@@ -63,9 +63,10 @@ class WarningsCompiler
 
                             $roomType = $this->dm->find('MBHHotelBundle:RoomType', $roomTypeId);
                             $tariff = $className === RoomCache::class ? null : $this->dm->find('MBHPriceBundle:Tariff', $tariffId);
-
-                            $emptyPeriod = new EmptyCachePeriod($cachePeriodData['begin'], $cachePeriodData['end'], $roomType, $tariff);
-                            $periodsWithoutPrice[$hotelId][$roomTypeId][$tariffId][] = $emptyPeriod;
+                            if (!is_null($roomType) && !is_null($tariff)) {
+                                $emptyPeriod = new EmptyCachePeriod($cachePeriodData['begin'], $cachePeriodData['end'], $roomType, $tariff);
+                                $periodsWithoutPrice[$hotelId][$roomTypeId][$tariffId][] = $emptyPeriod;
+                            }
                         }
                     }
                 }
@@ -153,11 +154,16 @@ class WarningsCompiler
                     }, $emptyPeriodsForTariff);
 
                     $firstPeriod = current($emptyPeriodsForTariff);
-                    $warningMessages[] = $this->translator->trans($warningMessageId, [
-                        '%roomTypeName%' => $firstPeriod->getRoomType()->getName(),
-                        '%tariffName%' => $firstPeriod->getTariff() ? $firstPeriod->getTariff()->getName() : '',
-                        '%periods%' => join(', ', $periods)
-                    ]);
+                    if ($firstPeriod) {
+                        $warningMessages[] = $this->translator->trans(
+                            $warningMessageId,
+                            [
+                                '%roomTypeName%' => $firstPeriod->getRoomType()->getName(),
+                                '%tariffName%' => $firstPeriod->getTariff() ? $firstPeriod->getTariff()->getName() : '',
+                                '%periods%' => join(', ', $periods)
+                            ]
+                        );
+                    }
                 }
             }
         }
