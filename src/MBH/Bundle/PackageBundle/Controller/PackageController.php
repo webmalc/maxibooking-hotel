@@ -148,7 +148,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
             $data = [
                 'hotel' => $this->get('mbh.hotel.selector')->getSelected(),
-                'roomType' => $formData['roomType'],
+                'roomType' => $this->helper->getDataFromMultipleSelectField(explode(',', $formData['roomType'])),
                 'source' => $formData['source'],
                 'status' => $formData['status'],
                 'deleted' => (boolean)$formData['deleted'],
