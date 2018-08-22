@@ -3,89 +3,18 @@
 namespace MBH\Bundle\ClientBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MBH\Bundle\BaseBundle\Lib\Exception;
-use MBH\Bundle\CashBundle\Document\CashDocument;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystem\CheckResultHolder;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
-use Symfony\Component\HttpFoundation\Request;
-use MBH\Bundle\ClientBundle\Lib\PaypalIPN;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
 
 /**
  * @ODM\EmbeddedDocument
  */
-class Paypal implements PaymentSystemInterface
+class Paypal extends PaymentSystemDocument
 {
     /**
      * @var string
      * @ODM\Field(type="string")
      */
     protected $paypalLogin;
-
-    /**
-     * @inheritdoc
-     */
-    public function getFormData(CashDocument $cashDocument, $url = null, $checkUrl = null)
-    {
-        $payer = $cashDocument->getPayer();
-        $createdAt = clone $cashDocument->getCreatedAt();
-        $createdAt->modify('+30 minutes');
-
-        return [
-            'action' => 'https://www.paypal.com/cgi-bin/webscr',
-            'testAction' => 'https://www.paypal.com/cgi-bin/websc',
-            'shopId' => $this->getPaypalLogin(),
-            'total' => $cashDocument->getTotal(),
-            'orderId' => $cashDocument->getId(),
-            'touristId' => $cashDocument->getOrder()->getId(),
-            'cardId' => $cashDocument->getOrder()->getId(),
-            'url' => $url,
-            'time' => 60 * 30,
-            'disabled' => $createdAt <= new \DateTime(),
-            'touristEmail' => $payer ? $payer->getEmail() : null,
-            'touristPhone' => $payer ? $payer->getPhone(true) : null,
-            'comment' => 'Order # ' . $cashDocument->getOrder()->getId() . '. CashDocument #' . $cashDocument->getId(),
-            'signature' => $this->getSignature($cashDocument, $url),
-        ];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getSignature(CashDocument $cashDocument, $url = null)
-    {
-
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function checkRequest(Request $request, ClientConfig $clientConfig): CheckResultHolder
-    {
-        $cashDocumentId = $request->get('item_name');
-        $total = $request->get('mc_gross');
-        $commission = $request->get('mc_fee');
-        $status = $request->get('address_status');
-
-        $dataRequest = $request->request->all();
-
-        $test = false;
-
-        $Ipn = new PaypalIPN();
-        $statusResponse = $Ipn->checkPayment($dataRequest, $test);
-
-        $holder = new CheckResultHolder();
-
-        if (in_array($statusResponse,['INVALID', 'ERROR'])) {
-            return $holder;
-        } elseif ($statusResponse === 'VERIFIED') {
-            return $holder->parseData([
-                'doc'        => $cashDocumentId,
-                'commission' => $commission,
-                //'commissionPercent' => true,
-                'text'       => 'OK',
-            ]);
-        }
-    }
 
     /**
      * @return string

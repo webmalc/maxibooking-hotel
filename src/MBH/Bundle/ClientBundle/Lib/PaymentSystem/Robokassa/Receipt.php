@@ -35,7 +35,7 @@ class Receipt implements \JsonSerializable
             $item->setName($package->getRoomType()->getName());
             $item->setTax($tax);
             $item->setQuantity((string) 1);
-            $item->setSum($order->getPrice());
+            $item->setSum($package->getPackagePrice(true));
 
             $items[] = $item;
 

@@ -12,7 +12,7 @@ use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\CheckResultHolder;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -170,6 +170,12 @@ class ClientConfig extends Base
      * @ODM\EmbedOne(targetDocument="NewRbk")
      */
     protected $newRbk;
+
+    /**
+     * @var NewRbk
+     * @ODM\EmbedOne(targetDocument="Tinkoff")
+     */
+    protected $tinkoff;
 
     /**
      * @var string
@@ -792,6 +798,21 @@ class ClientConfig extends Base
         $this->rbk = $rbk;
     }
 
+    /**
+     * @return null|Tinkoff
+     */
+    public function getTinkoff(): ?Tinkoff
+    {
+        return $this->tinkoff;
+    }
+
+    /**
+     * @param Tinkoff $tinkoff
+     */
+    public function setTinkoff(Tinkoff $tinkoff): void
+    {
+        $this->tinkoff = $tinkoff;
+    }
 
     /**
      * @param boolean $paymentSystem
@@ -886,12 +907,12 @@ class ClientConfig extends Base
 
     /**
      * @param $paymentSystemName
-     * @return PaymentSystemInterface
+     * @return PaymentSystemDocument
      * @throws Exception
      */
     public function getPaymentSystemDocByName($paymentSystemName)
     {
-        if (empty($this->$paymentSystemName) || !($this->$paymentSystemName instanceof PaymentSystemInterface)) {
+        if (empty($this->$paymentSystemName) || !($this->$paymentSystemName instanceof PaymentSystemDocument)) {
             throw new Exception('Specified payment system "' . $paymentSystemName . '" is not valid!');
         }
 

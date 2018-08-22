@@ -11,7 +11,7 @@ use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\Uniteller;
 use MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -21,7 +21,7 @@ class UnitellerHelper implements HelperInterface
 {
     private const PREFIX = 'uniteller';
 
-    public static function instance(FormInterface $form): PaymentSystemInterface
+    public static function instance(FormInterface $form): PaymentSystemDocument
     {
         $uniteller = new Uniteller();
         $uniteller

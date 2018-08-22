@@ -421,6 +421,9 @@ class CashController extends Controller
      */
     public function getMoneyFromCardAction(CashDocument $entity)
     {
+        $em = $this->container->get('mbh.exception_manager');
+        $em->sendExceptionNotification(new \LogicException('CashController. Для статистики о попадании: getMoneyFromCardAction'));
+
         $this->dm->getFilterCollection()->disable('softdeleteable');
         $order = $entity->getOrder();
         $clientConfig = $this->container->get('mbh.client_config_manager')->fetchConfig();
@@ -430,16 +433,30 @@ class CashController extends Controller
             throw $this->createNotFoundException();
         }
 
-        /** @var Uniteller $uniteller */
-        $uniteller = $clientConfig->getPaymentSystemDocs();
+        /**
+         * Здесь в целом не понятно для чего и что творится
+         * в случае попадания сюда, отправляется отчет в sentry (для статистики)
+         * а возможно это какой-то реликт?
+         *
+         * но сюда не попадают в принципе т.к. выше проверка $clientConfig->getPaymentSystems() != 'uniteller' уже не проходит
+         * по этому отчет будет отправлятся просто при попадании на этот actions
+         */
+        $doc = $clientConfig->getUniteller();
+        $em->sendExceptionNotification(new \LogicException('CashController. А здесь нас вообще не должно было быть'));
 
-        try {
+        if ($doc !== null) {
+            /** @var \MBH\Bundle\ClientBundle\Service\PaymentSystem\Wrapper\Uniteller $uniteller */
+            $uniteller = $this->container->get('MBH\Bundle\ClientBundle\Service\PaymentSystem\Wrapper\Uniteller');
+            $uniteller->setPaymentSystemDocument($doc);
 
-            $client = new Client();
-            $client->post(Uniteller::DO_CHECK_URL, ['form_params' => $uniteller->getCheckPaymentData($entity)]);
+            try {
 
-        } catch (Exception $e) {
-            throw $this->createNotFoundException();
+                $client = new Client();
+                $client->post(Uniteller::DO_CHECK_URL, ['form_params' => $uniteller->getCheckPaymentData($entity)]);
+
+            } catch (Exception $e) {
+                throw $this->createNotFoundException();
+            }
         }
     }
 

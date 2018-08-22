@@ -251,7 +251,21 @@ class ApiController extends Controller
             $logger->info('FAIL. '.$logText.' .Not found config');
             throw $this->createNotFoundException();
         }
-        $holder = $clientConfig->checkRequest($request, $paymentSystemName, $clientConfig);
+
+        $doc = $clientConfig->getPaymentSystemDocByName($paymentSystemName);
+        $paymentSystem =
+            $this
+                ->container
+                ->get('MBH\Bundle\ClientBundle\Service\PaymentSystem\Wrapper\PaymentSystemWrapperFactory')
+                ->create($doc);
+
+        $holder = $paymentSystem->checkRequest($request, $clientConfig);
+
+        if ($holder->hasInterimResponse()) {
+            $logger->info('OK. ' . $logText . ' . Interim Response');
+
+            return $holder->getInterimResponse();
+        }
 
         if (!$holder->isSuccess()) {
             $logger->info('FAIL. '.$logText.' .Bad signature');
@@ -490,11 +504,21 @@ class ApiController extends Controller
             throw $this->createNotFoundException();
         }
 
+        $emailIsRequired = false;
+        /**
+         * т.к. при фискилизации для генерации урл, неодходимо поле email
+         * возможно перенести куда-то в другое место и сделать более универсально
+         */
+        if ($this->clientConfig->getTinkoff() !== null) {
+            $emailIsRequired = $this->clientConfig->getTinkoff()->isWithFiscalization();
+        }
+
         return [
-            'request' => $requestJson,
-            'services' => $services,
-            'hotels' => $hotels,
-            'config' => $formConfig
+            'request'         => $requestJson,
+            'services'        => $services,
+            'hotels'          => $hotels,
+            'config'          => $formConfig,
+            'emailIsRequired' => $emailIsRequired,
         ];
     }
 
@@ -589,9 +613,18 @@ class ApiController extends Controller
                 'packageId' => current($packages)->getId(),
             ]);
         } else {
-            $paymentSystem = $requestJson->paymentSystem;
+            $paymentSystemName = $requestJson->paymentSystem;
+
+            $doc = $this->clientConfig->getPaymentSystemDocByName($paymentSystemName);
+
+            $paymentSystem =
+                $this
+                    ->container
+                    ->get('MBH\Bundle\ClientBundle\Service\PaymentSystem\Wrapper\PaymentSystemWrapperFactory')
+                    ->create($doc);
+
             $form = $this->container->get('twig')->render(
-                'MBHClientBundle:PaymentSystem:'.$paymentSystem.'.html.twig',
+                'MBHClientBundle:PaymentSystem:'.$paymentSystemName.'.html.twig',
                 [
                     'data' => array_merge(
                         [
@@ -603,7 +636,8 @@ class ApiController extends Controller
                                 'MBHOnlineBundle'
                             ),
                         ],
-                        $this->clientConfig->getFormData($order->getCashDocuments()[0], $paymentSystem)
+
+                        $paymentSystem->getPreFormData($this->clientConfig, $order->getCashDocuments()[0])
                     ),
                 ]
             );
