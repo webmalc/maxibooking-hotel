@@ -70,7 +70,7 @@ function setPayerFormVisibility() {
     var $payerTypeBox = $payerType.closest('.box');
 
     var firstFieldsOfGroupsByCategories = {
-        'ru_legal': ['mbhuser_bundle_payer_type_organizationName', 'mbhuser_bundle_payer_type_surname', 'mbhuser_bundle_payer_type_checkingAccount'],
+        'ru_legal': ['mbhuser_bundle_payer_type_organizationName', 'mbhuser_bundle_payer_type_surname', 'mbhuser_bundle_payer_type_checkingAccount', 'mbhuser_bundle_payer_type_orgState'],
         'ru_natural': ['mbhuser_bundle_payer_type_documentType', 'mbhuser_bundle_payer_type_financeInn'],
         'en_legal': ['mbhuser_bundle_payer_type_organizationName', 'mbhuser_bundle_payer_type_checkingAccount'],
         'en_natural': ['mbhuser_bundle_payer_type_address']
@@ -283,9 +283,6 @@ function switchAuthOrganFieldsVisibility() {
 }
 
 function initTariffPage() {
-    var $changeTariffShowModalButton = $('#change-tariff-modal-show');
-    var $changeTariffFormWrapper = $('#change-tariff-form-wrapper');
-
     var setPrice = function (priceString, isCorrect) {
         isCorrect = isCorrect === undefined ? true : isCorrect;
         $('#mbhuser_bundle_client_tariff_type_price').val(priceString);
@@ -321,8 +318,12 @@ function initTariffPage() {
         }
     };
 
-    if ($changeTariffShowModalButton.length = 1) {
+    var $changeTariffShowModalButton = $('#change-tariff-modal-show');
+    if ($changeTariffShowModalButton.length === 1) {
+        var $changeTariffFormWrapper = $('#change-tariff-form-wrapper');
+
         $changeTariffShowModalButton.click(function () {
+            console.log(this);
             $('#change-tariff-modal').modal('show');
             $changeTariffFormWrapper.html(mbh.loader.html);
             $.get(Routing.generate("update_tariff_modal")).done(function (modalBody) {

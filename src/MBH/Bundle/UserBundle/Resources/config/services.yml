@@ -116,7 +116,11 @@ services:
 
     mbh.account_payer_type:
         class: MBH\Bundle\UserBundle\Form\PayerType
-        arguments: ['@mbh.fms_dictionaries', '@mbh.client_payer_manager', '@mbh.client_manager']
+        arguments:
+            - '@mbh.fms_dictionaries'
+            - '@mbh.client_payer_manager'
+            - '@mbh.client_manager'
+            - '@translator'
         tags:
             - {name: form.type}
 
