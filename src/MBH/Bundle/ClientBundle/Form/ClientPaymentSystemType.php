@@ -49,12 +49,7 @@ class ClientPaymentSystemType extends AbstractType
         $invoiceDocument = null;
         $stripePubToken = null;
 
-        $paymentSystemName = $options['paymentSystemName'];
-
-        if ($paymentSystemName === null) {
-            $paymentSystemName = $this->extraData->getPaymentSystemsDefault();
-        }
-
+        $paymentSystemName = $options['paymentSystemName'] ?? $this->extraData->getPaymentSystemsDefault();
         $paymentSystemsChoices = array_filter($this->extraData->getPaymentSystems(), function ($paymentSystemName) use ($clientConfig, $options) {
             return !in_array($paymentSystemName, $clientConfig->getPaymentSystems()) || $paymentSystemName == $options['paymentSystemName'];
         }, ARRAY_FILTER_USE_KEY);
@@ -219,7 +214,6 @@ class ClientPaymentSystemType extends AbstractType
                 'required' => false,
                 'attr' => ['class' => self::COMMON_ATTR_CLASS . ' stripe'],
                 'group' => self::COMMON_GROUP,
-                'validation_groups' => 'stripe',
             ])
             ->add('commission', TextType::class, [
                 'label' => 'form.clientPaymentSystemType.stripe_commission.label',
@@ -233,7 +227,6 @@ class ClientPaymentSystemType extends AbstractType
                     'decimals' => 2
                 ],
                 'group' => self::COMMON_GROUP,
-                'validation_groups' => 'stripe',
             ])
             ->add(
                 'paypalLogin',
@@ -257,7 +250,6 @@ class ClientPaymentSystemType extends AbstractType
             'taxationRateCodes'  => null,
             'taxationSystemCode' => null,
             'paymentSystemName'  => null,
-//            'validation_groups'  => ['stripe'],
         ]);
     }
 
