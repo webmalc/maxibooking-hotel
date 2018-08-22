@@ -13,6 +13,7 @@ use MBH\Bundle\ClientBundle\Lib\PaymentSystem\FiscalizationTrait;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbk\CheckWebhook;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbk\Webhook;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\TaxMapInterface;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystemCommonDocument;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -23,7 +24,7 @@ use Symfony\Component\HttpFoundation\Request;
  * @package MBH\Bundle\ClientBundle\Document\PaymentSystem
  * @ODM\EmbeddedDocument()
  */
-class NewRbk implements PaymentSystemInterface, TaxMapInterface
+class NewRbk extends PaymentSystemCommonDocument implements TaxMapInterface
 {
     use FiscalizationTrait;
 
@@ -164,48 +165,5 @@ class NewRbk implements PaymentSystemInterface, TaxMapInterface
     public function setTaxationRateCode(string $taxationRateCode): void
     {
         $this->taxationRateCode = $taxationRateCode;
-    }
-
-    public function getFormData(CashDocument $cashDocument, $url = null, $checkUrl = null)
-    {
-        return [
-            'total'     => $cashDocument->getTotal(),
-            'packageId' => $cashDocument->getOrder()->getPackages()[0]->getId(),
-        ];
-    }
-
-    public function checkRequest(Request $request, ClientConfig $clientConfig): CheckResultHolder
-    {
-        $check = new CheckWebhook($request,$clientConfig);
-
-        $holder = new CheckResultHolder();
-
-        if (!$check->verifySignature()) {
-            $holder->setIndividualErrorResponse($check->getErrorResponse());
-            return $holder;
-        }
-
-        $webhook = Webhook::parseAndCreate($check->getContent());
-
-        if ($webhook->getEventType() != Webhook::PAYMENT_CAPTURED ||
-            $webhook->getTopic() != Webhook::INVOICES_TOPIC) {
-            return $holder;
-        }
-
-        $invoice = $webhook->getInvoice();
-
-        if ($invoice === null) {
-            return $holder;
-        }
-
-        $holder->setDoc($invoice->getCashDocumentId());
-        $holder->setText('Ok');
-
-        return $holder;
-    }
-
-    public function getSignature(CashDocument $cashDocument, $url = null)
-    {
-        // TODO: Implement getSignature() method.
     }
 }

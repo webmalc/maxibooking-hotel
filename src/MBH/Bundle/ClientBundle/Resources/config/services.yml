@@ -102,6 +102,12 @@ services:
         resource: '%kernel.root_dir%/../src/MBH/Bundle/ClientBundle/Service/PaymentSystem/*'
         arguments:
             - '@service_container'
+
+    MBH\Bundle\ClientBundle\Service\PaymentSystem\Wrapper\:
+        resource: '%kernel.root_dir%/../src/MBH/Bundle/ClientBundle/Service/PaymentSystem/Wrapper/*'
+        arguments:
+            - '@service_container'
+
     mbh.document_template_update.logger:
           class:     Symfony\Bridge\Monolog\Logger
           arguments: [app]

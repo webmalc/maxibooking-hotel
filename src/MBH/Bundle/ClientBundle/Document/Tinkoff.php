@@ -7,16 +7,9 @@
 namespace MBH\Bundle\ClientBundle\Document;
 
 
-use GuzzleHttp\Client;
-use MBH\Bundle\CashBundle\Document\CashDocument;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystem\CheckResultHolder;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\FiscalizationTrait;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\TaxMapInterface;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystem\Tinkoff\InitRequest;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystem\Tinkoff\InitResponse;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystem\Tinkoff\Notification;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
-use Symfony\Component\HttpFoundation\Request;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystemCommonDocument;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -25,7 +18,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @package MBH\Bundle\ClientBundle\Document
  * @ODM\EmbeddedDocument()
  */
-class Tinkoff implements PaymentSystemInterface, TaxMapInterface
+class Tinkoff extends PaymentSystemCommonDocument implements TaxMapInterface
 {
     use FiscalizationTrait;
 
@@ -203,49 +196,5 @@ class Tinkoff implements PaymentSystemInterface, TaxMapInterface
     public function getTaxSystemMap(): array
     {
         return self::TAX_SYSTEM_MAP;
-    }
-
-    public function checkRequest(Request $request, ClientConfig $config): CheckResultHolder
-    {
-        $notification = Notification::parseRequest($request);
-
-        $holder = new CheckResultHolder();
-
-        if ($notification === null) {
-
-            return $holder;
-        }
-
-        if (!$notification->compareToken($this)
-            || !$notification->isSuccess()
-            || $notification->getStatus() !== Notification::STATUS_CONFIRMED) {
-
-            return $holder;
-        }
-
-        $holder->setDoc($notification->getOrderId());
-        $holder->setText('OK');
-
-        return $holder;
-    }
-
-    public function getFormData(CashDocument $cashDocument, $url = null, $checkUrl = null)
-    {
-        return [
-            'cashDocumentId' => $cashDocument->getId(),
-        ];
-    }
-
-    /**
-     * Используются две подписи:
-     *  одна для инициализации: src/MBH/Bundle/ClientBundle/Lib/PaymentSystem/Tinkoff/InitRequest.php
-     *  вторая для нотификации src/MBH/Bundle/ClientBundle/Lib/PaymentSystem/Tinkoff/Notification.php
-     *
-     * @param CashDocument $cashDocument
-     * @param null $url
-     * @return void
-     */
-    public function getSignature(CashDocument $cashDocument, $url = null)
-    {
     }
 }

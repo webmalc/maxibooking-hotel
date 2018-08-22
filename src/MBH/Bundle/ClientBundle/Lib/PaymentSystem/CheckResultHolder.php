@@ -7,6 +7,8 @@
 namespace MBH\Bundle\ClientBundle\Lib\PaymentSystem;
 
 
+use Symfony\Component\HttpFoundation\Response;
+
 class CheckResultHolder
 {
     /**
@@ -41,6 +43,11 @@ class CheckResultHolder
      */
     private $individualSuccessResponse;
 
+    /**
+     * @var Response|null
+     */
+    private $interimResponse;
+
     public function parseData(array $data): self
     {
         foreach ($data as $key => $value){
@@ -51,6 +58,30 @@ class CheckResultHolder
         }
 
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasInterimResponse(): bool
+    {
+        return $this->interimResponse !== null;
+    }
+
+    /**
+     * @return Response
+     */
+    public function getInterimResponse(): Response
+    {
+        return $this->interimResponse;
+    }
+
+    /**
+     * @param Response $interimResponse
+     */
+    public function setInterimResponse(Response $interimResponse): void
+    {
+        $this->interimResponse = $interimResponse;
     }
 
     /**
