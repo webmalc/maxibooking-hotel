@@ -11,12 +11,12 @@ use MBH\Bundle\SearchBundle\Lib\Exceptions\ConsumerSearchException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\ResultRedisStore;
-use MBH\Bundle\SearchBundle\Services\Search\ConsumerSearch;
-use MBH\Bundle\SearchBundle\Services\Search\Searcher;
+use MBH\Bundle\SearchBundle\Services\Search\CacheSearcher;
+use MBH\Bundle\SearchBundle\Services\Search\ConsumerSearcher;
 use MBH\Bundle\SearchBundle\Services\Search\SearcherFactory;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
-class ConsumerSearchTest extends SearchWebTestCase
+class ConsumerSearcherTest extends SearchWebTestCase
 {
 
     public function testSearch(): void
@@ -29,18 +29,24 @@ class ConsumerSearchTest extends SearchWebTestCase
 
 
         $searchedResult1 = (new Result())->setStatus('ok');
-        $searchedResult2 = (new Result())->setStatus('ok');
+        $searchedResult2 = ['status' => 'ok'];
         $searchedResult3 = (new Result())->setStatus('error');
 
-        $searcher = $this->createMock(Searcher::class);
+        $searcher = $this->createMock(CacheSearcher::class);
         $searcher->expects($this->exactly(3))->method('search')->willReturn($searchedResult1, $searchedResult2, $searchedResult3);
 
         $searcherFactory = $this->createMock(SearcherFactory::class);
         $searcherFactory->expects($this->once())->method('getSearcher')->willReturn($searcher);
 
         $resultStore = $this->createMock(ResultRedisStore::class);
-        $resultStore->expects($this->exactly(3))->method('store')->willReturnCallback(function ($searchResult) {
-            $this->assertInstanceOf(Result::class, $searchResult);
+        $resultStore->expects($this->exactly(3))->method('store')->willReturnCallback(function ($searchResult) use (&$numberOfCall) {
+            $numberOfCall++;
+            if ($numberOfCall === 2) {
+                $this->assertInternalType('array', $searchResult);
+            } else {
+                $this->assertInstanceOf(Result::class, $searchResult);
+            }
+
         });
         $resultStore->expects($this->exactly(2))->method('getAlreadySearchedDay')->willReturn(4, 6);
         $resultStore->expects($this->exactly(1))->method('addFakeReceivedCount')->willReturnCallback(function ($actualHash, $actualCount) {
@@ -52,7 +58,7 @@ class ConsumerSearchTest extends SearchWebTestCase
 
         $searchQuery = $this->createMock(SearchQuery::class);
 
-        $search = new ConsumerSearch($conditionsRepository, $resultStore, $searcherFactory);
+        $search = new ConsumerSearcher($conditionsRepository, $resultStore, $searcherFactory);
         $search->search('fakeConditionsId', [clone $searchQuery, clone $searchQuery, clone $searchQuery]);
         $search->search('fakeConditionsId', [clone $searchQuery, clone $searchQuery, clone $searchQuery]);
         $this->expectException(ConsumerSearchException::class);

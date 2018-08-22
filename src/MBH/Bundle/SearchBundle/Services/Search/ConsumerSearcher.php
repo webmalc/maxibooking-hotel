@@ -12,10 +12,10 @@ use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStoreInterface;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\ResultRedisStore;
 
-class ConsumerSearch
+class ConsumerSearcher
 {
 
-    private const ADDITIONAL_RESULTS_LIMIT = 5;
+    private const ADDITIONAL_RESULTS_LIMIT = 1;
 
     /** @var SearchConditionsRepository */
     private $conditionsRepository;
@@ -43,13 +43,14 @@ class ConsumerSearch
     public function search(string $conditionsId, array $searchQueries): void
     {
 
-         /** @var SearchConditions $conditions */
+        /** @var SearchConditions $conditions */
         $conditions = $this->conditionsRepository->find($conditionsId);
-        if (!$conditions ) {
+        if (!$conditions) {
             throw new ConsumerSearchException('Error! Can not find SearchConditions for search in consumerSearch');
         }
         $hash = $conditions->getSearchHash();
-        if ($this->resultStore->getAlreadySearchedDay($hash) > self::ADDITIONAL_RESULTS_LIMIT) {
+        $searchedDaysCount = $this->resultStore->getAlreadySearchedDay($hash);
+        if ($searchedDaysCount > self::ADDITIONAL_RESULTS_LIMIT) {
             $this->resultStore->addFakeReceivedCount($hash, \count($searchQueries));
         } else {
             $searcher = $this->searcherFactory->getSearcher($conditions->isUseCache());
@@ -59,8 +60,9 @@ class ConsumerSearch
                 $searchQuery->setSearchConditions($conditions);
                 $result = $searcher->search($searchQuery);
                 $this->resultStore->store($result, $conditions);
-                /** @var Result $result */
-                if ($result->getStatus() === 'ok') {
+                if ($result instanceof Result && $result->getStatus() === 'ok') {
+                    $successResults++;
+                } elseif (\is_array($result) && $result['status'] === 'ok') {
                     $successResults++;
                 }
             }

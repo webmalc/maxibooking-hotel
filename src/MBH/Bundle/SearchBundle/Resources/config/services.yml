@@ -83,8 +83,8 @@ services:
 
 
 #search
-    mbh_bundle_search.services_search.consumer_search:
-        class: MBH\Bundle\SearchBundle\Services\Search\ConsumerSearch
+    mbh_search.consumer_searcher:
+        class: MBH\Bundle\SearchBundle\Services\Search\ConsumerSearcher
         arguments:
             - '@mbh_search.search_conditions_repository'
             - '@mbh_search.redis_store'
@@ -153,7 +153,7 @@ services:
     mbh_search.asycn_search:
         class: MBH\Bundle\SearchBundle\RabbitMQ\AsyncSearchConsumer
         arguments:
-            - '@mbh_search.searcher_factory'
+            - '@mbh_search.consumer_searcher'
             - '@mbh_search.search_conditions_repository'
             - '@mbh_search.redis_store'
 
@@ -167,6 +167,13 @@ services:
             - '@mbh_search.room_cache_fetcher'
 
 # repositories
+    mbh_search.hotel_repository:
+      class: MBH\Bundle\HotelBundle\Document\HotelRepository
+      factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
+      arguments:
+      - MBH\Bundle\HotelBundle\Document\Hotel
+
+
     mbh_search.room_type_repository:
         class: MBH\Bundle\HotelBundle\Document\RoomTypeRepository
         factory: ["@doctrine.odm.mongodb.document_manager", getRepository]

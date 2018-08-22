@@ -63,9 +63,6 @@ class SearchController extends Controller
     {
         $data = json_decode($request->getContent(), true);
         $search = $this->get('mbh_search.search');
-        $search->setAsyncQueriesChunk(30);
-
-
         try {
             if (!\is_array($data)) {
                 throw new SearchConditionException('Received bad data');

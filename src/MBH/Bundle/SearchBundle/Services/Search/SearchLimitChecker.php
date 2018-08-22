@@ -171,11 +171,16 @@ class SearchLimitChecker
                 return;
             }
 
-            $roomType = $result->getResultRoomType()->getRoomType();
+            $roomTypeId = $result->getResultRoomType()->getId();
+            $roomType = $this->sharedDataFetcher->getFetchedRoomType($roomTypeId);
+            $tariffId = $result->getResultTariff()->getId();
+            $tariff = $this->sharedDataFetcher->getFetchedTariff($tariffId);
+
+
             $begin = clone $result->getBegin();
             $end = clone $result->getEnd();
             /** @var Tariff $tariff */
-            $tariff = $this->dm->getRepository(Tariff::class)->fetchBaseTariff($result->getResultTariff()->getTariff()->getHotel());
+            $tariff = $this->dm->getRepository(Tariff::class)->fetchBaseTariff($tariff->getHotel());
             /** @var RestrictionRepository $restrictionRepo */
             $restrictionRepo = $this->dm->getRepository(Restriction::class);
             /** @var Restriction $beginRestriction */

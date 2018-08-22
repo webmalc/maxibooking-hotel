@@ -31,7 +31,7 @@ class AdditionalDatesGenerator
         if (!$direction) {
             $dates = array_merge($dates, $this->dateGenerate($date, $range, 'up'));
             $dates = array_merge($dates, $this->dateGenerate($date, $range, 'down'));
-            $dates = array_merge($dates, [$date]);
+            array_unshift($dates, $date);
 
             return $dates;
         }

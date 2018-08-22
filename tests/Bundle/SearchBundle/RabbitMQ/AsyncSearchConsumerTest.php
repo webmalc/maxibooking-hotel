@@ -12,7 +12,7 @@ use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\RabbitMQ\AsyncSearchConsumer;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStoreInterface;
-use MBH\Bundle\SearchBundle\Services\Search\ConsumerSearch;
+use MBH\Bundle\SearchBundle\Services\Search\ConsumerSearcher;
 use MBH\Bundle\SearchBundle\Services\Search\Searcher;
 use MBH\Bundle\SearchBundle\Services\Search\SearcherFactory;
 use PhpAmqpLib\Message\AMQPMessage;
@@ -30,7 +30,7 @@ class AsyncSearchConsumerTest extends SearchWebTestCase
         $message = $this->createMock(AMQPMessage::class);
         $message->expects($this->once())->method('getBody')->willReturn(json_encode($body));
 
-        $consumerSearch = $this->createMock(ConsumerSearch::class);
+        $consumerSearch = $this->createMock(ConsumerSearcher::class);
         $consumerSearch->expects($this->once())->method('search')->willReturnCallback(function (string  $actualConditionId, array $searchQueries) use ($conditionId){
             $this->assertEquals($conditionId, $actualConditionId);
             foreach ($searchQueries as $searchQuery) {

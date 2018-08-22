@@ -22,10 +22,9 @@ class HotelRepository extends DocumentRepository
         $qb
             ->field('deletedAt')->exists(false)
             ->sort('createdAt', 'DESC');
-        /** @var Hotel $hotel */
-        $hotel = $qb->getQuery()->getSingleResult();
 
-        return $hotel;
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
+        return $qb->getQuery()->getSingleResult();
     }
 
     /**
@@ -64,4 +63,5 @@ class HotelRepository extends DocumentRepository
             ->getQuery()
             ->execute();
     }
+
 }

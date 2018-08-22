@@ -8,6 +8,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
+use MBH\Bundle\SearchBundle\Lib\Result\GroupSearchQuery;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\RestrictionsCheckerService;
 use MBH\Bundle\SearchBundle\Services\SearchConditionsCreator;
@@ -17,8 +18,6 @@ use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 
 class Search
 {
-    /** @var int */
-    public const QUERIES_CHUNK_NUM = 20;
 
     /** @var bool */
     public const PRE_RESTRICTION_CHECK = false;
@@ -40,9 +39,6 @@ class Search
 
     /** @var ProducerInterface */
     private $producer;
-
-    /** @var int */
-    private $asyncQueriesChunk;
 
     /** @var FinalSearchResultsBuilder */
     private $resultsBuilder;
@@ -97,7 +93,7 @@ class Search
     )
     {
         $conditions = $this->createSearchConditions($data);
-        $searchQueries = $this->queryGenerator->generateSearchQueries($conditions);
+        $searchQueries = $this->queryGenerator->generate($conditions, false);
         if (self::PRE_RESTRICTION_CHECK) {
             $searchQueries = array_filter($searchQueries, [$this->restrictionChecker, 'check']);
         }
@@ -129,27 +125,31 @@ class Search
     {
 
         $conditions = $this->createSearchConditions($data);
-        $searchQueries = $this->queryGenerator->generateSearchQueries($conditions);
-        $conditions->setExpectedResultsCount(\count($searchQueries));
-        $this->dm->persist($conditions);
-        $this->dm->flush($conditions);
+        $groupedSearchQueries = $this->queryGenerator->generate($conditions, true);
         //** TODO: Create SearchQueryGroup */
-        $searchQueriesChunks = array_chunk($searchQueries, $this->getAsyncQueriesChunkNum());
+
         $conditionsId = $conditions->getId();
-        foreach ($searchQueriesChunks as $searchQueriesChunk) {
+        $countQueries = 0;
+        foreach ($groupedSearchQueries as $groupSearchQuery) {
             $queries = [];
-            foreach ($searchQueriesChunk as $searchQuery) {
+            /** @var GroupSearchQuery $groupSearchQuery */
+            foreach ($groupSearchQuery->getSearchQueries() as $searchQuery) {
                 /** @var SearchQuery $searchQuery */
                 $searchQuery->unsetConditions();
                 $queries[] = $searchQuery;
+                $countQueries++;
             }
             $message = [
                 'conditionsId' => $conditionsId,
                 'searchQueries' => serialize($queries)
             ];
             $msgBody = json_encode($message);
-            $this->producer->publish($msgBody);
+            $this->producer->publish($msgBody, '', ['priority' => $groupSearchQuery->getType() === GroupSearchQuery::MAIN_DATES ? 10: 1]);
         }
+
+        $conditions->setExpectedResultsCount($countQueries);
+        $this->dm->persist($conditions);
+        $this->dm->flush($conditions);
 
         return $conditions->getId();
     }
@@ -184,26 +184,4 @@ class Search
     {
         return $this->restrictionChecker->getErrors();
     }
-
-    /**
-     * @return int
-     */
-    public function getAsyncQueriesChunkNum(): int
-    {
-        if (null === $this->asyncQueriesChunk) {
-            return self::QUERIES_CHUNK_NUM;
-        }
-
-        return $this->asyncQueriesChunk;
-    }
-
-    /**
-     * @param int $asyncQueriesChunk
-     */
-    public function setAsyncQueriesChunk(int $asyncQueriesChunk): void
-    {
-        $this->asyncQueriesChunk = $asyncQueriesChunk;
-    }
-
-
 }

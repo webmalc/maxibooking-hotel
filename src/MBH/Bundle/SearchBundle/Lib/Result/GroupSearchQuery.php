@@ -100,5 +100,16 @@ class GroupSearchQuery
         return $this;
     }
 
+    /**
+     * @param SearchQuery $searchQuery
+     * @return GroupSearchQuery
+     */
+    public function addSearchQuery(SearchQuery $searchQuery): GroupSearchQuery
+    {
+        $this->searchQueries[] = $searchQuery;
+
+        return $this;
+    }
+
 
 }

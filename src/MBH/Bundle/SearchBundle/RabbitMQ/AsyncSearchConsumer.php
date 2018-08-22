@@ -12,7 +12,7 @@ use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStoreInterface;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\ResultRedisStore;
-use MBH\Bundle\SearchBundle\Services\Search\ConsumerSearch;
+use MBH\Bundle\SearchBundle\Services\Search\ConsumerSearcher;
 use MBH\Bundle\SearchBundle\Services\Search\Searcher;
 use MBH\Bundle\SearchBundle\Services\Search\SearcherFactory;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
@@ -21,10 +21,10 @@ use PhpAmqpLib\Message\AMQPMessage;
 class AsyncSearchConsumer implements ConsumerInterface
 {
 
-    /** @var ConsumerSearch */
+    /** @var ConsumerSearcher */
     private $consumerSearch;
 
-    public function __construct(ConsumerSearch $consumerSearch)
+    public function __construct(ConsumerSearcher $consumerSearch)
     {
         $this->consumerSearch = $consumerSearch;
     }

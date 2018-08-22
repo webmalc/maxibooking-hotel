@@ -75,13 +75,13 @@ class ResultRedisStore implements AsyncResultStoreInterface
         $hash = $conditions->getSearchHash();
 
         $expectedResults = $conditions->getExpectedResultsCount();
-        $receivedCount = $this->cache->get('received' . $hash);
+        $receivedCount = (int)$this->cache->get('received' . $hash) + (int)$this->cache->get('received_fake'.$hash);
 
-        if ($expectedResults === (int)$receivedCount) {
+        if ($expectedResults === $receivedCount) {
             throw new AsyncResultReceiverException('All results were taken.');
         }
 
-        if (null !== $receivedCount && (int)$receivedCount > $expectedResults ) {
+        if (null !== $receivedCount && $receivedCount > $expectedResults ) {
             throw new AsyncResultReceiverException('Some error! Taken results more than Expected!');
         }
 
@@ -119,8 +119,8 @@ class ResultRedisStore implements AsyncResultStoreInterface
      */
     public function addFakeReceivedCount(string $hash, int $number): void
     {
-        $receivedCount = $this->cache->get('received' . $hash);
-        $this->cache->set('received' . $hash, (int)$receivedCount + $number);
+        $fakeReceived = $this->cache->get('received_fake' . $hash);
+        $this->cache->set('received_fake' . $hash, (int)$fakeReceived + $number);
     }
 
     public function increaseAlreadySearchedDay(string $hash): void
