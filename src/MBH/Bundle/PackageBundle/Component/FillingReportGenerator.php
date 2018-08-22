@@ -247,24 +247,31 @@ class FillingReportGenerator
                         $packagePrice = !is_null($packagePriceWithDiscount) ? $packagePriceWithDiscount->getPrice() : 0;
 
                         $servicesPrice = 0;
+                        /** @var PackageService[] $packageServicesList */
                         $packageServicesList = isset($packageServicesByPackageIds[$package->getId()])
                             ? $packageServicesByPackageIds[$package->getId()]
                             : [];
 
-                        foreach($packageServicesList as $service) {
-                            if($date >= $service->getBegin() && $date < $service->getEnd()) {
-                                if (!empty($service->getService()->getInnerPrice() && $recalculateAccommodationCauseOfServices)) {
-                                    $serviceDayPrice = $service->calcTotal(true);
-                                    if ($service->getService()->isSubtracted()) {
-                                        $packagePrice -= $serviceDayPrice;
-                                        $servicesPrice += $serviceDayPrice;
-                                    } else {
+                        foreach($packageServicesList as $packageService) {
+                            $service = $packageService->getService();
+                            if($date >= $packageService->getBegin() && $date < $packageService->getEnd()) {
+                                if ($recalculateAccommodationCauseOfServices) {
+                                    $singleServicePrice = $this->container
+                                        ->get('mbh.order_manager')
+                                        ->getPackageServicePrice($service, $package, true);
+                                    $serviceDayPrice = $packageService->calcTotal(true, $singleServicePrice)
+                                        / $packageService->getNights();
+
+                                    if ($service->isIncludeInAccommodationPrice()) {
                                         $packagePrice += $serviceDayPrice;
                                         $servicesPrice -= $serviceDayPrice;
+                                    } elseif ($service->subtractFromAccommodationPrice()) {
+                                        $packagePrice -= $serviceDayPrice;
+                                        $servicesPrice += $serviceDayPrice;
                                     }
                                 }
 
-                                $servicesPrice += $service->calcTotal() / $service->getNights();
+                                $servicesPrice += $packageService->calcTotal() / $packageService->getNights();
                             }
                         }
 
