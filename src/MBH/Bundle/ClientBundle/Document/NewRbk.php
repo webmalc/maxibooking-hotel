@@ -7,17 +7,11 @@
 namespace MBH\Bundle\ClientBundle\Document;
 
 
-use MBH\Bundle\CashBundle\Document\CashDocument;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystem\CheckResultHolder;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\FiscalizationTrait;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbk\CheckWebhook;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbk\Webhook;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\TaxMapInterface;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemCommonDocument;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class NewRbk
