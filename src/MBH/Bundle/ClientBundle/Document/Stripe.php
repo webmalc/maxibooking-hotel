@@ -3,19 +3,12 @@
 namespace MBH\Bundle\ClientBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MBH\Bundle\CashBundle\Document\CashDocument;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystem\CheckResultHolder;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystemCommonDocument;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
-use Stripe\Charge;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
 
 /**
  * @ODM\EmbeddedDocument
  */
-class Stripe extends PaymentSystemCommonDocument
+class Stripe extends PaymentSystemDocument
 {
     const NAME = 'stripe';
 

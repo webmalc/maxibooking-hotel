@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @property \MBH\Bundle\ClientBundle\Document\Rbk $entity
  */
-class Rbk extends CommonWrapper
+class Rbk extends Wrapper
 {
     /**
      * @inheritdoc

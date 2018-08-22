@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @property \MBH\Bundle\ClientBundle\Document\NewRbk $entity
  */
-class NewRbk extends CommonWrapper
+class NewRbk extends Wrapper
 {
     public function getFormData(CashDocument $cashDocument, $url = null, $checkUrl = null)
     {

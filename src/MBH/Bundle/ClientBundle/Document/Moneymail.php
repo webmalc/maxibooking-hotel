@@ -3,12 +3,12 @@
 namespace MBH\Bundle\ClientBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystemCommonDocument;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
 
 /**
  * @ODM\EmbeddedDocument
  */
-class Moneymail extends PaymentSystemCommonDocument
+class Moneymail extends PaymentSystemDocument
 {
     /**
      * @var string

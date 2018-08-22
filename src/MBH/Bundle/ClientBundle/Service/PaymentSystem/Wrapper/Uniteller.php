@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @property \MBH\Bundle\ClientBundle\Document\Uniteller $entity
  */
-class Uniteller extends CommonWrapper
+class Uniteller extends Wrapper
 {
     public function getCheckPaymentData(CashDocument $cashDocument)
     {

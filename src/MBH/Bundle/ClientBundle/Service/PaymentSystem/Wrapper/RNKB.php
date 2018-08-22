@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @property \MBH\Bundle\ClientBundle\Document\RNKB $entity
  */
-class RNKB extends CommonWrapper
+class RNKB extends Wrapper
 {
     /**
      * Этот метод еще встречается у юнителлер

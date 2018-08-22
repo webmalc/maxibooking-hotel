@@ -18,7 +18,7 @@ use MBH\Bundle\ClientBundle\Lib\PaypalIPN;
  *
  * @property \MBH\Bundle\ClientBundle\Document\Paypal $entity
  */
-class Paypal extends CommonWrapper
+class Paypal extends Wrapper
 {
     /**
      * @inheritdoc

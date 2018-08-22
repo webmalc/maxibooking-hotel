@@ -20,7 +20,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  *
  * @property \MBH\Bundle\ClientBundle\Document\Stripe $entity
  */
-class Stripe extends CommonWrapper
+class Stripe extends Wrapper
 {
     /**
      * @param CashDocument $cashDocument

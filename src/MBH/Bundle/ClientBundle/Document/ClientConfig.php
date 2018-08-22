@@ -12,8 +12,7 @@ use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\CheckResultHolder;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystemCommonDocument;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -908,12 +907,12 @@ class ClientConfig extends Base
 
     /**
      * @param $paymentSystemName
-     * @return PaymentSystemCommonDocument
+     * @return PaymentSystemDocument
      * @throws Exception
      */
     public function getPaymentSystemDocByName($paymentSystemName)
     {
-        if (empty($this->$paymentSystemName) || !($this->$paymentSystemName instanceof PaymentSystemCommonDocument)) {
+        if (empty($this->$paymentSystemName) || !($this->$paymentSystemName instanceof PaymentSystemDocument)) {
             throw new Exception('Specified payment system "' . $paymentSystemName . '" is not valid!');
         }
 

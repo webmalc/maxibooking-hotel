@@ -210,7 +210,7 @@ class Notification extends Response
             'Password'    => $tinkoff->getSecretKey(),
         ];
 
-        if ($tinkoff->isWithFiscalization() && $this->receipt !== null) {
+        if ($tinkoff->isWithFiscalization()) {
             $data = array_merge(
                 $data,
                 [

@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @property \MBH\Bundle\ClientBundle\Document\Moneymail $entity
  */
-class Moneymail extends CommonWrapper
+class Moneymail extends Wrapper
 {
     /**
      * @inheritdoc

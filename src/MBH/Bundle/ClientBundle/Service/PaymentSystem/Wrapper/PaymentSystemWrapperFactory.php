@@ -6,7 +6,7 @@
 
 namespace MBH\Bundle\ClientBundle\Service\PaymentSystem\Wrapper;
 
-use MBH\Bundle\ClientBundle\Lib\PaymentSystemCommonDocument;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -24,14 +24,14 @@ class PaymentSystemWrapperFactory
     }
 
     /**
-     * @param PaymentSystemCommonDocument $doc
+     * @param PaymentSystemDocument $doc
      * @return PaymentSystemInterface
      */
-    public function create(PaymentSystemCommonDocument $doc): PaymentSystemInterface
+    public function create(PaymentSystemDocument $doc): PaymentSystemInterface
     {
         $name = $doc::name();
 
-        /** @var CommonWrapper $instance */
+        /** @var Wrapper $instance */
         $instance = $this->container->get('MBH\Bundle\ClientBundle\Service\PaymentSystem\Wrapper\\' . $doc::name());
         $instance->setPaymentSystemDocument($doc);
 

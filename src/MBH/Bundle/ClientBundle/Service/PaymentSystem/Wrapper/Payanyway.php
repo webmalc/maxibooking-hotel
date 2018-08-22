@@ -11,7 +11,7 @@ use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\CheckResultHolder;
 use Symfony\Component\HttpFoundation\Request;
 
-class Payanyway extends CommonWrapper
+class Payanyway extends Wrapper
 {
     public function getFormData(CashDocument $cashDocument, $url = null , $checkUrl = null)
     {

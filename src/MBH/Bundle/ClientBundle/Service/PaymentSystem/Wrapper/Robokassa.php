@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
  *
  * @property \MBH\Bundle\ClientBundle\Document\Robokassa $entity
  */
-class Robokassa extends CommonWrapper
+class Robokassa extends Wrapper
 {
     /**
      * @var null | Receipt

@@ -7,7 +7,7 @@
 namespace MBH\Bundle\ClientBundle\Lib;
 
 
-abstract class PaymentSystemCommonDocument
+abstract class PaymentSystemDocument
 {
     public static function name(): string
     {

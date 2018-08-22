@@ -2,13 +2,13 @@
 
 namespace MBH\Bundle\ClientBundle\Document;
 
-use MBH\Bundle\ClientBundle\Lib\PaymentSystemCommonDocument;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
  * @ODM\EmbeddedDocument
  */
-class RNKB extends PaymentSystemCommonDocument
+class RNKB extends PaymentSystemDocument
 {
 //    const COMMISSION = 0.035;
 

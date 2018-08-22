@@ -8,11 +8,11 @@ namespace MBH\Bundle\ClientBundle\Service\PaymentSystem\Wrapper;
 
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystemCommonDocument;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-abstract class CommonWrapper implements PaymentSystemInterface
+abstract class Wrapper implements PaymentSystemInterface
 {
     protected $entity;
 
@@ -26,7 +26,7 @@ abstract class CommonWrapper implements PaymentSystemInterface
         $this->container = $container;
     }
 
-    public function setPaymentSystemDocument(PaymentSystemCommonDocument $document): void
+    public function setPaymentSystemDocument(PaymentSystemDocument $document): void
     {
         $this->entity = $document;
     }

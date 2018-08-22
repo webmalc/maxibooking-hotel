@@ -19,8 +19,10 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @property \MBH\Bundle\ClientBundle\Document\Tinkoff $entity
  */
-class Tinkoff extends CommonWrapper
+class Tinkoff extends Wrapper
 {
+    private const SUCCESSFUL_RESPONSE = 'OK';
+
     public function checkRequest(Request $request, ClientConfig $config): CheckResultHolder
     {
         $notification = Notification::parseRequest($request);
@@ -39,24 +41,30 @@ class Tinkoff extends CommonWrapper
             Notification::STATUS_REFUNDED,
         ];
         if (in_array($notification->getStatus(), $statusForTestCase)) {
-            $holder->setInterimResponse(new Response('OK'));
+            $holder->setInterimResponse(new Response(self::SUCCESSFUL_RESPONSE));
 
+            return $holder;
+        }
+
+        if (!$notification->isSuccess() || $notification->getStatus() !== Notification::STATUS_CONFIRMED) {
             return $holder;
         }
 
         /**
-         * для сравнения ключей c фискализацией
+         * сравнение ключей фиктивное с логированием
+         *
+         * для проверки сравнения с фискализацией и без неё
          */
+        $logger = $this->container->get('mbh.payment_tinkoff.logger');
+        $logger->addInfo('DEBUG: Fiscalization: ' . ($this->entity->isWithFiscalization() ? 'On' : 'Off'));
+        $logger->addInfo('DEBUG: Compare Token: ' . ($notification->compareToken($this->entity) ? 'true' : 'false'));
+        $logger->addInfo('DEBUG:' . var_export($notification, true));
 
-        if (!$notification->compareToken($this->entity)
-            || !$notification->isSuccess()
-            || $notification->getStatus() !== Notification::STATUS_CONFIRMED) {
-
-            return $holder;
-        }
+        $em = $this->container->get('mbh.exception_manager');
+        $em->sendExceptionNotification(new \Exception('Клиенту поступил платеж через Tinkoff.'));
 
         $holder->setDoc($notification->getOrderId());
-        $holder->setText('OK');
+        $holder->setText(self::SUCCESSFUL_RESPONSE);
 
         return $holder;
     }

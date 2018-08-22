@@ -11,7 +11,7 @@ use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\Tinkoff;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -31,7 +31,7 @@ class TinkoffHelper implements HelperInterface
     const NAME_TYPE_SECRET_KEY = self::PREFIX . '_SecretKey';
     const NAME_TYPE_REDIRECT_DUE_DATA = self::PREFIX . '_RedirectDueDate';
 
-    public static function instance(FormInterface $form): PaymentSystemInterface
+    public static function instance(FormInterface $form): PaymentSystemDocument
     {
         $entity = new Tinkoff();
         $entity->setTerminalKey($form->get(self::NAME_TYPE_TERMINAL_KEY)->getData());

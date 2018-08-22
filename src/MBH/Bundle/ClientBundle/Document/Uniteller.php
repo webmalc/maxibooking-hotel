@@ -4,12 +4,12 @@ namespace MBH\Bundle\ClientBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\FiscalizationTrait;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystemCommonDocument;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
 
 /**
  * @ODM\EmbeddedDocument
  */
-class Uniteller extends PaymentSystemCommonDocument
+class Uniteller extends PaymentSystemDocument
 {
     use FiscalizationTrait;
 

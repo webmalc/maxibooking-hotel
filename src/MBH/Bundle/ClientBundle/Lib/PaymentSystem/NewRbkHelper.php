@@ -11,8 +11,7 @@ use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\NewRbk;
 use MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbk\TaxMode;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -36,7 +35,7 @@ class NewRbkHelper implements HelperInterface
      * @param FormInterface $form
      * @return NewRbk
      */
-    public static function instance(FormInterface $form): PaymentSystemInterface
+    public static function instance(FormInterface $form): PaymentSystemDocument
     {
         $entity = new NewRbk();
         $entity->setApiKey($form->get(self::NAME_TYPE_API_KEY)->getData());

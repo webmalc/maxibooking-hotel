@@ -5,12 +5,12 @@ namespace MBH\Bundle\ClientBundle\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\FiscalizationTrait;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\TaxMapInterface;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystemCommonDocument;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
 
 /**
  * @ODM\EmbeddedDocument
  */
-class Robokassa extends PaymentSystemCommonDocument implements TaxMapInterface
+class Robokassa extends PaymentSystemDocument implements TaxMapInterface
 {
     use FiscalizationTrait;
 

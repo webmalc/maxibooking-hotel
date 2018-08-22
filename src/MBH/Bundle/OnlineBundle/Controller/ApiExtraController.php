@@ -61,7 +61,7 @@ class ApiExtraController extends Controller
         $response = InitResponse::parseResponse($client->post($tinkoff::URL_API . '/Init', ['json' => $init]));
 
         $logger = $this->container->get('mbh.payment_tinkoff.logger');
-        $dataForLogger = ' Data response: ' . json_encode($response, JSON_UNESCAPED_UNICODE);
+        $dataForLogger = ' Data response: ' . var_export($response, true);
         $dataForLogger .= '. Data init: ' . json_encode($init, JSON_UNESCAPED_UNICODE);
 
         if ($response === null || $response->getErrorCode() !== '0') {

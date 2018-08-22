@@ -9,7 +9,7 @@ namespace MBH\Bundle\ClientBundle\Document;
 
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\FiscalizationTrait;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\TaxMapInterface;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystemCommonDocument;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -18,7 +18,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @package MBH\Bundle\ClientBundle\Document\PaymentSystem
  * @ODM\EmbeddedDocument()
  */
-class NewRbk extends PaymentSystemCommonDocument implements TaxMapInterface
+class NewRbk extends PaymentSystemDocument implements TaxMapInterface
 {
     use FiscalizationTrait;
 
