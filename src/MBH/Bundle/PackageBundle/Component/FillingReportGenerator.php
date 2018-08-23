@@ -263,7 +263,7 @@ class FillingReportGenerator
 
                         foreach($packageServicesList as $packageService) {
                             $service = $packageService->getService();
-                            if($date >= $packageService->getBegin() && $date < $packageService->getEnd() || $packageService->getEnd() == $date) {
+                            if($date >= $packageService->getBegin() && $date <= $packageService->getEnd()) {
                                 $serviceDayPrice = $packageService->calcTotal() / $packageService->getNights();
                                 if ($recalculateAccommodationCauseOfServices) {
                                     if ($service->getInnerPrice()) {
