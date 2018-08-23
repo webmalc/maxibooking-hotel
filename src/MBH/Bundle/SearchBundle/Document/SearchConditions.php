@@ -156,6 +156,14 @@ class SearchConditions extends Base
     private $expectedResultsCount = 0;
 
     /**
+     * @var int
+     * @Assert\Type(type="int")
+     * @ODM\Field(type="int")
+     */
+    private $additionalResultsLimit = 2;
+
+
+    /**
      * @var bool
      * @Assert\Type(type="bool")
      * @ODM\Field(type="bool")
@@ -514,6 +522,25 @@ class SearchConditions extends Base
     public function setIsUseCache(bool $isUseCache): SearchConditions
     {
         $this->isUseCache = $isUseCache;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getAdditionalResultsLimit(): int
+    {
+        return $this->additionalResultsLimit;
+    }
+
+    /**
+     * @param int $additionalResultsLimit
+     * @return SearchConditions
+     */
+    public function setAdditionalResultsLimit(int $additionalResultsLimit): SearchConditions
+    {
+        $this->additionalResultsLimit = $additionalResultsLimit;
 
         return $this;
     }

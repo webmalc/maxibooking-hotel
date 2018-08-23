@@ -15,8 +15,6 @@ use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\ResultRedisStore;
 class ConsumerSearcher
 {
 
-    private const ADDITIONAL_RESULTS_LIMIT = 1;
-
     /** @var SearchConditionsRepository */
     private $conditionsRepository;
 
@@ -50,7 +48,7 @@ class ConsumerSearcher
         }
         $hash = $conditions->getSearchHash();
         $searchedDaysCount = $this->resultStore->getAlreadySearchedDay($hash);
-        if ($searchedDaysCount > self::ADDITIONAL_RESULTS_LIMIT) {
+        if ($searchedDaysCount > $conditions->getAdditionalResultsLimit()) {
             $this->resultStore->addFakeReceivedCount($hash, \count($searchQueries));
         } else {
             $searcher = $this->searcherFactory->getSearcher($conditions->isUseCache());

@@ -22,7 +22,7 @@ class ConsumerSearcherTest extends SearchWebTestCase
     public function testSearch(): void
     {
         $dm = $this->createMock(DocumentManager::class);
-        $searchConditions = (new SearchConditions())->setSearchHash('fakeSearchHash');
+        $searchConditions = (new SearchConditions())->setSearchHash('fakeSearchHash')->setAdditionalResultsLimit(5);
         $conditionsRepository = $this->createMock(SearchConditionsRepository::class);
         $conditionsRepository->expects($this->exactly(3))->method('find')->willReturn($searchConditions, $searchConditions, null);
         $conditionsRepository->expects($this->exactly(2))->method('getDocumentManager')->willReturn($dm);

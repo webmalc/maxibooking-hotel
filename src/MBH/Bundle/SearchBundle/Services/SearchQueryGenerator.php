@@ -37,11 +37,12 @@ class SearchQueryGenerator
      */
     public function generate(SearchConditions $conditions, bool $grouped = false): array
     {
-        $dates = $this->getDatesCombinations(
+        $dates = $this->addDatesGenerator->generate(
             $conditions->getBegin(),
             $conditions->getEnd(),
             $conditions->getAdditionalBegin(),
-            $conditions->getAdditionalEnd());
+            $conditions->getAdditionalEnd()
+        );
 
         $tariffRoomTypeCombinations = $this->getTariffRoomTypesCombinations($conditions);
 
@@ -51,11 +52,9 @@ class SearchQueryGenerator
             $end = $period['end'];
             if ($grouped) {
                 $queryGroup = new GroupSearchQuery();
+                /** @noinspection TypeUnsafeComparisonInspection */
                 $isMainGroup = ($begin == $conditions->getBegin()) && ($end == $conditions->getEnd());
-                $queryGroup
-                    ->setBegin($period['begin'])
-                    ->setEnd($period['end'])
-                    ->setType($isMainGroup ? GroupSearchQuery::MAIN_DATES: GroupSearchQuery::ADDITIONAL_DATES);
+                $queryGroup->setBegin($begin)->setEnd($end)->setType($isMainGroup ? GroupSearchQuery::MAIN_DATES : GroupSearchQuery::ADDITIONAL_DATES);
                 foreach ($tariffRoomTypeCombinations as $combination) {
                     $queryGroup->addSearchQuery(SearchQuery::createInstance($conditions, $begin, $end, $combination));
                 }
@@ -65,7 +64,6 @@ class SearchQueryGenerator
                     $result [] = SearchQuery::createInstance($conditions, $begin, $end, $combination);
                 }
             }
-
         }
 
         return $result;
@@ -97,8 +95,10 @@ class SearchQueryGenerator
      * @return array
      * @throws SearchQueryGeneratorException
      */
-    private function combineTariffWithRoomType(array $roomTypeGroupedByHotelId, array $tariffsGroupedByHotelId): array
-    {
+    private function combineTariffWithRoomType(
+        array $roomTypeGroupedByHotelId,
+        array $tariffsGroupedByHotelId
+    ): array {
         $roomTypeHotelIdsKeys = array_keys($roomTypeGroupedByHotelId);
         $tariffHotelIdsKeys = array_keys($tariffsGroupedByHotelId);
         $sharedHotelKeys = array_intersect($roomTypeHotelIdsKeys, $tariffHotelIdsKeys);
@@ -123,11 +123,6 @@ class SearchQueryGenerator
         return $result;
     }
 
-    private function getDatesCombinations(\DateTime $begin, \DateTime $end, int $additionalBegin, int $additionalEnd)
-    {
-        return $this->addDatesGenerator->generate($begin, $end, $additionalBegin, $additionalEnd);
-    }
-
 
     /**
      * @param ArrayCollection|Tariff[] $rawTariffIds
@@ -146,7 +141,7 @@ class SearchQueryGenerator
         try {
             $tariffsRaw = $this->dataHolder->getTariffsRaw($hotelIds, $rawTariffIds, true, $isOnline);
         } catch (MongoDBException $e) {
-            throw new SearchQueryGeneratorException('Error in fetchRaw repo method. '.$e->getMessage());
+            throw new SearchQueryGeneratorException('Error in fetchRaw repo method. ' . $e->getMessage());
         }
 
         if (empty($tariffsRaw)) {
@@ -198,8 +193,6 @@ class SearchQueryGenerator
     {
         return Helper::toIds($entry);
     }
-
-
 
 
     private function mixRoomTypeTariff(array $roomTypes, array $tariffs): array

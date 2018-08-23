@@ -49,6 +49,7 @@ class SearchQueryGeneratorTest extends WebTestCase
         }
 
         $actual = $generator->generate($conditions, true);
+        $this->assertCount(231, $actual);
         foreach ($actual as $result) {
             $this->assertInstanceOf(GroupSearchQuery::class, $result);
         }
