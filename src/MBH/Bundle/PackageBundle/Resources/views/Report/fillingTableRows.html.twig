@@ -226,7 +226,7 @@
     {% endfor %}
     <td class="content-total">
         <strong>
-            {{ totalServicesData[categoryId].sum|default(0)|number_format(2) }}
+            {{ tableData.totalServicesData[categoryId].sum|default(0)|number_format(2) }}
         </strong>
     </td>
 </tr>

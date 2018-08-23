@@ -263,14 +263,18 @@ class FillingReportGenerator
 
                         foreach($packageServicesList as $packageService) {
                             $service = $packageService->getService();
-                            if($date >= $packageService->getBegin() && $date < $packageService->getEnd()) {
+                            if($date >= $packageService->getBegin() && $date < $packageService->getEnd() || $packageService->getEnd() == $date) {
                                 $serviceDayPrice = $packageService->calcTotal() / $packageService->getNights();
                                 if ($recalculateAccommodationCauseOfServices) {
-                                    $singleServicePrice = $this->container
-                                        ->get('mbh.order_manager')
-                                        ->getPackageServicePrice($service, $package, true);
-                                    $serviceDayInnerPrice = $packageService->calcTotal(true, $singleServicePrice)
-                                        / $packageService->getNights();
+                                    if ($service->getInnerPrice()) {
+                                        $singleServicePrice = $this->container
+                                            ->get('mbh.order_manager')
+                                            ->getPackageServicePrice($service, $package, true);
+                                        $serviceDayInnerPrice = $packageService->calcTotal(true, $singleServicePrice)
+                                            / $packageService->getNights();
+                                    } else {
+                                        $serviceDayInnerPrice = $serviceDayPrice;
+                                    }
 
                                     if ($service->isIncludeInAccommodationPrice()) {
                                         $packagePrice += $serviceDayInnerPrice;
