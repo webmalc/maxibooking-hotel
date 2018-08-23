@@ -545,3 +545,4 @@ total_rooms_overview_table.rooms_at_sale: 'Номера в продаже'
 total_rooms_overview_table.rooms_count: Номеров
 total_rooms_overview_table.number_of_unused_rooms: 'Не использовано номеров'
 total_rooms_overview_table.total: Всего
+room_type_flow_type.room_type.label: 'Тип номера'

@@ -26,6 +26,39 @@ class FlowConfig extends Base
     private $flowId;
 
     /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    private $serializedData;
+
+    /**
+     * @return string
+     */
+    public function getSerializedData(): ?string
+    {
+        return $this->serializedData;
+    }
+
+    /**
+     * @param string $serializedData
+     * @return FlowConfig
+     */
+    public function setSerializedData(string $serializedData): FlowConfig
+    {
+        $this->serializedData = $serializedData;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDataAsArray()
+    {
+        return json_decode($this->getSerializedData(), true);
+    }
+
+    /**
      * @return int
      */
     public function getCurrentStepNumber(): ?int

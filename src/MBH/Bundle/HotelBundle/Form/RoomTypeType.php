@@ -5,9 +5,7 @@ namespace MBH\Bundle\HotelBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Form\FacilitiesType;
-use MBH\Bundle\BaseBundle\Form\FormWithMultiLangFields;
-use MBH\Bundle\BaseBundle\Form\MultiLanguagesType;
-use MBH\Bundle\ClientBundle\Service\ClientConfigManager;
+use MBH\Bundle\BaseBundle\Service\MBHFormBuilder;
 use MBH\Bundle\HotelBundle\Document\RoomViewType;
 use Symfony\Bundle\FrameworkBundle\Translation\Translator;
 use Symfony\Component\Form\AbstractType;
@@ -20,15 +18,16 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * Class RoomTypeType
  */
-class RoomTypeType extends FormWithMultiLangFields
+class RoomTypeType extends AbstractType
 {
     /** @var  Translator $translator */
     private $translator;
+    private $mbhFormBuilder;
 
-    public function __construct(Translator $translator, ClientConfigManager $clientConfigManager)
+    public function __construct(Translator $translator, MBHFormBuilder $mbhFormBuilder)
     {
         $this->translator = $translator;
-        parent::__construct($clientConfigManager);
+        $this->mbhFormBuilder = $mbhFormBuilder;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -52,7 +51,7 @@ class RoomTypeType extends FormWithMultiLangFields
                 ]);
         }
 
-        $builder = $this->addMultiLangField($builder, TextType::class, 'fullTitle', [
+        $this->mbhFormBuilder->addMultiLangField($builder, TextType::class, 'fullTitle', [
             'group' => 'form.roomTypeType.general_info',
             'attr' => ['placeholder' => 'form.roomTypeType.comfort_plus'],
             'label' => 'form.roomTypeType.name',
@@ -72,7 +71,7 @@ class RoomTypeType extends FormWithMultiLangFields
                 'group' => 'form.roomTypeType.general_info',
             ])
         ;
-        $builder = $this->addMultiLangField($builder, TextareaType::class, 'description', [
+        $builder = $this->mbhFormBuilder->addMultiLangField($builder, TextareaType::class, 'description', [
             'attr' => ['class' => 'big roomTypeTypeEditor tinymce'],
             'label' => 'form.roomTypeType.description',
             'group' => 'form.roomTypeType.general_info',

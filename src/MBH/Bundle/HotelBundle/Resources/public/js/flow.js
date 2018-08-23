@@ -3,15 +3,17 @@ $(document).ready(function () {
     $addImageInput.change(function () {
         $addImageInput.closest('form').submit();
     });
+
     drawLinesBetweenFlowTabs();
-    setInterval(drawLinesBetweenFlowTabs, 500);
+    setInterval(drawLinesBetweenFlowTabs, 1500);
 });
 
 function drawLinesBetweenFlowTabs() {
     $('.line-between-flow-tabs').remove()
     var $stepTabs = $('.flow-step-tab');
     var numberOfSteps = $stepTabs.length;
-    var numberOfActiveStep = $stepTabs.index($('.active'));
+    var $activeTab = $stepTabs.filter('.active');
+    var numberOfActiveStep = $stepTabs.index($activeTab);
 
     var firstTab = $stepTabs.get(0);
     var lineWidth = 10;

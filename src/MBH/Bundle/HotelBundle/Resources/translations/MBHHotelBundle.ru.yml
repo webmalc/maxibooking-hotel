@@ -139,4 +139,6 @@ views.corpus: Корпуса
 view.create_task_type_categoty: 'Новая категория'
 views.roomTypeCaterory.layout.index: 'Группы номеров'
 views.facility.list.title: Удобства
+views.flow.flow.title: 'Настройка'
 views.flow.hotel_flow.title: 'Настройка отеля'
+views.flow.rooms_flow.title: 'Информация о номерах'

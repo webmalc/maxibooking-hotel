@@ -87,7 +87,7 @@ services:
 
     mbh.room_type_form:
         class: MBH\Bundle\HotelBundle\Form\RoomTypeType
-        arguments: ['@translator.default', '@mbh.client_config_manager']
+        arguments: ['@translator.default', '@mbh.form_builder']
         tags:
             - { name: form.type}
 
@@ -126,11 +126,15 @@ services:
     mbh.hotel_flow:
         class: MBH\Bundle\HotelBundle\Form\HotelFlow\HotelFlow
         parent: mbh.form_flow
+        arguments: ['@mbh.document_fields_manager', '@mbh.form_data_handler']
+
+    mbh.room_type_flow:
+        class: MBH\Bundle\HotelBundle\Form\RoomTypeFlow\RoomTypeFlow
+        parent: mbh.form_flow
 
     mbh.form_flow:
         class: MBH\Bundle\HotelBundle\Service\FormFlow
         calls:
             - [ setDm, [ '@doctrine.odm.mongodb.document_manager' ] ]
             - [ setFormFactory, ['@form.factory']]
-            - [ setHotelSelector, ['@mbh.hotel.selector']]
             - [ setRequestStack, ['@request_stack']]

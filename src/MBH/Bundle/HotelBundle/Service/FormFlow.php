@@ -3,8 +3,6 @@
 namespace MBH\Bundle\HotelBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use MBH\Bundle\BaseBundle\Document\Base;
-use MBH\Bundle\BaseBundle\Service\HotelSelector;
 use MBH\Bundle\HotelBundle\Document\FlowConfig;
 use Symfony\Component\Form\FormFactory;
 use Symfony\Component\Form\FormInterface;
@@ -13,10 +11,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 abstract class FormFlow
 {
-    /** @var DocumentManager  */
+    /** @var DocumentManager */
     protected $dm;
-    /** @var HotelSelector */
-    protected $hotelSelector;
     /** @var FlowConfig */
     protected $flowConfig;
     /** @var FormFactory */
@@ -24,14 +20,11 @@ abstract class FormFlow
     /** @var Request */
     protected $request;
 
+    private $isFlowConfigInit = false;
+
     public function setDm(DocumentManager $dm)
     {
         $this->dm = $dm;
-    }
-
-    public function setHotelSelector(HotelSelector $hotelSelector)
-    {
-        $this->hotelSelector = $hotelSelector;
     }
 
     public function setFormFactory(FormFactory $formFactory)
@@ -47,32 +40,45 @@ abstract class FormFlow
         }
     }
 
-    abstract protected function getStepsConfig();
+    abstract protected function getStepsConfig(): array;
 
-    /**
-     * @param $data
-     * @return FormInterface
-     */
-    public function createForm($data = null)
+    abstract protected function getFormData();
+
+    abstract protected function handleForm(FormInterface $form);
+
+    public function handleStep()
     {
-        $formType = $this->getCurrentStepInfo()['form_type'];
-        $definedOptions = isset($this->getCurrentStepInfo()['options']) ? $this->getCurrentStepInfo()['options'] : [];
+        $form = $this->createForm();
+        $form->handleRequest($this->request);
 
-        return $this->formFactory->create($formType, $data, array_merge($definedOptions, [
-            'flow_step' => $this->getCurrentStepNumber(),
-            'hasGroups' => false
-        ]));
+        if ($form->isValid()) {
+            $this->handleForm($form);
+        }
     }
 
     /**
-     * @param Base|null $document
-     * @return FormFlow
+     * @param $data
+     * @param array $options
+     * @return FormInterface
      */
-    public function init(Base $document = null)
+    public function createForm($options = [])
     {
-        $this->flowConfig = $this->getFlowConfig($this->getFlowId($document));
+        $data = $this->getFormData();
+        $formType = $this->getCurrentStepInfo()['form_type'];
+        $definedOptions = isset($this->getCurrentStepInfo()['options']) ? $this->getCurrentStepInfo()['options'] : [];
 
-        return $this;
+        return $this->formFactory->create(
+            $formType,
+            $data,
+            array_merge(
+                $definedOptions,
+                $options,
+                [
+                    'flow_step' => $this->getCurrentStepNumber(),
+                    'hasGroups' => false,
+                ]
+            )
+        );
     }
 
     /**
@@ -84,16 +90,16 @@ abstract class FormFlow
             if ($this->isFirstStep()) {
                 throw new \RuntimeException('So this is the first step!');
             }
-            $this->flowConfig->decreaseStepNumber();
+            $this->getFlowConfig()->decreaseStepNumber();
         } else {
             if ($this->isLastStep()) {
                 throw new \RuntimeException('There are no steps after current!');
             }
 
-            $this->flowConfig->increaseStepNumber();
+            $this->getFlowConfig()->increaseStepNumber();
         }
 
-        $this->dm->flush($this->flowConfig);
+        $this->dm->flush($this->getFlowConfig());
 
         return true;
     }
@@ -116,7 +122,7 @@ abstract class FormFlow
 
     public function getCurrentStepNumber()
     {
-        return $this->flowConfig->getCurrentStepNumber();
+        return $this->getFlowConfig()->getCurrentStepNumber();
     }
 
     public function getNumberOfSteps()
@@ -147,13 +153,13 @@ abstract class FormFlow
 
     public function reset()
     {
-        $this->flowConfig->setCurrentStep(1);
+        $this->getFlowConfig()->setCurrentStep(1);
     }
 
 
     protected function getDocumentForForm($step)
     {
-        
+
     }
 
     /**
@@ -161,9 +167,12 @@ abstract class FormFlow
      */
     public function getStepLabels()
     {
-        return array_map(function (array $stepConfig) {
-            return $stepConfig['label'];
-        }, $this->getStepsConfig());
+        return array_map(
+            function (array $stepConfig) {
+                return $stepConfig['label'];
+            },
+            $this->getStepsConfig()
+        );
     }
 
     /**
@@ -185,22 +194,27 @@ abstract class FormFlow
     }
 
     /**
-     * @param string $flowId
-     * @return FlowConfig|null
+     * @return FlowConfig
      */
-    protected function getFlowConfig(string $flowId)
+    public function getFlowConfig()
     {
-        $config = $this->dm
-            ->getRepository('MBHHotelBundle:FlowConfig')
-            ->findOneBy(['flowId' => $flowId, 'isEnabled' => true]);
+        if (!$this->isFlowConfigInit) {
+            $flowId = $this->getFlowId();
+            $config = $this->dm
+                ->getRepository('MBHHotelBundle:FlowConfig')
+                ->findOneBy(['flowId' => $flowId, 'isEnabled' => true]);
 
-        if (is_null($config)) {
-            $config = (new FlowConfig())
-                ->setFlowId($flowId);
-            $this->dm->persist($config);
+            if (is_null($config)) {
+                $config = (new FlowConfig())
+                    ->setFlowId($flowId);
+                $this->dm->persist($config);
+            }
+
+            $this->flowConfig = $config;
+            $this->isFlowConfigInit = true;
         }
 
-        return $config;
+        return $this->flowConfig;
     }
 
     /**
@@ -212,16 +226,10 @@ abstract class FormFlow
     }
 
     /**
-     * @param Base $document
      * @return string
      */
-    private function getFlowId(Base $document): string
+    private function getFlowId(): string
     {
-        $documentId = !is_null($document) && !empty($document->getId())
-            ? $document->getId()
-            : $this->hotelSelector->getSelected()->getId();
-        $flowId = static::class . $documentId;
-
-        return $flowId;
+        return static::class;
     }
 }
