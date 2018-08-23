@@ -8,6 +8,21 @@ var mbhNewRbk_Event = {
       document.dispatchEvent(this.event)
     },
     create: function() {
+      if (typeof window.CustomEvent !== "function") {
+        window.CustomEvent = function(event, params) {
+          var evt;
+          params = params || {
+            bubbles: false,
+            cancelable: false,
+            detail: undefined
+          };
+          evt = document.createEvent("CustomEvent");
+          evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+          return evt;
+        };
+
+        CustomEvent.prototype = Object.create(window.Event.prototype);
+      }
       this.event = new CustomEvent('mbh_payment_finished');
     }
   }

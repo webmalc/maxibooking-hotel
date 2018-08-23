@@ -122,7 +122,6 @@ external_api_controller.error.hotel_with_specified_id_not_exists: 'Отеля с
 external_api_controller.error.specified_room_type_not_contains_in_form_config: 'Тип номера с ID = "%roomTypeId%" не указан в списке типов номеров конфигурации указанной онлайн-формы'
 external_api_controller.error.specified_hotel_not_contains_in_form_config: 'Отель с ID = "%hotelId%" не указан списке отелей конфигурации указанной онлайн-формы'
 external_api_controller.error.room_type_with_specified_id_not_exists: 'Тип комнат с ID = "%roomTypeId%" не существует'
-
 views.mb_site.title: Сайт
 views.mb_site.index.main_settings: Настройки
 views.mb_site.hotel_settings.empty_fields_error: 'Не заполнены обязательные поля: %fields%'
@@ -168,3 +167,9 @@ site_config.color_theme.colors.brown: 'Коричневая'
 site_config.color_theme.colors.fuksia: 'Фуксия'
 site_config.color_theme.colors.green: 'Зеленая'
 site_config.color_theme.colors.sea: 'Морская'
+api.payment_form.search.not_valid_fields: 'Номер телефона или e-mail указан не корректно'
+payment.receipt.common_description.hotel_name_and_date: 'Проживание в "%1$s" c %2$s по %3$s.'
+payment.receipt.common_description.package: 'Бронь № '
+payment.receipt.common_description.packages: 'Брони № '
+payment.receipt.item_description.package: 'Проживание в номере "%1$s". Бронь № %2$s'
+payment.receipt.item_description.service: 'Услуга: '

@@ -8,7 +8,7 @@ namespace MBH\Bundle\ClientBundle\Lib\PaymentSystem;
 
 
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 
@@ -19,8 +19,9 @@ interface HelperInterface
      * (используется в \MBH\Bundle\ClientBundle\Controller\ClientConfigController::paymentSystemSaveAction)
      *
      * @param FormInterface $form
+     * @return PaymentSystemDocument
      */
-    public static function instance(FormInterface $form): PaymentSystemInterface;
+    public static function instance(FormInterface $form): PaymentSystemDocument;
 
 
     /**

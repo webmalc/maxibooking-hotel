@@ -6,9 +6,11 @@ use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
+use MBH\Bundle\ClientBundle\Form\PaymentSystem\TinkoffType;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\ExtraData;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbkHelper;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\RobokassaHelper;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\TinkoffHelper;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\UnitellerHelper;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -88,6 +90,7 @@ class ClientPaymentSystemType extends AbstractType
         UnitellerHelper::addFields($builder, $clientConfig, $this->extraData);
         NewRbkHelper::addFields($builder, $clientConfig, $this->extraData);
         RobokassaHelper::addFields($builder, $clientConfig, $this->extraData);
+        TinkoffHelper::addFields($builder, $clientConfig, $this->extraData);
 
         $builder
             ->add(
@@ -202,6 +205,7 @@ class ClientPaymentSystemType extends AbstractType
                 'required' => false,
                 'attr' => ['class' => self::COMMON_ATTR_CLASS . ' stripe'],
                 'group' => self::COMMON_GROUP,
+                'validation_groups' => 'stripe'
             ])
             ->add('stripeSecretKey', TextType::class, [
                 'label' => 'form.clientPaymentSystemType.stripe_secret_key.label',
@@ -241,11 +245,11 @@ class ClientPaymentSystemType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'MBH\Bundle\ClientBundle\Document\ClientConfig',
-            'entity' => null,
-            'taxationRateCodes' => null,
+            'data_class'         => 'MBH\Bundle\ClientBundle\Document\ClientConfig',
+            'entity'             => null,
+            'taxationRateCodes'  => null,
             'taxationSystemCode' => null,
-            'paymentSystemName' => null
+            'paymentSystemName'  => null,
         ]);
     }
 

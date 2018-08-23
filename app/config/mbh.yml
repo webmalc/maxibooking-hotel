@@ -208,6 +208,7 @@ parameters:
       rnkb: 'Rnkb'
       invoice: 'mbh.payment_systems.by_invoice'
       stripe: 'Stripe'
+      tinkoff: Tinkoff
     mbh.payment_systems.default: uniteller
     mbh.payment_systems.change: "%mbh_payment_systems_change%"
 

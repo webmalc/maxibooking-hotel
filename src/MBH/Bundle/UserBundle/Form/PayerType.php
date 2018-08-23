@@ -18,22 +18,24 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class PayerType extends AbstractType
 {
     private $fmsDictionaries;
     private $clientManager;
     private $clientPayerManager;
+    private $translator;
 
-    public function __construct(FMSDictionaries $fmsDictionaries, ClientPayerManager $clientPayerManager, ClientManager $clientManager) {
+    public function __construct(FMSDictionaries $fmsDictionaries, ClientPayerManager $clientPayerManager, ClientManager $clientManager, TranslatorInterface $translator) {
         $this->fmsDictionaries = $fmsDictionaries;
         $this->clientManager = $clientManager;
         $this->clientPayerManager = $clientPayerManager;
+        $this->translator = $translator;
     }
 
     /**
@@ -57,6 +59,9 @@ class PayerType extends AbstractType
         $worldCompany = $this->clientPayerManager->getClientWorldCompany();
         $hasCompany = !is_null($company);
         $countryTld = isset($client) ? $client->getCountry() : Country::RUSSIA_TLD;
+
+        $cityHelp = $this->translator->trans('form.organization_type.city.help',
+            ['%plusButtonHtml%' => '<a class="add-billing-entity-button" data-entity-type="cities"><i class="fa fa-plus"></i></a>']);
 
         $builder
             ->add('country', TextType::class, [
@@ -83,23 +88,21 @@ class PayerType extends AbstractType
                 'data' => $hasCompany ? BillingPayerFormHandler::LEGAL_ENTITY_ID : BillingPayerFormHandler::NATURAL_ENTITY_ID
             ])
             ->add('address', TextType::class, [
-                'required' => false,
                 'group' => 'form.payer_type.address_group',
                 'label' => 'form.payer_type.address.label',
                 'data' => $client->getAddress()
             ])
             ->add('city', TextType::class, [
-                'required' => false,
                 'attr' => [
                     'class' => 'billing-text-select',
                     'data-endpoint-name' => 'cities'
                 ],
                 'group' => 'form.payer_type.address_group',
                 'label' => 'form.payer_type.city.label',
-                'data' => $client->getCity()
+                'data' => $client->getCity(),
+                'help' => $cityHelp
             ])
             ->add('state', TextType::class, [
-                'required' => false,
                 'group' => 'form.payer_type.address_group',
                 'label' => 'form.payer_type.state.label',
                 'attr' => [
@@ -109,13 +112,11 @@ class PayerType extends AbstractType
                 'data' => $client->getRegion()
             ])
             ->add('postalCode', TextType::class, [
-                'required' => false,
                 'group' => 'form.payer_type.address_group',
                 'label' => 'form.payer_type.postal_code.label',
                 'data' => $client->getPostal_code()
             ])
             ->add('documentType', InvertChoiceType::class, [
-                'required' => false,
                 'choices' => $this->fmsDictionaries->getDocumentTypes(),
                 'group' => 'form.payer_type.identification_group',
                 'label' => 'form.payer_type.document_type.label',
@@ -123,19 +124,16 @@ class PayerType extends AbstractType
                 'disabled' => true
             ])
             ->add('series', TextType::class, [
-                'required' => false,
                 'group' => 'form.payer_type.identification_group',
                 'label' => 'form.payer_type.series.label',
                 'data' => $clientRuPayerData ? $clientRuPayerData->getPassport_serial() : ''
             ])
             ->add('number', TextType::class, [
-                'required' => false,
                 'group' => 'form.payer_type.identification_group',
                 'label' => 'form.payer_type.number.label',
                 'data' => $clientRuPayerData ? $clientRuPayerData->getPassport_number() : ''
             ])
             ->add('issueDate', DateType::class, [
-                'required' => false,
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'attr' => ['class' => 'datepicker begin-datepicker input-remember', 'data-date-format' => 'dd.mm.yyyy'],
@@ -146,13 +144,11 @@ class PayerType extends AbstractType
                     : new \DateTime('midnight')
             ])
             ->add('registration_address', TextType::class, [
-                'required' => false,
                 'group' => 'form.payer_type.identification_group',
                 'label' => 'form.payer_type.reg_address.label',
                 'data' => $client->getAddress()
             ])
             ->add('issuedBy', TextType::class, [
-                'required' => false,
                 'attr' => [
                     'class' => 'billing-text-select',
                     'data-endpoint-name' => 'fms'
@@ -162,19 +158,16 @@ class PayerType extends AbstractType
                 'data' => $clientRuPayerData ? $clientRuPayerData->getPassport_issued_by() : ''
             ])
             ->add('financeInn', TextType::class, [
-                'required' => false,
                 'group' => 'form.payer_type.financial_information.label',
                 'label' => 'form.payer_type.inn.label',
                 'data' => $clientRuPayerData ? $clientRuPayerData->getInn() : ''
             ])
             ->add('organizationName', TextType::class, [
-                'required' => false,
                 'group' => 'form.payer_type.organization.group',
                 'label' => 'form.payer_type.organization.name.label',
                 'data' => $hasCompany ? $company->getName() : ''
             ])
             ->add('form', ChoiceType::class, [
-                'required' => false,
                 'group' => 'form.payer_type.organization.group',
                 'label' => 'form.payer_type.organization.form_of_legal_entity.label',
                 'choices' => [
@@ -185,16 +178,9 @@ class PayerType extends AbstractType
                 ],
                 'data' => $ruCompany ? $ruCompany->getForm() : ''
             ])
-            ->add('orgAddress', TextType::class, [
-                'required' => false,
-                'label' => 'form.payer_type.organization.legal_address.label',
-                'group' => 'form.payer_type.organization.group',
-                'data' => $hasCompany ? $company->getAddress() : ''
-            ])
             ->add('orgState', TextType::class, [
-                'required' => false,
                 'label' => 'form.payer_type.state.label',
-                'group' => 'form.payer_type.organization.group',
+                'group' => 'form.payer_type.legal_address.group',
                 'attr' => [
                     'class' => 'billing-text-select',
                     'data-endpoint-name' => 'regions'
@@ -202,29 +188,31 @@ class PayerType extends AbstractType
                 'data' => $hasCompany ? $company->getRegion() : ''
             ])
             ->add('orgCity', TextType::class, [
-                'required' => false,
                 'label' => 'form.payer_type.city.label',
-                'group' => 'form.payer_type.organization.group',
+                'group' => 'form.payer_type.legal_address.group',
                 'attr' => [
                     'class' => 'billing-text-select',
                     'data-endpoint-name' => 'cities'
                 ],
-                'data' => $hasCompany ? $company->getCity() : ''
+                'data' => $hasCompany ? $company->getCity() : '',
+                'help' => $cityHelp
             ])
             ->add('orgPostalCode', TextType::class, [
-                'required' => false,
                 'label' => 'form.payer_type.postal_code.label',
-                'group' => 'form.payer_type.organization.group',
+                'group' => 'form.payer_type.legal_address.group',
                 'data' => $hasCompany ? $company->getPostal_code() : ''
             ])
+            ->add('orgAddress', TextType::class, [
+                'label' => 'form.payer_type.organization.legal_address.label',
+                'group' => 'form.payer_type.legal_address.group',
+                'data' => $hasCompany ? $company->getAddress() : ''
+            ])
             ->add('inn', TextType::class, [
-                'required' => false,
                 'label' => 'form.payer_type.organization.inn.label',
                 'group' => 'form.payer_type.organization.group',
                 'data' => $ruCompany ? $ruCompany->getInn() : ''
             ])
             ->add('ogrn', TextType::class, [
-                'required' => false,
                 'label' => 'form.payer_type.organization.ogrn.label',
                 'group' => 'form.payer_type.organization.group',
                 'data' => $ruCompany ? $ruCompany->getOgrn() : ''
@@ -236,30 +224,25 @@ class PayerType extends AbstractType
                 'data' => $ruCompany ? $ruCompany->getKpp() : ''
             ])
 //            ->add('position', TextType::class, [
-//                'required' => false,
 //                'group' => 'form.payer_type.head.group',
 //                'label' => 'form.payer_type.head.position.label'
 //            ])
             ->add('surname', TextType::class, [
-                'required' => false,
                 'group' => 'form.payer_type.head.group',
                 'label' => 'form.payer_type.head.surname.label',
                 'data' => $ruCompany ? $ruCompany->getBoss_lastname() : ''
             ])
             ->add('name', TextType::class, [
-                'required' => false,
                 'group' => 'form.payer_type.head.group',
                 'label' => 'form.payer_type.head.name.label',
                 'data' => $ruCompany ? $ruCompany->getBoss_firstname() : ''
             ])
             ->add('patronymic', TextType::class, [
-                'required' => false,
                 'group' => 'form.payer_type.head.group',
                 'label' => 'form.payer_type.head.patronymic.label',
                 'data' => $ruCompany ? $ruCompany->getBoss_patronymic() : ''
             ])
             ->add('base', ChoiceType::class, [
-                'required' => false,
                 'group' => 'form.payer_type.head.group',
                 'label' => 'form.payer_type.head.operates_on_basis_of.label',
                 'choices' => [
@@ -269,13 +252,11 @@ class PayerType extends AbstractType
                 'data' => $ruCompany ? $ruCompany->getBoss_operation_base() : ''
             ])
             ->add('proxy', TextType::class, [
-                'required' => false,
                 'group' => 'form.payer_type.head.group',
                 'label' => 'form.payer_type.head.number_of_power_of_attorney.label',
                 'data' => $ruCompany ? $ruCompany->getProxy_number() : ''
             ])
             ->add('proxyDate', DateType::class, [
-                'required' => false,
                 'group' => 'form.payer_type.head.group',
                 'label' => 'form.payer_type.head.date_of_power_of_attorney.label',
                 'widget' => 'single_text',
@@ -286,31 +267,26 @@ class PayerType extends AbstractType
                     : new \DateTime('midnight')
             ])
             ->add('checkingAccount', TextType::class, [
-                'required' => false,
                 'group' => 'form.payer_type.bank.group',
                 'label' => 'form.payer_type.bank.checking_account.label',
                 'data' => $hasCompany ? $company->getAccount_number() : ''
             ])
             ->add('bank_name', TextType::class, [
-                'required' => false,
                 'group' => 'form.payer_type.bank.group',
                 'label' => 'form.payer_type.bank.name.label',
                 'data' => $hasCompany ? $company->getBank() : ''
             ])
             ->add('bik', TextType::class, [
-                'required' => false,
                 'group' => 'form.payer_type.bank.group',
                 'label' => 'form.payer_type.bank.bik.label',
                 'data' => $ruCompany ? $ruCompany->getBik() : ''
             ])
             ->add('correspondentAccount', TextType::class, [
-                'required' => false,
                 'group' => 'form.payer_type.bank.group',
                 'label' => 'form.payer_type.bank.correspondent_account.label',
                 'data' => $ruCompany ? $ruCompany->getCorr_account() : ''
             ])
             ->add('swift', TextType::class, [
-                'required' => false,
                 'group' => 'form.payer_type.bank.group',
                 'label' => 'form.payer_type.foreign_bank.swift.label',
                 'data' => $worldCompany ? $worldCompany->getSwift() : ''
@@ -329,7 +305,8 @@ class PayerType extends AbstractType
             'form.payer_type.head.group',
             'form.payer_type.bank.group',
             'form.payer_type.foreign_organization.group',
-            'form.payer_type.foreign_bank.group'
+            'form.payer_type.foreign_bank.group',
+            'form.payer_type.legal_address.group'
         ];
     }
 

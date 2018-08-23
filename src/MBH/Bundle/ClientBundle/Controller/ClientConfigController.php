@@ -19,6 +19,7 @@ use MBH\Bundle\ClientBundle\Form\PaymentSystemsUrlsType;
 use MBH\Bundle\ClientBundle\Form\ColorsType;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbkHelper;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\RobokassaHelper;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\TinkoffHelper;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\UnitellerHelper;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\UserBundle\DataFixtures\MongoDB\UserData;
@@ -256,6 +257,9 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
                 case 'newRbk':
                     $config->setNewRbk(NewRbkHelper::instance($form));
                     break;
+                case 'tinkoff':
+                    $config->setTinkoff(TinkoffHelper::instance($form));
+                    break;
                 default:
                     throw new Exception('Incorrect name of payment system!');
             }
@@ -270,9 +274,10 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
         }
 
         return [
-            'entity' => $config,
-            'form' => $form->createView(),
-            'logs' => $this->logs($config)
+            'entity'            => $config,
+            'form'              => $form->createView(),
+            'paymentSystemName' => $paymentSystemName,
+            'logs'              => $this->logs($config),
         ];
     }
 
