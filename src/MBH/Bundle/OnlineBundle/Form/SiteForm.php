@@ -26,9 +26,13 @@ class SiteForm extends AbstractType
 {
     /** @var DocumentManager */
     private $dm;
+    private $translator;
+    private $siteManager;
 
-    public function __construct(DocumentManager $dm) {
+    public function __construct(DocumentManager $dm, TranslatorInterface $translator, SiteManager $siteManager) {
         $this->dm = $dm;
+        $this->translator = $translator;
+        $this->siteManager = $siteManager;
     }
 
     /**
@@ -57,7 +61,11 @@ class SiteForm extends AbstractType
                 'label' => 'site_form.web_address.label',
                 'required' => true,
                 'addonText' => SiteManager::SITE_DOMAIN,
-                'preAddonText' => SiteManager::SITE_PROTOCOL
+                'preAddonText' => SiteManager::SITE_PROTOCOL,
+                'help' => $siteConfig->getSiteDomain()
+                    ? '<a class="btn btn-success" target="_blank" href="' . $this->siteManager->getSiteAddress() . '">'
+                    . $this->translator->trans('site_form.site_domain.go_to_site_button.text'). '</a>'
+                    : ''
             ])
             ->add('keyWords', CollectionType::class, [
                 'label' => 'site_form.key_words.label',
