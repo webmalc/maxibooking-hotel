@@ -215,7 +215,7 @@
 {% for categoryId, serviceDataByCategory in tableData.servicesData %}
 <tr class="info">
     <td>
-        <small>{{ serviceDataByCategory.category.name }}</small>
+        <small>{{ '- ' ~ serviceDataByCategory.category.name}}</small>
     </td>
     {% set serviceCategorySumsByDates = serviceDataByCategory.servicePricesByDates %}
     {% for date in rangeDateList %}
@@ -226,7 +226,7 @@
     {% endfor %}
     <td class="content-total">
         <strong>
-            {{ tableData.totalServicesData[categoryId].sum|default(0)|number_format(2) }}
+            {{ tableData.totalServicesData[serviceDataByCategory.category.name].sum|default(0)|number_format(2) }}
         </strong>
     </td>
 </tr>

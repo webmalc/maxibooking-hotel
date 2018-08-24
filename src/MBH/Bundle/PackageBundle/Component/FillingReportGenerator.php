@@ -460,17 +460,17 @@ class FillingReportGenerator
     private function addServicePrice(Service $service, &$servicesByCategories, $serviceDayPrice, $dateString): void
     {
         $serviceCategory = $service->getCategory();
-        if (!isset($servicesByCategories[$serviceCategory->getId()])) {
-            $servicesByCategories[$serviceCategory->getId()] = [
+        if (!isset($servicesByCategories[$serviceCategory->getName()])) {
+            $servicesByCategories[$serviceCategory->getName()] = [
                 'category' => $serviceCategory,
                 'servicePricesByDates' => [],
             ];
         }
 
-        if (!isset($servicesByCategories[$serviceCategory->getId()]['servicePricesByDates'][$dateString])) {
-            $servicesByCategories[$serviceCategory->getId()]['servicePricesByDates'][$dateString] = $serviceDayPrice;
+        if (!isset($servicesByCategories[$serviceCategory->getName()]['servicePricesByDates'][$dateString])) {
+            $servicesByCategories[$serviceCategory->getName()]['servicePricesByDates'][$dateString] = $serviceDayPrice;
         } else {
-            $servicesByCategories[$serviceCategory->getId()]['servicePricesByDates'][$dateString] += $serviceDayPrice;
+            $servicesByCategories[$serviceCategory->getName()]['servicePricesByDates'][$dateString] += $serviceDayPrice;
         }
     }
 
