@@ -127,6 +127,7 @@ views.mb_site.index.main_settings: Настройки
 views.mb_site.hotel_settings.empty_fields_error: 'Не заполнены обязательные поля: %fields%'
 site_form.is_enabled.label: 'Включен?'
 site_form.web_address.label: 'WEB адрес'
+site_form.site_domain.go_to_site_button.text: 'Перейти на сайт'
 site_form.key_words.label: 'Ключевые слова'
 site_form.contract.label: Договор
 site_form.pers_data_policy.label: 'Политика обработки персональных данных'
