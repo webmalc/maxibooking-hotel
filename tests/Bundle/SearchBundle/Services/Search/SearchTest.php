@@ -64,7 +64,7 @@ class SearchTest extends SearchWebTestCase
     {
         $expected = $data['expected'];
         $producer = $this->createMock(Producer::class);
-        $producer->expects($this->exactly($expected['searchCount']/$expected['chunk']))->method('publish')->willReturnCallback(function (string $message) {
+        $producer->expects($this->exactly(1))->method('publish')->willReturnCallback(function (string $message) {
             $msg = json_decode($message, true);
             $this->assertNotEmpty($msg['conditionsId']);
             $this->assertContainsOnlyInstancesOf(SearchQuery::class, unserialize($msg['searchQueries']));
@@ -72,7 +72,6 @@ class SearchTest extends SearchWebTestCase
         $this->getContainer()->set('old_sound_rabbit_mq.async_search_producer', $producer);
         $conditionData = $this->createConditionData($data);
         $search = $this->getContainer()->get('mbh_search.search');
-        $search->setAsyncQueriesChunk($expected['chunk']);
         $actual = $search->searchAsync($conditionData);
         $this->dm->clear();
         $conditions = $this->dm->find(SearchConditions::class, $actual);
@@ -87,7 +86,7 @@ class SearchTest extends SearchWebTestCase
             [
                 'beginOffset' => 3,
                 'endOffset' => 7,
-                'roomTypes' => [],
+                'roomTypes' => ['Люкс'],
                 'tariffs' => [],
                 'hotels' => [],
                 'adults' => 2,
@@ -99,7 +98,7 @@ class SearchTest extends SearchWebTestCase
                     'searchCount' => 10,
                     'results' => 10-8,
                     'successResults' => 2,
-                    'chunk' => 2
+                    'chunk' => 1
                 ]
             ]
         ];

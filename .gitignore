@@ -1,3 +1,8 @@
+#New front
+yarn-error.log
+fakewebpack.config.js
+/web/build/*
+index.html
 azovsky_remote/
 profiles/
 scripts/deploy_to_test.sh

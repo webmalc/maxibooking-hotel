@@ -18,40 +18,54 @@ class SearchQuery
     /**
      * @var \DateTime
      * @Assert\NotNull()
+     * @Assert\Date()
      */
     private $begin;
 
     /**
      * @var \DateTime
      * @Assert\NotNull()
+     * @Assert\Date()
      */
     private $end;
 
     /**
      * @var string
      * @Assert\NotNull()
+     * @Assert\Type("string")
      */
     private $tariffId;
 
-    /** @var string */
+    /**
+     * @var string
+     * @Assert\Type("string")
+     * @Assert\NotNull()
+     */
     private $restrictionTariffId;
 
     /**
      * @var string
+     * @Assert\Type("string")
      * @Assert\NotNull()
      */
     private $roomTypeId;
 
     /**
      * @var int
+     * @Assert\NotNull()
+     * @Assert\Type("integer")
      */
     private $adults;
+
     /**
      * @var int
+     * @Assert\NotNull()
+     * @Assert\Type("integer")
      */
     private $children;
     /**
      * @var array
+     * @Assert\Type("array")
      */
     private $childrenAges = [];
 
@@ -66,16 +80,27 @@ class SearchQuery
      */
     private $searchConditions;
 
-    /** @var bool */
+    /** @var bool
+     * @Assert\Type("bool")
+     */
     private $isRestrictionsWhereChecked = false;
 
-    /** @var bool  */
+    /**
+     * @var bool
+     * @Assert\Type("bool")
+     */
     private $isIgnoreRestrictions = false;
 
-    /** @var bool */
+    /**
+     * @var bool
+     * @Assert\Type("bool")
+     */
     private $isForceBooking;
 
-    /** @var string */
+    /**
+     * @var string
+     * @Assert\Type("string")
+     */
     private $searchHash;
 
     /**
@@ -350,7 +375,7 @@ class SearchQuery
         return $this;
     }
 
-    public function unsetConditions()
+    public function unsetConditions(): void
     {
         $this->searchConditions = null;
     }
@@ -406,17 +431,17 @@ class SearchQuery
     }
 
 
-    public static function createInstance(SearchQueryHelper $queryHelper, SearchConditions $conditions): SearchQuery
+    public static function createInstance(SearchConditions $conditions, \DateTime $begin, \DateTime $end, array $tariffRoomType): SearchQuery
     {
         $searchQuery = new static();
         $searchQuery
-            ->setBegin($queryHelper->getBegin())
-            ->setEnd($queryHelper->getEnd())
-            ->setTariffId($queryHelper->getTariffId())
-            ->setRestrictionTariffId($queryHelper->getRestrictionTariffId())
-            ->setRoomTypeId($queryHelper->getRoomTypeId())
-            ->setChildAge($queryHelper->getChildAge())
-            ->setInfantAge($queryHelper->getInfantAge())
+            ->setBegin($begin)
+            ->setEnd($end)
+            ->setTariffId($tariffRoomType['tariffId'])
+            ->setRestrictionTariffId($tariffRoomType['restrictionTariffId'])
+            ->setRoomTypeId($tariffRoomType['roomTypeId'])
+            ->setChildAge($tariffRoomType['tariff']['childAge'])
+            ->setInfantAge($tariffRoomType['tariff']['infantAge'])
             ->setSearchConditions($conditions)
             ->setIgnoreRestrictions($conditions->isIgnoreRestrictions())
             ->setChildren($conditions->getChildren())

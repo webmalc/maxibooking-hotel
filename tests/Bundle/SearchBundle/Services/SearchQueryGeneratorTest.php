@@ -11,6 +11,7 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
+use MBH\Bundle\SearchBundle\Lib\Result\GroupSearchQuery;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\SearchQueryGenerator;
 
@@ -38,57 +39,20 @@ class SearchQueryGeneratorTest extends WebTestCase
             ->setAdults(3)
             ->setChildren(4)
             ->setAdditionalBegin($additionalDays);
-        $actual = $generator->generateSearchQueries($conditions);
+
+        $actual = $generator->generate($conditions, false);
         $expectedCount = $this->getAllExpectedVariants($dateBegin, $dateEnd, $additionalDays);
 
         $this->assertCount($expectedCount, $actual);
-        $this->assertContainsOnlyInstancesOf(SearchQuery::class, $actual);
-    }
+        foreach ($actual as $result) {
+            $this->assertInstanceOf(SearchQuery::class, $result);
+        }
 
-
-    /**
-     * @param \DateTime $dateBegin
-     * @param \DateTime $dateEnd
-     * @param int $additionalDays
-     * @dataProvider addingDatesProvider
-     */
-    public function testPrepareConditionsForSearchQueries(
-        \DateTime $dateBegin,
-        \DateTime $dateEnd,
-        int $additionalDays
-    ): void {
-        $generator = $this->getContainer()->get('mbh_search.search_query_generator');
-        $conditions = new SearchConditions();
-        $conditions
-            ->setBegin($dateBegin)
-            ->setEnd($dateEnd)
-            ->setAdults(3)
-            ->setChildren(4)
-            ->setAdditionalBegin($additionalDays);
-
-        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'prepareConditionsForSearchQueries');
-        $actual = $method->invokeArgs($generator, [$conditions]);
-        $expectedCount = $this->getAllExpectedVariants($dateBegin, $dateEnd, $additionalDays);
-
-        $this->assertCount($expectedCount, $actual);
-
-    }
-
-    public function testFailPrepareConditionsForSearchQueries2(): void
-    {
-        $generator = $this->getContainer()->get('mbh_search.search_query_generator');
-
-        $conditions = new SearchConditions();
-        $conditions
-            ->setBegin(new \DateTime('2018-04-21 midnight'))
-            ->setEnd(new \DateTime('2018-03-21 midnight'))
-            ->setAdults(3)
-            ->setChildren(4)
-            ->setAdditionalBegin(1);
-
-        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'prepareConditionsForSearchQueries');
-        $this->expectException(SearchQueryGeneratorException::class);
-        $method->invokeArgs($generator, [$conditions]);
+        $actual = $generator->generate($conditions, true);
+        $this->assertCount(231, $actual);
+        foreach ($actual as $result) {
+            $this->assertInstanceOf(GroupSearchQuery::class, $result);
+        }
 
     }
 
@@ -161,7 +125,7 @@ class SearchQueryGeneratorTest extends WebTestCase
 
         $this->assertNotEmpty($actual, 'Result is empty!');
         $this->assertCount(1, $actual);
-        $this->assertCount(count($tariffs), $actual[$hotel->getId()]);
+        $this->assertCount(\count($tariffs), $actual[$hotel->getId()]);
     }
 
 
@@ -386,15 +350,6 @@ class SearchQueryGeneratorTest extends WebTestCase
         ];
     }
 
-    private function calculateAdditionalDays(\DateTime $begin, \DateTime $end, $range): int
-    {
-        $dates = count(
-            $this->getContainer()->get('mbh_search.additional_days_generator')->generate($begin, $end, $range, $range)
-        );
-
-        return $dates;
-    }
-
     private function getAllExpectedVariants($dateBegin, $dateEnd, $additionalDays): int
     {
         $roomTypeQb = $this->dm->getRepository(RoomType::class)->createQueryBuilder();
@@ -410,5 +365,12 @@ class SearchQueryGeneratorTest extends WebTestCase
         $expectedCount *= $this->calculateAdditionalDays($dateBegin, $dateEnd, $additionalDays);
 
         return $expectedCount;
+    }
+
+    private function calculateAdditionalDays(\DateTime $begin, \DateTime $end, $range): int
+    {
+        $dates = \count($this->getContainer()->get('mbh_search.additional_days_generator')->generate($begin, $end, $range, $range));
+
+        return $dates;
     }
 }

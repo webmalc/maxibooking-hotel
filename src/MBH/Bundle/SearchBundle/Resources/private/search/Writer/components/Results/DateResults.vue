@@ -1,8 +1,5 @@
 <template>
     <tbody>
-    <tr class="mbh-grid-header1 info">
-        <td colspan="8">{{roomType.name}}: {{roomType.hotelName}}</td>
-    </tr>
     <tr @booking="booking($event)" is="Result" v-for="(result, key) in sortedResults" :key="key" :result="result"></tr>
     </tbody>
 </template>
@@ -12,8 +9,8 @@
     import Result from './Result';
 
     export default Vue.extend({
-        name: "RoomType",
-        props: ['roomType', 'results'],
+        name: "DateResults",
+        props: ['results'],
         methods: {
             booking: function (count: number) {
                 for (let index in this.results) {

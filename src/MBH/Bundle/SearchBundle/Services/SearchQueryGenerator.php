@@ -10,6 +10,7 @@ use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
+use MBH\Bundle\SearchBundle\Lib\Result\GroupSearchQuery;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Lib\SearchQueryHelper;
 use MBH\Bundle\SearchBundle\Lib\DataHolder;
@@ -30,51 +31,96 @@ class SearchQueryGenerator
 
     /**
      * @param SearchConditions $conditions
-     * @return SearchQuery[]
+     * @param bool $grouped
+     * @return SearchQuery[]|GroupSearchQuery[]
      * @throws SearchQueryGeneratorException
      */
-    public function generateSearchQueries(SearchConditions $conditions): array
+    public function generate(SearchConditions $conditions, bool $grouped = false): array
     {
+        $dates = $this->addDatesGenerator->generate(
+            $conditions->getBegin(),
+            $conditions->getEnd(),
+            $conditions->getAdditionalBegin(),
+            $conditions->getAdditionalEnd()
+        );
 
-        $queryHelpers = $this->prepareConditionsForSearchQueries($conditions);
-        $searchQueries = [];
-        foreach ($queryHelpers as $queryHelper) {
-            $searchQueries[] = SearchQuery::createInstance($queryHelper, $conditions);
+        $tariffRoomTypeCombinations = $this->getTariffRoomTypesCombinations($conditions);
+
+        $result = [];
+        foreach ($dates as $period) {
+            $begin = $period['begin'];
+            $end = $period['end'];
+            if ($grouped) {
+                $queryGroup = new GroupSearchQuery();
+                /** @noinspection TypeUnsafeComparisonInspection */
+                $isMainGroup = ($begin == $conditions->getBegin()) && ($end == $conditions->getEnd());
+                $queryGroup->setBegin($begin)->setEnd($end)->setType($isMainGroup ? GroupSearchQuery::MAIN_DATES : GroupSearchQuery::ADDITIONAL_DATES);
+                foreach ($tariffRoomTypeCombinations as $combination) {
+                    $queryGroup->addSearchQuery(SearchQuery::createInstance($conditions, $begin, $end, $combination));
+                }
+                $result[] = $queryGroup;
+            } else {
+                foreach ($tariffRoomTypeCombinations as $combination) {
+                    $result [] = SearchQuery::createInstance($conditions, $begin, $end, $combination);
+                }
+            }
         }
 
-        return $searchQueries;
+        return $result;
     }
 
 
     /**
      * @param SearchConditions $conditions
-     * @return SearchQueryHelper[]
+     * @return array
      * @throws SearchQueryGeneratorException
      */
-    private function prepareConditionsForSearchQueries(SearchConditions $conditions): array
+    private function getTariffRoomTypesCombinations(SearchConditions $conditions): array
     {
         $hotelIds = $this->getEntryIds($conditions->getHotels());
-        $rawTariffIds = $this->getEntryIds($conditions->getTariffs()->toArray());
-        $tariffs = $this->getTariffs($rawTariffIds, $hotelIds, $conditions->isOnline());
 
-        $rawRoomTypeIds = $this->getEntryIds($conditions->getRoomTypes());
-        $roomTypeIds = $this->getRoomTypeIds($rawRoomTypeIds, $hotelIds);
+        $tariffIds = $this->getEntryIds($conditions->getTariffs()->toArray());
+        $tariffsGroupedByHotelId = $this->getTariffs($tariffIds, $hotelIds, $conditions->isOnline());
 
-        $dates =
-            $this->addDatesGenerator->generate(
-                $conditions->getBegin(),
-                $conditions->getEnd(),
-                $conditions->getAdditionalBegin(),
-                $conditions->getAdditionalEnd()
-            );
-        $tariffRoomTypeCombined = $this->combineTariffWithRoomType($roomTypeIds, $tariffs);
+        $roomTypeIds = $this->getEntryIds($conditions->getRoomTypes());
+        $roomTypeIdsGroupedByHotel = $this->getRoomTypeIds($roomTypeIds, $hotelIds);
 
-        $queryHelpers = $this->createQueryHelpers($dates, $tariffRoomTypeCombined);
-        if (empty($queryHelpers)) {
-            throw new SearchQueryGeneratorException('No combinations for search');
+        return $this->combineTariffWithRoomType($roomTypeIdsGroupedByHotel, $tariffsGroupedByHotelId);
+    }
+
+
+    /**
+     * @param array $roomTypeGroupedByHotelId
+     * @param array $tariffsGroupedByHotelId
+     * @return array
+     * @throws SearchQueryGeneratorException
+     */
+    private function combineTariffWithRoomType(
+        array $roomTypeGroupedByHotelId,
+        array $tariffsGroupedByHotelId
+    ): array {
+        $roomTypeHotelIdsKeys = array_keys($roomTypeGroupedByHotelId);
+        $tariffHotelIdsKeys = array_keys($tariffsGroupedByHotelId);
+        $sharedHotelKeys = array_intersect($roomTypeHotelIdsKeys, $tariffHotelIdsKeys);
+        if (empty($sharedHotelKeys)) {
+            throw new SearchQueryGeneratorException('There is an error in combine Tariff with RoomType');
+        }
+        $combined = [];
+        foreach ($sharedHotelKeys as $hotelKey) {
+            $roomTypes = $roomTypeGroupedByHotelId[$hotelKey];
+            $tariffs = $tariffsGroupedByHotelId[$hotelKey];
+            /** https://stackoverflow.com/questions/23348339/optimizing-array-merge-operation
+             * Potential performance problem if use array_merge in loop.
+             */
+            $combined[] = $this->mixRoomTypeTariff($roomTypes, $tariffs);
         }
 
-        return $queryHelpers;
+        $result = [];
+        if (\count($combined)) {
+            $result = array_merge(...$combined);
+        }
+
+        return $result;
     }
 
 
@@ -95,7 +141,7 @@ class SearchQueryGenerator
         try {
             $tariffsRaw = $this->dataHolder->getTariffsRaw($hotelIds, $rawTariffIds, true, $isOnline);
         } catch (MongoDBException $e) {
-            throw new SearchQueryGeneratorException('Error in fetchRaw repo method. '.$e->getMessage());
+            throw new SearchQueryGeneratorException('Error in fetchRaw repo method. ' . $e->getMessage());
         }
 
         if (empty($tariffsRaw)) {
@@ -143,69 +189,18 @@ class SearchQueryGenerator
     }
 
 
-    /**
-     * @param array $dates
-     * @param array $tariffRoomTypeCombined
-     * @return SearchQueryHelper[]
-     */
-    private function createQueryHelpers(array $dates, array $tariffRoomTypeCombined): array
-    {
-        $result = [];
-        foreach ($dates as $date) {
-            foreach ($tariffRoomTypeCombined as $tariffRoomType) {
-                $result[] = SearchQueryHelper::createInstance($date, $tariffRoomType);
-            }
-        }
-
-        return $result;
-    }
-
-
     private function getEntryIds(iterable $entry): array
     {
         return Helper::toIds($entry);
     }
 
 
-    /**
-     * @param array $rawRoomTypeIds
-     * @param array $rawTariffs
-     * @return array
-     * @throws SearchQueryGeneratorException
-     */
-    private function combineTariffWithRoomType(array $rawRoomTypeIds, array $rawTariffs): array
-    {
-        $roomTypeHotelIdsKeys = array_keys($rawRoomTypeIds);
-        $tariffHotelIdsKeys = array_keys($rawTariffs);
-        $sharedHotelKeys = array_intersect($roomTypeHotelIdsKeys, $tariffHotelIdsKeys);
-        if (empty($sharedHotelKeys)) {
-            throw new SearchQueryGeneratorException('There is an error in combine Tariff with RoomType');
-        }
-        $combined = [];
-        foreach ($sharedHotelKeys as $hotelKey) {
-            $roomTypeIds = $rawRoomTypeIds[$hotelKey];
-            $tariffId = $rawTariffs[$hotelKey];
-            /** https://stackoverflow.com/questions/23348339/optimizing-array-merge-operation
-             * Potential performance problem if use array_merge in loop.
-             */
-            $combined[] = $this->mixRoomTypeTariff($roomTypeIds, $tariffId);
-        }
-
-        $result = [];
-        if (\count($combined)) {
-            $result = array_merge(...$combined);
-        }
-
-        return $result;
-    }
-
-
     private function mixRoomTypeTariff(array $roomTypes, array $tariffs): array
     {
-        //** TODO: Тут rawTariff передается чтоб забрать из него настройки возрастов в тарифе
+        //** TODO: Костыль. Тут rawTariff передается чтоб забрать из него настройки возрастов в тарифе
         // т.к. у нас появляются merged тарифы, настройки будем брать из них. значит это убирать
         // так же остается вопрос с restrictionTariffId ибо нужно будет брать restrictions взависимости
-        // от того какой тарифф мы получаем потом в mergedPriceCache
+        // от того какой тариф мы получаем потом в mergedPriceCache
         //
         // */
 

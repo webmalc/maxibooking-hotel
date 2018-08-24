@@ -4,8 +4,7 @@
 namespace MBH\Bundle\SearchBundle\Services;
 
 
-use Doctrine\ODM\MongoDB\DocumentManager;
-use MBH\Bundle\PriceBundle\Document\Restriction;
+use MBH\Bundle\SearchBundle\Services\DateSorters\SorterFactory;
 
 class AdditionalDatesGenerator
 {
@@ -14,55 +13,33 @@ class AdditionalDatesGenerator
         \DateTime $begin,
         \DateTime $end,
         ?int $additionalBegin = null,
-        ?int $additionalEnd = null
+        ?int $additionalEnd = null,
+        ?string $sorterName = 'nearestFirst'
     ): array {
-        $begins = $this->dateGenerate($begin, $additionalBegin);
-        $ends = $this->dateGenerate($end, $additionalEnd);
+        $combinedDates = $this->generateDates($begin, $end, $additionalBegin, $additionalEnd);
+        $sorter = SorterFactory::createSorter($sorterName);
 
-        return $this->combineDates($begins, $ends);
+        return $sorter->sort($begin, $end, $combinedDates);
     }
 
-    private function dateGenerate(\DateTime $date, int $range = null, string $direction = null): array
+    private function generateDates(\DateTime $begin, \DateTime $end, ?int $beginRange = null, ?int $endRange = null): array
     {
         $dates = [];
-        if (null === $range) {
-            $range = 0;
+        if (null === $beginRange) {
+            $beginRange = 0;
         }
-        if (!$direction) {
-            $dates = array_merge($dates, $this->dateGenerate($date, $range, 'up'));
-            $dates = array_merge($dates, $this->dateGenerate($date, $range, 'down'));
-            $dates = array_merge($dates, [$date]);
-
-            return $dates;
+        if (null === $endRange) {
+            $endRange = $beginRange;
         }
 
-        $directions = ['up' => '+', 'down' => '-'];
-
-        $clonedDate = clone $date;
-        while (0 !== $range) {
-            $clonedDate->modify($directions[$direction].' 1 day');
-            $dates[] = clone $clonedDate;
-            $range--;
-        }
-
-        return $dates;
-    }
-
-
-    /**
-     * @param array $begins
-     * @param array $ends
-     * @return array
-     */
-    private function combineDates(array $begins, array $ends): array
-    {
-        $dates = [];
-        foreach ($begins as $begin) {
-            foreach ($ends as $end) {
-                if ($begin < $end) {
-                    $dates[$begin->format('d-m-Y').'_'.$end->format('d-m-Y')] = [
-                        'begin' => $begin,
-                        'end' => $end,
+        foreach (new \DatePeriod((clone $begin)->modify("- ${beginRange} days"), \DateInterval::createFromDateString('1 day'), (clone $begin)->modify("+ ${beginRange} days +1 day")) as $beginDay) {
+            foreach (new \DatePeriod((clone $end)->modify("- ${endRange} days"), \DateInterval::createFromDateString('1 day'), (clone $end)->modify("+ ${endRange} days +1 day")) as $endDay) {
+                if ($beginDay < $endDay) {
+                    /** @var \DateTime $beginDay */
+                    /** @var \DateTime $endDay */
+                    $dates[$beginDay->format('d-m-Y') . '_' . $endDay->format('d-m-Y')] = [
+                        'begin' => $beginDay,
+                        'end' => $endDay
                     ];
                 }
             }
@@ -70,6 +47,4 @@ class AdditionalDatesGenerator
 
         return $dates;
     }
-
-
 }

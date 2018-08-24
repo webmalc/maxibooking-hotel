@@ -91,9 +91,6 @@ class SearchController extends Controller
     {
         $data = json_decode($request->getContent(), true);
         $search = $this->get('mbh_search.search');
-        $search->setAsyncQueriesChunk(30);
-
-
         try {
             if (!\is_array($data)) {
                 throw new SearchConditionException('Received bad data');
@@ -140,7 +137,6 @@ class SearchController extends Controller
         $conditions = new SearchConditions();
         $conditions->setBegin($begin)->setEnd($end)->setAdults($adults)->setChildren($children)->setChildrenAges($childrenAges);
         $form = $this->createForm(SearchConditionsType::class, $conditions);
-
         return $this->render('@MBHSearch/Search/client.html.twig', ['form' => $form->createView()]);
     }
 

@@ -162,8 +162,6 @@ class SearchLimitChecker
     /**
      * @param Result $result
      * @throws SearchLimitCheckerException
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
      */
     public function checkWindows(Result $result): void
     {
@@ -173,12 +171,16 @@ class SearchLimitChecker
                 return;
             }
 
+            $roomTypeId = $result->getResultRoomType()->getId();
+            $roomType = $this->sharedDataFetcher->getFetchedRoomType($roomTypeId);
+            $tariffId = $result->getResultTariff()->getId();
+            $tariff = $this->sharedDataFetcher->getFetchedTariff($tariffId);
+
+
             $begin = clone $result->getBegin();
             $end = clone $result->getEnd();
-            $roomType = $this->sharedDataFetcher->getFetchedRoomType($result->getResultRoomType()->getId());
-            $searchingTariff = $this->sharedDataFetcher->getFetchedTariff($result->getResultTariff()->getId());
             /** @var Tariff $tariff */
-            $tariff = $this->dm->getRepository(Tariff::class)->fetchBaseTariff($searchingTariff->getHotel());
+            $tariff = $this->dm->getRepository(Tariff::class)->fetchBaseTariff($tariff->getHotel());
             /** @var RestrictionRepository $restrictionRepo */
             $restrictionRepo = $this->dm->getRepository(Restriction::class);
             /** @var Restriction $beginRestriction */

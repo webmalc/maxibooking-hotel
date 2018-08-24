@@ -1,7 +1,9 @@
 services:
     mbh_search.search_query_generator:
         class: MBH\Bundle\SearchBundle\Services\SearchQueryGenerator
-        arguments: ['@mbh_search.additional_days_generator' , '@mbh_search.data_holder']
+        arguments:
+            - '@mbh_search.additional_days_generator'
+            - '@mbh_search.data_holder'
 
     mbh_search.search_conditions_roomtype_type:
         class: MBH\Bundle\SearchBundle\Form\RoomTypesType
@@ -81,65 +83,97 @@ services:
 
 
 #search
+    mbh_search.consumer_searcher:
+        class: MBH\Bundle\SearchBundle\Services\Search\ConsumerSearcher
+        arguments:
+            - '@mbh_search.search_conditions_repository'
+            - '@mbh_search.redis_store'
+            - '@mbh_search.searcher_factory'
 
     mbh_search.searcher_factory:
         class: MBH\Bundle\SearchBundle\Services\Search\SearcherFactory
-        arguments: ['@mbh_search.searcher', '@mbh_search.cache_searcher']
+        arguments:
+            - '@mbh_search.searcher'
+            - '@mbh_search.cache_searcher'
 
     mbh_search.cache_searcher:
         class: MBH\Bundle\SearchBundle\Services\Search\CacheSearcher
-        arguments: ['@mbh_search.searcher', '@mbh_search.cache_search']
+        arguments:
+            - '@mbh_search.searcher'
+            - '@mbh_search.cache_search'
 
     mbh_search.searcher:
         class: MBH\Bundle\SearchBundle\Services\Search\Searcher
-        arguments: ['@mbh_search.restrictions_checker_service', '@mbh_search.search_limit_checker', '@mbh_search.result_composer', '@validator']
-
-#    mbh_search.search:
-#        class: MBH\Bundle\SearchBundle\Services\Search\Search
-#        arguments: ['@mbh_search.restrictions_checker_service', '@mbh_search.search_factory', '@doctrine.odm.mongodb.document_manager', '@mbh_search.search_condition_creator', '@mbh_search.search_query_generator', '@old_sound_rabbit_mq.async_search_producer', '@mbh_search.results_final_builder']
+        arguments:
+            - '@mbh_search.restrictions_checker_service'
+            - '@mbh_search.search_limit_checker'
+            - '@mbh_search.result_composer'
+            - '@validator'
 
     mbh_search.search:
         class: MBH\Bundle\SearchBundle\Services\Search\Search
-        arguments: ['@mbh_search.restrictions_checker_service', '@mbh_search.searcher_factory', '@doctrine.odm.mongodb.document_manager', '@mbh_search.search_condition_creator', '@mbh_search.search_query_generator', '@old_sound_rabbit_mq.async_search_producer', '@mbh_search.results_final_builder']
+        arguments:
+            - '@mbh_search.restrictions_checker_service'
+            - '@mbh_search.searcher_factory'
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@mbh_search.search_condition_creator'
+            - '@mbh_search.search_query_generator'
+            - '@old_sound_rabbit_mq.async_search_producer'
+            - '@mbh_search.results_final_builder'
 
     mbh_search.accommodation_room_searcher:
         class: MBH\Bundle\SearchBundle\Services\AccommodationRoomSearcher
-        arguments: ['@mbh_search.room_fetcher', '@mbh_search.package_accommodation_fetcher']
+        arguments:
+            - '@mbh_search.room_fetcher'
+            - '@mbh_search.package_accommodation_fetcher'
 
     mbh_search.calculation:
         class: MBH\Bundle\SearchBundle\Services\Calc\Calculation
-        arguments: ['@mbh_search.price_caches_merger', '@mbh_search.shared_data_fetcher']
+        arguments:
+            - '@mbh_search.price_caches_merger'
+            - '@mbh_search.shared_data_fetcher'
 
     mbh_search.price_caches_merger:
         class: MBH\Bundle\SearchBundle\Services\Calc\PriceCachesMerger
-        arguments: ['@mbh_search.tariff_repository', '@mbh_search.price_cache_fetcher']
+        arguments:
+            - '@mbh_search.tariff_repository'
+            - '@mbh_search.price_cache_fetcher'
 
     mbh_search.result_composer:
         class: MBH\Bundle\SearchBundle\Services\Search\SearchResultComposer
-        arguments: ['@mbh.hotel.room_type_manager', '@mbh_search.calculation', '@mbh_search.search_limit_checker', '@mbh_search.room_cache_fetcher', '@mbh_search.shared_data_fetcher', '@mbh_search.accommodation_room_searcher', '@event_dispatcher']
+        arguments:
+            - '@mbh.hotel.room_type_manager'
+            - '@mbh_search.calculation'
+            - '@mbh_search.search_limit_checker'
+            - '@mbh_search.room_cache_fetcher'
+            - '@mbh_search.shared_data_fetcher'
+            - '@mbh_search.accommodation_room_searcher'
+            - '@event_dispatcher'
 
 # async receive results
     mbh_search.asycn_search:
         class: MBH\Bundle\SearchBundle\RabbitMQ\AsyncSearchConsumer
-        arguments: ['@mbh_search.searcher_factory', '@mbh_search.search_conditions_repository', '@mbh_search.redis_store']
-
-#special searcher
-    mbh_search.special_search:
-        class: MBH\Bundle\SearchBundle\Services\Search\SpecialSearch
-        arguments: ['@mbh_search.special_repository', '@mbh.hotel.room_type_manager', '@mbh_search.room_type_category_repository']
+        arguments:
+            - '@mbh_search.consumer_searcher'
+            - '@mbh_search.search_conditions_repository'
+            - '@mbh_search.redis_store'
 
 #search limit checker for refactoring
     mbh_search.search_limit_checker:
         class: MBH\Bundle\SearchBundle\Services\Search\SearchLimitChecker
-        arguments: ['@mbh_search.client_config_repository', '@doctrine.odm.mongodb.document_manager', '@mbh_search.shared_data_fetcher', '@mbh_search.room_cache_fetcher']
+        arguments:
+            - '@mbh_search.client_config_repository'
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@mbh_search.shared_data_fetcher'
+            - '@mbh_search.room_cache_fetcher'
 
 # repositories
-
     mbh_search.hotel_repository:
-            class: MBH\Bundle\HotelBundle\Document\HotelRepository
-            factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
-            arguments:
-                - MBH\Bundle\HotelBundle\Document\Hotel
+      class: MBH\Bundle\HotelBundle\Document\HotelRepository
+      factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
+      arguments:
+      - MBH\Bundle\HotelBundle\Document\Hotel
+
 
     mbh_search.room_type_repository:
         class: MBH\Bundle\HotelBundle\Document\RoomTypeRepository
@@ -247,7 +281,10 @@ services:
 ##Cache Results
     mbh_search.cache_search:
         class: MBH\Bundle\SearchBundle\Services\Cache\CacheSearchResults
-        arguments: ['@mbh_search.search_cache_item_repository', '@mbh_search.result_serializer', '@snc_redis.cache_results_client']
+        arguments:
+            - '@mbh_search.search_cache_item_repository'
+            - '@mbh_search.result_serializer'
+            - '@snc_redis.cache_results_client'
 
   ##REDIS_Caches
     mbh_search.redis:
@@ -257,52 +294,88 @@ services:
 
     mbh_search.room_cache_redis_cache:
         class: Symfony\Component\Cache\Simple\RedisCache
-        arguments: ['@mbh_search.redis', 'room_caches' ]
+        arguments:
+            - '@mbh_search.redis'
+            - 'room_caches'
 
     mbh_search.restrictions_redis_cache:
         class: Symfony\Component\Cache\Simple\RedisCache
-        arguments: ['@mbh_search.redis', 'restrictions' ]
+        arguments:
+            - '@mbh_search.redis'
+            - 'restrictions'
 
     mbh_search.rooms_redis_cache:
         class: Symfony\Component\Cache\Simple\RedisCache
-        arguments: ['@mbh_search.redis', 'rooms']
+        arguments:
+            - '@mbh_search.redis'
+            - 'rooms'
 
     mbh_search.package_accommodation_redis_cache:
         class: Symfony\Component\Cache\Simple\RedisCache
-        arguments: ['@mbh_search.redis', 'package_accommodations']
+        arguments:
+            - '@mbh_search.redis'
+            - 'package_accommodations'
 
     mbh_search.price_cache_redis_cache:
         class: Symfony\Component\Cache\Simple\RedisCache
-        arguments: ['@mbh_search.redis', 'price_caches' ]
+        arguments:
+            - '@mbh_search.redis'
+            - 'price_caches'
 
     mbh_search.search_result_redis_cache:
         class: Symfony\Component\Cache\Simple\RedisCache
-        arguments: ['@mbh_search.redis', 'search_results' ]
+        arguments:
+            - '@mbh_search.redis'
+            - 'search_results'
 
 ##Fetchers
     mbh_search.shared_data_fetcher:
         class: MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher
-        arguments: ['@mbh_search.tariff_repository', '@mbh_search.room_type_repository', '@mbh_search.room_repository']
+        arguments:
+            - '@mbh_search.tariff_repository'
+            - '@mbh_search.room_type_repository'
+            - '@mbh_search.room_repository'
 
     mbh_search.room_cache_fetcher:
         class: MBH\Bundle\SearchBundle\Services\Data\RoomCacheFetcher
-        arguments: ['@mbh_search.room_cache_holder', '@mbh_search.shared_data_fetcher', '@mbh_search.room_cache_repository', '@mbh_search.room_cache_redis_cache']
+        arguments:
+            - '@mbh_search.room_cache_holder'
+            - '@mbh_search.shared_data_fetcher'
+            - '@mbh_search.room_cache_repository'
+            - '@mbh_search.room_cache_redis_cache'
 
     mbh_search.restrictions_fetcher:
         class: MBH\Bundle\SearchBundle\Services\Data\RestrictionsFetcher
-        arguments: ['@mbh_search.restrictions_holder', '@mbh_search.shared_data_fetcher', '@mbh_search.restriction_repository', '@mbh_search.restrictions_redis_cache']
+        arguments:
+            - '@mbh_search.restrictions_holder'
+            - '@mbh_search.shared_data_fetcher'
+            - '@mbh_search.restriction_repository'
+            - '@mbh_search.restrictions_redis_cache'
 
     mbh_search.room_fetcher:
         class: MBH\Bundle\SearchBundle\Services\Data\RoomFetcher
-        arguments: ['@mbh_search.room_holder', '@mbh_search.shared_data_fetcher', '@mbh_search.room_repository', '@mbh_search.rooms_redis_cache']
+        arguments:
+            - '@mbh_search.room_holder'
+            - '@mbh_search.shared_data_fetcher'
+            - '@mbh_search.room_repository'
+            - '@mbh_search.rooms_redis_cache'
 
     mbh_search.package_accommodation_fetcher:
         class: MBH\Bundle\SearchBundle\Services\Data\PackageAccommodationFetcher
-        arguments: ['@mbh_search.package_accommodation_holder', '@mbh_search.shared_data_fetcher', '@mbh_search.package_repository', '@mbh_search.package_accommodation_redis_cache']
+        arguments:
+            - '@mbh_search.package_accommodation_holder'
+            - '@mbh_search.shared_data_fetcher'
+            - '@mbh_search.package_repository'
+            - '@mbh_search.package_accommodation_redis_cache'
 
     mbh_search.price_cache_fetcher:
         class: MBH\Bundle\SearchBundle\Services\Data\PriceCacheFetcher
-        arguments: ['@mbh_search.price_cache_holder', '@mbh_search.shared_data_fetcher', '@mbh_search.price_cache_repository', '@mbh_search.client_config_repository', '@mbh_search.price_cache_redis_cache']
+        arguments:
+            - '@mbh_search.price_cache_holder'
+            - '@mbh_search.shared_data_fetcher'
+            - '@mbh_search.price_cache_repository'
+            - '@mbh_search.client_config_repository'
+            - '@mbh_search.price_cache_redis_cache'
 
 #SearchResult To JSON
 
@@ -313,7 +386,10 @@ services:
 #AsyncStores
     mbh_search.redis_store:
         class: MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\ResultRedisStore
-        arguments: ['@snc_redis.results_client', '@mbh_search.result_serializer', '@mbh_search.results_final_builder']
+        arguments:
+            - '@snc_redis.results_client'
+            - '@mbh_search.result_serializer'
+            - '@mbh_search.results_final_builder'
 
 #serializer
     mbh_search.serializer:
@@ -326,4 +402,6 @@ services:
 
     mbh_search.result_serializer:
       class: MBH\Bundle\SearchBundle\Services\Data\Serializers\ResultSerializer
-      arguments: ['@mbh_search.serializer', '@mbh_search.normalizer']
+      arguments:
+            - '@mbh_search.serializer'
+            - '@mbh_search.normalizer'

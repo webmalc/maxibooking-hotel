@@ -3,6 +3,7 @@
 namespace Tests\Bundle\SearchBundle\Services;
 
 use Liip\FunctionalTestBundle\Test\WebTestCase;
+use MBH\Bundle\SearchBundle\Services\AdditionalDatesGenerator;
 
 class AdditionalDatesGeneratorTest extends WebTestCase
 {
@@ -25,11 +26,16 @@ class AdditionalDatesGeneratorTest extends WebTestCase
         int $countExpected,
         array $dataExpected
     ): void {
-        $generator = $this->getContainer()->get('mbh_search.additional_days_generator');
+
+        $generator = new AdditionalDatesGenerator();
+
         $actual = $generator->generate($begin, $end, $rangeBegin, $rangeEnd);
 
         $this->assertCount($countExpected, $actual);
-        $this->assertEquals($dataExpected, $actual, 'The array of dates is wrong');
+        if (\count($dataExpected)) {
+            $this->assertEquals($dataExpected, $actual, 'The array of dates is wrong');
+        }
+
 
     }
 
@@ -49,6 +55,14 @@ class AdditionalDatesGeneratorTest extends WebTestCase
                     ],
                 ],
             ],
+            [
+                new \DateTime('10.01.2018 midnight'),
+                new \DateTime('15.01.2018 midnight'),
+                1,
+                1,
+                9,
+                [],
+            ]
         ];
     }
 }

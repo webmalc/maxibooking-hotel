@@ -29,7 +29,7 @@ class SearchControllerTest extends SearchWebTestCase
         $response = $this->client->getResponse();
         $json = $response->getContent();
         if ($isResultExpected) {
-            $this->assertTrue($response->isSuccessful());
+            $this->assertTrue($response->isSuccessful(), 'status code = '.$response->getStatusCode());
             $this->assertJson($json);
             $answer = json_decode($json, true);
             $this->assertCount($grouping ? 6 : 8, $answer['results']);

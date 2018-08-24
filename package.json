@@ -22,5 +22,10 @@
     "less-loader": "^4.1.0",
     "moment": "^2.22.2",
     "typescript": "^3.0.1"
+  },
+  "scripts": {
+    "dev": "yarn run encore dev",
+    "watch": "yarn run encore dev --watch",
+    "production": "yarn run encore production"
   }
 }

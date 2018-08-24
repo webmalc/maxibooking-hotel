@@ -54,25 +54,27 @@ export class Writer {
         this.searchStatus.state = state;
     }
 
-    public drawResults(data: any): void {
-        for (let newKey in data) {
-            if (!data.hasOwnProperty(newKey)) {
+    public drawResults(receivedData: any): void {
+        for (let roomTypeId in receivedData) {
+            if (!receivedData.hasOwnProperty(roomTypeId)) {
                 continue;
             }
-            if (!this.data.hasOwnProperty(newKey)) {
+            if (!this.data.hasOwnProperty(roomTypeId)) {
                 //  * @url https://ru.vuejs.org/v2/guide/reactivity.html */
-                this.rootApp.$set(this.rootApp.rawData, newKey, data[newKey]);
+                this.rootApp.$set(this.rootApp.rawData, roomTypeId, receivedData[roomTypeId]);
             } else {
-                let existsDates = this.data[newKey].results;
-                let newDates = data[newKey].results;
-                for (let newDatesKey in newDates) {
-                    if (newDates.hasOwnProperty(newDatesKey) && existsDates.hasOwnProperty(newDatesKey)) {
-                        for (let newDate of newDates[newDatesKey]) {
-                            this.data[newKey].results[newDatesKey].push(newDate);
+                let existsResults = this.data[roomTypeId].results;
+                let newResults = receivedData[roomTypeId].results;
+                //В случае с добавлением результатов где ключи списка - даты.
+                for (let newResultsKey in newResults) {
+                    if (newResults.hasOwnProperty(newResultsKey) && existsResults.hasOwnProperty(newResultsKey)) {
+                        for (let newDate of newResults[newResultsKey]) {
+                            this.data[roomTypeId].results[newResultsKey].push(newDate);
                         }
                     } else {
-                        Vue.set(this.data[newKey].results, newDatesKey, newDates[newDatesKey]);
+                        Vue.set(this.data[roomTypeId].results, newResultsKey, newResults[newResultsKey]);
                     }
+
                 }
             }
         }

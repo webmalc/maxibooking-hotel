@@ -12,7 +12,7 @@
             <th class="td-md"></th>
         </tr>
         </thead>
-        <tbody is="RoomType" v-for="(data, key) in rawData" :roomType="data.roomType" :results="data.results"
+        <tbody is="RoomTypeResults" v-for="(data, key) in rawData" :roomType="data.roomType" :results="data.results"
                :key="key">
         </tbody>
     </table>
@@ -20,13 +20,13 @@
 
 <script lang="ts">
     import Vue from 'vue';
-    import RoomType from './RoomType'
+    import RoomTypeResults from './RoomTypeResults'
 
     export default Vue.extend({
         name: 'SearchResults',
         props: ['rawData'],
         components: {
-            RoomType
+            RoomTypeResults
         }
     })
 </script>
