@@ -1,6 +1,7 @@
 $(document).ready(function () {
-    var $addImageInput = $('#mbhhotel_bundle_hotel_image_type_imageFile');
+    var $addImageInput = $('#mbhhotel_bundle_hotel_image_type_imageFile, #image_imageFile');
     $addImageInput.change(function () {
+        console.log('sdfsf');
         $addImageInput.closest('form').submit();
     });
 

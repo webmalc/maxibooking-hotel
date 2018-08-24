@@ -131,7 +131,7 @@ class DocumentFieldsManager
      * @return array
      * @throws \ReflectionException
      */
-    public function getPropertiesByAnnotationClass(string $className, string $annotationName)
+    public function getPropertiesByAnnotationClass(string $className, string $annotationName = Translatable::class)
     {
         $result = [];
         $classProperties = (new \ReflectionClass($className))->getProperties();

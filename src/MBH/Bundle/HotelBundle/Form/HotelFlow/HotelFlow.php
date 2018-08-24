@@ -111,9 +111,5 @@ class HotelFlow extends FormFlow
         }
 
         $this->dm->flush();
-
-        if ($this->isNextButtonClicked() || $this->isBackButtonClicked()) {
-            $this->nextStep();
-        }
     }
 }

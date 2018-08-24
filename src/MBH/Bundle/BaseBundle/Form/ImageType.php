@@ -28,14 +28,15 @@ class ImageType extends AbstractType
                 'label' => 'form.image.file.label',
                 'required' => false,
                 'help' => 'form.image.file.help',
-                'constraints' => [new ConstraintsImage(), new NotBlank()]
+                'constraints' => $options['hasConstraints'] ? [new ConstraintsImage(), new NotBlank()] : []
             ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => Image::class
+            'data_class' => Image::class,
+            'hasConstraints' => true
         ]);
     }
 

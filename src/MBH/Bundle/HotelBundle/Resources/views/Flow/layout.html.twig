@@ -3,6 +3,17 @@
 {% set title = 'views.flow.flow.title'|trans({}, 'MBHHotelBundle') %}
 {% set layout = "tabs" %}
 
+{% block scripts %}
+    {{ parent() }}
+
+    {% javascripts filter='?uglifyjs2'
+        '@MBHHotelBundle/Resources/public/js/flow/*'
+    %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+{% endblock %}
+
 {% block content %}
     <div class="tab-content">
         <div>

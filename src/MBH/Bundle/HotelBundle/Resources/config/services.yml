@@ -131,6 +131,16 @@ services:
     mbh.room_type_flow:
         class: MBH\Bundle\HotelBundle\Form\RoomTypeFlow\RoomTypeFlow
         parent: mbh.form_flow
+        arguments:
+            - '@mbh.document_fields_manager'
+            - '@mbh.form_data_handler'
+            - '@mbh.room.cache'
+            - '@mbh.price.cache'
+
+    mbh.room_type_flow_type:
+        class: MBH\Bundle\HotelBundle\Form\RoomTypeFlow\RoomTypeFlowType
+        arguments: ['@mbh.form_builder', '@doctrine.odm.mongodb.document_manager']
+        tags: [{name: form.type}]
 
     mbh.form_flow:
         class: MBH\Bundle\HotelBundle\Service\FormFlow

@@ -6,6 +6,7 @@ use MBH\Bundle\BaseBundle\Form\MultiLanguagesType;
 use MBH\Bundle\ClientBundle\Service\ClientConfigManager;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormFactory;
+use Symfony\Component\Form\FormInterface;
 
 class MBHFormBuilder
 {
@@ -41,7 +42,7 @@ class MBHFormBuilder
                 'field_type' => $fieldType,
                 'group' => $group,
                 'fields_options' => array_merge([
-                    'required' => false
+                    'required' => false,
                 ], $fieldOptions),
             ]);
         }
@@ -53,12 +54,17 @@ class MBHFormBuilder
      * @param FormBuilderInterface $formBuilder
      * @param string $mergedFormName
      * @param $data
+     * @param null $fields
+     * @param array $options
      */
-    public function mergeFormFields(FormBuilderInterface $formBuilder, string $mergedFormName, $data)
+    public function mergeFormFields(FormBuilderInterface $formBuilder, string $mergedFormName, $data, $fields = null, $options = [])
     {
-        $mergedFormBuilder = $this->formFactory->createBuilder($mergedFormName, $data);
+        $mergedFormBuilder = $this->formFactory->createBuilder($mergedFormName, $data, $options);
+        /** @var FormInterface $formField */
         foreach ($mergedFormBuilder->all() as $formField) {
-            $formBuilder->add($formField);
+            if (is_null($fields) || in_array($formField->getName(), $fields)) {
+                $formBuilder->add($formField);
+            }
         }
     }
 }

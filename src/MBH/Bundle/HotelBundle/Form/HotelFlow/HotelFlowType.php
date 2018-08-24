@@ -78,14 +78,6 @@ class HotelFlowType extends AbstractType
                     'showHelp' => false
                 ]);
                 break;
-            case 8:
-                $builder->add('plugForHotelFlowImagesField', LogoImageType::class, [
-                    'label' => 'Фотографии отеля',
-                    'group' => 'form.hotelType.settings',
-                    'required' => false,
-                    'showHelp' => false
-                ]);
-                break;
             default:
                 throw new \InvalidArgumentException('Incorrect flow step number!');
         }

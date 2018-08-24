@@ -169,6 +169,7 @@ controller.roomTypeController.success_set_main_photo: 'Фотография ус
 controller.roomTypeController.success_set_photo: 'Фотография успешно добавлена'
 controller.roomTypeController.success_delete_photo: 'Изображение успешно удалено'
 controller.roomTypeController.success_room_type_creation: 'Новый тип номера успешно создан'
+controller.TaskTypeController.success_delete_photo: 'Изображение успешно удалено.'
 controller.hotelController.task_created_notall: 'Не все задачи созданы/отредактированы, сначала закройте открытые задачи для данного типа.'
 controller.hotelController.task_created_failed: 'Не удалось создать ни одной задачи.'
 form.taskType.title: Название
@@ -258,7 +259,7 @@ views.hotel.roomType.editAutoTasks.add: Добавить
 views.hotel.roomType.editTabs.public_information_and_setting: 'Общая информация и настройки'
 views.hotel.roomType.editTabs.photo: Фотографии
 views.hotel.roomType.editTabs.tasks: Задачи
-views.hotel.roomType.editImages.do_default: Задачи
+views.hotel.roomType.editImages.do_default: 'Сделать главной'
 views.hotel.roomType.editImages.delete_picture: 'Удалить картинку'
 views.hotel.roomType.new.public_information_and_setting: 'Общая информация и настройки'
 views.hotel.roomType.new.photo: Фотографии

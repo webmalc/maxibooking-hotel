@@ -21,36 +21,8 @@
         } %}
     {% endif %}
 
-    <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
-        <div class="container-fluid">
-            <ul class="nav navbar-nav">
-                {% if flow.currentStepNumber > 1 %}
-                    <li>
-                        <button type="submit" class="btn btn-primary navbar-btn" name="back">
-                            <i class="fa fa-arrow-left"></i>
-                            &nbsp;{{- 'views.flow.hotel_flow.back_button.title'| trans -}}
-                        </button>
-                    </li>
-                {% endif %}
-                <li>
-                    {% if isLastStep %}
-                        <button type="submit" name="finish"
-                                class="btn btn-{{ isLastStep ? 'success' : 'primary' }} primary navbar-btn">
-                            &nbsp;<i
-                                    class="fa fa-check-square"></i>&nbsp; {{- 'views.flow.hotel_flow.finish_button.title' | trans -}}
-                        </button>
-                    {% else %}
-                        <button type="submit" name="next"
-                                class="btn btn-{{ isLastStep ? 'success' : 'primary' }} primary navbar-btn">
-                            {{ 'views.flow.hotel_flow.next_button.title'|trans }}
-                            &nbsp;<i class="fa fa-arrow-right"></i>
-                        </button>
-                    {% endif %}
-                </li>
-                {{ form_end(form) }}
-            </ul>
-        </div>
-    </div>
+    {% include '@MBHHotel/Flow/flowButtons.html.twig' %}
+    {{ form_end(form) }}
 
     {% include '@MBHHotel/Hotel/coordinates-modal.html.twig' with {entity: hotel} %}
     {% include '@MBHBase/modalWithForm.html.twig' with {modalTitle: 'modal_with_form.add_city.title'|trans} %}

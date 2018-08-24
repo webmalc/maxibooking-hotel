@@ -19,6 +19,8 @@ abstract class FormFlow
     protected $formFactory;
     /** @var Request */
     protected $request;
+    protected $customErrors = [];
+
 
     private $isFlowConfigInit = false;
 
@@ -46,14 +48,30 @@ abstract class FormFlow
 
     abstract protected function handleForm(FormInterface $form);
 
-    public function handleStep()
+    public function handleStepAndGetForm()
     {
         $form = $this->createForm();
         $form->handleRequest($this->request);
 
         if ($form->isValid()) {
-            $this->handleForm($form);
+            $isSuccess = $this->handleForm($form);
+
+            if ($isSuccess) {
+                if ($this->isNextButtonClicked() || $this->isBackButtonClicked()) {
+                    $this->nextStep();
+                }
+
+                if ($this->isFinishButtonClicked()) {
+                    $this->getFlowConfig()->setIsFinished(true);
+                    $this->isFlowConfigInit = false;
+                }
+
+                $this->dm->flush();
+                $form = $this->createForm();
+            }
         }
+
+        return $form;
     }
 
     /**
@@ -64,6 +82,12 @@ abstract class FormFlow
     public function createForm($options = [])
     {
         $data = $this->getFormData();
+        if (!isset($this->getCurrentStepInfo()['form_type'])) {
+            throw new \InvalidArgumentException(
+                'There is no "form_type" parameter in step config #'.$this->getCurrentStepNumber()
+            );
+        }
+
         $formType = $this->getCurrentStepInfo()['form_type'];
         $definedOptions = isset($this->getCurrentStepInfo()['options']) ? $this->getCurrentStepInfo()['options'] : [];
 
@@ -109,7 +133,7 @@ abstract class FormFlow
      */
     public function isLastStep()
     {
-        return $this->getNumberOfSteps() <= $this->getCurrentStepNumber();
+        return $this->getNumberOfSteps() === $this->getCurrentStepNumber();
     }
 
     /**
@@ -202,7 +226,7 @@ abstract class FormFlow
             $flowId = $this->getFlowId();
             $config = $this->dm
                 ->getRepository('MBHHotelBundle:FlowConfig')
-                ->findOneBy(['flowId' => $flowId, 'isEnabled' => true]);
+                ->findOneBy(['flowId' => $flowId, 'isEnabled' => true, 'isFinished' => false]);
 
             if (is_null($config)) {
                 $config = (new FlowConfig())
@@ -218,11 +242,27 @@ abstract class FormFlow
     }
 
     /**
+     * @return bool
+     */
+    protected function isFinishButtonClicked()
+    {
+        return $this->isLastStep() && $this->isButtonClicked('finish');
+    }
+
+    /**
      * @return array
      */
     protected function getCurrentStepInfo()
     {
         return $this->getStepsConfig()[$this->getCurrentStepNumber() - 1];
+    }
+
+    /**
+     * @return array
+     */
+    protected function getFlowData()
+    {
+        return $this->getFlowConfig()->getFlowData();
     }
 
     /**

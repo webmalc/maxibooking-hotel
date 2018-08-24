@@ -2,8 +2,10 @@
 
 namespace MBH\Bundle\HotelBundle\Document;
 
+use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 
 /**
  * @ODM\Document()
@@ -12,6 +14,9 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class FlowConfig extends Base
 {
+    use TimestampableDocument;
+    use BlameableDocument;
+
     /**
      * @ODM\Field(type="int")
      * @var int
@@ -29,23 +34,29 @@ class FlowConfig extends Base
      * @var string
      * @ODM\Field(type="string")
      */
-    private $serializedData;
+    private $flowData;
 
     /**
-     * @return string
+     * @var bool
+     * @ODM\Field(type="bool")
      */
-    public function getSerializedData(): ?string
+    private $isFinished = false;
+
+    /**
+     * @return bool
+     */
+    public function isFinished(): ?bool
     {
-        return $this->serializedData;
+        return $this->isFinished;
     }
 
     /**
-     * @param string $serializedData
+     * @param bool $isFinished
      * @return FlowConfig
      */
-    public function setSerializedData(string $serializedData): FlowConfig
+    public function setIsFinished(bool $isFinished): FlowConfig
     {
-        $this->serializedData = $serializedData;
+        $this->isFinished = $isFinished;
 
         return $this;
     }
@@ -53,9 +64,20 @@ class FlowConfig extends Base
     /**
      * @return array
      */
-    public function getDataAsArray()
+    public function getFlowData(): array
     {
-        return json_decode($this->getSerializedData(), true);
+        return $this->flowData ? json_decode($this->flowData, true) : [];
+    }
+
+    /**
+     * @param array $flowData
+     * @return FlowConfig
+     */
+    public function setFlowData(array $flowData): FlowConfig
+    {
+        $this->flowData = json_encode($flowData);
+
+        return $this;
     }
 
     /**

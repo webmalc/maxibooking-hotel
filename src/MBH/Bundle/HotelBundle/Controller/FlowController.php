@@ -30,10 +30,10 @@ class FlowController extends BaseController
             ->get('mbh.hotel_flow')
             ->setInitData($hotel);
 
-        $flow->handleStep();
+        $form = $flow->handleStepAndGetForm();
 
         return [
-            'form' => $flow->createForm()->createView(),
+            'form' => $form->createView(),
             'flow' => $flow,
             'hotel' => $hotel
         ];
@@ -47,13 +47,15 @@ class FlowController extends BaseController
     public function roomTypeFlowAction()
     {
         /** @var RoomTypeFlow $flow */
-        $flow = $this->get('mbh.room_type_flow');
-
-        $form = $flow->createForm(null, ['hotel' => $this->hotel]);
+        $flow = $this
+            ->get('mbh.room_type_flow')
+            ->setInitData($this->hotel);
+        $form = $flow->handleStepAndGetForm();
 
         return [
             'flow' => $flow,
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'roomType' => $flow->getManagedRoomType()
         ];
     }
 }

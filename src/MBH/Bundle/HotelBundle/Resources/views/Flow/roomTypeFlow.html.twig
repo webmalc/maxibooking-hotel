@@ -5,5 +5,31 @@
 {% block flowBody %}
     {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
     {{ form_widget(form) }}
+
+    {% if flow.currentStepNumber == 3 %}
+        {% include '@MBHHotel/Hotel/image-list.html.twig' with {
+            entityType: 'roomType',
+            images: roomType.onlineImages,
+            entity: roomType,
+            showMakeMainButton: false,
+            showDeleteButton: true,
+            redirect_url: path('room_type_flow')
+        } %}
+    {% endif %}
+
+    {% include '@MBHHotel/Flow/flowButtons.html.twig' %}
+
     {{ form_end(form) }}
+{% endblock %}
+
+{% block scripts %}
+    {{ parent() }}
+    {% if form.facilities is defined %}
+        <script>
+            $('#{{ (form.facilities.vars.id) }}').tagsSelectWidget({
+                value: {% autoescape false %}{{ form.facilities.vars.value|json_encode }}{% endautoescape %},
+                emptyHelp: '{{ 'form.roomTypeType.help.empty_facilities'|trans({}) }}'
+            });
+        </script>
+    {% endif %}
 {% endblock %}
