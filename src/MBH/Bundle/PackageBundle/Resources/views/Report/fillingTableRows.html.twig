@@ -195,22 +195,43 @@
         </strong>
     </td>
 </tr>
+{#<tr class="info">#}
+    {#<td>#}
+        {#<small>{{ 'report.filling_table_rows.cost_of_services'|trans}}</small>#}
+    {#</td>#}
+    {#{% for date in rangeDateList %}#}
+        {#{% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}#}
+        {#<td class="content">#}
+            {#{{ row.servicePrice|default(0)|number_format(2) }}#}
+        {#</td>#}
+    {#{% endfor %}#}
+    {#<td class="content-total">#}
+        {#<strong>#}
+            {#{{ tableData.totals.servicePrice|default(0)|number_format(2) }}#}
+        {#</strong>#}
+    {#</td>#}
+{#</tr>#}
+
+{% for categoryId, serviceDataByCategory in tableData.servicesData %}
 <tr class="info">
     <td>
-        <small>{{ 'report.filling_table_rows.cost_of_services'|trans}}</small>
+        <small>{{ serviceDataByCategory.category.name }}</small>
     </td>
+    {% set serviceCategorySumsByDates = serviceDataByCategory.servicePricesByDates %}
     {% for date in rangeDateList %}
-        {% set row = tableData.rows[date|date('d.m.Y')] is defined ? tableData.rows[date|date('d.m.Y')] : null %}
+        {% set value = serviceCategorySumsByDates[date|date('d.m.Y')] is defined ? serviceCategorySumsByDates[date|date('d.m.Y')] : null %}
         <td class="content">
-            {{ row.servicePrice|default(0)|number_format(2) }}
+            {{ value|default(0)|number_format(2) }}
         </td>
     {% endfor %}
     <td class="content-total">
         <strong>
-            {{ tableData.totals.servicePrice|default(0)|number_format(2) }}
+            {{ tableData.totalServicesData[categoryId].sum|default(0)|number_format(2) }}
         </strong>
     </td>
 </tr>
+{% endfor %}
+
 <tr class="info">
     <td>
         <small>{{ 'report.filling_table_rows.total_cost'|trans }}</small>
