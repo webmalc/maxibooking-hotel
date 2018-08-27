@@ -12,7 +12,8 @@
 <script lang="ts">
 
     import Vue from 'vue';
-
+    import * as moment from 'moment';
+    moment.locale('ru');
     export default Vue.extend({
         name: "DayPrice",
         props: ['dayPrices'],
@@ -20,7 +21,8 @@
             detail: function () {
                 let html: string = '';
                 for (let dayPrice of this.dayPrices) {
-                    html += `${dayPrice['day']} - ${dayPrice['price']} - <i class='fa fa-sliders'></i> ${dayPrice['tariff']['name']}<br>`;
+                    let day = moment(dayPrice['date']).format('DD MMM');
+                    html += `${day} - ${dayPrice['price']} - <i class='fa fa-sliders'></i> ${dayPrice['tariff']['name']}<br>`;
                 }
 
                 return `<small>${html}</small>`;

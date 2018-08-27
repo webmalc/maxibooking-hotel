@@ -46,6 +46,13 @@ class Result implements ResultCacheablesInterface
     /** @var string */
     private $error = '';
 
+    /** @var bool */
+    private $cached = false;
+
+    /** @var string */
+    private $cacheItemId = '';
+
+
     /**
      * Result constructor.
      */
@@ -276,6 +283,48 @@ class Result implements ResultCacheablesInterface
 
         return $this;
     }
+
+    /**
+     * @return bool
+     */
+    public function isCached(): bool
+    {
+        return $this->cached;
+    }
+
+    /**
+     * @param bool $cached
+     * @return Result
+     */
+    public function setCached(bool $cached): Result
+    {
+        $this->cached = $cached;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCacheItemId(): string
+    {
+        return $this->cacheItemId;
+    }
+
+    /**
+     * @param string $cacheItemId
+     * @return Result
+     */
+    public function setCacheItemId(string $cacheItemId): Result
+    {
+        $this->cacheItemId = $cacheItemId;
+
+        return $this;
+    }
+
+
+
+
 
     public static function createErrorResult(SearchQuery $searchQuery, SearchException $exception): Result
     {

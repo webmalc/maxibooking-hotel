@@ -11,7 +11,8 @@ interface SearchDataType {
     hotels?: any,
     order?: number,
     isForceBooking?: boolean,
-    isSpecialStrict?: boolean
+    isSpecialStrict?: boolean,
+    isUseCache?: boolean
 }
 
 interface Routing {

@@ -3,11 +3,14 @@
 namespace MBH\Bundle\SearchBundle\Controller;
 
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
+use MBH\Bundle\SearchBundle\Document\SearchResultCacheItem;
 use MBH\Bundle\SearchBundle\Form\SearchConditionsType;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\AsyncResultReceiverException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\GroupingFactoryException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultCacheException;
+use PhpAmqpLib\Connection\AMQPSocketConnection;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -101,8 +104,8 @@ class SearchController extends Controller
      */
     public function clientAction(): Response
     {
-        $begin = new \DateTime('10.09.2018');
-        $end = new \DateTime('17.09.2018');
+        $begin = new \DateTime('midnight');
+        $end = new \DateTime('midnight +1 days');
         $adults = 2;
         $children = 1;
         $childrenAges = [3];
@@ -111,4 +114,54 @@ class SearchController extends Controller
         $form = $this->createForm(SearchConditionsType::class, $conditions);
         return $this->render('@MBHSearch/Search/client.html.twig', ['form' => $form->createView()]);
     }
+
+    /**
+     * Uses direct from twig
+     * @return Response
+     */
+    public function searcherAction(): Response
+    {
+        $initSearchConditions = new SearchConditions();
+        $initSearchConditions
+            ->setBegin(new \DateTime('midnight'))
+            ->setEnd(new \DateTime('midnight +1 day' ))
+            ->setAdults(1)
+            ->setChildren(0)
+            ->setChildrenAges([]);
+        $form = $this->createForm(SearchConditionsType::class, $initSearchConditions);
+
+        return $this->render('@MBHSearch/Search/searcher.html.twig', ['form' => $form->createView()]);
+    }
+
+    /**
+     * @Route("/cache/flush" , name="cache_flush",  options={"expose"=true})
+     * @return JsonResponse
+     */
+    public function flushCacheAction(): Response
+    {
+        $cache = $this->get('mbh_search.cache_search');
+        $cache->flushCache();
+
+        return new JsonResponse(['result' => 'Cache flushed']);
+    }
+
+
+    /**
+     * @Route("/cache/invalidate/item/{id}/" , name="invalidate_item",  options={"expose"=true})
+     * @param SearchResultCacheItem $cacheItem
+     * @return Response
+     */
+    public function invalidateCacheItem(SearchResultCacheItem $cacheItem): Response
+    {
+        $service = $this->get('mbh_search.cache_search');
+        try {
+            $service->invalidateCacheResultByCacheItem($cacheItem);
+            $result = ['result' => 'Cache item was invalidated'];
+        } catch (SearchResultCacheException $e) {
+            $result = ['result' => 'Error while invalidate'];
+        }
+
+        return new JsonResponse($result);
+    }
+
 }

@@ -1,6 +1,6 @@
 <template>
     <tr :class="{success: isAdditionalDate}">
-        <td class="text-center table-icon"><i class="fa fa-paper-plane-o"></i></td>
+        <td class="text-center table-icon"><Icon :isCached="result.cached" :cacheItemId="result.cacheItemId"></Icon></td>
         <td>{{begin}}-{{end}}<br>
             <small>{{night}} ночей</small>
         </td>
@@ -22,7 +22,8 @@
     import Prices from "./Prices";
     import TotalPrice from "./TotalPrice";
     import PackageLink from "./PackageLink";
-
+    import Icon from "./Icon";
+    moment.locale('ru');
     declare let Routing: any;
 
     export default Vue.extend({
@@ -31,7 +32,8 @@
             Count,
             Prices,
             TotalPrice,
-            PackageLink
+            PackageLink,
+            Icon
         },
         name: "Result",
         props: ['result'],
@@ -74,6 +76,7 @@
             minRooms: function () {
                 return this.result.minRoomsCount;
             }
+
         },
         methods: {
             getLink: function () {
