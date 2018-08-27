@@ -8,6 +8,7 @@ use MBH\Bundle\BaseBundle\Service\DocumentFieldsManager;
 use MBH\Bundle\BaseBundle\Service\FormDataHandler;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\HotelBundle\Model\FlowRuntimeException;
 use MBH\Bundle\HotelBundle\Service\FormFlow;
 use MBH\Bundle\PriceBundle\Services\PriceCache;
 use MBH\Bundle\PriceBundle\Services\RoomCache;
@@ -144,9 +145,9 @@ class RoomTypeFlow extends FormFlow
 
     /**
      * @param FormInterface $form
-     * @return bool
      * @throws \ReflectionException
      * @throws \Exception
+     * @throws FlowRuntimeException
      */
     protected function handleForm(FormInterface $form)
     {
@@ -197,9 +198,7 @@ class RoomTypeFlow extends FormFlow
 
             if ($error !== '') {
                 $this->getFlowConfig()->setCurrentStep(5);
-                $form->addError(new FormError($error));
-
-                return false;
+                throw new FlowRuntimeException($error);
             }
 
             $this->priceCacheService
@@ -218,8 +217,6 @@ class RoomTypeFlow extends FormFlow
         }
 
         $this->dm->flush();
-
-        return true;
     }
 
     /**

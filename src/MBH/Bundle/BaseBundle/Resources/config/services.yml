@@ -389,23 +389,23 @@ services:
         calls:
             - [ setCachePrefix, ["protected_cache"]]
 
-#    mbh.imagine.cache.resolver.amazon_s3.cache:
-#        class: Liip\ImagineBundle\Imagine\Cache\Resolver\CacheResolver
-#        arguments:
-#            - "@cache.memcache"
-#            - "@mbh.imagine.cache.resolver.amazon_s3"
-#            - { prefix: "amazon_s3" }
-#        tags:
-#            - { name: "liip_imagine.cache.resolver", resolver: "public_cached_images" }
-#
-#    mbh.imagine.protected.cache.resolver.amazon_s3.cache:
-#        class: Liip\ImagineBundle\Imagine\Cache\Resolver\CacheResolver
-#        arguments:
-#            - "@cache.memcache"
-#            - "@mbh.imagine.protected.cache.resolver.amazon_s3"
-#            - { prefix: "protected_amazon_s3" }
-#        tags:
-#            - { name: "liip_imagine.cache.resolver", resolver: "protected_cached_images" }
+    mbh.imagine.cache.resolver.amazon_s3.cache:
+        class: Liip\ImagineBundle\Imagine\Cache\Resolver\CacheResolver
+        arguments:
+            - "@cache.memcache"
+            - "@mbh.imagine.cache.resolver.amazon_s3"
+            - { prefix: "amazon_s3" }
+        tags:
+            - { name: "liip_imagine.cache.resolver", resolver: "public_cached_images" }
+
+    mbh.imagine.protected.cache.resolver.amazon_s3.cache:
+        class: Liip\ImagineBundle\Imagine\Cache\Resolver\CacheResolver
+        arguments:
+            - "@cache.memcache"
+            - "@mbh.imagine.protected.cache.resolver.amazon_s3"
+            - { prefix: "protected_amazon_s3" }
+        tags:
+            - { name: "liip_imagine.cache.resolver", resolver: "protected_cached_images" }
 
 #Didn't work
 #    mbh.imagine.cache.resolver.proxy:
@@ -415,15 +415,15 @@ services:
 #            - [ "http://localhost:9090"]
 #        tags:
 #            - { name: "liip_imagine.cache.resolver", resolver: "proxy"}
-#    memcache:
-#        class: Memcache
-#        calls:
-#            - [connect, ["%memcache_host%", 11211 ]]
-#
-#    cache.memcache:
-#        class: Doctrine\Common\Cache\MemcacheCache
-#        calls:
-#            - [ setMemcache, ["@memcache"]]
+    memcache:
+        class: Memcache
+        calls:
+            - [connect, ["%memcache_host%", 11211 ]]
+
+    cache.memcache:
+        class: Doctrine\Common\Cache\MemcacheCache
+        calls:
+            - [ setMemcache, ["@memcache"]]
 
     mbh.form_data_handler:
         class: MBH\Bundle\BaseBundle\Service\FormDataHandler

@@ -4,6 +4,8 @@ namespace MBH\Bundle\HotelBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\HotelBundle\Document\FlowConfig;
+use MBH\Bundle\HotelBundle\Model\FlowRuntimeException;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormFactory;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -46,17 +48,26 @@ abstract class FormFlow
 
     abstract protected function getFormData();
 
+    /**
+     * @param FormInterface $form
+     * @throws FlowRuntimeException
+     */
     abstract protected function handleForm(FormInterface $form);
 
     public function handleStepAndGetForm()
     {
         $form = $this->createForm();
         $form->handleRequest($this->request);
+        $flowExceptions = [];
 
-        if ($form->isValid()) {
-            $isSuccess = $this->handleForm($form);
+        if ($form->isSubmitted() && $form->isValid()) {
+            try {
+                $this->handleForm($form);
+            } catch (FlowRuntimeException $exception) {
+                $flowExceptions[] = $exception->getMessage();
+            }
 
-            if ($isSuccess) {
+            if (empty($flowExceptions)) {
                 if ($this->isNextButtonClicked() || $this->isBackButtonClicked()) {
                     $this->nextStep();
                 }
@@ -65,9 +76,13 @@ abstract class FormFlow
                     $this->getFlowConfig()->setIsFinished(true);
                     $this->isFlowConfigInit = false;
                 }
+            }
 
-                $this->dm->flush();
-                $form = $this->createForm();
+            $this->dm->flush();
+            $form = $this->createForm();
+
+            foreach ($flowExceptions as $exceptionMessage) {
+                $form->addError(new FormError($exceptionMessage));
             }
         }
 
