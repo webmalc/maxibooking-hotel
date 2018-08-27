@@ -29,10 +29,8 @@ class PaymentSystemWrapperFactory
      */
     public function create(PaymentSystemDocument $doc): PaymentSystemInterface
     {
-        $name = $doc::name();
-
         /** @var Wrapper $instance */
-        $instance = $this->container->get('MBH\Bundle\ClientBundle\Service\PaymentSystem\Wrapper\\' . $doc::name());
+        $instance = $this->container->get('MBH\Bundle\ClientBundle\Service\PaymentSystem\Wrapper\\' . $doc::fileClassName());
         $instance->setPaymentSystemDocument($doc);
 
         return $instance;

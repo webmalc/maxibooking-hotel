@@ -67,10 +67,7 @@ services:
     mbh.client_payment_system_type:
         class: MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType
         arguments:
-            - '%mbh.payment_systems%'
-            - '%mbh.payment_systems.change%'
-            - '%mbh.payment_systems.default%'
-            - '%mbh.taxation%'
+            - '@mbh.payment_extra_data'
         tags:
             - { name: form.type }
 
@@ -129,3 +126,18 @@ services:
     mbh.payment_tinkoff.logger_handler:
         class:     Monolog\Handler\StreamHandler
         arguments: ["%kernel.logs_dir%/%kernel.environment%.paymentSystem_tinkoff.log", 200]
+
+    mbh.payment_extra_data:
+        class: MBH\Bundle\ClientBundle\Lib\PaymentSystem\ExtraData
+        arguments:
+        - '%mbh.payment_systems%'
+        - '%mbh.payment_systems.change%'
+        - '%mbh.payment_systems.default%'
+        - '%mbh.taxation%'
+
+    MBH\Bundle\ClientBundle\Form\PaymentSystem\:
+        resource: '%kernel.root_dir%/../src/MBH/Bundle/ClientBundle/Form/PaymentSystem/*'
+        arguments:
+        - '@mbh.payment_extra_data'
+        tags:
+        - { name: form.type }

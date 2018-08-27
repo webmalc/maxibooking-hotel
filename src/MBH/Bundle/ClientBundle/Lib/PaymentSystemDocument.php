@@ -9,10 +9,23 @@ namespace MBH\Bundle\ClientBundle\Lib;
 
 abstract class PaymentSystemDocument
 {
-    public static function name(): string
+    /**
+     * @return string
+     */
+    public static function fileClassName(): string
     {
         $name = explode('\\', static::class);
 
         return end($name);
+    }
+
+    /**
+     * For dynamic class names
+     *
+     * @return string
+     */
+    public static function className(): string
+    {
+        return static::class;
     }
 }

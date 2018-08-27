@@ -61,6 +61,7 @@ class Tinkoff extends PaymentSystemDocument implements TaxMapInterface
     /**
      * @var string
      * @ODM\Field(type="string")
+     * @Assert\NotBlank()
      */
     private $secretKey;
 
@@ -73,12 +74,14 @@ class Tinkoff extends PaymentSystemDocument implements TaxMapInterface
     /**
      * @var string
      * @ODM\Field(type="string")
+     * @Assert\NotBlank()
      */
     protected $taxationRateCode = self::DEFAULT_TAX_RATE;
 
     /**
      * @var string
      * @ODM\Field(type="string")
+     * @Assert\NotBlank()
      */
     protected $taxationSystemCode = self::DEFAULT_TAX_SYSTEM;
 
@@ -93,7 +96,7 @@ class Tinkoff extends PaymentSystemDocument implements TaxMapInterface
     /**
      * @param int $redirectDueDate
      */
-    public function setRedirectDueDate(int $redirectDueDate): void
+    public function setRedirectDueDate(?int $redirectDueDate): void
     {
         $this->redirectDueDate = $redirectDueDate;
     }
@@ -109,7 +112,7 @@ class Tinkoff extends PaymentSystemDocument implements TaxMapInterface
     /**
      * @param string $secretKey
      */
-    public function setSecretKey(string $secretKey): void
+    public function setSecretKey(?string $secretKey): void
     {
         $this->secretKey = $secretKey;
     }
@@ -125,7 +128,7 @@ class Tinkoff extends PaymentSystemDocument implements TaxMapInterface
     /**
      * @param string $language
      */
-    public function setLanguage(string $language): void
+    public function setLanguage(?string $language): void
     {
         $this->language = $language;
     }
@@ -141,7 +144,7 @@ class Tinkoff extends PaymentSystemDocument implements TaxMapInterface
     /**
      * @param string $taxationRateCode
      */
-    public function setTaxationRateCode(string $taxationRateCode): self
+    public function setTaxationRateCode(?string $taxationRateCode): self
     {
         $this->taxationRateCode = $taxationRateCode;
 
@@ -159,7 +162,7 @@ class Tinkoff extends PaymentSystemDocument implements TaxMapInterface
     /**
      * @param string $taxationSystemCode
      */
-    public function setTaxationSystemCode(string $taxationSystemCode): self
+    public function setTaxationSystemCode(?string $taxationSystemCode): self
     {
         $this->taxationSystemCode = $taxationSystemCode;
 
@@ -177,7 +180,7 @@ class Tinkoff extends PaymentSystemDocument implements TaxMapInterface
     /**
      * @param string $terminalKey
      */
-    public function setTerminalKey(string $terminalKey): void
+    public function setTerminalKey(?string $terminalKey): void
     {
         $this->terminalKey = $terminalKey;
     }
