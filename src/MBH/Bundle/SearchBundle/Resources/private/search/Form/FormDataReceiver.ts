@@ -33,6 +33,7 @@ export class FormDataReceiver implements DataReceiverInterface {
             order: Number(this.getFormFieldValue('order')),
             isForceBooking: this.getFormField('isForceBooking').bootstrapSwitch('state'),
             isSpecialStrict: this.getFormField('isSpecialStrict').bootstrapSwitch('state'),
+            isUseCache: this.getFormField('isUseCache').bootstrapSwitch('state'),
         };
 
         return data;

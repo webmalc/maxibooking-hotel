@@ -58,6 +58,37 @@
        data-toggle='tooltip'></i>&nbsp;{{ form_widget(form.isSpecialStrict) }}
 </div>
 
+{% set clientConfig = client_config() %}
+{% if not clientConfig or not clientConfig.isInstantSearch %}
+    <div class="input">
+        <button class="btn btn-primary" id="searcher-submit-button">
+            <i class="fa fa-search"></i> Найти
+        </button>
+    </div>
+    {#<div class="input">#}
+        {#<button class="btn btn-primary" id="searcher-sync-submit-button">#}
+            {#<i class="fa fa-search"></i> Найти Sync#}
+        {#</button>#}
+    {#</div>#}
+    <div class="input">
+        <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#additionalSearchSetup">
+            <i class="fa fa-search-plus"></i>&nbsp;Доп настройки.
+        </button>
+    </div>
+{% endif %}
+
+{% include '@MBHSearch/Search/form/modal.additional.html.twig' %}
+
+
+<div class="hide">
+    {{ form_end(form) }}
+</div>
+
+
+
+
+
+
 {#Для азовского выключаю туриста  ибо его придется описывать во VueJS#}
 {#<div class="input">#}
     {#<i class="fa fa-users" title='{{ 'form.searchType.payer'|trans() }}'#}
@@ -70,28 +101,6 @@
         {#</a>#}
     {#</small>#}
 {#</div>#}
-
-{% set clientConfig = client_config() %}
-{% if not clientConfig or not clientConfig.isInstantSearch %}
-    <div class="input">
-        <button class="btn btn-primary" id="searcher-submit-button">
-            <i class="fa fa-search"></i> Найти
-        </button>
-    </div>
-    <div class="input">
-        <button class="btn btn-primary" id="searcher-sync-submit-button">
-            <i class="fa fa-search"></i> Найти Sync
-        </button>
-    </div>
-{% endif %}
-
-<div class="hide">
-    {{ form_end(form) }}
-</div>
-
-
-
-
 
 {#<div class="input">#}
     {#<i class="fa fa-file-text-o" title='{{ 'form.searchType.order'|trans() }}'#}

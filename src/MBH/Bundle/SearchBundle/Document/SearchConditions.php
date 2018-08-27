@@ -174,7 +174,6 @@ class SearchConditions extends Base
      * @var bool
      * @Assert\Type(type="bool")
      * @ODM\Field(type="bool")
-     *
      */
     private $isUseCache = true;
 

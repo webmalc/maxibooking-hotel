@@ -562,14 +562,14 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             } else {
                 if ($this->container->get('kernel')->getEnvironment() == 'dev') {
                     dump($e);
-                };
+                }
                 return [];
             }
         } catch (\Exception $e) {
             $this->get('logger')->err($e->getMessage());
             if ($this->container->get('kernel')->getEnvironment() == 'dev') {
                 dump($e);
-            };
+            }
 
             return [];
         }

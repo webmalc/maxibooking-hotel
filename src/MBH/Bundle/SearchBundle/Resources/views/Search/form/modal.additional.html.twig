@@ -1,0 +1,26 @@
+<div class="modal fade" id="additionalSearchSetup" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Доп настройки поиска.</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="input">
+                    <i class="fa fa-envelope" title='Использовать кэш при поиске'
+                       data-toggle='tooltip'></i>&nbsp;{{ form_widget(form.isUseCache) }}
+                </div>
+                <div class="input">
+                    <a href="{{ path('cache_flush') }}" class="btn btn-warning" title="Очистить кэш, весь, совсем." data-toggle="tooltip" role="button">Очистка кэша</a>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                {#<button type="button" class="btn btn-primary">Save changes</button>#}
+            </div>
+        </div>
+    </div>
+</div>

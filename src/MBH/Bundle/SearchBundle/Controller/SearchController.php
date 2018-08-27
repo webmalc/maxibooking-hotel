@@ -3,11 +3,14 @@
 namespace MBH\Bundle\SearchBundle\Controller;
 
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
+use MBH\Bundle\SearchBundle\Document\SearchResultCacheItem;
 use MBH\Bundle\SearchBundle\Form\SearchConditionsType;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\AsyncResultReceiverException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\GroupingFactoryException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultCacheException;
+use PhpAmqpLib\Connection\AMQPSocketConnection;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -159,11 +162,34 @@ class SearchController extends Controller
     }
 
     /**
-     * @Route("/front")
+     * @Route("/cache/flush" , name="cache_flush",  options={"expose"=true})
+     * @return JsonResponse
      */
-    public function newFrontAction(): Response
+    public function flushCacheAction(): Response
     {
-        return $this->render('@MBHSearch/Search/front.html.twig');
+        $cache = $this->get('mbh_search.cache_search');
+        $cache->flushCache();
+
+        return new JsonResponse(['result' => 'Cache flushed']);
+    }
+
+
+    /**
+     * @Route("/cache/invalidate/item/{id}/" , name="invalidate_item",  options={"expose"=true})
+     * @param SearchResultCacheItem $cacheItem
+     * @return Response
+     */
+    public function invalidateCacheItem(SearchResultCacheItem $cacheItem): Response
+    {
+        $service = $this->get('mbh_search.cache_search');
+        try {
+            $service->invalidateCacheResultByCacheItem($cacheItem);
+            $result = ['result' => 'Cache item was invalidated'];
+        } catch (SearchResultCacheException $e) {
+            $result = ['result' => 'Error while invalidate'];
+        }
+
+        return new JsonResponse($result);
     }
 
 }

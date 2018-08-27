@@ -164,6 +164,10 @@ class SearchConditionsType extends AbstractType
                     'class' => 'findGuest'
                 ]
             ])
+            ->add('isUseCache', CheckboxType::class, [
+                'required' => false,
+                'label' => false
+            ])
 
             ->add(
                 'isOnline',

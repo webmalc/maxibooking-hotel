@@ -248,6 +248,12 @@ class SearchResultCacheItem extends Base
         return $this;
     }
 
+    /**
+     * @param Result $result
+     * @param SearchQuery $searchQuery
+     * @return SearchResultCacheItem
+     * @throws SearchResultCacheException
+     */
     public static function createInstance(Result $result, SearchQuery $searchQuery): SearchResultCacheItem
     {
         $cacheItem = new self();
@@ -271,6 +277,11 @@ class SearchResultCacheItem extends Base
         return $cacheItem;
     }
 
+    /**
+     * @param SearchQuery $searchQuery
+     * @return string
+     * @throws SearchResultCacheException
+     */
     public static function createRedisKey(SearchQuery $searchQuery): string
     {
         $key = '';

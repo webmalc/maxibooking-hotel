@@ -4,8 +4,10 @@
 namespace MBH\Bundle\SearchBundle\Services\Cache;
 
 
+use MBH\Bundle\BaseBundle\Document\CacheItem;
 use MBH\Bundle\SearchBundle\Document\SearchResultCacheItem;
 use MBH\Bundle\SearchBundle\Document\SearchResultCacheItemRepository;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultCacheException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Data\Serializers\ResultSerializer;
@@ -57,16 +59,23 @@ class CacheSearchResults implements SearchCacheInterface
         return $result;
     }
 
+    /**
+     * @param Result $result
+     * @param SearchQuery $searchQuery
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultCacheException
+     */
     public function saveToCache(Result $result, SearchQuery $searchQuery): void
     {
         $cacheItem = SearchResultCacheItem::createInstance($result, $searchQuery);
-        $this->redis->set($cacheItem->getCacheResultKey(), $this->serializer->serialize($result));
         $dm = $this->cacheItemRepository->getDocumentManager();
         $dm->persist($cacheItem);
         $dm->flush($cacheItem);
+
+        $result->setCached(true)->setCacheItemId($cacheItem->getId());
+        $this->redis->set($cacheItem->getCacheResultKey(), $this->serializer->serialize($result));
     }
 
-    public function invalidateCache(\DateTime $begin, \DateTime $end = null): void
+    public function invalidateCacheByDate(\DateTime $begin, \DateTime $end = null): void
     {
         if (null === $end) {
             $end = clone $begin;
@@ -76,7 +85,26 @@ class CacheSearchResults implements SearchCacheInterface
 
     public function flushCache(): void
     {
+        $this->redis->flushall();
         $this->cacheItemRepository->flushCache();
+    }
+
+    /**
+     * @param SearchResultCacheItem $cacheItem
+     * @throws SearchResultCacheException
+     */
+    public function invalidateCacheResultByCacheItem(SearchResultCacheItem $cacheItem): void
+    {
+        $key = $cacheItem->getCacheResultKey();
+        $deleted = $this->redis->del([$key]);
+
+        $dm = $this->cacheItemRepository->getDocumentManager();
+        $dm->remove($cacheItem);
+        $dm->flush($cacheItem);
+
+        if (1 === $deleted) {
+            throw new SearchResultCacheException('No removed cache item from cache while invalidate');
+        }
     }
 
 }
