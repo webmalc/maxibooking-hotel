@@ -77,6 +77,7 @@ class OrderManager
 
         $newPackage = clone $package;
         $newPackage
+            ->setSpecial(null)
             ->setBegin($date)
             ->setEnd($package->getEnd())
             ->setPackagePrice(0)
