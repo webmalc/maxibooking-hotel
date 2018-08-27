@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "8838c85bd513862585b43b6a52d58bb1",
+    "content-hash": "8994337b4875c1582298f885409ca1dd",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -258,12 +258,12 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/dinhkhanh/MongoDBAclBundle.git",
+                "url": "https://github.com/webmalc/MongoDBAclBundle.git",
                 "reference": "87bf62c5ad7b64fe86938e471b8f78371bdf6a84"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dinhkhanh/MongoDBAclBundle/zipball/87bf62c5ad7b64fe86938e471b8f78371bdf6a84",
+                "url": "https://api.github.com/repos/webmalc/MongoDBAclBundle/zipball/87bf62c5ad7b64fe86938e471b8f78371bdf6a84",
                 "reference": "87bf62c5ad7b64fe86938e471b8f78371bdf6a84",
                 "shasum": ""
             },
@@ -5415,7 +5415,6 @@
                 "compression",
                 "minification"
             ],
-            "abandoned": "symfony/webpack-encore-pack",
             "time": "2017-07-14T07:26:46+00:00"
         },
         {
