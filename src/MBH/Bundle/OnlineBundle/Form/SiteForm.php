@@ -17,6 +17,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -62,7 +63,7 @@ class SiteForm extends AbstractType
                 'required' => true,
                 'addonText' => SiteManager::SITE_DOMAIN,
                 'preAddonText' => SiteManager::SITE_PROTOCOL,
-                'help' => $siteConfig->getSiteDomain()
+                'help' => !is_null($siteConfig) && $siteConfig->getSiteDomain()
                     ? '<a class="btn btn-success" target="_blank" href="' . $this->siteManager->getSiteAddress() . '">'
                     . $this->translator->trans('site_form.site_domain.go_to_site_button.text'). '</a>'
                     : ''
