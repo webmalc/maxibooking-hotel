@@ -43,6 +43,10 @@ class SearchConditionsCreator
             throw new SearchConditionException('No valid SearchConditions data.'.$conditionForm->getErrors());
         }
 
+        $searchConditions = $conditionForm->getData();
+        /** @var SearchConditions $hash */
+        $hash = uniqid('az_', true);
+        $searchConditions->setSearchHash($hash);
         return $conditionForm->getData();
     }
 

@@ -81,7 +81,7 @@ class SearchConditions extends Base
      * @var int
      * @Assert\Range(
      *     min=0,
-     *     max=14
+     *     max=20
      * )
      * @ODM\Field(type="int")
      */
@@ -91,7 +91,7 @@ class SearchConditions extends Base
      * @var int
      * @Assert\Range(
      *     min=0,
-     *     max=14
+     *     max=20
      * )
      * @ODM\Field(type="int")
      */

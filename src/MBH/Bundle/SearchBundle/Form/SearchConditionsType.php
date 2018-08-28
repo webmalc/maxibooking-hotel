@@ -19,8 +19,23 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Class SearchConditionsType
+ * @package MBH\Bundle\SearchBundle\Form
+ */
 class SearchConditionsType extends AbstractType
 {
+
+
+    /**
+     * @int
+     */
+    public const MIN_CHILDREN_AGE = 0;
+
+    /**
+     * @int
+     */
+    public const MAX_CHILDREN_AGE = 13;
 
     /**
      * @param FormBuilderInterface $builder
@@ -83,7 +98,7 @@ class SearchConditionsType extends AbstractType
                     'entry_options' => [
                         'label' => false,
                         'placeholder' => false,
-                        'choices' => range(0, 13),
+                        'choices' => range(self::MIN_CHILDREN_AGE, self::MAX_CHILDREN_AGE),
                         'compound' => false,
                         'attr' => [
                             'class' => 'plain-html children_age_select',
@@ -194,7 +209,10 @@ class SearchConditionsType extends AbstractType
             );
     }
 
-    public function getBlockPrefix()
+    /**
+     * @return null|string
+     */
+    public function getBlockPrefix(): string
     {
         return 'search_conditions';
     }

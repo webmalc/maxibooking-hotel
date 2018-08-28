@@ -163,9 +163,7 @@ class Search
     private function createSearchConditions(array $data): SearchConditions
     {
 
-        $hash = uniqid('az_', true);
         $conditions = $this->conditionsCreator->createSearchConditions($data);
-        $conditions->setSearchHash($hash);
         $this->saveQueryStat($conditions);
 
         return $conditions;

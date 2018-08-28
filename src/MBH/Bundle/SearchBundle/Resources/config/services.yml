@@ -286,7 +286,15 @@ services:
             - '@mbh_search.result_serializer'
             - '@snc_redis.cache_results_client'
 
-  ##REDIS_Caches
+    mbh_search.cache_warmer:
+        class: MBH\Bundle\SearchBundle\Services\Cache\CacheWarmer
+        arguments:
+            - '@mbh_search.search_condition_creator'
+            - '@mbh_search.search_query_generator'
+            - '@mbh_search.cache_searcher'
+            - '@mbh_search.cache_logger'
+
+    ##REDIS_Caches
     mbh_search.redis:
         class: Symfony\Component\Cache\Adapter\RedisAdapter
         factory: ['Symfony\Component\Cache\Adapter\RedisAdapter', createConnection]
@@ -405,3 +413,13 @@ services:
       arguments:
             - '@mbh_search.serializer'
             - '@mbh_search.normalizer'
+
+#logger
+    mbh_search.cache_logger_handler:
+        class: Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.cache.log", 200]
+    mbh_search.cache_logger:
+        class: Monolog\Logger
+        arguments: ['cache']
+        calls:
+            - [pushHandler, ['@mbh_search.cache_logger_handler']]
