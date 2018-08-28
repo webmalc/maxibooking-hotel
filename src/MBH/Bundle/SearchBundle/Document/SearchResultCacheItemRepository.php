@@ -25,17 +25,44 @@ class SearchResultCacheItemRepository extends DocumentRepository
         return $qb->hydrate($hydrate)->getQuery()->getSingleResult();
     }
 
-    public function invalidateByDates(\DateTime $begin, \DateTime $end): void
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @return iterable
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function fetchCachedKeys(\DateTime $begin, \DateTime $end): iterable
     {
-        $qb = $this->createQueryBuilder();
-        $qb
-            ->remove()
-            ->field('begin')->lte($end)
-            ->field('end')->gt($begin)
+        $qb = $this->getInvalidateQB($begin, $end);
+
+        return $qb
+            ->distinct('cacheResultKey')
             ->getQuery()
             ->execute()
+            ->toArray()
         ;
 
+    }
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function removeItemsByDates(\DateTime $begin, \DateTime $end): void
+    {
+        $qb = $this->getInvalidateQB($begin, $end);
+        $qb->remove()->getQuery()->execute();
+    }
+
+    private function getInvalidateQB(\DateTime $begin, \DateTime $end)
+    {
+        $qb = $this->createQueryBuilder();
+
+        return $qb
+            ->field('begin')->lte($end)
+            ->field('end')->gt($begin)
+            ;
     }
 
 

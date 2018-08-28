@@ -95,9 +95,27 @@ class CacheSearchResultsTest extends SearchWebTestCase
 
     }
 
-    public function testInvalidateCache()
+    /**
+     * @param $data
+     * @dataProvider dataProvider
+     */
+    public function testInvalidateCacheByDate($data)
     {
+        /** @var SearchQuery $searchQuery */
+        $dataSearchQuery = $data['searchQuery'];
+        /** @var SearchConditions $conditions */
+        $conditions = $dataSearchQuery->getSearchConditions();
+        $service = $this->getContainer()->get('mbh_search.cache_search');
+        $service->flushCache();
 
+        $cacheSearcher = $this->getContainer()->get('mbh_search.cache_searcher');
+        $generator = $this->getContainer()->get('mbh_search.search_query_generator');
+        $searchQueries = $generator->generate($conditions);
+        foreach ($searchQueries as $searchQuery) {
+            $cacheSearcher->search($searchQuery);
+        }
+
+        $service->invalidateCacheByDate($conditions->getBegin(), $conditions->getEnd());
     }
 
     public function dataProvider(): iterable
@@ -125,7 +143,9 @@ class CacheSearchResultsTest extends SearchWebTestCase
             ->setEnd($end)
             ->setAdults($adults)
             ->setChildren($children)
-            ->setChildrenAges($childrenAges);
+            ->setChildrenAges($childrenAges)
+            ->setSearchHash('fakeSearchHash')
+        ;
 
         $dayPrice = ResultDayPrice::createInstance($begin, $adults, $children, 0, 333, $resultTariff);
         $resultPrice = ResultPrice::createInstance($adults, $children, 33333, [$dayPrice]);

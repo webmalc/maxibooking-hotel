@@ -75,19 +75,23 @@ class CacheSearchResults implements SearchCacheInterface
         $this->redis->set($cacheItem->getCacheResultKey(), $this->serializer->serialize($result));
     }
 
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime|null $end
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
     public function invalidateCacheByDate(\DateTime $begin, \DateTime $end = null): void
     {
         if (null === $end) {
             $end = clone $begin;
         }
-        $this->cacheItemRepository->invalidateByDates($begin, $end);
+
+        $keys = $this->cacheItemRepository->fetchCachedKeys($begin, $end);
+        $this->redis->del($keys);
+        $this->cacheItemRepository->removeItemsByDates($begin, $end);
+
     }
 
-    public function flushCache(): void
-    {
-        $this->redis->flushall();
-        $this->cacheItemRepository->flushCache();
-    }
 
     /**
      * @param SearchResultCacheItem $cacheItem
@@ -105,6 +109,12 @@ class CacheSearchResults implements SearchCacheInterface
         if (1 === $deleted) {
             throw new SearchResultCacheException('No removed cache item from cache while invalidate');
         }
+    }
+
+    public function flushCache(): void
+    {
+        $this->redis->flushall();
+        $this->cacheItemRepository->flushCache();
     }
 
 }
