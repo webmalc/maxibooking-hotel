@@ -7,7 +7,7 @@
 namespace MBH\Bundle\ClientBundle\Lib\PaymentSystem\Robokassa;
 
 
-use MBH\Bundle\ClientBundle\Document\Robokassa;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\Robokassa;
 use MBH\Bundle\ClientBundle\Service\DocumentSerialize\CashDocument;
 use MBH\Bundle\PackageBundle\Document\Order;
 

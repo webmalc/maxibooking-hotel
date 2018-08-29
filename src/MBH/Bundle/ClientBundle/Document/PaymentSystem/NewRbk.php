@@ -4,7 +4,7 @@
  * Date: 06.06.18
  */
 
-namespace MBH\Bundle\ClientBundle\Document;
+namespace MBH\Bundle\ClientBundle\Document\PaymentSystem;
 
 
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\FiscalizationTrait;

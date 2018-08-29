@@ -6,7 +6,7 @@
 
 namespace MBH\Bundle\ClientBundle\Lib\PaymentSystem\Tinkoff;
 
-use MBH\Bundle\ClientBundle\Document\Tinkoff;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\Tinkoff;
 use Symfony\Component\HttpFoundation\Request;
 
 /**

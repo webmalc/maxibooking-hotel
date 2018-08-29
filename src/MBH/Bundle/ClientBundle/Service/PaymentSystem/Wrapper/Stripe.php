@@ -18,7 +18,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  * Class Stripe
  * @package MBH\Bundle\ClientBundle\Service\PaymentSystem\Wrapper
  *
- * @property \MBH\Bundle\ClientBundle\Document\Stripe $entity
+ * @property \MBH\Bundle\ClientBundle\Document\PaymentSystem\Stripe $entity
  */
 class Stripe extends Wrapper
 {

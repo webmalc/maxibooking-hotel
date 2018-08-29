@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
  * Class Rbk
  * @package MBH\Bundle\ClientBundle\Service\PaymentSystem\Wrapper
  *
- * @property \MBH\Bundle\ClientBundle\Document\Rbk $entity
+ * @property \MBH\Bundle\ClientBundle\Document\PaymentSystem\Rbk $entity
  */
 class Rbk extends Wrapper
 {

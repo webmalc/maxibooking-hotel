@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
  * Class Robokassa
  * @package MBH\Bundle\ClientBundle\Service\PaymentSystem\Wrapper
  *
- * @property \MBH\Bundle\ClientBundle\Document\Robokassa $entity
+ * @property \MBH\Bundle\ClientBundle\Document\PaymentSystem\Robokassa $entity
  */
 class Robokassa extends Wrapper
 {

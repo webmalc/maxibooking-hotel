@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
  * Class Tinkoff
  * @package MBH\Bundle\ClientBundle\Service\PaymentSystem\Wrapper
  *
- * @property \MBH\Bundle\ClientBundle\Document\Tinkoff $entity
+ * @property \MBH\Bundle\ClientBundle\Document\PaymentSystem\Tinkoff $entity
  */
 class Tinkoff extends Wrapper
 {

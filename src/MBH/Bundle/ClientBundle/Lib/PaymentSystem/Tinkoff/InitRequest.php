@@ -8,7 +8,7 @@ namespace MBH\Bundle\ClientBundle\Lib\PaymentSystem\Tinkoff;
 
 
 use MBH\Bundle\CashBundle\Document\CashDocument;
-use MBH\Bundle\ClientBundle\Document\Tinkoff;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\Tinkoff;
 use MBH\Bundle\PackageBundle\Document\Order;
 
 class InitRequest extends InitCommon implements \JsonSerializable

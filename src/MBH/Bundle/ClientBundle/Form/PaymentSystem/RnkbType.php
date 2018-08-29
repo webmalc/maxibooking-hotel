@@ -7,7 +7,7 @@
 namespace MBH\Bundle\ClientBundle\Form\PaymentSystem;
 
 
-use MBH\Bundle\ClientBundle\Document\RNKB;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\RNKB;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;

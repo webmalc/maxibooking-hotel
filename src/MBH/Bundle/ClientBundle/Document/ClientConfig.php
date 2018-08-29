@@ -11,6 +11,17 @@ use MBH\Bundle\BaseBundle\Document\Traits\AllowNotificationTypesTrait;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\Invoice;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\Moneymail;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\NewRbk;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\Payanyway;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\Paypal;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\Rbk;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\RNKB;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\Robokassa;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\Stripe;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\Tinkoff;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\Uniteller;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\CheckResultHolder;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
 use Symfony\Component\HttpFoundation\Request;
@@ -113,69 +124,69 @@ class ClientConfig extends Base
 
     /**
      * @var Robokassa
-     * @ODM\EmbedOne(targetDocument="Robokassa")
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\ClientBundle\Document\PaymentSystem\Robokassa")
      */
     protected $robokassa;
 
     /**
      * @var Payanyway
-     * @ODM\EmbedOne(targetDocument="Payanyway")
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\ClientBundle\Document\PaymentSystem\Payanyway")
      */
     protected $payanyway;
 
     /**
      * @var Moneymail
-     * @ODM\EmbedOne(targetDocument="Moneymail")
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\ClientBundle\Document\PaymentSystem\Moneymail")
      */
     protected $moneymail;
 
     /**
      * @var Uniteller
-     * @ODM\EmbedOne(targetDocument="Uniteller")
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\ClientBundle\Document\PaymentSystem\Uniteller")
      */
     protected $uniteller;
 
     /**
      * @var RNKB
-     * @ODM\EmbedOne(targetDocument="RNKB")
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\ClientBundle\Document\PaymentSystem\RNKB")
      */
     protected $rnkb;
 
     /**
      * @var Rbk
-     * @ODM\EmbedOne(targetDocument="Rbk")
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\ClientBundle\Document\PaymentSystem\Rbk")
      */
     protected $rbk;
 
     /**
      * @var PayPal
-     * @ODM\EmbedOne(targetDocument="Paypal")
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\ClientBundle\Document\PaymentSystem\Paypal")
      */
     protected $paypal;
 
     /**
      * @var Invoice
-     * @ODM\EmbedOne(targetDocument="Invoice")
-     * @Assert\Type(type="MBH\Bundle\ClientBundle\Document\Invoice")
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\ClientBundle\Document\PaymentSystem\Invoice")
+     * @Assert\Type(type="MBH\Bundle\ClientBundle\Document\PaymentSystem\Invoice")
      */
     protected $invoice;
 
     /**
      * @var Stripe
-     * @ODM\EmbedOne(targetDocument="Stripe")
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\ClientBundle\Document\PaymentSystem\Stripe")
      */
     protected $stripe;
 
     /**
      * @var NewRbk
-     * @ODM\EmbedOne(targetDocument="NewRbk")
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\ClientBundle\Document\PaymentSystem\NewRbk")
      */
     protected $newRbk;
 
     /**
      * @var Tinkoff
-     * @ODM\EmbedOne(targetDocument="Tinkoff")
-     * @Assert\Type(type="MBH\Bundle\ClientBundle\Document\Tinkoff")
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\ClientBundle\Document\PaymentSystem\Tinkoff")
+     * @Assert\Type(type="MBH\Bundle\ClientBundle\Document\PaymentSystem\Tinkoff")
      */
     protected $tinkoff;
 

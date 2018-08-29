@@ -1,6 +1,6 @@
 <?php
 
-namespace MBH\Bundle\ClientBundle\Document;
+namespace MBH\Bundle\ClientBundle\Document\PaymentSystem;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;

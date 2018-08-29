@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
  * Class NewRbk
  * @package MBH\Bundle\ClientBundle\Service\PaymentSystem\Wrapper
  *
- * @property \MBH\Bundle\ClientBundle\Document\NewRbk $entity
+ * @property \MBH\Bundle\ClientBundle\Document\PaymentSystem\NewRbk $entity
  */
 class NewRbk extends Wrapper
 {

@@ -8,7 +8,7 @@ namespace MBH\Bundle\ClientBundle\Form\PaymentSystem;
 
 
 use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
-use MBH\Bundle\ClientBundle\Document\NewRbk;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\NewRbk;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;

@@ -16,7 +16,7 @@ use MBH\Bundle\ClientBundle\Lib\PaypalIPN;
  * Class Paypal
  * @package MBH\Bundle\ClientBundle\Service\PaymentSystem\Wrapper
  *
- * @property \MBH\Bundle\ClientBundle\Document\Paypal $entity
+ * @property \MBH\Bundle\ClientBundle\Document\PaymentSystem\Paypal $entity
  */
 class Paypal extends Wrapper
 {
