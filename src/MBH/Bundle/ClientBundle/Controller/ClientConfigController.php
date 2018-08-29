@@ -152,7 +152,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
 
     /**
      * Payment system configuration page
-     * @Route("/payment_system_form/{paymentSystemName}", name="client_payment_system_form")
+     * @Route("/payment_system/form/{paymentSystemName}", name="client_payment_system_form")
      * @Method("GET")
      * @Security("is_granted('ROLE_CLIENT_CONFIG_VIEW')")
      * @Template("@MBHClient/ClientConfigPaymentSystem/form.html.twig")
@@ -229,13 +229,12 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
     }
 
     /**
-     * @Route("payment_system/remove", name="remove_payment_system")
+     * @Route("/payment_system/remove/{paymentSystemName}", name="remove_payment_system")
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function removePaymentSystemAction(Request $request)
+    public function removePaymentSystemAction($paymentSystemName)
     {
-        $paymentSystemName = $request->query->get('paymentSystemName');
         $this->clientConfig->removePaymentSystem($paymentSystemName);
         $this->dm->flush();
 

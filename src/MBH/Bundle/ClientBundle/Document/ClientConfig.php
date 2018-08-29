@@ -1188,20 +1188,4 @@ class ClientConfig extends Base
     {
         return \DateTimeZone::listIdentifiers();
     }
-
-    /**
-     * @return array
-     */
-    public static function getAvailablePaymentSystems()
-    {
-        return [
-            "robokassa",
-            "payanyway",
-            "moneymail",
-            "uniteller",
-            "paypal",
-            "rbk",
-            "rnkb"
-        ];
-    }
 }
