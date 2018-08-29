@@ -777,14 +777,15 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             $message = $notifier::createMessage();
 
             $subject = 'channelManager.commonCM.notification.error.subject';
-            $text = $tr->trans($requestDescription, ['%channelManagerName%' => $channelManager], 'MBHChannelManagerBundle')
+            $transParams = ['%channelManagerName%' => $channelManager];
+            $text = $tr->trans($requestDescription, $transParams, 'MBHChannelManagerBundle')
                 . '<br>'
-                . $tr->trans('channelManager.booking.notification.bottom', ['%channelManagerName%' => $channelManager], 'MBHChannelManagerBundle');
+                . $tr->trans('channelManager.booking.notification.bottom', $transParams, 'MBHChannelManagerBundle');
 
             $message
                 ->setText($text)
                 ->setFrom('channelmanager')
-                ->setSubject($tr->trans($subject, [], 'MBHChannelManagerBundle'))
+                ->setSubject($tr->trans($subject, $transParams, 'MBHChannelManagerBundle'))
                 ->setType('danger')
                 ->setCategory('notification')
                 ->setAutohide(false)
