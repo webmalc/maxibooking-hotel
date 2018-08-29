@@ -38,6 +38,8 @@ class CacheSearcher implements SearcherInterface
     {
         $result = $this->cache->searchInCache($searchQuery);
         if (null !== $result) {
+            $result['cached'] = true;
+
             return $result;
         }
         $result = $this->searcher->search($searchQuery);

@@ -71,7 +71,7 @@ class CacheSearchResults implements SearchCacheInterface
         $dm->persist($cacheItem);
         $dm->flush($cacheItem);
 
-        $result->setCached(true)->setCacheItemId($cacheItem->getId());
+        $result->setCacheItemId($cacheItem->getId());
         $this->redis->set($cacheItem->getCacheResultKey(), $this->serializer->serialize($result));
     }
 
