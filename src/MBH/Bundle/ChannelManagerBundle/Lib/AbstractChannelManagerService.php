@@ -764,6 +764,40 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         }
     }
 
+    /**
+     * @param string $channelManager
+     * @param string $requestDescription
+     * @throws \Throwable
+     */
+    public function notifyErrorRequest(string $channelManager, string $requestDescription)
+    {
+        try {
+            $notifier = $this->container->get('mbh.notifier');
+            $tr = $this->container->get('translator');
+            $message = $notifier::createMessage();
+
+            $subject = 'channelManager.commonCM.notification.error.subject';
+            $text = $tr->trans($requestDescription, ['%channelManagerName%' => $channelManager], 'MBHChannelManagerBundle')
+                . '<br>'
+                . $tr->trans('channelManager.booking.notification.bottom', ['%channelManagerName%' => $channelManager], 'MBHChannelManagerBundle');
+
+            $message
+                ->setText($text)
+                ->setFrom('channelmanager')
+                ->setSubject($tr->trans($subject, [], 'MBHChannelManagerBundle'))
+                ->setType('danger')
+                ->setCategory('notification')
+                ->setAutohide(false)
+                ->setEnd(new \DateTime('+10 minute'))
+                ->setMessageType(NotificationType::CHANNEL_MANAGER_TYPE)
+            ;
+
+            $notifier->setMessage($message)->notify();
+        } catch (\Exception $e) {
+            $this->logger->addAlert('Error notification Error ChannelManager'.$e->getMessage());
+        }
+    }
+
     public function notify(Order $order, $service, $type = 'new', $transParams = [])
     {
         try {
