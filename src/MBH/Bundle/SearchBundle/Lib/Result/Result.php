@@ -296,7 +296,7 @@ class Result implements ResultCacheablesInterface
      * @param bool $cached
      * @return Result
      */
-    public function setCached(bool $cached): Result
+    public function setCached(?bool $cached): Result
     {
         $this->cached = $cached;
 

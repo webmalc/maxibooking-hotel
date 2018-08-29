@@ -96,6 +96,13 @@ class SearchResultCacheItem extends Base
      */
     private $cacheResultKey;
 
+    public function setId($id): SearchResultCacheItem
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
     /**
      * @return \DateTime
      */
@@ -285,7 +292,7 @@ class SearchResultCacheItem extends Base
     public static function createRedisKey(SearchQuery $searchQuery): string
     {
         $key = '';
-        $key .= $searchQuery->getBegin()->format('d.m.Y').'_'.$searchQuery->getEnd()->format('d.m.Y');
+        $key .= $searchQuery->getBegin()->format('d.m.Y') . '_' . $searchQuery->getEnd()->format('d.m.Y');
         $key .= '_' . $searchQuery->getRoomTypeId();
         $key .= '_' . $searchQuery->getTariffId();
         $conditions = $searchQuery->getSearchConditions();
