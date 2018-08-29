@@ -76,6 +76,7 @@ class CacheSearchResultsTest extends SearchWebTestCase
 
         $dmMock->expects($this->once())->method('flush')->willReturnCallback(function ($actual) {
             $this->assertInstanceOf(SearchResultCacheItem::class, $actual);
+            $actual->setId('fakeTestId');
         });
 
         $repositoryMock = $this->createMock(SearchResultCacheItemRepository::class);
@@ -161,6 +162,7 @@ class CacheSearchResultsTest extends SearchWebTestCase
             5,
             []
         );
+        $result->setCacheItemId('fakeTestId');
 
         $searchQuery = new SearchQuery();
         $searchQuery

@@ -11,6 +11,7 @@ use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use MBH\Bundle\SearchBundle\Services\SearchConditionsCreator;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class SearchConditionsCreatorTest extends WebTestCase
 {
@@ -47,21 +48,18 @@ class SearchConditionsCreatorTest extends WebTestCase
             'childrenAges' => ['3', 7, '12'],
             'isOnline' => true
         ];
-        $result = $this->creator->createSearchConditions($data);
-        $object = (new SearchConditions())
-            ->setBegin(new \DateTime('2018-04-21 midnight'))
-            ->setEnd(new \DateTime('2018-04-22 midnight'))
-            ->setAdults(3)
-            ->setChildren(3)
-            ->setChildrenAges([3, 7, 12])
-            ->setRoomTypes(new ArrayCollection(array_values($roomTypes)))
-            ->setTariffs(new ArrayCollection(array_values($tariffs)))
-            ->setHotels(new ArrayCollection(array_values($hotels)))
-            ->setIsOnline(true)
-        ;
-
-        $this->assertEquals($object, $result, 'Data from form is not equal expected');
-
+        /** @var SearchConditions $actual */
+        $actual = $this->creator->createSearchConditions($data);
+        $this->assertNotEmpty($actual->getSearchHash());
+        $this->assertEquals(new \DateTime($data['begin']), $actual->getBegin());
+        $this->assertEquals(new \DateTime($data['end']), $actual->getEnd());
+        $this->assertEquals(3, $actual->getAdults());
+        $this->assertEquals(3, $actual->getChildren());
+        $this->assertEquals([3,7,12], $actual->getChildrenAges());
+        $this->assertEquals(new ArrayCollection(array_values($roomTypes)), $actual->getRoomTypes());
+        $this->assertEquals(new ArrayCollection(array_values($tariffs)), $actual->getTariffs());
+        $this->assertEquals(new ArrayCollection(array_values($hotels)), $actual->getHotels());
+        $this->assertTrue($actual->isOnline());
     }
 
     /**
@@ -69,9 +67,15 @@ class SearchConditionsCreatorTest extends WebTestCase
      */
     public function testHandleSuccessData($data): void
     {
-        $result = $this->creator->createSearchConditions($data['raw']);
+        /** @var SearchConditions $actual */
+        $actual = $this->creator->createSearchConditions($data['raw']);
 
-        $this->assertEquals($data['object'], $result, 'Data from form is not equal expected');
+        $this->assertNotEmpty($actual->getSearchHash());
+        $this->assertEquals(new \DateTime($data['raw']['begin']), $actual->getBegin());
+        $this->assertEquals(new \DateTime($data['raw']['end']), $actual->getEnd());
+        $this->assertEquals($data['raw']['adults'], $actual->getAdults());
+        $this->assertNull($actual->getChildren());
+
 
     }
 
@@ -164,29 +168,9 @@ class SearchConditionsCreatorTest extends WebTestCase
                         'begin' => '21.04.2018',
                         'end' => '22.04.2018',
                         'adults' => 3,
-                    ],
-                    'object' => (new SearchConditions())
-                        ->setBegin(new \DateTime('2018-04-21 midnight'))
-                        ->setEnd(new \DateTime('2018-04-22 midnight'))
-                        ->setAdults(3),
-                ],
-            ],
-            [
-                [
-                    'raw' => [
-                        'begin' => '21.04.2018',
-                        'end' => '22.04.2018',
-                        'adults' => 3,
                         'additionalBegin' => 2,
                         'additionalEnd' => 3,
-                    ],
-                    'object' => (new SearchConditions())
-                        ->setBegin(new \DateTime('2018-04-21 midnight'))
-                        ->setEnd(new \DateTime('2018-04-22 midnight'))
-                        ->setAdults(3)
-                        ->setAdditionalBegin(2)
-                        ->setAdditionalEnd(3),
-
+                    ]
                 ],
             ],
         ];
