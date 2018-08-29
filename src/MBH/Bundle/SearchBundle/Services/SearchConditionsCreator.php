@@ -45,7 +45,7 @@ class SearchConditionsCreator
 
         $searchConditions = $conditionForm->getData();
         /** @var SearchConditions $hash */
-        $hash = uniqid(\AppKernel::DEFAULT_CLIENT, true);
+        $hash = uniqid('az_', true);
         $searchConditions->setSearchHash($hash);
         return $conditionForm->getData();
     }

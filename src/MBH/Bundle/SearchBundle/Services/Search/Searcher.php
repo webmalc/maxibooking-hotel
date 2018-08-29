@@ -65,7 +65,7 @@ class Searcher implements SearcherInterface
             $this->searchLimitChecker->checkRoomTypePopulationLimit($searchQuery);
 
             $result = $this->resultComposer->composeResult($searchQuery);
-            $this->searchLimitChecker->checkWindows($result);
+            $this->searchLimitChecker->checkWindows($result, $searchQuery);
         } catch (SearchException $e) {
             $result = Result::createErrorResult($searchQuery, $e);
         }

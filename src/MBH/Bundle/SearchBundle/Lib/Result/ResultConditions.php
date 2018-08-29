@@ -23,8 +23,6 @@ class ResultConditions
     private $childrenAges;
     /** @var string */
     private $searchHash;
-    /** @var bool */
-    private $isForceBooking = false;
 
     /**
      * @return string
@@ -156,25 +154,6 @@ class ResultConditions
         return $this;
     }
 
-    /**
-     * @return bool
-     */
-    public function isForceBooking(): bool
-    {
-        return $this->isForceBooking;
-    }
-
-    /**
-     * @param bool $isForceBooking
-     * @return ResultConditions
-     */
-    public function setIsForceBooking(bool $isForceBooking): ResultConditions
-    {
-        $this->isForceBooking = $isForceBooking;
-
-        return $this;
-    }
-
     public static function createInstance(SearchConditions $conditions): ResultConditions
     {
         $searchConditions = new self();
@@ -187,7 +166,6 @@ class ResultConditions
             ->setChildren($conditions->getChildren() ?? 0)
             ->setChildrenAges($conditions->getChildrenAges() ?? [])
             ->setSearchHash($conditions->getSearchHash())
-            ->setIsForceBooking($conditions->isForceBooking())
         ;
 
         return $searchConditions;

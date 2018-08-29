@@ -36,7 +36,7 @@
             Icon
         },
         name: "Result",
-        props: ['result'],
+        props: ['result', 'isForceBooking'],
         computed: {
             begin: function () {
                 let begin = moment(this.result.begin);
@@ -88,7 +88,7 @@
                 const children = this.result.prices[this.currentPriceIndex].searchChildren;
                 const childrenAges = this.result.resultConditions.childrenAges;
                 const order = this.result.resultConditions.order;
-                const forceBooking = this.result.resultConditions.forceBooking;
+                const forceBooking = this.isForceBooking === false ? 0 : 1;
                 return Routing.generate('package_new', {
                     begin: begin,
                     end: end,

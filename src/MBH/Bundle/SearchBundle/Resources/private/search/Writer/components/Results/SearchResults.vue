@@ -13,7 +13,7 @@
         </tr>
         </thead>
         <tbody is="RoomTypeResults" v-for="(data, key) in rawData" :roomType="data.roomType" :results="data.results"
-               :key="key">
+               :key="key" :isForceBooking="isForceBooking">
         </tbody>
     </table>
 </template>
@@ -27,6 +27,20 @@
         props: ['rawData'],
         components: {
             RoomTypeResults
+        },
+
+        created: function () {
+            let switcher = $('#search_conditions_isForceBooking');
+            let that = this;
+            switcher.on('switchChange.bootstrapSwitch', function (event, state) {
+                that.isForceBooking = state;
+                console.log('yaya');
+            });
+        },
+        data: function () {
+            return {
+                isForceBooking: false
+            }
         }
     })
 </script>

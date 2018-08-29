@@ -38,7 +38,16 @@ export class AsyncSearcher extends Searcher {
                     this.drawResults(data);
                 } catch (err) {
                     error = true;
-                    this.onStopSearch(requestResults);
+                    if(requestResults.status == 204) {
+                        const message = {
+                            status: 'success',
+                            message: {
+                                results: []
+                            }
+                        };
+                        this.onStopSearch(message);
+                    }
+
                 }
                 count++;
                 await new Promise((resolve) => {
@@ -53,6 +62,7 @@ export class AsyncSearcher extends Searcher {
             }
         } catch (e) {
             this.onStopSearch(ajax);
+            console.log('ya ya')
         }
     }
 }

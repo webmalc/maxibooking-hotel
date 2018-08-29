@@ -3,7 +3,7 @@
         для поиска
     </div>
     <div v-else-if="status.state === 'noResults' " class="alert alert-warning"><i class="fa fa-exclamation-circle"></i>
-        По вашему запросу ничего не найдено
+        Поиск выполнен.
     </div>
     <div v-else-if="status.state === 'error' " class="alert alert-danger"><i class="fa fa-exclamation-circle"></i>
         Произошла ошибка при запросе в базу данных!

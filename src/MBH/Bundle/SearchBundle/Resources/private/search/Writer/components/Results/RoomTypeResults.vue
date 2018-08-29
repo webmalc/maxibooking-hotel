@@ -3,7 +3,8 @@
     <tr class="mbh-grid-header1 info">
         <td colspan="8">{{roomType.name}}: {{roomType.hotelName}}</td>
     </tr>
-    <tr is="RoomTypeByDate" v-for="(dateResults, key) in results" :date="key" :dateResults="dateResults"></tr>
+    <tr is="RoomTypeByDate" v-for="(dateResults, key) in results" :date="key" :dateResults="dateResults"
+        :isForceBooking="isForceBooking"></tr>
     </tbody>
 </template>
 
@@ -13,7 +14,7 @@
 
     export default Vue.extend({
         name: "RoomTypeResults",
-        props: ['roomType', 'results'],
+        props: ['roomType', 'results', 'isForceBooking'],
         components: {
             RoomTypeByDate
         }
