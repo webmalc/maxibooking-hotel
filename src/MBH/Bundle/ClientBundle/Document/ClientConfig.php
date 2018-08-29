@@ -156,6 +156,7 @@ class ClientConfig extends Base
     /**
      * @var Invoice
      * @ODM\EmbedOne(targetDocument="Invoice")
+     * @Assert\Type(type="MBH\Bundle\ClientBundle\Document\Invoice")
      */
     protected $invoice;
 
@@ -172,8 +173,9 @@ class ClientConfig extends Base
     protected $newRbk;
 
     /**
-     * @var NewRbk
+     * @var Tinkoff
      * @ODM\EmbedOne(targetDocument="Tinkoff")
+     * @Assert\Type(type="MBH\Bundle\ClientBundle\Document\Tinkoff")
      */
     protected $tinkoff;
 
@@ -1185,21 +1187,5 @@ class ClientConfig extends Base
     public static function getTimeZonesList()
     {
         return \DateTimeZone::listIdentifiers();
-    }
-
-    /**
-     * @return array
-     */
-    public static function getAvailablePaymentSystems()
-    {
-        return [
-            "robokassa",
-            "payanyway",
-            "moneymail",
-            "uniteller",
-            "paypal",
-            "rbk",
-            "rnkb"
-        ];
     }
 }

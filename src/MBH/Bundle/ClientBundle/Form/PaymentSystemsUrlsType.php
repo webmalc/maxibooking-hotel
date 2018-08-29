@@ -10,6 +10,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class PaymentSystemsUrlsType extends AbstractType
 {
+    public const FORM_NAME = 'mbhclient_bundle_payment_systems_urls_type';
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('successUrl', TextType::class,
@@ -39,6 +41,6 @@ class PaymentSystemsUrlsType extends AbstractType
 
     public function getBlockPrefix()
     {
-        return 'mbhclient_bundle_payment_systems_urls_type';
+        return self::FORM_NAME;
     }
 }

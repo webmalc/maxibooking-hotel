@@ -5,8 +5,12 @@ $(document).ready(function () {
     (function () {
         var select = $('#mbh_bundle_clientbundle_client_payment_system_type_paymentSystem'),
             showHideFields = function () {
-                $('.payment-system-params').closest('.form-group').hide();
-                $('input.' + select.val() + ',select.' + select.val() + ', textarea.' + select.val()).closest('.form-group').show();
+                $('.paymentSystem')
+                    .hide()
+                    .find('[data-required]').removeAttr('required');
+                $('.paymentSystem[data-name="' + select.val() + '"]')
+                    .show()
+                    .find('[data-required]').attr('required', 'required');
             };
 
         if (!select.length) {
