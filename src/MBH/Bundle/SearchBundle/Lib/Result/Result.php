@@ -47,7 +47,7 @@ class Result implements ResultCacheablesInterface
     private $error = '';
 
     /** @var bool */
-    private $cached = false;
+    private $cached;
 
     /** @var string */
     private $cacheItemId = '';
@@ -287,7 +287,7 @@ class Result implements ResultCacheablesInterface
     /**
      * @return bool
      */
-    public function isCached(): bool
+    public function isCached(): ?bool
     {
         return $this->cached;
     }

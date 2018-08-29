@@ -19,6 +19,8 @@ class CacheWarmer
 
     public const MAX_CAPACITY = 6;
 
+    public const MAX_ADULTS_RESTRICTIONS = 3;
+
     public const MAX_CHILDREN_RESTRICTION = 2;
 
     /** @var SearchQueryGenerator */
@@ -62,17 +64,17 @@ class CacheWarmer
         $year = (int)$date->format('Y');
         $begin = new \DateTime("8-${month}-${year} midnight");
         $end = new \DateTime("22-${month}-${year} midnight");
-        $conditions = [
+        $conditionsData = [
             'begin' => $begin->format('d.m.Y'),
             'end' => $end->format('d.m.Y'),
-            'additionalBegin' => 9,
-            'additionalEnd' => 10,
+            'additionalBegin' => 0,
+            'additionalEnd' => 0,
             'isUseCache' => true,
         ];
         $externalExpected = \count($adultsChildrenCombinations);
         $externalCount = 0;
         foreach ($adultsChildrenCombinations as $combination) {
-            $data = array_merge($conditions, $combination);
+            $data = array_merge($conditionsData, $combination);
             try {
                 if (null !== $externalProgress) {
                     $externalProgress($externalExpected, $externalCount++);
@@ -119,7 +121,7 @@ class CacheWarmer
         $filteredCombinations = array_filter(
             $combinations,
             function ($variant) {
-                return $variant['children'] <= self::MAX_CHILDREN_RESTRICTION;
+                return $variant['children'] <= self::MAX_CHILDREN_RESTRICTION && $variant['adults'] <= self::MAX_ADULTS_RESTRICTIONS;
             }
         );
 
