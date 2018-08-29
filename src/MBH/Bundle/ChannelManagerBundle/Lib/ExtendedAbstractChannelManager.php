@@ -141,7 +141,7 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
      * @return array
      * @throws \Throwable
      */
-    public function pullRooms(ChannelManagerConfigInterface $config, $sendMessageIfFail = true)
+    public function pullRooms(ChannelManagerConfigInterface $config)
     {
         $roomTypes = [];
 
@@ -156,12 +156,10 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
                 $roomTypes += $roomTypesData;
             } else {
                 $this->log($response);
-                if ($sendMessageIfFail) {
-                    $this->notifyErrorRequest(
-                        $config->getName(),
-                        'channelManager.commonCM.notification.request_error.pull_rooms'
-                    );
-                }
+                $this->notifyErrorRequest(
+                    $config->getName(),
+                    'channelManager.commonCM.notification.request_error.pull_rooms'
+                );
                 break;
             }
         }
@@ -176,10 +174,10 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
      * @return array
      * @throws \Throwable
      */
-    public function pullTariffs(ChannelManagerConfigInterface $config, $sendMessageIfFail = true)
+    public function pullTariffs(ChannelManagerConfigInterface $config)
     {
         $tariffs = [];
-        $roomTypes = $this->pullRooms($config, $sendMessageIfFail);
+        $roomTypes = $this->pullRooms($config);
 
         $requestInfoList = $this->requestFormatter->formatPullTariffsRequest($config, $roomTypes);
 
@@ -191,12 +189,10 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
                 $tariffs += $tariffsData;
             } else {
                 $this->log($response);
-                if ($sendMessageIfFail) {
-                    $this->notifyErrorRequest(
-                        $config->getName(),
-                        'channelManager.commonCM.notification.request_error.pull_tariffs'
-                    );
-                }
+                $this->notifyErrorRequest(
+                    $config->getName(),
+                    'channelManager.commonCM.notification.request_error.pull_tariffs'
+                );
                 break;
             }
         }
