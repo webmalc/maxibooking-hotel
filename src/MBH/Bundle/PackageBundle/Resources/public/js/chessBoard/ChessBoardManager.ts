@@ -66,6 +66,25 @@ class ChessBoardManager {
         let self = this;
         let chessBoardContentBlock = document.getElementById('accommodation-chessBoard-content');
         this.setContentWidth(chessBoardContentBlock);
+
+        let $reportFilter = $('#accommodation-report-filter');
+
+        $('.daterangepicker-input').daterangepicker(mbh.datarangepicker.options).on('apply.daterangepicker', function (ev, picker) {
+            mbh.datarangepicker.on($reportFilter.find('.begin-datepicker.mbh-daterangepicker'), $reportFilter.find('.end-datepicker.mbh-daterangepicker'), picker);
+        });
+
+        //Удаляем второй инпут дейтпикера
+        $('.daterangepicker-input.form-control.input-sm').eq(1).remove();
+
+        let rangePicker = $reportFilter.find('.daterangepicker-input').data('daterangepicker');
+        rangePicker.setStartDate(this.tableStartDate);
+        rangePicker.setEndDate(this.tableEndDate);
+        this.hangChangeNumberOfDaysButtonClick();
+
+        $reportFilter.find('#filter-button').click(function () {
+            $reportFilter.submit();
+        });
+
         $('.sidebar-toggle').click(function () {
             setTimeout(function () {
                 self.setContentWidth(chessBoardContentBlock);
@@ -132,24 +151,6 @@ class ChessBoardManager {
             }
             ActionManager.showLoadingIndicator();
         };
-
-        let $reportFilter = $('#accommodation-report-filter');
-
-        $('.daterangepicker-input').daterangepicker(mbh.datarangepicker.options).on('apply.daterangepicker', function (ev, picker) {
-            mbh.datarangepicker.on($reportFilter.find('.begin-datepicker.mbh-daterangepicker'), $reportFilter.find('.end-datepicker.mbh-daterangepicker'), picker);
-        });
-
-        //Удаляем второй инпут дейтпикера
-        $('.daterangepicker-input.form-control.input-sm').eq(1).remove();
-
-        let rangePicker = $reportFilter.find('.daterangepicker-input').data('daterangepicker');
-        rangePicker.setStartDate(this.tableStartDate);
-        rangePicker.setEndDate(this.tableEndDate);
-        this.hangChangeNumberOfDaysButtonClick();
-
-        $reportFilter.find('#filter-button').click(function () {
-            $reportFilter.submit();
-        });
 
         this.onAddGuestClick();
         this.hangOnHideFieldButtonClick();

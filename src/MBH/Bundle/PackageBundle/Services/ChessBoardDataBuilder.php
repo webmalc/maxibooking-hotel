@@ -30,8 +30,8 @@ class ChessBoardDataBuilder
     private $dm;
     /** @var  Helper $helper */
     private $helper;
-    /** @var  Hotel $hotel */
-    private $hotel;
+    /** @var array $hotelIds */
+    private $hotelIds;
     private $roomTypeIds;
     /** @var  \DateTime $beginDate */
     private $beginDate;
@@ -60,6 +60,8 @@ class ChessBoardDataBuilder
     private $packageAccommodationsData = [];
     private $isAvailableRoomTypesInit = false;
     private $availableRoomTypes;
+    private $roomTypeIdsInSelectedHotels;
+    private $isRoomTypeIdsInSelectedHotelsInit = false;
 
     /**
      * @param DocumentManager $dm
@@ -84,7 +86,7 @@ class ChessBoardDataBuilder
     }
 
     /**
-     * @param Hotel $hotel
+     * @param array $hotelIds
      * @param \DateTime $beginDate
      * @param \DateTime $endDate
      * @param int[] $roomTypeIds
@@ -95,7 +97,7 @@ class ChessBoardDataBuilder
      * @return ChessBoardDataBuilder
      */
     public function init(
-        Hotel $hotel,
+        array $hotelIds,
         \DateTime $beginDate,
         \DateTime $endDate,
         $roomTypeIds = [],
@@ -104,7 +106,7 @@ class ChessBoardDataBuilder
         Tariff $tariff = null,
         $pageNumber
     ) {
-        $this->hotel = $hotel;
+        $this->hotelIds = $hotelIds;
         $this->roomTypeIds = $roomTypeIds;
         $this->beginDate = $beginDate;
         $this->endDate = $endDate;
@@ -149,6 +151,7 @@ class ChessBoardDataBuilder
      * Получение массива данныых о количестве свободных комнат, разделенных по дням
      *
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getDayNoAccommodationPackageCounts()
     {
@@ -185,21 +188,24 @@ class ChessBoardDataBuilder
      */
     public function getPackagesWithoutAccommodation()
     {
-        $packageQueryCriteria = new PackageQueryCriteria();
-        $packageQueryCriteria->hotel = $this->hotel;
-        //$packageQueryCriteria->confirmed
-        $packageQueryCriteria->filter = 'live_between';
-        $packageQueryCriteria->liveBegin = $this->beginDate;
-        $packageQueryCriteria->setIsWithoutAccommodation(true);
-        $packageQueryCriteria->liveEnd = $this->endDate;
-        foreach ($this->getRoomTypeIds() as $roomTypeId) {
-            $packageQueryCriteria->addRoomTypeCriteria($roomTypeId);
-        }
-        $packages = $this->dm
-            ->getRepository('MBHPackageBundle:Package')
-            ->findByQueryCriteria($packageQueryCriteria);
+        if (!empty($this->getRoomTypeIds())) {
+            $packageQueryCriteria = new PackageQueryCriteria();
+            //$packageQueryCriteria->confirmed
+            $packageQueryCriteria->filter = 'live_between';
+            $packageQueryCriteria->liveBegin = $this->beginDate;
+            $packageQueryCriteria->setIsWithoutAccommodation(true);
+            $packageQueryCriteria->liveEnd = $this->endDate;
+            foreach ($this->getRoomTypeIds() as $roomTypeId) {
+                $packageQueryCriteria->addRoomTypeCriteria($roomTypeId);
+            }
+            $packages = $this->dm
+                ->getRepository('MBHPackageBundle:Package')
+                ->findByQueryCriteria($packageQueryCriteria);
 
-        $this->loadRelatedToPackagesData($packages);
+            $this->loadRelatedToPackagesData($packages);
+        } else {
+            $packages = [];
+        }
 
         return $packages;
     }
@@ -378,6 +384,7 @@ class ChessBoardDataBuilder
 
     /**
      * @return array [roomTypeId => date string(d.m.Y) => left rooms count]
+     * @throws \Exception
      */
     public function getLeftRoomCounts()
     {
@@ -387,7 +394,7 @@ class ChessBoardDataBuilder
         $roomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')
             ->fetch($this->beginDate,
                 $this->endDate,
-                $this->hotel,
+                null,
                 $this->getRoomTypeIds(),
                 $this->tariff === null ? [] : [$this->tariff],
                 true
@@ -458,6 +465,7 @@ class ChessBoardDataBuilder
 
     /**
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getRoomTypeData()
     {
@@ -480,6 +488,7 @@ class ChessBoardDataBuilder
 
     /**
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getRoomsByRoomTypeIds()
     {
@@ -490,7 +499,7 @@ class ChessBoardDataBuilder
             $skipValue = ($this->pageNumber - 1) * $numberOfRooms;
 
             $allRooms = $this->dm->getRepository('MBHHotelBundle:Room')
-                ->fetch($this->hotel, $roomTypes, $this->housingIds, $this->floorIds, null,
+                ->fetch(null, $roomTypes, $this->housingIds, $this->floorIds, null,
                     null, false, true, ['fullTitle' => 'asc'])->toArray();
 
             usort($allRooms, function(Room $room1, Room $room2) {
@@ -535,27 +544,57 @@ class ChessBoardDataBuilder
 
     /**
      * @return int
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getRoomCount()
     {
         $roomTypes = $this->getRoomTypeIds();
 
         return $this->dm->getRepository('MBHHotelBundle:Room')
-            ->fetchQuery($this->hotel, $roomTypes, $this->housingIds, $this->floorIds, null, null, true)
+            ->fetchQuery(null, $roomTypes, $this->housingIds, $this->floorIds, null, null, true)
             ->getQuery()
             ->count();
     }
 
     /**
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     private function getRoomTypeIds()
     {
+        $roomTypeIdsInSelectedHotels = $this->getRoomTypeIdsInSelectedHotels();
+        $roomTypeIds = $this->getAvailableRoomTypeIds();
         if (count($this->roomTypeIds) > 0) {
-            return array_intersect($this->roomTypeIds, $this->getAvailableRoomTypeIds());
+            $roomTypeIds = array_intersect($this->roomTypeIds, $roomTypeIds);
+        }
+        if (!empty($roomTypeIdsInSelectedHotels)) {
+            $roomTypeIds = array_intersect($roomTypeIdsInSelectedHotels, $roomTypeIds);
         }
 
-        return $this->getAvailableRoomTypeIds();
+        return $roomTypeIds;
+    }
+
+    /**
+     * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function getRoomTypeIdsInSelectedHotels() {
+        if (!$this->isRoomTypeIdsInSelectedHotelsInit) {
+            $hotels = $this->dm
+                ->getRepository('MBHHotelBundle:Hotel')
+                ->getByIds($this->hotelIds, false)
+                ->toArray();
+            $this->roomTypeIdsInSelectedHotels = [];
+            array_walk($hotels, function(Hotel $hotel) {
+                $this->roomTypeIdsInSelectedHotels = array_merge(array_map(function(RoomType $roomType) {
+                    return $roomType->getId();
+                }, $hotel->getRoomTypes()->toArray()), $this->roomTypeIdsInSelectedHotels);
+            });
+
+            $this->isRoomTypeIdsInSelectedHotelsInit = true;
+        }
+
+        return $this->roomTypeIdsInSelectedHotels;
     }
 
     /**
@@ -598,8 +637,9 @@ class ChessBoardDataBuilder
                 $filterCollection->enable('disableable');
             }
 
-            $this->availableRoomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
-                ->fetch($this->hotel)->toArray();
+            $this->availableRoomTypes = $this->dm
+                ->getRepository('MBHHotelBundle:RoomType')
+                ->findAll();
 
             if ($isDisableableOn && $filterCollection->isEnabled('disableable')) {
                 $filterCollection->disable('disableable');
@@ -612,6 +652,7 @@ class ChessBoardDataBuilder
 
     /**
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     private function getAvailableRoomTypeIds()
     {
@@ -627,14 +668,19 @@ class ChessBoardDataBuilder
     /**
      * Ленивая загрузка массива объектов RoomType, используемых в данном запросе
      * @return RoomType[]
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     private function getRoomTypes()
     {
         if (!$this->isRoomTypesInit) {
 
-            $this->roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
-                ->fetch($this->hotel, $this->getRoomTypeIds())
-                ->toArray();
+            if (!empty($this->getRoomTypeIds())) {
+                $this->roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
+                    ->fetch(null, $this->getRoomTypeIds())
+                    ->toArray();
+            } else {
+                $this->roomTypes = [];
+            }
 
             $this->isRoomTypesInit = true;
         }
@@ -644,6 +690,7 @@ class ChessBoardDataBuilder
 
     /**
      * @param Package[] $packages
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     private function loadRelatedToPackagesData($packages)
     {

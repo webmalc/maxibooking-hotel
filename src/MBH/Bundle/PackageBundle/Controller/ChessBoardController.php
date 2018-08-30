@@ -81,6 +81,7 @@ class ChessBoardController extends BaseController
      * @param Request $request
      * @Security("is_granted('ROLE_ACCOMMODATION_REPORT')")
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function indexAction(Request $request)
     {
@@ -89,7 +90,7 @@ class ChessBoardController extends BaseController
         $builder = $this
             ->get('mbh.package.report_data_builder')
             ->init(
-                $this->hotel,
+                $filterData['hotelIds'],
                 $filterData['begin'],
                 $filterData['end'],
                 $filterData['roomTypeIds'],
@@ -162,6 +163,10 @@ class ChessBoardController extends BaseController
             'sizes' => self::SIZE_CONFIGS,
             'stylesFileNumber' => $stylesFileNumber,
             'colors' => $colorSettings->__toArray(),
+            'hotels' => $this->dm
+                ->getRepository('MBHHotelBundle:Hotel')
+                ->findBy(['isEnabled' => true]),
+            'selectedHotelIds' => $filterData['hotelIds']
         ];
     }
 
@@ -472,7 +477,7 @@ class ChessBoardController extends BaseController
         $filterData = $this->getFilterData($request);
         $builder = $this->get('mbh.package.report_data_builder')
             ->init(
-                $this->hotel,
+                $filterData['hotelIds'],
                 $filterData['begin'],
                 $filterData['end'],
                 $filterData['roomTypeIds'],
@@ -516,6 +521,7 @@ class ChessBoardController extends BaseController
         return [
             'begin' => $beginDate,
             'end' => $endDate,
+            'hotelIds' => $this->helper->getDataFromMultipleSelectField($data['filter_hotel'] ?? [$this->hotel->getId()]),
             'roomTypeIds' => $this->helper->getDataFromMultipleSelectField(
                 isset($data['filter_roomType']) ? $data['filter_roomType'] : null
             ),

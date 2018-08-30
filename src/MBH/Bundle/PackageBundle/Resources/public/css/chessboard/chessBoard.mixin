@@ -34,6 +34,9 @@ body {
   top: 50%;
   left: 50%;
 }
+.today {
+  background-color: #d9edf7;
+}
 
 .red-package {
   background-color: rgba(232, 34, 34, 0.6) !important;
@@ -321,6 +324,9 @@ body {
   .leftRoomsLine {
     .weekend {
       background-color: #E6E6E6 !important;
+    }
+    .today {
+      background-color: #9bd3ef !important;
     }
   }
   .tile .date div {
