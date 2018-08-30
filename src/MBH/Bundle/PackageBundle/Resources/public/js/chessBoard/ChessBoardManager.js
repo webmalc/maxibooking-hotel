@@ -37,6 +37,19 @@ var ChessBoardManager = /** @class */ (function () {
         var self = this;
         var chessBoardContentBlock = document.getElementById('accommodation-chessBoard-content');
         this.setContentWidth(chessBoardContentBlock);
+        var $reportFilter = $('#accommodation-report-filter');
+        $('.daterangepicker-input').daterangepicker(mbh.datarangepicker.options).on('apply.daterangepicker', function (ev, picker) {
+            mbh.datarangepicker.on($reportFilter.find('.begin-datepicker.mbh-daterangepicker'), $reportFilter.find('.end-datepicker.mbh-daterangepicker'), picker);
+        });
+        //Удаляем второй инпут дейтпикера
+        $('.daterangepicker-input.form-control.input-sm').eq(1).remove();
+        var rangePicker = $reportFilter.find('.daterangepicker-input').data('daterangepicker');
+        rangePicker.setStartDate(this.tableStartDate);
+        rangePicker.setEndDate(this.tableEndDate);
+        this.hangChangeNumberOfDaysButtonClick();
+        $reportFilter.find('#filter-button').click(function () {
+            $reportFilter.submit();
+        });
         $('.sidebar-toggle').click(function () {
             setTimeout(function () {
                 self.setContentWidth(chessBoardContentBlock);
@@ -96,19 +109,6 @@ var ChessBoardManager = /** @class */ (function () {
             }
             ActionManager.showLoadingIndicator();
         };
-        var $reportFilter = $('#accommodation-report-filter');
-        $('.daterangepicker-input').daterangepicker(mbh.datarangepicker.options).on('apply.daterangepicker', function (ev, picker) {
-            mbh.datarangepicker.on($reportFilter.find('.begin-datepicker.mbh-daterangepicker'), $reportFilter.find('.end-datepicker.mbh-daterangepicker'), picker);
-        });
-        //Удаляем второй инпут дейтпикера
-        $('.daterangepicker-input.form-control.input-sm').eq(1).remove();
-        var rangePicker = $reportFilter.find('.daterangepicker-input').data('daterangepicker');
-        rangePicker.setStartDate(this.tableStartDate);
-        rangePicker.setEndDate(this.tableEndDate);
-        this.hangChangeNumberOfDaysButtonClick();
-        $reportFilter.find('#filter-button').click(function () {
-            $reportFilter.submit();
-        });
         this.onAddGuestClick();
         this.hangOnHideFieldButtonClick();
         if (!isMobileDevice()) {
