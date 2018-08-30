@@ -7,6 +7,7 @@
 namespace MBH\Bundle\ClientBundle\Document\PaymentSystem;
 
 
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\FiscalizationInterface;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\FiscalizationTrait;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\TaxMapInterface;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
@@ -17,7 +18,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Class Tinkoff
  * @ODM\EmbeddedDocument()
  */
-class Tinkoff extends PaymentSystemDocument implements TaxMapInterface
+class Tinkoff extends PaymentSystemDocument implements TaxMapInterface, FiscalizationInterface
 {
     use FiscalizationTrait;
 

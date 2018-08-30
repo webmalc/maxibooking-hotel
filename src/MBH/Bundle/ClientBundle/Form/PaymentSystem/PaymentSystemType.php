@@ -45,11 +45,17 @@ abstract class PaymentSystemType extends AbstractType
         $common = [
             'group'       => 'no-group',
             'required'    => false,
-            'constraints' => [new NotBlank()],
             'attr' => [
                 'data-required' => true
             ]
         ];
+
+        /**
+         * атрибут дисеблед пока встречается только в группе при фискализации
+         */
+        if (!(isset($data['attr']['disabled']) && $data['attr']['disabled'])) {
+            $common['constraints'] = [new NotBlank()];
+        }
 
         return array_merge_recursive($data, $common);
     }

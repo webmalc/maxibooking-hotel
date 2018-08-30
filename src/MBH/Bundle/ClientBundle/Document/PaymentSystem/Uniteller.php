@@ -3,13 +3,14 @@
 namespace MBH\Bundle\ClientBundle\Document\PaymentSystem;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\FiscalizationInterface;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\FiscalizationTrait;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
 
 /**
  * @ODM\EmbeddedDocument
  */
-class Uniteller extends PaymentSystemDocument
+class Uniteller extends PaymentSystemDocument implements FiscalizationInterface
 {
     use FiscalizationTrait;
 
