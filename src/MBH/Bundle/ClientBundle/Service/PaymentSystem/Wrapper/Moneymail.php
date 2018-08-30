@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
  * Class Moneymail
  * @package MBH\Bundle\ClientBundle\Service\PaymentSystem\Wrapper
  *
- * @property \MBH\Bundle\ClientBundle\Document\Moneymail $entity
+ * @property \MBH\Bundle\ClientBundle\Document\PaymentSystem\Moneymail $entity
  */
 class Moneymail extends Wrapper
 {

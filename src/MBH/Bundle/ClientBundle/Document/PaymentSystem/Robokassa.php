@@ -1,8 +1,9 @@
 <?php
 
-namespace MBH\Bundle\ClientBundle\Document;
+namespace MBH\Bundle\ClientBundle\Document\PaymentSystem;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\FiscalizationInterface;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\FiscalizationTrait;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\TaxMapInterface;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
@@ -10,7 +11,7 @@ use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
 /**
  * @ODM\EmbeddedDocument
  */
-class Robokassa extends PaymentSystemDocument implements TaxMapInterface
+class Robokassa extends PaymentSystemDocument implements TaxMapInterface, FiscalizationInterface
 {
     use FiscalizationTrait;
 

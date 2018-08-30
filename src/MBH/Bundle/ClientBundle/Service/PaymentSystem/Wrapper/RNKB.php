@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
  * Class RNKB
  * @package MBH\Bundle\ClientBundle\Service\PaymentSystem\Wrapper
  *
- * @property \MBH\Bundle\ClientBundle\Document\RNKB $entity
+ * @property \MBH\Bundle\ClientBundle\Document\PaymentSystem\RNKB $entity
  */
 class RNKB extends Wrapper
 {

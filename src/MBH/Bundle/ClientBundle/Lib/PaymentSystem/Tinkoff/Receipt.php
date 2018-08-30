@@ -7,7 +7,7 @@
 namespace MBH\Bundle\ClientBundle\Lib\PaymentSystem\Tinkoff;
 
 use MBH\Bundle\CashBundle\Document\CashDocument;
-use MBH\Bundle\ClientBundle\Document\Tinkoff;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\Tinkoff;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use Symfony\Component\DependencyInjection\ContainerInterface;

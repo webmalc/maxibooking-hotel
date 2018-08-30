@@ -7,16 +7,15 @@
 namespace MBH\Bundle\ClientBundle\Form\PaymentSystem;
 
 
-use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
-use MBH\Bundle\ClientBundle\Document\Robokassa;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\Robokassa;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class RobokassaType extends PaymentSystemType
 {
     use ExtraDataTrait;
+    use FiscalizationTypeTrait;
 
     private const NAME_TYPE_TAXATION_RATE_CODE = 'taxationRateCode';
     private const NAME_TYPE_TAXATION_SYSTEM_CODE = 'taxationSystemCode';
@@ -55,35 +54,8 @@ class RobokassaType extends PaymentSystemType
                         'label' => 'form.clientPaymentSystemType.password_two',
                     ]
                 )
-            )
-            ->add(
-                'IsWithFiscalization',
-                CheckboxType::class,
-                $this->addCommonAttributes(
-                    [
-                        'label' => 'form.clientPaymentSystemType.uniteller_is_with_fiscalization.label',
-                    ]
-                )
-            )
-            ->add(
-                self::NAME_TYPE_TAXATION_RATE_CODE,
-                InvertChoiceType::class,
-                $this->addCommonAttributes(
-                    [
-                        'label'   => 'form.clientPaymentSystemType.uniteller.taxation_rate_code',
-                        'choices' => $this->extraData->getTaxationRateCodes($robokassa),
-                    ]
-                )
-            )
-            ->add(
-                self::NAME_TYPE_TAXATION_SYSTEM_CODE,
-                InvertChoiceType::class,
-                $this->addCommonAttributes(
-                    [
-                        'label'   => 'form.clientPaymentSystemType.uniteller.taxation_system_code',
-                        'choices' => $this->extraData->getTaxationSystemCodes($robokassa),
-                    ]
-                )
-            );;
+            );
+
+        $this->addFieldsForFiscalization($builder, $robokassa);
     }
 }

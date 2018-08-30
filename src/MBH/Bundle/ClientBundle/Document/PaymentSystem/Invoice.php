@@ -1,8 +1,9 @@
 <?php
 
-namespace MBH\Bundle\ClientBundle\Document;
+namespace MBH\Bundle\ClientBundle\Document\PaymentSystem;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
 use Symfony\Component\Validator\Constraints as Assert;
 

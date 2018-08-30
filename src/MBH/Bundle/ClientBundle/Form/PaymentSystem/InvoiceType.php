@@ -9,7 +9,7 @@ namespace MBH\Bundle\ClientBundle\Form\PaymentSystem;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
-use MBH\Bundle\ClientBundle\Document\Invoice;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\Invoice;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
 use Symfony\Component\Form\FormBuilderInterface;
 

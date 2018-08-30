@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
  * Class Uniteller
  * @package MBH\Bundle\ClientBundle\Service\PaymentSystem\Wrapper
  *
- * @property \MBH\Bundle\ClientBundle\Document\Uniteller $entity
+ * @property \MBH\Bundle\ClientBundle\Document\PaymentSystem\Uniteller $entity
  */
 class Uniteller extends Wrapper
 {

@@ -12,7 +12,7 @@ use MBH\Bundle\CashBundle\Document\CashDocumentQueryCriteria;
 use MBH\Bundle\CashBundle\Document\CashDocumentRepository;
 use MBH\Bundle\CashBundle\Form\CashDocumentType;
 use MBH\Bundle\CashBundle\Form\NewCashDocumentType;
-use MBH\Bundle\ClientBundle\Document\Uniteller;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\Uniteller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;

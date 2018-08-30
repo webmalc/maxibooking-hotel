@@ -8,9 +8,8 @@ namespace MBH\Bundle\ClientBundle\Form\PaymentSystem;
 
 
 use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
-use MBH\Bundle\ClientBundle\Document\Tinkoff;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\Tinkoff;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -18,6 +17,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 class TinkoffType extends PaymentSystemType
 {
     use ExtraDataTrait;
+    use FiscalizationTypeTrait;
 
     private const PREFIX_LABEL = 'form.clientPaymentSystemType.tinkoff_';
 
@@ -79,37 +79,8 @@ class TinkoffType extends PaymentSystemType
                     ]
                 )
 
-            )
-            ->add(
-                self::NAME_TYPE_TAXATION_RATE_CODE,
-                InvertChoiceType::class,
-                $this->addCommonAttributes(
-                    [
-                        'label'   => 'form.clientPaymentSystemType.uniteller.taxation_rate_code',
-                        'choices' => $this->extraData->getTaxationRateCodes($tinkoff),
-                    ]
-                )
-
-            )
-            ->add(
-                self::NAME_TYPE_TAXATION_SYSTEM_CODE,
-                InvertChoiceType::class,
-                $this->addCommonAttributes(
-                    [
-                        'label'   => 'form.clientPaymentSystemType.uniteller.taxation_system_code',
-                        'choices' => $this->extraData->getTaxationSystemCodes($tinkoff),
-                    ]
-                )
-
-            )
-            ->add(
-                self::NAME_TYPE_IS_WITH_FISCALIZATION,
-                CheckboxType::class,
-                $this->addCommonAttributes(
-                    [
-                        'label' => 'form.clientPaymentSystemType.uniteller_is_with_fiscalization.label',
-                    ]
-                )
             );
+
+        $this->addFieldsForFiscalization($builder, $tinkoff);
     }
 }

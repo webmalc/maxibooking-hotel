@@ -7,10 +7,8 @@
 namespace MBH\Bundle\ClientBundle\Form\PaymentSystem;
 
 
-use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
-use MBH\Bundle\ClientBundle\Document\NewRbk;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\NewRbk;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -19,6 +17,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 class NewRbkType extends PaymentSystemType
 {
     use ExtraDataTrait;
+    use FiscalizationTypeTrait;
 
     private const PREFIX = '';
     private const PREFIX_LABEL = 'form.clientPaymentSystemType.newRbk_';
@@ -76,25 +75,8 @@ class NewRbkType extends PaymentSystemType
                         'label' => self::PREFIX_LABEL . self::NAME_TYPE_LIFETIME_INVOICE,
                     ]
                 )
-            )
-            ->add(
-                self::NAME_TYPE_IS_WITH_FISCALIZATION,
-                CheckboxType::class,
-                $this->addCommonAttributes(
-                    [
-                        'label' => 'form.clientPaymentSystemType.uniteller_is_with_fiscalization.label',
-                    ]
-                )
-            )
-            ->add(
-                self::NAME_TYPE_TAXATION_RATE_CODE,
-                InvertChoiceType::class,
-                $this->addCommonAttributes(
-                    [
-                        'label'   => 'form.clientPaymentSystemType.uniteller.taxation_rate_code',
-                        'choices' => $this->extraData->getTaxationRateCodes($newRbk),
-                    ]
-                )
             );
+
+        $this->addFieldsForFiscalization($builder, $newRbk, true, false);
     }
 }
