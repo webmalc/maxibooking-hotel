@@ -17,9 +17,6 @@ class RobokassaType extends PaymentSystemType
     use ExtraDataTrait;
     use FiscalizationTypeTrait;
 
-    private const NAME_TYPE_TAXATION_RATE_CODE = 'taxationRateCode';
-    private const NAME_TYPE_TAXATION_SYSTEM_CODE = 'taxationSystemCode';
-
     public static function getSourceDocument(): PaymentSystemDocument
     {
         return new Robokassa();

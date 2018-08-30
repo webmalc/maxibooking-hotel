@@ -57,7 +57,7 @@ trait FiscalizationTypeTrait
                     CheckboxType::class,
                     $this->addCommonAttributes(
                         [
-                            'label' => 'form.clientPaymentSystemType.uniteller_is_with_fiscalization.label',
+                            'label' => 'form.clientPaymentSystemType.is_with_fiscalization.label',
                             'attr'  => [
                                 'class' => 'checkboxForIsWithFiscalization',
                                 'disabled' => $disabledTaxion,
@@ -72,7 +72,7 @@ trait FiscalizationTypeTrait
                     InvertChoiceType::class,
                     $this->addCommonAttributes(
                         [
-                            'label'   => 'form.clientPaymentSystemType.uniteller.taxation_rate_code',
+                            'label'   => 'form.clientPaymentSystemType.taxation_rate_code',
                             'choices' => $this->extraData->getTaxationRateCodes($doc),
                             'attr'    => $attr
                         ]
@@ -86,7 +86,7 @@ trait FiscalizationTypeTrait
                     InvertChoiceType::class,
                     $this->addCommonAttributes(
                         [
-                            'label'   => 'form.clientPaymentSystemType.uniteller.taxation_system_code',
+                            'label'   => 'form.clientPaymentSystemType.taxation_system_code',
                             'choices' => $this->extraData->getTaxationSystemCodes($doc),
                             'attr'    => $attr
                         ]

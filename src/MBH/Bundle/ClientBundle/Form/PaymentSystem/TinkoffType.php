@@ -23,9 +23,6 @@ class TinkoffType extends PaymentSystemType
 
     private const NAME_TYPE_TERMINAL_KEY = 'terminalKey';
     private const NAME_TYPE_LANGUAGE = 'language';
-    private const NAME_TYPE_TAXATION_RATE_CODE = 'taxationRateCode';
-    private const NAME_TYPE_TAXATION_SYSTEM_CODE = 'taxationSystemCode';
-    private const NAME_TYPE_IS_WITH_FISCALIZATION = 'isWithFiscalization';
     private const NAME_TYPE_SECRET_KEY = 'secretKey';
     private const NAME_TYPE_REDIRECT_DUE_DATA = 'redirectDueDate';
 
