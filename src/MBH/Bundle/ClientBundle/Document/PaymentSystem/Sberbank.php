@@ -56,6 +56,18 @@ class Sberbank extends PaymentSystemDocument implements TaxMapInterface, Fiscali
     private $password;
 
     /**
+     * @var integer
+     * @ODM\Field(type="integer")
+     */
+    private $sessionTimeoutSecs = 1200;
+
+    /**
+     * @var null|string
+     * @ODM\Field(type="string")
+     */
+    private $token;
+
+    /**
      * @var int
      * @ODM\Field(type="int")
      */
@@ -81,6 +93,38 @@ class Sberbank extends PaymentSystemDocument implements TaxMapInterface, Fiscali
     public function setUserName(?string $userName): void
     {
         $this->userName = $userName;
+    }
+
+    /**
+     * @return int
+     */
+    public function getSessionTimeoutMinutes(): int
+    {
+        return $this->sessionTimeoutSecs / 60;
+    }
+
+    /**
+     * @param int $sessionTimeoutMinutes
+     */
+    public function setSessionTimeoutMinutes(?int $sessionTimeoutMinutes): void
+    {
+        $this->sessionTimeoutSecs = $sessionTimeoutMinutes * 60;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getToken(): ?string
+    {
+        return $this->token;
+    }
+
+    /**
+     * @param null|string $token
+     */
+    public function setToken(?string $token): void
+    {
+        $this->token = $token;
     }
 
     /**
@@ -110,7 +154,7 @@ class Sberbank extends PaymentSystemDocument implements TaxMapInterface, Fiscali
     /**
      * @param int $taxationRateCode
      */
-    public function setTaxationRateCode(int $taxationRateCode): void
+    public function setTaxationRateCode(?int $taxationRateCode): void
     {
         $this->taxationRateCode = $taxationRateCode;
     }
@@ -126,7 +170,7 @@ class Sberbank extends PaymentSystemDocument implements TaxMapInterface, Fiscali
     /**
      * @param int $taxationSystemCode
      */
-    public function setTaxationSystemCode(int $taxationSystemCode): void
+    public function setTaxationSystemCode(?int $taxationSystemCode): void
     {
         $this->taxationSystemCode = $taxationSystemCode;
     }

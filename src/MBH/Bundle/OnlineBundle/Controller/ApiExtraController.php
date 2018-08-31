@@ -75,4 +75,17 @@ class ApiExtraController extends Controller
 
         return $this->redirect($response->getPaymentURL());
     }
+
+    /**
+     * @Route("/sberbank/generate_link/{id}", name="online_form_api_sberbank_generate_link")
+     * @param CashDocument $cashDocument
+     */
+    public function generateLinkSberbank(CashDocument $cashDocument)
+    {
+        $sberbank = $this->clientConfig->getSberbank();
+
+        if ($sberbank === null) {
+            throw new \Exception('not setup Sberbank');
+        }
+    }
 }
