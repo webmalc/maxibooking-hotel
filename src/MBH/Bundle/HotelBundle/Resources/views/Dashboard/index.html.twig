@@ -1,0 +1,36 @@
+{% extends "MBHHotelBundle::layout.html.twig" %}
+
+{% set title = 'views.facility.list.title'|trans({}, 'MBHHotelBundle') %}
+
+{% block content %}
+    <div class="row" id="flow-widgets">
+        <div class="col-md-6">
+            <div class="small-box bg-red">
+                <div class="inner">
+                    <h3>Номера</h3>
+                    <p>Настройка номеров</p>
+                </div>
+                <div class="icon" style="color: white;">
+                    <i class="fa fa-bed"></i>
+                </div>
+                <a href="#" class="small-box-footer">
+                    Настроить <i class="fa fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="small-box bg-red">
+                <div class="inner">
+                    <h3>Отели</h3>
+                    <p>Настройка отеля</p>
+                </div>
+                <div class="icon" style="color: white;">
+                    <i class="fa fa-bed"></i>
+                </div>
+                <a href="#" class="small-box-footer">
+                    Настроить <i class="fa fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

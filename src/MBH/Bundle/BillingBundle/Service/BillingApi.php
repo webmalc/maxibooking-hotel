@@ -508,6 +508,7 @@ class BillingApi
             $response = $this->sendPost($url, $data, true);
         } catch (RequestException $exception) {
             $response = $exception->getResponse();
+            $requestResult = new Result();
             $this->handleErrorResponse($response, $requestResult, $url, $data);
         }
     }
