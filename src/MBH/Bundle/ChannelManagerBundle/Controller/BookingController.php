@@ -120,7 +120,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
 
             $this->addFlash('success','controller.bookingController.settings_saved_success');
 
-            if (!$config->isReadyToSync()) {
+            if (!$config->isReadyToSync() && $config->getIsEnabled()) {
                 $this->get('mbh.messages_store')->sendMessageToTechSupportAboutNewConnection('Booking', $this->get('mbh.instant_notifier'));
             }
 

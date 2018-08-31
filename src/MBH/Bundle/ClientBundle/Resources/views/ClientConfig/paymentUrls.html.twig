@@ -1,7 +1,7 @@
 {% extends "MBHBaseBundle::ajax.html.twig" %}
 {% block content %}
     <div id="payment-types-success-urls">
-        {{ form_start(form, {'action': path('client_payment_urls'), 'method' : 'POST', 'attr': {'class': 'form-horizontal' }}) }}
+        {{ form_start(form, {'action': path('client_save_payment_urls'), 'method' : 'POST', 'attr': {'class': 'form-horizontal' }}) }}
         {{ form_widget(form) }}
         {{ form_end(form) }}
     </div>

@@ -103,6 +103,11 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         $form->handleRequest($request);
         if ($form->isValid()) {
 
+            if (!$this->get('mbh.client_config_manager')->hasSingleLanguage()) {
+                $this->get('mbh.form_data_handler')
+                    ->saveTranslationsFromMultipleFieldsForm($form, $request, ['description']);
+            }
+
             $this->dm->persist($entity);
             $this->dm->flush();
 
@@ -129,7 +134,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      * @param Image $image
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function imageDelete(RoomType $roomType, Image $image)
+    public function imageDelete(RoomType $roomType, Image $image, Request $request)
     {
         if (!$roomType || !$this->container->get('mbh.hotel.selector')->checkPermissions($roomType->getHotel())) {
             throw $this->createNotFoundException();
@@ -145,7 +150,11 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         $this->dm->flush();
         $this->addFlash('success', 'controller.TaskTypeController.success_delete_photo');
 
-        return $this->redirectToRoute('room_type_image_edit', ['id' => $roomType->getId(), 'imageTab' => 'active']);
+        $redirectUrl = $request->get('redirect_url')
+            ? $request->get('redirect_url')
+            : $this->generateUrl('room_type_image_edit', ['id' => $roomType->getId(), 'imageTab' => 'active']) ;
+
+        return $this->redirect($redirectUrl);
     }
 
     /**
@@ -181,7 +190,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
     /**
      * Edits an existing entity.
      *
-     * @Route("/{id}", name="room_type_update")
+     * @Route("/{id}/edit", name="room_type_update")
      * @Method("POST")
      * @Security("is_granted('ROLE_ROOM_TYPE_EDIT')")
      * @ParamConverter(class="MBHHotelBundle:RoomType")

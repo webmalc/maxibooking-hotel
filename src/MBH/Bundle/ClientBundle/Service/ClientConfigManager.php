@@ -60,6 +60,6 @@ class ClientConfigManager
         $config = $this->fetchConfig();
         $languages = $config->getLanguages();
 
-        return count($languages) === 0 || (count($languages) === 1 && current($languages) === $this->defaultLanguage);
+        return empty($languages) || (count($languages) === 1 && current($languages) === $this->defaultLanguage);
     }
 }

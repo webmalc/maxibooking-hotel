@@ -5,7 +5,6 @@ namespace MBH\Bundle\HotelBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Document\Image;
 use MBH\Bundle\BaseBundle\EventListener\OnRemoveSubscriber\Relationship;
-use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Form\HotelContactInformationType;
 use MBH\Bundle\HotelBundle\Form\HotelExtendedType;
@@ -245,12 +244,15 @@ class HotelController extends Controller
      * @Route("/{id}/logoImage/delete", name="hotel_delete_logo_image")
      * @Security("is_granted('ROLE_HOTEL_EDIT')")
      */
-    public function deleteImageLogoAction(Hotel $hotel)
+    public function deleteImageLogoAction(Request $request, Hotel $hotel)
     {
         $hotel->removeLogoImage();
         $this->dm->flush();
+        $redirectUrl = $request->get('redirect_url')
+            ? $request->get('redirect_url')
+            : $this->generateUrl('hotel_edit', ['id' => $hotel->getId()]) ;
 
-        return $this->redirect($this->generateUrl('hotel_edit', ['id' => $hotel->getId()]));
+        return $this->redirect($redirectUrl);
     }
 
     /**
@@ -342,10 +344,6 @@ class HotelController extends Controller
             $this->get('mbh.form_data_handler')
                 ->saveTranslationsFromMultipleFieldsForm($form, $request, ['settlement', 'street']);
 
-            if ($hotel->getStreet() && !$hotel->getInternationalStreetName()) {
-                $hotel->setInternationalStreetName(Helper::translateToLat($hotel->getStreet()));
-            }
-
             $this->dm->persist($hotel);
             $this->dm->flush();
 
@@ -387,7 +385,7 @@ class HotelController extends Controller
             $image = $form->getData();
             $hotel->addImage($image);
             if ($image->getIsDefault()) {
-                $this->setHotelMainImage($hotel, $image);
+                $hotel->setDefaultImage($image);
             }
             $this->dm->persist($image);
             $this->dm->flush();
@@ -411,11 +409,12 @@ class HotelController extends Controller
      * @Method("GET")
      * @Security("is_granted('ROLE_HOTEL_DELETE')")
      * @param Hotel $hotel
-     * @ParamConverter("image", options={"id" = "imageId"})
      * @param Image $image
+     * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @ParamConverter("image", options={"id" = "imageId"})
      */
-    public function imageDelete(Hotel $hotel, Image $image)
+    public function imageDelete(Hotel $hotel, Image $image, Request $request)
     {
         if (!$hotel || !$this->container->get('mbh.hotel.selector')->checkPermissions($hotel)) {
             throw $this->createNotFoundException();
@@ -425,7 +424,10 @@ class HotelController extends Controller
 
         $this->addFlash('success', 'controller.hotelController.success_delete_photo');
 
-        return $this->redirectToRoute('hotel_images', ['id' => $hotel->getId()]);
+        $redirectUrl = $request->get('redirect_url')
+            ?? $this->generateUrl('hotel_images', ['id' => $hotel->getId()]);
+
+        return $this->redirect($redirectUrl);
     }
 
     /**
@@ -443,22 +445,12 @@ class HotelController extends Controller
         if (!$this->container->get('mbh.hotel.selector')->checkPermissions($hotel)) {
             throw $this->createNotFoundException();
         }
-        $this->setHotelMainImage($hotel, $newMainImage);
+        $hotel->setDefaultImage($newMainImage);
 
         $this->dm->flush();
         $this->addFlash('success', 'controller.hotelController.success_main_image_set');
 
         return $this->redirectToRoute('hotel_images', ['id' => $hotel->getId()]);
-    }
-
-    private function setHotelMainImage(Hotel $hotel, Image $newMainImage)
-    {
-        foreach ($hotel->getImages() as $image) {
-            /** @var Image $image */
-            $image->setIsDefault($image->getId() == $newMainImage->getId());
-        }
-
-        return $hotel;
     }
 
     /**

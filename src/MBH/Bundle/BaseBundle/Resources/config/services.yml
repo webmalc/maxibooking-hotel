@@ -271,7 +271,7 @@ services:
 
     mbh.locale.subscriber:
         class: MBH\Bundle\BaseBundle\EventListener\LocaleSubscriber
-        arguments: ['%kernel.default_locale%',  '@translator', '%mbh.languages%']
+        arguments: ['%kernel.default_locale%',  '@translator', '%mbh.languages%', '@stof_doctrine_extensions.listener.translatable']
         tags:
           - { name: kernel.event_subscriber }
 
@@ -427,7 +427,7 @@ services:
 
     mbh.form_data_handler:
         class: MBH\Bundle\BaseBundle\Service\FormDataHandler
-        arguments: ['@translator', '@mbh.helper', '@mbh.multi_lang_translator']
+        arguments: ['@translator', '@mbh.helper', '@mbh.multi_lang_translator', '@mbh.client_config_manager']
 
     mbh.protected.file.downloader:
         class: MBH\Bundle\BaseBundle\Service\ProtectedFileViewer
@@ -492,7 +492,12 @@ services:
 
     mbh.multi_lang_translator:
         class: MBH\Bundle\BaseBundle\Service\MultiLangTranslator
-        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.helper']
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@mbh.helper'
+            - '@property_accessor'
+            - '@stof_doctrine_extensions.listener.translatable'
+            - '%locale%'
 
     mbh.menu_builder:
         class: MBH\Bundle\BaseBundle\Menu\Builder
@@ -509,6 +514,7 @@ services:
         arguments:
             - '@translator'
             - '@property_accessor'
+            - '@annotation_reader'
 
     mbh.messages_store:
         class: MBH\Bundle\BaseBundle\Service\Messenger\MessagesStore
@@ -530,6 +536,12 @@ services:
     mbh.warnings_compiler:
         class: MBH\Bundle\BaseBundle\Service\WarningsCompiler
         arguments: ['@doctrine.odm.mongodb.document_manager', '@translator', '@mbh.periods_compiler']
+
+    mbh.form_builder:
+        class: MBH\Bundle\BaseBundle\Service\MBHFormBuilder
+        arguments:
+            - '@mbh.client_config_manager'
+            - '@form.factory'
 
     mbh.exception_manager:
         class: MBH\Bundle\BaseBundle\Service\ExceptionManager

@@ -6,6 +6,7 @@
 
 namespace MBH\Bundle\ClientBundle\Lib\PaymentSystem;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 trait FiscalizationTrait
 {

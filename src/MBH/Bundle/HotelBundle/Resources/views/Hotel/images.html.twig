@@ -9,34 +9,10 @@
         {{ form_start(form, {'action': path('hotel_images', {'id': entity.id}),  'attr': {'class': 'form-horizontal'}}) }}
 
         {{ form_widget(form) }}
-        {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'route': 'hotel' } %}
+            {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'route': 'hotel' } %}
         {{ form_end(form) }}
 
-        <div class="row">
-            {% for image in images %}
-                <div class="col-md-1">
-                    <a href=" {{ vich_uploader_asset(image, 'imageFile') | imagine_filter('scaler') }}"
-                       class="fancybox" rel="gallery" data-fancybox-title="{{ image.imageName }}">
-                        <img src="{{ vich_uploader_asset(image, 'imageFile') | imagine_filter('thumb_100x100') }}" class="img-thumbnail"/>
-                    </a>
-                    <div style="text-align: center;margin-top: 5px;">
-                        {% if not image.isDefault %}
-                            <a href="{{ path('hotel_image_make_main', {'id': entity.id, 'imageId' : image.getId}) }}"
-                               class="btn btn-success btn-xs" data-toggle="tooltip" data-original-title="{{ 'hotel_images.set_image_main'|trans }}">
-                                <i class="fa fa-check"></i>
-                            </a>
-                        {% else %}
-                            <span class="btn btn-info btn-xs disabled"><i class="fa fa-check" title="{{ 'hotel_images.main_image'|trans }}"></i></span>
-                        {% endif %}
-                        <a href="{{ path('hotel_image_delete', {'id': entity.id, 'imageId' : image.getId}) }}"
-                           class="btn btn-danger btn-xs delete-link" data-toggle="tooltip"
-                           style="margin-left: 5px;"
-                           data-original-title="{{ 'hotel_images.remove_image'|trans }}"><i class="fa fa-trash-o"></i>
-                        </a>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
+        {% include '@MBHHotel/Hotel/image-list.html.twig' with {showMakeMainButton: true, showDeleteButton: true} %}
     </div>
 
 {% endblock %}

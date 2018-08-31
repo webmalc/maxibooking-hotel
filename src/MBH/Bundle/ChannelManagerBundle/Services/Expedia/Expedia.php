@@ -115,6 +115,9 @@ class Expedia extends ExtendedAbstractChannelManager
                 $response = $this->sendRequestAndGetResponse($request);
                 $this->handlePullOrdersResponse($response, $config, $result, true);
             }
+
+            $config->setIsAllPackagesPulled(true);
+            $this->dm->flush();
         }
 
         $cm = $this->container->get('mbh.channelmanager');

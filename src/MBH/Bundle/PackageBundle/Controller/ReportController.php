@@ -650,6 +650,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
 
         $begin = $this->get('mbh.helper')->getDateFromString($request->get('begin'));
         $end = $this->get('mbh.helper')->getDateFromString($request->get('end'));
+        $recalculateAccommodationCauseOfServices = $request->query->get('recalculate-accommodation') === 'true';
         if (!$begin && !$end) {
             $begin = new \DateTime('midnight -1 day');
             $end = new \DateTime('midnight +6 day');
@@ -673,6 +674,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
         $hotelIds = empty($requestedHotelIds) ? null : $requestedHotelIds;
         $roomTypes = $roomTypeRepository->getByIdsAndHotelsIds($roomTypeIds, $hotelIds);
 
+
         if (!$begin && !$end) {
             $begin = new \DateTime('midnight -1 day');
             $end = new\DateTime('midnight +6 day');
@@ -681,7 +683,7 @@ class ReportController extends Controller implements CheckHotelControllerInterfa
 
         $generator = $this->get('mbh.package.report.filling_report_generator');
         $isEnabled = $request->get('isEnabled') === 'true';
-        $result = $generator->generate($begin, $end, $roomTypes, $roomStatusOptions, $isEnabled);
+        $result = $generator->generate($begin, $end, $roomTypes, $roomStatusOptions, $isEnabled, $recalculateAccommodationCauseOfServices);
 
         return $result + ['roomTypes' => $roomTypes];
     }

@@ -1,0 +1,50 @@
+{% if entityType is not defined or entityType == 'hotel' %}
+    {% set makeMainRoute = 'hotel_image_make_main' %}
+    {% set makeMainButtonTitle = 'hotel_images.set_image_main' %}
+    {% set deleteImageRoute = 'hotel_image_delete' %}
+{% elseif entityType == 'roomType' %}
+    {% set makeMainRoute = 'room_type_image_make_main' %}
+    {% set makeMainButtonTitle = 'views.hotel.roomType.editImages.do_default' %}
+    {% set deleteImageRoute = 'room_type_image_delete' %}
+{% endif %}
+
+<div class="row">
+    {% for image in images %}
+        <div class="col-md-1">
+            <a href=" {{ vich_uploader_asset(image, 'imageFile') | imagine_filter('scaler') }}"
+               class="fancybox" rel="gallery" data-fancybox-title="{{ image.imageName }}">
+                <img src="{{ vich_uploader_asset(image, 'imageFile') | imagine_filter('thumb_100x100') }}"
+                     class="img-thumbnail"/>
+            </a>
+
+            {% if showMakeMainButton or showDeleteButton %}
+                <div style="text-align: center;margin-top: 5px;">
+                    {% if showMakeMainButton %}
+                        {% if not image.isDefault %}
+                            <a href="{{ path(makeMainRoute, {'id': entity.id, 'imageId' : image.getId}) }}"
+                               class="btn btn-success btn-xs" data-toggle="tooltip"
+                               data-original-title="{{ makeMainButtonTitle|trans }}">
+                                <i class="fa fa-check"></i>
+                            </a>
+                        {% else %}
+                            <span class="btn btn-info btn-xs disabled">
+                            <i class="fa fa-check" title="{{ 'hotel_images.main_image'|trans }}"></i></span>
+                        {% endif %}
+                    {% endif %}
+
+                    {% if showDeleteButton %}
+                        {% set deleteHrefParams = {'id': entity.id, 'imageId' : image.getId} %}
+                        {% if redirect_url is defined %}
+                            {% set deleteHrefParams = deleteHrefParams|merge({"redirect_url" : redirect_url}) %}
+                        {% endif %}
+                        <a href="{{ path(deleteImageRoute, deleteHrefParams) }}"
+                           class="btn btn-danger btn-xs delete-link" data-toggle="tooltip"
+                           style="margin-left: 5px;"
+                           data-original-title="{{ 'hotel_images.remove_image'|trans }}"><i class="fa fa-trash-o"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>

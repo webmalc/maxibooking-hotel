@@ -1,0 +1,29 @@
+{% extends "MBHHotelBundle:Flow:layout.html.twig" %}
+
+{% set small_title = 'views.flow.hotel_flow.title'|trans({}, 'MBHHotelBundle') %}
+
+{% if form.logoImage is defined %}
+    {% form_theme form.logoImage '@MBHHotel/Form/hotelLogoImageTypeImageFile.html.twig' %}
+{% elseif form.defaultImage is defined %}
+    {% form_theme form.defaultImage '@MBHHotel/Form/hotelLogoImageTypeImageFile.html.twig' %}
+{% endif %}
+
+{% set isLastStep = flow.numberOfSteps == flow.currentStepNumber %}
+{% set isImagesStep = isLastStep %}
+
+{% block flowBody %}
+    {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
+    {{ form_widget(form) }}
+
+    {% if isImagesStep %}
+        {% include '@MBHHotel/Hotel/image-list.html.twig' with {
+            images: hotel.images, entity: hotel, showMakeMainButton: false, showDeleteButton: true, redirect_url: path('hotel_flow')
+        } %}
+    {% endif %}
+
+    {% include '@MBHHotel/Flow/flowButtons.html.twig' %}
+    {{ form_end(form) }}
+
+    {% include '@MBHHotel/Hotel/coordinates-modal.html.twig' with {entity: hotel} %}
+    {% include '@MBHBase/modalWithForm.html.twig' with {modalTitle: 'modal_with_form.add_city.title'|trans} %}
+{% endblock %}

@@ -72,6 +72,10 @@ class HotelManager
         $this->container
             ->get('mbh.site_manager')
             ->createOrUpdateForHotel($hotel, $client);
+        $this->container
+            ->get('mbh.client_config_manager')
+            ->fetchConfig()
+            ->setIsMBSiteEnabled(true);
         $this->dm->persist($hotel);
 
         $this->container

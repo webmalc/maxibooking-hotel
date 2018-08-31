@@ -1,0 +1,34 @@
+<div class="modal fade" id="hotel_coordinates_help" tabindex="-1" role="dialog" aria-labelledby="hotel_coordinates_help_label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">{{ 'views.hotel.extended.close'|trans({}, 'MBHHotelBundle') }}</span></button>
+                <h4 class="modal-title" id="myModalLabel"><i class="fa fa-question-circle"></i>&nbsp;{{ 'views.hotel.extended.how_to_know_hotel_coordinates'|trans({}, 'MBHHotelBundle') }}</h4>
+            </div>
+            <div class="modal-body">
+                <h3>{{ 'views.hotel.extended.google_maps'|trans({}, 'MBHHotelBundle') }} <small><a target="_blank" href="https://support.google.com/maps/answer/18539?hl=ru">{{ 'views.hotel.extended.help_is_on_site'|trans({}, 'MBHHotelBundle') }}Google.com</a></small></h3>
+                <ol>
+                    <li>
+                        {{ 'views.hotel.extended.go_to_site'|trans({}, 'MBHHotelBundle') }} <a href="https://www.google.ru/maps/{{ entity.cityId is null ? '' : 'place/' ~ get_city(entity.cityId).name|url_encode }}" target="_blank">https://www.google.ru/maps</a>
+                    </li>
+                    <li>{{ 'views.hotel.extended.find_hotel_on_map'|trans({}, 'MBHHotelBundle') }}</li>
+                    <li>{{ 'views.hotel.extended.left_click_on_hotel_on_map'|trans({}, 'MBHHotelBundle') }}</li>
+                    <li>{{ 'views.hotel.extended.copy_coordinates_like_this'|trans({}, 'MBHHotelBundle') }}</li>
+                </ol>
+
+                <h3>{{ 'views.hotel.extended.yandex_maps'|trans({}, 'MBHHotelBundle') }}</h3>
+                <ol>
+                    <li>
+                        {{ 'views.hotel.extended.go_to_site'|trans({}, 'MBHHotelBundle') }} <a href="//maps.yandex.ru/{{ entity.cityId is null ? '' : '?text=' ~ get_city(entity.cityId).name|url_encode }}" target="_blank">http://maps.yandex.ru</a>
+                    </li>
+                    <li>{{ 'views.hotel.extended.find_hotel_on_map'|trans({}, 'MBHHotelBundle') }}</li>
+                    <li>{{ 'views.hotel.extended.right_click_on_hotel_on_map'|trans({}, 'MBHHotelBundle') }}</li>
+                    <li>{{ 'views.hotel.extended.yandex_copy_coordinates_like_this'|trans({}, 'MBHHotelBundle') }}</li>
+                </ol>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">{{ 'views.hotel.extended.close'|trans({}, 'MBHHotelBundle') }}</button>
+            </div>
+        </div>
+    </div>
+</div>

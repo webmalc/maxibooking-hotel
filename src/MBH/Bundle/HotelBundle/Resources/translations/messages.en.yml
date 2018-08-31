@@ -264,7 +264,7 @@ mbhhotelbundle.roomTypeData.single.place: 'Deluxe King Room'
 mbhhotelbundle.roomTypeData.three.place: Suite
 views.hotel.notFound.error: error
 views.hotel.new.creating: Create
-views.hotel.roomType.editImages.do_default: Tasks
+views.hotel.roomType.editImages.do_default: 'Make main'
 views.hotel.roomType.new.photo: Images
 controller.hotelController.success_main_image_set: 'This image is set as default for this hotel'
 hotel_images.set_image_main: 'Select this Picture as the Main Image'
@@ -280,3 +280,4 @@ views.facility.list.description_title: Description
 views.facility.list.facility_title: Amenity
 facility_controller.facility_description.save_table.success: 'Changes successfully saved'
 views.facility.list.save_changes_button.title: 'Save changes'
+room_type_flow_type.rooms.help: 'Количество номеров в продаже'

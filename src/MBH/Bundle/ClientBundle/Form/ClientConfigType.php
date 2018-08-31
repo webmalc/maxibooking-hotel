@@ -37,7 +37,7 @@ class ClientConfigType extends AbstractType
             ->add('timeZone', ChoiceType::class, [
                 'choices' => ClientConfig::getTimeZonesList(),
                 'group' => 'form.clientConfigType.main_group',
-                'required' => false,
+                'required' => true,
                 'choice_label' => function ($value) {
                     return $value;
                 },

@@ -25,6 +25,4 @@ $(document).ready(function () {
         boostat: 1,
         maxboostedstep: 1
     });
-
 });
-

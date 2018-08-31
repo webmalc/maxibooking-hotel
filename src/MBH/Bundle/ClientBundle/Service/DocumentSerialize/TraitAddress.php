@@ -132,18 +132,6 @@ trait TraitAddress
         $this->address = $address;
     }
 
-    /**
-     * @param $method
-     * @return string
-     */
-    private function returnValue($method): string
-    {
-        $temp = explode('::', $method);
-        $method = end($temp);
-
-        return $this->address !== null && $this->address->$method() !== null ? $this->address->$method() : '';
-    }
-
     public function getName(): string
     {
         return $this->returnValue(__METHOD__);
@@ -171,5 +159,30 @@ trait TraitAddress
     public function getCityId(): string
     {
         return $this->returnValue(__METHOD__);
+    }
+
+    /**
+     * @return string
+     */
+    public function getSellement(): string
+    {
+        /** TODO надо посмотреть это встречается */
+        if (!method_exists($this->address, 'getSellement')) {
+            return '';
+        }
+
+        return $this->returnValue(__METHOD__);
+    }
+
+    /**
+     * @param $method
+     * @return string
+     */
+    private function returnValue($method): string
+    {
+        $temp = explode('::', $method);
+        $method = end($temp);
+
+        return $this->address !== null && $this->address->$method() !== null ? $this->address->$method() : '';
     }
 }

@@ -2,7 +2,10 @@
 
 namespace MBH\Bundle\BaseBundle\Service;
 
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Collections\Collection;
+use Gedmo\Mapping\Annotation\Translatable;
 use MBH\Bundle\HotelBundle\Document\ContactInfo;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
@@ -48,11 +51,13 @@ class DocumentFieldsManager
     private $translator;
     /** @var PropertyAccessor */
     private $accessor;
+    private $annotationReader;
 
-    public function __construct(TranslatorInterface $translator, PropertyAccessor $accessor)
+    public function __construct(TranslatorInterface $translator, PropertyAccessor $accessor, Reader $annotationReader)
     {
         $this->translator = $translator;
         $this->accessor = $accessor;
+        $this->annotationReader = $annotationReader;
     }
 
     /**
@@ -118,5 +123,24 @@ class DocumentFieldsManager
         return isset(self::INCONSISTENT_DOC_FIELD_TO_FORM_FIELD[$documentName][$fieldName])
             ? self::INCONSISTENT_DOC_FIELD_TO_FORM_FIELD[$documentName][$fieldName]
             : $fieldName;
+    }
+
+    /**
+     * @param string $className
+     * @param string $annotationName
+     * @return array
+     * @throws \ReflectionException
+     */
+    public function getPropertiesByAnnotationClass(string $className, string $annotationName = Translatable::class)
+    {
+        $result = [];
+        $classProperties = (new \ReflectionClass($className))->getProperties();
+        foreach ($classProperties as $property) {
+            if ($this->annotationReader->getPropertyAnnotation($property, $annotationName)) {
+                $result[] = $property->getName();
+            }
+        }
+
+        return $result;
     }
 }

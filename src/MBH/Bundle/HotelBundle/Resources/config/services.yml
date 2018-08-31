@@ -69,7 +69,7 @@ services:
 
     mbh.hotel_contact_information:
         class: MBH\Bundle\HotelBundle\Form\HotelContactInformationType
-        arguments: ['@doctrine.odm.mongodb.document_manager', '@translator']
+        arguments: ['@mbh.form_builder']
         tags:
             - { name: form.type}
 
@@ -87,7 +87,7 @@ services:
 
     mbh.room_type_form:
         class: MBH\Bundle\HotelBundle\Form\RoomTypeType
-        arguments: ['@translator.default', '@mbh.client_config_manager']
+        arguments: ['@translator.default', '@mbh.form_builder']
         tags:
             - { name: form.type}
 
@@ -105,9 +105,46 @@ services:
 
     mbh.hotel_type:
         class: MBH\Bundle\HotelBundle\Form\HotelType
-        arguments: ['@mbh.client_config_manager']
+        arguments: ['@mbh.form_builder']
         tags:
             - {name: form.type}
+
     mbh.housing_manager:
         class: MBH\Bundle\HotelBundle\Service\HousingManager
         arguments: ['@doctrine.odm.mongodb.document_manager']
+
+    mbh.hotel_address_type:
+        class: MBH\Bundle\HotelBundle\Form\HotelFlow\HotelAddressType
+        arguments: ['@translator', '@mbh.form_builder']
+        tags: [{name: form.type}]
+
+    mbh.hotel_flow_type:
+        class: MBH\Bundle\HotelBundle\Form\HotelFlow\HotelFlowType
+        arguments: ['@mbh.form_builder', '@router']
+        tags: [{name: form.type}]
+
+    mbh.hotel_flow:
+        class: MBH\Bundle\HotelBundle\Form\HotelFlow\HotelFlow
+        parent: mbh.form_flow
+        arguments: ['@mbh.document_fields_manager', '@mbh.form_data_handler']
+
+    mbh.room_type_flow:
+        class: MBH\Bundle\HotelBundle\Form\RoomTypeFlow\RoomTypeFlow
+        parent: mbh.form_flow
+        arguments:
+            - '@mbh.document_fields_manager'
+            - '@mbh.form_data_handler'
+            - '@mbh.room.cache'
+            - '@mbh.price.cache'
+
+    mbh.room_type_flow_type:
+        class: MBH\Bundle\HotelBundle\Form\RoomTypeFlow\RoomTypeFlowType
+        arguments: ['@mbh.form_builder', '@doctrine.odm.mongodb.document_manager']
+        tags: [{name: form.type}]
+
+    mbh.form_flow:
+        class: MBH\Bundle\HotelBundle\Service\FormFlow
+        calls:
+            - [ setDm, [ '@doctrine.odm.mongodb.document_manager' ] ]
+            - [ setFormFactory, ['@form.factory']]
+            - [ setRequestStack, ['@request_stack']]

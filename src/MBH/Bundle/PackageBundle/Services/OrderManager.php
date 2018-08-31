@@ -471,6 +471,8 @@ class OrderManager implements Searchable
                         ->setAmount((int)$info['amount'])
                         ->setPrice($price);
 
+                    $package->addService($packageService);
+
                     $this->dm->persist($packageService);
                     $this->dm->flush();
 

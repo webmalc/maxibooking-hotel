@@ -1,0 +1,40 @@
+{% extends 'MBHHotelBundle::layout.html.twig' %}
+
+{% set title = 'views.flow.flow.title'|trans({}, 'MBHHotelBundle') %}
+{% set layout = "tabs" %}
+
+{% block scripts %}
+    {{ parent() }}
+
+    {% javascripts filter='?uglifyjs2'
+        '@MBHHotelBundle/Resources/public/js/flow/*'
+    %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+{% endblock %}
+
+{% block content %}
+    <div class="tab-content">
+        <div>
+            {% include '@MBHHotel/Flow/flowStepList.html.twig' %}
+        </div>
+        <div class="box box-default box-solid">
+
+            <div class="box-header with-border">
+                <h3 class="box-title">{{ flow.currentStepLabel }}</h3>
+
+                <div class="box-tools pull-right">
+                    <button class="btn btn-box-tool form-group-collapse" data-widget="collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="box-body">
+                {% block flowBody %}{% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

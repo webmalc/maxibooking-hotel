@@ -14,11 +14,13 @@
                 <div class="print-clearfix"></div>
                 <a href="{{ asset(image_uri|imagine_filter('scaler')) }}" class="fancybox"><img src="{{ asset(image_uri|imagine_filter('thumb_95x80')) }}" alt="" /></a>
             {% endif %}
-            {% if download_uri %}
+
+            {% if download_uri and download_uri is not empty %}
                 <p>
                 <a href="{{ download_uri }}">{{ translation_domain is same as(false) ? download_label : download_label|trans({}, translation_domain) }}</a>
                 </p>
             {% endif %}
+
             {% if logo_image_delete_url is defined and logo_image_delete_url is not empty and image_uri %}
                 <p>
                 <a class="text-danger delete-link" data-text="{{ 'views.hotel.form.hotelType.delete_modal_text'|trans }}" href="{{ logo_image_delete_url }}"><i class="fa fa-trash-o"></i>{{ 'views.hotel.form.hotelType.delete'|trans }} </a>

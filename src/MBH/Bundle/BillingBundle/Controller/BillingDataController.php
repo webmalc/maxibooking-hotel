@@ -6,16 +6,15 @@ use MBH\Bundle\BillingBundle\Form\CityType;
 use MBH\Bundle\BillingBundle\Form\RegionType;
 use MBH\Bundle\BillingBundle\Lib\Model\City;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-//TODO: Какие права нужны?
-
 /**
  * @Route("/billing_data")
- * Class DataByAjaxController
+ * Class BillingDataController
  * @package MBH\Bundle\BaseBundle\Controller
  */
 class BillingDataController extends Controller
@@ -23,6 +22,7 @@ class BillingDataController extends Controller
     /**
      * @Route("/create_region", name="create_region", options={"expose"=true})
      * @param Request $request
+     * @Security("is_granted('ROLE_ADMIN')")
      * @return JsonResponse
      */
     public function newRegionAction(Request $request)
@@ -33,6 +33,7 @@ class BillingDataController extends Controller
     /**
      * @Route("/create_city", name="create_city", options={"expose"=true})
      * @param Request $request
+     * @Security("is_granted('ROLE_ADMIN')")
      * @return JsonResponse
      */
     public function newCityAction(Request $request)

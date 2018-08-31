@@ -1546,25 +1546,6 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * @return string
      */
-    public function getInternationalStreetName(): ?string
-    {
-        return $this->internationalStreetName;
-    }
-
-    /**
-     * @param string $internationalStreetName
-     * @return Hotel
-     */
-    public function setInternationalStreetName(string $internationalStreetName = null): Hotel
-    {
-        $this->internationalStreetName = $internationalStreetName;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
     public function getCheckinoutPolicy() : ?string
     {
         return $this->checkinoutPolicy;
@@ -1602,6 +1583,9 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
         $this->images->removeElement($image);
     }
 
+    /**
+     * @return ArrayCollection|Image[]
+     */
     public function getImages()
     {
         return $this->images;
@@ -1627,6 +1611,55 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
         return $this;
     }
 
+    /**
+     * @return Image|mixed
+     */
+    public function getDefaultImage()
+    {
+        foreach ($this->getImages() as $image) {
+            if ($image->getIsDefault()) {
+                return $image;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param Image $defaultImage
+     * @return Hotel
+     */
+    public function setDefaultImage(Image $defaultImage)
+    {
+        if (!$this->isImageSaved($defaultImage)) {
+            $this->addImage($defaultImage);
+        }
+
+        foreach ($this->getImages() as $image) {
+            /** @var Image $image */
+            $image->setIsDefault($image->getId() == $defaultImage->getId());
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Image $checkedImage
+     * @return bool
+     */
+    private function isImageSaved(Image $checkedImage)
+    {
+        foreach ($this->getImages() as $image) {
+            if ($checkedImage->getImageName() === $image->getImageName()
+                && $checkedImage->getHeight() === $image->getHeight()
+                && $checkedImage->getWidth() === $image->getWidth()
+            ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     /**
      * @return mixed
@@ -1849,7 +1882,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
                     $comprehensiveData['logoUrl'] = $cacheManager->getBrowserPath($uploaderHelper->asset($this->getLogoImage(), 'imageFile'), 'scaler');
                 }
             } else {
-                throw new \InvalidArgumentException('It\'s required uploader helper and current domain for serialization of the full information about the hotel!');
+                throw new \InvalidArgumentException('It\'s required to pass uploader helper and current domain for serialization of the full information about the hotel!');
             }
 
 //            if (!is_null($this->latitude)) {

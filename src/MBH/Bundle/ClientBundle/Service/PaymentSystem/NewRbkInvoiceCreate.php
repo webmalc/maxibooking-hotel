@@ -30,7 +30,7 @@ class NewRbkInvoiceCreate
     private $dm;
 
     /**
-     * @var \MBH\Bundle\ClientBundle\Document\NewRbk
+     * @var \MBH\Bundle\ClientBundle\Document\PaymentSystem\NewRbk
      */
     private $entity;
 

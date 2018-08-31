@@ -1,0 +1,20 @@
+{%- if flow.getStepLabels() is not empty -%}
+    <div id="tabs-container" style="position:relative;">
+        <ul class="nav nav-tabs" id="flow-step-tabs">
+            {% for stepLabel in flow.getStepLabels() %}
+
+                {% if loop.index == flow.currentStepNumber %}
+                    {% set stepStatusClass = 'active' %}
+                {% elseif loop.index < flow.currentStepNumber %}
+                    {% set stepStatusClass = 'passed-step' %}
+                {% else %}
+                    {% set stepStatusClass = 'not-passed-step' %}
+                {% endif %}
+
+                <li class="flow-step-tab {{ stepStatusClass }}">
+                    {{ loop.index }}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{%- endif -%}

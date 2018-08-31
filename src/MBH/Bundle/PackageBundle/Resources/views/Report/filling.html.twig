@@ -1,6 +1,6 @@
 {% extends 'MBHPackageBundle:Report:layout.html.twig' %}
 
-{% set title = 'menu.label.financial_analytics'|trans({}, 'MBHBaseBundle') %}
+{% set title = 'menu.label.financial_analytics'|trans %}
 {% set small_title = "source.index.filling"|trans({}, "MBHPackageBundle") %}
 {% set layout = 'box' %}
 {% set title_url = path('report_filling') %}
@@ -60,6 +60,10 @@
                         <option value="{{ hotel.id }}" {{ selected_hotel().id == hotel.id ? 'selected' }}>{{ hotel.name }}</option>
                     {% endfor %}
                 </select>
+            </div>
+            <div class="filter-form_input">
+                <i class="fa fa-calculator" title="{{ 'report.filling.filling.recalculate_price_of_accommodation'|trans }}" data-toggle="tooltip" aria-hidden="true"></i>
+                <input type="checkbox" id="filling-report-filter-recalculate-accommodation">
             </div>
             <div class="filter-form_input">
                 <i class="fa fa-toggle-on" title="{{ 'report.filling.filling.only_enabled'|trans }}" data-toggle="tooltip" aria-hidden="true"></i>

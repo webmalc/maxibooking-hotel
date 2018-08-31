@@ -142,6 +142,7 @@ site_form.hotels.hotel_data: 'Hotel Description'
 site_form.hotels.label: Properties
 site_form.contract.label: Contract
 site_form.web_address.label: 'WEB address'
+site_form.site_domain.go_to_site_button.text: 'Go to the site'
 site_form.key_words.label: Tags
 site_form.is_enabled.label: 'Active?'
 views.mb_site.index.main_settings: Settings
@@ -167,3 +168,8 @@ site_config.color_theme.colors.black01: 'Black 1'
 site_config.color_theme.colors.autumn: Autumn
 site_form.hotels.required_fields.price_caches: Prices
 site_form.hotels.required_fields.room_caches: 'Room in sale'
+payment.receipt.common_description.hotel_name_and_date: 'Accomdation in the "%1$s" from %2$s to %3$s.'
+payment.receipt.common_description.package: 'Reservation № '
+payment.receipt.common_description.packages: 'Reservations № '
+payment.receipt.item_description.package: 'Accommodation in the hotel room "%1$s". Reservation № %2$s'
+payment.receipt.item_description.service: 'Service: '

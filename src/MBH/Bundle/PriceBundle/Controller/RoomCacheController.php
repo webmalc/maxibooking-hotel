@@ -133,7 +133,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
     }
 
     /**
-     * @Route("/save", name="room_cache_overview_save")
+     * @Route("/", name="room_cache_overview_save")
      * @Method("POST")
      * @Security("is_granted('ROLE_ROOM_CACHE_EDIT')")
      * @Template("MBHPriceBundle:RoomCache:index.html.twig")

@@ -22,8 +22,9 @@
         {% if form.vars.groups is defined %}
             {% set groups = form.vars.groups %}
         {% endif %}
+
         {% for group, items in groups %}
-            {% if group != 'no-group' %}
+            {% if group != 'no-group' and form.vars.hasGroups != false %}
             <div class="box box-default box-solid box-header_when-mobile" {% if form.vars.nonDisplayGroups is defined and group in form.vars.nonDisplayGroups %} style="display: none;" {% endif %}>
 
                 <div class="box-header with-border">
@@ -60,9 +61,9 @@
             {{ form_widget(form) }}
         {% else %}
         {% set isMultiLanguageField = form.vars['languages'] is defined %}
-        <div class="form-group {% if errors|length > 0 %} has-error{% endif %} {% if isMultiLanguageField %} multi-languages-field {% endif %}"
-                {% if isMultiLanguageField %}data-language="{{ form.vars['language'] }}"{% endif %}
-                {% if isMultiLanguageField and form.vars['languages']|length != 1 and form.vars['language'] != form.vars['defaultLang'] %}style="display: none;" {% endif %}>
+        <div class="form-group{% if errors|length > 0 %} has-error{% endif %}{% if isMultiLanguageField %} multi-languages-field{% endif %}"
+                {% if isMultiLanguageField %} data-language="{{ form.vars['language'] }}"{% endif %}
+                {% if isMultiLanguageField and form.vars['languages']|length != 1 and form.vars['language'] != form.vars['defaultLang'] %} style="display: none;"{% endif %}>
             {{ form_label(form) }}
             <div class="col-sm-6">
                 {{ form_widget(form) }}
