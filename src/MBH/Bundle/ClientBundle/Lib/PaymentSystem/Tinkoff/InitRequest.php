@@ -9,7 +9,7 @@ namespace MBH\Bundle\ClientBundle\Lib\PaymentSystem\Tinkoff;
 
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Document\PaymentSystem\Tinkoff;
-use MBH\Bundle\PackageBundle\Document\Order;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\DescriptionGenerator;
 
 class InitRequest extends InitCommon implements \JsonSerializable
 {
@@ -128,8 +128,10 @@ class InitRequest extends InitCommon implements \JsonSerializable
 
     public function generate(CashDocument $cashDocument, Tinkoff $tinkoff): self
     {
+        $descriptionGenerator = new DescriptionGenerator($this->container);
+
         $this->setOrderId($cashDocument->getId());
-        $this->setDescription($cashDocument);
+        $this->setDescription($descriptionGenerator->generate($cashDocument));
         $this->setAmount($cashDocument->getTotal() * 100);
         $this->setLanguage($tinkoff->getLanguage());
         $this->setRedirectDueDate($tinkoff->getRedirectDueDate());
@@ -187,30 +189,9 @@ class InitRequest extends InitCommon implements \JsonSerializable
     /**
      * @param null|string $description
      */
-    public function setDescription(CashDocument $cashDocument): void
+    public function setDescription(string $description): void
     {
-        $trans = $this->container->get('translator');
-        $hotel = $cashDocument->getHotel();
-        // т.к. генерация происходит из онлайн формы, те ордер новый и пакеджы с одной датой
-        $packages = iterator_to_array($cashDocument->getOrder()->getPackages());
-
-        if (count($packages) > 1) {
-            $descSuffix = $trans->trans('payment.receipt.common_description.packages');
-        } else {
-            $descSuffix = $trans->trans('payment.receipt.common_description.package');
-        }
-
-        $descSuffix .= implode(' ,', $packages) . '.';
-
-        $desc = $trans->trans('payment.receipt.common_description.hotel_name_and_date') . $descSuffix;
-
-        $this->description =
-            sprintf(
-                $desc,
-                $hotel,
-                $packages[0]->getBegin()->format('d.m.Y'),
-                $packages[0]->getEnd()->format('d.m.Y')
-            );
+        $this->description = $description;
     }
 
     /**
