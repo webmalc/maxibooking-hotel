@@ -16,7 +16,9 @@ class Sberbank extends Wrapper
 {
     public function getFormData(CashDocument $cashDocument, $url = null, $checkUrl = null)
     {
-        // TODO: Implement getFormData() method.
+        return [
+            'cashDocumentId' => $cashDocument->getId(),
+        ];
     }
 
     public function getSignature(CashDocument $cashDocument, $url = null)

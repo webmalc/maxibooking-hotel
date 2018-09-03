@@ -12,8 +12,10 @@ namespace MBH\Bundle\ClientBundle\Lib\PaymentSystem\Sberbank;
  *
  * @see https://securepayments.sberbank.ru/wiki/doku.php/integration:api:rest:requests:register
  */
-class RegisterRequest
+class RegisterRequest implements \JsonSerializable
 {
+    const URL_REGISTER = 'https://3dsec.sberbank.ru/payment/rest/register.do';
+
     const PAGE_VIEW_DESKTOP = 'DESKTOP';
     const PAGE_VIEW_MOBILE = 'MOBILE';
 
@@ -55,6 +57,8 @@ class RegisterRequest
     private $amount;
 
     /**
+     * НЕ ИСПОЛЬЗУЕТСЯ
+     *
      * Код валюты платежа ISO 4217. Единственное допустимое значение - 643.
      *
      * @var integer
@@ -66,7 +70,7 @@ class RegisterRequest
      * Адрес должен быть указан полностью, включая используемый протокол (например, https://test.ru вместо test.ru).
      * В противном случае пользователь будет перенаправлен по адресу следующего вида: http://<адрес_платёжного_шлюза>/<адрес_продавца>.
      *
-     * @var string
+     * @var null|string
      */
     private $returnUrl;
 
@@ -75,7 +79,7 @@ class RegisterRequest
      * Адрес должен быть указан полностью, включая используемый протокол (например, https://test.ru вместо test.ru).
      * В противном случае пользователь будет перенаправлен по адресу следующего вида: http://<адрес_платёжного_шлюза>/<адрес_продавца>.
      *
-     * @var string
+     * @var null|string
      */
     private $failUrl;
 
@@ -88,6 +92,8 @@ class RegisterRequest
     private $description;
 
     /**
+     * НЕ ИСПОЛЬЗУЕТСЯ
+     *
      * Язык в кодировке ISO 639-1.
      * Если не указан, будет использован язык, указанный в настройках магазина как язык по умолчанию.
      *
@@ -190,5 +196,143 @@ class RegisterRequest
      * @var integer
      */
     private $taxSystem;
+
+    /**
+     * НЕ ИСПОЛЬЗУЕТСЯ
+     *
+     * @var string
+     */
+    private $features;
+
+    /**
+     * @param string $userName
+     */
+    public function setUserName(string $userName): void
+    {
+        $this->userName = $userName;
+    }
+
+    /**
+     * @param string $password
+     */
+    public function setPassword(string $password): void
+    {
+        $this->password = $password;
+    }
+
+    /**
+     * @param string $token
+     */
+    public function setToken(string $token): void
+    {
+        $this->token = $token;
+    }
+
+    /**
+     * @param string $orderNumber
+     */
+    public function setOrderNumber(string $orderNumber): void
+    {
+        $this->orderNumber = $orderNumber;
+    }
+
+    /**
+     * @param int $amount
+     */
+    public function setAmount(int $amount): void
+    {
+        $this->amount = $amount;
+    }
+
+    /**
+     * @param null|string $returnUrl
+     */
+    public function setReturnUrl(?string $returnUrl): void
+    {
+        $this->returnUrl = $returnUrl;
+    }
+
+    /**
+     * @param null|string $failUrl
+     */
+    public function setFailUrl(?string $failUrl): void
+    {
+        $this->failUrl = $failUrl;
+    }
+
+    /**
+     * @param string $description
+     */
+    public function setDescription(string $description): void
+    {
+        $this->description = $description;
+    }
+
+    /**
+     * @param string $pageView
+     */
+    public function setPageView(string $pageView): void
+    {
+        $this->pageView = $pageView;
+    }
+
+    /**
+     * @param int $sessionTimeoutSecs
+     */
+    public function setSessionTimeoutSecs(int $sessionTimeoutSecs): void
+    {
+        $this->sessionTimeoutSecs = $sessionTimeoutSecs;
+    }
+
+    /**
+     * @param string $orderBundle
+     */
+    public function setOrderBundle(string $orderBundle): void
+    {
+        $this->orderBundle = $orderBundle;
+    }
+
+    /**
+     * @param int $taxSystem
+     */
+    public function setTaxSystem(int $taxSystem): void
+    {
+        $this->taxSystem = $taxSystem;
+    }
+
+    public function jsonSerialize()
+    {
+        $data = [];
+
+        if ($this->token === null) {
+            $data['userName'] = $this->userName;
+            $data['password'] = $this->password;
+        } else {
+            $data['token'] = $this->token;
+        }
+
+        $data['orderNumber'] = $this->orderNumber;
+        $data['amount'] = $this->amount;
+
+        if ($this->returnUrl !== null) {
+            $data['returnUrl'] = $this->returnUrl;
+        }
+
+        if ($this->failUrl !== null) {
+            $data['failUrl'] = $this->failUrl;
+        }
+
+        $data['description'] = $this->description;
+        $data['pageView'] = $this->pageView;
+        $data['sessionTimeoutSecs'] = $this->sessionTimeoutSecs;
+
+        if ($this->orderBundle !== null) {
+            $data['orderBundle'] = $this->orderBundle;
+            $data['taxSystem'] = $this->taxSystem;
+        }
+
+        return $data;
+    }
+
 
 }

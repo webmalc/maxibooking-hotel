@@ -104,6 +104,14 @@ class Sberbank extends PaymentSystemDocument implements TaxMapInterface, Fiscali
     }
 
     /**
+     * @return int
+     */
+    public function getSessionTimeoutSecs(): int
+    {
+        return $this->sessionTimeoutSecs;
+    }
+
+    /**
      * @param int $sessionTimeoutMinutes
      */
     public function setSessionTimeoutMinutes(?int $sessionTimeoutMinutes): void

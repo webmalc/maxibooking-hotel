@@ -8,8 +8,11 @@ namespace MBH\Bundle\OnlineBundle\Controller;
 
 use GuzzleHttp\Client;
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\Sberbank\RegisterRequest;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\Sberbank\RegisterResponse;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\Tinkoff\InitRequest;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\Tinkoff\InitResponse;
+use MBH\Bundle\ClientBundle\Service\PaymentSystem\Sberbank\Helper;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
@@ -68,7 +71,7 @@ class ApiExtraController extends Controller
             $msg = 'at response from tinkoff.';
 
             $logger->addError($msg . $dataForLogger);
-            throw new \Exception('Error ' . $msg . $response->getDetails() ?? null);
+            throw new \Exception('Error ' . $msg . $response->getDetails() ?? 'error in json or empty body');
         }
 
         $logger->addInfo('Ok.' . $dataForLogger);
@@ -78,14 +81,38 @@ class ApiExtraController extends Controller
 
     /**
      * @Route("/sberbank/generate_link/{id}", name="online_form_api_sberbank_generate_link")
+     * @param Request $request
      * @param CashDocument $cashDocument
      */
-    public function generateLinkSberbank(CashDocument $cashDocument)
+    public function generateLinkSberbank(Request $request, CashDocument $cashDocument)
     {
         $sberbank = $this->clientConfig->getSberbank();
 
         if ($sberbank === null) {
             throw new \Exception('not setup Sberbank');
         }
+
+        $sbrfHelper = new Helper($this->container, $this->clientConfig);
+
+        /** @var RegisterRequest $register */
+        $register = $sbrfHelper->register($cashDocument, $request);
+
+        /** @var RegisterResponse $response */
+        $response = $sbrfHelper->request($register);
+
+        $logger = $this->container->get('mbh.payment_sberbank.logger');
+        $dataForLogger = ' Data response: ' . var_export($response, true);
+        $dataForLogger .= '. Data init: ' . json_encode($register, JSON_UNESCAPED_UNICODE);
+
+        if ($response === null || $response->getErrorCode() !== RegisterResponse::NO_ERROR) {
+            $msg = 'at response from sberbank.';
+
+            $logger->addError($msg . $dataForLogger);
+            throw new \Exception('Error ' . $msg . $response->getErrorMessage() ?? 'error in json or empty body');
+        }
+
+        $logger->addInfo('Ok.' . $dataForLogger);
+
+        return $this->redirect($response->getFormUrl());
     }
 }
