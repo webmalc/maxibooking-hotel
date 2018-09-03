@@ -7,8 +7,18 @@
 namespace MBH\Bundle\ClientBundle\Form\PaymentSystem;
 
 
+use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\ExtraData;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\FiscalizationInterface;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystem\TaxMapInterface;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
+use MBH\Bundle\ClientBundle\Service\ClientConfigManager;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -16,6 +26,21 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 abstract class PaymentSystemType extends AbstractType
 {
+
+    /** @var ExtraData  */
+    protected $extraData;
+
+    /**
+     * @var ClientConfig
+     */
+    protected $clientConfig;
+
+    public function __construct(ExtraData $extraData, ClientConfigManager $clientConfigManager)
+    {
+        $this->extraData = $extraData;
+        $this->clientConfig = $clientConfigManager->fetchConfig();
+    }
+
     /**
      * @return PaymentSystemDocument
      */
@@ -34,6 +59,22 @@ abstract class PaymentSystemType extends AbstractType
         $resolver->setDefaults([
             'data_class' => $class::className(),
         ]);
+    }
+
+    /**
+     * @return ClientConfig
+     */
+    protected function getClientConfig(): ClientConfig
+    {
+        return $this->clientConfig;
+    }
+
+    /**
+     * @return ExtraData
+     */
+    protected function getExtraData(): ExtraData
+    {
+        return $this->extraData;
     }
 
     /**
@@ -58,5 +99,99 @@ abstract class PaymentSystemType extends AbstractType
         }
 
         return array_merge_recursive($data, $common);
+    }
+
+    /**
+     * @param FormBuilderInterface $builder
+     * @param TaxMapInterface|null $doc
+     * @param bool $fieldTaxationRateCode
+     * @param bool $fieldTaxationSystemCode
+     */
+    protected function addFieldsForFiscalization(
+        FormBuilderInterface $builder,
+        TaxMapInterface $doc = null,
+        bool $fieldTaxationRateCode = true,
+        bool $fieldTaxationSystemCode = true
+    ): void
+    {
+        $formModifier = function (
+            FormEvent $event,
+            TaxMapInterface $doc = null,
+            bool $fieldTaxationRateCode = true,
+            bool $fieldTaxationSystemCode = true
+        ) {
+
+            /** @var FormBuilderInterface $form */
+            $form = $event->getForm();
+            if ($event->getData() instanceof FiscalizationInterface) {
+//                $disabledTaxion = !$event->getData()->isWithFiscalization();
+                $disabledTaxion = false;
+                $attr = [];
+            } else {
+                $disabledTaxion = empty($event->getData()['isWithFiscalization']);
+                $attr = [
+                    'disabled' => $disabledTaxion,
+                ];
+            }
+
+            $attr['class'] = 'select_tax_code';
+
+            $form->add(
+                'isWithFiscalization',
+                CheckboxType::class,
+                $this->addCommonAttributes(
+                    [
+                        'label' => 'form.clientPaymentSystemType.is_with_fiscalization.label',
+                        'attr'  => [
+                            'class' => 'checkboxForIsWithFiscalization',
+                            'disabled' => $disabledTaxion,
+                        ],
+                    ]
+                )
+            );
+
+            if ($fieldTaxationRateCode) {
+                $form->add(
+                    'taxationRateCode',
+                    InvertChoiceType::class,
+                    $this->addCommonAttributes(
+                        [
+                            'label'   => 'form.clientPaymentSystemType.taxation_rate_code',
+                            'choices' => $this->getExtraData()->getTaxationRateCodes($doc),
+                            'attr'    => $attr
+                        ]
+                    )
+                );
+            }
+
+            if ($fieldTaxationSystemCode) {
+                $form->add(
+                    'taxationSystemCode',
+                    InvertChoiceType::class,
+                    $this->addCommonAttributes(
+                        [
+                            'label'   => 'form.clientPaymentSystemType.taxation_system_code',
+                            'choices' => $this->getExtraData()->getTaxationSystemCodes($doc),
+                            'attr'    => $attr
+                        ]
+                    )
+                );
+            }
+        };
+
+
+        $builder->addEventListener(
+            FormEvents::PRE_SET_DATA,
+            function (FormEvent $event) use ($formModifier, $doc, $fieldTaxationRateCode, $fieldTaxationSystemCode) {
+                $formModifier($event, $doc, $fieldTaxationRateCode, $fieldTaxationSystemCode);
+            }
+        );
+
+        $builder->addEventListener(
+            FormEvents::PRE_SUBMIT,
+            function (FormEvent $event) use ($formModifier, $doc, $fieldTaxationRateCode, $fieldTaxationSystemCode) {
+                $formModifier($event, $doc, $fieldTaxationRateCode, $fieldTaxationSystemCode);
+            }
+        );
     }
 }

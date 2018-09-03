@@ -16,9 +16,6 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class TinkoffType extends PaymentSystemType
 {
-    use ExtraDataTrait;
-    use FiscalizationTypeTrait;
-
     private const PREFIX_LABEL = 'form.clientPaymentSystemType.tinkoff_';
 
     private const NAME_TYPE_TERMINAL_KEY = 'terminalKey';

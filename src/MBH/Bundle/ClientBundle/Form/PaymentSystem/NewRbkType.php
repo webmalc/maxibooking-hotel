@@ -16,9 +16,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 
 class NewRbkType extends PaymentSystemType
 {
-    use ExtraDataTrait;
-    use FiscalizationTypeTrait;
-
     private const PREFIX = '';
     private const PREFIX_LABEL = 'form.clientPaymentSystemType.newRbk_';
 

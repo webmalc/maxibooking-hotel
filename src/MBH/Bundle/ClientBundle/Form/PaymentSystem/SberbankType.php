@@ -17,9 +17,6 @@ use Symfony\Component\Form\FormEvents;
 
 class SberbankType extends PaymentSystemType
 {
-    use ExtraDataTrait;
-    use FiscalizationTypeTrait;
-
     public static function getSourceDocument(): PaymentSystemDocument
     {
         return new Sberbank();
@@ -114,6 +111,52 @@ class SberbankType extends PaymentSystemType
                         'constraints' => [new \Symfony\Component\Validator\Constraints\Range(['min' => 1])],
                     ]
                 )
+            );
+
+        $urlAttr = [
+            'group'       => 'no-group',
+            'mapped' => false,
+            'required' => false,
+            'attr' => [
+                'disabled' => true
+            ]
+        ];
+
+        $urlSuccessAttr = [
+            'label' => 'orm.clientPaymentSystemType.sberbank.successUrl.label',
+            'data' => $this->getClientConfig()->getSuccessUrl()
+            ];
+
+        $urlFailAttr = [
+            'label' => 'orm.clientPaymentSystemType.sberbank.failUrl.label',
+            'data' => $this->getClientConfig()->getFailUrl()
+            ];
+
+        $urlWarning = [
+            'help' => 'Необходимо указать url, иначе ссылка будет сформерована на строне Sberbank\'а.',
+            'attr' => [
+                'style' => 'border-color: red;'
+                ]
+        ];
+
+        if ($this->getClientConfig()->getSuccessUrl() === null) {
+            $urlSuccessAttr = array_merge($urlSuccessAttr, $urlWarning);
+        }
+
+        if ($this->getClientConfig()->getFailUrl() === null) {
+            $urlFailAttr = array_merge($urlFailAttr, $urlWarning);
+        }
+
+        $builder
+            ->add(
+                'successUrl',
+                TextType::class,
+                array_merge_recursive($urlAttr, $urlSuccessAttr)
+            )
+            ->add(
+                'failUrl',
+                TextType::class,
+                array_merge_recursive($urlAttr, $urlFailAttr)
             );
 
         $this->addFieldsForFiscalization($builder, $sberbank);
