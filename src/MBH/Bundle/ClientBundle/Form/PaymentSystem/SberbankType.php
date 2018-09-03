@@ -14,7 +14,6 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
-use Symfony\Component\Validator\Constraints\NotNull;
 
 class SberbankType extends PaymentSystemType
 {
@@ -50,8 +49,8 @@ class SberbankType extends PaymentSystemType
                 TextType::class,
                 $this->addCommonAttributes(
                     [
-                        'label' => 'form.clientPaymentSystemType.sberbank_userName',
-                        'help'  => 'При указании token, userName и password не обязателен.',
+                        'label' => 'form.clientPaymentSystemType.sberbank.userName.label',
+                        'help'  => 'form.clientPaymentSystemType.sberbank.userName.help',
                         'attr'  => [
                             'disabled' => $disabledUserAndPass,
                             'class' => 'sberbank-field-userName'
@@ -64,8 +63,8 @@ class SberbankType extends PaymentSystemType
                     TextType::class,
                     $this->addCommonAttributes(
                         [
-                            'label' => 'form.clientPaymentSystemType.sberbank_password',
-                            'help'  => 'При указании token, userName и password не обязателен.',
+                            'label' => 'form.clientPaymentSystemType.sberbank.password.label',
+                            'help'  => 'form.clientPaymentSystemType.sberbank.password.help',
                             'attr'  => [
                                 'disabled' => $disabledUserAndPass,
                                 'class' => 'sberbank-field-password'
@@ -78,8 +77,8 @@ class SberbankType extends PaymentSystemType
                     TextType::class,
                     $this->addCommonAttributes(
                         [
-                            'label' => 'form.clientPaymentSystemType.sberbank_token',
-                            'help'  => 'При указании userName и password, token не обязателен.',
+                            'label' => 'form.clientPaymentSystemType.sberbank.token.label',
+                            'help'  => 'form.clientPaymentSystemType.sberbank.token.help',
                             'attr'  => [
                                 'disabled' => $disabledToken,
                                 'class' => 'sberbank-field-token'
@@ -110,7 +109,8 @@ class SberbankType extends PaymentSystemType
                 NumberType::class,
                 $this->addCommonAttributes(
                     [
-                        'label'       => 'form.clientPaymentSystemType.sberbank_sessionTimeoutMinutes',
+                        'label'       => 'form.clientPaymentSystemType.sberbank.sessionTimeoutMinutes.label',
+                        'help'        => 'form.clientPaymentSystemType.sberbank.sessionTimeoutMinutes.help',
                         'constraints' => [new \Symfony\Component\Validator\Constraints\Range(['min' => 1])],
                     ]
                 )

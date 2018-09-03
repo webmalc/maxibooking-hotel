@@ -63,7 +63,15 @@ form.clientPaymentSystemType.newRbk_lifetimeInvoice: 'Время жизни ин
 form.clientPaymentSystemType.tinkoff_terminalKey: 'Идентификатор терминала'
 form.clientPaymentSystemType.tinkoff_language: 'Язык формы оплаты'
 form.clientPaymentSystemType.tinkoff_secretKey: 'Пароль для терминала'
-form.clientPaymentSystemType.tinkoff_redirectDueDate: 'Cрок жизни ссылки (часы)'
+form.clientPaymentSystemType.tinkoff_redirectDueDate: 'Cрок жизни ссылки(часы)'
+form.clientPaymentSystemType.sberbank.userName.label: Логин
+form.clientPaymentSystemType.sberbank.password.label: Пароль
+form.clientPaymentSystemType.sberbank.token.label: Token
+form.clientPaymentSystemType.sberbank.sessionTimeoutMinutes.label: 'Время жизни заказа(минуты)'
+form.clientPaymentSystemType.sberbank.userName.help: 'Логин служебной учётной записи продавца. При указании Token, Логин и Пароль не обязателен.'
+form.clientPaymentSystemType.sberbank.password.help: 'Пароль служебной учётной записи продавца. При указании Token, Логин и Пароль не обязателен.'
+form.clientPaymentSystemType.sberbank.token.help: 'При указании Логин и Пароль, Token не обязателен.'
+form.clientPaymentSystemType.sberbank.sessionTimeoutMinutes.help: 'Время жизни заказа в системе Сбербанка'
 
 controller.clientConfig.change_time_zone_contact_support: 'Для изменения временной зоны, пожалуйста, обратитесь в службу тех.поддержки по адресу: "%supportEmail%"'
 controller.clientConfig.params_success_save: 'Параметры успешно сохранены.'
