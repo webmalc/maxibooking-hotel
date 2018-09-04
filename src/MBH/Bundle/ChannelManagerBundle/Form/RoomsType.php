@@ -54,6 +54,10 @@ class RoomsType extends AbstractType
     {
         $ids = [];
         $notMappedRoomsId = [];
+        if (empty($data)) {
+            $context->addViolation('validator.rooms_type.empty_rooms_list');
+        }
+
         foreach($data as $cmRoomId => $roomType) {
             if ($roomType && in_array($roomType->getId(), $ids)) {
                 $context->addViolation('roomtype.validation');

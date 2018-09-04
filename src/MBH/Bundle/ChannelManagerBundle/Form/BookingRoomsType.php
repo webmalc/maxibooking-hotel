@@ -77,6 +77,10 @@ class BookingRoomsType extends AbstractType
     {
         $ids = [];
         $notMappedRoomsId = [];
+        if (empty($data)) {
+            $context->addViolation('validator.rooms_type.empty_tariffs_list');
+        }
+
         /** @var RoomType $roomType */
         foreach ($data as $key => $roomType) {
             if ($this->helper->startsWith($key, self::ROOM_TYPE_FIELD_PREFIX)) {
