@@ -68,6 +68,12 @@ class Sberbank extends PaymentSystemDocument implements TaxMapInterface, Fiscali
     private $token;
 
     /**
+     * @var null|string
+     * @ODM\Field(type="string")
+     */
+    private $securityKey;
+
+    /**
      * @var int
      * @ODM\Field(type="int")
      */
@@ -101,6 +107,22 @@ class Sberbank extends PaymentSystemDocument implements TaxMapInterface, Fiscali
     public function getSessionTimeoutMinutes(): int
     {
         return $this->sessionTimeoutSecs / 60;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getSecurityKey(): ?string
+    {
+        return $this->securityKey;
+    }
+
+    /**
+     * @param null|string $securityKey
+     */
+    public function setSecurityKey(?string $securityKey): void
+    {
+        $this->securityKey = $securityKey;
     }
 
     /**

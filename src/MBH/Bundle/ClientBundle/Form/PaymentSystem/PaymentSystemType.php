@@ -81,15 +81,16 @@ abstract class PaymentSystemType extends AbstractType
      * @param array $data
      * @return array
      */
-    protected function addCommonAttributes(array $data = []): array
+    protected function addCommonAttributes(array $data = [], bool $requiredInFronend = true): array
     {
         $common = [
             'group'       => 'no-group',
             'required'    => false,
-            'attr' => [
-                'data-required' => true
-            ]
         ];
+
+        if ($requiredInFronend) {
+            $common['attr'] = ['data-required' => true];
+        }
 
         /**
          * атрибут дисеблед пока встречается только в группе при фискализации

@@ -179,7 +179,7 @@ class RegisterRequest implements \JsonSerializable
     /**
      * Блок, содержащий корзину товаров заказа.
      *
-     * @var string
+     * @var null|OrderBundle
      */
     private $orderBundle;
 
@@ -285,9 +285,9 @@ class RegisterRequest implements \JsonSerializable
     }
 
     /**
-     * @param string $orderBundle
+     * @param OrderBundle $orderBundle
      */
-    public function setOrderBundle(string $orderBundle): void
+    public function setOrderBundle(OrderBundle $orderBundle): void
     {
         $this->orderBundle = $orderBundle;
     }

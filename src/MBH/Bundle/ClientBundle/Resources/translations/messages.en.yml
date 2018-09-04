@@ -52,6 +52,14 @@ form.clientPaymentSystemType.sberbank.userName.help: "Login to the seller's serv
 form.clientPaymentSystemType.sberbank.password.help: "The Password for the seller's service account. When specifying Token, Login and Password is optional."
 form.clientPaymentSystemType.sberbank.token.help: 'When specifying Login and Password, Token is optional.'
 form.clientPaymentSystemType.sberbank.sessionTimeoutMinutes.help: 'Order lifetime in the Sberbank system'
+form.clientPaymentSystemType.sberbank.successUrl.label: 'Success Url'
+form.clientPaymentSystemType.sberbank.successUrl.help: 'The address to which you want to redirect the user in case of successful payment'
+form.clientPaymentSystemType.sberbank.successUrl.help.warning: 'You can add a link by going back<br>The address to which you want to redirect the user in case of successful payment.<br>The link will be formed on the side of Sberbank.'
+form.clientPaymentSystemType.sberbank.failUrl.label: 'Fail Url'
+form.clientPaymentSystemType.sberbank.failUrl.help: 'The address to which you want to redirect the user in case of unsuccessful payment.'
+form.clientPaymentSystemType.sberbank.failUrl.help.warning: 'You can add a link by going back.<br>The address to which you want to redirect the user in case of unsuccessful payment.<br>The link will be formed on the side of Sberbank.'
+form.clientPaymentSystemType.sberbank.securityKey.label: 'Security key'
+form.clientPaymentSystemType.sberbank.securityKey.help: 'To obtain a security key, contact Sberbank Technical Support.'
 
 mailer.notice.unpaid.order.list: 'List of reservations with overdue payments'
 form.clientConfigType.search_tariffs: 'Number of rates'

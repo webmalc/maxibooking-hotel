@@ -28,16 +28,38 @@ class SberbankType extends PaymentSystemType
 
         $formModifier = function (FormEvent $event, string $eventName) {
 
-            $disabledUserAndPass = false;
-            $disabledToken = false;
+            $backendDisabledUserAndPass = false;
+            $backendDisabledToken = false;
+            $frontendRequiredUserAndPass = true;
+            $frontendRequiredToken = true;
 
+            /** выключение проверки на backend`е */
             if ($eventName === FormEvents::PRE_SUBMIT) {
                 if (empty($event->getData()['token'])) {
-                    $disabledToken = true;
+                    $backendDisabledToken = true;
                 } else {
-                    $disabledUserAndPass = true;
+                    $backendDisabledUserAndPass = true;
                 }
             }
+
+            /** выключение проверки на frontend`е */
+            if ($event->getData() instanceof Sberbank) {
+                /** @var Sberbank $sbrf */
+                $sbrf = $event->getData();
+
+                $emptyToken = $sbrf->getToken() === null;
+                $emptyRequiredUserAndPass = $sbrf->getUserName() === null || $sbrf->getPassword() === null;
+
+                if (!$emptyToken) {
+                    $frontendRequiredUserAndPass = false;
+                } elseif ($emptyToken && !$emptyRequiredUserAndPass) {
+                    $frontendRequiredToken = false;
+                }
+            }
+
+            $addClass = function (string $name, bool $add) {
+                return $name . ($add ? ' payment-system-form_sberbank' : '');
+            };
 
             $form = $event->getForm();
 
@@ -49,10 +71,11 @@ class SberbankType extends PaymentSystemType
                         'label' => 'form.clientPaymentSystemType.sberbank.userName.label',
                         'help'  => 'form.clientPaymentSystemType.sberbank.userName.help',
                         'attr'  => [
-                            'disabled' => $disabledUserAndPass,
-                            'class' => 'sberbank-field-userName'
+                            'disabled' => $backendDisabledUserAndPass,
+                            'class'    => $addClass('sberbank-field-userName', $frontendRequiredUserAndPass),
                         ],
-                    ]
+                    ],
+                    $frontendRequiredUserAndPass
                 )
             )
                 ->add(
@@ -63,10 +86,11 @@ class SberbankType extends PaymentSystemType
                             'label' => 'form.clientPaymentSystemType.sberbank.password.label',
                             'help'  => 'form.clientPaymentSystemType.sberbank.password.help',
                             'attr'  => [
-                                'disabled' => $disabledUserAndPass,
-                                'class' => 'sberbank-field-password'
+                                'disabled' => $backendDisabledUserAndPass,
+                                'class'    => $addClass('sberbank-field-password', $frontendRequiredUserAndPass),
                             ],
-                        ]
+                        ],
+                        $frontendRequiredUserAndPass
                     )
                 )
                 ->add(
@@ -77,10 +101,11 @@ class SberbankType extends PaymentSystemType
                             'label' => 'form.clientPaymentSystemType.sberbank.token.label',
                             'help'  => 'form.clientPaymentSystemType.sberbank.token.help',
                             'attr'  => [
-                                'disabled' => $disabledToken,
-                                'class' => 'sberbank-field-token'
+                                'disabled' => $backendDisabledToken,
+                                'class'    => $addClass('sberbank-field-token', $frontendRequiredToken),
                             ],
-                        ]
+                        ],
+                        $frontendRequiredToken
                     )
                 );
         };
@@ -114,37 +139,40 @@ class SberbankType extends PaymentSystemType
             );
 
         $urlAttr = [
-            'group'       => 'no-group',
-            'mapped' => false,
+            'group'    => 'no-group',
+            'mapped'   => false,
             'required' => false,
-            'attr' => [
-                'disabled' => true
-            ]
+            'attr'     => [
+                'disabled' => true,
+            ],
         ];
 
         $urlSuccessAttr = [
-            'label' => 'orm.clientPaymentSystemType.sberbank.successUrl.label',
-            'data' => $this->getClientConfig()->getSuccessUrl()
-            ];
+            'label' => 'form.clientPaymentSystemType.sberbank.successUrl.label',
+            'help'  => 'form.clientPaymentSystemType.sberbank.successUrl.help',
+            'data'  => $this->getClientConfig()->getSuccessUrl(),
+        ];
 
         $urlFailAttr = [
-            'label' => 'orm.clientPaymentSystemType.sberbank.failUrl.label',
-            'data' => $this->getClientConfig()->getFailUrl()
-            ];
+            'label' => 'form.clientPaymentSystemType.sberbank.failUrl.label',
+            'help'  => 'form.clientPaymentSystemType.sberbank.failUrl.help',
+            'data'  => $this->getClientConfig()->getFailUrl(),
+        ];
 
         $urlWarning = [
-            'help' => 'Необходимо указать url, иначе ссылка будет сформерована на строне Sberbank\'а.',
             'attr' => [
-                'style' => 'border-color: red;'
-                ]
+                'class' => 'payment-system-form_sberbank_url_warning',
+            ],
         ];
 
         if ($this->getClientConfig()->getSuccessUrl() === null) {
             $urlSuccessAttr = array_merge($urlSuccessAttr, $urlWarning);
+            $urlSuccessAttr['help'] .= '.warning';
         }
 
         if ($this->getClientConfig()->getFailUrl() === null) {
             $urlFailAttr = array_merge($urlFailAttr, $urlWarning);
+            $urlFailAttr['help'] .= '.warning';
         }
 
         $builder
@@ -157,6 +185,18 @@ class SberbankType extends PaymentSystemType
                 'failUrl',
                 TextType::class,
                 array_merge_recursive($urlAttr, $urlFailAttr)
+            );
+
+        $builder
+            ->add(
+                'securityKey',
+                TextType::class,
+                $this->addCommonAttributes(
+                    [
+                        'label' => 'form.clientPaymentSystemType.sberbank.securityKey.label',
+                        'help'  => 'form.clientPaymentSystemType.sberbank.securityKey.help',
+                    ]
+                )
             );
 
         $this->addFieldsForFiscalization($builder, $sberbank);

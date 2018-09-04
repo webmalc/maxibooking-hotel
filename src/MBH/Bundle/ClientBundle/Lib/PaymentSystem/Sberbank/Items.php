@@ -12,7 +12,7 @@ namespace MBH\Bundle\ClientBundle\Lib\PaymentSystem\Sberbank;
  *
  * @see https://securepayments.sberbank.ru/wiki/doku.php/integration:api:rest:requests:register_cart#items
  */
-class Items
+class Items implements \JsonSerializable
 {
     /**
      * Уникальный идентификатор товарной позиции внутри корзины заказа.
@@ -27,22 +27,26 @@ class Items
      * @var string
      */
     private $name;
-    
+
     /**
+     * НЕ ИСПОЛЬЗУЕТСЯ
+     *
      * Дополнительный блок с параметрами описания товарной позиции.
      *
-     * @var 
+     * @var
      */
     private $itemDetails;
 
     /**
      * Элемент описывающий общее количество товарных позиций одного positionId и их меру измерения
      *
-     * @var
+     * @var Quantity
      */
     private $quantity;
 
     /**
+     * НЕ ИСПОЛЬЗУЕТСЯ
+     *
      * Сумма стоимости всех товарных позиций одного positionId в минимальных единицах валюты.
      * itemAmount обязателен к передаче, только если не был передан параметр itemPrice.
      * В противном случае передача itemAmount не требуется.
@@ -54,6 +58,8 @@ class Items
     private $itemAmount;
 
     /**
+     * НЕ ИСПОЛЬЗУЕТСЯ
+     *
      * Код валюты товарной позиции ISO 4217. Если не указан, считается равным валюте заказа
      *
      * @var integer
@@ -98,4 +104,66 @@ class Items
      * @var int
      */
     private $itemPrice;
+
+    /**
+     * @param int $positionId
+     */
+    public function setPositionId(int $positionId): void
+    {
+        $this->positionId = $positionId;
+    }
+
+    /**
+     * @param string $name
+     */
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @param Quantity $quantity
+     */
+    public function setQuantity(Quantity $quantity): void
+    {
+        $this->quantity = $quantity;
+    }
+
+    /**
+     * @param string $itemCode
+     */
+    public function setItemCode(string $itemCode): void
+    {
+        $this->itemCode = $itemCode;
+    }
+
+    /**
+     * @param int $tax
+     */
+    public function setTax(int $tax): void
+    {
+        $this->tax = $tax;
+    }
+
+    /**
+     * @param int $itemPrice
+     */
+    public function setItemPrice(int $itemPrice): void
+    {
+        $this->itemPrice = $itemPrice;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'positionId' => $this->positionId,
+            'name'       => $this->name,
+            'quantity'   => $this->quantity,
+            'itemCode'   => $this->itemCode,
+            'tax'        => $this->tax,
+            'itemPrice'  => $this->itemPrice,
+        ];
+    }
+
+
 }

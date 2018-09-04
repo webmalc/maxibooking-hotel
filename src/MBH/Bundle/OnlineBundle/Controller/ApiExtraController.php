@@ -68,7 +68,7 @@ class ApiExtraController extends Controller
         $dataForLogger .= '. Data init: ' . json_encode($init, JSON_UNESCAPED_UNICODE);
 
         if ($response === null || $response->getErrorCode() !== '0') {
-            $msg = 'at response from tinkoff.';
+            $msg = 'at response from tinkoff: ';
 
             $logger->addError($msg . $dataForLogger);
             throw new \Exception('Error ' . $msg . $response->getDetails() ?? 'error in json or empty body');
@@ -105,7 +105,7 @@ class ApiExtraController extends Controller
         $dataForLogger .= '. Data init: ' . json_encode($register, JSON_UNESCAPED_UNICODE);
 
         if ($response === null || $response->getErrorCode() !== RegisterResponse::NO_ERROR) {
-            $msg = 'at response from sberbank.';
+            $msg = 'at response from sberbank: ';
 
             $logger->addError($msg . $dataForLogger);
             throw new \Exception('Error ' . $msg . $response->getErrorMessage() ?? 'error in json or empty body');

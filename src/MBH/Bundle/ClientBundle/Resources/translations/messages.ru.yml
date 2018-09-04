@@ -72,6 +72,14 @@ form.clientPaymentSystemType.sberbank.userName.help: 'Логин служебн�
 form.clientPaymentSystemType.sberbank.password.help: 'Пароль служебной учётной записи продавца. При указании Token, Логин и Пароль не обязателен.'
 form.clientPaymentSystemType.sberbank.token.help: 'При указании Логин и Пароль, Token не обязателен.'
 form.clientPaymentSystemType.sberbank.sessionTimeoutMinutes.help: 'Время жизни заказа в системе Сбербанка'
+form.clientPaymentSystemType.sberbank.successUrl.label: 'Success Url'
+form.clientPaymentSystemType.sberbank.successUrl.help: 'Адрес, на который требуется перенаправить пользователя в случае успешной оплаты.'
+form.clientPaymentSystemType.sberbank.successUrl.help.warning: "Добавить ссылку можно вернувшись назад.<br>Адрес, на который требуется перенаправить пользователя в случае успешной оплаты.<br>Ссылка будет сформирована на стороне Sberbank'а."
+form.clientPaymentSystemType.sberbank.failUrl.label: 'Fail Url'
+form.clientPaymentSystemType.sberbank.failUrl.help: 'Адрес, на который требуется перенаправить пользователя в случае неуспешной оплаты.'
+form.clientPaymentSystemType.sberbank.failUrl.help.warning: "Добавить ссылку можно вернувшись назад.<br>Адрес, на который требуется перенаправить пользователя в случае неуспешной оплаты.<br>Ссылка будет сформирована на стороне Sberbank'а."
+form.clientPaymentSystemType.sberbank.securityKey.label: 'Закрытый ключ'
+form.clientPaymentSystemType.sberbank.securityKey.help: "Для получения закрытого ключа, обратитесь в службу технической поддержки Sberbank'а."
 
 controller.clientConfig.change_time_zone_contact_support: 'Для изменения временной зоны, пожалуйста, обратитесь в службу тех.поддержки по адресу: "%supportEmail%"'
 controller.clientConfig.params_success_save: 'Параметры успешно сохранены.'
