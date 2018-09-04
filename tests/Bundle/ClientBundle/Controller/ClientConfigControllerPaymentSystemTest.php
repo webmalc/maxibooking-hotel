@@ -323,6 +323,10 @@ class ClientConfigControllerPaymentSystemTest extends WebTestCase
         $dataForm = [];
 
         foreach ($nameFields as $field) {
+            if (!empty($field->getAttribute('disabled'))) {
+                continue;
+            }
+
             $attr = $field->getAttribute('name');
 
             switch ($field->nodeName) {
