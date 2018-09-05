@@ -1,4 +1,5 @@
-{% if formConfig.forMbSite %}
+{#{% if formConfig.forMbSite %}#}
+{% if true %}
     <link href="https://fonts.googleapis.com/css?family=PT+Sans+Caption:400,700|PT+Serif+Caption:400,400i&amp;subset=cyrillic" rel="stylesheet">
     {% set themeColors = siteConfig.getThemeColors() %}
     <style>
@@ -9,12 +10,6 @@
 
         .mbh-form-row {
             vertical-align: top;
-        }
-
-        #mbh-form-begin, #mbh-form-end {
-            background-image: url({{ asset('bundles/mbhonline/images/icon-calendar.png') }});
-            background-repeat: no-repeat;
-            background-position: right;
         }
 
         .mbh-form-row.form-group:not(#mbh-form-submit-wrapper) {
@@ -111,6 +106,12 @@
             }
             #mbh-form-begin, #mbh-form-end {
                 width: 140px !important;
+            }
+
+            #mbh-form-begin, #mbh-form-end {
+                background-image: url({{ asset('bundles/mbhonline/images/icon-calendar.png') }});
+                background-repeat: no-repeat;
+                background-position: right;
             }
         }
 
