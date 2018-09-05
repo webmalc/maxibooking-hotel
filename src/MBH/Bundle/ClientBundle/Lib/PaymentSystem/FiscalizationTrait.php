@@ -14,7 +14,7 @@ trait FiscalizationTrait
      * @var bool
      * @ODM\Field(type="bool")
      */
-    protected $isWithFiscalization = true;
+    protected $isWithFiscalization = false;
 
     /**
      * @return bool
