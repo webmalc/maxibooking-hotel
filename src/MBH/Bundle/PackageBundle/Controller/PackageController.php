@@ -254,6 +254,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             ->getQueryBuilderByRequestData($request, $this->getUser(), $this->get('mbh.hotel.selector')->getSelected());
 
         $entities = $qb->getQuery()->execute();
+        $entitiesAsArray = $entities->toArray();
+        $this->dm->getRepository('MBHPackageBundle:Order')->loadRelatedOrders($entitiesAsArray);
         $summary = $this->get('mbh.order_manager')
             ->calculateSummary($qb->limit(0)->skip(0));
         //TODO: Check $entities->count() must be != count($entities)

@@ -14,6 +14,7 @@ use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Service;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\ParameterBag;
@@ -29,6 +30,7 @@ use Swagger\Annotations as SWG;
 class ExternalApiController extends BaseController
 {
     /**
+     * @Cache(expires="+1 hour", public=true)
      * @Method("GET")
      * @SWG\Get(
      *     path="/management/online/api/roomTypes",
@@ -109,6 +111,7 @@ class ExternalApiController extends BaseController
     }
 
     /**
+     * @Cache(expires="+1 hour", public=true)
      * @Method("GET")
      * @SWG\Get(
      *     path="/management/online/api/tariffs",
@@ -167,6 +170,7 @@ class ExternalApiController extends BaseController
     }
 
     /**
+     * @Cache(expires="+1 hour", public=true)
      * @Method("GET")
      * @SWG\Get(
      *     path="/management/online/api/hotels",
@@ -232,6 +236,7 @@ class ExternalApiController extends BaseController
     }
 
     /**
+     * @Cache(expires="+1 hour", public=true)
      * @Method("GET")
      * @SWG\Get(
      *     path="/management/online/api/services",
@@ -409,6 +414,7 @@ class ExternalApiController extends BaseController
     }
 
     /**
+     * @Cache(expires="+1 hour", public=true)
      * @Route("/minPrices")
      * @param Request $request
      * @return JsonResponse
@@ -442,6 +448,7 @@ class ExternalApiController extends BaseController
     }
 
     /**
+     * @Cache(expires="+1 hour", public=true)
      * @Route("/facilities_data")
      * @param Request $request
      * @return JsonResponse

@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\HotelBundle\Form\RoomTypeFlow;
 
-use Gedmo\Translatable\Translatable;
 use MBH\Bundle\BaseBundle\Form\ImageType;
 use MBH\Bundle\BaseBundle\Service\DocumentFieldsManager;
 use MBH\Bundle\BaseBundle\Service\FormDataHandler;
@@ -10,14 +9,14 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Model\FlowRuntimeException;
 use MBH\Bundle\HotelBundle\Service\FormFlow;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Services\PriceCache;
 use MBH\Bundle\PriceBundle\Services\RoomCache;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
 
 class RoomTypeFlow extends FormFlow
 {
-    const DATE_FORMAT = 'd.m.Y';
+    const DATE_FORMAT = 'd.m.Y H:i:s';
 
     private $hotel;
     private $documentFieldsManager;
@@ -156,12 +155,21 @@ class RoomTypeFlow extends FormFlow
             $flowConfig = $this->getFlowConfig();
             $flowData = $flowConfig->getFlowData();
             if ($this->getCurrentStepNumber() === 1) {
-                $flowData['roomTypeId'] = $formData['roomType']->getId();
+                /** @var RoomType $roomType */
+                $roomType = $formData['roomType'];
+                $flowData['roomTypeId'] = $roomType->getId();
             } elseif ($this->getCurrentStepNumber() === 8) {
-                $flowData['pricesTariffId'] = $formData['tariff']->getId();
+                /** @var Tariff $tariff */
+                $tariff = $formData['tariff'];
+                $flowData['pricesTariffId'] = $tariff->getId();
             } elseif ($this->getCurrentStepNumber() === 7) {
-                $flowData['begin'] = $formData['begin']->format(self::DATE_FORMAT);
-                $flowData['end'] = $formData['end']->format(self::DATE_FORMAT);
+                /** @var \DateTime $begin */
+                $begin = $formData['begin'];
+                /** @var \DateTime $end */
+                $end = $formData['end'];
+
+                $flowData['begin'] = $begin->format(self::DATE_FORMAT);
+                $flowData['end'] = $end->format(self::DATE_FORMAT);
             } else {
                 $flowData = array_replace($flowData, $formData);
             }
@@ -225,7 +233,7 @@ class RoomTypeFlow extends FormFlow
      */
     private function getDateFromFlowData($fieldName)
     {
-        return \DateTime::createFromFormat(self::DATE_FORMAT, $this->getFlowData()[$fieldName]);
+        return \DateTime::createFromFormat(self::DATE_FORMAT, $this->getFlowData()[$fieldName] . ' 00:00:00');
     }
 
     /**

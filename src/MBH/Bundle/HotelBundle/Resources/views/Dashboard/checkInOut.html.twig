@@ -1,0 +1,41 @@
+<div class="row" id="checkinout-widget">
+    <div class="col-md-4 col-xs-12">
+        <div class="box box-widget widget-user-2">
+            <div class="widget-user-header bg-aqua-active row text-center without-margin">
+                <a href="{{ path('report_porter', {type: 'arrivals'}) }}" id="checkinout-header">
+                    <div class="col-xs-5">{{ 'views.dashboard.index.checkinout.arrival'|trans }}</div>
+                    <div class="col-xs-2"><i class="fa fa-arrows-h"></i></div>
+                    <div class="col-xs-5">{{ 'views.dashboard.index.checkinout.departure'|trans }}</div>
+                </a>
+            </div>
+            <div class="box-footer no-padding row text-center without-margin" id="checkinout-box">
+                <div class="col-xs-6">
+                    <a class="checkin-box" href="{{ path('report_porter', {type: 'arrivals'}) }}">
+                        <div class="checkinout-lines">
+                            <i class="fa fa-arrow-up"></i>
+                        </div>
+                        <div class="checkinout-lines">
+                            <span class="number-of-packages-in-out bg-red" id="number-of-check-in"></span>
+                        </div>
+                        <div class="checkinout-lines">
+                            <strong><span>{{ 'views.dashboard.index.checkinout.arrival'|trans|lower }}</span></strong>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xs-6">
+                    <a href="{{ path('report_porter', {type: 'out'}) }}" class="checkout-box">
+                    <div class="checkinout-lines">
+                        <i class="fa fa-arrow-down"></i>
+                    </div>
+                    <div class="checkinout-lines">
+                        <span class="number-of-packages-in-out bg-green" id="number-of-check-out"></span>
+                    </div>
+                    <div class="checkinout-lines">
+                        <strong><span>{{ 'views.dashboard.index.checkinout.departure'|trans|lower }}</span></strong>
+                    </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,10 @@
+{% set flowWidgetsData = [
+    {id: 'roomType', title: 'views.dashboard.index.widgets.roomTypes', routeName: 'room_type_flow', icon: 'bed'},
+    {id: 'hotel', title: 'views.dashboard.index.widgets.hotel', routeName: 'hotel_flow', icon: 'home'}
+]  %}
+
+<div class="row" id="flow-widgets">
+    {% for widgetData in flowWidgetsData %}
+        {% include '@MBHHotel/Dashboard/widget.html.twig' with widgetData %}
+    {% endfor %}
+</div>

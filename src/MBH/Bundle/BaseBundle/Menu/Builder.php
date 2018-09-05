@@ -153,6 +153,17 @@ class Builder
 
         // packages
         $menu->addChild($this->createItem($packages));
+        $menu->addChild($this->createItem([
+            'dashboard' => [
+            'options'    => [
+                'route' => 'dashboard',
+                'label' => 'views.dashboard.title',
+            ],
+            'attributes' => [
+                'icon' => 'fa fa-home',
+            ],
+        ]
+        ]));
 
         // Reception
         $menu->addChild($this->itemsReception());

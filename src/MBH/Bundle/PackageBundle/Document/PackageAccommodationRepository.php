@@ -111,4 +111,20 @@ class PackageAccommodationRepository extends DocumentRepository
             ->getQuery()
             ->execute();
     }
+
+    public function loadRelatedToPackages(array $packages)
+    {
+        $accommodationIds = [];
+        array_walk($packages, function(Package $package) {
+            array_merge(array_map(function(PackageAccommodation $accommodation) {
+                return $accommodation->getId();
+            }, $package->getAccommodations()->getMongoData()));
+        });
+
+//        $accommodations = $this->findBy([
+//            'id' => ['$in' => $accommodationIds]
+//        ]);
+//
+//        return $accommodations;
+    }
 }

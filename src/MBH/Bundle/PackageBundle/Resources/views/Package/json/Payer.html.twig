@@ -1,22 +1,29 @@
 {% wrapinline %}
-    <a data-toggle='tooltip' href='{{ path('package_order_tourist_edit', {'id': entity.order.id, 'packageId': entity.id}) }}' title='{{ "package.json.go_to_payer"|trans({}, "MBHPackageBundle") }}' class='{{ entity.order.payer ? '' : 'text text-danger' }}'>
-        {% if entity.order.payer %}
-            {{ entity.order.payer.shortName }}
-        {% else %}
-            &lt;{{ "package.json.no_payer"|trans({}, "MBHPackageBundle") }}&gt;
-        {% endif %}
-    </a>
-    <br>
-    <small>
-        {% if entity.adults > 0 %}
-            {{ entity.adults }} {{ 'package.json_json.number_of_adults'|trans }}
-        {% endif %}
-        {% if entity.adults > 0 and entity.children > 0 %}
-            +
-        {% endif %}
-        {% if entity.children > 0 %}
-            {{ entity.children }} {{ 'package.json_json.number_of_children'|trans }}
-        {% endif %}
-        / {{ 'package.json_json.issued_guests'|trans }}: {{ entity.tourists|length }}
-    </small>
+    {% if showPayer is not defined or showPayer %}
+        <a data-toggle='tooltip'
+           href='{{ path('package_order_tourist_edit', {'id': entity.order.id, 'packageId': entity.id}) }}'
+           title='{{ "package.json.go_to_payer"|trans({}, "MBHPackageBundle") }}'
+           class='{{ entity.order.payer ? '' : 'text text-danger' }}'>
+            {% if entity.order.payer %}
+                {{ entity.order.payer.shortName }}
+            {% else %}
+                &lt;{{ "package.json.no_payer"|trans({}, "MBHPackageBundle") }}&gt;
+            {% endif %}
+        </a>
+        <br>
+    {% endif %}
+    {% if showGuests is not defined or showGuests %}
+        <small>
+            {% if entity.adults > 0 %}
+                {{ entity.adults }} {{ 'package.json_json.number_of_adults'|trans }}
+            {% endif %}
+            {% if entity.adults > 0 and entity.children > 0 %}
+                +
+            {% endif %}
+            {% if entity.children > 0 %}
+                {{ entity.children }} {{ 'package.json_json.number_of_children'|trans }}
+            {% endif %}
+            / {{ 'package.json_json.issued_guests'|trans }}: {{ entity.tourists|length }}
+        </small>
+    {% endif %}
 {% endwrapinline %}

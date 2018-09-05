@@ -285,3 +285,16 @@ views.facility.list.save_changes_button.title: 'Сохранить измене�
 views.flow.hotel_flow.finish_button.title: Завершить
 views.flow.hotel_flow.back_button.title: Назад
 views.flow.hotel_flow.next_button.title: Вперед
+views.dashboard.title: 'Дашборд'
+views.dashboard.index.widgets.roomTypes: Номера
+views.dashboard.index.widgets.hotel: Отель
+views.dashboard.index.widgets.configure: Настроить
+views.dashboard.index.not_confirmed_packages.table_title: 'Неподтвержденные брони'
+views.dashboard.index.not_confirmed_packages.dates: Даты
+views.dashboard.index.not_confirmed_packages.room_type: 'Тип номера'
+views.dashboard.index.not_confirmed_packages.guests: Гости
+views.dashboard.index.not_confirmed_packages.payer: Плательщик
+views.dashboard.index.not_confirmed_packages.create_new_order: 'Создать новую бронь'
+views.dashboard.index.not_confirmed_packages.orders_list: 'Список броней'
+views.dashboard.index.checkinout.arrival: Заезд
+views.dashboard.index.checkinout.departure: Выезд

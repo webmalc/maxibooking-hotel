@@ -1,0 +1,37 @@
+<div class="box box-info" id="not-confirmed-packages-box">
+    <div class="box-header with-border">
+        <h3 class="box-title">{{ 'views.dashboard.index.not_confirmed_packages.table_title'|trans }}</h3>
+
+        <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="box-body">
+        <div class="table-responsive">
+            <table id="not-confirmed-packages-table" class="table no-margin package-table table not-auto-datatable table-striped table-hover table-condensed table-icons table-action">
+                <thead>
+                <tr>
+                    <th class="td-xxs"></th>
+                    <th class="td-xs">#</th>
+                    <th class="td-md">{{ 'views.dashboard.index.not_confirmed_packages.dates'|trans }}</th>
+                    <th class="td-md">{{ 'views.dashboard.index.not_confirmed_packages.room_type'|trans }}</th>
+                    <th class="td-md">{{ 'views.dashboard.index.not_confirmed_packages.guests'|trans }}</th>
+                    <th class="td-md">{{ 'views.dashboard.index.not_confirmed_packages.payer'|trans }}</th>
+                    <th class="td-sm"></th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="box-footer clearfix">
+        <a href="{{ path('package_search') }}" target="_blank"
+           class="btn btn-sm btn-info btn-flat pull-left">{{ 'views.dashboard.index.not_confirmed_packages.create_new_order'|trans }}</a>
+        <a href="{{ path('package') }}" target="_blank"
+           class="btn btn-sm btn-default btn-flat pull-right">{{ 'views.dashboard.index.not_confirmed_packages.orders_list'|trans }}</a>
+    </div>
+</div>

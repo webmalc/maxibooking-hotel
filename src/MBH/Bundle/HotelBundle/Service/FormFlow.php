@@ -61,6 +61,9 @@ abstract class FormFlow
         $flowExceptions = [];
 
         if ($form->isSubmitted() && $form->isValid()) {
+            if ($this->isFirstStep()) {
+                $this->dm->persist($this->getFlowConfig());
+            }
             try {
                 $this->handleForm($form);
             } catch (FlowRuntimeException $exception) {
@@ -195,12 +198,6 @@ abstract class FormFlow
         $this->getFlowConfig()->setCurrentStep(1);
     }
 
-
-    protected function getDocumentForForm($step)
-    {
-
-    }
-
     /**
      * @return array
      */
@@ -238,7 +235,7 @@ abstract class FormFlow
     public function getFlowConfig()
     {
         if (!$this->isFlowConfigInit) {
-            $flowId = $this->getFlowId();
+            $flowId = static::getFlowId();
             $config = $this->dm
                 ->getRepository('MBHHotelBundle:FlowConfig')
                 ->findOneBy(['flowId' => $flowId, 'isEnabled' => true, 'isFinished' => false]);
@@ -246,7 +243,6 @@ abstract class FormFlow
             if (is_null($config)) {
                 $config = (new FlowConfig())
                     ->setFlowId($flowId);
-                $this->dm->persist($config);
             }
 
             $this->flowConfig = $config;
@@ -283,8 +279,32 @@ abstract class FormFlow
     /**
      * @return string
      */
-    private function getFlowId(): string
+    public static function getFlowId(): string
     {
         return static::class;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isFlowStarted()
+    {
+        return !empty($this->getFlowConfig()->getId());
+    }
+
+    /**
+     * @return float|int
+     */
+    public function getProgressRate()
+    {
+        if (!$this->isFlowStarted()) {
+            $finishedConfig = $this->dm
+                ->getRepository(FlowConfig::class)
+                ->findOneBy(['isFinished' => true]);
+
+            return is_null($finishedConfig) ? 0 : 100;
+        }
+
+        return round(($this->getCurrentStepNumber() - 1) / $this->getNumberOfSteps(), 2) * 100;
     }
 }

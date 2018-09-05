@@ -10,7 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class DatesRecalculationCommand extends ContainerAwareCommand
 {
-    const TIME_ZONE_OFFSET = 3;
+    const TIME_ZONE_OFFSET = -5;
 
     /**
      * {@inheritdoc}

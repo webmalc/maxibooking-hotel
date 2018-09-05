@@ -8,19 +8,19 @@
         {#{% endif %}#}
         {#Ссылка на подтверждение и редирект на редактирование#}
 
-        {% if (is_granted('ROLE_NO_OWN_ONLINE_VIEW') or (is_granted('ROLE_ORDER_EDIT') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')))) and not entity.confirmed %}
+        {% if (is_granted('ROLE_NO_OWN_ONLINE_VIEW') or (is_granted('ROLE_ORDER_EDIT') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')))) and not entity.confirmed and (showConfirmBtn is not defined or showConfirmBtn) %}
             <a href='{{ path('package_order_confirm', { 'packageId': entity.id, "id": entity.order.id }) }}' class='btn btn-primary btn-xs' title='{{ "package.jsonButtons.confirm_order"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'>
                 <i class='fa fa-check'></i>
             </a>
         {% endif %}
 
-        {% if is_granted('ROLE_PACKAGE_VIEW') and (is_granted('VIEW', entity) or is_granted('ROLE_PACKAGE_VIEW_ALL')) %}
+        {% if is_granted('ROLE_PACKAGE_VIEW') and (is_granted('VIEW', entity) or is_granted('ROLE_PACKAGE_VIEW_ALL')) and (showEditBtn is not defined or showEditBtn) %}
             <a href='{{ path('package_edit', { 'id': entity.id }) }}' class='btn btn-success btn-xs' title='{{ "package.jsonButtons.edit_record"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'>
                 <i class='fa {{ is_granted('ROLE_PACKAGE_EDIT') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')) ? 'fa-pencil-square-o' : 'fa-eye'}}'></i>
             </a>
         {% endif %}
 
-        {% if is_granted('ROLE_PACKAGE_DELETE') and (is_granted('DELETE', entity) or is_granted('ROLE_PACKAGE_DELETE_ALL')) and not entity.deletedAt%}
+        {% if is_granted('ROLE_PACKAGE_DELETE') and (is_granted('DELETE', entity) or is_granted('ROLE_PACKAGE_DELETE_ALL')) and not entity.deletedAt and (showRmBtn is not defined or showRmBtn) %}
             <a href='#modal_delete_package' title='{{ "package.jsonButtons.delete_record"|trans({}, "MBHPackageBundle") }}' class='btn btn-danger btn-xs booking-delete-link' data-title='{{ entity.title }}' data-id='{{ entity.id }}'>
                 <i class='fa fa-trash-o'></i>
             </a>

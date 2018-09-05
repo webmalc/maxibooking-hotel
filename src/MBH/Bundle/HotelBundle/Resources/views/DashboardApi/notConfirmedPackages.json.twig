@@ -1,0 +1,19 @@
+{% spaceless %}
+    {
+    "data": [
+    {% for entity in packages %}
+        {% if entity.isCheckIn and entity.accommodation %}{% set checkIn = true %}{% else %}{% set checkIn = false %}{% endif %}
+        {% if entity.isCheckOut and entity.accommodation %}{% set checkOut = true %}{% else %}{% set checkOut = false %}{% endif %}
+        [
+        "{% include 'MBHPackageBundle:Package:/json/OrderStatus.html.twig' %}",
+        "{% include 'MBHPackageBundle:Package:/json/Reservation.html.twig' %}",
+        "{% include 'MBHPackageBundle:Package:/json/DateArrivalDepartures.html.twig' %}",
+        "<div>{{ entity.roomType }}</div>",
+        "{% include 'MBHPackageBundle:Package:/json/Payer.html.twig' with {showPayer: false} %}",
+        "{% include 'MBHPackageBundle:Package:/json/Payer.html.twig' with {showGuests: false} %}",
+        "{% include 'MBHPackageBundle:Package:/json/Buttons.html.twig' with {'entity': entity, showRmBtn: false, showEditBtn: false} %}"
+        ]{% if loop.index != packages|length %},{% endif %}
+    {% endfor %}
+    ]
+    }
+{% endspaceless %}

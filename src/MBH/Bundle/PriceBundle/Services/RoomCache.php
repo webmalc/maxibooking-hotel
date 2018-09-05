@@ -235,6 +235,8 @@ class RoomCache
         ;
 
         $this->container->get('logger')->addAlert($loggerMessage);
+        $username = $this->container->get('security.token_storage')->getToken()->getUser()->getUsername();
+
         $endWithDay = clone $end;
         $endWithDay->modify('+1 day');
         $roomCaches = $updateCaches = $updates = $remove = [];
@@ -279,6 +281,7 @@ class RoomCache
 
         (empty($tariffs)) ? $tariffs = [0] : $tariffs;
 
+        $createdAt = new \MongoDate((new \DateTime())->getTimestamp());
         foreach ($tariffs as $tariff) {
             foreach ($roomTypes as $roomType) {
                 foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $endWithDay) as $date) {
@@ -302,6 +305,8 @@ class RoomCache
                         'leftRooms' => (int)$rooms,
                         'isEnabled' => true,
                         'isClosed' => $isClosed,
+                        'createdAt' => $createdAt,
+                        'createdBy' => $username
                     ];
                 }
             }

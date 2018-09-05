@@ -181,4 +181,20 @@ class OrderRepository extends DocumentRepository
             ->getQuery()
             ->execute();
     }
+
+    /**
+     * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function getNotConfirmedOrderIds()
+    {
+        return $this->dm
+            ->getRepository('MBHPackageBundle:Order')
+            ->createQueryBuilder()
+            ->field('confirmed')->equals(false)
+            ->distinct('id')
+            ->getQuery()
+            ->execute()
+            ->toArray();
+    }
 }

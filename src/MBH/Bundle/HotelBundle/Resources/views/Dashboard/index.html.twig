@@ -1,36 +1,28 @@
 {% extends "MBHHotelBundle::layout.html.twig" %}
 
-{% set title = 'views.facility.list.title'|trans({}, 'MBHHotelBundle') %}
+{% set title = 'views.dashboard.title'|trans %}
+
+{% block scripts %}
+    {{ parent() }}
+
+    {% javascripts filter='?uglifyjs2'
+        '@MBHHotelBundle/Resources/public/js/dashboard/*'
+    %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+{% endblock %}
+
+{% block styles %}
+    {{ parent() }}
+
+    {% stylesheets filter='cssrewrite, uglifycss' '@MBHHotelBundle/Resources/public/css/dashboard/*'%}
+        <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+{% endblock %}
 
 {% block content %}
-    <div class="row" id="flow-widgets">
-        <div class="col-md-6">
-            <div class="small-box bg-red">
-                <div class="inner">
-                    <h3>Номера</h3>
-                    <p>Настройка номеров</p>
-                </div>
-                <div class="icon" style="color: white;">
-                    <i class="fa fa-bed"></i>
-                </div>
-                <a href="#" class="small-box-footer">
-                    Настроить <i class="fa fa-arrow-circle-right"></i>
-                </a>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="small-box bg-red">
-                <div class="inner">
-                    <h3>Отели</h3>
-                    <p>Настройка отеля</p>
-                </div>
-                <div class="icon" style="color: white;">
-                    <i class="fa fa-bed"></i>
-                </div>
-                <a href="#" class="small-box-footer">
-                    Настроить <i class="fa fa-arrow-circle-right"></i>
-                </a>
-            </div>
-        </div>
-    </div>
+    {% include '@MBHHotel/Dashboard/flowWidgets.html.twig' %}
+    {% include '@MBHHotel/Dashboard/notConfirmedPackages.html.twig' %}
+    {% include '@MBHHotel/Dashboard/checkInOut.html.twig' %}
 {% endblock %}
