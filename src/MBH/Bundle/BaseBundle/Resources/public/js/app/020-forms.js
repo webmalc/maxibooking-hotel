@@ -85,7 +85,7 @@ mbh.datarangepicker = {
         }
     },
     on: function (begin, end, picker) {
-        'use strict'
+        'use strict';
         begin.val(picker.startDate.format('DD.MM.YYYY'));
         end.val(picker.endDate.format('DD.MM.YYYY'));
         begin.trigger('change');
@@ -236,10 +236,10 @@ $.fn.mbhOrganizationSelectPlugin = function () {
              },*/
             dropdownCssClass: "bigdrop"
         });
-    })
+    });
 
     return this;
-}
+};
 
 mbh.payerSelect = function ($payerSelect, $organizationPayerInput, $touristPayerInput) {
     this.$payerSelect = $payerSelect;
@@ -256,10 +256,9 @@ mbh.payerSelect = function ($payerSelect, $organizationPayerInput, $touristPayer
         var value = this.$payerSelect.val().split('_');
         this.update(value[0], value[1]);
     }
-    ;
 
     this.bindEventHandlers();
-}
+};
 
 mbh.payerSelect.prototype.bindEventHandlers = function () {
     var that = this;
@@ -272,7 +271,7 @@ mbh.payerSelect.prototype.bindEventHandlers = function () {
             that.update(value[0], value[1]);
         }
     });
-}
+};
 
 mbh.payerSelect.prototype.update = function (type, value) {
     if (type === 'org') {
@@ -282,7 +281,7 @@ mbh.payerSelect.prototype.update = function (type, value) {
     } else {
         //throw new Error("");
     }
-}
+};
 
 var docReadyForms = function () {
     'use strict';
@@ -468,15 +467,35 @@ var docReadyForms = function () {
             wrapper = begin.parent('div'),
             end = $('.end-datepicker.mbh-daterangepicker'),
             range = $('<input type="text" required="required" class="daterangepicker-input form-control input-sm" autocomplete="off">');
-        ;
-
 
         if (!begin.length || !end.length || !wrapper.length) {
             return;
         }
 
+        var alertMsg = Translator.trans('020-forms.restrict_daterangepicker'),
+            needRestrict = (function() {
+                var need = window['mbh_restrictForDateRangePicker'] !== undefined && mbh_restrictForDateRangePicker === true;
+
+                return function() {
+                    return need;
+                }
+            })();
+
         begin.after(range);
         range.daterangepicker(mbh.datarangepicker.options).on('apply.daterangepicker', function (ev, picker) {
+            if (needRestrict()) {
+                // 31536000 this seconds in 365 days
+                if ((picker.endDate.unix() - picker.startDate.unix()) >  31536000) {
+                    $('#messages').html(
+                        '<div class="alert alert-warning alert-dismissable">\n' +
+                        ' <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>\n' +
+                            alertMsg +
+                        '</div>'
+                    );
+
+                    return;
+                }
+            }
             mbh.datarangepicker.on(begin, end, picker);
         });
         if (begin.datepicker("getDate") && end.datepicker("getDate")) {

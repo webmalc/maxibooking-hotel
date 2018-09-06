@@ -1,5 +1,5 @@
 /*global window, $, document, Routing, mbhGridCopy */
-
+var mbh_restrictForDateRangePicker = true;
 $(document).ready(function () {
     'use strict';
     var $displayedDateInput = $('#displayed-prices-date').eq(0);
