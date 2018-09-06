@@ -97,11 +97,13 @@
         <ns1:livingAddress>
             {% if isRussianTourist %}
                 <russianAddress>
-                    {#Строковое представление адреса (элементы заполнять в соответствии со справочником ФИАС): Регион$Район$Город$Населенный Пункт$Городской район$Улица#}
-                    <addressObjectString>{{ get_region(tourist.addressObjectDecomposed.regionId).name|replace({'область' : 'обл'}) }}
-                        $${{ tourist.addressObjectDecomposed.city }}
-                        $$${{ tourist.addressObjectDecomposed.street|capitalize }}
-                    </addressObjectString>
+                    {% if tourist.addressObjectDecomposed.regionId %}
+                        {#Строковое представление адреса (элементы заполнять в соответствии со справочником ФИАС): Регион$Район$Город$Населенный Пункт$Городской район$Улица#}
+                        <addressObjectString>{{ get_region(tourist.addressObjectDecomposed.regionId).name|replace({'область' : 'обл'}) }}
+                            $${{ tourist.addressObjectDecomposed.city }}
+                            $$${{ tourist.addressObjectDecomposed.street|capitalize }}
+                        </addressObjectString>
+                    {% endif %}
                     {% if tourist.addressObjectDecomposed.house %}
                         <housing>
                             <type>
@@ -139,7 +141,7 @@
                         </housing>
                     {% endif %}
                 </russianAddress>
-            {% else %}
+            {% elseif tourist.addressObjectDecomposed.countryTld %}
                 <ns1:foreignAddress>
                     <country>
                         <type>Country</type>

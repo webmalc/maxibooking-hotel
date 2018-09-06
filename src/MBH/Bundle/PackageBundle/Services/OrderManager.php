@@ -16,6 +16,7 @@ use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\PackageCreationException;
+use MBH\Bundle\PriceBundle\Document\Service;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use MBH\Bundle\PackageBundle\Document\PackageService;
@@ -440,6 +441,7 @@ class OrderManager implements Searchable
                 throw new Exception('Create services error: $data["id"] || $data["amount"] is empty.');
             }
 
+            /** @var Service $service */
             $service = $this->dm->getRepository('MBHPriceBundle:Service')->find($info['id']);
 
             if (!$service) {
@@ -450,20 +452,9 @@ class OrderManager implements Searchable
             foreach ($order->getPackages() as $package) {
                 if ($package->getTariff()->getHotel()->getId() == $service->getCategory()->getHotel()->getId()) {
                     /** @var Package $package */
-                    $package = $this->dm->getRepository('MBHPackageBundle:Package')->find($package->getId());
+                    $package = $this->dm->find('MBHPackageBundle:Package', $package->getId());
 
-                    if ($service->getCalcType() == 'day_percent') {
-                        $date = null;
-                        if ($service->getCode() === 'Early check-in') {
-                            $date = $package->getBegin();
-                        } elseif ($service->getCode() === 'Late check-out') {
-                            $date = (clone $package->getEnd())->modify('-1 day');
-                        }
-
-                        $price = $package->getPriceByDate($date) * $service->getPrice() / 100;
-                    } else {
-                        $price = $service->getPrice();
-                    }
+                    $price = $this->getPackageServicePrice($service, $package);
 
                     $packageService = new PackageService();
                     $packageService->setPackage($package)
@@ -934,5 +925,33 @@ class OrderManager implements Searchable
             'nights' => $numberOfNights,
             'guests' => $numberOfGuests,
         ];
+    }
+
+    /**
+     * @param Service $service
+     * @param Package $package
+     * @param bool $forInnerCalculation
+     * @return float|int
+     */
+    public function getPackageServicePrice(Service $service, Package $package, $forInnerCalculation = false)
+    {
+        if (!$forInnerCalculation || is_null($service->getInnerPrice())) {
+            $servicePrice = $service->getPrice();
+        } else {
+            $servicePrice = $service->getInnerPrice();
+        }
+
+        if ($service->getCalcType() == 'day_percent') {
+            $date = null;
+            if ($service->getCode() === 'Early check-in') {
+                $date = $package->getBegin();
+            } elseif ($service->getCode() === 'Late check-out') {
+                $date = (clone $package->getEnd())->modify('-1 day');
+            }
+
+            return $package->getPriceByDate($date) * $servicePrice / 100;
+        }
+
+        return $servicePrice;
     }
 }

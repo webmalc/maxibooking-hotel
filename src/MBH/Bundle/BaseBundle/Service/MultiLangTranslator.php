@@ -41,6 +41,10 @@ class MultiLangTranslator
 
         foreach ($translationsByFields as $fieldName => $translationsByLanguages) {
             foreach ($translationsByLanguages as $language => $translation) {
+                if ($fieldName === 'fullTitle' && $translation === '') {
+                    continue;
+                }
+
                 $repository->translate($document, $fieldName, $language, $translation);
             }
         }

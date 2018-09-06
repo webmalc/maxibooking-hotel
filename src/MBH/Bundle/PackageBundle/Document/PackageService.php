@@ -31,7 +31,7 @@ class PackageService extends Base
      * deletedAt field
      */
     use SoftDeleteableDocument;
-    
+
     /**
      * Hook blameable behavior
      * createdBy&updatedBy fields
@@ -75,7 +75,7 @@ class PackageService extends Base
      * @Assert\Type(type="boolean")
      */
     protected $recalcWithPackage = false;
-    
+
     /**
      * @var bool
      * @Gedmo\Versioned
@@ -84,7 +84,7 @@ class PackageService extends Base
      * @Assert\Type(type="boolean")
      */
     private $includeArrival;
-    
+
     /**
      * @var bool
      * @Gedmo\Versioned
@@ -126,7 +126,7 @@ class PackageService extends Base
      * @Assert\NotNull()
      */
     protected $amount;
-    
+
     /**
      * @var int
      * @Gedmo\Versioned
@@ -138,7 +138,7 @@ class PackageService extends Base
      * )
      */
     protected $persons;
-    
+
     /**
      * @var int
      * @Gedmo\Versioned
@@ -150,7 +150,7 @@ class PackageService extends Base
      * )
      */
     protected $nights;
-    
+
     /**
      * @var \DateTime
      * @Gedmo\Versioned
@@ -175,7 +175,7 @@ class PackageService extends Base
      * @Assert\Date()
      */
     protected $end;
-    
+
     /**
      * @var string
      * @Gedmo\Versioned
@@ -372,16 +372,23 @@ class PackageService extends Base
     }
 
     /**
-     * @param bool $byInnerPrice
+     * @param bool $forInnerCalculation
+     * @param null $singlePrice
      * @return int
      */
-    public function calcTotal($byInnerPrice = false)
+    public function calcTotal($forInnerCalculation = false, $singlePrice = null)
     {
-        if (!empty($this->getTotalOverwrite()) && !$byInnerPrice) {
+        if (!empty($this->getTotalOverwrite()) && !$forInnerCalculation) {
             return $this->getTotalOverwrite();
         }
 
-        $price = ($byInnerPrice ? $this->getService()->getInnerPrice() : $this->getPrice()) * $this->getAmount();
+        if (is_null($singlePrice)) {
+            $singlePrice = $forInnerCalculation && !is_null($this->getService()->getInnerPrice())
+                ? $this->getService()->getInnerPrice()
+                : $this->getPrice();
+        }
+
+        $price = $singlePrice * $this->getAmount();
 
         if ($this->getCalcType() == 'per_night') {
             $price *= $this->getNights();
@@ -421,7 +428,7 @@ class PackageService extends Base
     {
         return $this->price;
     }
-    
+
     /**
      * Set price
      *
@@ -443,7 +450,7 @@ class PackageService extends Base
     {
         return $this->note;
     }
-    
+
     /**
      * Set note
      *
@@ -481,7 +488,7 @@ class PackageService extends Base
         if (!$this->getPersons()) {
             $this->setPersons(1);
         }
-        
+
         if (!$service->getTime()) {
             $this->setTime(null);
         }
@@ -523,7 +530,7 @@ class PackageService extends Base
         }
         return $end;
     }
-    
+
     /**
      * calcBegin
      *
@@ -689,7 +696,7 @@ class PackageService extends Base
     {
         return $this->includeDeparture;
     }
-    
+
     /**
      * includeArrival set
      *

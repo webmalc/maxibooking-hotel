@@ -625,7 +625,7 @@ class Helper
         }
 
         $end = $this->getDateFromString($request->get('end'));
-        if (!$end || $end->diff($begin)->format("%a") > 366 || $end <= $begin) {
+        if (!$end || $end->diff($begin)->days > 366 || $end <= $begin) {
             $end = clone $begin;
             $end->modify('+45 days');
         }
