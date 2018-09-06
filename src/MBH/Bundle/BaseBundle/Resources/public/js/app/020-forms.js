@@ -108,32 +108,6 @@ var select2Text = function (el) {
     return $('#' + el.prop('id'));
 };
 
-/**
- * @param $begin
- * @param $end
- */
-var RangeInputs = function ($begin, $end) {
-    'use strict';
-    this.$begin = $begin;
-    this.$end = $end;
-    this.bindEventListeners();
-};
-
-RangeInputs.prototype.bindEventListeners = function () {
-    'use strict';
-    var that = this;
-    this.$begin.change(function () {
-        if (!that.$end.val()) {
-            //that.$end.focus();
-        }
-    });
-    this.$end.change(function () {
-        if (!that.$begin.val()) {
-            //that.$begin.focus();
-        }
-    });
-}
-
 $.fn.serializeObject = function () {
     'use strict';
     var o = {},
@@ -278,8 +252,6 @@ mbh.payerSelect.prototype.update = function (type, value) {
         this.$organizationPayerInput.val(value);
     } else if (type === 'tourist') {
         this.$touristPayerInput.val(value);
-    } else {
-        //throw new Error("");
     }
 };
 
@@ -458,8 +430,6 @@ var docReadyForms = function () {
             setDates();
         }());
     }
-
-    new RangeInputs($('.begin-datepicker'), $('.end-datepicker'));
 
     //Daterangepickers
     (function () {
