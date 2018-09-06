@@ -151,8 +151,6 @@ var docReadyTourists = function () {
         stepinterval: 1
     });
 
-    new RangeInputs($('#form_visa_issued'), $('#form_visa_expiry'));
-    new RangeInputs($('#form_visa_arrivalTime'), $('#form_visa_departureTime'));
     handleAuthOrganFieldVisibility();
     hangOnExportToKonturButtonClick();
 };
