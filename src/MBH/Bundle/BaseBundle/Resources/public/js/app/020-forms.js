@@ -368,13 +368,82 @@ var docReadyForms = function () {
     }
 
     //Datepicker configuration
-    $('.datepicker').datepicker({
-        language: "ru",
-        todayHighlight: true,
-        autoclose: true,
-        format: 'dd.mm.yyyy',
-        disableTouchKeyboard: true
+    var optionForDatepicker = {
+        common:function () {
+            return {
+                language: "ru",
+                todayHighlight: true,
+                autoclose: true,
+                format: 'dd.mm.yyyy',
+                disableTouchKeyboard: true
+            };
+        },
+        addStartDate: function(setDate) {
+            if (setDate === undefined || setDate === null) {
+                return this.common();
+            }
+
+            var data = this.common();
+            data.startDate = setDate;
+
+            return data;
+        }
+    };
+
+    var CssClassName = function(key) {
+        this._key = key;
+    };
+
+    CssClassName.prototype = {
+        _prefix: 'datepicker-group-',
+        getBegin: function() {
+            return this.getPrefix() + 'begin_' + this._key;
+        },
+        getEnd: function() {
+            return this.getPrefix() + 'end_' + this._key;
+        },
+        getPrefix: function() {
+            return this._prefix;
+        }
+    };
+
+    var helperDate = {
+        returnPlusOneDay: function(date) {
+            var newDate = moment(date);
+            newDate.add(1, 'day');
+
+            return newDate.format('DD.MM.YYYY');
+        }
+    };
+
+    document.querySelectorAll('.filter-form_group-date .filter-form_input-group').forEach(function(divElement, key) {
+        var cssClass = new CssClassName(key),
+            inputBegin = divElement.querySelector('.datepicker.begin-datepicker'),
+            inputEnd = divElement.querySelector('.datepicker.end-datepicker');
+
+        inputBegin.classList.add(cssClass.getBegin());
+        inputEnd.classList.add(cssClass.getEnd());
+
+        $(inputBegin).datepicker(optionForDatepicker.common())
+            .on('changeDate', function() {
+                var dateEnd = $(inputEnd).datepicker('getUTCDate'),
+                    dateBegin = $(inputBegin).datepicker('getUTCDate');
+
+                $(inputEnd).datepicker('setStartDate', inputBegin.value);
+
+                if (dateEnd === null || dateBegin.setHours(0) > dateEnd.setHours(23)) {
+                    $(inputEnd).datepicker('setDate', helperDate.returnPlusOneDay(dateBegin));
+                }
+            });
+
+        $(inputEnd).datepicker(
+            optionForDatepicker.addStartDate(
+                helperDate.returnPlusOneDay($(inputBegin).datepicker('getUTCDate'))
+            )
+        );
     });
+
+    $('.datepicker:not([class^="' + CssClassName.prototype.getPrefix() + '"])').datepicker(optionForDatepicker.common());
 
     //Datepicker configuration
     $('.datepicker-year').datepicker({
