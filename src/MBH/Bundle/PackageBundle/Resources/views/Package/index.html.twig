@@ -12,7 +12,7 @@
                     <i class="fa fa-calendar"
                        title='{{ 'package.index.dates'|trans }}'
                        data-toggle='tooltip'></i>
-                    <div class="filter-form_input">
+                    <div class="filter-form_input-group">
                         <input type="text"
                                id="package-filter-begin"
                                class="datepicker package-filter begin-datepicker form-control"
@@ -26,6 +26,7 @@
                                value="">
                     </div>
                 </div>
+
                 <div class="filter-form_input filter-form_group-date-select">
                     <select id="package-filter-dates" class="package-filter form-control">
                         <option value="begin">{{ 'package.index.check_in'|trans({}, 'MBHPackageBundle') }}</option>
