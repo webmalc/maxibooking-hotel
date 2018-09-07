@@ -142,3 +142,4 @@ views.facility.list.title: Удобства
 views.flow.flow.title: 'Настройка'
 views.flow.hotel_flow.title: 'Настройка отеля'
 views.flow.rooms_flow.title: 'Информация о номерах'
+views.flow.mb_site_flow.title: 'Настройка сайта'

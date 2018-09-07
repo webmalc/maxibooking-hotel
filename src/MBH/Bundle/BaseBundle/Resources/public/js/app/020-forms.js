@@ -1315,6 +1315,26 @@ function makeDateRangepickerReadonlyForMobileDevices() {
     }
 }
 
+function initKeyWordsForm() {
+    var $keyWordsList = $('#key-words-list');
+
+    var initRemoveButtons = function() {
+        $keyWordsList.find('.fa-times').click(function () {
+            $(this).closest('li').remove();
+        });
+    };
+
+    $('#add-key-word-button').click(function () {
+        var prototype = $(this).data('prototype');
+        var $lastKeyWordInput = $keyWordsList.find('li').last();
+        var keyNumber = $lastKeyWordInput.length > 0 ? parseInt($lastKeyWordInput.data('number')) + 1 : 0;
+        var newField = prototype.replace(/__name__/g, keyNumber);
+        $keyWordsList.append('<li data-number="' + keyNumber + '">' + newField + '</li>');
+        initRemoveButtons();
+    });
+    initRemoveButtons();
+}
+
 $(document).ready(function () {
     'use strict';
     docReadyForms();

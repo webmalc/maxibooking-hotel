@@ -148,3 +148,14 @@ services:
             - [ setDm, [ '@doctrine.odm.mongodb.document_manager' ] ]
             - [ setFormFactory, ['@form.factory']]
             - [ setRequestStack, ['@request_stack']]
+            - [ setTranslator, ['@translator']]
+
+    mbh.mb_site_flow:
+        class: MBH\Bundle\HotelBundle\Form\MBSiteFlow\MBSiteFlow
+        arguments: ['@mbh.site_manager', '@mbh.client_manager']
+        parent: mbh.form_flow
+
+    mbh.mb_site_flow_type:
+        class: MBH\Bundle\HotelBundle\Form\MBSiteFlow\MBSiteFlowType
+        arguments: ['@mbh.form_builder', '@mbh.site_manager', '@translator']
+        tags: [{name: form.type}]

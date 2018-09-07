@@ -41,35 +41,35 @@ class HotelFlow extends FormFlow
     {
         return [
             [
-                'label' => 'Ввод имени отеля',
+                'label' => 'hotel_flow.step_labels.hotel_name',
                 'form_type' => HotelFlowType::class,
             ],
             [
-                'label' => 'Ввод описания отеля',
+                'label' => 'hotel_flow.step_labels.hotel_description',
                 'form_type' => HotelFlowType::class,
             ],
             [
-                'label' => 'Логотип отеля',
+                'label' => 'hotel_flow.step_labels.hotel_logo',
                 'form_type' => HotelFlowType::class,
             ],
             [
-                'label' => 'Адрес отеля',
+                'label' => 'hotel_flow.step_labels.hotel_address',
                 'form_type' => HotelAddressType::class,
             ],
             [
-                'label' => 'Координаты отеля на карте',
+                'label' => 'hotel_flow.step_labels.hotel_coordinates',
                 'form_type' => HotelLocationType::class,
             ],
             [
-                'label' => 'Контакты',
+                'label' => 'hotel_flow.step_labels.contacts',
                 'form_type' => HotelFlowType::class,
             ],
             [
-                'label' => 'Главная фотография',
+                'label' => 'hotel_flow.step_labels.main_photo',
                 'form_type' => HotelFlowType::class,
             ],
             [
-                'label' => 'Фотографии',
+                'label' => 'hotel_flow.step_labels.photos',
                 'form_type' => HotelImageType::class,
                 'options' => [
                     'withIsDefaultField' => false,

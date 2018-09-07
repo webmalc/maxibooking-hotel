@@ -31,6 +31,11 @@ class FormType extends AbstractType implements DecorationTypeInterface
         $this->paymentTypes = $onlineFormParams['payment_types'];
     }
 
+    /**
+     * @param FormBuilderInterface $builder
+     * @param array $options
+     * @throws \Exception
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $clientCountry = $this->clientManager->getClient()->getCountry();

@@ -298,3 +298,26 @@ views.dashboard.index.not_confirmed_packages.create_new_order: 'Создать �
 views.dashboard.index.not_confirmed_packages.orders_list: 'Список броней'
 views.dashboard.index.checkinout.arrival: Заезд
 views.dashboard.index.checkinout.departure: Выезд
+mb_site_flow.step_labels.site_name: 'Название сайт'
+mb_site_flow.step_labels.payment_types: 'Типы оплаты'
+mb_site_flow.step_labels.color_theme: 'Цветовая схема'
+mb_site_flow.step_labels.key_words: 'Ключевые слова'
+mb_site_flow.step_labels.pers_data_policy: 'Политика обработки персональных данных'
+mb_site_flow.unexpected_error: 'Произошла непредвиденная ошибка.'
+room_type_flow.step_labels.room_type: 'Тип номера'
+room_type_flow.step_labels.room_info: 'Информация о номере'
+room_type_flow.step_labels.photos: Фотографии
+room_type_flow.step_labels.number_of_places: 'Количество мест'
+room_type_flow.step_labels.room_caches: 'Номера в продаже'
+room_type_flow.step_labels.prices_type: 'Тип цен'
+room_type_flow.step_labels.period: Период
+room_type_flow.step_labels.tariff: Тариф
+room_type_flow.step_labels.price: Цена
+hotel_flow.step_labels.hotel_name: 'Ввод имени отеля'
+hotel_flow.step_labels.hotel_description: 'Ввод описания отеля'
+hotel_flow.step_labels.hotel_logo: 'Логотип отеля'
+hotel_flow.step_labels.hotel_address: 'Адрес отеля'
+hotel_flow.step_labels.hotel_coordinates: 'Координаты отеля на карте'
+hotel_flow.step_labels.contacts: Контакты
+hotel_flow.step_labels.main_photo: 'Главная фотография'
+hotel_flow.step_labels.photos: Фотографии

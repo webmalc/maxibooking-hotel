@@ -164,7 +164,6 @@ class SiteManager
     /**
      * @param Hotel $hotel
      * @param Client $client
-     * @param bool $isEnabled
      * @return SiteConfig
      */
     public function createOrUpdateForHotel(Hotel $hotel, Client $client)
@@ -182,6 +181,8 @@ class SiteManager
                 ->setUrl($this->compileSiteAddress($siteDomain))
                 ->setClient($client->getLogin());
             $this->billingApi->addClientSite($clientSite);
+        } elseif (!$config->getHotels()->contains($hotel)) {
+            $config->addHotel($hotel);
         }
 
         $this->updateSiteFormConfig($config, $this->fetchFormConfig());

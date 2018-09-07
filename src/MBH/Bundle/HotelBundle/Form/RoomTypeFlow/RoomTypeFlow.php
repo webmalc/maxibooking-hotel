@@ -63,29 +63,29 @@ class RoomTypeFlow extends FormFlow
                 ],
             ],
             [
-                'label' => 'Информация о номере',
+                'label' => 'room_type_flow.step_labels.room_info',
                 'form_type' => RoomTypeFlowType::class,
             ],
             [
-                'label' => 'Фотографии',
+                'label' => 'room_type_flow.step_labels.photos',
                 'form_type' => ImageType::class,
                 'options' => [
                     'hasConstraints' => false,
                 ],
             ],
             [
-                'label' => 'Количество мест',
+                'label' => 'room_type_flow.step_labels.number_of_places',
                 'form_type' => RoomTypeFlowType::class,
             ],
             [
-                'label' => 'Номера в продаже',
+                'label' => 'room_type_flow.step_labels.room_caches',
                 'form_type' => RoomTypeFlowType::class,
                 'options' => [
                     'rooms' => $roomCaches,
                 ],
             ],
             [
-                'label' => 'Тип цен',
+                'label' => 'room_type_flow.step_labels.prices_type',
                 'form_type' => RoomTypeFlowType::class,
                 'options' => [
                     'hotel' => $this->hotel,
@@ -93,7 +93,7 @@ class RoomTypeFlow extends FormFlow
                 ],
             ],
             [
-                'label' => 'Период',
+                'label' => 'room_type_flow.step_labels.period',
                 'form_type' => RoomTypeFlowType::class,
                 'options' => [
                     'hotel' => $this->hotel,
@@ -102,7 +102,7 @@ class RoomTypeFlow extends FormFlow
                 ],
             ],
             [
-                'label' => 'Тариф',
+                'label' => 'room_type_flow.step_labels.tariff',
                 'form_type' => RoomTypeFlowType::class,
                 'options' => [
                     'hotel' => $this->hotel,
@@ -110,7 +110,7 @@ class RoomTypeFlow extends FormFlow
                 ],
             ],
             [
-                'label' => 'Цена',
+                'label' => 'room_type_flow.step_labels.price',
                 'form_type' => RoomTypeFlowType::class,
                 'options' => [
                     'roomType' => $this->getManagedRoomType(),

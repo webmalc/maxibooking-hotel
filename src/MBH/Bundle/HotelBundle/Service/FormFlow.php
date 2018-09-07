@@ -10,6 +10,7 @@ use Symfony\Component\Form\FormFactory;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Translation\TranslatorInterface;
 
 abstract class FormFlow
 {
@@ -21,6 +22,8 @@ abstract class FormFlow
     protected $formFactory;
     /** @var Request */
     protected $request;
+    /** @var TranslatorInterface */
+    protected $translator;
     protected $customErrors = [];
 
 
@@ -42,6 +45,11 @@ abstract class FormFlow
         if ($this->request === null) {
             throw new \RuntimeException('The request is not available.');
         }
+    }
+
+    public function setTranslator(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
     }
 
     abstract protected function getStepsConfig(): array;

@@ -92,6 +92,7 @@ class SiteConfig extends Base
     /**
      * @var string
      * @ODM\Field(type="string")
+     * @Assert\Choice(callback="getThemes")
      */
     private $colorTheme = 'black01';
 
@@ -231,5 +232,12 @@ class SiteConfig extends Base
     public function getThemeColors()
     {
         return self::COLORS_BY_THEMES[$this->getColorTheme()];
+    }
+
+    /**
+     * @return array
+     */
+    public static function getThemes() {
+        return array_keys(SiteConfig::COLORS_BY_THEMES);
     }
 }

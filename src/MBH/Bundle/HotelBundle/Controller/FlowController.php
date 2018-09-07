@@ -58,4 +58,22 @@ class FlowController extends BaseController
             'roomType' => $flow->getManagedRoomType()
         ];
     }
+
+    /**
+     * @Route("/mb_site", name="mb_site")
+     * @Template()
+     * @return array
+     */
+    public function mbSiteFlowAction()
+    {
+        /** @var RoomTypeFlow $flow */
+        $flow = $this
+            ->get('mbh.mb_site_flow');
+        $form = $flow->handleStepAndGetForm();
+
+        return [
+            'flow' => $flow,
+            'form' => $form->createView(),
+        ];
+    }
 }

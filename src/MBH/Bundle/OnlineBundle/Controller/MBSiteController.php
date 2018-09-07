@@ -9,10 +9,9 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
 use MBH\Bundle\OnlineBundle\Form\SiteForm;
-use MBH\Bundle\PriceBundle\Document\PriceCache;
-use MBH\Bundle\PriceBundle\Document\RoomCache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\FormError;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -113,5 +112,26 @@ class MBSiteController extends BaseController
             'emptyPriceCaches' => $warningsCompiler->getEmptyPriceCachePeriods(),
             'emptyRoomCaches' => $warningsCompiler->getEmptyRoomCachePeriods()
         ];
+    }
+
+    /**
+     * @Route("/change_color_theme/{colorTheme}", name="change_color_theme", options={"expose"=true})
+     * @param string $colorTheme
+     * @return JsonResponse
+     * @throws \MBH\Bundle\BaseBundle\Lib\Exception
+     */
+    public function updateSiteColorTheme(string $colorTheme)
+    {
+        $siteConfig = $this->get('mbh.site_manager')
+            ->getSiteConfig()
+            ->setColorTheme($colorTheme);
+        $res = $this->get('validator')->validate($siteConfig);
+        if ($res->count() > 0) {
+            throw new \InvalidArgumentException('Invalid color theme name: ' . $colorTheme);
+        }
+
+        $this->dm->flush();
+
+        return new JsonResponse((new Result())->getApiResponse());
     }
 }

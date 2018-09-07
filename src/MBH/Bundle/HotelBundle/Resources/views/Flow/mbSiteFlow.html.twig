@@ -1,0 +1,43 @@
+{% extends 'MBHHotelBundle:Flow:layout.html.twig' %}
+
+{% set small_title = 'views.flow.mb_site_flow.title'|trans({}, 'MBHHotelBundle') %}
+
+{% block flowBody %}
+    {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
+
+    {% if flow.currentStepNumber == 4 %}
+        <div class="default-service form-group form-inline">
+            {{ form_label(form.keyWords) }}
+            <div class="col-sm-6">
+                <ul id="key-words-list">
+                    {% for keyWordNumber, keyWord in form.keyWords %}
+                        <li data-number="{{ keyWordNumber }}">
+                            {{ form_widget(keyWord) }}
+                            &nbsp;<i class="fa fa-times"></i>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <a id="add-key-word-button" data-prototype="
+                {{ (form_widget(form.keyWords.vars.prototype))|e }}{{ ' &nbsp;<i class="fa fa-times" class="remove-key-word-button"></i> '|e }}"
+                   class="btn btn-xs btn-success"><i class="fa fa-plus"></i>
+                    {{ 'mbhpricebundle.view.tariff.editservices.dobavit'|trans }}
+                </a>
+            </div>
+        </div>
+        {% do form.keyWords.setRendered %}
+    {% else %}
+        {{ form_widget(form) }}
+    {% endif %}
+
+    {% include '@MBHHotel/Flow/flowButtons.html.twig' %}
+
+    {{ form_end(form) }}
+{% endblock %}
+
+{% block styles %}
+    {{ parent() }}
+
+    {% stylesheets filter='cssrewrite, uglifycss' '@MBHOnlineBundle/Resources/public/css/mb-site.css'%}
+        <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+{% endblock %}

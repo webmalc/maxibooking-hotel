@@ -1,16 +1,24 @@
 $(document).ready(function () {
     var $addImageInput = $('#mbhhotel_bundle_hotel_image_type_imageFile, #image_imageFile');
     $addImageInput.change(function () {
-        console.log('sdfsf');
         $addImageInput.closest('form').submit();
     });
 
     drawLinesBetweenFlowTabs();
     setInterval(drawLinesBetweenFlowTabs, 1500);
+
+    $('#go-to-site_with-save').click(function () {
+        $.ajax({
+            method: "GET",
+            url: Routing.generate('change_color_theme', {colorTheme: $('#mb_site_flow_colorTheme').val()})
+        });
+    });
+
+    initKeyWordsForm();
 });
 
 function drawLinesBetweenFlowTabs() {
-    $('.line-between-flow-tabs').remove()
+    $('.line-between-flow-tabs').remove();
     var $stepTabs = $('.flow-step-tab');
     var numberOfSteps = $stepTabs.length;
     var $activeTab = $stepTabs.filter('.active');
