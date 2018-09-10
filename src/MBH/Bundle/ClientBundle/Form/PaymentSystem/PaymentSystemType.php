@@ -95,7 +95,7 @@ abstract class PaymentSystemType extends AbstractType
         /**
          * атрибут дисеблед пока встречается только в группе при фискализации
          */
-        if (!(isset($data['attr']['disabled']) && $data['attr']['disabled'])) {
+        if (!(isset($data['attr']['disabled']) && $data['attr']['disabled'] === true)) {
             $common['constraints'] = [new NotBlank()];
         }
 

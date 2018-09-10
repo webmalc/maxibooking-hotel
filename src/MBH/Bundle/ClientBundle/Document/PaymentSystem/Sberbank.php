@@ -86,6 +86,18 @@ class Sberbank extends PaymentSystemDocument implements TaxMapInterface, Fiscali
     private $taxationSystemCode = self::DEFAULT_TAX_SYSTEM;
 
     /**
+     * @var null|string
+     * @ODM\Field(type="string")
+     */
+    private $returnUrl;
+
+    /**
+     * @var null|string
+     * @ODM\Field(type="string")
+     */
+    private $failUrl;
+
+    /**
      * @return null|string
      */
     public function getUserName(): ?string
@@ -171,6 +183,38 @@ class Sberbank extends PaymentSystemDocument implements TaxMapInterface, Fiscali
     public function setPassword(?string $password): void
     {
         $this->password = $password;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getReturnUrl(): ?string
+    {
+        return $this->returnUrl;
+    }
+
+    /**
+     * @param null|string $returnUrl
+     */
+    public function setReturnUrl(?string $returnUrl): void
+    {
+        $this->returnUrl = $returnUrl;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getFailUrl(): ?string
+    {
+        return $this->failUrl;
+    }
+
+    /**
+     * @param null|string $failUrl
+     */
+    public function setFailUrl(?string $failUrl): void
+    {
+        $this->failUrl = $failUrl;
     }
 
     /**

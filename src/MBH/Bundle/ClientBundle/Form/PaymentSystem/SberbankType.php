@@ -14,6 +14,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Validator\Constraints\Url;
 
 class SberbankType extends PaymentSystemType
 {
@@ -33,6 +34,8 @@ class SberbankType extends PaymentSystemType
             $frontendRequiredUserAndPass = true;
             $frontendRequiredToken = true;
 
+            $disabledFailUrl = false;
+
             /** выключение проверки на backend`е */
             if ($eventName === FormEvents::PRE_SUBMIT) {
                 if (empty($event->getData()['token'])) {
@@ -40,13 +43,18 @@ class SberbankType extends PaymentSystemType
                 } else {
                     $backendDisabledUserAndPass = true;
                 }
+
+                $disabledFailUrl = empty($event->getData()['failUrl']);
             }
 
-            /** выключение проверки на frontend`е */
             if ($event->getData() instanceof Sberbank) {
                 /** @var Sberbank $sbrf */
                 $sbrf = $event->getData();
 
+                $returnUrl = $sbrf->getReturnUrl() ?? $this->getClientConfig()->getSuccessUrl();
+                $failUrl = $sbrf->getFailUrl() ?? $this->getClientConfig()->getFailUrl();
+
+                /** выключение проверки на frontend`е */
                 $emptyToken = $sbrf->getToken() === null;
                 $emptyRequiredUserAndPass = $sbrf->getUserName() === null || $sbrf->getPassword() === null;
 
@@ -63,6 +71,7 @@ class SberbankType extends PaymentSystemType
 
             $form = $event->getForm();
 
+            // поля: токен, юзер, пассворд
             $form->add(
                 'userName',
                 TextType::class,
@@ -108,6 +117,37 @@ class SberbankType extends PaymentSystemType
                         $frontendRequiredToken
                     )
                 );
+
+            // поля: returnUrl, failUrl
+
+            $optionFailUrl = [
+                'label' => 'form.clientPaymentSystemType.sberbank.failUrl.label',
+                'help'  => 'form.clientPaymentSystemType.sberbank.failUrl.help',
+                'data'  => $failUrl ?? null,
+            ];
+
+            if ($disabledFailUrl) {
+                $optionFailUrl['attr'] = ['disabled' => true];
+            } else {
+                $optionFailUrl['constraints'] = [new Url(['protocols' => ['https']])];
+            }
+
+            $form
+                ->add(
+                    'returnUrl',
+                    TextType::class,
+                    $this->addCommonAttributes([
+                        'label' => 'form.clientPaymentSystemType.sberbank.returnUrl.label',
+                        'help'  => 'form.clientPaymentSystemType.sberbank.returnUrl.help',
+                        'data' => $returnUrl ?? null,
+                        'constraints' => [new Url(['protocols' => ['https']])]
+                    ])
+                )
+                ->add(
+                    'failUrl',
+                    TextType::class,
+                    $this->addCommonAttributes($optionFailUrl, false)
+                );
         };
 
         $builder->addEventListener(
@@ -136,55 +176,6 @@ class SberbankType extends PaymentSystemType
                         'constraints' => [new \Symfony\Component\Validator\Constraints\Range(['min' => 1])],
                     ]
                 )
-            );
-
-        $urlAttr = [
-            'group'    => 'no-group',
-            'mapped'   => false,
-            'required' => false,
-            'attr'     => [
-                'disabled' => true,
-            ],
-        ];
-
-        $urlSuccessAttr = [
-            'label' => 'form.clientPaymentSystemType.sberbank.successUrl.label',
-            'help'  => 'form.clientPaymentSystemType.sberbank.successUrl.help',
-            'data'  => $this->getClientConfig()->getSuccessUrl(),
-        ];
-
-        $urlFailAttr = [
-            'label' => 'form.clientPaymentSystemType.sberbank.failUrl.label',
-            'help'  => 'form.clientPaymentSystemType.sberbank.failUrl.help',
-            'data'  => $this->getClientConfig()->getFailUrl(),
-        ];
-
-        $urlWarning = [
-            'attr' => [
-                'class' => 'payment-system-form_sberbank_url_warning',
-            ],
-        ];
-
-        if ($this->getClientConfig()->getSuccessUrl() === null) {
-            $urlSuccessAttr = array_merge($urlSuccessAttr, $urlWarning);
-            $urlSuccessAttr['help'] .= '.warning';
-        }
-
-        if ($this->getClientConfig()->getFailUrl() === null) {
-            $urlFailAttr = array_merge($urlFailAttr, $urlWarning);
-            $urlFailAttr['help'] .= '.warning';
-        }
-
-        $builder
-            ->add(
-                'successUrl',
-                TextType::class,
-                array_merge_recursive($urlAttr, $urlSuccessAttr)
-            )
-            ->add(
-                'failUrl',
-                TextType::class,
-                array_merge_recursive($urlAttr, $urlFailAttr)
             );
 
         $builder
