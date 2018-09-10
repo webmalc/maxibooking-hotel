@@ -3,6 +3,7 @@
 namespace MBH\Bundle\UserBundle\Security;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -67,7 +68,7 @@ class ApiKeyUserProvider implements UserProviderInterface
      * object can just be merged into some internal array of users / identity
      * map.
      *
-     * @param UserInterface $user
+     * @param UserInterface|User $user
      *
      * @return UserInterface
      *

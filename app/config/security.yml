@@ -45,6 +45,8 @@ security:
                 lifetime: 3600
                 path:     /
                 domain:   ~
+            json_login:
+                check_path: /user/json_login
 
     access_control:
         - { path: ^/deploy, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
@@ -55,6 +57,7 @@ security:
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/media/cache/resolve, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/user/login$, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+#        - { path: ^/user/json_login$, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/_wdt, roles: 'IS_AUTHENTICATED_ANONYMOUSLY' } 
         - { path: ^/_profiler, roles: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/, role: ROLE_BASE_USER }
