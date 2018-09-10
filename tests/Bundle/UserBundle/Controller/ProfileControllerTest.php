@@ -243,11 +243,7 @@ class ProfileControllerTest extends WebTestCase
         /** @var User $user */
         $user = $this->dm->getRepository('MBHUserBundle:User')
             ->findOneBy([])
-            ->setApiToken(
-                (new AuthorizationToken())
-                    ->setExpiredAt(new \DateTime('+1 day'))
-                    ->setToken(self::API_TOKEN)
-            );
+            ->setApiToken(self::API_TOKEN, new \DateTime('+1 day'));
         $this->dm->flush();
     }
 

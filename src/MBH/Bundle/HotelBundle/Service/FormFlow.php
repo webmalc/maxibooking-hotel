@@ -308,7 +308,7 @@ abstract class FormFlow
         if (!$this->isFlowStarted()) {
             $finishedConfig = $this->dm
                 ->getRepository(FlowConfig::class)
-                ->findOneBy(['isFinished' => true]);
+                ->findOneBy(['isFinished' => true, 'flowId' => self::getFlowId()]);
 
             return is_null($finishedConfig) ? 0 : 100;
         }

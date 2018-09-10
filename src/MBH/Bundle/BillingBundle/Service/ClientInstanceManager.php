@@ -263,10 +263,7 @@ class ClientInstanceManager
         $plainPassword = $this->generateAdminPassword();
         $admin->setPlainPassword($plainPassword);
         $admin->setEmail($client->getEmail());
-        $token = (new AuthorizationToken())
-            ->setToken($this->generateAuthorizationToken())
-            ->setExpiredAt(new \DateTime('+1 hour'));
-        $admin->setApiToken($token);
+        $admin->setApiToken($this->generateAuthorizationToken(), new \DateTime('+1 hour'));
         $this->dm->flush();
         $this->userManager->updateUser($admin, true);
 

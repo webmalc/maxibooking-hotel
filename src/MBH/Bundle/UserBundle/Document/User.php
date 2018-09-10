@@ -232,12 +232,19 @@ class User extends BaseUser implements RecipientInterface, DataOfMortalInterface
     }
 
     /**
-     * @param AuthorizationToken $apiToken
+     * @param string $token
+     * @param \DateTime|null $expiredAt
      * @return User
      */
-    public function setApiToken(AuthorizationToken $apiToken): User
+    public function setApiToken(string $token, ?\DateTime $expiredAt): User
     {
-        $this->apiToken = $apiToken;
+        if (is_null($expiredAt)) {
+            $expiredAt = new \DateTime('+1 hour');
+        }
+
+        $this->apiToken = (new AuthorizationToken())
+            ->setToken($token)
+            ->setExpiredAt($expiredAt);
 
         return $this;
     }

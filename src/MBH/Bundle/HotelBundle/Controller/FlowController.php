@@ -67,8 +67,7 @@ class FlowController extends BaseController
     public function mbSiteFlowAction()
     {
         /** @var RoomTypeFlow $flow */
-        $flow = $this
-            ->get('mbh.mb_site_flow');
+        $flow = $this->get('mbh.mb_site_flow');
         $form = $flow->handleStepAndGetForm();
 
         return [

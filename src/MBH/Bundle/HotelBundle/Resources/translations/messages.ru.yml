@@ -288,6 +288,7 @@ views.flow.hotel_flow.next_button.title: Вперед
 views.dashboard.title: 'Дашборд'
 views.dashboard.index.widgets.roomTypes: Номера
 views.dashboard.index.widgets.hotel: Отель
+views.dashboard.index.widgets.site: Сайт
 views.dashboard.index.widgets.configure: Настроить
 views.dashboard.index.not_confirmed_packages.table_title: 'Неподтвержденные брони'
 views.dashboard.index.not_confirmed_packages.dates: Даты

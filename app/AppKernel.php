@@ -59,8 +59,6 @@ class AppKernel extends Kernel
             new KnpGaufretteBundle(),
             new OneupFlysystemBundle(),
             new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
-//            new Craue\FormFlowBundle\CraueFormFlowBundle(),
-
 
             //Project bundles,
             new MBH\Bundle\BaseBundle\MBHBaseBundle(),

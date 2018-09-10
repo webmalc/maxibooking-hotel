@@ -87,10 +87,7 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
                 $user->setAllowNotificationTypes($notificationTypes);
 
                 if ($userData['username'] === self::SANDBOX_USERNAME) {
-                    $apiToken = (new AuthorizationToken())
-                        ->setExpiredAt(new \DateTime('+ 1 day'))
-                        ->setToken(self::SANDBOX_USER_TOKEN);
-                    $user->setApiToken($apiToken);
+                    $user->setApiToken(self::SANDBOX_USER_TOKEN, new \DateTime('+ 1 day'));
                 }
 
                 $manager->persist($user);

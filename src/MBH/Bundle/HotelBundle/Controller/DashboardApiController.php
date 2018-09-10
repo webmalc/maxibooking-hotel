@@ -28,8 +28,9 @@ class DashboardApiController extends BaseController
      */
     public function flowProgressDataAction(Request $request)
     {
+        // TODO: Здесь нужно добавлять Access-control header
         $result = new Result();
-        $flowServiceIds = ['roomType' => 'mbh.room_type_flow', 'hotel' => 'mbh.hotel_flow'];
+        $flowServiceIds = ['roomType' => 'mbh.room_type_flow', 'hotel' => 'mbh.hotel_flow', 'site' => 'mbh.mb_site_flow'];
 
         $data = [];
         foreach ($flowServiceIds as $flowId => $flowServiceId) {
