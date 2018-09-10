@@ -24,3 +24,5 @@ validator.document.expediaConfig.no_hotel_id_specified: 'Не указан id о
 validator.document.expediaConfig.no_hotel_selected: 'Не выбран отель'
 validator.document.expediaConfig.username_not_specified: 'Не указано имя пользователя'
 validator.document.expediaConfig.password_not_specified: 'Не указан пароль'
+validator.rooms_type.empty_rooms_list: 'Не указано ни одного типа номера.'
+validator.rooms_type.empty_tariffs_list: 'Не указано ни одного тарифа'

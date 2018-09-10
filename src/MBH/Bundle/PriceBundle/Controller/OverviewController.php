@@ -55,15 +55,7 @@ class OverviewController extends Controller implements CheckHotelControllerInter
         $manager = $this->get('mbh.hotel.room_type_manager');
 
         //dates
-        $begin = $helper->getDateFromString($request->get('begin'));
-        if (!$begin) {
-            $begin = new \DateTime('00:00');
-        }
-        $end = $helper->getDateFromString($request->get('end'));
-        if (!$end || $end->diff($begin)->format("%a") > 366 || $end <= $begin) {
-            $end = clone $begin;
-            $end->modify('+45 days');
-        }
+        list($begin, $end) = $helper->getReportDates($request);
 
         $to = clone $end;
         $to->modify('+1 day');
@@ -72,9 +64,9 @@ class OverviewController extends Controller implements CheckHotelControllerInter
 
         $response = [
             'period' => iterator_to_array($period),
-            'begin' => $begin,
-            'end' => $end,
-            'hotel' => $hotel
+            'begin'  => $begin,
+            'end'    => $end,
+            'hotel'  => $hotel,
         ];
 
         $isDisableableOn = $this->clientConfig->isDisableableOn();

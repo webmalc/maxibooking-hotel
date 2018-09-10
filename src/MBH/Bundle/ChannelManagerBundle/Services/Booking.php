@@ -129,6 +129,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
 
     /**
      * {@inheritDoc}
+     * @throws \Throwable
      */
     public function pullTariffs(ChannelManagerConfigInterface $config)
     {
@@ -140,28 +141,38 @@ class Booking extends Base implements ChannelManagerServiceInterface
 
         $response = $this->sendXml(static::BASE_URL . 'roomrates', $request);
 
-        foreach ($response->room as $room) {
-            foreach ($room->rates->rate as $rate) {
-                if (isset($result[(string)$rate['id']]['rooms'])) {
-                    $rooms = $result[(string)$rate['id']]['rooms'];
-                } else {
-                    $rooms = [];
-                }
-                $rooms[(string)$room['id']] = (string)$room['id'];
+        if ($this->checkResponse($response)) {
+            foreach ($response->room as $room) {
+                foreach ($room->rates->rate as $rate) {
+                    if (isset($result[(string)$rate['id']]['rooms'])) {
+                        $rooms = $result[(string)$rate['id']]['rooms'];
+                    } else {
+                        $rooms = [];
+                    }
+                    $rooms[(string)$room['id']] = (string)$room['id'];
 
-                $result[(string)$rate['id']] = [
-                    'title' => (string)$rate['rate_name'],
-                    'readonly' => empty((int)$rate['readonly']) ? false : true,
-                    'is_child_rate' => empty((int)$rate['is_child_rate']) ? false : true,
-                    'rooms' => $rooms
-                ];
+                    $result[(string)$rate['id']] = [
+                        'title' => (string)$rate['rate_name'],
+                        'readonly' => empty((int)$rate['readonly']) ? false : true,
+                        'is_child_rate' => empty((int)$rate['is_child_rate']) ? false : true,
+                        'rooms' => $rooms
+                    ];
+                }
             }
+        } else {
+            $this->log($response->asXML());
+            $this->notifyErrorRequest(
+                'Booking.com',
+                'channelManager.commonCM.notification.request_error.pull_tariffs'
+            );
         }
+
         return $result;
     }
 
     /**
      * {@ inheritDoc}
+     * @throws \Throwable
      */
     public function pullRooms(ChannelManagerConfigInterface $config)
     {
@@ -170,12 +181,20 @@ class Booking extends Base implements ChannelManagerServiceInterface
             'MBHChannelManagerBundle:Booking:get.xml.twig',
             ['config' => $config, 'params' => $this->params]
         );
-        $response = $this->sendXml(static::BASE_URL . 'rooms', $request);
-        //$this->log($response->asXML());
 
-        foreach ($response->xpath('room') as $room) {
-            $result[(string)$room['id']] = (string)$room;
+        $response = $this->sendXml(static::BASE_URL . 'rooms', $request);
+        if ($this->checkResponse($result)) {
+            foreach ($response->xpath('room') as $room) {
+                $result[(string)$room['id']] = (string)$room;
+            }
+        } else {
+            $this->log($response->asXML());
+            $this->notifyErrorRequest(
+                'Booking.com',
+                'channelManager.commonCM.notification.request_error.pull_rooms'
+            );
         }
+
         return $result;
     }
 

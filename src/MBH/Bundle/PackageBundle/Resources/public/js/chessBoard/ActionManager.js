@@ -50,6 +50,7 @@ var ActionManager = /** @class */ (function () {
         var self = this;
         var editBody = $('#package-new-results');
         editBody.html(searchData);
+        // console.log(searchData);
         editBody.find('.search-room-select').val(packageData.accommodation);
         editBody.find('td:nth-child(4)').remove();
         editBody.find('thead th:nth-child(4)').remove();
@@ -351,7 +352,7 @@ var ActionManager = /** @class */ (function () {
                 return {
                     message: Translator.trans('action_manager.modal.need_changepackage_end.title') + '. '
                         + Translator.trans('action_manager.modal.have_not_rights') + '.',
-                    resolved: false
+                    resolved: false,
                 };
             }
         }
@@ -489,4 +490,3 @@ var ActionManager = /** @class */ (function () {
     };
     return ActionManager;
 }());
-//# sourceMappingURL=ActionManager.js.map

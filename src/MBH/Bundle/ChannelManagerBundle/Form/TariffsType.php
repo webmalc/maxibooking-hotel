@@ -54,6 +54,9 @@ class TariffsType extends AbstractType
     {
         $notMappedTariffsIds = [];
 
+        if (empty($data)) {
+            $context->addViolation('validator.rooms_type.empty_rooms_list');
+        }
         /** @var Tariff $tariff */
         foreach($data as $cmTariffId => $tariff) {
             if (is_null($tariff)) {

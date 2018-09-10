@@ -115,7 +115,13 @@ class Service extends Base
      * @var bool
      * @ODM\Field(type="bool")
      */
-    protected $isSubtracted = true;
+    protected $includeInAccommodationPrice = false;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    protected $subtractFromAccommodationPrice = false;
 
     /**
      * @var boolean
@@ -228,18 +234,37 @@ class Service extends Base
     /**
      * @return bool
      */
-    public function isSubtracted(): ?bool
+    public function subtractFromAccommodationPrice(): ?bool
     {
-        return $this->isSubtracted;
+        return $this->subtractFromAccommodationPrice;
     }
 
     /**
-     * @param bool $isSubtracted
+     * @param bool $subtractFromAccommodationPrice
      * @return Service
      */
-    public function setIsSubtracted(bool $isSubtracted): Service
+    public function setSubtractFromAccommodationPrice(bool $subtractFromAccommodationPrice): Service
     {
-        $this->isSubtracted = $isSubtracted;
+        $this->subtractFromAccommodationPrice = $subtractFromAccommodationPrice;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isIncludeInAccommodationPrice(): ?bool
+    {
+        return $this->includeInAccommodationPrice;
+    }
+
+    /**
+     * @param bool $includeInAccommodationPrice
+     * @return Service
+     */
+    public function setIncludeInAccommodationPrice(bool $includeInAccommodationPrice): Service
+    {
+        $this->includeInAccommodationPrice = $includeInAccommodationPrice;
 
         return $this;
     }

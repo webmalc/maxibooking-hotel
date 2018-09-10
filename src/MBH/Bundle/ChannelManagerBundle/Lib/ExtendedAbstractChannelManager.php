@@ -137,7 +137,9 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
     /**
      * Pull rooms from service server
      * @param ChannelManagerConfigInterface $config
+     * @param bool $sendMessageIfFail
      * @return array
+     * @throws \Throwable
      */
     public function pullRooms(ChannelManagerConfigInterface $config)
     {
@@ -152,6 +154,13 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
             if ($responseHandler->isResponseCorrect()) {
                 $roomTypesData = $responseHandler->getRoomTypesData();
                 $roomTypes += $roomTypesData;
+            } else {
+                $this->log($response);
+                $this->notifyErrorRequest(
+                    $config->getName(),
+                    'channelManager.commonCM.notification.request_error.pull_rooms'
+                );
+                break;
             }
         }
 
@@ -161,21 +170,31 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
     /**
      * Pull tariffs from service server
      * @param ChannelManagerConfigInterface $config
+     * @param bool $sendMessageIfFail
      * @return array
+     * @throws \Throwable
      */
     public function pullTariffs(ChannelManagerConfigInterface $config)
     {
         $tariffs = [];
         $roomTypes = $this->pullRooms($config);
 
-//        Получаем список объектов RequestInfo, содержащих данные о запросах.
         $requestInfoList = $this->requestFormatter->formatPullTariffsRequest($config, $roomTypes);
 
         foreach ($requestInfoList as $requestInfo) {
             $response = $this->sendRequestAndGetResponse($requestInfo);
             $responseHandler = $this->getResponseHandler($response, $config);
-            $tariffsData = $responseHandler->getTariffsData($roomTypes);
-            $tariffs += $tariffsData;
+            if ($responseHandler->isResponseCorrect()) {
+                $tariffsData = $responseHandler->getTariffsData($roomTypes);
+                $tariffs += $tariffsData;
+            } else {
+                $this->log($response);
+                $this->notifyErrorRequest(
+                    $config->getName(),
+                    'channelManager.commonCM.notification.request_error.pull_tariffs'
+                );
+                break;
+            }
         }
 
         return $tariffs;

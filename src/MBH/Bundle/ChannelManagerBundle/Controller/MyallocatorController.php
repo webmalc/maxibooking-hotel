@@ -74,7 +74,7 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-
+            $isSuccess = true;
             if (!$config->getToken()) {
                 $username = $form->get('username')->getData();
                 $password = $form->get('password')->getData();
@@ -84,19 +84,25 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
                 if ($token) {
                     $config->setToken($token);
                 } else {
+                    $isSuccess = false;
                     $this->addFlash('danger', 'controller.myallocatorController.invalid_credentials');
                 }
             }
 
-            $this->dm->persist($config);
-            $this->dm->flush();
+            if ($isSuccess) {
+                $this->dm->persist($config);
+                $this->dm->flush();
 
-            $this->get('mbh.channelmanager')->updateInBackground();
+                $this->get('mbh.channelmanager')->updateInBackground();
 
-            $this->addFlash('success', 'controller.myallocatorController.settings_saved_success');
+                $this->addFlash('success', 'controller.myallocatorController.settings_saved_success');
 
-            if ($config->isReadyToSync()) {
-                $this->get('mbh.messages_store')->sendMessageToTechSupportAboutNewConnection('MyAllocator', $this->get('mbh.instant_notifier'));
+                if (!$config->isReadyToSync()) {
+                    $this->get('mbh.messages_store')->sendMessageToTechSupportAboutNewConnection(
+                        'MyAllocator',
+                        $this->get('mbh.instant_notifier')
+                    );
+                }
             }
 
             return $this->redirect($this->generateUrl('myallocator'));

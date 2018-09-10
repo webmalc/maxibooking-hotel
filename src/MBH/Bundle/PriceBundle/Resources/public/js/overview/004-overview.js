@@ -1,5 +1,6 @@
 /*global window, $, document, Routing, mbh*/
 /*jslint regexp: true */
+var mbh_restrictForDateRangePicker = true;
 $(document).ready(function () {
     'use strict';
 
