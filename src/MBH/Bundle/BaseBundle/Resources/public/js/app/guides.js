@@ -317,7 +317,7 @@ var GUIDES = {
 
 $(document).ready(function () {
     'use strict';
-    if (true || localStorage.getItem(LS_HAS_VIEWED_WELCOME_GUIDE) !== 'true') {
+    if (localStorage.getItem(LS_HAS_VIEWED_WELCOME_GUIDE) !== 'true') {
         localStorage.setItem(LS_HAS_VIEWED_WELCOME_GUIDE, true);
         var $welcomeModal = $('#welcome-modal');
         $welcomeModal.modal('show');
