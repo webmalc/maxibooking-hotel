@@ -245,9 +245,9 @@ class RegisterRequest implements \JsonSerializable
     }
 
     /**
-     * @param null|string $returnUrl
+     * @param string $returnUrl
      */
-    public function setReturnUrl(?string $returnUrl): void
+    public function setReturnUrl(string $returnUrl): void
     {
         $this->returnUrl = $returnUrl;
     }
@@ -300,15 +300,23 @@ class RegisterRequest implements \JsonSerializable
         $this->taxSystem = $taxSystem;
     }
 
-    public function jsonSerialize()
+    /**
+     * @return bool
+     */
+    public function useToken(): bool
+    {
+        return $this->token !== null;
+    }
+
+    public function getQuery(): array
     {
         $data = [];
 
-        if ($this->token === null) {
+        if ($this->useToken()) {
+            $data['token'] = $this->token;
+        } else {
             $data['userName'] = $this->userName;
             $data['password'] = $this->password;
-        } else {
-            $data['token'] = $this->token;
         }
 
         $data['orderNumber'] = $this->orderNumber;
@@ -334,5 +342,8 @@ class RegisterRequest implements \JsonSerializable
         return $data;
     }
 
-
+    public function jsonSerialize()
+    {
+        return $this->getQuery();
+    }
 }

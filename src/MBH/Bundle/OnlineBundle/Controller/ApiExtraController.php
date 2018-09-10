@@ -104,7 +104,7 @@ class ApiExtraController extends Controller
         $dataForLogger = ' Data response: ' . var_export($response, true);
         $dataForLogger .= '. Data init: ' . json_encode($register, JSON_UNESCAPED_UNICODE);
 
-        if ($response === null || $response->getErrorCode() !== RegisterResponse::NO_ERROR) {
+        if ($response === null || ($response->getErrorCode() !== null && $response->getErrorCode() !== RegisterResponse::NO_ERROR)) {
             $msg = 'at response from sberbank: ';
 
             $logger->addError($msg . $dataForLogger);

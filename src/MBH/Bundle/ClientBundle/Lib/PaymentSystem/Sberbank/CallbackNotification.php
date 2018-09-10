@@ -54,9 +54,13 @@ class CallbackNotification
      */
     private $extraParams = [];
 
+    /**
+     * @param Request $request
+     * @return CallbackNotification|null
+     */
     public static function parseRequest(Request $request): ?self
     {
-        $body = json_decode($request->getContent(), true);
+        $body = $request->query->getIterator();
         if (json_last_error() !== JSON_ERROR_NONE || empty($body)) {
             return null;
         }
@@ -113,7 +117,10 @@ class CallbackNotification
         return $this->status;
     }
 
-    public function generateRawString(bool $toUpper = true): string
+    /**
+     * @return string
+     */
+    public function generateRawString(): string
     {
         $data = [];
 
@@ -122,7 +129,9 @@ class CallbackNotification
         $data['operation'] = $this->getOperation();
         $data['status'] = (string)$this->getStatus();
 
-        $data = array_merge($data, $this->extraParams);
+        if ($this->extraParams !== []) {
+            $data = array_merge($data, $this->extraParams);
+        }
 
         ksort($data);
 
@@ -131,14 +140,16 @@ class CallbackNotification
             $d[] = $key . ';' . $value;
         }
 
-        $str = implode(';', $d);
-
-        return $toUpper ? strtoupper($str) : $str;
+        return implode(';', $d) . ';';
     }
 
+    /**
+     * @param Sberbank $sberbank
+     * @return string
+     */
     public function generateHmacSha256(Sberbank $sberbank): string
     {
-        return hash_hmac('sha256', $this->generateRawString(), $sberbank->getSecurityKey());
+        return strtoupper(hash_hmac('sha256', $this->generateRawString(), $sberbank->getSecurityKey()));
     }
 
 }

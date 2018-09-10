@@ -48,7 +48,7 @@ class Sberbank extends Wrapper
         $intermediateOperation = [
             CallbackNotification::OPERATION_REFUNDED,
             CallbackNotification::OPERATION_REVERSED,
-
+            CallbackNotification::OPERATION_APPROVED,
         ];
 
         if (in_array($notification->getOperation(), $intermediateOperation)) {
@@ -57,11 +57,10 @@ class Sberbank extends Wrapper
             return $holder;
         }
 
-        $checksum = $notification->getChecksum();
-        $str = $notification->generateRawString();
-        $key = $notification->generateHmacSha256($this->entity);
-
-        if ($notification->getChecksum() !== $notification->generateHmacSha256($this->entity)) {
+        if ($notification->getOperation() !== CallbackNotification::OPERATION_DEPOSITED
+            && $notification->getStatus() !== 1
+            && $notification->getChecksum() !== $notification->generateHmacSha256($this->entity)
+        ) {
             return $holder;
         }
 

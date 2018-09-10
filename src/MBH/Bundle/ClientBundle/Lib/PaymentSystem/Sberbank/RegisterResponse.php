@@ -27,7 +27,7 @@ class RegisterResponse
     /**
      * Код ошибки.
      *
-     * @var integer
+     * @var null|integer
      */
     private $errorCode;
 
@@ -71,9 +71,9 @@ class RegisterResponse
     }
 
     /**
-     * @return int
+     * @return null|int
      */
-    public function getErrorCode(): int
+    public function getErrorCode(): ?int
     {
         return $this->errorCode;
     }

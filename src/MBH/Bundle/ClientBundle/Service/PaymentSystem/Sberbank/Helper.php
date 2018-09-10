@@ -90,10 +90,13 @@ class Helper
 
     public function request(RegisterRequest $register): ?RegisterResponse
     {
-        $str = urlencode(json_encode($register, JSON_UNESCAPED_UNICODE));
-
         $client = new Client();
-        $response = RegisterResponse::parseResponse($client->post(RegisterRequest::URL_REGISTER, ['body' => $str]));
+
+        $response = RegisterResponse::parseResponse(
+            $client->post(RegisterRequest::URL_REGISTER, [
+                'form_params' => $register->getQuery(),
+            ])
+        );
 
         return $response;
     }
