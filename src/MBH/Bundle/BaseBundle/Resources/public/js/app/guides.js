@@ -317,13 +317,10 @@ var GUIDES = {
 
 $(document).ready(function () {
     'use strict';
-    if (localStorage.getItem(LS_HAS_VIEWED_WELCOME_GUIDE) !== 'true') {
+    if (true || localStorage.getItem(LS_HAS_VIEWED_WELCOME_GUIDE) !== 'true') {
         localStorage.setItem(LS_HAS_VIEWED_WELCOME_GUIDE, true);
         var $welcomeModal = $('#welcome-modal');
         $welcomeModal.modal('show');
-        $welcomeModal.on('hidden.bs.modal', function () {
-            runFirstGuide();
-        });
     }
 });
 

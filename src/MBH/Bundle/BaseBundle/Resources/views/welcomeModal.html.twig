@@ -10,47 +10,47 @@
                 </h4>
             </div>
             <div class="modal-body" id="welcome-modal-body" style="padding: 15px 30px;">
-                <p>
-                <div class="row">
-                    <div class="col-md-1" style="font-size: 35px; text-align: right;"><i style="color: red" class='fa fa-exclamation'></i></div>
-                    <div class="col-md-11">{{ 'welcome_modal.welcome3'|trans }}
-                    </div>
-                </div>
-                </p>
+                {#<p>#}
+                {#<div class="row">#}
+                    {#<div class="col-md-1" style="font-size: 35px; text-align: right;"><i style="color: red" class='fa fa-exclamation'></i></div>#}
+                    {#<div class="col-md-11">{{ 'welcome_modal.welcome3'|trans }}#}
+                    {#</div>#}
+                {#</div>#}
+                {#</p>#}
                 <p>
                 <div class="row">
                     <div class="col-md-1"><i style="color: #f39c12" class='fa fa-envelope'></i></div>
                     <div class="col-md-11">{{ 'welcome_modal.welcome2'|trans }}</div>
                 </div>
                 </p>
-                <p>
-                    <div class="row">
-                        <div class="col-md-1"><i style="color: #3c8dbc" class='fa fa-info-circle'></i></div>
-                        <div class="col-md-11">
-                            {% set buttonHtml = '<div id="welcome-modal-help-button"><i class="fa fa-question-circle fa-lg"></i>&nbsp; <strong>' ~ 'mbhbasebundle.views.help'|trans ~'</strong></div>' %}
-                            {{ 'welcome_modal.welcome5'|trans({'%button%': buttonHtml})|raw }}
-                        </div>
-                    </div>
-                </p>
-                <p>
-                <div class="row">
-                    <div class="col-md-1"><i style="color: #00a65a" class='fa fa-edit'></i></div>
-                    <div class="col-md-11">
-                        {{ 'welcome_modal.welcome9'|trans({'%base_url%': 'https://support.maxi-booking.com', '%request_url%': 'https://support.maxi-booking.com/hc/ru/requests/new'})|raw }}
-                    </div>
-                </div>
-                </p>
-                <p>
-                <div class="row">
-                    <div class="col-md-1"><i style="color: #7d7d7d" class='fa fa-desktop'></i></div>
-                    <div class="col-md-11">
-                        {{ 'welcome_modal.welcome7'|trans}}
-                        <a target="_blank" href="https://example.maxi-booking.ru?apiKey={{ get_twig_data()['demo_user_token'] }}" class="btn btn-primary btn-sm">
-                            {{ 'welcome_modal.welcome7_continuation'|trans}}
-                        </a>
-                    </div>
-                </div>
-                </p>
+                {#<p>#}
+                    {#<div class="row">#}
+                        {#<div class="col-md-1"><i style="color: #3c8dbc" class='fa fa-info-circle'></i></div>#}
+                        {#<div class="col-md-11">#}
+                            {#{% set buttonHtml = '<div id="welcome-modal-help-button"><i class="fa fa-question-circle fa-lg"></i>&nbsp; <strong>' ~ 'mbhbasebundle.views.help'|trans ~'</strong></div>' %}#}
+                            {#{{ 'welcome_modal.welcome5'|trans({'%button%': buttonHtml})|raw }}#}
+                        {#</div>#}
+                    {#</div>#}
+                {#</p>#}
+                {#<p>#}
+                {#<div class="row">#}
+                    {#<div class="col-md-1"><i style="color: #00a65a" class='fa fa-edit'></i></div>#}
+                    {#<div class="col-md-11">#}
+                        {#{{ 'welcome_modal.welcome9'|trans({'%base_url%': 'https://support.maxi-booking.com', '%request_url%': 'https://support.maxi-booking.com/hc/ru/requests/new'})|raw }}#}
+                    {#</div>#}
+                {#</div>#}
+                {#</p>#}
+                {#<p>#}
+                {#<div class="row">#}
+                    {#<div class="col-md-1"><i style="color: #7d7d7d" class='fa fa-desktop'></i></div>#}
+                    {#<div class="col-md-11">#}
+                        {#{{ 'welcome_modal.welcome7'|trans}}#}
+                        {#<a target="_blank" href="https://example.maxi-booking.ru?apiKey={{ get_twig_data()['demo_user_token'] }}" class="btn btn-primary btn-sm">#}
+                            {#{{ 'welcome_modal.welcome7_continuation'|trans}}#}
+                        {#</a>#}
+                    {#</div>#}
+                {#</div>#}
+                {#</p>#}
                 <p>
                     <div class="row" style="font-weight: 600;">
                         <div class="col-md-1"></div>
@@ -63,8 +63,9 @@
                     </div>
                 </p>
             </div>
-            <div class="modal-footer" style="text-align: center;">
-                <button type="button" class="btn btn-primary" data-dismiss="modal">{{ 'welcome_modal.ok_button'|trans}}</button>
+            <div class="modal-footer">
+                <a href="{{ path('site_settings') }}" class="btn btn-success" style="float: left;">{{ 'welcome_modal.go_to_site_settings_button'|trans }}</a>
+                <button type="button" class="btn btn-success" data-dismiss="modal">{{ 'welcome_modal.ok_button'|trans}}</button>
             </div>
         </div>
     </div>

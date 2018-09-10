@@ -690,7 +690,6 @@ modal.close_button: Close
 mbhbasebundle.views.help: Help
 support_modal.all_articles: 'All articles'
 support_modal.info_base: Guide
-welcome_modal.ok_button: OK
 welcome_modal.welcome5: 'You will be offered an interactive introductory lesson to familiarize yourself with the program. Click the %button% button in the top menu to start.'
 support_modal.articles.chessboard: Calendar
 support_modal.articles.booking_sync: 'Set up synchronisation with Booking.com'
@@ -701,7 +700,6 @@ support_modal.interactive_halper: 'Interactive help'
 support_modal.header_text: 'Knowledge Base'
 welcome_modal.welcome5_continuation: 'Knowledge base'
 welcome_modal.header_text: 'Welcome to'
-welcome_modal.welcome2: 'To log in, please use the username and password sent in the email. You should save this email, so you can refer to it later.'
 welcome_modal.welcome3: 'We sent you a confirmation email with a link to activate your account. Please check your email and click the link.'
 welcome_modal.welcome4: 'You can start working right now!'
 welcome_modal.welcome7_continuation: Demo-version
