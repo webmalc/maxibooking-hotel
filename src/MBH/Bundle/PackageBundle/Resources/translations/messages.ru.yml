@@ -901,6 +901,7 @@ report.filling.filling.room_status: 'Статус комнаты'
 report.filling.filling.room_status.without_status: 'Без статуса'
 report.filling.filling.only_enabled: 'Только влюченные?'
 report.filling.filling.recalculate_price_of_accommodation: 'Пересчет стоимости проживания'
+report.filling_report.export_to_csv_button.title: 'Выгрузка'
 report.polls_view.number_of_order: Заказ
 report.polls_view.hotel: Отель
 report.polls: Даты

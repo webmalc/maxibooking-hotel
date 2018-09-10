@@ -33,3 +33,4 @@ document.tariff.description.too_short: 'Слишком короткое опис
 document.tariff.description.too_long: 'Слишком длинное описание'
 mbhpricebundle.form.pricecachegeneratortype.beginning_period_should_be_less_than_end_period: 'Начало периода должно быть меньше конца периода.'
 mbhpricebundle.form.pricecachegeneratortype.period_can_not_be_more_than_year: 'Период не может быть больше года.'
+service_type.service_price_can_not_be_subtracted_and_added_in_accommodation_price: 'Цена услуги не может быть одновременно включена и вычтена из стоимости проживания!'

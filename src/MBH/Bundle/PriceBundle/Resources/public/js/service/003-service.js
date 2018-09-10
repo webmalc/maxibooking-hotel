@@ -13,6 +13,17 @@ $(document).ready(function () {
         postfix: '<i class="' + mbh.currency.icon + '"></i>'
     });
 
+    var $includeAccPriceInput = $('#mbh_bundle_pricebundle_service_type_includeInAccommodationPrice');
+    var $subtractAccPriceInput = $('#mbh_bundle_pricebundle_service_type_subtractFromAccommodationPrice');
+    if ($includeAccPriceInput.length === 1) {
+        var $includeAndSubtractInputs = $includeAccPriceInput.add($subtractAccPriceInput);
+        $includeAndSubtractInputs.on('switchChange.bootstrapSwitch', function () {
+            if ($includeAndSubtractInputs.bootstrapSwitch('state') === true) {
+                $includeAndSubtractInputs.not($(this)).bootstrapSwitch('state', false);
+            }
+        });
+    }
+
     // show/hide dates fields
     (function () {
         var type = $('#mbh_bundle_pricebundle_service_type_calcType');
@@ -35,7 +46,6 @@ $(document).ready(function () {
     }());
 
     (function () {
-
         var icon = $('#mbh_bundle_pricebundle_service_type_price').next('span.bootstrap-touchspin-postfix'),
             calcType = $('#mbh_bundle_pricebundle_service_type_calcType'),
             iconChange = function () {
