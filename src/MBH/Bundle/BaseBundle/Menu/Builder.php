@@ -887,7 +887,7 @@ class Builder
                     'route' => 'client_payment_systems',
                     'label' => 'menu.label.payment_systems',
                 ],
-                'attributes' => ['icon' => 'fa fa-paperclip'],
+                'attributes' => ['icon' => 'fa fa-credit-card'],
             ],
         ];
 
