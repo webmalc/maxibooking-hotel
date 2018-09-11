@@ -4,3 +4,8 @@
 #key-words-list li {
     margin-bottom: 10px;
 }
+
+.label-as-badge i.fa {
+    min-width: 10.5px;
+    min-height: 11px;
+}
