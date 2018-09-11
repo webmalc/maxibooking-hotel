@@ -36,7 +36,6 @@ class CommandRunner implements ConsumerInterface
      */
     public function execute(AMQPMessage $message)
     {
-        $this->logger->err('dsfasdf');
         try {
             $command = unserialize($message->body);
             /** @var Command $command */
