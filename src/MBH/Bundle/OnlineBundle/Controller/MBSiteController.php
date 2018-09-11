@@ -83,8 +83,9 @@ class MBSiteController extends BaseController
         }
 
         return [
-            'form' => $form->createView(),
-            'hotelsSettings' => $siteManager->getHotelsSettingsInfo($siteConfig)
+            'form'                => $form->createView(),
+            'hotelsSettings'      => $siteManager->getHotelsSettingsInfo($siteConfig),
+            'isUsePaymentSystems' => $this->clientConfig->getPaymentSystems() !== [],
         ];
     }
 
@@ -106,12 +107,13 @@ class MBSiteController extends BaseController
         $warningsCompiler = $this->get('mbh.warnings_compiler');
 
         return [
-            'hotelsSettings' => $siteManager->getHotelsSettingsInfo($config),
-            'hotel' => $hotel,
-            'hotelWarnings' => $siteManager->getDocumentFieldsCorrectnessTypesByRoutesNames($hotel),
-            'roomTypesWarnings' => $roomTypesWarnings,
-            'emptyPriceCaches' => $warningsCompiler->getEmptyPriceCachePeriods(),
-            'emptyRoomCaches' => $warningsCompiler->getEmptyRoomCachePeriods()
+            'hotelsSettings'      => $siteManager->getHotelsSettingsInfo($config),
+            'hotel'               => $hotel,
+            'hotelWarnings'       => $siteManager->getDocumentFieldsCorrectnessTypesByRoutesNames($hotel),
+            'roomTypesWarnings'   => $roomTypesWarnings,
+            'emptyPriceCaches'    => $warningsCompiler->getEmptyPriceCachePeriods(),
+            'emptyRoomCaches'     => $warningsCompiler->getEmptyRoomCachePeriods(),
+            'isUsePaymentSystems' => $this->clientConfig->getPaymentSystems() !== [],
         ];
     }
 }

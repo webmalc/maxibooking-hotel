@@ -3,9 +3,19 @@
 {% set management_icon = true %}
 {% set title = 'menu.label.web_site'|trans({}, 'MBHBaseBundle') %}
 
+
+{% set titlePaymentSystems %}
+    <i class="fa fa-paperclip"></i> {{ 'menu.label.payment_systems'|trans }}
+    {% if not isUsePaymentSystems %}
+    <small class="label label-danger label-as-badge"><i
+                class="fa fa-exclamation"></i></small>
+    {% endif %}
+{% endset %}
+
 {% set layout = "tabs" %}
 {% set menu = [
-    {'route': 'site_settings', 'title': '<i class="fa fa-cogs"></i> '~ 'views.mb_site.index.main_settings'|trans}
+    {'route': 'site_settings', 'title': '<i class="fa fa-cogs"></i> '~ 'views.mb_site.index.main_settings'|trans},
+    {'route': 'client_payment_systems', 'title': titlePaymentSystems},
 ] %}
 
 {% set numberOfNotHotelTabs = menu|length %}
