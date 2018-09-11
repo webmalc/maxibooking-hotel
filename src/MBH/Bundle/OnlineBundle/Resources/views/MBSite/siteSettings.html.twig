@@ -4,6 +4,7 @@
 {% set title_url = path('site_settings') %}
 {#{% set small_title = 'views.mb_site.title'|trans %}#}
 {% set small_title = 'views.mb_site.index.main_settings'|trans %}
+{% set active = 1 %}
 
 {% block content %}
     {{ parent() }}
@@ -41,7 +42,7 @@
                 </div>
             </div>
             {#{{ form_row(form.contract) }}#}
-            {{ form_row(form.personalDataPolicies) }}
+            {#{{ form_row(form.personalDataPolicies) }}#}
             {% include 'MBHBaseBundle:Actions:new.html.twig' %}
             {{ form_widget(form._token) }}
             {{ form_end(form, {render_rest: false}) }}

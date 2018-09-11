@@ -15,7 +15,7 @@ class DocumentFieldsManager
         Hotel::class => [
             'description' => 'site_manager.description.hotel',
             'logoImage' => 'form.hotel_logo.image_file.help',
-            'contactInformation' => 'form.hotel_contact_information.contact_info.group',
+            'contactInformation' => 'site_manager.contactInformation.label',
             'latitude' => 'form.hotelExtendedType.latitude',
             'longitude' => 'form.hotelExtendedType.longitude',
             'images' => 'site_manager.photos_tab.hotel',

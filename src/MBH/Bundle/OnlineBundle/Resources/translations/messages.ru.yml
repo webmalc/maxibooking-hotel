@@ -124,6 +124,7 @@ external_api_controller.error.specified_hotel_not_contains_in_form_config: 'От
 external_api_controller.error.room_type_with_specified_id_not_exists: 'Тип комнат с ID = "%roomTypeId%" не существует'
 views.mb_site.title: Сайт
 views.mb_site.index.main_settings: Настройки
+views.mb_site.index.personal_data_policies: 'Политика обработки персональных данных'
 views.mb_site.index.hotel_settings.info: 'Инфо - '
 views.mb_site.hotel_settings.empty_fields_error: 'Не заполнены обязательные поля: %fields%'
 site_form.is_enabled.label: 'Включен?'
@@ -141,6 +142,7 @@ mb_site_controller.site_config_saved: 'Настройки успешно сох�
 site_manager.description.hotel: 'Описание объекта'
 site_manager.photos_tab.hotel: 'Фотографии объекта'
 site_manager.photos_tab.room: Фотографии
+site_manager.contactInformation.label: 'Телефон и email'
 site_manager.mandatory_field_empty.error: 'Поле "%fieldTitle%" обязательно для заполнения, так как оно используется на сайте'
 analytics_form.is_enabled.label: 'Включена?'
 analytics_form.google_id.label: 'Идентификатор отслеживания'

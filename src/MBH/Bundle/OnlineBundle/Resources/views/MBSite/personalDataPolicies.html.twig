@@ -1,0 +1,25 @@
+{% extends "MBHOnlineBundle:MBSite:layout.html.twig" %}
+
+{% set title_url = path('site_settings') %}
+{% set small_title = 'site_form.pers_data_policy.label'|trans %}
+{% set active = 2 %}
+
+{% block content %}
+    {{ parent() }}
+
+    <div class="tab-content">
+
+    <div class="box box-default box-solid">
+
+        <div class="box-header with-border">
+            <h3 class="box-title">{{ 'form.userType.general_info'|trans }}</h3>
+        </div>
+
+        <div class="box-body">
+            {{ form_start(form, { 'attr':{'class':'form-horizontal'}}) }}
+            {{ form_row(form.personalDataPolicies) }}
+            {% include 'MBHBaseBundle:Actions:new.html.twig' %}
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

@@ -3,14 +3,12 @@
 namespace MBH\Bundle\OnlineBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
-use MBH\Bundle\BillingBundle\Lib\Model\Result;
 use MBH\Bundle\BillingBundle\Lib\Model\WebSite;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
 use MBH\Bundle\OnlineBundle\Form\SiteForm;
-use MBH\Bundle\PriceBundle\Document\PriceCache;
-use MBH\Bundle\PriceBundle\Document\RoomCache;
+use MBH\Bundle\OnlineBundle\Form\SitePersonalDataPoliciesType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
@@ -84,6 +82,36 @@ class MBSiteController extends BaseController
 
         return [
             'form'                => $form->createView(),
+            'siteConfig'          => $siteConfig,
+            'hotelsSettings'      => $siteManager->getHotelsSettingsInfo($siteConfig),
+            'isUsePaymentSystems' => $this->clientConfig->getPaymentSystems() !== [],
+        ];
+    }
+
+    /**
+     * @Route("/personal_data_policies", name="site_hotel_personal_data_policies")
+     * @param Request $request
+     * @return array
+     * @Template()
+     */
+    public function personalDataPoliciesAction(Request $request)
+    {
+        $siteManager = $this->get('mbh.site_manager');
+        $siteConfig = $siteManager->getSiteConfig();
+
+        $form = $this->createForm(SitePersonalDataPoliciesType::class, $siteConfig);
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            /** @var SiteConfig $siteConfig */
+            $siteConfig = $form->getData();
+            $this->dm->flush($siteConfig);
+            $this->addFlash('success', 'mb_site_controller.site_config_saved');
+        }
+
+        return [
+            'form'                => $form->createView(),
+            'siteConfig'          => $siteConfig,
             'hotelsSettings'      => $siteManager->getHotelsSettingsInfo($siteConfig),
             'isUsePaymentSystems' => $this->clientConfig->getPaymentSystems() !== [],
         ];
@@ -99,7 +127,7 @@ class MBSiteController extends BaseController
     public function hotelSettingsAction(Hotel $hotel)
     {
         $siteManager = $this->get('mbh.site_manager');
-        $config = $siteManager->getSiteConfig();
+        $siteConfig = $siteManager->getSiteConfig();
 
         $roomTypesWarnings = array_map(function (RoomType $roomType) use ($siteManager) {
             return $siteManager->getDocumentFieldsCorrectnessTypesByRoutesNames($roomType);
@@ -107,7 +135,8 @@ class MBSiteController extends BaseController
         $warningsCompiler = $this->get('mbh.warnings_compiler');
 
         return [
-            'hotelsSettings'      => $siteManager->getHotelsSettingsInfo($config),
+            'hotelsSettings'      => $siteManager->getHotelsSettingsInfo($siteConfig),
+            'siteConfig'          => $siteConfig,
             'hotel'               => $hotel,
             'hotelWarnings'       => $siteManager->getDocumentFieldsCorrectnessTypesByRoutesNames($hotel),
             'roomTypesWarnings'   => $roomTypesWarnings,

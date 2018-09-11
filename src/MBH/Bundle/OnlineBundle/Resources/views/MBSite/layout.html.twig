@@ -1,25 +1,35 @@
 {% extends "MBHOnlineBundle::layout.html.twig" %}
 
 {% set management_icon = true %}
-{% set title = 'menu.label.web_site'|trans({}, 'MBHBaseBundle') %}
+{% set title = 'menu.label.web_site'|trans %}
 
 
 {% set titlePaymentSystems %}
-    <i class="fa fa-paperclip"></i> {{ 'menu.label.payment_systems'|trans }}
+    <i class="fa fa-credit-card"></i> {{ 'menu.label.payment_systems'|trans }}
     {% if not isUsePaymentSystems %}
     <small class="label label-danger label-as-badge"><i
                 class="fa fa-exclamation"></i></small>
     {% endif %}
 {% endset %}
 
+{% set titlePersonalDataPolicies %}
+    <i class="fa fa-expeditedssl"></i>
+    {{ 'views.mb_site.index.personal_data_policies'|trans }}
+    {% if siteConfig.personalDataPolicies is empty  %}
+        <small class="label label-danger label-as-badge"><i
+                    class="fa fa-exclamation"></i></small>
+    {% endif %}
+{% endset %}
+
 {% set layout = "tabs" %}
 {% set menu = [
     {'route': 'site_settings', 'title': '<i class="fa fa-cogs"></i> '~ 'views.mb_site.index.main_settings'|trans},
-    {'route': 'client_payment_systems', 'title': titlePaymentSystems},
 ] %}
 
 {% set numberOfNotHotelTabs = menu|length %}
-{% set active = 1 %}
+{% if active is not defined %}
+    {% set active = 1 %}
+{% endif %}
 
 {% for hotelInfo in hotelsSettings %}
     {% set iteratedHotel = hotelInfo.hotel %}
@@ -32,6 +42,11 @@
         {'route': 'site_hotel_settings', 'params': {'id': iteratedHotel.id}, 'title': hotelTitle }
     ]) %}
 {% endfor %}
+
+{% set menu = menu|merge([
+    {'route': 'site_hotel_personal_data_policies', 'title': titlePersonalDataPolicies},
+    {'route': 'client_payment_systems', 'title': titlePaymentSystems, 'attr': {'target':'_blank'}},
+]) %}
 
 
 {% block content %}
@@ -52,7 +67,7 @@
 {% block styles %}
     {{ parent() }}
     {% stylesheets filter='cssrewrite, uglifycss'
-        '@MBHOnlineBundle/Resources/public/css/mb-site.css'
+        '@MBHOnlineBundle/Resources/public/css/mb-site/*'
     %}
         <link rel="stylesheet" href="{{ asset_url }}"/>
     {% endstylesheets %}
