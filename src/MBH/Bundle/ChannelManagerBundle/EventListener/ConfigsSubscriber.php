@@ -25,7 +25,7 @@ class ConfigsSubscriber implements EventSubscriber
     {
         return array(
             'preUpdate',
-            'preRemove'
+//            'preRemove'
         );
     }
 

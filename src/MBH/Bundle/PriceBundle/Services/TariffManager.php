@@ -5,15 +5,18 @@ namespace MBH\Bundle\PriceBundle\Services;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\EventListener\OnRemoveSubscriber\DocumentsRelationships;
 use MBH\Bundle\BaseBundle\EventListener\OnRemoveSubscriber\Relationship;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 
 class TariffManager
 {
     private $dm;
+    private $helper;
 
-    public function __construct(DocumentManager $dm) {
+    public function __construct(DocumentManager $dm, Helper $helper) {
         $this->dm = $dm;
+        $this->helper = $helper;
     }
 
     /**
@@ -22,29 +25,19 @@ class TariffManager
      */
     public function forceDelete(Tariff $tariff)
     {
-        $tariffRelationships = DocumentsRelationships::getRelationships()[Tariff::class];
+        $relatedDocumentsData = $this->helper->getRelatedDocuments($tariff);
 
-        /** @var Relationship $tariffRelationship */
-        foreach ($tariffRelationships as $tariffRelationship) {
-            $repository = $this->dm->getRepository($tariffRelationship->getDocumentClass());
-            if ($tariffRelationship->IsMany()) {
-                $count = $repository->createQueryBuilder()
-                    ->field($tariffRelationship->getFieldName())->includesReferenceTo($tariff)
-                    ->field('deletedAt')->exists(false)
-                    ->getQuery()
-                    ->count();
-            } else {
-                $query = $repository->createQueryBuilder()
-                    ->field($tariffRelationship->getFieldName())->references($tariff)
-                    ->field('deletedAt')->exists(false)
-                    ->getQuery();
-                $count = $query->count();
-            }
-            if ($count > 0) {
-                $message = $tariffRelationship->getErrorMessage() ? $tariffRelationship->getErrorMessage() : 'exception.relation_delete.message'; // have existing relation
-                throw new DeleteException($message, $count);
+        foreach ($relatedDocumentsData as $relatedDocumentData) {
+            $quantity = $relatedDocumentData['quantity'];
+            /** @var Relationship $relation */
+            $relation = $relatedDocumentData['relation'];
+
+            if ($quantity > 0) {
+                $message = $relation->getErrorMessage() ? $relation->getErrorMessage() : 'exception.relation_delete.message'; // have existing relation
+                throw new DeleteException($message, $quantity);
             }
         }
+
         $tariff->setDeletedAt(new \DateTime());
         $this->dm->flush();
     }
