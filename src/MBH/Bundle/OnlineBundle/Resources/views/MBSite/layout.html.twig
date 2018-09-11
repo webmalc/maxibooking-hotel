@@ -26,7 +26,6 @@
     {'route': 'site_settings', 'title': '<i class="fa fa-cogs"></i> '~ 'views.mb_site.index.main_settings'|trans},
 ] %}
 
-{% set numberOfNotHotelTabs = menu|length %}
 {% if active is not defined %}
     {% set active = 1 %}
 {% endif %}
@@ -34,7 +33,7 @@
 {% for hotelInfo in hotelsSettings %}
     {% set iteratedHotel = hotelInfo.hotel %}
     {% if hotel is defined and hotel.id == iteratedHotel.id %}
-        {% set active = loop.index + numberOfNotHotelTabs %}
+        {% set active = loop.index + 1 %}
     {% endif %}
     {% set hotelTitle = '<i class="fa fa-home"></i> ' ~ 'views.mb_site.index.hotel_settings.info'|trans ~ iteratedHotel.name
         ~ ' <small class="label label-danger label-as-badge">' ~ hotelInfo.numberOfWarnings ~ '</small>' %}
@@ -47,7 +46,6 @@
     {'route': 'site_hotel_personal_data_policies', 'title': titlePersonalDataPolicies},
     {'route': 'client_payment_systems', 'title': titlePaymentSystems, 'attr': {'target':'_blank'}},
 ]) %}
-
 
 {% block content %}
     {% include '@MBHBase/tabs.html.twig' with {'menu': menu, 'id': 'site_settings_tabs'} %}

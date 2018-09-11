@@ -2,8 +2,7 @@
     {% if item.attr is defined %}
     {% set attrForLink = [] %}
         {% for key, value in item.attr %}
-            {% set str = key ~ '='~ value %}
-            {% set attrForLink = attrForLink|merge([ str ]) %}
+            {% set attrForLink = attrForLink|merge([ key ~ '=' ~ value ]) %}
         {% endfor %}
         {{ attrForLink|join(' ') }}
     {% endif %}

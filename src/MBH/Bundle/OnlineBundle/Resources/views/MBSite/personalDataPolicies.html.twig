@@ -2,7 +2,8 @@
 
 {% set title_url = path('site_settings') %}
 {% set small_title = 'site_form.pers_data_policy.label'|trans %}
-{% set active = 2 %}
+
+{% set active = hotelsSettings|length + 2 %}
 
 {% block content %}
     {{ parent() }}
