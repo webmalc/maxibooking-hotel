@@ -93,6 +93,11 @@ class SiteForm extends AbstractType
                 'help' => 'form.formType.reservation_payment_types_with_online_form',
                 'constraints' => [new NotBlank()]
             ])
+            /**
+             * для select2 в colorTheme используется margin-bottom
+             * src/MBH/Bundle/OnlineBundle/Resources/public/css/mb-site/mb-site.css
+             * вместо help
+             */
             ->add('colorTheme', ChoiceType::class, [
                 'label' => 'site_config.color_theme.colors.label',
                 'choices' => array_keys(SiteConfig::COLORS_BY_THEMES),
