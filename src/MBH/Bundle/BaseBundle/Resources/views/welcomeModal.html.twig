@@ -56,7 +56,7 @@
                         <div class="col-md-1"></div>
                         <div class="col-md-11">
                             {% if is_russian_client() %}
-                                Мы всегда на связи: <span class="mb-links-font">{{ get_twig_data()['support_phone'] }}</span> (бесплатно по России)<br>
+                                {{ 'welcome_modal.welcome8'|trans({'%phone%': '<span class="mb-links-font">' ~ get_twig_data()['support_phone'] ~ '</span>'})|raw }}<br>
                             {% endif %}
                             {{ 'welcome_modal.welcome6'|trans({'%support_mail%': '<span class="mb-links-font">' ~ get_twig_data()['clients_support_email'] ~ '</span>'})|raw}}
                         </div>
@@ -65,7 +65,7 @@
             </div>
             <div class="modal-footer">
                 <a href="{{ path('site_settings') }}" class="btn btn-success" style="float: left;">{{ 'welcome_modal.go_to_site_settings_button'|trans }}</a>
-                <button type="button" class="btn btn-success" data-dismiss="modal">{{ 'welcome_modal.ok_button'|trans}}</button>
+                <a href="{{ path('chess_board_home') }}" class="btn btn-success">{{ 'welcome_modal.ok_button'|trans}}</a>
             </div>
         </div>
     </div>
