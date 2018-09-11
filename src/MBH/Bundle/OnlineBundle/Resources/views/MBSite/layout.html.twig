@@ -1,7 +1,8 @@
 {% extends "MBHOnlineBundle::layout.html.twig" %}
 
-{% set title = 'views.mb_site.title'|trans %}
-{% set title_url = path('site_settings') %}
+{% set management_icon = true %}
+{% set title = 'menu.label.web_site'|trans({}, 'MBHBaseBundle') %}
+
 {% set layout = "tabs" %}
 {% set menu = [
     {'route': 'site_settings', 'title': '<i class="fa fa-cogs"></i> '~ 'views.mb_site.index.main_settings'|trans}
@@ -15,7 +16,7 @@
     {% if hotel is defined and hotel.id == iteratedHotel.id %}
         {% set active = loop.index + numberOfNotHotelTabs %}
     {% endif %}
-    {% set hotelTitle = '<i class="fa fa-home"></i> ' ~ iteratedHotel.name
+    {% set hotelTitle = '<i class="fa fa-home"></i> ' ~ 'views.mb_site.index.hotel_settings.info'|trans ~ iteratedHotel.name
         ~ ' <small class="label label-danger label-as-badge">' ~ hotelInfo.numberOfWarnings ~ '</small>' %}
     {% set menu = menu|merge([
         {'route': 'site_hotel_settings', 'params': {'id': iteratedHotel.id}, 'title': hotelTitle }

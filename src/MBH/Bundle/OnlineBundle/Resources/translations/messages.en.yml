@@ -146,6 +146,7 @@ site_form.site_domain.go_to_site_button.text: 'Go to the site'
 site_form.key_words.label: Tags
 site_form.is_enabled.label: 'Active?'
 views.mb_site.index.main_settings: Settings
+views.mb_site.index.hotel_settings.info: 'Info - '
 views.mb_site.title: Website
 views.mb_site.hotel_settings.empty_fields_error: 'Required fields are not filled: %fields%'
 site_form.pers_data_policy.label: 'Privacy Policy'
