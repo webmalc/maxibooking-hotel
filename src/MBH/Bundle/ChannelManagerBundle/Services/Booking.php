@@ -141,7 +141,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
 
         $response = $this->sendXml(static::BASE_URL . 'roomrates', $request);
 
-        if ($this->checkResponse($response)) {
+        if ($this->checkResponse($response->asXML())) {
             foreach ($response->room as $room) {
                 foreach ($room->rates->rate as $rate) {
                     if (isset($result[(string)$rate['id']]['rooms'])) {
@@ -159,12 +159,6 @@ class Booking extends Base implements ChannelManagerServiceInterface
                     ];
                 }
             }
-        } else {
-            $this->log($response->asXML());
-            $this->notifyErrorRequest(
-                'Booking.com',
-                'channelManager.commonCM.notification.request_error.pull_tariffs'
-            );
         }
 
         return $result;
@@ -183,16 +177,10 @@ class Booking extends Base implements ChannelManagerServiceInterface
         );
 
         $response = $this->sendXml(static::BASE_URL . 'rooms', $request);
-        if ($this->checkResponse($result)) {
+        if ($this->checkResponse($response->asXML())) {
             foreach ($response->xpath('room') as $room) {
                 $result[(string)$room['id']] = (string)$room;
             }
-        } else {
-            $this->log($response->asXML());
-            $this->notifyErrorRequest(
-                'Booking.com',
-                'channelManager.commonCM.notification.request_error.pull_rooms'
-            );
         }
 
         return $result;
@@ -211,6 +199,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
             $this->addError($response);
             return false;
         }
+
         return count($xml->xpath('/'. ($params['element'] ?? 'ok'))) ? true : false;
     }
 
