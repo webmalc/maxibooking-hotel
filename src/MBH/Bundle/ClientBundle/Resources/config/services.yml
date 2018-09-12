@@ -138,6 +138,17 @@ services:
     MBH\Bundle\ClientBundle\Form\PaymentSystem\:
         resource: '%kernel.root_dir%/../src/MBH/Bundle/ClientBundle/Form/PaymentSystem/*'
         arguments:
-        - '@mbh.payment_extra_data'
+            - '@mbh.payment_extra_data'
+            - '@mbh.client_config_manager'
         tags:
         - { name: form.type }
+
+    mbh.payment_sberbank.logger:
+        class:     Symfony\Bridge\Monolog\Logger
+        arguments: [app]
+        calls:
+        - [pushHandler, ['@mbh.payment_sberbank.logger_handler']]
+
+    mbh.payment_sberbank.logger_handler:
+        class:     Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.paymentSystem_sberbank.log", 200]

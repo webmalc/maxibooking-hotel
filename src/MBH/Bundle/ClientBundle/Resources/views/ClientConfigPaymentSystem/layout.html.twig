@@ -6,8 +6,8 @@
 {% block scripts %}
     {{ parent() }}
 
-    {% javascripts filter='uglifyjs2'
-        '@MBHClientBundle/Resources/public/js/client_config_payment_system/*'
+    {% javascripts
+        '@MBHClientBundle/Resources/public/js/client_config_payment_system/*.js'
     %}
         <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
