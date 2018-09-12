@@ -196,24 +196,8 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
 
         if ($form->isValid()) {
 
-            /** @var PaymentSystemDocument $paymentSystem */
-            $paymentSystem = $form->get($paymentSystemName)->getData();
-            $setterName = 'set' . $paymentSystem::fileClassName();
-            if (!method_exists($config, $setterName)) {
-                throw new \Exception(
-                    sprintf(
-                        'Not found setter(%s) for payment system "%s" in the configClient',
-                        $setterName,
-                        $paymentSystemName
-                        )
-                );
-            }
-
-            $config->$setterName($paymentSystem);
-            $config->addPaymentSystem($paymentSystemName);
-
-            $this->dm->persist($config);
-            $this->dm->flush();
+            $config->addPaymentSystemFromForm($form, $paymentSystemName);
+            $this->dm->flush($config);
 
             $this->addFlash('success', 'controller.clientConfig.params_success_save');
 
