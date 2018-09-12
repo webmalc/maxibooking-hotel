@@ -183,6 +183,9 @@ class MBSiteController extends BaseController
                     $this->dm->flush($this->clientConfig);
 
                     $this->addFlash('success', 'controller.clientConfig.params_success_save');
+
+                    /** для корректого отображении формы */
+                    return $this->redirectToRoute('site_hotel_payment_systems');
                 }
             }
         }

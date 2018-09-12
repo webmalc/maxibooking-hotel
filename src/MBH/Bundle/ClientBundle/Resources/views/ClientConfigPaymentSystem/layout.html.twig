@@ -5,6 +5,9 @@
 
 {% block scripts %}
     {{ parent() }}
-    {% embed "MBHClientBundle:ClientConfigPaymentSystem:blockScripts.htm.twig" %}{% endembed %}
-
+    {% javascripts
+        '@MBHClientBundle/Resources/public/js/client_config_payment_system/*.js'
+    %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
 {% endblock %}

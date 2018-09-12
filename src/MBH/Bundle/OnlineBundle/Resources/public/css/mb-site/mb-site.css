@@ -14,7 +14,7 @@
     margin-bottom: 25px;
 }
 
-#mb-site_tab_payment-systems #actions li button i.fa + span {
+form[name=mbh_bundle_clientbundle_client_payment_system_type] #actions li button i.fa + span {
     margin-left: 0.3em;
 }
 
