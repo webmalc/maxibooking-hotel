@@ -25,6 +25,9 @@
                         {{ form_start(form, {'action': path('site_hotel_payment_systems'), 'method': 'post','attr': {'class': 'form-horizontal' }}) }}
                     {% endblock %}
                     {% block btnActions %}
+                        <div id="mb-site_tab_payment-systems_link-to-list">
+                            <a href="{{ path('client_payment_systems') }}" target="_blank">{{ 'views.mb_site.index.paymentSystem.link_to_list'|trans }}</a>
+                        </div>
                         <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
                             <div class="container-fluid">
                                 <ul class="nav navbar-nav">
@@ -76,13 +79,9 @@
                         </div>
                     {% endblock %}
                 {% endembed %}
-                <div>
-                    <a href="{{ path('client_payment_systems') }}" target="_blank">{{ 'views.mb_site.index.paymentSystem.link_to_list'|trans }}</a>
-                </div>
             {% else %}
                 <p>
-                    Настроено использование больше одной платежной системы, для редактрирования перейдите по
-                    <a href="{{ path('client_payment_systems') }}" target="_blank">ссылке</a>.
+                    {{ 'views.mb_site.index.paymentSystem.link_to_list_if_more_than_one'|trans({'%href%': path('client_payment_systems') })|raw }}
                 </p>
             {% endif %}
         </div>

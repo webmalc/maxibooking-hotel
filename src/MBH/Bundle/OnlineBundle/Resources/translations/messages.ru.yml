@@ -135,7 +135,7 @@ views.mb_site.index.paymentSystem.title.save_changes: 'Сохранит теку
 views.mb_site.index.paymentSystem.title.add_system: 'Добавит платежную систему'
 views.mb_site.index.paymentSystem.title.breadcrumbs.add: 'Добавление платежной системы'
 views.mb_site.index.paymentSystem.title.breadcrumbs.edit: 'Изменение платежной системы'
-
+views.mb_site.index.paymentSystem.link_to_list_if_more_than_one: 'Настроено использование более одной платежной системы, для редактирования перейдите по <a target="_blank" href="%href%">ссылке</a>.'
 views.mb_site.index.paymentSystem: 'Платежная система'
 views.mb_site.index.personal_data_policies: 'Политика обработки персональных данных'
 views.mb_site.index.hotel_settings.info: 'Инфо - '

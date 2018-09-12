@@ -160,7 +160,7 @@ views.mb_site.index.paymentSystem.title.save_changes: 'Saved changes'
 views.mb_site.index.paymentSystem.title.add_system: 'Add Payment System'
 views.mb_site.index.paymentSystem.title.breadcrumbs.add: 'Add a payment system'
 views.mb_site.index.paymentSystem.title.breadcrumbs.edit: 'Changing the payment system'
-
+views.mb_site.index.paymentSystem.link_to_list_if_more_than_one: 'Set up the use of more than one payment system, for editing click on the <a target="_blank" href="%href%">link</a>.'
 views.mb_site.index.personal_data_policies: 'Privacy Policy'
 views.mb_site.index.hotel_settings.info: 'Info - '
 views.mb_site.title: Website
