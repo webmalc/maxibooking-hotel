@@ -10,6 +10,7 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
 use MBH\Bundle\OnlineBundle\Form\SiteForm;
 use MBH\Bundle\OnlineBundle\Form\SitePersonalDataPoliciesType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,6 +28,7 @@ class MBSiteController extends BaseController
      * @Route("/", name="site_settings")
      * @param Request $request
      * @return array
+     * @Security("is_granted('ROLE_MB_SITE')")
      * @throws \Exception
      */
     public function siteSettingsAction(Request $request)
@@ -95,6 +97,7 @@ class MBSiteController extends BaseController
      * @param Request $request
      * @return array
      * @Template()
+     * @Security("is_granted('ROLE_MB_SITE')")
      */
     public function personalDataPoliciesAction(Request $request)
     {
@@ -125,6 +128,7 @@ class MBSiteController extends BaseController
      * @param Hotel $hotel
      * @return array
      * @throws \Exception
+     * @Security("is_granted('ROLE_MB_SITE')")
      */
     public function hotelSettingsAction(Hotel $hotel)
     {
@@ -151,6 +155,7 @@ class MBSiteController extends BaseController
     /**
      * @Route("/payment_system", name="site_hotel_payment_systems")
      * @Template()
+     * @Security("is_granted('ROLE_MB_SITE')")
      */
     public function paymentSystemsAction(Request $request)
     {
@@ -209,6 +214,7 @@ class MBSiteController extends BaseController
      * @Route("/payment_system/remove/{paymentSystemName}", name="site_hotel_remove_payment_system")
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @Security("is_granted('ROLE_MB_SITE')")
      */
     public function removePaymentSystemAction($paymentSystemName)
     {
