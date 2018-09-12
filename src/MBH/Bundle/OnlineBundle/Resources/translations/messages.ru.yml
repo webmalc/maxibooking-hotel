@@ -174,7 +174,6 @@ api.payment_form.result_search.not_found_order: 'Заказ не найден'
 api.payment_form.result_search.order_has_been_paid: 'Заказ уже оплачен'
 api.payment_form.pay_order.total: 'Сумма к оплате'
 api.payment_form.pay_order.submit: 'Оплатить'
-api.payment_form.search.not_valid_fields: 'Номер телефона или e-mail указан некорректно'
 site_config.color_theme.colors.label: 'Цветовая тема'
 site_config.color_theme.colors.autumn: 'Осенняя'
 site_config.color_theme.colors.black01: 'Черная 1'
@@ -192,3 +191,5 @@ payment.receipt.common_description.package: 'Бронь № '
 payment.receipt.common_description.packages: 'Брони № '
 payment.receipt.item_description.package: 'Проживание в номере "%1$s". Бронь № %2$s'
 payment.receipt.item_description.service: 'Услуга: '
+payment.receipt.item.quantity.night: ночь
+payment.receipt.item.quantity.units: шт

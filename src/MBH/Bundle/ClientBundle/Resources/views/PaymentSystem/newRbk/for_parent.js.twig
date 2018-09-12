@@ -1,13 +1,13 @@
 {% include 'MBHClientBundle:PaymentSystem/newRbk:event.js.twig' %}
 var mbhNewRbk = {
   urlPostMessage : '{{ app.request.getSchemeAndHttpHost() }}',
-  typePostMessage: '{{ constant('MBH\\Bundle\\ClientBundle\\Document\\NewRbk::TYPE_POST_MSG') }}',
+  typePostMessage: '{{ constant('MBH\\Bundle\\ClientBundle\\Document\\PaymentSystem\\NewRbk::TYPE_POST_MSG') }}',
   iframe         : null,
   scriptId       : 'mbh-script-newrbk',
   getScript   : function() {
     var script = document.createElement('script');
     script.id = this.scriptId;
-    script.src = '{{ constant('MBH\\Bundle\\ClientBundle\\Document\\NewRbk::URL_FOR_CHECKOUT_JS') }}';
+    script.src = '{{ constant('MBH\\Bundle\\ClientBundle\\Document\\PaymentSystem\\NewRbk::URL_FOR_CHECKOUT_JS') }}';
 
     return script;
   },

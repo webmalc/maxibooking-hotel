@@ -190,3 +190,5 @@ payment.receipt.common_description.package: 'Reservation № '
 payment.receipt.common_description.packages: 'Reservations № '
 payment.receipt.item_description.package: 'Accommodation in the hotel room "%1$s". Reservation № %2$s'
 payment.receipt.item_description.service: 'Service: '
+payment.receipt.item.quantity.night: night
+payment.receipt.item.quantity.units: units

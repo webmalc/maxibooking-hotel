@@ -19,6 +19,7 @@ use MBH\Bundle\ClientBundle\Document\PaymentSystem\Paypal;
 use MBH\Bundle\ClientBundle\Document\PaymentSystem\Rbk;
 use MBH\Bundle\ClientBundle\Document\PaymentSystem\RNKB;
 use MBH\Bundle\ClientBundle\Document\PaymentSystem\Robokassa;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\Sberbank;
 use MBH\Bundle\ClientBundle\Document\PaymentSystem\Stripe;
 use MBH\Bundle\ClientBundle\Document\PaymentSystem\Tinkoff;
 use MBH\Bundle\ClientBundle\Document\PaymentSystem\Uniteller;
@@ -190,6 +191,13 @@ class ClientConfig extends Base
      * @Assert\Type(type="MBH\Bundle\ClientBundle\Document\PaymentSystem\Tinkoff")
      */
     protected $tinkoff;
+
+    /**
+     * @var Sberbank
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\ClientBundle\Document\PaymentSystem\Sberbank")
+     * @Assert\Type(type="MBH\Bundle\ClientBundle\Document\PaymentSystem\Sberbank")
+     */
+    protected $sberbank;
 
     /**
      * @var string
@@ -410,6 +418,22 @@ class ClientConfig extends Base
         $this->isCacheValid = $isCacheValid;
 
         return $this;
+    }
+
+    /**
+     * @return Sberbank
+     */
+    public function getSberbank(): ?Sberbank
+    {
+        return $this->sberbank;
+    }
+
+    /**
+     * @param Sberbank $sberbank
+     */
+    public function setSberbank(Sberbank $sberbank): void
+    {
+        $this->sberbank = $sberbank;
     }
 
     /**
