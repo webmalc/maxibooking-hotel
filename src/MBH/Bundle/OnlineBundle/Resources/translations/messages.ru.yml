@@ -124,6 +124,19 @@ external_api_controller.error.specified_hotel_not_contains_in_form_config: 'От
 external_api_controller.error.room_type_with_specified_id_not_exists: 'Тип комнат с ID = "%roomTypeId%" не существует'
 views.mb_site.title: Сайт
 views.mb_site.index.main_settings: Настройки
+views.mb_site.index.paymentSystem.label: 'Платежная система'
+views.mb_site.index.paymentSystem.link_to_list: 'Перейти к списку платежных систем'
+views.mb_site.index.paymentSystem.create: Создать
+views.mb_site.index.paymentSystem.save: Сохранить
+views.mb_site.index.paymentSystem.update: Обновить
+views.mb_site.index.paymentSystem.disabled: Отключить
+views.mb_site.index.paymentSystem.title.open_new_window: 'Откроется в новом окне'
+views.mb_site.index.paymentSystem.title.save_changes: 'Сохранит текушие изменения'
+views.mb_site.index.paymentSystem.title.add_system: 'Добавит платежную систему'
+views.mb_site.index.paymentSystem.title.breadcrumbs.add: 'Добавление платежной системы'
+views.mb_site.index.paymentSystem.title.breadcrumbs.edit: 'Изменение платежной системы'
+
+views.mb_site.index.paymentSystem: 'Платежная система'
 views.mb_site.index.personal_data_policies: 'Политика обработки персональных данных'
 views.mb_site.index.hotel_settings.info: 'Инфо - '
 views.mb_site.hotel_settings.empty_fields_error: 'Не заполнены обязательные поля: %fields%'

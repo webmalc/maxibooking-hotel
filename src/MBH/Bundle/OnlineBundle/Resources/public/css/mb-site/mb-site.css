@@ -13,3 +13,7 @@
 #mbhonline_bundle_site_form_colorTheme + span.select2 {
     margin-bottom: 25px;
 }
+
+#mb-site_tab_payment-systems #actions li button i.fa + span {
+    margin-left: 0.3em;
+}

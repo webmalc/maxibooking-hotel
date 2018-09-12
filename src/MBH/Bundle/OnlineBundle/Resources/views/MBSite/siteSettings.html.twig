@@ -2,7 +2,6 @@
 
 
 {% set title_url = path('site_settings') %}
-{#{% set small_title = 'views.mb_site.title'|trans %}#}
 {% set small_title = 'views.mb_site.index.main_settings'|trans %}
 {% set active = 1 %}
 
@@ -15,7 +14,6 @@
         <div class="box-header with-border">
             <h3 class="box-title">{{ 'form.userType.general_info'|trans }}</h3>
         </div>
-
         <div class="box-body">
             {{ form_start(form, {'action': path('site_settings'), 'attr': {'class': 'form-horizontal'}}) }}
             {% set groups = {'form.main.group': form.children|keys} %}

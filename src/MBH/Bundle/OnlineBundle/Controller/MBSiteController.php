@@ -4,6 +4,7 @@ namespace MBH\Bundle\OnlineBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\BillingBundle\Lib\Model\WebSite;
+use MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
@@ -71,7 +72,8 @@ class MBSiteController extends BaseController
                     }
                 }
                 if ($isSuccess) {
-                    $siteManager->updateSiteFormConfig($siteConfig, $formConfig, $request->get($form->getName())['paymentTypes']);
+                    $siteManager->updateSiteFormConfig($siteConfig, $formConfig,
+                        $request->get($form->getName())['paymentTypes']);
                     $this->dm->flush();
                     $this->addFlash('success', 'mb_site_controller.site_config_saved');
                 }
@@ -81,10 +83,10 @@ class MBSiteController extends BaseController
         }
 
         return [
-            'form'                => $form->createView(),
-            'siteConfig'          => $siteConfig,
-            'hotelsSettings'      => $siteManager->getHotelsSettingsInfo($siteConfig),
-            'isUsePaymentSystems' => $this->clientConfig->getPaymentSystems() !== [],
+            'form'                  => $form->createView(),
+            'siteConfig'            => $siteConfig,
+            'hotelsSettings'        => $siteManager->getHotelsSettingsInfo($siteConfig),
+            'isSetUpPaymentSystems' => $this->clientConfig->getPaymentSystems() !== [],
         ];
     }
 
@@ -110,10 +112,10 @@ class MBSiteController extends BaseController
         }
 
         return [
-            'form'                => $form->createView(),
-            'siteConfig'          => $siteConfig,
-            'hotelsSettings'      => $siteManager->getHotelsSettingsInfo($siteConfig),
-            'isUsePaymentSystems' => $this->clientConfig->getPaymentSystems() !== [],
+            'form'                  => $form->createView(),
+            'siteConfig'            => $siteConfig,
+            'hotelsSettings'        => $siteManager->getHotelsSettingsInfo($siteConfig),
+            'isSetUpPaymentSystems' => $this->clientConfig->getPaymentSystems() !== [],
         ];
     }
 
@@ -135,14 +137,81 @@ class MBSiteController extends BaseController
         $warningsCompiler = $this->get('mbh.warnings_compiler');
 
         return [
-            'hotelsSettings'      => $siteManager->getHotelsSettingsInfo($siteConfig),
-            'siteConfig'          => $siteConfig,
-            'hotel'               => $hotel,
-            'hotelWarnings'       => $siteManager->getDocumentFieldsCorrectnessTypesByRoutesNames($hotel),
-            'roomTypesWarnings'   => $roomTypesWarnings,
-            'emptyPriceCaches'    => $warningsCompiler->getEmptyPriceCachePeriods(),
-            'emptyRoomCaches'     => $warningsCompiler->getEmptyRoomCachePeriods(),
-            'isUsePaymentSystems' => $this->clientConfig->getPaymentSystems() !== [],
+            'hotelsSettings'        => $siteManager->getHotelsSettingsInfo($siteConfig),
+            'siteConfig'            => $siteConfig,
+            'hotel'                 => $hotel,
+            'hotelWarnings'         => $siteManager->getDocumentFieldsCorrectnessTypesByRoutesNames($hotel),
+            'roomTypesWarnings'     => $roomTypesWarnings,
+            'emptyPriceCaches'      => $warningsCompiler->getEmptyPriceCachePeriods(),
+            'emptyRoomCaches'       => $warningsCompiler->getEmptyRoomCachePeriods(),
+            'isSetUpPaymentSystems' => $this->clientConfig->getPaymentSystems() !== [],
         ];
+    }
+
+    /**
+     * @Route("/payment_system", name="site_hotel_payment_systems")
+     * @Template()
+     */
+    public function paymentSystemsAction(Request $request)
+    {
+        $paymentSystems = $this->clientConfig->getPaymentSystems();
+        $isUsedForm = true;
+
+        if (empty($paymentSystems)) {
+            $paymentSystemName = null;
+        } elseif (count($paymentSystems) > 1) {
+            $paymentSystemName = true;
+            $isUsedForm = false;
+        } else {
+            $paymentSystemName = $paymentSystems[0];
+        }
+
+        $siteManager = $this->get('mbh.site_manager');
+        $siteConfig = $siteManager->getSiteConfig();
+
+        if ($isUsedForm) {
+
+            $paymentSystemName = $paymentSystemName ?? $request->get(ClientPaymentSystemType::FORM_NAME)['paymentSystem'] ?? null;
+            $form = $this->createForm(ClientPaymentSystemType::class, $this->clientConfig, [
+                'paymentSystemName' => $paymentSystemName,
+            ]);
+
+            if ($request->isMethod('POST')) {
+                $form->handleRequest($request);
+                if ($form->isValid()) {
+                    $this->clientConfig->addPaymentSystemFromForm($form, $paymentSystemName);
+                    $this->dm->flush($this->clientConfig);
+
+                    $this->addFlash('success', 'controller.clientConfig.params_success_save');
+                }
+            }
+        }
+
+        $response = [
+            'siteConfig'            => $siteConfig,
+            'hotelsSettings'        => $siteManager->getHotelsSettingsInfo($siteConfig),
+            'isSetUpPaymentSystems' => $paymentSystemName !== null,
+            'paymentSystemName'     => $paymentSystemName,
+            'isUsedForm'            => $isUsedForm,
+        ];
+
+        if ($isUsedForm) {
+            $response['form'] = $form->createView();
+        }
+
+        return $response;
+    }
+
+    /**
+     * @Route("/payment_system/remove/{paymentSystemName}", name="site_hotel_remove_payment_system")
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function removePaymentSystemAction($paymentSystemName)
+    {
+        $this->clientConfig->removePaymentSystem($paymentSystemName);
+        $this->dm->flush();
+
+        return $this->redirectToRoute('site_hotel_payment_systems');
     }
 }

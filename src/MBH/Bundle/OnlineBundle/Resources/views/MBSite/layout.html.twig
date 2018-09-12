@@ -5,8 +5,8 @@
 
 
 {% set titlePaymentSystems %}
-    <i class="fa fa-credit-card"></i> {{ 'menu.label.payment_systems'|trans }}
-    {% if not isUsePaymentSystems %}
+    <i class="fa fa-credit-card"></i> {{ 'views.mb_site.index.paymentSystem.label'|trans }}
+    {% if not isSetUpPaymentSystems %}
     <small class="label label-danger label-as-badge"><i
                 class="fa fa-exclamation"></i></small>
     {% endif %}
@@ -41,10 +41,9 @@
         {'route': 'site_hotel_settings', 'params': {'id': iteratedHotel.id}, 'title': hotelTitle }
     ]) %}
 {% endfor %}
-
 {% set menu = menu|merge([
     {'route': 'site_hotel_personal_data_policies', 'title': titlePersonalDataPolicies},
-    {'route': 'client_payment_systems', 'title': titlePaymentSystems, 'attr': {'target':'_blank'}},
+    {'route': 'site_hotel_payment_systems', 'title': titlePaymentSystems},
 ]) %}
 
 {% block content %}

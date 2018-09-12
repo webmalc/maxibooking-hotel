@@ -149,6 +149,18 @@ site_form.site_domain.go_to_site_button.text: 'Go to the site'
 site_form.key_words.label: Tags
 site_form.is_enabled.label: 'Active?'
 views.mb_site.index.main_settings: Settings
+views.mb_site.index.paymentSystem.label: 'Payment System'
+views.mb_site.index.paymentSystem.link_to_list: 'Go to the list of payment systems'
+views.mb_site.index.paymentSystem.create: Create
+views.mb_site.index.paymentSystem.save: Save
+views.mb_site.index.paymentSystem.update: Update
+views.mb_site.index.paymentSystem.disabled: Disabled
+views.mb_site.index.paymentSystem.title.open_new_window: 'Open in new window'
+views.mb_site.index.paymentSystem.title.save_changes: 'Saved changes'
+views.mb_site.index.paymentSystem.title.add_system: 'Add Payment System'
+views.mb_site.index.paymentSystem.title.breadcrumbs.add: 'Add a payment system'
+views.mb_site.index.paymentSystem.title.breadcrumbs.edit: 'Changing the payment system'
+
 views.mb_site.index.personal_data_policies: 'Privacy Policy'
 views.mb_site.index.hotel_settings.info: 'Info - '
 views.mb_site.title: Website
