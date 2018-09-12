@@ -126,9 +126,9 @@ views.mb_site.title: Сайт
 views.mb_site.index.main_settings: Настройки
 views.mb_site.index.paymentSystem.label: 'Платежная система'
 views.mb_site.index.paymentSystem.link_to_list: 'Перейти к списку платежных систем'
-views.mb_site.index.paymentSystem.create: Создать
+views.mb_site.index.paymentSystem.create: Добавить
 views.mb_site.index.paymentSystem.save: Сохранить
-views.mb_site.index.paymentSystem.update: Обновить
+views.mb_site.index.paymentSystem.update: Сохранить
 views.mb_site.index.paymentSystem.disabled: Отключить
 views.mb_site.index.paymentSystem.title.open_new_window: 'Откроется в новом окне'
 views.mb_site.index.paymentSystem.title.save_changes: 'Сохранит текушие изменения'

@@ -30,14 +30,6 @@
                                 <ul class="nav navbar-nav">
                                     {% if isSetUpPaymentSystems %}
                                         <li>
-                                            <button type="button" class="btn btn-success navbar-btn"
-                                                    title="{{ 'views.mb_site.index.paymentSystem.title.open_new_window'|trans }}"
-                                                    onclick="window.open('{{ path('client_payment_system_form') }}')">
-                                                <i class="fa fa-check-square-o"></i>
-                                                <span>{{ 'views.mb_site.index.paymentSystem.create'|trans }}</span>
-                                            </button>
-                                        </li>
-                                        <li>
                                             <button type="submit"
                                                     title="{{ 'views.mb_site.index.paymentSystem.title.save_changes'|trans }}"
                                                     name="save"
@@ -52,6 +44,14 @@
                                                     data-text="{{ 'client.views.payment_systems.disable_text'|trans({}, 'MBHClientBundle') }}">
                                                 <i class="fa fa-trash-o"></i>
                                                 <span>{{ 'views.mb_site.index.paymentSystem.disabled'|trans }}</span>
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button type="button" class="btn btn-success navbar-btn"
+                                                    title="{{ 'views.mb_site.index.paymentSystem.title.open_new_window'|trans }}"
+                                                    onclick="window.open('{{ path('client_payment_system_form') }}')">
+                                                <i class="fa fa-check-square-o"></i>
+                                                <span>{{ 'views.mb_site.index.paymentSystem.create'|trans }}</span>
                                             </button>
                                         </li>
                                     {% else %}
