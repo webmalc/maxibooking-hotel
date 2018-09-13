@@ -82,7 +82,9 @@ mbh-webserver:
       - ..:/var/www/mbh
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
       - ./nginx/fastcgi_param_client:/etc/nginx/fastcgi_param_client
+      - ./nginx/cert/:/etc/cert/
   ports:
    - "9090:80"
+   - "9443:443"
   links:
    - mbh-php-fpm

@@ -16,18 +16,13 @@ use Symfony\Component\Form\FormBuilderInterface;
 
 class NewRbkType extends PaymentSystemType
 {
-    use ExtraDataTrait;
-    use FiscalizationTypeTrait;
-
     private const PREFIX = '';
     private const PREFIX_LABEL = 'form.clientPaymentSystemType.newRbk_';
 
     const NAME_TYPE_API_KEY = self::PREFIX . 'apiKey';
     const NAME_TYPE_SHOP_ID = self::PREFIX . 'shopId';
     const NAME_TYPE_LIFETIME_INVOICE = self::PREFIX . 'lifetimeInvoice';
-    const NAME_TYPE_TAXATION_RATE_CODE = self::PREFIX . 'taxationRateCode';
     const NAME_TYPE_WEBHOOK_KEY = self::PREFIX . 'webhookKey';
-    const NAME_TYPE_IS_WITH_FISCALIZATION = self::PREFIX . 'isWithFiscalization';
 
     public static function getSourceDocument(): PaymentSystemDocument
     {

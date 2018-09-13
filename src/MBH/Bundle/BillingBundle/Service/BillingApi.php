@@ -504,6 +504,7 @@ class BillingApi
 
         $url = $this->getBillingUrl('authentications');
         $data = $this->serializer->normalize($clientAuth);
+        $requestResult = new Result();
         try {
             $response = $this->sendPost($url, $data, true);
         } catch (RequestException $exception) {

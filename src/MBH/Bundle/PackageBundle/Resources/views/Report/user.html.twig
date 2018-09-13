@@ -11,7 +11,7 @@
             <div class="filter-form_group-date">
                 <div class="filter-form_input">
                     <i class="fa fa-calendar" title='{{ 'report.user.dates'|trans }}' data-toggle='tooltip'></i>
-                    <div class="filter-form_input">
+                    <div class="filter-form_input-group">
                         <input type="text" name="begin" id="users-report-filter-begin" class="datepicker users-report-filter begin-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('begin') is empty ? 'now'|date_modify("-14 days")|date('d.m.Y') : app.request.get('begin')}}">
                         <span class="filter-form_separator"></span>
                         <input type="text" name="end" id="users-report-filter-end" class="datepicker users-report-filter end-datepicker not-set-date form-control input-sm" data-date-format="dd.mm.yyyy" value="{{ app.request.get('end') is empty ?  'now'|date_modify("+1 day")|date('d.m.Y') : app.request.get('end')}}">

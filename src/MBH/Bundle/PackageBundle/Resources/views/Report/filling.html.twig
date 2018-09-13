@@ -22,7 +22,7 @@
             <div class="filter-form_group-date">
                 <div class="filter-form_input">
                     <i class="fa fa-calendar" title="{{ 'report.filling.filling.dates'|trans }}" data-toggle='tooltip'></i>
-                    <div class="filter-form_input">
+                    <div class="filter-form_input-group">
                         <input type="text" name="begin" id="accommodation-report-filter-begin" class="datepicker accommodation-report-filter begin-datepicker not-set-date form-control" data-date-format="dd.mm.yyyy" value="{{ begin|date('d.m.Y') }}">
                         <span class="filter-form_separator"></span>
                         <input type="text" name="end" id="accommodation-report-filter-end" class="datepicker accommodation-report-filter end-datepicker not-set-date form-control" data-date-format="dd.mm.yyyy" value="{{ end|date('d.m.Y') }}">
@@ -71,6 +71,9 @@
             </div>
             <div class="filter-form_input">
                 <button type="button" class="btn btn-primary navbar-btn" id="filling-filter-button">{{ 'chessboard_manager.filter.button.text'|trans }}</button>
+            </div>
+            <div class="filter-form_input">
+                <button type="button" class="btn btn-primary navbar-btn" id="filling-filter-export-button">{{ 'report.filling_report.export_to_csv_button.title'|trans }}</button>
             </div>
         </form>
         {% endblock content %}

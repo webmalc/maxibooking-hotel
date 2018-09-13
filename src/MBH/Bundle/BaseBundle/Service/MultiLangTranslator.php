@@ -41,11 +41,12 @@ class MultiLangTranslator
 
         foreach ($translationsByFields as $fieldName => $translationsByLanguages) {
             foreach ($translationsByLanguages as $language => $translation) {
-                $document->setLocale($language);
-                $this->propertyAccessor->setValue($document, $fieldName, $translation);
-                $this->dm->flush();
-            }
+                if ($fieldName === 'fullTitle' && $translation === '') {
+                    continue;
+                }
 
+                $repository->translate($document, $fieldName, $language, $translation);
+            }
         }
 
         $this->dm->flush();

@@ -195,7 +195,6 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-
             /** @var PaymentSystemDocument $paymentSystem */
             $paymentSystem = $form->get($paymentSystemName)->getData();
             $setterName = 'set' . $paymentSystem::fileClassName();

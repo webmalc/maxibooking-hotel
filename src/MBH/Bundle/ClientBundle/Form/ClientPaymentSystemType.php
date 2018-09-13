@@ -9,6 +9,8 @@ use MBH\Bundle\ClientBundle\Lib\PaymentSystem\ExtraData;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\HolderNamePaymentSystem;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -48,22 +50,48 @@ class ClientPaymentSystemType extends AbstractType
 
         $isPaymentSystemChanged = $paymentSystemName !== null;
 
-        $builder
-            ->add(
-                'paymentSystem',
-                InvertChoiceType::class,
-                [
-                    'label'       => 'form.clientPaymentSystemType.payment_system',
-                    'choices'     => $paymentSystemsChoices,
-                    'group'       => self::COMMON_GROUP,
-                    'placeholder' => '',
-                    'data'        => $paymentSystemName,
-                    'required'    => true,
-                    'mapped'      => false,
-                    'constraints' => $isPaymentSystemChanged ? [] : [new NotBlank()],
-                    'attr'        => ['disabled' => $isPaymentSystemChanged],
-                ]
-            );
+        if ($isPaymentSystemChanged) {
+            $holder = $this->extraData->getPaymentSystemAsObj($paymentSystemName);
+            $builder
+                ->add(
+                    'paymentSystemFake',
+                    TextType::class,
+                    [
+                        'label'       => 'form.clientPaymentSystemType.payment_system',
+                        'group'       => self::COMMON_GROUP,
+                        'data'        => $holder->getName(),
+                        'required'    => true,
+                        'mapped'      => false,
+                        'attr'        => ['readonly' => true],
+                    ]
+                )
+                ->add(
+                    'paymentSystem',
+                    HiddenType::class,
+                    [
+                        'data'        => $holder->getKey(),
+                        'mapped'      => false,
+                        'attr'        => ['readonly' => true],
+                    ]
+                );
+        } else {
+            $builder
+                ->add(
+                    'paymentSystem',
+                    InvertChoiceType::class,
+                    [
+                        'label'       => 'form.clientPaymentSystemType.payment_system',
+                        'choices'     => $paymentSystemsChoices,
+                        'group'       => self::COMMON_GROUP,
+                        'placeholder' => '',
+                        'data'        => $paymentSystemName,
+                        'required'    => true,
+                        'mapped'      => false,
+                        'constraints' => [new NotBlank()],
+                        'attr'        => ['disabled' => $isPaymentSystemChanged],
+                    ]
+                );
+        }
 
         /** @var HolderNamePaymentSystem $holder */
         foreach ($this->extraData->getPaymentSystemsAsObj() as $holder) {

@@ -85,7 +85,7 @@ mbh.datarangepicker = {
         }
     },
     on: function (begin, end, picker) {
-        'use strict'
+        'use strict';
         begin.val(picker.startDate.format('DD.MM.YYYY'));
         end.val(picker.endDate.format('DD.MM.YYYY'));
         begin.trigger('change');
@@ -107,32 +107,6 @@ var select2Text = function (el) {
     );
     return $('#' + el.prop('id'));
 };
-
-/**
- * @param $begin
- * @param $end
- */
-var RangeInputs = function ($begin, $end) {
-    'use strict';
-    this.$begin = $begin;
-    this.$end = $end;
-    this.bindEventListeners();
-};
-
-RangeInputs.prototype.bindEventListeners = function () {
-    'use strict';
-    var that = this;
-    this.$begin.change(function () {
-        if (!that.$end.val()) {
-            //that.$end.focus();
-        }
-    });
-    this.$end.change(function () {
-        if (!that.$begin.val()) {
-            //that.$begin.focus();
-        }
-    });
-}
 
 $.fn.serializeObject = function () {
     'use strict';
@@ -236,10 +210,10 @@ $.fn.mbhOrganizationSelectPlugin = function () {
              },*/
             dropdownCssClass: "bigdrop"
         });
-    })
+    });
 
     return this;
-}
+};
 
 mbh.payerSelect = function ($payerSelect, $organizationPayerInput, $touristPayerInput) {
     this.$payerSelect = $payerSelect;
@@ -256,10 +230,9 @@ mbh.payerSelect = function ($payerSelect, $organizationPayerInput, $touristPayer
         var value = this.$payerSelect.val().split('_');
         this.update(value[0], value[1]);
     }
-    ;
 
     this.bindEventHandlers();
-}
+};
 
 mbh.payerSelect.prototype.bindEventHandlers = function () {
     var that = this;
@@ -272,17 +245,15 @@ mbh.payerSelect.prototype.bindEventHandlers = function () {
             that.update(value[0], value[1]);
         }
     });
-}
+};
 
 mbh.payerSelect.prototype.update = function (type, value) {
     if (type === 'org') {
         this.$organizationPayerInput.val(value);
     } else if (type === 'tourist') {
         this.$touristPayerInput.val(value);
-    } else {
-        //throw new Error("");
     }
-}
+};
 
 var docReadyForms = function () {
     'use strict';
@@ -397,13 +368,82 @@ var docReadyForms = function () {
     }
 
     //Datepicker configuration
-    $('.datepicker').datepicker({
-        language: "ru",
-        todayHighlight: true,
-        autoclose: true,
-        format: 'dd.mm.yyyy',
-        disableTouchKeyboard: true
+    var optionForDatepicker = {
+        common:function () {
+            return {
+                language: "ru",
+                todayHighlight: true,
+                autoclose: true,
+                format: 'dd.mm.yyyy',
+                disableTouchKeyboard: true
+            };
+        },
+        addStartDate: function(setDate) {
+            if (setDate === undefined || setDate === null) {
+                return this.common();
+            }
+
+            var data = this.common();
+            data.startDate = setDate;
+
+            return data;
+        }
+    };
+
+    var CssClassName = function(key) {
+        this._key = key;
+    };
+
+    CssClassName.prototype = {
+        _prefix: 'datepicker-group-',
+        getBegin: function() {
+            return this.getPrefix() + 'begin_' + this._key;
+        },
+        getEnd: function() {
+            return this.getPrefix() + 'end_' + this._key;
+        },
+        getPrefix: function() {
+            return this._prefix;
+        }
+    };
+
+    var helperDate = {
+        returnPlusOneDay: function(date) {
+            var newDate = moment(date);
+            newDate.add(1, 'day');
+
+            return newDate.format('DD.MM.YYYY');
+        }
+    };
+
+    document.querySelectorAll('.filter-form_group-date .filter-form_input-group').forEach(function(divElement, key) {
+        var cssClass = new CssClassName(key),
+            inputBegin = divElement.querySelector('.datepicker.begin-datepicker'),
+            inputEnd = divElement.querySelector('.datepicker.end-datepicker');
+
+        inputBegin.classList.add(cssClass.getBegin());
+        inputEnd.classList.add(cssClass.getEnd());
+
+        $(inputBegin).datepicker(optionForDatepicker.common())
+            .on('changeDate', function() {
+                var dateEnd = $(inputEnd).datepicker('getUTCDate'),
+                    dateBegin = $(inputBegin).datepicker('getUTCDate');
+
+                $(inputEnd).datepicker('setStartDate', inputBegin.value);
+
+                if (dateEnd === null || dateBegin.setHours(0) > dateEnd.setHours(23)) {
+                    $(inputEnd).datepicker('setDate', helperDate.returnPlusOneDay(dateBegin));
+                }
+            });
+
+        $(inputEnd).datepicker(
+            optionForDatepicker.addStartDate(
+                helperDate.returnPlusOneDay($(inputBegin).datepicker('getUTCDate'))
+            )
+        );
     });
+
+    $('.datepicker:not([class^="' + CssClassName.prototype.getPrefix() + '"])').datepicker(optionForDatepicker.common());
 
     //Datepicker configuration
     $('.datepicker-year').datepicker({
@@ -460,23 +500,41 @@ var docReadyForms = function () {
         }());
     }
 
-    new RangeInputs($('.begin-datepicker'), $('.end-datepicker'));
-
     //Daterangepickers
     (function () {
         var begin = $('.begin-datepicker.mbh-daterangepicker'),
             wrapper = begin.parent('div'),
             end = $('.end-datepicker.mbh-daterangepicker'),
             range = $('<input type="text" required="required" class="daterangepicker-input form-control input-sm" autocomplete="off">');
-        ;
-
 
         if (!begin.length || !end.length || !wrapper.length) {
             return;
         }
 
+        var alertMsg = Translator.trans('020-forms.restrict_daterangepicker'),
+            needRestrict = (function() {
+                var need = window['mbh_restrictForDateRangePicker'] !== undefined && mbh_restrictForDateRangePicker === true;
+
+                return function() {
+                    return need;
+                }
+            })();
+
         begin.after(range);
         range.daterangepicker(mbh.datarangepicker.options).on('apply.daterangepicker', function (ev, picker) {
+            if (needRestrict()) {
+                // 31536000 this seconds in 365 days
+                if ((picker.endDate.unix() - picker.startDate.unix()) >  31536000) {
+                    $('#messages').html(
+                        '<div class="alert alert-warning alert-dismissable">\n' +
+                        ' <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>\n' +
+                            alertMsg +
+                        '</div>'
+                    );
+
+                    return;
+                }
+            }
             mbh.datarangepicker.on(begin, end, picker);
         });
         if (begin.datepicker("getDate") && end.datepicker("getDate")) {

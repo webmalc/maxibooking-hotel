@@ -14,9 +14,6 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class UnitellerType extends PaymentSystemType
 {
-    use ExtraDataTrait;
-    use FiscalizationTypeTrait;
-
     public static function getSourceDocument(): PaymentSystemDocument
     {
         return new Uniteller();
