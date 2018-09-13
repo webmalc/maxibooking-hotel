@@ -211,10 +211,10 @@ class TouristRepository extends DocumentRepository
 
     /**
      * @param string $query
-     * @return mixed
+     * @return array
      * @throws \Doctrine\ODM\MongoDB\MongoDBException]
      */
-    public function getIdsWithNameByQueryString(string $query)
+    public function getIdsWithNameByQueryString(string $query): array
     {
         return $this
             ->createQueryBuilder()
