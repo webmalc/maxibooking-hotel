@@ -22,6 +22,7 @@ use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\HotelBundle\Document\Task;
 use MBH\Bundle\HotelBundle\Document\TaskType;
 use MBH\Bundle\HotelBundle\Document\TaskTypeCategory;
+use MBH\Bundle\OnlineBundle\Document\FormConfig;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Package;
@@ -110,6 +111,7 @@ class DocumentsRelationships
                 new Relationship(OstrovokConfig::class, 'rooms.roomType', 'exception.roomType_relation_delete.message.ostrovok_config'),
                 new Relationship(VashotelConfig::class, 'rooms.roomType', 'exception.roomType_relation_delete.message.vashotel_config'),
                 new Relationship(MyallocatorConfig::class, 'rooms.roomType', 'exception.roomType_relation_delete.message.myallocator_config'),
+                new Relationship(FormConfig::class, 'roomTypeChoices', 'exception.roomType_relation_delete.message.online_form_config'),
             ],
             Room::class => [
                 new Relationship(Task::class, 'room', 'exception.room_relation_delete.message.task'),
