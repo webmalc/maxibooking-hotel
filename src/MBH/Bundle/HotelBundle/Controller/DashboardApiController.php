@@ -5,6 +5,7 @@ namespace MBH\Bundle\HotelBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\BillingBundle\Lib\Model\Result;
 use MBH\Bundle\HotelBundle\Service\FormFlow;
+use MBH\Bundle\PackageBundle\Document\Package;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,7 +31,11 @@ class DashboardApiController extends BaseController
     {
         // TODO: Здесь нужно добавлять Access-control header
         $result = new Result();
-        $flowServiceIds = ['roomType' => 'mbh.room_type_flow', 'hotel' => 'mbh.hotel_flow', 'site' => 'mbh.mb_site_flow'];
+        $flowServiceIds = [
+            'roomType' => 'mbh.room_type_flow',
+            'hotel' => 'mbh.hotel_flow',
+            'site' => 'mbh.mb_site_flow',
+        ];
 
         $data = [];
         foreach ($flowServiceIds as $flowId => $flowServiceId) {
@@ -48,11 +53,13 @@ class DashboardApiController extends BaseController
      * @Template()
      * @Route("/not_confirmed_packages", name="not_confirmed_packages", options={"expose"=true}, defaults={"_format"="json"})
      * @param Request $request
-     * @return array
+     * @return array|JsonResponse
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws \MBH\Bundle\BaseBundle\Lib\Exception
      */
     public function notConfirmedPackagesAction(Request $request)
     {
+        $asHtml = $request->get('asHtml') === 'true';
         $notConfirmedOrderIds = $this->dm
             ->getRepository('MBHPackageBundle:Order')
             ->getNotConfirmedOrderIds();
@@ -65,9 +72,37 @@ class DashboardApiController extends BaseController
                 self::NUMBER_OF_NOT_CONFIRMED_PACKAGES
             );
 
+        if (!$asHtml) {
+            $normalizedPackages = array_map(function (Package $package) {
+                    return [
+                        'id' => $package->getId(),
+                        'status' => $package->getStatus(),
+                        'begin' => $package->getBegin()->format('d.m.Y'),
+                        'end' => $package->getEnd()->format('d.m.Y'),
+                        // TODO: Можно просто Id, с получением данных о комнате из API, либо ссылку на эндпоинт в этом API
+                        'roomType' => [
+                            'id' => $package->getRoomType()->getId(),
+                            'name' => $package->getRoomType()->getName(),
+                        ],
+                        'adults' => $package->getAdults(),
+                        'children' => $package->getChildren(),
+                        'payer' => [
+                            'id' => $package->getPayer()->getId(),
+                            'name' => $package->getPayer()->getName(),
+                        ],
+                    ];
+                }, $packages);
+
+            $apiResponseArr = (new Result())
+                ->setData($normalizedPackages)
+                ->getApiResponse();
+
+            return new JsonResponse($apiResponseArr);
+        }
+
         return [
             'statuses' => $this->container->getParameter('mbh.package.statuses'),
-            'packages' => $packages
+            'packages' => $packages,
         ];
     }
 
