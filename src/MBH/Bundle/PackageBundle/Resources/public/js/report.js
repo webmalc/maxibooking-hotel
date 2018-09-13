@@ -9,7 +9,8 @@ var REPORT_SETTINGS = {
                 periodBegin: $('#reservation-report-filter-begin').val(),
                 periodEnd: $('#reservation-report-filter-end').val(),
                 date: $('#reservation-report-date').val(),
-                roomTypes: $('#reservation-report-filter-rooms').val()
+                roomTypes: $('#reservation-report-filter-rooms').val(),
+                comparedPeriod: $('#compared-period-length').val()
             }
         },
         isScrollable: true,
@@ -42,6 +43,12 @@ var REPORT_SETTINGS = {
             if (!$reportDateInput.val()) {
                 $reportDateInput.val(moment().format('DD.MM.YYYY'))
             }
+            $('#compared-period-length').change(function () {
+                var comparedPeriod = this.value;
+                if (comparedPeriod === '1 month' || comparedPeriod === '1 week') {
+                    
+                }
+            });
         }
     },
     salesChannels: {
