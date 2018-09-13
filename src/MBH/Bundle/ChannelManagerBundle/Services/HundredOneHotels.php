@@ -646,14 +646,7 @@ class HundredOneHotels extends Base
             foreach ($response['data']['rooms'] as $roomType) {
                 $rooms[$roomType['id']] = $roomType['name'];
             }
-        } else {
-            $this->log($response->asXML());
-            $this->notifyErrorRequest(
-                '101hotels.ru',
-                'channelManager.commonCM.notification.request_error.pull_rooms'
-            );
         }
-
 
         return $rooms;
     }
@@ -684,12 +677,6 @@ class HundredOneHotels extends Base
                     ];
                 }
             }
-        } else {
-            $this->log($response->asXML());
-            $this->notifyErrorRequest(
-                '101hotels.ru',
-                'channelManager.commonCM.notification.request_error.pull_tariffs'
-            );
         }
 
         return $result;
@@ -710,7 +697,7 @@ class HundredOneHotels extends Base
 
         $responseCode = $response['response'];
         $isSuccess = $responseCode == 1;
-        if (!$isSuccess) {
+        if (!$isSuccess && isset($response['errors'])) {
             $this->addError(json_encode($response['errors']));
         }
 
