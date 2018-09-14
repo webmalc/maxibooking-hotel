@@ -18,14 +18,14 @@ class JsonLoginController extends BaseController
      */
     public function loginAction(Request $request)
     {
-        // TODO: Здесь нужно добавлять Access-control header
+        $this->addAccessControlAllowOriginHeaders($this->getParameter('api_domains'));
         $requestContent = json_decode($request->getContent(), true);
         /** @var User $user */
         $user = $this->dm
             ->getRepository(User::class)
             ->findOneBy(['username' => $requestContent['username']]);
         $token = bin2hex(random_bytes(64)) . time();
-        $user->setApiToken($token, new \DateTime('+ 2 hour'));
+        $user->setApiToken($token, new \DateTime('+ 1 month'));
         $this->dm->flush();
 
         return new JsonResponse(['status' => 'ok', 'name' => $user->getUsername(), 'token' => $token]);

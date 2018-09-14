@@ -29,7 +29,7 @@ class DashboardApiController extends BaseController
      */
     public function flowProgressDataAction(Request $request)
     {
-        // TODO: Здесь нужно добавлять Access-control header
+        $this->addAccessControlAllowOriginHeaders($this->getParameter('api_domains'));
         $result = new Result();
         $flowServiceIds = [
             'roomType' => 'mbh.room_type_flow',
@@ -59,6 +59,7 @@ class DashboardApiController extends BaseController
      */
     public function notConfirmedPackagesAction(Request $request)
     {
+        $this->addAccessControlAllowOriginHeaders($this->getParameter('api_domains'));
         $asHtml = $request->get('asHtml') === 'true';
         $notConfirmedOrderIds = $this->dm
             ->getRepository('MBHPackageBundle:Order')
@@ -115,6 +116,7 @@ class DashboardApiController extends BaseController
      */
     public function getNumberOfCurrentPackages(Request $request)
     {
+        $this->addAccessControlAllowOriginHeaders($this->getParameter('api_domains'));
         $packageTypes = ['arrivals', 'out'];
         $numberOfPackagesByTypes = [];
         $packageRepo = $this->dm->getRepository('MBHPackageBundle:Package');
