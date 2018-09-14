@@ -75,7 +75,7 @@ class DashboardApiController extends BaseController
 
         if (!$asHtml) {
             $normalizedPackages = array_map(function (Package $package) {
-                    return [
+                    $normalizedPackage = [
                         'id' => $package->getId(),
                         'status' => $package->getStatus(),
                         'begin' => $package->getBegin()->format('d.m.Y'),
@@ -87,11 +87,17 @@ class DashboardApiController extends BaseController
                         ],
                         'adults' => $package->getAdults(),
                         'children' => $package->getChildren(),
-                        'payer' => [
+                    ];
+                    if ($package->getPayer()) {
+                        $normalizedPackage['payer'] = [
                             'id' => $package->getPayer()->getId(),
                             'name' => $package->getPayer()->getName(),
-                        ],
-                    ];
+                            'phone' => $package->getPayer()->getPhone(),
+                            'email' => $package->getPayer()->getEmail()
+                        ];
+                    }
+
+                    return $normalizedPackage;
                 }, $packages);
 
             $apiResponseArr = (new Result())
