@@ -10,7 +10,6 @@ use MBH\Bundle\ClientBundle\Form\ClientConfigType;
 use MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType;
 use MBH\Bundle\ClientBundle\Form\PaymentSystemsUrlsType;
 use MBH\Bundle\ClientBundle\Form\ColorsType;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -114,6 +113,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
      * @Method("GET")
      * @Route("/payment_urls", name="client_payment_urls", options={"expose"=true})
      * @Template()
+     * @Security("is_granted('ROLE_CLIENT_CONFIG_EDIT')")
      * @return array|JsonResponse
      */
     public function paymentUrlsAction()
@@ -129,6 +129,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
      * @Method("POST")
      * @Route("/save_payment_urls", name="client_save_payment_urls", options={"expose"=true})
      * @param Request $request
+     * @Security("is_granted('ROLE_CLIENT_CONFIG_EDIT')")
      * @return JsonResponse
      */
     public function savePaymentUrls(Request $request)
@@ -195,24 +196,9 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            /** @var PaymentSystemDocument $paymentSystem */
-            $paymentSystem = $form->get($paymentSystemName)->getData();
-            $setterName = 'set' . $paymentSystem::fileClassName();
-            if (!method_exists($config, $setterName)) {
-                throw new \Exception(
-                    sprintf(
-                        'Not found setter(%s) for payment system "%s" in the configClient',
-                        $setterName,
-                        $paymentSystemName
-                        )
-                );
-            }
 
-            $config->$setterName($paymentSystem);
-            $config->addPaymentSystem($paymentSystemName);
-
-            $this->dm->persist($config);
-            $this->dm->flush();
+            $config->addPaymentSystemFromForm($form, $paymentSystemName);
+            $this->dm->flush($config);
 
             $this->addFlash('success', 'controller.clientConfig.params_success_save');
 

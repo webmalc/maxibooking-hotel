@@ -27,14 +27,23 @@ class SiteManager
     const SITE_PROTOCOL = 'https://';
     const MANDATORY_FIELDS_BY_ROUTE_NAMES = [
         Hotel::class => [
-            'hotel_edit' => ['description', 'logoImage'],
-            'hotel_contact_information' => ['contactInformation', 'latitude', 'longitude', 'street', 'settlement', 'cityId', 'house', 'zipCode'],
-            'hotel_images' => ['images']
+            'hotel_edit'                => ['description', 'logoImage'],
+            'hotel_images'              => ['images'],
+            'hotel_contact_information' => [
+                'zipCode',
+                'cityId',
+                'street',
+                'settlement',
+                'house',
+                'latitude',
+                'longitude',
+                'contactInformation',
+            ],
         ],
         RoomType::class => [
-            'room_type_edit' => ['description', 'roomSpace', 'facilities'],
-            'room_type_image_edit' => ['onlineImages']
-        ]
+            'room_type_edit'       => ['description', 'roomSpace', 'facilities'],
+            'room_type_image_edit' => ['onlineImages'],
+        ],
     ];
 
     /** @var DocumentManager */

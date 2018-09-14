@@ -122,12 +122,13 @@ abstract class PaymentSystemType extends AbstractType
             bool $fieldTaxationSystemCode = true
         ) {
 
+            $requiredInFronend = true;
             /** @var FormBuilderInterface $form */
             $form = $event->getForm();
             if ($event->getData() instanceof FiscalizationInterface) {
 //                $disabledTaxion = !$event->getData()->isWithFiscalization();
                 $disabledTaxion = false;
-                $attr = [];
+                $requiredInFronend = $event->getData()->isWithFiscalization();
             } else {
                 $disabledTaxion = empty($event->getData()['isWithFiscalization']);
                 $attr = [
@@ -147,7 +148,8 @@ abstract class PaymentSystemType extends AbstractType
                             'class' => 'checkboxForIsWithFiscalization',
                             'disabled' => $disabledTaxion,
                         ],
-                    ]
+                    ],
+                    $requiredInFronend
                 )
             );
 
@@ -160,7 +162,8 @@ abstract class PaymentSystemType extends AbstractType
                             'label'   => 'form.clientPaymentSystemType.taxation_rate_code',
                             'choices' => $this->getExtraData()->getTaxationRateCodes($doc),
                             'attr'    => $attr
-                        ]
+                        ],
+                        $requiredInFronend
                     )
                 );
             }
@@ -174,7 +177,8 @@ abstract class PaymentSystemType extends AbstractType
                             'label'   => 'form.clientPaymentSystemType.taxation_system_code',
                             'choices' => $this->getExtraData()->getTaxationSystemCodes($doc),
                             'attr'    => $attr
-                        ]
+                        ],
+                        $requiredInFronend
                     )
                 );
             }

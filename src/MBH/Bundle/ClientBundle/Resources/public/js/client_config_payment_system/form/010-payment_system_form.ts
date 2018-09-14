@@ -1,24 +1,29 @@
 declare let $;
+'use strict';
 window.addEventListener('load', function () {
-    'use strict';
     //payment system form
     (function() {
-        var select = $('#mbh_bundle_clientbundle_client_payment_system_type_paymentSystem'),
-            showHideFields = function() {
-                $('.paymentSystem').hide().find('[data-required]').removeAttr('required');
-                $('.paymentSystem[data-name="' + select.val() + '"]').
-                show().
-                find('[data-required]').
-                attr('required', 'required');
-            };
+        let select = $('#mbh_bundle_clientbundle_client_payment_system_type_paymentSystem');
 
-        if (!select.length) {
+        if (select.length === 0) {
             return;
         }
+
+        let showHideFields = function() {
+            $('.paymentSystem')
+                .hide()
+                .find('[data-required]')
+                .removeAttr('required');
+            $('.paymentSystem[data-name="' + select.val() + '"]')
+                .show()
+                .find('[data-required]')
+                .attr('required', 'required');
+        };
+
         showHideFields();
         select.change(showHideFields);
 
-        var changeRequired = function(element, state) {
+        let changeRequired = function(element, state) {
             var elem = $(element);
             if (state) {
                 elem.attr('required', 'required');
@@ -54,6 +59,5 @@ window.addEventListener('load', function () {
             changeRequired(this, state);
             changeSelectFiscalization(this, state);
         });
-
     }());
 });
