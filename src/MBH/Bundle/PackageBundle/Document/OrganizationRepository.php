@@ -52,10 +52,10 @@ class OrganizationRepository extends DocumentRepository
 
     /**
      * @param string $query
-     * @return mixed
+     * @return array
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function getContragentsIdsByQueryString(string $query)
+    public function getContragentsIdsByQueryString(string $query): array
     {
         return $this
             ->createQueryBuilder()
