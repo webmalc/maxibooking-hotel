@@ -124,7 +124,7 @@ class HotelContactInformationType extends AbstractType
                 'required' => false,
                 'group' => 'form.hotelExtendedType.location',
                 'help' => '<a target="_blank" href="https://www.google.ru/maps">https://www.google.ru/maps</a>',
-                'constraints' => [new Callback([$this, 'check'])],
+                'constraints' => [new Callback([$this, 'checkMapUrl'])],
             ])
             ->add('latitude', TextType::class, [
                 'label' => 'form.hotelExtendedType.latitude',
@@ -159,7 +159,7 @@ class HotelContactInformationType extends AbstractType
         ]);
     }
 
-    public function check($mapUrl, ExecutionContextInterface $context)
+    public function checkMapUrl($mapUrl, ExecutionContextInterface $context)
     {
         $isGoogleMapUrl = substr($mapUrl, 0, strlen(self::MAP_URL_BEGIN)) === self::MAP_URL_BEGIN;
         if (!$isGoogleMapUrl) {
