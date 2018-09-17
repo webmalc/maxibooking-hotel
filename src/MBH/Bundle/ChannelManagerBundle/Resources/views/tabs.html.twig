@@ -2,6 +2,10 @@
     {% set services = true %}
 {% endif %}
 
+{% if tariffs is not defined %}
+    {% set tariffs = true %}
+{% endif %}
+
 {% set menu = [] %}
 {% set isReadyToSync = config and config.isReadyToSync() %}
 {% if not isReadyToSync %}
@@ -12,12 +16,16 @@
     {% set active = active + 1 %}
 {% endif %}
 
-
 {% set menu = menu|merge([
     {'route': base, icon: 'fa-info-circle', titleTransId: 'views.tabs.main_settings'},
     {'route': base ~ '_room', icon: 'fa-bed', titleTransId: 'views.tabs.room_types'},
-    {'route': base ~ '_tariff', icon: 'fa-sliders', titleTransId: 'views.tabs.tariffs'}
 ]) %}
+
+{% if tariffs %}
+    {% set menu = menu|merge([
+        {'route': base ~ '_tariff', icon: 'fa-sliders', titleTransId: 'views.tabs.tariffs'}
+    ]) %}
+{% endif %}
 
 {% if not isReadyToSync %}
     {% set menu = menu|merge([

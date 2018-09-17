@@ -172,3 +172,7 @@ services:
         class: MBH\Bundle\ChannelManagerBundle\Form\IntroType
         arguments: ['@translator']
         tags: [{name: form.type}]
+
+    mbh.airbnb:
+        class: MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb
+        arguments: ['@service_container']

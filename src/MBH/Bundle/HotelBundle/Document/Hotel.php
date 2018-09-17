@@ -15,6 +15,7 @@ use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\LocalizableTrait;
 use MBH\Bundle\CashBundle\Document\CardType;
+use MBH\Bundle\ChannelManagerBundle\Document\AirbnbConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
 use MBH\Bundle\PackageBundle\Document\Organization;
@@ -218,6 +219,12 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
 
     /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig", mappedBy="hotel") */
     protected $hundredOneHotelsConfig;
+
+    /**
+     * @var AirbnbConfig
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\AirbnbConfig", mappedBy="hotel")
+     */
+    protected $airbnbConfig;
 
     /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\IngredientCategory", mappedBy="hotel") */
     protected $ingredientCategories;
@@ -445,6 +452,25 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
         $this->TableTypes = new ArrayCollection();
         $this->acceptedCardTypes = new ArrayCollection();
         $this->images = new ArrayCollection();
+    }
+
+    /**
+     * @return AirbnbConfig
+     */
+    public function getAirbnbConfig(): ?AirbnbConfig
+    {
+        return $this->airbnbConfig;
+    }
+
+    /**
+     * @param AirbnbConfig $airbnbConfig
+     * @return Hotel
+     */
+    public function setAirbnbConfig(AirbnbConfig $airbnbConfig): Hotel
+    {
+        $this->airbnbConfig = $airbnbConfig;
+
+        return $this;
     }
 
     /**
