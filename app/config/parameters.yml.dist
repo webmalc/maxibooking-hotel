@@ -81,3 +81,4 @@ parameters:
   domain: 'maxi-booking.ru'
   billing_url: 'https://billing.maxi-booking.com'
   api_domains: []
+  token_lifetime_string: '+1 month'

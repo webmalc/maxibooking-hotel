@@ -45,8 +45,6 @@ security:
                 lifetime: 3600
                 path:     /
                 domain:   ~
-            json_login:
-                check_path: /user/json_login
 
     access_control:
         - { path: ^/deploy, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
