@@ -143,7 +143,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         }
 
         $this->dm->flush();
-        $this->addFlash('success', 'controller.TaskTypeController.success_delete_photo');
+        $this->addFlash('success', 'controller.roomTypeController.success_delete_photo');
 
         return $this->redirectToRoute('room_type_image_edit', ['id' => $roomType->getId(), 'imageTab' => 'active']);
     }

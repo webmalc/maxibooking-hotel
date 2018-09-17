@@ -143,6 +143,20 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     protected $longitude;
 
     /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\Field(type="string")
+     * @Assert\Url
+     */
+    protected $mapUrl;
+
+    /**
+     * @var Image
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\BaseBundle\Document\Image", cascade={"persist"})
+     */
+    protected $mapImage;
+
+    /**
      * @var array
      * @Gedmo\Versioned
      * @ODM\Field(type="collection")
@@ -901,6 +915,44 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     public function setLongitude($longitude)
     {
         $this->longitude = $longitude;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMapUrl(): ?string
+    {
+        return $this->mapUrl;
+    }
+
+    /**
+     * @param string $mapUrl
+     * @return Hotel
+     */
+    public function setMapUrl(?string $mapUrl): Hotel
+    {
+        $this->mapUrl = $mapUrl;
+
+        return $this;
+    }
+
+    /**
+     * @return Image
+     */
+    public function getMapImage(): ?Image
+    {
+        return $this->mapImage;
+    }
+
+    /**
+     * @param Image $mapImage
+     * @return Hotel
+     */
+    public function setMapImage(?Image $mapImage): Hotel
+    {
+        $this->mapImage = $mapImage;
 
         return $this;
     }
@@ -1885,6 +1937,9 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
                 if (!empty($contactsInfoArray)) {
                     $comprehensiveData['contacts'] = $contactsInfoArray;
                 }
+            }
+            if (!empty($this->getMapImage())) {
+                $comprehensiveData['mapUrl'] = $cacheManager->getBrowserPath($uploaderHelper->asset($this->getMapImage(), 'imageFile'), 'scaler');
             }
 
             $data = array_merge($data, $comprehensiveData);

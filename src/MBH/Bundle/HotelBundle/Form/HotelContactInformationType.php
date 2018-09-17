@@ -13,9 +13,12 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class HotelContactInformationType extends AbstractType
 {
+    const MAP_URL_BEGIN = 'https://www.google.com/maps/';
     /** @var  DocumentManager $dm */
     private $dm;
     private $translator;
@@ -116,6 +119,13 @@ class HotelContactInformationType extends AbstractType
             ]);
 
         $builder
+            ->add('mapUrl', TextType::class, [
+                'label' => 'form.hotel_contact_information_type.map_url',
+                'required' => false,
+                'group' => 'form.hotelExtendedType.location',
+                'help' => '<a target="_blank" href="https://www.google.ru/maps">https://www.google.ru/maps</a>',
+                'constraints' => [new Callback([$this, 'checkMapUrl'])],
+            ])
             ->add('latitude', TextType::class, [
                 'label' => 'form.hotelExtendedType.latitude',
                 'group' => 'form.hotelExtendedType.location',
@@ -145,8 +155,16 @@ class HotelContactInformationType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => Hotel::class,
+            'data_class' => Hotel::class
         ]);
+    }
+
+    public function checkMapUrl($mapUrl, ExecutionContextInterface $context)
+    {
+        $isGoogleMapUrl = substr($mapUrl, 0, strlen(self::MAP_URL_BEGIN)) === self::MAP_URL_BEGIN;
+        if (!$isGoogleMapUrl) {
+            $context->addViolation('validator.hotel.map_url');
+        }
     }
 
     public function finishView(FormView $view, FormInterface $form, array $options)

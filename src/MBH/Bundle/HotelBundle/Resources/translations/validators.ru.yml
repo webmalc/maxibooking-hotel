@@ -53,3 +53,4 @@ validator.task.assignment: 'Группа или исполнитель долж�
 form.roomTypeGenerateRoomsType.first_room_number_less_last_room_number: 'Первый номер должен быть меньше второго номера'
 form.roomTypeGenerateRoomsType.too_many_generation_numbers: 'Слишком большой промежуток для генерации. Разница между номерами должна быть не больше 500'
 validator.document.roomTypeImage.image_size_5_mb: 'Размер изображения не должен превышать 5MB.'
+validator.hotel.map_url: 'Некорректный URL'
