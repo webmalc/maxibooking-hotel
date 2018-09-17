@@ -126,7 +126,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     {
         $method = 'get' . static::CONFIG;
         $config = $hotel->$method();
-        if (!$config && !$config->getIsEnabled()) {
+        if (!$config || !$config->getIsEnabled()) {
             return null;
         }
 
