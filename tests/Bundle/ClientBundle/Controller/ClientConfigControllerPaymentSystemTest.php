@@ -341,7 +341,20 @@ class ClientConfigControllerPaymentSystemTest extends WebTestCase
                     $value = $field->getAttribute('value');
             }
 
-            $dataForm[$attr] = $writeData !== null ? (!empty($value) ? $value : $writeData) : $value;
+            $newValue = $value;
+
+            if ($writeData !== null) {
+                if (empty($value)) {
+                    /** Для полей где нужен url, имя поля должно содержать текст "Url" */
+                    if (strpos($attr,'Url') !== false) {
+                        $newValue = sprintf('https://%s.address.com', $writeData);
+                    } else {
+                        $newValue = $writeData;
+                    }
+                }
+            }
+
+            $dataForm[$attr] = $newValue;
         }
 
         return $dataForm;
