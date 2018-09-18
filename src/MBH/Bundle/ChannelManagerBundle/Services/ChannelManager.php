@@ -4,9 +4,11 @@ namespace MBH\Bundle\ChannelManagerBundle\Services;
 
 use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Lib\Task\Command;
+use MBH\Bundle\ChannelManagerBundle\Document\AirbnbConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerServiceInterface as ServiceInterface;
+use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use OldSound\RabbitMqBundle\RabbitMq\Producer;
@@ -30,13 +32,15 @@ class ChannelManager
         'vashotel' => 'VashotelConfig',
         'myallocator' => 'MyallocatorConfig',
         'expedia' => 'ExpediaConfig',
-        'hundred_one_hotels' => 'HundredOneHotelsConfig'
+        'hundred_one_hotels' => 'HundredOneHotelsConfig',
+        Airbnb::NAME => 'AirbnbConfig'
     ];
 
     const PULL_OLD_ORDERS_ROUTES = [
         'booking' => 'booking_all_packages_sync',
         'hundred_one_hotels' => 'hoh_packages_sync',
-        'expedia' => 'expedia_packages_sync'
+        'expedia' => 'expedia_packages_sync',
+        Airbnb::NAME => 'airbnb_all_packages_sync'
     ];
 
     /**

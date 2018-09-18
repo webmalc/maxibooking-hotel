@@ -23,6 +23,7 @@ use MBH\Bundle\PackageBundle\Lib\AddressInterface;
 use MBH\Bundle\PriceBundle\Document\Service;
 use MBH\Bundle\PriceBundle\Document\ServiceCategory;
 use MBH\Bundle\PriceBundle\Document\Special;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\RestaurantBundle\Document\DishMenuCategory;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -671,11 +672,25 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Get tariffs
      *
-     * @return \Doctrine\Common\Collections\Collection $tariffs
+     * @return \Doctrine\Common\Collections\Collection|ArrayCollection|Tariff[] $tariffs
      */
     public function getTariffs()
     {
         return $this->tariffs;
+    }
+
+    /**
+     * @return Tariff|null
+     */
+    public function getBaseTariff()
+    {
+        foreach ($this->getTariffs() as $tariff) {
+            if ($tariff->getIsDefault()) {
+                return $tariff;
+            }
+        }
+
+        return null;
     }
 
     /**

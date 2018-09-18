@@ -655,7 +655,6 @@ class Helper
         return $result->__toString() !== '';
     }
 
-
     /**
      * @return array
      */
@@ -728,26 +727,6 @@ class Helper
         }
 
         return $relatedDocumentsData;
-    }
-
-    /**
-     * @param $haystack
-     * @param $needle
-     * @return bool
-     */
-    public function startsWith($haystack, $needle)
-    {
-        return substr($haystack, 0, strlen($needle)) === $needle;
-    }
-
-    /**
-     * @param array $array
-     * @param array $keys
-     * @return array
-     */
-    public function getFromArrayByKeys(array $array, array $keys)
-    {
-        return array_intersect_key($array, array_flip($keys));
     }
 
     /**

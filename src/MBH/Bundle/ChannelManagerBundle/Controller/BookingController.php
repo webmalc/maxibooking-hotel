@@ -4,6 +4,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Controller\EnvironmentInterface;
+use MBH\Bundle\BaseBundle\Service\Utils;
 use MBH\Bundle\ChannelManagerBundle\Document\BookingConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\BookingRoom;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
@@ -164,7 +165,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             foreach ($form->getData() as $fieldName => $fieldData) {
                 $fieldsPrefixes = [BookingRoomsType::ROOM_TYPE_FIELD_PREFIX, BookingRoomsType::SINGLE_PRICES_FIELD_PREFIX];
                 foreach ($fieldsPrefixes as $prefix) {
-                    if ($this->helper->startsWith($fieldName, $prefix)) {
+                    if (Utils::startsWith($fieldName, $prefix)) {
                         $roomId = substr($fieldName, strlen($prefix));
                         isset($bookingRoomsDataByRoomIds[$roomId])
                             ? $bookingRoomsDataByRoomIds[$roomId][$prefix] = $fieldData

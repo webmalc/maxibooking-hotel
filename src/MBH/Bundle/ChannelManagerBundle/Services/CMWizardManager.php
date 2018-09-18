@@ -9,6 +9,7 @@ use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Form\IntroType;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
+use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\PriceCache;
@@ -52,6 +53,7 @@ class CMWizardManager
         'hundred_one_hotels',
         'vashotel'
     ];
+    const CMS_WITHOUT_TARIFFS = [Airbnb::NAME];
     const HOTEL_ADDRESS_FIELDS = [];
 
     /**
@@ -100,6 +102,11 @@ class CMWizardManager
         return in_array($channelManagerName, self::CHANNEL_MANAGERS_WITH_CONFIGURATION_BY_TECH_SUPPORT);
     }
 
+    public function hasCMTariffs(string $channelManager)
+    {
+        return !in_array($channelManager, self::CMS_WITHOUT_TARIFFS);
+    }
+
     /**
      * @param string $channelManagerName
      * @param ChannelManagerConfigInterface|null $config
@@ -126,7 +133,7 @@ class CMWizardManager
             return $channelManagerName . '_room';
         }
 
-        if ($config->getTariffs()->isEmpty()) {
+        if ($config->getTariffs()->isEmpty() && $this->hasCMTariffs($channelManagerName)) {
             return $channelManagerName . '_tariff';
         }
 
@@ -191,10 +198,15 @@ class CMWizardManager
         }, $config->getRooms()->toArray()), SORT_REGULAR);
         $syncRoomTypeIds = $this->helper->toIds($syncRoomTypes);
 
-        /** @var Tariff[] $syncTariffs */
-        $syncTariffs = array_unique(array_map(function(\MBH\Bundle\ChannelManagerBundle\Document\Tariff $tariff) {
-            return $tariff->getTariff();
-        }, $config->getTariffs()->toArray()), SORT_REGULAR);
+        if (!$this->hasCMTariffs($config->getName()) && $cacheClass === RoomCache::class ) {
+            $syncTariffs = [$config->getHotel()->getBaseTariff()];
+        } else {
+            /** @var Tariff[] $syncTariffs */
+            $syncTariffs = array_unique(array_map(function (\MBH\Bundle\ChannelManagerBundle\Document\Tariff $tariff) {
+                return $tariff->getTariff();
+            }, $config->getTariffs()->toArray()), SORT_REGULAR);
+        }
+
         $syncTariffIds = $this->helper->toIds($syncTariffs);
 
         $lastDefinedCaches = [];

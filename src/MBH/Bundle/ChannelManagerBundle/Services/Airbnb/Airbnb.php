@@ -2,6 +2,8 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services\Airbnb;
 
+use GuzzleHttp\Client;
+use ICal\ICal;
 use MBH\Bundle\ChannelManagerBundle\Document\AirbnbConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\AirbnbRoom;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService;
@@ -13,6 +15,8 @@ use Symfony\Component\HttpFoundation\Request;
 class Airbnb extends AbstractChannelManagerService
 {
     const NAME = 'airbnb';
+    const SYNC_URL_BEGIN = 'https://www.airbnb.ru/calendar/ical/';
+    const CONFIG = 'AirbnbConfig';
 
     /**
      * @param \DateTime $begin
@@ -66,6 +70,7 @@ class Airbnb extends AbstractChannelManagerService
      */
     public function pullOrders()
     {
+        $client = new Client();
         /** @var AirbnbConfig $config */
         foreach ($this->getConfig() as $config) {
             $roomTypes = array_map(function(AirbnbRoom $room) {
@@ -82,6 +87,15 @@ class Airbnb extends AbstractChannelManagerService
                 $packagesByRoomIds[$package->getRoomType()->getId()][$package->getChannelManagerId()] = $package;
             }
 
+            foreach ($config->getRooms() as $room) {
+                $response = $client->get($room->getSyncUrl());
+                if ($response->getStatusCode() === 200) {
+                    $iCalResponse = new ICal((string)$response->getBody());
+                    $events = $iCalResponse->cal['VEVENT'];
+                } else {
+                    $this->log((string)$response->getBody());
+                }
+            }
         }
 
         return $this;

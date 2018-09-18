@@ -3,19 +3,14 @@
 namespace Tests\Bundle\BaseBundle\Service;
 
 use MBH\Bundle\BaseBundle\Lib\Test\UnitTestCase;
-use MBH\Bundle\BaseBundle\Service\Helper;
+use MBH\Bundle\BaseBundle\Service\Utils;
 
-class HelperTest extends UnitTestCase
+class UtilsTest extends UnitTestCase
 {
-    /** @var Helper */
-    private $helper;
-
-    public function setUp()
+    public function testStartsWith()
     {
-        parent::setUp();
-
-        self::bootKernel();
-        $this->helper = (self::getContainerStat())->get('mbh.helper');
+        $this->assertTrue(Utils::startsWith('some_string_123123', 'some_string'));
+        $this->assertFalse(Utils::startsWith('some_string_for_false_condition', 'false_cond'));
     }
 
     public function testGetFromArrayByKeys()
@@ -31,7 +26,7 @@ class HelperTest extends UnitTestCase
 
         $this->assertEquals(
             ['first' => 'first key val', 'fourth' => 'fourth key val'],
-            $this->helper->getFromArrayByKeys($array, ['first', 'fourth'])
+            Utils::getFromArrayByKeys($array, ['first', 'fourth'])
         );
     }
 }
