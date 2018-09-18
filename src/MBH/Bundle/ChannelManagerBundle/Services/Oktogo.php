@@ -3,21 +3,17 @@
 namespace MBH\Bundle\ChannelManagerBundle\Services;
 
 use MBH\Bundle\CashBundle\Document\CashDocument;
-use MBH\Bundle\ChannelManagerBundle\Document\OktogoConfig;
-use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use MBH\Bundle\PackageBundle\Document\CreditCard;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
-use MBH\Bundle\PriceBundle\Document\PriceCache;
+use MBH\Bundle\PriceBundle\Document\RoomCache;
 use Symfony\Component\HttpFoundation\Request;
 use MBH\Bundle\ChannelManagerBundle\Document\Service;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\PackageService;
-use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService as Base;
-use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 
@@ -308,12 +304,12 @@ class Oktogo extends Base
                 foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
 
                     if (isset($roomCaches[$roomTypeId][0][$day->format('d.m.Y')])) {
-
+                        /** @var RoomCache $info */
                         $info = $roomCaches[$roomTypeId][0][$day->format('d.m.Y')];
 
                         $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')] = [
                             'roomstosell' => $info->getLeftRooms() > 0 ? $info->getLeftRooms() : 0,
-                            'closed' => $info->getIsClosed() > 0 ? 1 : 0
+                            'closed' => (int)!$info->isOpen()
                         ];
 
                     } else {

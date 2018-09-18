@@ -96,7 +96,7 @@ class RoomCache extends Base
      * @Assert\Type(type="boolean")
      * @Assert\NotNull()
      */
-    protected $isClosed = false;
+    protected $isOpen = true;
 
     /**
      * Set hotel
@@ -397,12 +397,12 @@ class RoomCache extends Base
     /**
      * Set isClosed
      *
-     * @param boolean $isClosed
+     * @param boolean $isOpen
      * @return self
      */
-    public function setIsClosed($isClosed)
+    public function setIsOpen($isOpen)
     {
-        $this->isClosed = $isClosed;
+        $this->isOpen = $isOpen;
         return $this;
     }
 
@@ -411,8 +411,8 @@ class RoomCache extends Base
      *
      * @return boolean $isClosed
      */
-    public function getIsClosed()
+    public function isOpen()
     {
-        return $this->isClosed;
+        return $this->isOpen;
     }
 }

@@ -5,8 +5,8 @@ namespace MBH\Bundle\PriceBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
+use MBH\Bundle\PriceBundle\Document\RoomCacheGenerator;
 use MBH\Bundle\PriceBundle\Form\RoomCacheGeneratorType;
-use MBH\Bundle\PriceBundle\Services\GraphExtraData;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -44,7 +44,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         return [
             'roomTypes' => $roomTypes,
             'tariffs' => $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchChildTariffs($this->hotel, 'rooms'),
-            'displayDisabledRoomType' => !$isDisableableOn
+            'displayDisabledRoomType' => !$isDisableableOn,
         ];
     }
 
@@ -67,7 +67,19 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
             'begin'     => $generator->getBegin(),
             'end'       => $generator->getEnd(),
             'error'     => $generator->getError(),
-            'extraData' => $extraData->get($request, $generator, $this->hotel)
+            'extraData' => $extraData->get($request, $generator, $this->hotel),
+        ];
+    }
+
+    private function getCategories(): array
+    {
+        $trans = $this->container->get('translator');
+
+        return [
+            'totalRooms'           => $trans->trans('price.resources.views.roomcache.in_sales'),
+            'packagesCount'        => $trans->trans('price.resources.views.booking'),
+            'packagesCountPercent' => $trans->trans('price.resources.views.booking_in_percents'),
+            'leftRooms'            => $trans->trans('price.resources.views.left'),
         ];
     }
 
@@ -87,13 +99,22 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         list($begin, $end) = $helper->getReportDates($request);
         $to = (clone $end)->modify('+1 day');
 
-        $period = new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $to);
+        $period = [];
+
+        /** @var \DateTime $date */
+        foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $to) as $date) {
+            $period[] = [
+                'date'      => $date,
+                'isWeekend' => (integer)$date->format('N') > 5,
+            ];
+        }
 
         $response = [
-            'period' => iterator_to_array($period),
+            'period' => $period,
             'begin'  => $begin,
             'end'    => $end,
             'hotel'  => $hotel,
+            'cats'   => $this->getCategories(),
         ];
 
         //get roomTypes
@@ -126,9 +147,9 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         ;
 
         return array_merge($response, [
-            'roomTypes' => $roomTypes,
-            'tariffs' => $tariffs,
-            'roomCaches' => $roomCaches
+            'roomTypes'  => $roomTypes,
+            'tariffs'    => $tariffs,
+            'roomCaches' => $roomCaches,
         ]);
     }
 
@@ -184,12 +205,13 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
                         ->setRoomType($roomType)
                         ->setDate($helper->getDateFromString($date))
                         ->setTotalRooms((int) $totalRooms['rooms'])
+                        ->setIsOpen(!empty($totalRooms['isOpen']))
                         ->setPackagesCount(0);
 
                     $dates[] = $newRoomCache->getDate();
                     
                     $roomCachesByDates[$newRoomCache->getDate()->format('d.m.Y')][] = $newRoomCache;
-                    if ($tariffId && isset($tariff) && !is_null($tariff)) {
+                    if ($tariffId && !empty($tariff)) {
                         $newRoomCache->setTariff($tariff);
                     }
 
@@ -218,7 +240,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
             if (isset($val['rooms'])) {
                 $roomCache->setTotalRooms((int) $val['rooms']);
             }
-            $roomCache->setIsClosed(isset($val['closed']) && !empty($val['closed']) ? true : false);
+            $roomCache->setIsOpen(!empty($val['isOpen']));
             if ($validator->validate($roomCache)) {
                 $this->dm->persist($roomCache);
             }
@@ -241,7 +263,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
                 ->trans('room_cache_controller.limit_of_rooms_exceeded', [
                     '%busyDays%' => join(', ', $busyDays),
                     '%availableNumberOfRooms%' => $limitManager->getAvailableNumberOfRooms(),
-                    '%overviewUrl%' => $this->generateUrl('total_rooms_overview')
+                    '%overviewUrl%' => $this->generateUrl('total_rooms_overview'),
                 ]);
             $this->addFlash('error', $limitErrorMessage);
         } else {
@@ -273,13 +295,14 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
 
-        $form = $this->createForm(RoomCacheGeneratorType::class, [], [
-            'weekdays' => $this->container->getParameter('mbh.weekdays'),
-            'hotel' => $hotel,
-        ]);
+        $generator = new RoomCacheGenerator();
+        $generator->setHotel($hotel);
+        $generator->setWeekdays($this->container->getParameter('mbh.weekdays'));
+
+        $form = $this->createForm(RoomCacheGeneratorType::class, $generator);
 
         return [
-            'form' => $form->createView()
+            'form' => $form->createView(),
         ];
     }
 
@@ -295,19 +318,19 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
 
-        $form = $this->createForm(RoomCacheGeneratorType::class, [], [
-            'weekdays' => $this->container->getParameter('mbh.weekdays'),
-            'hotel' => $hotel,
-        ]);
+        $generator = new RoomCacheGenerator();
+        $generator->setHotel($hotel);
+        $generator->setWeekdays($this->container->getParameter('mbh.weekdays'));
+
+        $form = $this->createForm(RoomCacheGeneratorType::class, $generator);
 
         $form->handleRequest($request);
 
         if ($form->isValid()) {
+            /** @var RoomCacheGenerator $data */
             $data = $form->getData();
 
-            $error = $this->get('mbh.room.cache')->update(
-                $data['begin'], $data['end'], $hotel, $data['rooms'], false,  $data['roomTypes']->toArray(), $data['tariffs']->toArray(), $data['weekdays']
-            );
+            $error = $this->get('mbh.room.cache')->update($data);
             if (empty($error)) {
                 $this->addFlash('success', 'price.tariffcontroller.data_successfully_generated');
                 $this->get('mbh.channelmanager')->updateRoomsInBackground($data['begin'], $data['end']);
@@ -322,7 +345,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         }
 
         return [
-            'form' => $form->createView()
+            'form' => $form->createView(),
         ];
     }
 }

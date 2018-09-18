@@ -4,6 +4,7 @@ namespace MBH\Bundle\PriceBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\PriceBundle\Document\RoomCacheGenerator;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -20,6 +21,10 @@ class RoomCacheGeneratorType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        /** @var RoomCacheGenerator $generator */
+        $generator = $builder->getData();
+        $hotel = $generator->getHotel();
+
         $builder
                 ->add('begin', DateType::class, array(
                     'label' => 'mbhpricebundle.form.roomcachegeneratortype.nachaloperioda',
@@ -42,7 +47,7 @@ class RoomCacheGeneratorType extends AbstractType
                     'label' => 'mbhpricebundle.form.roomcachegeneratortype.dninedeli',
                     'required' => false,
                     'multiple' => true,
-                    'choices' => $options['weekdays'],
+                    'choices' => $generator->getWeekdays(),
                     'help' => 'mbhpricebundle.form.roomcachegeneratortype.dninedelidlyagotorykhbudetproizvedenageneratsiyanalichiyamest',
                     'attr' => array('placeholder' => 'mbhpricebundle.form.roomcachegeneratortype.vse.dni.nedeli'),
                 ])
@@ -51,11 +56,11 @@ class RoomCacheGeneratorType extends AbstractType
                     'required' => true,
                     'multiple' => true,
                     'class' => 'MBHHotelBundle:RoomType',
-                    'query_builder' => function(DocumentRepository $dr) use ($options) {
-                        return $dr->fetchQueryBuilder($options['hotel']);
+                    'query_builder' => function(DocumentRepository $dr) use ($hotel) {
+                        return $dr->fetchQueryBuilder($hotel);
                     },
                     'help' => 'mbhpricebundle.form.roomcachegeneratortype.tipynomerovdlyagotorykhbudetproizvedenageneratsiyanalichiyamest',
-                    'attr' => array('placeholder' => $options['hotel']. ': mbhpricebundle.form.roomcachegeneratortype.vse.tipy.nomerov', 'class' => 'select-all'),
+                    'attr' => array('placeholder' => $hotel. ': mbhpricebundle.form.roomcachegeneratortype.vse.tipy.nomerov', 'class' => 'select-all'),
                 ])
                 ->add('quotas', CheckboxType::class, [
                     'label' => 'mbhpricebundle.form.roomcachegeneratortype.ustanovitkvoty',
@@ -68,8 +73,8 @@ class RoomCacheGeneratorType extends AbstractType
                     'required' => false,
                     'multiple' => true,
                     'class' => 'MBHPriceBundle:Tariff',
-                    'query_builder' => function (DocumentRepository $dr) use ($options) {
-                        return $dr->fetchChildTariffsQuery($options['hotel'], 'rooms');
+                    'query_builder' => function (DocumentRepository $dr) use ($hotel) {
+                        return $dr->fetchChildTariffsQuery($hotel, 'rooms');
                     },
                     'help' => 'mbhpricebundle.form.roomcachegeneratortype.tarifydlyagotorykhbudetproizvedenageneratsiyakvot',
                     'attr' => array('placeholder' => 'mbhpricebundle.form.roomcachegeneratortype.kvoty.ne.budut.sgenerirovany'),
@@ -85,6 +90,10 @@ class RoomCacheGeneratorType extends AbstractType
                     ],
                     'help' => 'mbhpricebundle.form.roomcachegeneratortype.kolichestvomest',
                 ])
+                ->add(
+                    'isOpen',
+                    CheckboxType::class
+                )
         ;
     }
 
@@ -101,9 +110,10 @@ class RoomCacheGeneratorType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'weekdays' => [],
-            'hotel' => null,
-            'constraints' => new Callback([$this, 'checkDates'])
+//            'weekdays'    => [],
+//            'hotel'       => null,
+            'constraints' => new Callback([$this, 'checkDates']),
+            'data_class'  => RoomCacheGenerator::class,
         ]);
     }
 

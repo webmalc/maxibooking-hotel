@@ -2,14 +2,12 @@
 
 namespace MBH\Bundle\PriceBundle\Services;
 
-use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Package;
-use MBH\Bundle\PriceBundle\Document\PackageInfo;
+use MBH\Bundle\PriceBundle\Document\RoomCacheGenerator;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\BaseBundle\Lib\Task\Command;
-use Symfony\Component\Process\Process;
 
 /**
  *  RoomCache service
@@ -203,52 +201,38 @@ class RoomCache
     }
 
     /**
-     * @param \DateTime $begin
-     * @param \DateTime $end
-     * @param Hotel $hotel
-     * @param int $rooms
-     * @param bool $isClosed
-     * @param array $availableRoomTypes
-     * @param array $tariffs
-     * @param array $weekdays
+     * @param RoomCacheGenerator $roomCacheGenerator
      * @return string
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws \MongoException
      */
-    public function update(
-        \DateTime $begin,
-        \DateTime $end,
-        Hotel $hotel,
-        $rooms = 0,
-        $isClosed = false,
-        array $availableRoomTypes = [],
-        array $tariffs = [],
-        array $weekdays = []
-    ) {
-        $loggerMessage = 'Begin update of room caches with parameters:'
-            . ' begin: ' . $begin->format('d.m.Y')
-            . ', end: ' . $end->format('d.m.Y')
-            . ', hotel ID: ' . $hotel->getId()
-            . ', number of rooms: ' . $rooms
-            . ', is closed: ' . ($isClosed ? 'true' : 'false')
-            . ', available room type: ' . join(', ', $this->helper->toIds($availableRoomTypes))
-            . ', tariffs: ' . join(', ', $this->helper->toIds($tariffs))
-            . ', available room type: ' . join(', ', $weekdays)
-        ;
+    public function update(RoomCacheGenerator $roomCacheGenerator)
+    {
+        $this->logger($roomCacheGenerator);
 
-        $this->container->get('logger')->addAlert($loggerMessage);
-        $endWithDay = clone $end;
+        $isOpen = $roomCacheGenerator->isOpen();
+        $dateBegin = $roomCacheGenerator->getBegin();
+        $dateEnd = $roomCacheGenerator->getEnd();
+        $weekdays = $roomCacheGenerator->getWeekdays();
+        $rooms = $roomCacheGenerator->getRooms();
+
+        $endWithDay = clone $dateEnd;
         $endWithDay->modify('+1 day');
         $roomCaches = $updateCaches = $updates = $remove = [];
-
-        $roomTypes = empty($availableRoomTypes) ? $hotel->getRoomTypes()->toArray() : $availableRoomTypes;
+        $hotel = $roomCacheGenerator->getHotel();
+        $tariffs = $roomCacheGenerator->getTariffsAsArray();
+        $roomTypes = $roomCacheGenerator->getRoomTypesAsArray() ?? $hotel->getRoomTypes()->toArray();
 
         // find && group old caches
         $oldRoomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')
             ->fetch(
-                $begin,
-                $end,
+                $dateBegin,
+                $dateEnd,
                 $hotel,
                 $this->helper->toIds($roomTypes),
-                empty($tariffs) ? null : $this->helper->toIds($tariffs)
+                !empty($tariffs)
+                        ? $this->helper->toIds($tariffs)
+                        : null
             );
 
         /** @var \MBH\Bundle\PriceBundle\Document\RoomCache $oldRoomCache */
@@ -268,56 +252,56 @@ class RoomCache
 
             $updates[] = [
                 'criteria' => ['_id' => new \MongoId($oldRoomCache->getId())],
-                'values' => [
+                'values'   => [
                     'packagesCount' => $oldRoomCache->getPackagesCount(),
-                    'totalRooms' => (int)$rooms,
-                    'leftRooms' => (int)$rooms - $oldRoomCache->getPackagesCount(),
-                    'isClosed' => $isClosed,
+                    'totalRooms'    => $rooms,
+                    'leftRooms'     => $rooms - $oldRoomCache->getPackagesCount(),
+                    'isOpen'        => $isOpen,
                 ],
             ];
         }
 
-        (empty($tariffs)) ? $tariffs = [0] : $tariffs;
+        if (!empty($tariffs)) {
+            foreach ($tariffs as $tariff) {
+                foreach ($roomTypes as $roomType) {
+                    foreach (new \DatePeriod($dateBegin, new \DateInterval('P1D'), $endWithDay) as $date) {
+                        if (isset(
+                            $updateCaches[$tariff ? $tariff->getId() : 0][$date->format('d.m.Y')][$roomType->getId()]
+                        )) {
+                            continue;
+                        }
 
-        foreach ($tariffs as $tariff) {
-            foreach ($roomTypes as $roomType) {
-                foreach (new \DatePeriod($begin, new \DateInterval('P1D'), $endWithDay) as $date) {
-                    if (isset(
-                        $updateCaches[$tariff ? $tariff->getId() : 0][$date->format('d.m.Y')][$roomType->getId()]
-                    )) {
-                        continue;
+                        if (!empty($weekdays) && !in_array($date->format('w'), $weekdays)) {
+                            continue;
+                        }
+
+                        $roomCaches[] = [
+                            'hotel'         => \MongoDBRef::create('Hotels', new \MongoId($hotel->getId())),
+                            'roomType'      => \MongoDBRef::create('RoomTypes', new \MongoId($roomType->getId())),
+                            'tariff'        => $tariff ? \MongoDBRef::create('Tariffs',
+                                new \MongoId($tariff->getId())) : null,
+                            'date'          => new \MongoDate($date->getTimestamp()),
+                            'totalRooms'    => $rooms,
+                            'packagesCount' => 0,
+                            'leftRooms'     => $rooms,
+                            'isOpen'        => $isOpen,
+                        ];
                     }
-
-                    if (!empty($weekdays) && !in_array($date->format('w'), $weekdays)) {
-                        continue;
-                    }
-
-                    $roomCaches[] = [
-                        'hotel' => \MongoDBRef::create('Hotels', new \MongoId($hotel->getId())),
-                        'roomType' => \MongoDBRef::create('RoomTypes', new \MongoId($roomType->getId())),
-                        'tariff' => $tariff ? \MongoDBRef::create('Tariffs', new \MongoId($tariff->getId())) : null,
-                        'date' => new \MongoDate($date->getTimestamp()),
-                        'totalRooms' => (int)$rooms,
-                        'packagesCount' => (int)0,
-                        'leftRooms' => (int)$rooms,
-                        'isEnabled' => true,
-                        'isClosed' => $isClosed,
-                    ];
                 }
             }
-        }
+        };
 
-        if ($rooms == -1) {
+        if ($rooms === -1) {
             $this->container->get('mbh.mongo')->remove('RoomCache', $remove);
         } else {
             $limitsManager = $this->container->get('mbh.client_manager');
             $outOfLimitRoomsDays = $limitsManager
-                ->getDaysWithExceededLimitNumberOfRoomsInSell($begin, $end, $roomCaches, $updates);
+                ->getDaysWithExceededLimitNumberOfRoomsInSell($dateBegin, $dateEnd, $roomCaches, $updates);
             if (count($outOfLimitRoomsDays) > 0) {
                 return $this->container
                     ->get('translator')
                     ->trans('room_cache_controller.limit_of_rooms_exceeded', [
-                        '%busyDays%' => join(', ', $outOfLimitRoomsDays),
+                        '%busyDays%' => implode(', ', $outOfLimitRoomsDays),
                         '%availableNumberOfRooms%' => $limitsManager->getAvailableNumberOfRooms(),
                         '%overviewUrl%' => $this->container->get('router')->generate('total_rooms_overview')
                     ]);
@@ -331,8 +315,8 @@ class RoomCache
                 'mbh:cache:recalculate',
                 [
                     '--roomTypes' => implode(',', $this->helper->toIds($roomTypes)),
-                    '--begin' => $begin->format('d.m.Y'),
-                    '--end' => $end->format('d.m.Y'),
+                    '--begin' => $dateBegin->format('d.m.Y'),
+                    '--end' => $dateEnd->format('d.m.Y'),
                 ],
                 $kernel->getClient(),
                 $kernel->getEnvironment(),
@@ -347,5 +331,24 @@ class RoomCache
         }
 
         return '';
+    }
+
+    /**
+     * @param RoomCacheGenerator $roomCacheGenerator
+     */
+    private function logger(RoomCacheGenerator $roomCacheGenerator): void
+    {
+        $loggerMessage = 'Begin update of room caches with parameters:'
+            . ' begin: ' . $roomCacheGenerator->getBegin()->format('d.m.Y')
+            . ', end: ' . $roomCacheGenerator->getEnd()->format('d.m.Y')
+            . ', hotel ID: ' . $roomCacheGenerator->getHotel()->getId()
+            . ', number of rooms: ' . $roomCacheGenerator->getRooms()
+            . ', is open: ' . ($roomCacheGenerator->isOpen() ? 'true' : 'false')
+            . ', available room type: ' . implode(', ', $this->helper->toIds($roomCacheGenerator->getRoomTypesAsArray()))
+            . ', tariffs: ' . implode(', ', $this->helper->toIds($roomCacheGenerator->getTariffsAsArray()))
+            . ', available room type: ' . implode(', ', $roomCacheGenerator->getWeekdays())
+        ;
+
+        $this->container->get('logger')->addAlert($loggerMessage);
     }
 }

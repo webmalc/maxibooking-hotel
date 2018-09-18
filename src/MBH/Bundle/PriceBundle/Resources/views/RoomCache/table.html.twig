@@ -8,12 +8,13 @@
            class="table table-bordered not-auto-datatable table-striped table-hover table-condensed mbh-grid custom-mobile-style">
         <tbody>
         {% for tariff in tariffs %}
-
             {% if tariff is null %}
+                {% set tariffId = 0 %}
                 <tr class="mbh-grid-header1 info">
                     <td colspan="{{ period|length + 1 }}"><strong>{{ 'price.resources.views.roomcache.number_on_sales'|trans }}</strong></td>
                 </tr>
             {% else %}
+                {% set tariffId = tariff.id %}
                 <tr class="mbh-grid-header1 info">
                     <td colspan="{{ period|length + 1 }}"><strong>{{ 'price.resources.views.quotas_for_tariffs'|trans }} - {{ tariff }}</strong></td>
                 </tr>
@@ -24,15 +25,16 @@
                 <input type="hidden" name="roomTypes[]" class="hidden" value="{{ roomType.id }}">
 
                 <tr class="mbh-grid-header2 warning">
-                    <td colspan="{{ period|length + 1 }}"><strong {% if not roomType.isEnabled %} class="disabled-room-type"{% endif %} >{{ roomType }}</strong>&nbsp;-&nbsp;
+                    <td colspan="{{ period|length + 1 }}"><strong{% if not roomType.isEnabled %} class="disabled-room-type"{% endif %}>{{ roomType }}</strong>&nbsp;-&nbsp;
                         <small>{{ tariff is null ? 'mbhpricebundle.view.roomcache.layout.nomeravprodazhe'|trans : 'mbhpricebundle.view.roomcache.table.kvotypotarifam'|trans ~ ' - ' ~ tariff }}</small>
                     </td>
                 </tr>
 
                 <tr class="header" data-copy-row-id="{{ roomType.id }}">
                     <td class="first-th"></td>
-                    {% for date in period %}
-                        <td class="header-td {% if date|date('N') >= 6 %} text-danger{% endif %}">
+                    {% for day in period %}
+                        {%  set date = day.date %}
+                        <td class="header-td{% if day.isWeekend %} text-danger{% endif %}">
                             <span class="header-info">{{ date|mbh_format }}</span>
                             <a data-toggle="tooltip" data-placement="top" title="{{ 'mbh.grid.generator'|trans }}" href="#" class="header-action header-action-generator"><i class="fa fa fa-magic"></i></a>
                             <a data-toggle="tooltip" data-placement="top" title="{{ 'mbh.grid.copy'|trans }}" href="#" class="header-action header-action-copy"><i class="fa fa-copy"></i></a>
@@ -40,19 +42,14 @@
                     {% endfor %}
                 </tr>
 
-                {% set cats = {'totalRooms': 'price.resources.views.roomcache.in_sales'|trans, 'packagesCount': 'price.resources.views.booking'|trans, 'packagesCountPercent': 'price.resources.views.booking_in_percents'|trans, 'leftRooms': 'price.resources.views.left'|trans} %}
-                {% if tariff is null and false %}
-                    {% set cats = cats|merge({'isClosed': 'price.resources.views.closet'|trans}) %}
-                {% endif %}
-
                 {% for categoryId, category in cats %}
                     <tr data-copy-row-id="{{ roomType.id }}">
                         <td class="first-td">
                             <small>{{ category }}</small>
                         </td>
 
-                        {% for date in period %}
-
+                        {% for day in period %}
+                            {%  set date = day.date %}
                             {#<!-- BEGIN: set roomCache & dayRoomCache -->#}
 
                             {% if roomCaches[roomType.id][tariff is null ? 0 : tariff.id][date|date('d.m.Y')] is defined %}
@@ -69,9 +66,19 @@
 
                             {#<!-- END: set roomCache & dayRoomCache -->#}
 
-                            <td data-id="{{ roomType.id }}_{{ date|date('d.m.Y') }}" class="content {% if date|date('N') >= 6 %} weekend{% endif %}{% if (roomCache and roomCache.leftRooms < 0) or (tariff is not null and roomCache and dayRoomCache is null)  or (tariff is not null and roomCache and dayRoomCache and roomCache.totalRooms > dayRoomCache.totalRooms) or (roomCache and roomCache.isClosed)%} alert{% endif %}">
+                            {% set cssClass %}
+                                {% if (roomCache == null
+                                        or roomCache.leftRooms < 0
+                                        or dayRoomCache is null
+                                        or roomCache.totalRooms > dayRoomCache.totalRooms
+                                        or not roomCache.isOpen)
+                                %}
+                                    alert
+                                {% endif %}
+                            {% endset %}
+
+                            <td data-id="{{ roomType.id }}_{{ date|date('d.m.Y') }}" class="content{% if day.isWeekend %} weekend{% endif %}">
                                 {% if (categoryId == 'totalRooms' and tariff is null) or (tariff is not null and dayRoomCache is not null and categoryId == 'totalRooms') %}
-                                    {% if tariff is null %}{% set tariffId = 0 %}{% else %}{% set tariffId = tariff.id %}{% endif %}
                                     <span class="input">
                                         <input placeholder="{{ dayRoomCache is null ? '' : dayRoomCache.totalRooms }}"
                                                name="{{ roomCache is null ? 'newRoomCaches[' ~ roomType.id ~ '][' ~ tariffId ~'][' ~ date|date('d.m.Y') ~ '][rooms]' : 'updateRoomCaches[' ~ roomCache.id ~'][rooms]'}}"
@@ -79,11 +86,11 @@
                                                value="{{ roomCache is null ? '' : roomCache.totalRooms }}">
                                         <span class="disabled-detector"></span>
                                     </span>
-                                {% elseif categoryId == 'isClosed' and tariff is null and roomCache %}
-                                    <span class="input">
-                                        <input name="{{ roomCache is null ? 'newRoomCaches[' ~ roomType.id ~ '][0][' ~ date|date('d.m.Y') ~ '][closed]' : 'updateRoomCaches[' ~ roomCache.id ~'][closed]'}}" disabled type="checkbox" class="mbh-grid-checkbox {{ categoryId }}" {{ roomCache.isClosed ? 'checked' : '' }} value="1">
-                                        <span class="disabled-detector"></span>
-                                    </span>
+                                {#{% elseif categoryId == 'isClosed' and tariff is null and roomCache %}#}
+                                    {#<span class="input">#}
+                                        {#<input name="{{ roomCache is null ? 'newRoomCaches[' ~ roomType.id ~ '][0][' ~ date|date('d.m.Y') ~ '][closed]' : 'updateRoomCaches[' ~ roomCache.id ~'][closed]'}}" disabled type="checkbox" class="mbh-grid-checkbox {{ categoryId }}" {{ roomCache.isClosed ? 'checked' : '' }} value="1">#}
+                                        {#<span class="disabled-detector"></span>#}
+                                    {#</span>#}
                                 {% else %}
                                     <small>
                                         <span class="text-{{ categoryId == 'leftRooms' ? 'success bold' : 'info' }}">
@@ -104,7 +111,32 @@
                         {% endfor %}
                     </tr>
                 {% endfor %}
-
+                {% if tariff is not null %}
+                    <tr>
+                        <td class="first-th">
+                            <small>{{ 'mbhpricebundle.form.roomcachegeneratortype.isOpen'|trans }}</small>
+                        </td>
+                        {% for day in period %}
+                            {%  set date = day.date %}
+                            {% if roomCaches[roomType.id][tariff is null ? 0 : tariff.id][date|date('d.m.Y')] is defined %}
+                                {% set roomCache = roomCaches[roomType.id][ tariff is null ? 0 : tariff.id ][date|date('d.m.Y')] %}
+                            {% else %}
+                                {% set roomCache = null %}
+                            {% endif %}
+                            <td data-id="{{ roomType.id }}_{{ date|date('d.m.Y') }}" class="content{% if day.isWeekend %} weekend{% endif %}">
+                                <span class="input">
+                                    {% set nameInput = roomCache is null ? 'newRoomCaches[' ~ roomType.id ~ '][' ~ tariffId ~'][' ~ date|date('d.m.Y') ~ '][isOpen]' : 'updateRoomCaches[' ~ roomCache.id ~'][isOpen]' %}
+                                    <label for="{{ nameInput }}"></label>
+                                    <input type="checkbox"{{ roomCache != null and roomCache.isOpen ? ' checked' : '' }}
+                                           name="{{ nameInput }}"
+                                           disabled
+                                    >
+                                    <span class="disabled-detector"></span>
+                                </span>
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endif %}
             {% endfor %}
         {% endfor %}
         </tbody>

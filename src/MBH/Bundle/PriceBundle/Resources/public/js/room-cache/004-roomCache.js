@@ -21,9 +21,9 @@ $(document).ready(function () {
                     var input = $('input.mbh-grid-input, span.disabled-detector');
                     input.closest('td').click(function () {
                         var td = $("td[data-id='" + $(this).attr('data-id') + "']"),
-                            field = $(this).children('span.input').children('input[disabled]');
+                            field = $(this).children('span.input').find('input[disabled]');
 
-                        td.children('span.input').children('input').removeAttr('disabled');
+                        td.children('span.input').find('input').removeAttr('disabled');
 
                         if (field.prop('type') === 'checkbox') {
                             field.prop('checked', !field.prop('checked')).css('checkbox-end');
