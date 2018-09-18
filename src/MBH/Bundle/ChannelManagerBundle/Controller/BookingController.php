@@ -147,6 +147,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
     public function roomAction(Request $request)
     {
         $config = $this->hotel->getBookingConfig();
+        $prevRooms = $config->getRooms()->toArray();
 
         if (!$config) {
             throw $this->createNotFoundException();
@@ -179,11 +180,13 @@ class BookingController extends Controller implements CheckHotelControllerInterf
                     $room = (new BookingRoom())
                         ->setRoomType($roomData[BookingRoomsType::ROOM_TYPE_FIELD_PREFIX])
                         ->setRoomId($roomId)
-                        ->setUploadSinglePrices($roomData[BookingRoomsType::SINGLE_PRICES_FIELD_PREFIX])
-                    ;
+                        ->setUploadSinglePrices($roomData[BookingRoomsType::SINGLE_PRICES_FIELD_PREFIX]);
                     $config->addRoom($room);
                 }
             }
+
+            $userName = $this->getUser()->getUsername();
+            $this->get('mbh.channelmanager')->logCollectionChanges($config, 'rooms', $userName, $prevRooms);
 
             $this->dm->flush();
             $this->get('mbh.channelmanager')->updateInBackground();
@@ -213,6 +216,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
     public function tariffAction(Request $request)
     {
         $config = $this->hotel->getBookingConfig();
+        $prevTariffs = $config->getTariffs()->toArray();
         $inGuide = !$config->isReadyToSync();
 
         if (!$config) {
@@ -236,6 +240,9 @@ class BookingController extends Controller implements CheckHotelControllerInterf
                     $this->dm->persist($config);
                 }
             }
+
+            $userName = $this->getUser()->getUsername();
+            $this->get('mbh.channelmanager')->logCollectionChanges($config, 'tariffs', $userName, $prevTariffs);
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();

@@ -163,9 +163,10 @@ class CMWizardManager
                     $emptyFields
                 );
 
-                $result[] = 'Заполните информацию об отеле в '
-                    .(count($emptyFields) === 1 ? 'поле' : 'полях')
-                    .': '.join(', ', $emptyFieldNames);
+                $result[] = $this->translator
+                    ->transChoice('cm_wizard.unfilled_data_error', count($emptyFieldNames), [
+                        '%emptyFieldNames%' => join(',', $emptyFieldNames)
+                    ]);
             }
         }
 

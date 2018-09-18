@@ -116,6 +116,7 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
     public function roomAction(Request $request)
     {
         $entity = $this->hotel->getOstrovokConfig();
+        $prevRooms = $entity->getRooms()->toArray();
 
         if (!$entity) {
             throw $this->createNotFoundException();
@@ -137,6 +138,9 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
                     $this->dm->persist($entity);
                 }
             }
+
+            $userName = $this->getUser()->getUsername();
+            $this->get('mbh.channelmanager')->logCollectionChanges($entity, 'rooms', $userName, $prevRooms);
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();
@@ -167,6 +171,7 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
     public function tariffAction(Request $request)
     {
         $entity = $this->hotel->getOstrovokConfig();
+        $prevTariffs = $entity->getTariffs()->toArray();
         $inGuide = !$entity->isReadyToSync();
 
         if (!$entity) {
@@ -189,6 +194,9 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
                     $this->dm->persist($entity);
                 }
             }
+
+            $userName = $this->getUser()->getUsername();
+            $this->get('mbh.channelmanager')->logCollectionChanges($entity, 'tariffs', $userName, $prevTariffs);
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();

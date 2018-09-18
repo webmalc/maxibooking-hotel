@@ -708,20 +708,13 @@ class Helper
                 $repository = $this->container
                     ->get('doctrine.odm.mongodb.document_manager')
                     ->getRepository($relationship->getDocumentClass());
-                if ($relationship->IsMany()) {
-                    $quantity = $repository->createQueryBuilder()
-                        ->field($relationship->getFieldName())->includesReferenceTo($document)
-                        ->field('deletedAt')->exists(false)
-                        ->getQuery()
-                        ->count();
-                } else {
-                    $query = $repository->createQueryBuilder()
-                        ->field($relationship->getFieldName())->references($document)
-                        ->field('deletedAt')->exists(false)
-                        ->getQuery();
-                    $quantity = $query->count();
-                }
 
+                $qb = $repository
+                    ->createQueryBuilder()
+                    ->field('deletedAt')->exists(false)
+                    ->field($relationship->getFieldName() . '.$id')->equals(new \MongoId($document->getId()));
+
+                $quantity = $qb->getQuery()->count();
                 $relatedDocumentsData[] = ['quantity' => $quantity, 'relation' => $relationship];
             }
         }

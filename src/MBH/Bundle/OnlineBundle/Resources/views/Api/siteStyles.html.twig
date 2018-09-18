@@ -11,12 +11,6 @@
             vertical-align: top;
         }
 
-        #mbh-form-begin, #mbh-form-end {
-            background-image: url({{ asset('bundles/mbhonline/images/icon-calendar.png') }});
-            background-repeat: no-repeat;
-            background-position: right;
-        }
-
         .mbh-form-row.form-group:not(#mbh-form-submit-wrapper) {
             padding: 5px 15px;
             background: #fff;
@@ -111,6 +105,12 @@
             }
             #mbh-form-begin, #mbh-form-end {
                 width: 140px !important;
+            }
+
+            #mbh-form-begin, #mbh-form-end {
+                background-image: url({{ asset('bundles/mbhonline/images/icon-calendar.png') }});
+                background-repeat: no-repeat;
+                background-position: right;
             }
         }
 
