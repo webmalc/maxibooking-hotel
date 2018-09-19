@@ -917,7 +917,7 @@ class PackageRepository extends DocumentRepository
     /**
      * @param $type
      * @raram Hotel $hotel
-     * @return Package[]
+     * @return Package[]|Cursor
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function findByType($type, Hotel $hotel = null)

@@ -11,6 +11,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 /**
  * @Route("/dashboard_api")
@@ -24,13 +25,12 @@ class DashboardApiController extends BaseController
 
     /**
      * @Route("/flow_progress_data", name="flow_progress_data", options={"expose"=true})
-     * @param Request $request
      * @return JsonResponse
      * @throws \MBH\Bundle\BaseBundle\Lib\Exception
      */
     public function flowProgressDataAction()
     {
-        $this->addAccessControlAllowOriginHeaders($this->getParameter('api_domains'));
+        $this->addAccessControlHeaders();
         $result = new Result();
         $flowServiceIds = [
             'roomType' => 'mbh.room_type_flow',
@@ -60,7 +60,7 @@ class DashboardApiController extends BaseController
      */
     public function notConfirmedPackagesAction(Request $request)
     {
-        $this->addAccessControlAllowOriginHeaders($this->getParameter('api_domains'));
+        $this->addAccessControlHeaders();
         $asHtml = $request->get('asHtml') === 'true';
         $notConfirmedOrderIds = $this->dm
             ->getRepository('MBHPackageBundle:Order')
@@ -75,40 +75,7 @@ class DashboardApiController extends BaseController
             );
 
         if (!$asHtml) {
-            $normalizedPackages = array_map(function (Package $package) {
-                $normalizedPackage = [
-                    'id' => $package->getId(),
-                    'numberWithPrefix' => $package->getNumberWithPrefix(),
-                    'status' => $package->getStatus(),
-                    'begin' => $package->getBegin()->format(self::DATE_FORMAT),
-                    'end' => $package->getEnd()->format(self::DATE_FORMAT),
-                    'roomType' => [
-                        'id' => $package->getRoomType()->getId(),
-                        'name' => $package->getRoomType()->getName(),
-                    ],
-                    'adults' => $package->getAdults(),
-                    'children' => $package->getChildren(),
-                    'accommodations' => array_map(function (PackageAccommodation $accommodation) {
-                        return [
-                            'begin' => $accommodation->getBegin()->format(self::DATE_FORMAT),
-                            'end' => $accommodation->getEnd()->format(self::DATE_FORMAT),
-                            'roomName' => $accommodation->getRoom()->getName(),
-                            'roomTypeName' => $accommodation->getRoomType()->getName()
-                        ];
-                    }, $package->getAccommodations()->toArray())
-                ];
-
-                if ($package->getPayer()) {
-                    $normalizedPackage['payer'] = [
-                        'id' => $package->getPayer()->getId(),
-                        'name' => $package->getPayer()->getName(),
-                        'phone' => $package->getPayer()->getPhone(),
-                        'email' => $package->getPayer()->getEmail()
-                    ];
-                }
-
-                return $normalizedPackage;
-            }, $packages);
+            $normalizedPackages = $this->normalizePackages($packages);
 
             $apiResponseArr = (new Result())
                 ->setData($normalizedPackages)
@@ -124,6 +91,34 @@ class DashboardApiController extends BaseController
     }
 
     /**
+     * @Route("/current_packages_list/{type}", name="current_packages_list", options={"expose"=true})
+     * @param string $type
+     * @return JsonResponse
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws \MBH\Bundle\BaseBundle\Lib\Exception
+     */
+    public function getCurrentDayPackages($type = 'arrivals')
+    {
+        $this->addAccessControlHeaders();
+
+        $availableTypes = ['arrivals', 'out'];
+        if (!in_array($type, $availableTypes)) {
+            throw new RouteNotFoundException();
+        }
+
+        $packages = $this->dm
+            ->getRepository('MBHPackageBundle:Package')
+            ->findByType($type)
+            ->toArray();
+
+        $apiResponseArr = (new Result())
+            ->setData($this->normalizePackages($packages))
+            ->getApiResponse();
+
+        return new JsonResponse($apiResponseArr);
+    }
+
+    /**
      * @Route("/current_packages", name="current_packages", options={"expose"=true})
      * @return JsonResponse
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
@@ -131,7 +126,7 @@ class DashboardApiController extends BaseController
      */
     public function getNumberOfCurrentPackages()
     {
-        $this->addAccessControlAllowOriginHeaders($this->getParameter('api_domains'));
+        $this->addAccessControlHeaders();
         $packageTypes = ['arrivals', 'out'];
         $numberOfPackagesByTypes = [];
         $packageRepo = $this->dm->getRepository('MBHPackageBundle:Package');
@@ -145,5 +140,49 @@ class DashboardApiController extends BaseController
             ->getApiResponse();
 
         return new JsonResponse($response);
+    }
+
+    private function normalizePackages(array $packages)
+    {
+        return $normalizedPackages = array_map(function (Package $package) {
+            $normalizedPackage = [
+                'id' => $package->getId(),
+                'numberWithPrefix' => $package->getNumberWithPrefix(),
+                'status' => $package->getStatus(),
+                'begin' => $package->getBegin()->format(self::DATE_FORMAT),
+                'end' => $package->getEnd()->format(self::DATE_FORMAT),
+                'roomType' => [
+                    'id' => $package->getRoomType()->getId(),
+                    'name' => $package->getRoomType()->getName(),
+                ],
+                'adults' => $package->getAdults(),
+                'children' => $package->getChildren(),
+                'accommodations' => array_map(function (PackageAccommodation $accommodation) {
+                    return [
+                        'begin' => $accommodation->getBegin()->format(self::DATE_FORMAT),
+                        'end' => $accommodation->getEnd()->format(self::DATE_FORMAT),
+                        'roomName' => $accommodation->getRoom()->getName(),
+                        'roomTypeName' => $accommodation->getRoomType()->getName()
+                    ];
+                }, $package->getAccommodations()->toArray())
+            ];
+
+            if ($package->getPayer()) {
+                $normalizedPackage['payer'] = [
+                    'id' => $package->getPayer()->getId(),
+                    'name' => $package->getPayer()->getName(),
+                    'phone' => $package->getPayer()->getPhone(),
+                    'email' => $package->getPayer()->getEmail()
+                ];
+            }
+
+            return $normalizedPackage;
+        }, $packages);
+    }
+
+    private function addAccessControlHeaders()
+    {
+        $this->addAccessControlAllowOriginHeaders($this->getParameter('api_domains'));
+        header('Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE, PATCH');
     }
 }
