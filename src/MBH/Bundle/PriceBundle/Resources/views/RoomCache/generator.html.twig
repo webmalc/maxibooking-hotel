@@ -3,6 +3,19 @@
 {% set small_title = "price.resources.views.roomcache.generator"|trans %}
 {% set layout = 'box' %}
 
+{% block scripts %}
+    {{ parent() }}
+
+    <script type="text/javascript">
+        var mbh_tariffNotOpened = JSON.parse('{{ tariffNotOpened | raw }}');
+    </script>
+    {% javascripts filter='uglifyjs2''@MBHPriceBundle/Resources/public/js/room-cache/generator/*'%}
+
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+{% endblock %}
+
 {% block content %}
 
     {{ form_start(form, {'action': path('room_cache_generator_save'), 'attr': {'class': 'form-horizontal'}}) }}

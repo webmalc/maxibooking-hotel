@@ -2,6 +2,15 @@
 
 {% set layout = 'box' %}
 
+{% block scripts %}
+    {{ parent() }}
+    {% javascripts filter='uglifyjs2''@MBHPriceBundle/Resources/public/js/room-cache/index/*'%}
+
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+{% endblock %}
+
 {% block content %}
 
     {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'room-cache-overview-filter-widget' } %}

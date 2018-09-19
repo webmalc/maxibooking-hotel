@@ -3,14 +3,6 @@
 {% set small_title = "price.resources.views.roomcache.number_in_sell"|trans %}
 {% set title_url = path('room_cache_overview') %}
 
-{% block scripts %}
-    {{ parent() }}
-    {% javascripts filter='uglifyjs2''@MBHPriceBundle/Resources/public/js/room-cache/*'%}
-
-        <script type="text/javascript" src="{{ asset_url }}"></script>
-    {% endjavascripts %}
-
-{% endblock %}
 
 {#{% block styles %}#}
     {#{{ parent() }}#}

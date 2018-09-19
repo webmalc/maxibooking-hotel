@@ -46,7 +46,7 @@ class RoomCacheGenerator implements \ArrayAccess
     /**
      * @var bool
      */
-    private $isOpen = true;
+    private $isOpen = false;
 
     /**
      * @var null|bool

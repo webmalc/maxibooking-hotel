@@ -42,6 +42,11 @@
                     {% endfor %}
                 </tr>
 
+                {% set cats = categories %}
+                {% if tariff is null and false %}
+                    {% set cats = cats|merge({'isClosed': 'price.resources.views.closet'|trans}) %}
+                {% endif %}
+
                 {% for categoryId, category in cats %}
                     <tr data-copy-row-id="{{ roomType.id }}">
                         <td class="first-td">
@@ -67,17 +72,17 @@
                             {#<!-- END: set roomCache & dayRoomCache -->#}
 
                             {% set cssClass %}
-                                {% if (roomCache == null
-                                        or roomCache.leftRooms < 0
-                                        or dayRoomCache is null
-                                        or roomCache.totalRooms > dayRoomCache.totalRooms
-                                        or not roomCache.isOpen)
+                                {% if (
+                                        (roomCache and roomCache.leftRooms < 0)
+                                        or (tariff is not null and roomCache and dayRoomCache is null)
+                                        or (tariff is not null and roomCache and dayRoomCache and roomCache.totalRooms > dayRoomCache.totalRooms)
+                                        )
                                 %}
                                     alert
                                 {% endif %}
                             {% endset %}
 
-                            <td data-id="{{ roomType.id }}_{{ date|date('d.m.Y') }}" class="content{% if day.isWeekend %} weekend{% endif %}">
+                            <td data-id="{{ roomType.id }}_{{ date|date('d.m.Y') }}" class="content{% if day.isWeekend %} weekend{% endif %} {{ cssClass|trim }}">
                                 {% if (categoryId == 'totalRooms' and tariff is null) or (tariff is not null and dayRoomCache is not null and categoryId == 'totalRooms') %}
                                     <span class="input">
                                         <input placeholder="{{ dayRoomCache is null ? '' : dayRoomCache.totalRooms }}"
@@ -86,11 +91,11 @@
                                                value="{{ roomCache is null ? '' : roomCache.totalRooms }}">
                                         <span class="disabled-detector"></span>
                                     </span>
-                                {#{% elseif categoryId == 'isClosed' and tariff is null and roomCache %}#}
-                                    {#<span class="input">#}
-                                        {#<input name="{{ roomCache is null ? 'newRoomCaches[' ~ roomType.id ~ '][0][' ~ date|date('d.m.Y') ~ '][closed]' : 'updateRoomCaches[' ~ roomCache.id ~'][closed]'}}" disabled type="checkbox" class="mbh-grid-checkbox {{ categoryId }}" {{ roomCache.isClosed ? 'checked' : '' }} value="1">#}
-                                        {#<span class="disabled-detector"></span>#}
-                                    {#</span>#}
+                                {% elseif categoryId == 'isClosed' and tariff is null and roomCache %}
+                                    <span class="input closed">
+                                        <input name="{{ roomCache is null ? 'newRoomCaches[' ~ roomType.id ~ '][0][' ~ date|date('d.m.Y') ~ '][closed]' : 'updateRoomCaches[' ~ roomCache.id ~'][closed]'}}" disabled type="checkbox" class="mbh-grid-checkbox {{ categoryId }}" {{ roomCache.isClosed ? 'checked' : '' }} value="1">
+                                        <span class="disabled-detector"></span>
+                                    </span>
                                 {% else %}
                                     <small>
                                         <span class="text-{{ categoryId == 'leftRooms' ? 'success bold' : 'info' }}">
@@ -111,7 +116,7 @@
                         {% endfor %}
                     </tr>
                 {% endfor %}
-                {% if tariff is not null %}
+                {% if tariff is not null and not tariff.isOpen %}
                     <tr>
                         <td class="first-th">
                             <small>{{ 'mbhpricebundle.form.roomcachegeneratortype.isOpen'|trans }}</small>

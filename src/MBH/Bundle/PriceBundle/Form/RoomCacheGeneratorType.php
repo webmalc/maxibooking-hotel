@@ -79,6 +79,13 @@ class RoomCacheGeneratorType extends AbstractType
                     'help' => 'mbhpricebundle.form.roomcachegeneratortype.tarifydlyagotorykhbudetproizvedenageneratsiyakvot',
                     'attr' => array('placeholder' => 'mbhpricebundle.form.roomcachegeneratortype.kvoty.ne.budut.sgenerirovany'),
                 ])
+                ->add(
+                    'isOpen',
+                    CheckboxType::class,
+                    [
+                        'required' => false,
+                    ]
+                )
                 ->add('rooms', TextType::class, [
                     'label' => 'mbhpricebundle.form.roomcachegeneratortype.kolichestvo.mest',
                     'required' => true,
@@ -90,10 +97,6 @@ class RoomCacheGeneratorType extends AbstractType
                     ],
                     'help' => 'mbhpricebundle.form.roomcachegeneratortype.kolichestvomest',
                 ])
-                ->add(
-                    'isOpen',
-                    CheckboxType::class
-                )
         ;
     }
 

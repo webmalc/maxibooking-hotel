@@ -96,7 +96,7 @@ class RoomCache extends Base
      * @Assert\Type(type="boolean")
      * @Assert\NotNull()
      */
-    protected $isOpen = true;
+    protected $isOpen = false;
 
     /**
      * Set hotel

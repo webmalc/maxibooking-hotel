@@ -262,6 +262,7 @@ class RoomCache
         }
 
         if (!empty($tariffs)) {
+            /** @var Tariff $tariff */
             foreach ($tariffs as $tariff) {
                 foreach ($roomTypes as $roomType) {
                     foreach (new \DatePeriod($dateBegin, new \DateInterval('P1D'), $endWithDay) as $date) {
@@ -284,7 +285,7 @@ class RoomCache
                             'totalRooms'    => $rooms,
                             'packagesCount' => 0,
                             'leftRooms'     => $rooms,
-                            'isOpen'        => $isOpen,
+                            'isOpen'        => $tariff->isOpen() ? false : $isOpen,
                         ];
                     }
                 }
@@ -303,7 +304,7 @@ class RoomCache
                     ->trans('room_cache_controller.limit_of_rooms_exceeded', [
                         '%busyDays%' => implode(', ', $outOfLimitRoomsDays),
                         '%availableNumberOfRooms%' => $limitsManager->getAvailableNumberOfRooms(),
-                        '%overviewUrl%' => $this->container->get('router')->generate('total_rooms_overview')
+                        '%overviewUrl%' => $this->container->get('router')->generate('total_rooms_overview'),
                     ]);
             }
 
