@@ -24,6 +24,7 @@ class JsonLoginController extends BaseController
         $result = new Result();
         $this->addAccessControlAllowOriginHeaders($this->getParameter('api_domains'));
         header('Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE, PATCH');
+        header('Access-Control-Allow-Headers: Content-Type, *');
 
         $requestContent = json_decode($request->getContent(), true);
 
