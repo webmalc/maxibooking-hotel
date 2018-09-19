@@ -6,6 +6,7 @@ use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\BillingBundle\Lib\Model\Result;
 use MBH\Bundle\HotelBundle\Service\FormFlow;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,7 +28,7 @@ class DashboardApiController extends BaseController
      * @return JsonResponse
      * @throws \MBH\Bundle\BaseBundle\Lib\Exception
      */
-    public function flowProgressDataAction(Request $request)
+    public function flowProgressDataAction()
     {
         $this->addAccessControlAllowOriginHeaders($this->getParameter('api_domains'));
         $result = new Result();
@@ -75,30 +76,39 @@ class DashboardApiController extends BaseController
 
         if (!$asHtml) {
             $normalizedPackages = array_map(function (Package $package) {
-                    $normalizedPackage = [
-                        'id' => $package->getId(),
-                        'status' => $package->getStatus(),
-                        'begin' => $package->getBegin()->format('d.m.Y'),
-                        'end' => $package->getEnd()->format('d.m.Y'),
-                        // TODO: Можно просто Id, с получением данных о комнате из API, либо ссылку на эндпоинт в этом API
-                        'roomType' => [
-                            'id' => $package->getRoomType()->getId(),
-                            'name' => $package->getRoomType()->getName(),
-                        ],
-                        'adults' => $package->getAdults(),
-                        'children' => $package->getChildren(),
-                    ];
-                    if ($package->getPayer()) {
-                        $normalizedPackage['payer'] = [
-                            'id' => $package->getPayer()->getId(),
-                            'name' => $package->getPayer()->getName(),
-                            'phone' => $package->getPayer()->getPhone(),
-                            'email' => $package->getPayer()->getEmail()
+                $normalizedPackage = [
+                    'id' => $package->getId(),
+                    'numberWithPrefix' => $package->getNumberWithPrefix(),
+                    'status' => $package->getStatus(),
+                    'begin' => $package->getBegin()->format(self::DATE_FORMAT),
+                    'end' => $package->getEnd()->format(self::DATE_FORMAT),
+                    'roomType' => [
+                        'id' => $package->getRoomType()->getId(),
+                        'name' => $package->getRoomType()->getName(),
+                    ],
+                    'adults' => $package->getAdults(),
+                    'children' => $package->getChildren(),
+                    'accommodations' => array_map(function (PackageAccommodation $accommodation) {
+                        return [
+                            'begin' => $accommodation->getBegin()->format(self::DATE_FORMAT),
+                            'end' => $accommodation->getEnd()->format(self::DATE_FORMAT),
+                            'roomName' => $accommodation->getRoom()->getName(),
+                            'roomTypeName' => $accommodation->getRoomType()->getName()
                         ];
-                    }
+                    }, $package->getAccommodations()->toArray())
+                ];
 
-                    return $normalizedPackage;
-                }, $packages);
+                if ($package->getPayer()) {
+                    $normalizedPackage['payer'] = [
+                        'id' => $package->getPayer()->getId(),
+                        'name' => $package->getPayer()->getName(),
+                        'phone' => $package->getPayer()->getPhone(),
+                        'email' => $package->getPayer()->getEmail()
+                    ];
+                }
+
+                return $normalizedPackage;
+            }, $packages);
 
             $apiResponseArr = (new Result())
                 ->setData($normalizedPackages)
@@ -115,12 +125,11 @@ class DashboardApiController extends BaseController
 
     /**
      * @Route("/current_packages", name="current_packages", options={"expose"=true})
-     * @param Request $request
      * @return JsonResponse
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      * @throws \MBH\Bundle\BaseBundle\Lib\Exception
      */
-    public function getNumberOfCurrentPackages(Request $request)
+    public function getNumberOfCurrentPackages()
     {
         $this->addAccessControlAllowOriginHeaders($this->getParameter('api_domains'));
         $packageTypes = ['arrivals', 'out'];

@@ -36,21 +36,25 @@ class JsonLoginController extends BaseController
                 ->getRepository(User::class)
                 ->findOneBy(['username' => $username]);
 
-            $encoder = $this
-                ->get('security.encoder_factory')
-                ->getEncoder($user);
-
-            if (is_null($user) || !$encoder->isPasswordValid($user->getPassword(), $password, $user->getSalt())) {
+            if (is_null($user)) {
                 $result->setErrors(['Access denied']);
             } else {
-                $token = bin2hex(random_bytes(64)).time();
-                $user->setApiToken($token, new \DateTime($this->getParameter('token_lifetime_string')));
-                $this->dm->flush();
+                $encoder = $this
+                    ->get('security.encoder_factory')
+                    ->getEncoder($user);
 
-                $result->setData([
-                    'name' => $user->getUsername(),
-                    'token' => $token
-                ]);
+                if (!$encoder->isPasswordValid($user->getPassword(), $password, $user->getSalt())) {
+                    $result->setErrors(['Access denied']);
+                } else {
+                    $token = bin2hex(random_bytes(64)) . time();
+                    $user->setApiToken($token, new \DateTime($this->getParameter('token_lifetime_string')));
+                    $this->dm->flush();
+
+                    $result->setData([
+                        'name' => $user->getUsername(),
+                        'token' => $token
+                    ]);
+                }
             }
         }
 
