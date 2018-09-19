@@ -58,7 +58,7 @@ class BaseController extends Controller
     {
         $origin = $this->getRequest()->headers->get('origin');
         foreach ($sites as $site) {
-            if ($origin == $site) {
+            if ($site == '*' || $origin == $site) {
                 header('Access-Control-Allow-Origin: ' . $site);
             }
         }
