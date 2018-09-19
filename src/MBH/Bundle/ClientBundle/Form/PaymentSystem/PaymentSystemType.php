@@ -121,10 +121,14 @@ abstract class PaymentSystemType extends AbstractType
             bool $fieldTaxationRateCode = true,
             bool $fieldTaxationSystemCode = true
         ) {
+            $form = $event->getForm();
+            /** на проде без этого не работает */
+            if ($form->isSubmitted()) {
+                return;
+            }
 
             $requiredInFronend = true;
-            /** @var FormBuilderInterface $form */
-            $form = $event->getForm();
+
             if ($event->getData() instanceof FiscalizationInterface) {
 //                $disabledTaxion = !$event->getData()->isWithFiscalization();
                 $disabledTaxion = false;
@@ -195,7 +199,7 @@ abstract class PaymentSystemType extends AbstractType
         $builder->addEventListener(
             FormEvents::PRE_SUBMIT,
             function (FormEvent $event) use ($formModifier, $doc, $fieldTaxationRateCode, $fieldTaxationSystemCode) {
-                $formModifier($event, $doc, $fieldTaxationRateCode, $fieldTaxationSystemCode);
+                $formModifier($event, $doc,$fieldTaxationRateCode, $fieldTaxationSystemCode);
             }
         );
     }

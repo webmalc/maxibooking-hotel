@@ -29,6 +29,11 @@ class SberbankType extends PaymentSystemType
 
         $formModifier = function (FormEvent $event, string $eventName) {
 
+            $form = $event->getForm();
+            if ($form->isSubmitted()) {
+                return;
+            }
+
             $backendDisabledUserAndPass = false;
             $backendDisabledToken = false;
             $frontendRequiredUserAndPass = true;
@@ -68,8 +73,6 @@ class SberbankType extends PaymentSystemType
             $addClass = function (string $name, bool $add) {
                 return $name . ($add ? ' payment-system-form_sberbank' : '');
             };
-
-            $form = $event->getForm();
 
             // поля: токен, юзер, пассворд
             $form->add(
