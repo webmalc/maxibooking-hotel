@@ -181,3 +181,16 @@ services:
         class: MBH\Bundle\ChannelManagerBundle\Form\AirbnbRoomsType
         arguments: ['@doctrine.odm.mongodb.document_manager']
         tags: [{name: form.type}]
+
+    mbh.cm_http_service:
+        class: MBH\Bundle\ChannelManagerBundle\Services\CMHttpService
+
+    mbh.airbnb_order_info:
+        class: MBH\Bundle\ChannelManagerBundle\Services\Airbnb\AirbnbOrderInfo
+        arguments: ['@service_container']
+        shared: false
+
+    mbh.airbnb_package_info:
+        class: MBH\Bundle\ChannelManagerBundle\Services\Airbnb\AirbnbPackageInfo
+        arguments: ['@service_container']
+        shared: false

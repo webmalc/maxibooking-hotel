@@ -39,7 +39,8 @@ class CMWizardManager
         WarningsCompiler $warningsCompiler,
         Helper $helper,
         Router $router
-    ) {
+    )
+    {
         $this->fieldsManager = $fieldsManager;
         $this->tokenStorage = $tokenStorage;
         $this->billingApi = $billingApi;
@@ -53,7 +54,6 @@ class CMWizardManager
         'hundred_one_hotels',
         'vashotel'
     ];
-    const CMS_WITHOUT_TARIFFS = [Airbnb::NAME];
     const HOTEL_ADDRESS_FIELDS = [];
 
     /**
@@ -102,11 +102,6 @@ class CMWizardManager
         return in_array($channelManagerName, self::CHANNEL_MANAGERS_WITH_CONFIGURATION_BY_TECH_SUPPORT);
     }
 
-    public function hasCMTariffs(string $channelManager)
-    {
-        return !in_array($channelManager, self::CMS_WITHOUT_TARIFFS);
-    }
-
     /**
      * @param string $channelManagerName
      * @param ChannelManagerConfigInterface|null $config
@@ -133,7 +128,7 @@ class CMWizardManager
             return $channelManagerName . '_room';
         }
 
-        if ($config->getTariffs()->isEmpty() && $this->hasCMTariffs($channelManagerName)) {
+        if ($config->getTariffs()->isEmpty()) {
             return $channelManagerName . '_tariff';
         }
 
@@ -158,7 +153,7 @@ class CMWizardManager
             if (!empty($emptyFields)) {
                 $emptyFieldNames = array_map(
                     function ($emptyFieldName) {
-                        return '"'.$this->fieldsManager->getFieldName(Hotel::class, $emptyFieldName).'"';
+                        return '"' . $this->fieldsManager->getFieldName(Hotel::class, $emptyFieldName) . '"';
                     },
                     $emptyFields
                 );
@@ -194,19 +189,15 @@ class CMWizardManager
     public function getLastCachesData(ChannelManagerConfigInterface $config, string $cacheClass)
     {
         /** @var RoomType[] $syncRoomTypes */
-        $syncRoomTypes = array_unique(array_map(function(Room $room) {
+        $syncRoomTypes = array_unique(array_map(function (Room $room) {
             return $room->getRoomType();
         }, $config->getRooms()->toArray()), SORT_REGULAR);
         $syncRoomTypeIds = $this->helper->toIds($syncRoomTypes);
 
-        if (!$this->hasCMTariffs($config->getName()) && $cacheClass === RoomCache::class ) {
-            $syncTariffs = [$config->getHotel()->getBaseTariff()];
-        } else {
-            /** @var Tariff[] $syncTariffs */
-            $syncTariffs = array_unique(array_map(function (\MBH\Bundle\ChannelManagerBundle\Document\Tariff $tariff) {
-                return $tariff->getTariff();
-            }, $config->getTariffs()->toArray()), SORT_REGULAR);
-        }
+        /** @var Tariff[] $syncTariffs */
+        $syncTariffs = array_unique(array_map(function (\MBH\Bundle\ChannelManagerBundle\Document\Tariff $tariff) {
+            return $tariff->getTariff();
+        }, $config->getTariffs()->toArray()), SORT_REGULAR);
 
         $syncTariffIds = $this->helper->toIds($syncTariffs);
 

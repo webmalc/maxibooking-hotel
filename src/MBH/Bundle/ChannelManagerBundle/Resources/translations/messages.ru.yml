@@ -143,3 +143,6 @@ cm_wizard.buttons.complete.title: Подключить
 cm_wizard.configuration.success: 'Настройка "%channelManagerHumanName%" успешно заверешена!'
 cm_wizard.unfilled_data_error: '{1}Заполните информацию об отеле в поле %emptyFieldNames%|]1, Inf[Заполните информацию об отеле в полях: %emptyFieldNames%'
 forms.airbnb_rooms_type.sync_urls_group: 'Ссылки для синхронизации'
+form.airbnb_tariff_type.tariff.label: 'Тариф'
+form.airbnb_tariff_type.tariff.help: 'Тариф, по которому будут создаваться брони, приходящие с Airbnb'
+airbnb_package_info.errors.can_not_calc_price: 'Не удалось рассчитать стоимость заказа. Укажите актуальную цену.'

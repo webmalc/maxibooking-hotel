@@ -45,9 +45,16 @@ class AirbnbConfig extends Base implements ChannelManagerConfigInterface
      */
     protected $rooms;
 
+    /**
+     * @var Tariff[]|ArrayCollection
+     * @ODM\EmbedMany(targetDocument="Tariff")
+     */
+    protected $tariffs;
+
     public function __construct()
     {
         $this->rooms = new ArrayCollection();
+        $this->tariffs = new ArrayCollection();
     }
 
     public function getName()
@@ -113,6 +120,8 @@ class AirbnbConfig extends Base implements ChannelManagerConfigInterface
 
     public function removeAllTariffs()
     {
+        $this->tariffs = new ArrayCollection();
+
         return $this;
     }
 
@@ -121,16 +130,20 @@ class AirbnbConfig extends Base implements ChannelManagerConfigInterface
      */
     public function getTariffs()
     {
-        return new ArrayCollection();
+        return $this->tariffs;
     }
 
     public function addTariff(Tariff $tariff)
     {
+        $this->tariffs->add($tariff);
+
         return $this;
     }
 
     public function removeTariff(Tariff $tariff)
     {
+        $this->tariffs->remove($tariff);
+
         return $this;
     }
 
@@ -155,15 +168,5 @@ class AirbnbConfig extends Base implements ChannelManagerConfigInterface
         }
 
         return null;
-    }
-
-    /**
-     * @return bool
-     */
-    protected function isSettingsFilled()
-    {
-        return $this->getIsEnabled()
-            && !$this->getRooms()->isEmpty()
-            && $this->isConfirmedWithDataWarnings();
     }
 }

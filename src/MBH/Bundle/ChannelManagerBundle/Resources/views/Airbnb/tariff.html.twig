@@ -2,13 +2,14 @@
 
 {% block content %}
 
-    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 2, 'entity': config, base: 'airbnb', services: false } %}
+    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 3, 'entity': config, 'base': 'airbnb'} %}
 
     <div class="tab-content">
         <div class="tab-pane active" id="home">
-            {{ form_start(form, {'action': path('airbnb_room'), 'attr': {'class': 'form-horizontal'}}) }}
+
+            {{ form_start(form, {'action': path('airbnb_tariff'), 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
-            {% include 'MBHChannelManagerBundle::actions.html.twig' %}
+            {% include 'MBHChannelManagerBundle::actions.html.twig'%}
             {{ form_end(form) }}
 
             {% if config %}
@@ -17,3 +18,4 @@
         </div>
     </div>
 {% endblock %}
+

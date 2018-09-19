@@ -6,6 +6,7 @@ use Gedmo\Loggable\Document\LogEntry;
 use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Lib\Task\Command;
 use MBH\Bundle\ChannelManagerBundle\Document\AirbnbConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\AirbnbRoom;
 use MBH\Bundle\ChannelManagerBundle\Document\BookingRoom;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
@@ -551,6 +552,8 @@ class ChannelManager
             $normalizedItem = [];
             if ($item instanceof BookingRoom) {
                 $normalizedItem['uploadSinglePrices'] = $item->isUploadSinglePrices();
+            } elseif ($item instanceof AirbnbRoom) {
+                $normalizedItem['syncUrl'] = $item->getSyncUrl();
             }
 
             if ($item instanceof Room) {

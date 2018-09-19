@@ -8,6 +8,10 @@ use MBH\Bundle\BillingBundle\Lib\Model\Result;
 
 class CMHttpService
 {
+    /**
+     * @param string $url
+     * @return Result
+     */
     public function getByUrl(string $url)
     {
         $result = new Result();
