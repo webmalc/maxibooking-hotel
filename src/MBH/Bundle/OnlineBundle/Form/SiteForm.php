@@ -64,7 +64,7 @@ class SiteForm extends AbstractType
                 'required' => true,
                 'addonText' => SiteManager::SITE_DOMAIN,
                 'preAddonText' => SiteManager::SITE_PROTOCOL,
-                'help' => $siteConfig->getSiteDomain()
+                'help' => $siteConfig !== null && $siteConfig->getSiteDomain()
                     ? '<a class="btn btn-success" target="_blank" href="' . $this->siteManager->getSiteAddress() . '">'
                     . $this->translator->trans('site_form.site_domain.go_to_site_button.text'). '</a>'
                     : ''
