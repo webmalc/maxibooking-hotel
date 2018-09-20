@@ -15,7 +15,7 @@
 {% set titlePersonalDataPolicies %}
     <i class="fa fa-expeditedssl"></i>
     {{ 'views.mb_site.index.personal_data_policies'|trans }}
-    {% if siteConfig.personalDataPolicies is empty  %}
+    {% if siteConfig == null or siteConfig.personalDataPolicies is empty  %}
         <small class="label label-danger label-as-badge"><i
                     class="fa fa-exclamation"></i></small>
     {% endif %}
