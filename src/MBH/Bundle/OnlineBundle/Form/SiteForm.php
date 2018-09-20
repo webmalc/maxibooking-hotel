@@ -82,12 +82,6 @@ class SiteForm extends AbstractType
 //                'required' => false,
 //                'help' => 'sdfasdfasdf'
 //            ])
-                // отдельный Type для политики
-//            ->add('personalDataPolicies', TextareaType::class, [
-//                'label' => 'site_form.pers_data_policy.label',
-//                'attr' => ['class' => 'tinymce'],
-//                'required' => false,
-//            ])
             ->add('paymentTypes', PaymentTypesType::class, [
                 'mapped' => false,
                 'help' => 'form.formType.reservation_payment_types_with_online_form',
