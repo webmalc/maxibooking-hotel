@@ -76,22 +76,7 @@ class Airbnb extends AbstractChannelManagerService
         $httpService = $this->container->get('mbh.cm_http_service');
         /** @var AirbnbConfig $config */
         foreach ($this->getConfig() as $config) {
-            $roomTypes = array_map(function (AirbnbRoom $room) {
-                return $room->getRoomType();
-            }, $config->getRooms()->toArray());
-            $roomTypeIds = $this->helper->toIds($roomTypes);
-
-            $packages = $this->dm
-                ->getRepository('MBHPackageBundle:Package')
-                ->findBy([
-                    'roomType.id' => ['$in' => $roomTypeIds],
-                    'channelManagerType' => self::NAME
-                ]);
-
-            $packagesByRoomIds = [];
-            foreach ($packages as $package) {
-                $packagesByRoomIds[$package->getRoomType()->getId()][$package->getChannelManagerId()] = $package;
-            }
+            $packagesByRoomIds = $this->getPackagesByRoomIds($config);
 
             foreach ($config->getRooms() as $room) {
                 $result = $httpService->getByAirbnbUrl($room->getSyncUrl());
@@ -107,41 +92,19 @@ class Airbnb extends AbstractChannelManagerService
                             ->get('mbh.airbnb_order_info')
                             ->setInitData($event, $room, $config->getTariffs()->first()->getTariff());
                         $airbnbPackageIds[] = $orderInfo->getChannelManagerOrderId();
-
-                        if (isset($packagesInRoom[$orderInfo->getChannelManagerOrderId()])) {
-                            /** @var Package $existingPackage */
-                            $existingPackage = $packagesInRoom[$orderInfo->getChannelManagerOrderId()];
-                            $packageInfo = $orderInfo->getPackagesData()[0];
-
-                            if ($existingPackage->getBegin() != $packageInfo->getBeginDate()
-                                || $existingPackage->getEnd() != $packageInfo->getEndDate()) {
-                                $this->container
-                                    ->get('mbh.channelmanager.order_handler')
-                                    ->createOrder($orderInfo, $existingPackage->getOrder());
-                            }
-                        } else {
-                            $this->container
-                                ->get('mbh.channelmanager.order_handler')
-                                ->createOrder($orderInfo);
-                        }
+                        $packagesInRoom = $this->modifyOrCreatePackage($packagesInRoom, $orderInfo);
                     }
 
-                    $deletedPackageIds = array_diff(array_keys($packagesInRoom), $airbnbPackageIds);
-                    foreach ($deletedPackageIds as $packageId) {
-                        /** @var Package $deletedPackage */
-                        $deletedPackage = $packagesInRoom[$packageId];
-                        $deletedOrder = $deletedPackage->getOrder();
-                        $this->dm->remove($deletedOrder);
-                        $this->dm->flush();
-                    }
+                    $this->removeMissingOrders($packagesInRoom, $airbnbPackageIds);
                 } else {
                     $this->notifyErrorRequest(self::NAME, 'channelManager.commonCM.notification.request_error.pull_orders');
-                    $this->log($this->container
+                    $logErrorMessage = $this->container
                             ->get('translator')
                             ->trans('channelManager.commonCM.notification.request_error.pull_orders', [], 'MBHChannelManagerBundle')
                         . '. URL:' . $room->getSyncUrl()
                         . '. Response: '
-                        . $result->getData());
+                        . $result->getData();
+                    $this->log($logErrorMessage);
                     $isSuccess = false;
                 }
             }
@@ -198,5 +161,76 @@ class Airbnb extends AbstractChannelManagerService
     public function pushResponse(Request $request)
     {
         return new Response();
+    }
+
+    /**
+     * @param $packagesInRoom
+     * @param $airbnbPackageIds
+     */
+    private function removeMissingOrders($packagesInRoom, $airbnbPackageIds): void
+    {
+        $deletedPackageIds = array_diff(array_keys($packagesInRoom), $airbnbPackageIds);
+        foreach ($deletedPackageIds as $packageId) {
+            /** @var Package $deletedPackage */
+            $deletedPackage = $packagesInRoom[$packageId];
+            $deletedOrder = $deletedPackage->getOrder();
+            $this->dm->remove($deletedOrder);
+            $this->dm->flush();
+        }
+    }
+
+    /**
+     * @param array $packagesInRoom
+     * @param AirbnbOrderInfo $orderInfo
+     * @return mixed
+     */
+    private function modifyOrCreatePackage(array $packagesInRoom, AirbnbOrderInfo $orderInfo)
+    {
+        if (isset($packagesInRoom[$orderInfo->getChannelManagerOrderId()])) {
+            /** @var Package $existingPackage */
+            $existingPackage = $packagesInRoom[$orderInfo->getChannelManagerOrderId()];
+            $packageInfo = $orderInfo->getPackagesData()[0];
+
+            if ($existingPackage->getBegin() != $packageInfo->getBeginDate()
+                || $existingPackage->getEnd() != $packageInfo->getEndDate()) {
+                $order = $this->container
+                    ->get('mbh.channelmanager.order_handler')
+                    ->createOrder($orderInfo, $existingPackage->getOrder());
+                $this->notify($order, 'commonCM', 'edit', ['%channelManagerName%' => $orderInfo->getChannelManagerName()]);
+            }
+        } else {
+            $order = $this->container
+                ->get('mbh.channelmanager.order_handler')
+                ->createOrder($orderInfo);
+            $this->notify($order, 'commonCM', 'new', ['%channelManagerName%' => $orderInfo->getChannelManagerName()]);
+        }
+
+        return $packagesInRoom;
+    }
+
+    /**
+     * @param $config
+     * @return array
+     */
+    private function getPackagesByRoomIds($config): array
+    {
+        $roomTypes = array_map(function (AirbnbRoom $room) {
+            return $room->getRoomType();
+        }, $config->getRooms()->toArray());
+        $roomTypeIds = $this->helper->toIds($roomTypes);
+
+        $packages = $this->dm
+            ->getRepository('MBHPackageBundle:Package')
+            ->findBy([
+                'roomType.id' => ['$in' => $roomTypeIds],
+                'channelManagerType' => self::NAME
+            ]);
+
+        $packagesByRoomIds = [];
+        foreach ($packages as $package) {
+            $packagesByRoomIds[$package->getRoomType()->getId()][$package->getChannelManagerId()] = $package;
+        }
+
+        return $packagesByRoomIds;
     }
 }
