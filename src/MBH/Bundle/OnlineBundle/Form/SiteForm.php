@@ -58,6 +58,7 @@ class SiteForm extends AbstractType
         }
 
         //ФОРМА ОТРИСОВЫВАЕТСЯ В ШАБЛОНЕ ВРУЧНУЮ!
+        /** Для поля personalDataPolicies отдельный Type: src/MBH/Bundle/OnlineBundle/Form/SitePersonalDataPoliciesType.php */
         $builder
             ->add('siteDomain', TextType::class, [
                 'label' => 'site_form.web_address.label',
