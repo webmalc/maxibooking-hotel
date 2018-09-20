@@ -2,10 +2,11 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services\Airbnb;
 
+use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use MBH\Bundle\ChannelManagerBundle\Document\AirbnbRoom;
-use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 
 class AirbnbPackageInfo extends AbstractPackageInfo
 {
@@ -52,7 +53,7 @@ class AirbnbPackageInfo extends AbstractPackageInfo
 
     public function getTariff()
     {
-        return $this->tariff->getTariff();
+        return $this->tariff;
     }
 
     public function getAdultsCount()
@@ -71,7 +72,17 @@ class AirbnbPackageInfo extends AbstractPackageInfo
      */
     public function getPrices()
     {
-        return $this->getPackagePrice()['packagePrices'];
+        $prices = $this->getPackagePrice()['packagePrices'];
+        return array_map(function(PackagePrice $price) {
+            $tariff = $price->getTariff();
+
+            //workaround caused by doctrine bug
+            if ($tariff instanceof Proxy) {
+                $tariff = $this->dm->find(Tariff::class, $tariff->getId());
+                $price->setTariff($tariff);
+            }
+            return $price;
+        }, $prices);
     }
 
     /**
@@ -155,6 +166,7 @@ class AirbnbPackageInfo extends AbstractPackageInfo
                     $this->getAdultsCount()
                 );
 
+            $tariff = $this->dm->find('MBHPriceBundle:Tariff', $this->getTariff()->getId());
             $combination = $this->getAdultsCount() . '_' . $this->getChildrenCount();
             if (!is_array($pricesByCombinations) || !isset($pricesByCombinations[$combination])) {
                 $pricesByDates = [];
@@ -163,7 +175,7 @@ class AirbnbPackageInfo extends AbstractPackageInfo
                 /** @var \DateTime $date */
                 foreach (new \DatePeriod($this->getBeginDate(), new \DateInterval('P1D'), $this->getEndDate()) as $date) {
                     $pricesByDates[$date->format('d_m_Y')] = 0;
-                    $packagePrices[] = (new PackagePrice($date, 0, $this->getTariff()));
+                    $packagePrices[] = (new PackagePrice($date, 0, $tariff));
                 }
 
                 $this->packagePrice = [

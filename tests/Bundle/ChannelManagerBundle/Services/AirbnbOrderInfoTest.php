@@ -6,7 +6,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Lib\Test\UnitTestCase;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\AirbnbRoom;
-use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
 use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\AirbnbOrderInfo;
 use MBH\Bundle\PackageBundle\Document\Order;
@@ -23,7 +22,6 @@ class AirbnbOrderInfoTest extends UnitTestCase
     const TEST_PHONE_CLEAR = '79311231122';
     const TEST_FIRSTNAME = 'Григорий';
     const TEST_LASTNAME = 'Епифанцев';
-
     const TEST_ROOM_TYPE_TITLE = 'Стандартный одноместный';
 
     /**
@@ -58,7 +56,7 @@ class AirbnbOrderInfoTest extends UnitTestCase
     public function testGetPayer()
     {
         $payer = $this->airbnbOrderInfo->getPayer();
-        $this->isInstanceOf(Tourist::class);
+        $this->assertInstanceOf(Tourist::class, $payer);
         $this->assertEquals(self::TEST_PHONE_CLEAR, $payer->getPhone(true));
         $this->assertEquals(self::TEST_FIRSTNAME, $payer->getFirstName());
         $this->assertEquals(self::TEST_LASTNAME, $payer->getLastName());
@@ -137,7 +135,7 @@ class AirbnbOrderInfoTest extends UnitTestCase
     public function testOrderCreation()
     {
         $order = $this->container->get('mbh.channelmanager.order_handler')->createOrder($this->airbnbOrderInfo);
-        $this->isInstanceOf(Order::class);
+        $this->assertInstanceOf(Order::class, $order);
         $this->assertEquals(1, $order->getPackages());
     }
 
@@ -154,7 +152,6 @@ class AirbnbOrderInfoTest extends UnitTestCase
             . 'PHONE: ' . self::TEST_PHONE . '\n'
             . 'EMAIL: ' . self::TEST_EMAIL . '\n'
             . 'PROPERTY: ' . self::TEST_PROPERTY_NAME . '\n';
-        $cmTariff = (new Tariff())->setTariff($this->getTariff());
         $cmRoom = (new AirbnbRoom())->setRoomType($this->getRoomType());
 
         $this->airbnbOrderInfo = $this->container
@@ -166,7 +163,7 @@ class AirbnbOrderInfoTest extends UnitTestCase
                 'DESCRIPTION' => $description,
                 'SUMMARY' => self::TEST_FIRSTNAME . ' ' . self::TEST_LASTNAME . ' (HM3QFFPZ5N)',
                 'LOCATION' => self::TEST_PROPERTY_NAME,
-            ], $cmRoom, $cmTariff);
+            ], $cmRoom, $this->getTariff());
     }
 
 

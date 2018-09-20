@@ -4,7 +4,6 @@ namespace MBH\Bundle\ChannelManagerBundle\Services\Airbnb;
 
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Document\AirbnbRoom;
-use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractOrderInfo;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
 use MBH\Bundle\PackageBundle\Document\CreditCard;
@@ -12,6 +11,7 @@ use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\PackageSource;
 use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 
 class AirbnbOrderInfo extends AbstractOrderInfo
 {

@@ -150,3 +150,4 @@ channelManager.commonCM.notification.error.subject: 'Ошибка %channelManage
 channelManager.commonCM.notification.error: 'Ошибка при обработке заказа %channelManagerName%. Информация: %info%'
 channelManager.commonCM.notification.request_error.pull_rooms: 'Ошибка получения типов номеров из %channelManagerName%'
 channelManager.commonCM.notification.request_error.pull_tariffs: 'Ошибка получения тарифов из %channelManagerName%'
+channelManager.commonCM.notification.request_error.pull_orders: 'Ошибка получения информации о бронях с %channelManagerName%'
