@@ -12,6 +12,7 @@ use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Restriction;
 use MBH\Bundle\PriceBundle\Document\RestrictionRepository;
+use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Lib\SpecialFilter;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
@@ -138,6 +139,7 @@ class Search implements SearchInterface
         );
 
         //group caches
+        /** @var RoomCache $roomCache */
         foreach ($roomCaches as $roomCache) {
             if ($roomCache->getTariff()) {
                 // collect quotes
@@ -157,7 +159,7 @@ class Search implements SearchInterface
                     $skip = true;
                 }
 
-                if ($skip || ($roomCache->getLeftRooms() > 0 /*&& $roomCache->getRoomType()->getTotalPlaces() >= $query->getTotalPlaces()*/ && !$roomCache->getIsClosed())) {
+                if ($skip || $roomCache->getLeftRooms() > 0 ) {
                     $groupedCaches['room'][$roomCache->getHotel()->getId()][$roomCache->getRoomType()->getId()][] = $roomCache;
                 }
             }
@@ -177,6 +179,8 @@ class Search implements SearchInterface
             }
         }
 
+        $isOpenInCacheInit = isset($groupedCaches['tariff']);
+        $isOpenInCache = true;
         //delete short cache chains
         foreach ($groupedCaches['room'] as $hotelId => $hotelA) {
             foreach ($hotelA as $roomTypeId => $caches) {
@@ -194,6 +198,10 @@ class Search implements SearchInterface
 
                         if ($tariffCache->getLeftRooms() <= 0 && !$skip) {
                             $quotes = true;
+                        }
+
+                        if (!$tariffCache->isOpen()) {
+                            $isOpenInCache = false;
                         }
                     }
                 }
@@ -304,15 +312,22 @@ class Search implements SearchInterface
             if (!$hotel || !$hotel->getIsEnabled()) {
                 continue;
             }
+            /** @var Tariff $tariff */
             if (!empty($query->tariff)) {
                 $tariff = $query->tariff;
             } else {
                 $tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')
                     ->fetchBaseTariff($hotel, null, $this->memcached);
             }
+
             if (!$tariff || !$tariff->getIsEnabled()) {
                 continue;
             }
+
+            if (!$tariff->isOpen() && $isOpenInCacheInit && !$isOpenInCache) {
+                continue;
+            }
+
             // check hotel permission
             if ($token && !$query->isOnline && !$this->container->get('mbh.hotel.selector')->checkPermissions($hotel)) {
                 continue;
