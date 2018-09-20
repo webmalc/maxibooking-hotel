@@ -2,13 +2,20 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services\Airbnb;
 
+use Eluceo\iCal\Component\Calendar;
+use Eluceo\iCal\Component\Event;
 use ICal\ICal;
+use MBH\Bundle\BaseBundle\Lib\EmptyCachePeriod;
 use MBH\Bundle\ChannelManagerBundle\Document\AirbnbConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\AirbnbRoom;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PriceBundle\Document\PriceCache;
+use MBH\Bundle\PriceBundle\Document\RoomCache;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -17,6 +24,7 @@ class Airbnb extends AbstractChannelManagerService
     const NAME = 'airbnb';
     const SYNC_URL_BEGIN = 'https://www.airbnb.ru/calendar/ical/';
     const CONFIG = 'AirbnbConfig';
+    const PERIOD_LENGTH = '1 year';
 
     /**
      * @param \DateTime $begin
@@ -111,6 +119,54 @@ class Airbnb extends AbstractChannelManagerService
         }
 
         return $isSuccess;
+    }
+
+    /**
+     * @param RoomType $roomType
+     * @return string
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws \Exception
+     */
+    public function generateRoomCalendar(RoomType $roomType)
+    {
+        $hotel = $roomType->getHotel();
+        $airbnbConfig = $hotel->getAirbnbConfig();
+        /** @var Tariff $tariff */
+        $tariff = $airbnbConfig->getTariffs()->first()->getTariff();
+
+        //TODO: Уточнить
+        $calc = new Calendar('some_address');
+
+        $vEvent = new Event();
+        $vEvent->setDtStart($this->helper->getDateFromString('22.02.1991'));
+        $vEvent->setDtEnd($this->helper->getDateFromString('22.02.2591'));
+        $vEvent->setNoTime(true);
+
+        $calc->addComponent($vEvent);
+
+        $begin = new \DateTime('midnight');
+        $end = new \DateTime('midnight +' . self::PERIOD_LENGTH);
+
+        $warningsCompiler = $this->container->get('mbh.warnings_compiler');
+        $emptyPriceCachePeriods = $warningsCompiler
+            ->getEmptyCachePeriodsForRoomTypeAndTariff($roomType, $begin, $end, $tariff, PriceCache::class, 'price');
+        $emptyRoomCachePeriods = $warningsCompiler
+            ->getEmptyCachePeriodsForRoomTypeAndTariff($roomType, $begin, $end, $tariff, RoomCache::class, 'totalRooms');
+        $closedPeriods = $warningsCompiler->getClosedPeriods($begin, $end, $roomType, $tariff);
+
+        $emptyCachePeriods = array_map(function (EmptyCachePeriod $emptyCachePeriod) {
+            return ['begin' => $emptyCachePeriod->getBegin(), 'end' => $emptyCachePeriod->getEnd()];
+        }, array_merge($emptyPriceCachePeriods, $emptyRoomCachePeriods, $closedPeriods));
+
+        $packagePeriods = $this->getPackagePeriods($roomType, $begin, $end);
+        foreach ($packagePeriods as $packagePeriod) {
+            $emptyCachePeriods[] = [
+                'begin' => $packagePeriod['begin']->toDateTime(),
+                'end' => $packagePeriod['end']->toDateTime()
+            ];
+        }
+
+        return '';
     }
 
     /**
@@ -233,4 +289,33 @@ class Airbnb extends AbstractChannelManagerService
 
         return $packagesByRoomIds;
     }
+
+    /**
+     * @param RoomType $roomType
+     * @param $begin
+     * @param $end
+     * @return mixed
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    private function getPackagePeriods(RoomType $roomType, $begin, $end)
+    {
+        $packageCriteria = new PackageQueryCriteria();
+        $packageCriteria->filter = 'live_between';
+        $packageCriteria->begin = $begin;
+        $packageCriteria->end = $end;
+        $packageCriteria->addRoomTypeCriteria($roomType);
+
+        $packagePeriods = $this->dm
+            ->getRepository('MBHPackageBundle:Package')
+            ->queryCriteriaToBuilder($packageCriteria)
+            ->hydrate(false)
+            ->select(['begin', 'end'])
+            ->getQuery()
+            ->execute()
+            ->toArray();
+
+        return $packagePeriods;
+    }
+
+
 }

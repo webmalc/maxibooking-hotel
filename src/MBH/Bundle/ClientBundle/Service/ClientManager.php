@@ -4,6 +4,7 @@ namespace MBH\Bundle\ClientBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Service\Helper;
+use MBH\Bundle\BaseBundle\Service\Utils;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\BillingBundle\Lib\Model\Country;
 use MBH\Bundle\BillingBundle\Lib\Model\PaymentOrder;
@@ -212,7 +213,7 @@ class ClientManager
         $currentDateTime = new \DateTime();
         $config = $this->clientConfigManager->fetchConfig();
 
-        if (is_null($dataReceiptTime)|| !$config->isCacheValid()
+        if (is_null($dataReceiptTime) || !$config->isCacheValid()
             || $currentDateTime->diff($dataReceiptTime)->i >= self::CLIENT_DATA_STORAGE_TIME_IN_MINUTES
         ) {
             /** @var Client $client */
@@ -303,8 +304,7 @@ class ClientManager
                 $lastOrder = $clientOrders[0];
                 $currentDateTime = new \DateTime();
 
-                $daysBeforeDisable = $this->helper
-                    ->getDifferenceInDaysWithSign($currentDateTime, $lastOrder->getExpiredDateAsDateTime());
+                $daysBeforeDisable = Utils::getDifferenceInDaysWithSign($currentDateTime, $lastOrder->getExpiredDateAsDateTime());
                 if ($lastOrder->getExpiredDateAsDateTime() > $currentDateTime
                     && $lastOrder->getStatus() !== PaymentOrder::STATUS_PAID && $daysBeforeDisable >= 0) {
                     return $daysBeforeDisable;

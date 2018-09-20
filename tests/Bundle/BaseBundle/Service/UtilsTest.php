@@ -29,4 +29,10 @@ class UtilsTest extends UnitTestCase
             Utils::getFromArrayByKeys($array, ['first', 'fourth'])
         );
     }
+
+    public function testGetDifferenceInDaysWithSign()
+    {
+        $this->assertEquals(5, Utils::getDifferenceInDaysWithSign(new \DateTime(), new \DateTime('+5 days')));
+        $this->assertEquals(-15, Utils::getDifferenceInDaysWithSign(new \DateTime(), new \DateTime('-15 days')));
+    }
 }

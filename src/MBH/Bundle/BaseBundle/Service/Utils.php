@@ -29,4 +29,15 @@ class Utils
     {
         return array_intersect_key($array, array_flip($keys));
     }
+
+    /**
+     * If date > date2 than return negative int
+     * @param \DateTime $date
+     * @param \DateTime $date2
+     * @return int
+     */
+    public static function getDifferenceInDaysWithSign(\DateTime $date, \DateTime $date2)
+    {
+        return (int)($date->diff($date2)->format("%r%a"));
+    }
 }

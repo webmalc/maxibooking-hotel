@@ -28,7 +28,7 @@ class PeriodsCompiler
         \DateTime $begin,
         \DateTime $end,
         array $dataByDates,
-        array $comparedFieldNames,
+        array $comparedFieldNames = [],
         $dateFormat = 'd.m.Y',
         $isArray = false
     )
@@ -62,5 +62,10 @@ class PeriodsCompiler
         $periods[] = $currentPeriod;
 
         return $periods;
+    }
+
+    public function combineIntersectedPeriods(array $periods)
+    {
+
     }
 }

@@ -739,15 +739,4 @@ class Helper
 
         return [$dates[0], end($dates)];
     }
-
-    /**
-     * If date > date2 than return negative int
-     * @param \DateTime $date
-     * @param \DateTime $date2
-     * @return int
-     */
-    public function getDifferenceInDaysWithSign(\DateTime $date, \DateTime $date2)
-    {
-        return (int)($date->diff($date2)->format("%r%a"));
-    }
 }

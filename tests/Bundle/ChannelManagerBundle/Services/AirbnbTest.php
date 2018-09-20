@@ -7,6 +7,7 @@ use MBH\Bundle\BaseBundle\Lib\Test\UnitTestCase;
 use MBH\Bundle\BillingBundle\Lib\Model\Result;
 use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
 use MBH\Bundle\ChannelManagerBundle\Services\CMHttpService;
+use MBH\Bundle\PriceBundle\DataFixtures\MongoDB\RoomCacheData;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class AirbnbTest extends UnitTestCase
@@ -72,6 +73,29 @@ class AirbnbTest extends UnitTestCase
         $this->assertNotNull($existingOrder);
     }
 
+    public function testGenerateRoomCalendar()
+    {
+        $dayAfterLastRoomCache = new \DateTime(RoomCacheData::PERIOD_LENGTH_STR);
+        $lastDayOfSentData = new \DateTime('midnight +' . Airbnb::PERIOD_LENGTH);
+        $event = '
+BEGIN:VEVENT
+UID:5ba3602690c4b
+DTSTART;VALUE=DATE:' . $dayAfterLastRoomCache->format('Ymd') . "\n"
+. 'SEQUENCE:0
+TRANSP:OPAQUE
+DTEND;VALUE=DATE:' . $lastDayOfSentData->format('Ymd') . "\n"
+. 'CLASS:PUBLIC
+X-MICROSOFT-CDO-ALLDAYEVENT:TRUE
+DTSTAMP:' . (new \DateTime())->format('Ymd\THis\Z') . "\n"
+. 'END:VEVENT';
+
+        $expected = $this->wrapCalendar($event);
+        $roomType = $this->dm
+            ->getRepository('MBHHotelBundle:RoomType')
+            ->findOneBy([]);
+        $this->assertEquals($expected, $this->container->get('mbh.airbnb')->generateRoomCalendar($roomType));
+    }
+
     private function replaceHttpService(string $calendar)
     {
         $httpServiceMock = $this->getMockBuilder(CMHttpService::class)->getMock();
@@ -84,60 +108,34 @@ class AirbnbTest extends UnitTestCase
 
     private function getFirstCalendar()
     {
-        $events = "BEGIN:VEVENT
-DTEND;VALUE=DATE:20181211
-DTSTART;VALUE=DATE:20181210
-UID:1418fb94e984-4ac6e9147d674246f878defd58250d61@airbnb.com
-DESCRIPTION:CHECKIN: 10.12.2018\nCHECKOUT: 11.12.2018\nNIGHTS: 1\nPHONE: 
- +7 931 925-38-33\nEMAIL: user-ihxdqpdcd1k4zv81@guest.airbnb.com\nPROPERT
- Y: Гостевой дом\n
-SUMMARY:Забулдыжников Геннадий (HM3QFFP15N)
-LOCATION:Гостевой дом
-END:VEVENT\n";
-
-        return $this->wrapCalendar($events);
+        return $this->wrapCalendar($this->getEventById('1418fb94e984-4ac6e9147d674246f878defd58250d61@airbnb.com'));
     }
 
     private function getSecondCalendar()
     {
-        $events = "BEGIN:VEVENT
-DTEND;VALUE=DATE:20181211
-DTSTART;VALUE=DATE:20181210
-UID:1418fb94e984-4ac6e9147d674246f878defd58250d61@airbnb.com
-DESCRIPTION:CHECKIN: 10.12.2018\nCHECKOUT: 11.12.2018\nNIGHTS: 1\nPHONE: 
- +7 931 925-38-33\nEMAIL: user-ihxdqpdcd1k4zv81@guest.airbnb.com\nPROPERT
- Y: Гостевой дом\n
-SUMMARY:Забулдыжников Геннадий (HM3QFFP15N)
-LOCATION:Гостевой дом
-END:VEVENT\n
-BEGIN:VEVENT
-DTEND;VALUE=DATE:20181212
-DTSTART;VALUE=DATE:20181213
-UID:1418fb94e984-4ac6e9143r674246f878defd58250d61@airbnb.com
-DESCRIPTION:CHECKIN: 10.12.2018\nCHECKOUT: 11.12.2018\nNIGHTS: 1\nPHONE: 
- +7 931 925-38-33\nEMAIL: user-ihxdqpdcd1k4zv81@guest.airbnb.com\nPROPERT
- Y: Гостевой дом\n
-SUMMARY:Забулдыжников Геннадий (HM3QFFP15N)
-LOCATION:Гостевой дом
-END:VEVENT\n";
+        $events = $this->getEventById('1418fb94e984-4ac6e9147d674246f878defd58250d61@airbnb.com')
+            . $this->getEventById('1418fb94e984-4ac6e9143r674246f878defd58250d61@airbnb.com');
 
         return $this->wrapCalendar($events);
     }
 
     public function getThirdCalendar()
     {
-        $events = "BEGIN:VEVENT
-DTEND;VALUE=DATE:20181212
-DTSTART;VALUE=DATE:20181213
-UID:1418fb94e984-4ac6e9143r674246f878defd58250d61@airbnb.com
-DESCRIPTION:CHECKIN: 10.12.2018\nCHECKOUT: 11.12.2018\nNIGHTS: 1\nPHONE: 
+        return $this->wrapCalendar($this->getEventById('1418fb94e984-4ac6e9143r674246f878defd58250d61@airbnb.com'));
+    }
+
+    private function getEventById(string $id)
+    {
+        return "BEGIN:VEVENT
+DTEND;VALUE=DATE:20181211
+DTSTART;VALUE=DATE:20181210
+UID:" . $id
+            . "\nDESCRIPTION:CHECKIN: 10.12.2018\nCHECKOUT: 11.12.2018\nNIGHTS: 1\nPHONE: 
  +7 931 925-38-33\nEMAIL: user-ihxdqpdcd1k4zv81@guest.airbnb.com\nPROPERT
  Y: Гостевой дом\n
 SUMMARY:Забулдыжников Геннадий (HM3QFFP15N)
 LOCATION:Гостевой дом
 END:VEVENT\n";
-
-        return $this->wrapCalendar($events);
     }
 
     private function wrapCalendar(string $content)
