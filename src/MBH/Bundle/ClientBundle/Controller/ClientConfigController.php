@@ -6,22 +6,11 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\ColorsConfig;
-use MBH\Bundle\ClientBundle\Document\Invoice;
-use MBH\Bundle\ClientBundle\Document\Moneymail;
-use MBH\Bundle\ClientBundle\Document\Payanyway;
-use MBH\Bundle\ClientBundle\Document\Paypal;
-use MBH\Bundle\ClientBundle\Document\Rbk;
-use MBH\Bundle\ClientBundle\Document\RNKB;
-use MBH\Bundle\ClientBundle\Document\Stripe;
 use MBH\Bundle\ClientBundle\Form\ClientConfigType;
 use MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType;
 use MBH\Bundle\ClientBundle\Form\PaymentSystemsUrlsType;
 use MBH\Bundle\ClientBundle\Form\ColorsType;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbkHelper;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystem\RobokassaHelper;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystem\UnitellerHelper;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
-use MBH\Bundle\UserBundle\DataFixtures\MongoDB\UserData;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -124,6 +113,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
      * @Method("GET")
      * @Route("/payment_urls", name="client_payment_urls", options={"expose"=true})
      * @Template()
+     * @Security("is_granted('ROLE_CLIENT_CONFIG_EDIT')")
      * @return array|JsonResponse
      */
     public function paymentUrlsAction()
@@ -139,6 +129,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
      * @Method("POST")
      * @Route("/save_payment_urls", name="client_save_payment_urls", options={"expose"=true})
      * @param Request $request
+     * @Security("is_granted('ROLE_CLIENT_CONFIG_EDIT')")
      * @return JsonResponse
      */
     public function savePaymentUrls(Request $request)
@@ -162,7 +153,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
 
     /**
      * Payment system configuration page
-     * @Route("/payment_system_form/{paymentSystemName}", name="client_payment_system_form")
+     * @Route("/payment_system/form/{paymentSystemName}", name="client_payment_system_form")
      * @Method("GET")
      * @Security("is_granted('ROLE_CLIENT_CONFIG_VIEW')")
      * @Template("@MBHClient/ClientConfigPaymentSystem/form.html.twig")
@@ -171,7 +162,6 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
     public function paymentSystemFormAction($paymentSystemName = null)
     {
         $form = $this->createForm(ClientPaymentSystemType::class, $this->clientConfig, [
-            'entity' => $this->clientConfig,
             'paymentSystemName' => $paymentSystemName
         ]);
 
@@ -188,7 +178,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
      * @Route("/payment_system/save", name="client_payment_system_save")
      * @Method("POST")
      * @Security("is_granted('ROLE_CLIENT_CONFIG_EDIT')")
-     * @Template("MBHClientBundle:ClientConfig:paymentSystemForm.html.twig")
+     * @Template("@MBHClient/ClientConfigPaymentSystem/form.html.twig")
      * @param $request Request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      * @throws Exception
@@ -196,73 +186,19 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
     public function paymentSystemSaveAction(Request $request)
     {
         $config = $this->get('mbh.client_config_manager')->fetchConfig();
-        $paymentSystemName = $request->query->get('paymentSystemName');
+        $paymentSystemName = $request->query->get('paymentSystemName') ?? null;
+        $paymentSystemName = $paymentSystemName ?? $request->get(ClientPaymentSystemType::FORM_NAME)['paymentSystem'] ?? null;
 
         $form = $this->createForm(ClientPaymentSystemType::class, $config, [
-            'entity' => $config,
             'paymentSystemName' => $paymentSystemName
         ]);
 
         $form->handleRequest($request);
-        $paymentSystemName = $request->request->get($form->getName())['paymentSystem'] ?? $paymentSystemName;
 
         if ($form->isValid()) {
-            switch ($paymentSystemName) {
-                case 'robokassa':
-                    $config->setRobokassa(RobokassaHelper::instance($form));
-                    break;
-                case 'payanyway':
-                    $payanyway = new Payanyway();
-                    $payanyway->setPayanywayKey($form->get('payanywayKey')->getData())
-                        ->setPayanywayMntId($form->get('payanywayMntId')->getData());
-                    $config->setPayanyway($payanyway);
-                    break;
-                case 'moneymail':
-                    $moneymail = new Moneymail();
-                    $moneymail->setMoneymailShopIDP($form->get('moneymailShopIDP')->getData())
-                        ->setMoneymailKey($form->get('moneymailKey')->getData());
-                    $config->setMoneymail($moneymail);
-                    break;
-                case 'uniteller':
-                    $config->setUniteller(UnitellerHelper::instance($form));
-                    break;
-                case 'rbk':
-                    $rbk = new Rbk();
-                    $rbk->setRbkEshopId($form->get('rbkEshopId')->getData())
-                        ->setRbkSecretKey($form->get('rbkSecretKey')->getData());
-                    $config->setRbk($rbk);
-                    break;
-                case 'paypal':
-                    $paypal = new Paypal();
-                    $paypal->setPaypalLogin($form->get('paypalLogin')->getData());
-                    $config->setPaypal($paypal);
-                    break;
-                case 'rnkb':
-                    $rnkb = new RNKB();
-                    $rnkb->setKey($form->get('rnkbKey')->getData());
-                    $rnkb->setRnkbShopIDP($form->get('rnkbShopIDP')->getData());
-                    $config->setRnkb($rnkb);
-                    break;
-                case 'invoice':
-                    $invoice = (new Invoice())->setInvoiceDocument($form->get('invoiceDocument')->getData());
-                    $config->setInvoice($invoice);
-                    break;
-                case 'stripe':
-                    $stripe = (new Stripe())
-                        ->setPublishableToken($form->get('stripePubToken')->getData())
-                        ->setSecretKey($form->get('stripeSecretKey')->getData());
-                    $config->setStripe($stripe);
-                    break;
-                case 'newRbk':
-                    $config->setNewRbk(NewRbkHelper::instance($form));
-                    break;
-                default:
-                    throw new Exception('Incorrect name of payment system!');
-            }
-            $config->addPaymentSystem($paymentSystemName);
 
-            $this->dm->persist($config);
-            $this->dm->flush();
+            $config->addPaymentSystemFromForm($form, $paymentSystemName);
+            $this->dm->flush($config);
 
             $this->addFlash('success', 'controller.clientConfig.params_success_save');
 
@@ -270,20 +206,20 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
         }
 
         return [
-            'entity' => $config,
-            'form' => $form->createView(),
-            'logs' => $this->logs($config)
+            'entity'            => $config,
+            'form'              => $form->createView(),
+            'paymentSystemName' => $paymentSystemName,
+            'logs'              => $this->logs($config),
         ];
     }
 
     /**
-     * @Route("payment_system/remove", name="remove_payment_system")
+     * @Route("/payment_system/remove/{paymentSystemName}", name="remove_payment_system")
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function removePaymentSystemAction(Request $request)
+    public function removePaymentSystemAction($paymentSystemName)
     {
-        $paymentSystemName = $request->query->get('paymentSystemName');
         $this->clientConfig->removePaymentSystem($paymentSystemName);
         $this->dm->flush();
 

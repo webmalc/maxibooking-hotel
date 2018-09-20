@@ -8,6 +8,7 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\HotelRepository;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
 use MBH\Bundle\OnlineBundle\Services\SiteManager;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -63,7 +64,7 @@ class SiteForm extends AbstractType
                 'required' => true,
                 'addonText' => SiteManager::SITE_DOMAIN,
                 'preAddonText' => SiteManager::SITE_PROTOCOL,
-                'help' => !is_null($siteConfig) && $siteConfig->getSiteDomain()
+                'help' => $siteConfig->getSiteDomain()
                     ? '<a class="btn btn-success" target="_blank" href="' . $this->siteManager->getSiteAddress() . '">'
                     . $this->translator->trans('site_form.site_domain.go_to_site_button.text'). '</a>'
                     : ''
@@ -81,16 +82,22 @@ class SiteForm extends AbstractType
 //                'required' => false,
 //                'help' => 'sdfasdfasdf'
 //            ])
-            ->add('personalDataPolicies', TextareaType::class, [
-                'label' => 'site_form.pers_data_policy.label',
-                'attr' => ['class' => 'tinymce'],
-                'required' => false,
-            ])
+                // отдельный Type для политики
+//            ->add('personalDataPolicies', TextareaType::class, [
+//                'label' => 'site_form.pers_data_policy.label',
+//                'attr' => ['class' => 'tinymce'],
+//                'required' => false,
+//            ])
             ->add('paymentTypes', PaymentTypesType::class, [
                 'mapped' => false,
                 'help' => 'form.formType.reservation_payment_types_with_online_form',
                 'constraints' => [new NotBlank()]
             ])
+            /**
+             * для select2 в colorTheme используется margin-bottom
+             * src/MBH/Bundle/OnlineBundle/Resources/public/css/mb-site/mb-site.css
+             * вместо help
+             */
             ->add('colorTheme', ChoiceType::class, [
                 'label' => 'site_config.color_theme.colors.label',
                 'choices' => array_keys(SiteConfig::COLORS_BY_THEMES),

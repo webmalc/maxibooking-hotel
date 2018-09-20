@@ -46,6 +46,34 @@ class ExtraData
     }
 
     /**
+     * @return HolderNamePaymentSystem[]
+     */
+    public function getPaymentSystemsAsObj(): array
+    {
+        $holder = [];
+        foreach ($this->getPaymentSystems() as $key => $name) {
+            $holder[] = $this->getPaymentSystemAsObj($key);
+        }
+
+        return $holder;
+    }
+
+    /**
+     * @param string $key
+     * @return HolderNamePaymentSystem
+     */
+    public function getPaymentSystemAsObj(string $key): HolderNamePaymentSystem
+    {
+        $name = $this->getPaymentSystems()[$key];
+        /** т.к. там используется перевод */
+        if ($key === 'invoice') {
+            $name = 'Invoice';
+        }
+
+        return new HolderNamePaymentSystem($key, $name);
+    }
+
+    /**
      * @return bool
      */
     public function isPaymentSystemsChange(): bool

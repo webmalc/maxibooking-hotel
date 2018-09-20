@@ -1,0 +1,26 @@
+#key-words-list {
+    list-style-type: none;
+}
+#key-words-list li {
+    margin-bottom: 10px;
+}
+
+.label-as-badge i.fa {
+    min-width: 10.5px;
+    min-height: 11px;
+}
+
+#mbhonline_bundle_site_form_colorTheme + span.select2 {
+    margin-bottom: 25px;
+}
+
+form[name=mbh_bundle_clientbundle_client_payment_system_type] #actions li button i.fa + span {
+    margin-left: 0.3em;
+}
+
+@media (max-width: 767px) {
+    #mb-site_tab_payment-systems_link-to-list {
+        text-align: center;
+        margin-bottom: 15px;
+    }
+}

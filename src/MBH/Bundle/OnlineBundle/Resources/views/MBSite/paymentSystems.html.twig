@@ -1,0 +1,91 @@
+{% extends "MBHOnlineBundle:MBSite:layout.html.twig" %}
+
+{% set title_url = path('site_settings') %}
+{% set small_title = (
+    paymentSystemName != null
+        ? 'views.mb_site.index.paymentSystem.title.breadcrumbs.edit'
+        : 'views.mb_site.index.paymentSystem.title.breadcrumbs.add'
+    ) |trans %}
+{% set active = hotelsSettings|length + 3 %}
+
+{% if isUsedForm %}
+    {% block scripts %}
+        {{ parent() }}
+        {% embed "MBHClientBundle:ClientConfigPaymentSystem:blockScripts.htm.twig" %}{% endembed %}
+    {% endblock %}
+{% endif %}
+
+{% block content %}
+    {{ parent() }}
+    <div class="tab-content">
+        <div class="tab-pane active" id="home">
+            {% if isUsedForm %}
+                {% embed 'MBHClientBundle:ClientConfigPaymentSystem:blockPaymentSystemsForm.htm.twig' %}
+                    {% block formStart %}
+                        {{ form_start(form, {'action': path('site_hotel_payment_systems'), 'method': 'post','attr': {'class': 'form-horizontal' }}) }}
+                    {% endblock %}
+                    {% block btnActions %}
+                        <div id="mb-site_tab_payment-systems_link-to-list">
+                            <a href="{{ path('client_payment_systems') }}" target="_blank">{{ 'views.mb_site.index.paymentSystem.link_to_list'|trans }}</a>
+                        </div>
+                        <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
+                            <div class="container-fluid">
+                                <ul class="nav navbar-nav">
+                                    {% if isSetUpPaymentSystems %}
+                                        <li>
+                                            <button type="submit"
+                                                    title="{{ 'views.mb_site.index.paymentSystem.title.save_changes'|trans }}"
+                                                    name="save"
+                                                    class="btn btn-primary navbar-btn">
+                                                <i class="fa fa-check-square-o"></i>
+                                                <span>{{ 'views.mb_site.index.paymentSystem.update'|trans }}</span>
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button data-href="{{ path('site_hotel_remove_payment_system', {'paymentSystemName': paymentSystemName}) }}"
+                                                    class="btn btn-danger navbar-btn delete-link"
+                                                    data-text="{{ 'client.views.payment_systems.disable_text'|trans({}, 'MBHClientBundle') }}">
+                                                <i class="fa fa-trash-o"></i>
+                                                <span>{{ 'views.mb_site.index.paymentSystem.disabled'|trans }}</span>
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button type="button" class="btn btn-success navbar-btn"
+                                                    title="{{ 'views.mb_site.index.paymentSystem.title.open_new_window'|trans }}"
+                                                    onclick="window.open('{{ path('client_payment_system_form') }}')">
+                                                <i class="fa fa-check-square-o"></i>
+                                                <span>{{ 'views.mb_site.index.paymentSystem.create'|trans }}</span>
+                                            </button>
+                                        </li>
+                                    {% else %}
+                                        <li>
+                                            <button type="submit"
+                                                    title="{{ 'views.mb_site.index.paymentSystem.title.add_system'|trans }}"
+                                                    name="save"
+                                                    class="btn btn-success navbar-btn">
+                                                <i class="fa fa-check-square-o"> </i>
+                                                <span>{{ 'views.mb_site.index.paymentSystem.save'|trans }}</span>
+                                            </button>
+                                        </li>
+                                    {% endif %}
+                                    <li>
+                                        <button type="button" onclick="location.reload()" class="btn btn-default navbar-btn">
+                                            <i class="fa fa-ban"></i>
+                                            <span>{{ 'views.actions.saveButtons.cancel'|trans({}, 'MBHBaseBundle') }}</span>
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    {% endblock %}
+                {% endembed %}
+            {% else %}
+                <p>
+                    {{ 'views.mb_site.index.paymentSystem.link_to_list_if_more_than_one'|trans({'%href%': path('client_payment_systems') })|raw }}
+                </p>
+            {% endif %}
+        </div>
+
+    </div>
+
+{% endblock %}

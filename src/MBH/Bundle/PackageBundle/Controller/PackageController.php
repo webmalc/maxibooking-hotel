@@ -5,7 +5,6 @@ namespace MBH\Bundle\PackageBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Controller\DeletableControllerInterface;
 use MBH\Bundle\BaseBundle\Lib\Exception;
-use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomRepository;
@@ -993,16 +992,12 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             return 1;
         });
 
-        $this->dm->getFilterCollection()->enable('softdeleteable');
-        $timeZone = $this->helper->getTimeZone();
-        $currentDateTime = new \DateTime('now', new \DateTimeZone($timeZone));
-
         if (!$package->getArrivalTime()) {
-            $package->setArrivalTime($currentDateTime);
+            $package->setArrivalTime(new \DateTime());
         }
 
         if (!$package->getDepartureTime()) {
-            $package->setDepartureTime($currentDateTime);
+            $package->setDepartureTime(new \DateTime());
         }
 
         $hasEarlyCheckIn = false;
@@ -1016,15 +1011,24 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             }
         }
 
+        $order = $this->helper->getWithoutFilter(function() use ($package) {
+            /** @var \Doctrine\ODM\MongoDB\Proxy\Proxy $order */
+            $order = $package->getOrder();
+            $order->__load();
+
+            return $order;
+        });
+
         $form = $this->createForm(PackageAccommodationType::class, $package, [
             'optGroupRooms' => $optGroupRooms,
             'roomType' => $package->getRoomType(),
             'arrivals' => $this->container->getParameter('mbh.package.arrivals'),
             'roomStatusIcons' => $this->container->getParameter('mbh.room_status_icons'),
-            'debt' => $package->getPaidStatus() != 'success' && !$package->getIsCheckOut(),
+            'debt' => $order->getPaidStatus() != 'success' && !$package->getIsCheckOut(),
             'hasEarlyCheckIn' => $hasEarlyCheckIn,
             'hasLateCheckOut' => $hasLateCheckOut
         ]);
+        $this->dm->getFilterCollection()->enable('softdeleteable');
 
         $authorizationChecker = $this->container->get('security.authorization_checker');
 

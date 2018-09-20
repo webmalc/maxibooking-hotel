@@ -23,7 +23,8 @@
         <div class="tab-pane active" id="home">
             {% if package.accommodations|length %}
                 <div class="box box-default box-solid">
-                    <div class="box-header with-border box-header_when-mobile"><h3 class="box-title">{{ 'package.accommodation.rooms'|trans }}</h3>
+                    <div class="box-header with-border box-header_when-mobile"><h3
+                                class="box-title">{{ 'package.accommodation.rooms'|trans }}</h3>
                         <div class="box-tools pull-right">
                             <button class="btn btn-box-tool form-group-collapse" data-widget="collapse"
                                     id="mbh_bundle_packagebundle_package_accommodations"><i class="fa fa-minus"></i>
@@ -115,12 +116,12 @@
                 </div>
             {% endif %}
 
-            {% if emptyIntervalsAccommodation|length %}
-
-                {% if optGroupRooms|length %}
+            {% if package.deletedAt is empty %}
+                {% if optGroupRooms|length and emptyIntervalsAccommodation|length %}
                     <div class="box box-default box-solid">
                         <div class="box-header with-border box-header_when-mobile">
-                            <h3 class="box-title">{{ 'package.accommodation.choose_accommodation_on_dates'|trans }}&emsp;&emsp;</h3>
+                            <h3 class="box-title">
+                                {{ 'package.accommodation.choose_accommodation_on_dates'|trans }}&emsp;&emsp;</h3>
                             <div class="btn-group">
                                 {% for intervalNumber, interval in emptyIntervalsAccommodation %}
                                     {% set btnClass = app.request.attributes.get('begin')|date('Y-m-d') == interval.begin|date('Y-m-d') and app.request.attributes.get('end')|date('Y-m-d') == interval.end|date('Y-m-d') or (not app.request.attributes.get('begin') and intervalNumber == 0 ) ? 'btn-success':'btn-warning' %}

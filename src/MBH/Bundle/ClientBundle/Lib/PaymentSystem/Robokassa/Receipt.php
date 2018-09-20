@@ -7,7 +7,7 @@
 namespace MBH\Bundle\ClientBundle\Lib\PaymentSystem\Robokassa;
 
 
-use MBH\Bundle\ClientBundle\Document\Robokassa;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\Robokassa;
 use MBH\Bundle\ClientBundle\Service\DocumentSerialize\CashDocument;
 use MBH\Bundle\PackageBundle\Document\Order;
 
@@ -35,7 +35,7 @@ class Receipt implements \JsonSerializable
             $item->setName($package->getRoomType()->getName());
             $item->setTax($tax);
             $item->setQuantity((string) 1);
-            $item->setSum($order->getPrice());
+            $item->setSum($package->getPackagePrice(true));
 
             $items[] = $item;
 

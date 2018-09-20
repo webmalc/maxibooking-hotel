@@ -10,7 +10,7 @@
             <div class="filter-form_group-date">
                 <div class="filter-form_input">
                     <i class="fa fa-calendar" title={{ 'analytics.index.sales_date'|trans({}, 'MBHPackageBundle') }} data-toggle='tooltip'></i>
-                    <div class="filter-form_input">
+                    <div class="filter-form_input-group">
                         <input value="{{ "now"|date_modify("-1 month")|date('d.m.Y') }}" type="text"
                                 name="begin"
                                 id="analytics-filter-begin"
