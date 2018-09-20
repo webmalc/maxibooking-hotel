@@ -80,3 +80,4 @@ parameters:
 
   domain: 'maxi-booking.ru'
   billing_url: 'https://billing.maxi-booking.com'
+  chromedriver_path: ''

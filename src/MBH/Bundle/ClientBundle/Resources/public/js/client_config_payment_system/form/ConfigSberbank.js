@@ -6,6 +6,9 @@ var ConfigSberbank = /** @class */ (function () {
         this._fieldPass = document.querySelector('.sberbank-field-password');
     }
     ConfigSberbank.prototype.init = function () {
+        if (this._fieldToken === null) {
+            return;
+        }
         var self = this;
         this._fieldToken.addEventListener('change', function () {
             self._checkFields();

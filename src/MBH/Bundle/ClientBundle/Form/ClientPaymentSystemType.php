@@ -59,10 +59,10 @@ class ClientPaymentSystemType extends AbstractType
                     [
                         'label'       => 'form.clientPaymentSystemType.payment_system',
                         'group'       => self::COMMON_GROUP,
-                        'data'        => $holder->getName(),
+//                        'data'        => $holder->getName(),
                         'required'    => true,
                         'mapped'      => false,
-                        'attr'        => ['readonly' => true],
+                        'attr'        => ['readonly' => true, 'value' => $holder->getName()],
                     ]
                 )
                 ->add(

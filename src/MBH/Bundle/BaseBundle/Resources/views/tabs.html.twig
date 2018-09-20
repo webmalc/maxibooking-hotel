@@ -1,10 +1,21 @@
+{% macro getAttr(item) %}
+    {% if item.attr is defined %}
+    {% set attrForLink = [] %}
+        {% for key, value in item.attr %}
+            {% set attrForLink = attrForLink|merge([ key ~ '=' ~ value ]) %}
+        {% endfor %}
+        {{ attrForLink|join(' ') }}
+    {% endif %}
+{% endmacro %}
+
+{% import _self as func %}
 <ul class="nav nav-tabs" role="tablist" id="{{ id }}">
     {% for item in menu %}
-        <li {% if loop.index == active %}class="active"{% endif %}>
+        <li{% if loop.index == active %} class="active"{% endif %}>
             {% set transParams = item.params is defined ? item.params : [] %}
 
             <a {% if loop.index == active %}href="{{ path(item.route, transParams) }}" {#role="tab" data-toggle="tab"#}
-               {% else %}href="{{ path(item.route, transParams) }}"{% endif %}>
+               {% else %}href="{{ path(item.route, transParams) }}"{% endif %}{{ func.getAttr(item) }}>
                 {{ item.title|raw }}
 
                 {% if item.append is defined and item.append is not empty %}

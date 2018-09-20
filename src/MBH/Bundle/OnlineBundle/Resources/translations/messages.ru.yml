@@ -124,6 +124,21 @@ external_api_controller.error.specified_hotel_not_contains_in_form_config: 'От
 external_api_controller.error.room_type_with_specified_id_not_exists: 'Тип комнат с ID = "%roomTypeId%" не существует'
 views.mb_site.title: Сайт
 views.mb_site.index.main_settings: Настройки
+views.mb_site.index.paymentSystem.label: 'Платежная система'
+views.mb_site.index.paymentSystem.link_to_list: 'Перейти к списку платежных систем'
+views.mb_site.index.paymentSystem.create: Добавить
+views.mb_site.index.paymentSystem.save: Сохранить
+views.mb_site.index.paymentSystem.update: Сохранить
+views.mb_site.index.paymentSystem.disabled: Отключить
+views.mb_site.index.paymentSystem.title.open_new_window: 'Откроется в новом окне'
+views.mb_site.index.paymentSystem.title.save_changes: 'Сохранит текушие изменения'
+views.mb_site.index.paymentSystem.title.add_system: 'Добавит платежную систему'
+views.mb_site.index.paymentSystem.title.breadcrumbs.add: 'Добавление платежной системы'
+views.mb_site.index.paymentSystem.title.breadcrumbs.edit: 'Изменение платежной системы'
+views.mb_site.index.paymentSystem.link_to_list_if_more_than_one: 'Настроено использование более одной платежной системы, для редактирования перейдите по <a target="_blank" href="%href%">ссылке</a>.'
+views.mb_site.index.paymentSystem: 'Платежная система'
+views.mb_site.index.personal_data_policies: 'Политика обработки персональных данных'
+views.mb_site.index.hotel_settings.info: 'Инфо - '
 views.mb_site.hotel_settings.empty_fields_error: 'Не заполнены обязательные поля: %fields%'
 site_form.is_enabled.label: 'Включен?'
 site_form.web_address.label: 'WEB адрес'
@@ -133,11 +148,14 @@ site_form.contract.label: Договор
 site_form.pers_data_policy.label: 'Политика обработки персональных данных'
 site_form.hotels.label: Отели
 site_form.hotels.help: 'Отели, данные по которым отображаются на сайте'
-site_form.hotels.hotel_data: 'Данные отеля'
+site_form.hotels.hotel_data: 'Данные объекта размещения (отель, хостел, апартаменты)'
 site_form.hotels.required_fields.price_caches: 'Цены'
-site_form.hotels.required_fields.room_caches: 'Номера в продаже'
+site_form.hotels.required_fields.room_caches: 'Количество в продаже'
 mb_site_controller.site_config_saved: 'Настройки успешно сохранены!'
-site_manager.photos_tab: Изображение
+site_manager.description.hotel: 'Описание объекта'
+site_manager.photos_tab.hotel: 'Фотографии объекта'
+site_manager.photos_tab.room: Фотографии
+site_manager.contactInformation.label: 'Телефон и email'
 site_manager.mandatory_field_empty.error: 'Поле "%fieldTitle%" обязательно для заполнения, так как оно используется на сайте'
 analytics_form.is_enabled.label: 'Включена?'
 analytics_form.google_id.label: 'Идентификатор отслеживания'
