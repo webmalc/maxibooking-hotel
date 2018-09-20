@@ -4,8 +4,10 @@ namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\RoomCacheGenerator;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Form\RoomCacheGeneratorType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -71,18 +73,6 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         ];
     }
 
-    private function getCategories(): array
-    {
-        $trans = $this->container->get('translator');
-
-        return [
-            'totalRooms'           => $trans->trans('price.resources.views.roomcache.in_sales'),
-            'packagesCount'        => $trans->trans('price.resources.views.booking'),
-            'packagesCountPercent' => $trans->trans('price.resources.views.booking_in_percents'),
-            'leftRooms'            => $trans->trans('price.resources.views.left'),
-        ];
-    }
-
     /**
      * @param Request $request
      * @return array
@@ -110,11 +100,11 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         }
 
         $response = [
-            'period' => $period,
-            'begin'  => $begin,
-            'end'    => $end,
-            'hotel'  => $hotel,
-            'cats'   => $this->getCategories(),
+            'period'     => $period,
+            'begin'      => $begin,
+            'end'        => $end,
+            'hotel'      => $hotel,
+            'categories' => $this->getCategories(),
         ];
 
         //get roomTypes
@@ -211,7 +201,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
                     $dates[] = $newRoomCache->getDate();
                     
                     $roomCachesByDates[$newRoomCache->getDate()->format('d.m.Y')][] = $newRoomCache;
-                    if ($tariffId && !empty($tariff)) {
+                    if ($tariffId && isset($tariff) && $tariff !== null) {
                         $newRoomCache->setTariff($tariff);
                     }
 
@@ -240,6 +230,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
             if (isset($val['rooms'])) {
                 $roomCache->setTotalRooms((int) $val['rooms']);
             }
+            $roomCache->setIsClosed(isset($val['closed']) && !empty($val['closed']) ? true : false);
             $roomCache->setIsOpen(!empty($val['isOpen']));
             if ($validator->validate($roomCache)) {
                 $this->dm->persist($roomCache);
@@ -302,7 +293,8 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         $form = $this->createForm(RoomCacheGeneratorType::class, $generator);
 
         return [
-            'form' => $form->createView(),
+            'form'            => $form->createView(),
+            'tariffNotOpened' => json_encode($this->getTariffNotOpened($hotel), JSON_FORCE_OBJECT),
         ];
     }
 
@@ -333,7 +325,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
             $error = $this->get('mbh.room.cache')->update($data);
             if (empty($error)) {
                 $this->addFlash('success', 'price.tariffcontroller.data_successfully_generated');
-                $this->get('mbh.channelmanager')->updateRoomsInBackground($data['begin'], $data['end']);
+                $this->get('mbh.channelmanager')->updateRoomsInBackground($data->getBegin(), $data->getEnd());
                 $this->get('mbh.cache')->clear('room_cache');
 
                 return $this->isSavedRequest() ?
@@ -345,7 +337,40 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         }
 
         return [
-            'form' => $form->createView(),
+            'form'            => $form->createView(),
+            'tariffNotOpened' => json_encode($this->getTariffNotOpened($hotel), JSON_FORCE_OBJECT),
         ];
+    }
+
+    /**
+     * @return array
+     */
+    private function getCategories(): array
+    {
+        $trans = $this->container->get('translator');
+
+        return [
+            'totalRooms'           => $trans->trans('price.resources.views.roomcache.in_sales'),
+            'packagesCount'        => $trans->trans('price.resources.views.booking'),
+            'packagesCountPercent' => $trans->trans('price.resources.views.booking_in_percents'),
+            'leftRooms'            => $trans->trans('price.resources.views.left'),
+        ];
+    }
+
+    /**
+     * @param Hotel $hotel
+     * @return array
+     */
+    private function getTariffNotOpened(Hotel $hotel): array
+    {
+        $tariffNotOpened = [];
+        /** @var Tariff $tariff */
+        foreach ($hotel->getTariffs() as $tariff) {
+            if (!$tariff->isOpen()) {
+                $tariffNotOpened[$tariff->getId()] = true;
+            }
+        }
+
+        return $tariffNotOpened;
     }
 }

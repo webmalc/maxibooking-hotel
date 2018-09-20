@@ -238,6 +238,31 @@ class Tariff extends Base implements ConditionsInterface
     protected $mergingTariff;
 
     /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Boolean(name="isOpen")
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $isOpen = true;
+
+    /**
+     * @return bool
+     */
+    public function isOpen(): bool
+    {
+        return $this->isOpen;
+    }
+
+    /**
+     * @param bool $isOpen
+     */
+    public function setIsOpen(bool $isOpen): void
+    {
+        $this->isOpen = $isOpen;
+    }
+
+    /**
      * Tariff constructor.
      */
 

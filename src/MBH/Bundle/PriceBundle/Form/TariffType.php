@@ -193,7 +193,17 @@ class TariffType extends AbstractType
                 'value' => true,
                 'required' => false,
                 'help' => 'price.form.tariff_used_search'
-            ]);
+            ])
+            ->add(
+                'isOpen',
+                CheckboxType::class,
+                [
+                    'label'    => 'price.form.is_open',
+                    'group'    => 'configuration',
+                    'required' => false,
+                ]
+            )
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver)
