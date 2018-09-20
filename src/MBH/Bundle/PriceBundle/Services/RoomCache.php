@@ -256,43 +256,49 @@ class RoomCache
                     'packagesCount' => $oldRoomCache->getPackagesCount(),
                     'totalRooms'    => $rooms,
                     'leftRooms'     => $rooms - $oldRoomCache->getPackagesCount(),
+                    'isClosed'      => $roomCacheGenerator->isClosed(),
                     'isOpen'        => $isOpen,
                 ],
             ];
         }
 
-        if (!empty($tariffs)) {
-            /** @var Tariff $tariff */
-            foreach ($tariffs as $tariff) {
-                foreach ($roomTypes as $roomType) {
-                    foreach (new \DatePeriod($dateBegin, new \DateInterval('P1D'), $endWithDay) as $date) {
-                        if (isset(
-                            $updateCaches[$tariff ? $tariff->getId() : 0][$date->format('d.m.Y')][$roomType->getId()]
-                        )) {
-                            continue;
-                        }
+        if (empty($tariffs)) {
+            $tariffs = [0 => null];
+        }
 
-                        if (!empty($weekdays) && !in_array($date->format('w'), $weekdays)) {
-                            continue;
-                        }
-
-                        $roomCaches[] = [
-                            'hotel'         => \MongoDBRef::create('Hotels', new \MongoId($hotel->getId())),
-                            'roomType'      => \MongoDBRef::create('RoomTypes', new \MongoId($roomType->getId())),
-                            'tariff'        => $tariff ? \MongoDBRef::create('Tariffs',
-                                new \MongoId($tariff->getId())) : null,
-                            'date'          => new \MongoDate($date->getTimestamp()),
-                            'totalRooms'    => $rooms,
-                            'packagesCount' => 0,
-                            'leftRooms'     => $rooms,
-                            'isOpen'        => $tariff->isOpen() ? false : $isOpen,
-                        ];
+        /** @var Tariff|null $tariff */
+        foreach ($tariffs as $tariff) {
+            /** @var RoomType $roomType */
+            foreach ($roomTypes as $roomType) {
+                /** @var \DateTime $date */
+                foreach (new \DatePeriod($dateBegin, new \DateInterval('P1D'), $endWithDay) as $date) {
+                    if (isset(
+                        $updateCaches[$tariff !== null ? $tariff->getId() : 0][$date->format('d.m.Y')][$roomType->getId()]
+                    )) {
+                        continue;
                     }
+
+                    if (!empty($weekdays) && !in_array($date->format('w'), $weekdays)) {
+                        continue;
+                    }
+
+                    $roomCaches[] = [
+                        'hotel'         => \MongoDBRef::create('Hotels', new \MongoId($hotel->getId())),
+                        'roomType'      => \MongoDBRef::create('RoomTypes', new \MongoId($roomType->getId())),
+                        'tariff'        => $tariff !== null ? \MongoDBRef::create('Tariffs', new \MongoId($tariff->getId())): null,
+                        'date'          => new \MongoDate($date->getTimestamp()),
+                        'totalRooms'    => $rooms,
+                        'packagesCount' => 0,
+                        'leftRooms'     => $rooms,
+                        'isEnabled'     => true,
+                        'isClosed'      => $roomCacheGenerator->isClosed(),
+                        'isOpen'        => $tariff !== null && !$tariff->isOpen() ? $isOpen : false,
+                    ];
                 }
             }
-        };
+        }
 
-        if ($rooms === -1) {
+        if ($rooms == -1) {
             $this->container->get('mbh.mongo')->remove('RoomCache', $remove);
         } else {
             $limitsManager = $this->container->get('mbh.client_manager');

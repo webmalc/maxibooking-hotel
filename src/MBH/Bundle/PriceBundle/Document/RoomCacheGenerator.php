@@ -219,6 +219,16 @@ class RoomCacheGenerator implements \ArrayAccess
         $this->isOpen = $isOpen;
     }
 
+    /**
+     * Всегда возращает false, т.е. изначально этот параметр не записывался в генераторе
+     *
+     * @return bool
+     */
+    public function isClosed()
+    {
+        return false;
+    }
+
     public function offsetExists($offset)
     {
         return property_exists($this, $offset);

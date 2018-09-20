@@ -96,6 +96,14 @@ class RoomCache extends Base
      * @Assert\Type(type="boolean")
      * @Assert\NotNull()
      */
+    protected $isClosed = false;
+
+    /**
+     * @var boolean
+     * @ODM\Field(type="boolean")
+     * @Assert\Type(type="boolean")
+     * @Assert\NotNull()
+     */
     protected $isOpen = false;
 
     /**
@@ -392,6 +400,28 @@ class RoomCache extends Base
         $this->packagesCount--;
 
         return $this;
+    }
+
+    /**
+     * Set isClosed
+     *
+     * @param boolean $isClosed
+     * @return self
+     */
+    public function setIsClosed($isClosed)
+    {
+        $this->isClosed = $isClosed;
+        return $this;
+    }
+
+    /**
+     * Get isClosed
+     *
+     * @return boolean $isClosed
+     */
+    public function getIsClosed()
+    {
+        return $this->isClosed;
     }
 
     /**
