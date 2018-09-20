@@ -141,3 +141,4 @@ channel_manager.intro_type.hotel_data.help: 'Для изменения пере�
 cm_wizard.buttons.next_step.title: Далее
 cm_wizard.buttons.complete.title: Подключить
 cm_wizard.configuration.success: 'Настройка "%channelManagerHumanName%" успешно заверешена!'
+cm_wizard.unfilled_data_error: '{1}Заполните информацию об отеле в поле %emptyFieldNames%|]1, Inf[Заполните информацию об отеле в полях: %emptyFieldNames%'

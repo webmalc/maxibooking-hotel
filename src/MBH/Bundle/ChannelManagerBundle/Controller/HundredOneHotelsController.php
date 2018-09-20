@@ -107,6 +107,7 @@ class HundredOneHotelsController extends Controller
     public function tariffAction(Request $request)
     {
         $config = $this->hotel->getHundredOneHotelsConfig();
+        $prevTariffs = $config->getTariffs()->toArray();
         $inGuide = !$config->isReadyToSync();
 
         if (!$config) {
@@ -129,6 +130,9 @@ class HundredOneHotelsController extends Controller
                     $this->dm->persist($config);
                 }
             }
+
+            $userName = $this->getUser()->getUsername();
+            $this->get('mbh.channelmanager')->logCollectionChanges($config, 'tariffs', $userName, $prevTariffs);
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();
@@ -161,6 +165,7 @@ class HundredOneHotelsController extends Controller
     {
         /** @var HundredOneHotelsConfig $config */
         $config = $this->hotel->getHundredOneHotelsConfig();
+        $prevRooms = $config->getRooms()->toArray();
 
         if (!$config) {
             throw $this->createNotFoundException();
@@ -182,6 +187,9 @@ class HundredOneHotelsController extends Controller
                     $this->dm->persist($config);
                 }
             }
+
+            $userName = $this->getUser()->getUsername();
+            $this->get('mbh.channelmanager')->logCollectionChanges($config, 'rooms', $userName, $prevRooms);
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();

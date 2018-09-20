@@ -5,6 +5,16 @@ if (typeof(mbh) !== 'undefined') {
     var config = mbhForm;
 }
 
+var isMobileDevice = (function() {
+    var isMobile = /Mobi/.test(navigator.userAgent);
+    if (isMobile) {
+        isMobile = !(/iPad|vivo/.test(navigator.userAgent));
+    }
+    return function() {
+        return isMobile;
+    }
+})();
+
 function addLoadEvent(func) {
     var oldonload = window.onload;
     if (typeof window.onload !== 'function') {
@@ -141,7 +151,7 @@ function onLoadFormLoad() {
             var c = getCoords(formIframe);
             formCalendar.style.display = 'block';
             formCalendar.style.top = (e.data.top + c.top - 10) + 'px';
-            formCalendar.style.left = (e.data.left + c.left) + 'px';
+            formCalendar.style.left = (isMobileDevice() ? e.data.left : (e.data.left + c.left)) + 'px';
             formCalendar.contentWindow.postMessage(e.data, '*');
         }
         if (e.data.action === 'hideCalendar') {

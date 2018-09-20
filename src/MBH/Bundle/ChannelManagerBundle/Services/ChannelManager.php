@@ -2,8 +2,12 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services;
 
+use Gedmo\Loggable\Document\LogEntry;
 use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Lib\Task\Command;
+use MBH\Bundle\ChannelManagerBundle\Document\BookingRoom;
+use MBH\Bundle\ChannelManagerBundle\Document\Room;
+use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerServiceInterface as ServiceInterface;
@@ -13,7 +17,6 @@ use OldSound\RabbitMqBundle\RabbitMq\Producer;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Process\Process;
 
 /**
  *  ChannelManager service
@@ -497,5 +500,64 @@ class ChannelManager
         $notifier
             ->setMessage($message)
             ->notify();
+    }
+
+    /**
+     * @param $doc
+     * @param $collectionName
+     * @param $username
+     * @param array $previous
+     */
+    public function logCollectionChanges($doc, $collectionName, $username, array $previous)
+    {
+        $previousJson = $this->normalizeCMCollection($previous);
+        $new = $this->container
+            ->get('property_accessor')
+            ->getValue($doc, $collectionName)
+            ->toArray();
+
+        $newJson = $this->normalizeCMCollection($new);
+        if (json_encode($previousJson) !== json_encode($newJson)) {
+            $docClass = get_class($doc);
+            $logEntry = new LogEntry();
+            $logEntry->setData([$collectionName => $newJson]);
+            $logEntry->setAction('update');
+            $logEntry->setLoggedAt();
+            $logEntry->setObjectId($doc->getId());
+            $logEntry->setObjectClass($docClass);
+            $previousLog = $this->dm
+                ->getRepository(LogEntry::class)
+                ->findBy(['objectClass' => $docClass, 'objectId' => $doc->getId()], ['loggedAt' => -1], 1);
+            $version = empty($previousLog) ? 1 : (current($previousLog))->getVersion();
+            $logEntry->setVersion($version);
+            $logEntry->setUsername($username);
+            $this->dm->persist($logEntry);
+        }
+    }
+
+    /**
+     * @param array $collection
+     * @return array
+     */
+    private function normalizeCMCollection(array $collection)
+    {
+        // TODO: Поменять на сериализацию с помощью MBHSerializer, который находится в ветке с новым поиском
+        $normalizedItems = [];
+        foreach ($collection as $item) {
+            $normalizedItem = [];
+            if ($item instanceof BookingRoom) {
+                $normalizedItem['uploadSinglePrices'] = $item->isUploadSinglePrices();
+            }
+
+            if ($item instanceof Room) {
+                $normalizedItem['roomType'] = $item->getRoomType()->getId();
+                $normalizedItem['roomId'] = $item->getRoomId();
+            } elseif ($item instanceof Tariff) {
+                $normalizedItem[$item->getTariffId()] = $item->getTariff()->getId();
+            }
+            $normalizedItems[] = json_encode($normalizedItem);
+        }
+
+        return $normalizedItems;
     }
 }
