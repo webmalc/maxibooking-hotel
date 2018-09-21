@@ -182,6 +182,26 @@ class ClientConfigControllerPaymentSystemTest extends WebTestCase
     /**
      * @depends testPaymentUrl_DefaultData
      */
+    public function testPaymnetUrl_CheckStatusCode_SuccessUrl()
+    {
+        $this->client->request('GET', '/management/online/api/success/url');
+
+        $this->assertStatusCode(404, $this->client);
+    }
+
+    /**
+     * @depends testPaymentUrl_DefaultData
+     */
+    public function testPaymnetUrl_CheckStatusCode_FailUrl()
+    {
+        $this->client->request('GET', '/management/online/api/fail/url');
+
+        $this->assertStatusCode(404, $this->client);
+    }
+
+    /**
+     * @depends testPaymentUrl_DefaultData
+     */
     public function testPaymentUrl_InvalidData()
     {
         $crawler = $this->getListCrawler(self::URL_ADD_URL);
@@ -230,6 +250,25 @@ class ClientConfigControllerPaymentSystemTest extends WebTestCase
         $this->assertEquals($urlFail, $clientConfig->getFailUrl(), 'Data in clientConfig->getFailUrl');
     }
 
+    /**
+     * @depends testPaymnetUrl_AddUrl
+     */
+    public function testPaymnetUrl_CheckStatusCodeAfterAdd_SuccessUrl()
+    {
+        $this->client->request('GET', '/management/online/api/success/url');
+
+        $this->assertStatusCode(302, $this->client);
+    }
+
+    /**
+     * @depends testPaymnetUrl_AddUrl
+     */
+    public function testPaymnetUrl_CheckStatusCodeAfterAdd_FailUrl()
+    {
+        $this->client->request('GET', '/management/online/api/fail/url');
+
+        $this->assertStatusCode(302, $this->client);
+    }
 
     /**
      * @param string $url
