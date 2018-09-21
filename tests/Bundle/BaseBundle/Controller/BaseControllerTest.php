@@ -3,41 +3,64 @@
 namespace Tests\Bundle\BaseBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
+use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Component\Routing\Route;
 
 class BaseControllerTest extends WebTestCase
 {
-    const EXCLUDED_ROUTES = [
-        'mb_site_main_settings',
+    const EXCLUDED_ROUTES_FOR_INVALID_AUTH = [
+        "create_region",                //TODO: Какие права нужны? src/MBH/Bundle/BillingBundle/Controller/BillingDataController.php
+        "create_city",                  //TODO: Какие права нужны? src/MBH/Bundle/BillingBundle/Controller/BillingDataController.php
+        'online_form_calendar',
+    ];
+
+    /**
+     * TODO: нет разрешений
+     */
+    const PREXIX_EXCLUDED_ROUTES_FOR_INVALID_AUTH = 'mbh_online_externalapi';
+
+    const ROUTES_ALWAYS_302 = [
+        '_welcome',
         'fos_user_security_logout',
+        'fos_user_resetting_check_email',
+    ];
+
+    const ROUTES_ALWAYS_200 = [
+        'successful_payment',
+        'fail_payment',
+        'online_poll_js',
+        "fos_user_security_login",
+        "fos_user_resetting_request"
+    ];
+
+    const EXCLUDED_ROUTES = [
+        'mb_site_main_settings',            //without params 500, need hotel
         'export_to_kontur',
         'add_tip',
         'user_tariff',
-        'fos_user_profile_edit',
         'lexik_translation_invalidate_cache',
-        'fos_user_profile_show',
         'booking_packages_sync',
         'remove_payment_system',
         'reset_color_settings',
         'booking_all_packages_sync',
         'user_payer',                       //500 billing
         'payments_list_json',               //500 billing
-        '_welcome',
         'hoh_packages_sync',                //redirect
         'work_shift_wait',                  //redirect, need fixture
         'work_shift_new',                   //redirect, need fixture
         'work_shift_lock',                  //redirect, need fixture
-        'api_success_url',                  //need fixture
-        'api_fail_url',                     //need fixture
         'report_set_room_status',           //need params
         'report_work_shift_list',           //need params
         'report_work_shift_table',          //need params
         'work_shift_ajax_close',            //need params
-        'fos_user_resetting_check_email',   //not found
         'restaurant_table_save',            //need params
         'site_hotel_settings',              //need params
         'save_list',                        //need params
-        'site_settings'
+        'site_settings',
+        'fos_user_profile_edit',            //not used
+        'fos_user_profile_show',            //not used
+        'api_success_url',                  //master test there is, but if not setting client config -> 404, so common exclude
+        'api_fail_url',                     //master test there is, but if not setting client config -> 404, so common exclude
     ];
 
     private const ROUTES_WITH_OWN_TEST = [
@@ -136,6 +159,16 @@ class BaseControllerTest extends WebTestCase
         'ostrovok_service',
     ];
 
+    /**
+     * @var array
+     */
+    private static $cacheExcludedFor200 = [];
+
+    /**
+     * @var array
+     */
+    private static $cacheExcludedFor401 = [];
+
     public static function setUpBeforeClass()
     {
         self::baseFixtures();
@@ -147,8 +180,48 @@ class BaseControllerTest extends WebTestCase
     }
 
     /**
+     * @return array
+     */
+    public function getRouterFor302(): array
+    {
+        $routeCollection = $this->getContainer()->get('router')->getRouteCollection();
+
+        $data = [];
+
+        foreach (self::ROUTES_ALWAYS_302 as $routeName) {
+            $data[$routeName] = [$routeCollection->get($routeName)->getPath()];
+        }
+
+        return $data;
+    }
+
+    /**
+     *
+     * @dataProvider getRouterFor302
+     * @param string $url
+     */
+    public function testRouteAlways302(string $url)
+    {
+        $this->client->request('GET', $url);
+
+        $this->customAssertStatusCode($url, 302);
+    }
+
+    /**
+     * @dataProvider urlProvider401
+     * @param string $url
+     */
+    public function testBasicGetRouterInvalidAuth(string $url)
+    {
+        $client = static::makeClient(false);
+        $client->request('GET', $url);
+
+        $this->customAssertStatusCode($url, 401, $client);
+    }
+
+    /**
      * Test basic get routes (without params)
-     * @dataProvider urlProvider
+     * @dataProvider urlProvider200
      * @param string $url
      */
     public function testBasicGetRoutes(string $url)
@@ -157,26 +230,52 @@ class BaseControllerTest extends WebTestCase
         $client->request('GET', $url);
         $response = $client->getResponse();
 
-        if ($response->getStatusCode() == 200) {
-            $this->isSuccessful($response);
-            $this->assertGreaterThan(0, mb_strlen($response->getContent()));
-        }
+        $this->isSuccessful($response);
+        $this->assertGreaterThan(0, mb_strlen($response->getContent()));
+    }
+
+    /**
+     * @return array
+     */
+    public function urlProvider401(): array
+    {
+        return $this->urlProvider(401);
+    }
+
+    /**
+     * @return array
+     */
+    public function urlProvider200(): array
+    {
+        return $this->urlProvider(200);
     }
 
     /**
      * Get urls
      * @return array
      */
-    public function urlProvider()
+    public function urlProvider(int $forStatus): array
     {
-        $routers = array_filter($this->getContainer()->get('router')->getRouteCollection()->all(), function (Route $route, string $routeName) {
+        $routers = array_filter($this->getContainer()->get('router')->getRouteCollection()->all(), function (Route $route, string $routeName) use ($forStatus) {
             $path = $route->getPath();
             if (isset($path[1]) && $path[1] == '_') {
                 return false;
             }
-            if (in_array($routeName, array_merge($this->getCommonArrayExcluded()))) {
-                return false;
+
+            if ($forStatus === 200) {
+                if (in_array($routeName, $this->getExcludedFor200())) {
+                    return false;
+                }
+            } elseif ($forStatus === 401) {
+                if (in_array($routeName, $this->getExcludedFor401())) {
+                    return false;
+                }
+
+                if (mb_strpos($routeName, self::PREXIX_EXCLUDED_ROUTES_FOR_INVALID_AUTH) !== false) {
+                    return false;
+                }
             }
+
             if (mb_strpos($path, '{') !== false) {
                 return false;
             }
@@ -191,12 +290,61 @@ class BaseControllerTest extends WebTestCase
     /**
      * @return array
      */
-    private function getCommonArrayExcluded(): array
+    private function commonExclude(): array
     {
         return array_merge(
             self::ROUTERS_CHANNEL_MANAGER,
-            self::ROUTES_WITH_OWN_TEST,
-            self::EXCLUDED_ROUTES
+            self::EXCLUDED_ROUTES,
+            self::ROUTES_ALWAYS_302
+        );
+    }
+
+    /**
+     * @return array
+     */
+    private function getExcludedFor401(): array
+    {
+        if (self::$cacheExcludedFor401 === []) {
+            self::$cacheExcludedFor401 = array_merge(
+                $this->commonExclude(),
+                self::EXCLUDED_ROUTES_FOR_INVALID_AUTH,
+                self::ROUTES_ALWAYS_200
+            );
+        }
+
+        return self::$cacheExcludedFor401;
+    }
+
+    /**
+     * @return array
+     */
+    private function getExcludedFor200(): array
+    {
+        if (self::$cacheExcludedFor200 === []) {
+            self::$cacheExcludedFor200 = array_merge(
+                $this->commonExclude(),
+                self::ROUTES_WITH_OWN_TEST
+            );
+        }
+
+        return self::$cacheExcludedFor200;
+    }
+
+    /**
+     * @param string $url
+     * @param int $expectedStatus
+     * @param Client|null $client
+     */
+    private function customAssertStatusCode(string $url, int $expectedStatus, Client $client = null): void
+    {
+        $format = "The expected response status code from the URL %s \"%s\", received \"%s\".";
+
+        $response = $client !== null ? $client->getResponse() : $this->client->getResponse();
+
+        $this->assertEquals(
+            $expectedStatus,
+            $response->getStatusCode(),
+            sprintf($format, $url, $expectedStatus, $response->getStatusCode())
         );
     }
 }
