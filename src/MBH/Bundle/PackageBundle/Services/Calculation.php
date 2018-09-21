@@ -378,7 +378,13 @@ class Calculation
                     $dayPrice -= PromotionConditionFactory::calcDiscount($promotion, $dayPrice, true);
                 }
 
-                $packagePrice = $this->getPackagePrice($dayPrice, $cache->getDate(), $cache->getTariff(), $roomType, $special);
+                //workaround solution caused by doctrine bug
+                if ($cache->getTariff()->getId() === $originTariff) {
+                    $packagePriceTariff = $originTariff;
+                } else {
+                    $packagePriceTariff = $this->dm->find('MBHPriceBundle:Tariff', $cache->getTariff()->getId());
+                }
+                $packagePrice = $this->getPackagePrice($dayPrice, $cache->getDate(), $packagePriceTariff, $roomType, $special);
                 $dayPrice = $packagePrice->getPrice();
                 $dayPrices[str_replace('.', '_', $day)] = $dayPrice;
 

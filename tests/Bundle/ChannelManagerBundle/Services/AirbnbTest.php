@@ -25,6 +25,7 @@ class AirbnbTest extends UnitTestCase
 
     public function setUp()
     {
+        date_default_timezone_set('Europe/Moscow');
         self::bootKernel();
         $this->container = self::getContainerStat();
         $this->dm = $this->container->get('doctrine.odm.mongodb.document_manager');
@@ -75,32 +76,33 @@ class AirbnbTest extends UnitTestCase
     }
 
     /**
-//     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-//     */
-//    public function testGenerateRoomCalendar()
-//    {
-//        $hotel = $this->dm->getRepository('MBHHotelBundle:Hotel')->findOneBy(['isDefault' => true]);
-//        $roomType = $this->dm
-//            ->getRepository('MBHHotelBundle:RoomType')
-//            ->findOneBy([
-//                'hotel.id' => $hotel->getId(),
-//                'fullTitle' => 'Стандартный двухместный'
-//            ]);
-//
-//        $generatedRoomCalendar = $this->container->get('mbh.airbnb')->generateRoomCalendar($roomType);
-//        $calendar = new ICal($generatedRoomCalendar);
-//        $events = $calendar->events();
-//
-////        $eventCausedByPackages = $events[0];
-////        $this->assertEquals((new \DateTime())->format('Ymd'), $eventCausedByPackages->dtstart);
-////        $this->assertEquals((new \DateTime('+18 days'))->format('Ymd'), $eventCausedByPackages->dtend);
-//
-//        $lastEvent = end($events);
-//        $dayAfterLastRoomCache = new \DateTime(RoomCacheData::PERIOD_LENGTH_STR . ' -1 day');
-//        $lastDayOfSentData = new \DateTime('midnight +' . Airbnb::PERIOD_LENGTH);
-//        $this->assertEquals($dayAfterLastRoomCache->format('Ymd'), $lastEvent->dtstart);
-//        $this->assertEquals($lastDayOfSentData->format('Ymd'), $lastEvent->dtend);
-//    }
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function testGenerateRoomCalendar()
+    {
+        $hotel = $this->dm->getRepository('MBHHotelBundle:Hotel')->findOneBy(['isDefault' => true]);
+        $roomType = $this->dm
+            ->getRepository('MBHHotelBundle:RoomType')
+            ->findOneBy([
+                'hotel.id' => $hotel->getId(),
+                'fullTitle' => 'Стандартный двухместный'
+            ]);
+
+        $generatedRoomCalendar = $this->container->get('mbh.airbnb')->generateRoomCalendar($roomType);
+        $calendar = new ICal($generatedRoomCalendar);
+        $events = $calendar->events();
+
+        $eventCausedByPackages = $events[0];
+        $this->assertEquals((new \DateTime())->format('Ymd'), $eventCausedByPackages->dtstart);
+        //package begin is now +10 days, length 8 days, -1 day because last day of package is free
+        $this->assertEquals((new \DateTime('+18 days -1 day'))->format('Ymd'), $eventCausedByPackages->dtend);
+
+        $lastEvent = end($events);
+        $dayAfterLastRoomCache = new \DateTime(RoomCacheData::PERIOD_LENGTH_STR);
+        $lastDayOfSentData = new \DateTime('midnight +' . Airbnb::PERIOD_LENGTH);
+        $this->assertEquals($dayAfterLastRoomCache->format('Ymd'), $lastEvent->dtstart);
+        $this->assertEquals($lastDayOfSentData->format('Ymd'), $lastEvent->dtend);
+    }
 
     private function replaceHttpService(string $calendar)
     {

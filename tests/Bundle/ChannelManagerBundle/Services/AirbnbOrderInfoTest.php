@@ -136,7 +136,7 @@ class AirbnbOrderInfoTest extends UnitTestCase
     {
         $order = $this->container->get('mbh.channelmanager.order_handler')->createOrder($this->airbnbOrderInfo);
         $this->assertInstanceOf(Order::class, $order);
-        $this->assertEquals(1, $order->getPackages());
+        $this->assertEquals(1, count($order->getPackages()));
     }
 
     private function getPackageInfo()

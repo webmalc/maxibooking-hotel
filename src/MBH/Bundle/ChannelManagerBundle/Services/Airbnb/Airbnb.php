@@ -317,8 +317,12 @@ class Airbnb extends AbstractChannelManagerService
 
         $packagePeriods = [];
         foreach ($rawPackages as $rawPackage) {
-            $packageBegin = $rawPackage['begin']->toDateTime();
-            $packageEnd = ($rawPackage['end']->toDateTime())->modify('-1 day');
+            $packageBegin = $rawPackage['begin']
+                ->toDateTime()
+                ->setTimezone(new \DateTimeZone(date_default_timezone_get()));
+            $packageEnd = ($rawPackage['end']->toDateTime())
+                ->modify('-1 day')
+                ->setTimezone(new \DateTimeZone(date_default_timezone_get()));
 
             $packagePeriods[] = [
                 'begin' => $packageBegin >= $begin ? $packageBegin : $begin,

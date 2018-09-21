@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services\Airbnb;
 
-use Doctrine\ODM\MongoDB\Proxy\Proxy;
 use MBH\Bundle\ChannelManagerBundle\Document\AirbnbRoom;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
@@ -72,17 +71,7 @@ class AirbnbPackageInfo extends AbstractPackageInfo
      */
     public function getPrices()
     {
-        $prices = $this->getPackagePrice()['packagePrices'];
-        return array_map(function(PackagePrice $price) {
-            $tariff = $price->getTariff();
-
-            //workaround caused by doctrine bug
-            if ($tariff instanceof Proxy) {
-                $tariff = $this->dm->find(Tariff::class, $tariff->getId());
-                $price->setTariff($tariff);
-            }
-            return $price;
-        }, $prices);
+        return $this->getPackagePrice()['packagePrices'];
     }
 
     /**
