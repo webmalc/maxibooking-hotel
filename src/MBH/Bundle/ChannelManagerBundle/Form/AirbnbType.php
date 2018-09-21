@@ -32,6 +32,6 @@ class AirbnbType extends AbstractType
 
     public function getBlockPrefix()
     {
-        return 'mbhchannel_manager_bundle_airbnb_type';
+        return 'mbh_bundle_channelmanagerbundle_airbnb_type';
     }
 }

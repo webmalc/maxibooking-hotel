@@ -6,8 +6,12 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use ICal\ICal;
 use MBH\Bundle\BaseBundle\Lib\Test\UnitTestCase;
 use MBH\Bundle\BillingBundle\Lib\Model\Result;
+use MBH\Bundle\ChannelManagerBundle\Document\AirbnbConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\AirbnbRoom;
+use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
 use MBH\Bundle\ChannelManagerBundle\Services\CMHttpService;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PriceBundle\DataFixtures\MongoDB\RoomCacheData;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -29,6 +33,7 @@ class AirbnbTest extends UnitTestCase
         self::bootKernel();
         $this->container = self::getContainerStat();
         $this->dm = $this->container->get('doctrine.odm.mongodb.document_manager');
+        $this->initAirbnbConfig();
     }
 
     public function testFirstPullOrders()
@@ -154,5 +159,32 @@ END:VEVENT\n";
                 VERSION:2.0\n"
             . $content
             . 'END:VCALENDAR';
+    }
+
+    private function initAirbnbConfig()
+    {
+        $airbnbConfig = $this->dm->getRepository('MBHChannelManagerBundle:AirbnbConfig')->findOneBy([]);
+        if (is_null($airbnbConfig)) {
+            /** @var Hotel $hotel */
+            $hotel = $this->dm->getRepository('MBHHotelBundle:Hotel')->findOneBy(['isDefault' => true]);
+            $roomType = $this->dm
+                ->getRepository('MBHHotelBundle:RoomType')
+                ->findOneBy([
+                    'hotel.id' => $hotel->getId(),
+                    'fullTitle' => 'Стандартный одноместный'
+                ]);
+
+            $tariff = $hotel->getBaseTariff();
+            $airbnbConfig = (new AirbnbConfig())
+                ->setHotel($hotel)
+                ->setIsConfirmedWithDataWarnings(true)
+                ->setIsConnectionSettingsRead(true)
+                ->addTariff((new Tariff())->setTariff($tariff))
+                ->addRoom((new AirbnbRoom())->setSyncUrl(Airbnb::SYNC_URL_BEGIN . '/some_fiction_number')->setRoomType($roomType));
+            $hotel->setAirbnbConfig($airbnbConfig);
+
+            $this->dm->persist($airbnbConfig);
+            $this->dm->flush();
+        }
     }
 }

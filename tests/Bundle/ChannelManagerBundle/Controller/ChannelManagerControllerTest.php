@@ -4,6 +4,7 @@ namespace Tests\Bundle\ChannelManagerBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\ChannelManagerBundle\Form\BookingRoomsType;
+use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\UserBundle\DataFixtures\MongoDB\UserData;
 use Tests\Bundle\ChannelManagerBundle\Services\ChannelManagerServiceMock;
@@ -17,7 +18,7 @@ class ChannelManagerControllerTest extends WebTestCase
 
     public static function tearDownAfterClass()
     {
-        self::clearDB();
+//        self::clearDB();
     }
 
     public function setUp()
@@ -65,7 +66,13 @@ class ChannelManagerControllerTest extends WebTestCase
             $this->client->click($nextStepButton->link());
             $indexCrawler = $this->client->followRedirect();
 
-            $formName = $this->getIndexFormName($serviceName);
+            if ($serviceName !== Airbnb::NAME) {
+                $formName = $this->getIndexFormName($serviceName);
+            } else {
+                $indexCrawler = $this->client->followRedirect();
+                $formName = 'mbhchannel_manager_bundle_airbnb_room_form';
+            }
+
             $this->assertEquals(1, $indexCrawler->filter('form[name="' . $formName . '"]')->count());
         }
     }
