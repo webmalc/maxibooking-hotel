@@ -66,6 +66,28 @@ class PeriodsCompiler
 
     public function combineIntersectedPeriods(array $periods)
     {
+        if (empty($periods)) {
+            return [];
+        }
 
+        usort($periods, function(array $first, array $second) {
+            return $first['begin'] > $second['begin'] ? 1 : -1;
+        });
+
+        $result = [];
+
+        $currentPeriod = $periods[0];
+        for ($periodIndex = 1; $periodIndex < count($periods); $periodIndex++) {
+            $iteratedPeriod = $periods[$periodIndex];
+            if ($currentPeriod['end'] < $iteratedPeriod['begin']) {
+                $result[] = $currentPeriod;
+                $currentPeriod = $iteratedPeriod;
+            } elseif ($currentPeriod['end'] < $iteratedPeriod['end']) {
+                $currentPeriod['end'] = $iteratedPeriod['end'];
+            }
+        }
+        $result[] = $currentPeriod;
+
+        return $result;
     }
 }

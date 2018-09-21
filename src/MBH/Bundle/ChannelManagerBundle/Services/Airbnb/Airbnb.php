@@ -134,16 +134,6 @@ class Airbnb extends AbstractChannelManagerService
         /** @var Tariff $tariff */
         $tariff = $airbnbConfig->getTariffs()->first()->getTariff();
 
-        //TODO: Уточнить
-        $calc = new Calendar('some_address');
-
-        $vEvent = new Event();
-        $vEvent->setDtStart($this->helper->getDateFromString('22.02.1991'));
-        $vEvent->setDtEnd($this->helper->getDateFromString('22.02.2591'));
-        $vEvent->setNoTime(true);
-
-        $calc->addComponent($vEvent);
-
         $begin = new \DateTime('midnight');
         $end = new \DateTime('midnight +' . self::PERIOD_LENGTH);
 
@@ -158,15 +148,26 @@ class Airbnb extends AbstractChannelManagerService
             return ['begin' => $emptyCachePeriod->getBegin(), 'end' => $emptyCachePeriod->getEnd()];
         }, array_merge($emptyPriceCachePeriods, $emptyRoomCachePeriods, $closedPeriods));
 
-        $packagePeriods = $this->getPackagePeriods($roomType, $begin, $end);
-        foreach ($packagePeriods as $packagePeriod) {
-            $emptyCachePeriods[] = [
-                'begin' => $packagePeriod['begin']->toDateTime(),
-                'end' => $packagePeriod['end']->toDateTime()
-            ];
+        $busyPeriods = array_merge($this->getPackagePeriods($roomType, $begin, $end), $emptyCachePeriods);
+
+        $combinedPeriods = $this->container
+            ->get('mbh.periods_compiler')
+            ->combineIntersectedPeriods($busyPeriods);
+
+        //TODO: Уточнить
+        $calc = new Calendar('maxibooking');
+
+        foreach ($combinedPeriods as $period) {
+            $vEvent = new Event();
+            $vEvent->setDtStart($period['begin']);
+            //if "notime" param is true, vendor increase end date by one day(class Event, line 263)
+            $vEvent->setDtEnd(($period['end'])->modify('-1 day'));
+            $vEvent->setNoTime(true);
+
+            $calc->addComponent($vEvent);
         }
 
-        return '';
+        return $calc->render();
     }
 
     /**
@@ -292,12 +293,12 @@ class Airbnb extends AbstractChannelManagerService
 
     /**
      * @param RoomType $roomType
-     * @param $begin
-     * @param $end
-     * @return mixed
+     * @param \DateTime  $begin
+     * @param \DateTime  $end
+     * @return array
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    private function getPackagePeriods(RoomType $roomType, $begin, $end)
+    private function getPackagePeriods(RoomType $roomType, \DateTime $begin, \DateTime $end)
     {
         $packageCriteria = new PackageQueryCriteria();
         $packageCriteria->filter = 'live_between';
@@ -305,7 +306,7 @@ class Airbnb extends AbstractChannelManagerService
         $packageCriteria->end = $end;
         $packageCriteria->addRoomTypeCriteria($roomType);
 
-        $packagePeriods = $this->dm
+        $rawPackages = $this->dm
             ->getRepository('MBHPackageBundle:Package')
             ->queryCriteriaToBuilder($packageCriteria)
             ->hydrate(false)
@@ -314,8 +315,17 @@ class Airbnb extends AbstractChannelManagerService
             ->execute()
             ->toArray();
 
+        $packagePeriods = [];
+        foreach ($rawPackages as $rawPackage) {
+            $packageBegin = $rawPackage['begin']->toDateTime();
+            $packageEnd = ($rawPackage['end']->toDateTime())->modify('-1 day');
+
+            $packagePeriods[] = [
+                'begin' => $packageBegin >= $begin ? $packageBegin : $begin,
+                'end' => $packageEnd <= $end ? $packageEnd : $end
+            ];
+        }
+
         return $packagePeriods;
     }
-
-
 }
