@@ -8,6 +8,7 @@ use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\RestrictionsCheckerService;
+use MBH\Bundle\SearchBundle\Validator\Constraints\ChildrenAgesSameAsChildren;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class Searcher implements SearcherInterface
@@ -49,6 +50,13 @@ class Searcher implements SearcherInterface
     {
         try {
             $errors = $this->validator->validate($searchQuery);
+            $conditions = $searchQuery->getSearchConditions();
+            if (!$conditions) {
+                throw new SearcherException('There is a problem in SearchQuery. No conditions. ');
+            }
+            if (!\count($errors) && !$conditions->isThisWarmUp()) {
+                $errors = $this->validator->validate($searchQuery, new ChildrenAgesSameAsChildren());
+            }
             if (\count($errors)) {
                 /** @var string $errors */
                 throw new SearcherException('There is a problem in SearchQuery. '. $errors);

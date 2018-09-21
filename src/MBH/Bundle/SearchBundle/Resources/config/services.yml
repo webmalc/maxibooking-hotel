@@ -102,6 +102,21 @@ services:
             - '@mbh_search.searcher'
             - '@mbh_search.cache_search'
 
+    mbh_search.cache_key_creator:
+        class: MBH\Bundle\SearchBundle\Services\Cache\CacheKeyCreator
+        arguments:
+            - '@event_dispatcher'
+            - '@mbh_search.shared_data_fetcher'
+            - '@mbh_search.cache_key_creator_factory'
+
+    mbh_search.cache_key_creator_factory:
+        class: MBH\Bundle\SearchBundle\Services\Cache\CacheKeyCreatorFactory
+
+    mbh_search.warm_up_searcher:
+        class: MBH\Bundle\SearchBundle\Services\Search\WarmUpSearcher
+        arguments:
+            - '@old_sound_rabbit_mq.warm_up_search_producer'
+
     mbh_search.searcher:
         class: MBH\Bundle\SearchBundle\Services\Search\Searcher
         arguments:
@@ -156,6 +171,11 @@ services:
             - '@mbh_search.consumer_searcher'
             - '@mbh_search.search_conditions_repository'
             - '@mbh_search.redis_store'
+
+    mbh_search.warm_up_search:
+        class: MBH\Bundle\SearchBundle\RabbitMQ\WarmUpConsumer
+        arguments:
+            - '@mbh_search.cache_searcher'
 
 #search limit checker for refactoring
     mbh_search.search_limit_checker:
@@ -272,14 +292,40 @@ services:
             - '@mbh_search.search_cache_item_repository'
             - '@mbh_search.result_serializer'
             - '@snc_redis.cache_results_client'
+            - '@mbh_search.cache_key_creator'
 
     mbh_search.cache_warmer:
         class: MBH\Bundle\SearchBundle\Services\Cache\CacheWarmer
         arguments:
             - '@mbh_search.search_condition_creator'
             - '@mbh_search.search_query_generator'
-            - '@mbh_search.cache_searcher'
+            - '@mbh_search.warm_up_searcher'
+            - '@mbh_search.combinator'
+            - '@mbh_search.tariff_repository'
             - '@mbh_search.cache_logger'
+    ### Combinations
+    mbh_search.combinator:
+        class: MBH\Bundle\SearchBundle\Services\GuestCombinator
+        arguments:
+            - '@event_dispatcher'
+            - '@mbh_search.combination_creator'
+
+    mbh_search.combination_creator:
+        class: MBH\Bundle\SearchBundle\Lib\Combinations\CombinationCreator
+        arguments:
+            - '@service_container'
+
+    mbh_search.abstract_combinations:
+        class: MBH\Bundle\SearchBundle\Lib\Combinations\AbstractCombinations
+        abstract: true
+
+    mbh_search.combinations.no_children_ages:
+        class: MBH\Bundle\SearchBundle\Lib\Combinations\NoChildrenAgesCombination
+        parent: 'mbh_search.abstract_combinations'
+
+    mbh_search.combinations.with_children_ages:
+        class: MBH\Bundle\SearchBundle\Lib\Combinations\ChildrenAgesCombination
+        parent: 'mbh_search.abstract_combinations'
 
     ##REDIS_Caches
     mbh_search.redis:
@@ -410,3 +456,4 @@ services:
         arguments: ['cache']
         calls:
             - [pushHandler, ['@mbh_search.cache_logger_handler']]
+

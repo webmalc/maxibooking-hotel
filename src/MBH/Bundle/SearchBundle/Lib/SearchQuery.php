@@ -11,7 +11,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * Class SearchQuery
  * @package MBH\Bundle\SearchBundle\Lib
- * @ChildrenAgesSameAsChildren()
  */
 class SearchQuery
 {
@@ -304,8 +303,8 @@ class SearchQuery
     }
 
     /**
-     * @deprecated
      * TODO: Возраст будет браться из калькуляции взависимости от  тарифа priceCache (из за комбинирования тарифов)
+     * TODO: Так же используется для определения ключа кэша.
      * @param int $childAge
      * @return SearchQuery
      */

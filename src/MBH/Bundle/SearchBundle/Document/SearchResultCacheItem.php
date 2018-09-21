@@ -261,7 +261,7 @@ class SearchResultCacheItem extends Base
      * @return SearchResultCacheItem
      * @throws SearchResultCacheException
      */
-    public static function createInstance(Result $result, SearchQuery $searchQuery): SearchResultCacheItem
+    public static function createInstance(Result $result): SearchResultCacheItem
     {
         $cacheItem = new self();
         $roomTypeId = $result->getResultRoomType()->getId();
@@ -270,7 +270,6 @@ class SearchResultCacheItem extends Base
         $adults = $resultConditions->getAdults();
         $children = $resultConditions->getChildren();
         $childrenAges = $resultConditions->getChildrenAges();
-        $key = self::createRedisKey($searchQuery);
         $cacheItem
             ->setBegin($result->getBegin())
             ->setEnd($result->getEnd())
@@ -278,32 +277,9 @@ class SearchResultCacheItem extends Base
             ->setTariffId($tariffId)
             ->setAdults($adults)
             ->setChildren($children)
-            ->setChildrenAges($childrenAges)
-            ->setCacheResultKey($key);
+            ->setChildrenAges($childrenAges);
 
         return $cacheItem;
-    }
-
-    /**
-     * @param SearchQuery $searchQuery
-     * @return string
-     * @throws SearchResultCacheException
-     */
-    public static function createRedisKey(SearchQuery $searchQuery): string
-    {
-        $key = '';
-        $key .= $searchQuery->getBegin()->format('d.m.Y') . '_' . $searchQuery->getEnd()->format('d.m.Y');
-        $key .= '_' . $searchQuery->getRoomTypeId();
-        $key .= '_' . $searchQuery->getTariffId();
-        $conditions = $searchQuery->getSearchConditions();
-        if (!$conditions) {
-            throw new SearchResultCacheException('There is no conditions for create cache result redis key');
-        }
-        $key .= '_' . $conditions->getAdults();
-        $key .= '_' . $conditions->getChildren();
-        $key .= '_children_ages_' . implode('_', $conditions->getChildrenAges());
-
-        return $key;
     }
 
 

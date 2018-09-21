@@ -171,6 +171,16 @@ class SearchConditions extends Base
     private $isUseCache = true;
 
     /**
+     * @var string
+     * @Assert\Type(type="string")
+     * @ODM\Field(type="string")
+     */
+    private $order;
+
+    /** @var bool */
+    private $isThisWarmUp = false;
+
+    /**
      * SearchConditions constructor.
      */
     public function __construct()
@@ -425,7 +435,7 @@ class SearchConditions extends Base
         return $this;
     }
 
-    public function isIgnoreRestrictoins(): bool
+    public function isIgnoreRestrictions(): bool
     {
         return $this->isIgnoreRestrictions;
     }
@@ -507,6 +517,26 @@ class SearchConditions extends Base
     }
 
     /**
+     * @return string
+     */
+    public function getOrder()
+    {
+        return $this->order;
+    }
+
+    /**
+     * @param string $order
+     * @return SearchConditions
+     */
+    public function setOrder(string $order): SearchConditions
+    {
+        $this->order = $order;
+
+        return $this;
+    }
+
+
+    /**
      * @return bool
      */
     public function isUseCache(): bool
@@ -544,9 +574,21 @@ class SearchConditions extends Base
         return $this;
     }
 
+    public function isThisWarmUp(): bool
+    {
+        return $this->isThisWarmUp;
+    }
 
+    /**
+     * @param bool $isThisWarmUp
+     * @return SearchConditions
+     */
+    public function setIsThisWarmUp(bool $isThisWarmUp): SearchConditions
+    {
+        $this->isThisWarmUp = $isThisWarmUp;
 
-
+        return $this;
+    }
 
 
 }

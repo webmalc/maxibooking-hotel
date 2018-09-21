@@ -23,6 +23,15 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class SearchConditionsType extends AbstractType
 {
+    /**
+     * @int
+     */
+    public const MIN_CHILDREN_AGE = 0;
+
+    /**
+     * @int
+     */
+    public const MAX_CHILDREN_AGE = 13;
     /** @var bool */
     private $isUseCategory;
 
@@ -136,7 +145,13 @@ class SearchConditionsType extends AbstractType
                 [
                     'required' => false,
                 ]
-            );
+            )
+            ->add('isThisWarmUp',
+                CheckboxType::class,
+                [
+                    'required' => false
+                ])
+        ;
     }
 
     /**
