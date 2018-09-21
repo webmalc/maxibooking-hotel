@@ -37,7 +37,6 @@ mbh-mongo:
   container_name: mbh-mongo
   command: mongod --setParameter failIndexKeyTooLong=false
   volumes:
-      - ./mongodb/mongodb.conf:/etc/mongodb.conf
       - mongo_data:/data/db
   ports:
      - "27018:27017"

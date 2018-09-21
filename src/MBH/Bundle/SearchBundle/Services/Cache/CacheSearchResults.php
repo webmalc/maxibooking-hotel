@@ -24,18 +24,24 @@ class CacheSearchResults implements SearchCacheInterface
 
     /** @var Client */
     private $redis;
+    /**
+     * @var CacheKeyCreator
+     */
+    private $keyCreator;
 
     /**
      * SearchCache constructor.
      * @param SearchResultCacheItemRepository $cacheItemRepository
      * @param ResultSerializer $serializer
      * @param Client $client
+     * @param CacheKeyCreator $keyCreator
      */
-    public function __construct(SearchResultCacheItemRepository $cacheItemRepository, ResultSerializer $serializer, Client $client)
+    public function __construct(SearchResultCacheItemRepository $cacheItemRepository, ResultSerializer $serializer, Client $client, CacheKeyCreator $keyCreator)
     {
         $this->cacheItemRepository = $cacheItemRepository;
         $this->serializer = $serializer;
         $this->redis = $client;
+        $this->keyCreator = $keyCreator;
     }
 
 
@@ -48,8 +54,7 @@ class CacheSearchResults implements SearchCacheInterface
     public function searchInCache(SearchQuery $searchQuery, $hydrated = false)
     {
         $result = null;
-        /** @var SearchResultCacheItem $cache */
-        $key = SearchResultCacheItem::createRedisKey($searchQuery);
+        $key = $this->keyCreator->createKey($searchQuery);
         $cacheResult = $this->redis->get($key);
         if ($cacheResult) {
             /** @var Result $result */
@@ -66,13 +71,14 @@ class CacheSearchResults implements SearchCacheInterface
      */
     public function saveToCache(Result $result, SearchQuery $searchQuery): void
     {
-        $cacheItem = SearchResultCacheItem::createInstance($result, $searchQuery);
+        $cacheItem = SearchResultCacheItem::createInstance($result);
         $dm = $this->cacheItemRepository->getDocumentManager();
         $dm->persist($cacheItem);
         $dm->flush($cacheItem);
 
+        $key = $this->keyCreator->createKey($searchQuery);
         $result->setCacheItemId($cacheItem->getId());
-        $this->redis->set($cacheItem->getCacheResultKey(), $this->serializer->serialize($result));
+        $this->redis->set($key, $this->serializer->serialize($result));
     }
 
     /**

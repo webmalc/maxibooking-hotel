@@ -23,14 +23,12 @@ class TariffRepository extends DocumentRepository
             ->createQueryBuilder()
             ->distinct('tariff.$id')
             ->getQuery()
-            ->execute()
-        ;
+            ->execute();
 
         return $this->createQueryBuilder()
             ->field('id')->in(iterator_to_array($ids))
             ->getQuery()
-            ->execute()
-            ;
+            ->execute();
     }
 
     /**
@@ -43,15 +41,16 @@ class TariffRepository extends DocumentRepository
     public function fetchChildTariffsQuery(Hotel $hotel, $type, $tariffs = [], $onlyEnabled = true)
     {
         $types = [
-            'rooms' =>'inheritRooms', 'restrictions' => 'inheritRestrictions', 'prices' => 'inheritPrices'
+            'rooms' => 'inheritRooms',
+            'restrictions' => 'inheritRestrictions',
+            'prices' => 'inheritPrices',
         ];
 
         $qb = $this->createQueryBuilder();
         $qb->field('hotel.id')->equals($hotel->getId())
             ->addOr($qb->expr()->field('parent')->equals(null))
             ->addOr($qb->expr()->field('parent')->exists(false))
-            ->addOr($qb->expr()->field('childOptions.' . $types[$type])->equals(false))
-        ;
+            ->addOr($qb->expr()->field('childOptions.'.$types[$type])->equals(false));
 
         // tariffs
         if (!empty($tariffs) && is_array($tariffs)) {
@@ -171,8 +170,7 @@ class TariffRepository extends DocumentRepository
         if ($online) {
             $qb->field('isOnline')->equals(true);
         }
-        $qb->sort('title', 'asc')->sort('fullTitle', 'asc');
-        ;
+        $qb->sort('title', 'asc')->sort('fullTitle', 'asc');;
 
         return $qb;
     }
@@ -185,8 +183,13 @@ class TariffRepository extends DocumentRepository
      * @return mixed
      * @throws \Doctrine\ODM\MongoDB\MongoDBExceptionп
      */
-    public function fetch(Hotel $hotel = null, $tariffs = null, $enabled = false, $online = false, Cache $memcached = null)
-    {
+    public function fetch(
+        Hotel $hotel = null,
+        $tariffs = null,
+        $enabled = false,
+        $online = false,
+        Cache $memcached = null
+    ) {
         if ($memcached) {
             $cache = $memcached->get('tariffs_fetch_method', func_get_args());
             if ($cache !== false) {
@@ -212,22 +215,26 @@ class TariffRepository extends DocumentRepository
         $qb = $this->createQueryBuilder();
 
         if ($filter->getSearch()) {
-            $fullNameRegex = new \MongoRegex('/.*' . $filter->getSearch() . '.*/ui');
+            $fullNameRegex = new \MongoRegex('/.*'.$filter->getSearch().'.*/ui');
             $qb->field('fullTitle')->equals($fullNameRegex);
         }
 
         if ($filter->getBegin()) {
-            $qb->addAnd($qb->expr()->addOr(
-                $qb->expr()->field('end')->exists(true)->gte($filter->getBegin()),
-                $qb->expr()->field('end')->equals(null)
-            ));
+            $qb->addAnd(
+                $qb->expr()->addOr(
+                    $qb->expr()->field('end')->exists(true)->gte($filter->getBegin()),
+                    $qb->expr()->field('end')->equals(null)
+                )
+            );
         }
 
         if ($filter->getEnd()) {
-            $qb->addAnd($qb->expr()->addOr(
-                $qb->expr()->field('begin')->exists(true)->lte($filter->getEnd()),
-                $qb->expr()->field('begin')->equals(null)
-            ));
+            $qb->addAnd(
+                $qb->expr()->addOr(
+                    $qb->expr()->field('begin')->exists(true)->lte($filter->getEnd()),
+                    $qb->expr()->field('begin')->equals(null)
+                )
+            );
         }
 
         if (!$filter->getIsEnabled()) {
@@ -268,8 +275,12 @@ class TariffRepository extends DocumentRepository
      * @return array
      * @throws MongoDBException
      */
-    public function fetchRaw(array $hotelIds = [], ?array $tariffsIds = [], bool $isEnabled = true, bool $isOnline = false): array
-    {
+    public function fetchRaw(
+        array $hotelIds = [],
+        ?array $tariffsIds = [],
+        bool $isEnabled = true,
+        bool $isOnline = false
+    ): array {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $qb = $this->createQueryBuilder();
         // hotel
@@ -292,6 +303,17 @@ class TariffRepository extends DocumentRepository
         return $qb->hydrate(false)->getQuery()->toArray();
     }
 
+    public function getTariffsByHotelsIds(array $hotelIds): array
+    {
+        $qb = $this->createQueryBuilder();
+
+        return $qb
+            ->field('hotel.id')->in($hotelIds)
+            ->field('isEnabled')->equals(true)
+            ->getQuery()
+            ->toArray();
+    }
+
     /**
      * @param string $hotelId
      * @param null $online
@@ -309,11 +331,11 @@ class TariffRepository extends DocumentRepository
             $qb
                 ->field('isOnline')->equals((bool)$online);
         }
+
         return $qb->select('id')
             ->hydrate(false)
             ->getQuery()
             ->execute()
-            ->toArray()
-            ;
+            ->toArray();
     }
 }

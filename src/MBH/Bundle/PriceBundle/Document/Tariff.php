@@ -262,6 +262,7 @@ class Tariff extends Base implements ConditionsInterface
         $this->services  = new ArrayCollection();
     }
 
+
     /**
      * Set hotel
      *

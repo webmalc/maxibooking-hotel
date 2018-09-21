@@ -25,8 +25,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class SearchConditionsType extends AbstractType
 {
-
-
     /**
      * @int
      */
@@ -190,7 +188,13 @@ class SearchConditionsType extends AbstractType
                 [
                     'required' => false,
                 ]
-            );
+            )
+            ->add('isThisWarmUp',
+                CheckboxType::class,
+                [
+                    'required' => false
+                ])
+        ;
     }
 
     /**

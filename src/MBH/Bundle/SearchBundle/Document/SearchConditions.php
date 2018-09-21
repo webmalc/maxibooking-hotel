@@ -187,6 +187,9 @@ class SearchConditions extends Base
     /** @var bool */
     private $isSpecialStrict = false;
 
+    /** @var bool */
+    private $isThisWarmUp = false;
+
     /**
      * SearchConditions constructor.
      */
@@ -615,6 +618,24 @@ class SearchConditions extends Base
     public function setSpecial(Special $special): SearchConditions
     {
         $this->special = $special;
+
+        return $this;
+    }
+
+
+
+    public function isThisWarmUp(): bool
+    {
+        return $this->isThisWarmUp;
+    }
+
+    /**
+     * @param bool $isThisWarmUp
+     * @return SearchConditions
+     */
+    public function setIsThisWarmUp(bool $isThisWarmUp): SearchConditions
+    {
+        $this->isThisWarmUp = $isThisWarmUp;
 
         return $this;
     }
