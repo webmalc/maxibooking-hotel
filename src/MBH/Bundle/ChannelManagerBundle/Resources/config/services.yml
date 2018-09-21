@@ -179,7 +179,7 @@ services:
 
     mbh.airbnb_room_form:
         class: MBH\Bundle\ChannelManagerBundle\Form\AirbnbRoomsType
-        arguments: ['@doctrine.odm.mongodb.document_manager']
+        arguments: ['@doctrine.odm.mongodb.document_manager', '@router', '@translator']
         tags: [{name: form.type}]
 
     mbh.cm_http_service:

@@ -51,6 +51,7 @@ security:
         - { path: ^/management/channelmanager/package/notifications, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/management/channelmanager/expedia/push_notification, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/management/online/api, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+        - { path: ^/management/channelmanager/cm_external_api, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/management/online/api_payment_form, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/media/cache/resolve, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }

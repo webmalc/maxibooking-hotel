@@ -180,13 +180,4 @@ class AirbnbController extends BaseController
 
         return $this->redirect($this->generateUrl(Airbnb::NAME));
     }
-
-    /**
-     * @Route("/room_calendar/{id}")
-     * @param RoomType $roomType
-     */
-    public function roomCalendarAction(RoomType $roomType)
-    {
-
-    }
 }

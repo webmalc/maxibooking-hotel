@@ -6,20 +6,26 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Service\Utils;
 use MBH\Bundle\ChannelManagerBundle\Document\AirbnbConfig;
 use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class AirbnbRoomsType extends AbstractType
 {
     private $dm;
+    private $router;
+    private $translator;
 
-    public function __construct(DocumentManager $dm)
+    public function __construct(DocumentManager $dm, Router $router, TranslatorInterface $translator)
     {
         $this->dm = $dm;
+        $this->router = $router;
+        $this->translator = $translator;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -33,6 +39,10 @@ class AirbnbRoomsType extends AbstractType
 
         foreach ($roomTypes as $roomType) {
             $syncRoom = $config->getSyncRoomByRoomType($roomType);
+            $syncUrl = $this->router->generate('airbnb_room_calendar', ['id' => $roomType->getId()], Router::ABSOLUTE_URL);
+            $help = !is_null($syncRoom)
+                ? $syncUrl
+                : '';
 
             $builder
                 ->add($roomType->getId(), TextType::class, [
@@ -42,6 +52,7 @@ class AirbnbRoomsType extends AbstractType
                     'required' => false,
                     'data' => !is_null($syncRoom) ? $syncRoom->getSyncUrl() : '',
                     'constraints' => [new Callback([$this, 'validateSyncUrl'])],
+                    'help' => $help
                 ]);
         }
     }

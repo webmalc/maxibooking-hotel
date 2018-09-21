@@ -155,7 +155,7 @@ class Airbnb extends AbstractChannelManagerService
             ->combineIntersectedPeriods($busyPeriods);
 
         //TODO: Уточнить
-        $calc = new Calendar('maxibooking');
+        $calendar = new Calendar('maxibooking');
 
         foreach ($combinedPeriods as $period) {
             $vEvent = new Event();
@@ -164,10 +164,10 @@ class Airbnb extends AbstractChannelManagerService
             $vEvent->setDtEnd(($period['end'])->modify('-1 day'));
             $vEvent->setNoTime(true);
 
-            $calc->addComponent($vEvent);
+            $calendar->addComponent($vEvent);
         }
 
-        return $calc->render();
+        return $calendar->render();
     }
 
     /**
