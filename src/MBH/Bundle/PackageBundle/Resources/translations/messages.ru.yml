@@ -279,6 +279,7 @@ form.searchType.adults_amount_less_zero: 'Количество взрослых 
 form.searchType.adults_amount_not_filled: 'Не заполнено количество взрослых'
 form.searchType.children: Дети
 form.searchType.forceBooking: 'Игнорировать условия и ограничения'
+form.searchType.disabledIsOpen: 'Disabled is Open'
 form.searchType.children_ages: 'Возраст детей'
 form.searchType.children_amount_less_zero: 'Количество детей не может быть меньше нуля'
 form.searchType.children_amount_not_filled: 'Не заполнено количество детей'

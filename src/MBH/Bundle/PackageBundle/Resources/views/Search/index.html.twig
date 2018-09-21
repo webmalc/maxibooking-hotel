@@ -82,6 +82,14 @@
                 </div>
             {% endif %}
 
+            <div class="filter-form_input">
+                <i  id="icon_for_switcher_disabledIsOpen"
+                    class="fa {{ form.disabledIsOpen.vars.checked ? 'fa-envelope-o' : 'fa-envelope-open-o' }}"
+                    title='{{ 'form.searchType.disabledIsOpen'|trans() }}'
+                    data-toggle='tooltip'></i>
+                {{ form_widget(form.disabledIsOpen) }}
+            </div>
+
             {% set clientConfig = client_config() %}
             {% if not clientConfig or not clientConfig.isInstantSearch %}
                 <div class="filter-form_input">

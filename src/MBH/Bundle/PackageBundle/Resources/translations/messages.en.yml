@@ -134,6 +134,7 @@ form.searchType.adults_amount_less_zero: 'Number of adults cannot be less than z
 form.searchType.adults_amount_not_filled: 'Number of adults is not specified'
 form.searchType.children: Children
 form.searchType.forceBooking: 'Ignore Terms and Conditions'
+form.searchType.disabledIsOpen: 'Disabled is Open'
 form.searchType.children_ages: 'Children age'
 form.searchType.children_amount_less_zero: 'Number of children cannot be less than zero'
 form.searchType.children_amount_not_filled: 'Number of children is not specified'

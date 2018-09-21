@@ -141,6 +141,14 @@ class SearchType extends AbstractType
                 'label' => 'form.searchType.forceBooking',
                 'required' => false,
             ])
+            ->add(
+                'disabledIsOpen',
+                CheckboxType::class,
+                [
+                    'label' => 'form.searchType.disabledIsOpen',
+                    'required' => false,
+                ]
+            )
             ->add('room', HiddenType::class, [
                 'required' => false
             ])

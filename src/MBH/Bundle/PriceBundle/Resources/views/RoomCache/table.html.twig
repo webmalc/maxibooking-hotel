@@ -94,7 +94,11 @@
                                     </span>
                                 {% elseif categoryId == 'isClosed' and tariff is null and roomCache %}
                                     <span class="input">
-                                        <input name="{{ roomCache is null ? 'newRoomCaches[' ~ roomType.id ~ '][0][' ~ date|date('d.m.Y') ~ '][closed]' : 'updateRoomCaches[' ~ roomCache.id ~'][closed]'}}" disabled type="checkbox" class="mbh-grid-checkbox {{ categoryId }}" {{ roomCache.isClosed ? 'checked' : '' }} value="1">
+                                        <input name="{{ roomCache is null ? 'newRoomCaches[' ~ roomType.id ~ '][0][' ~ date|date('d.m.Y') ~ '][closed]' : 'updateRoomCaches[' ~ roomCache.id ~'][closed]'}}"
+                                               disabled
+                                               type="checkbox"
+                                               class="mbh-grid-checkbox {{ categoryId }}" {{ roomCache.isClosed ? 'checked' : '' }}
+                                               value="1">
                                         <span class="disabled-detector"></span>
                                     </span>
                                 {% elseif categoryId == 'isOpen' %}

@@ -86,7 +86,7 @@ $(document).ready(function() {
             this.bookCount = 0;
         }
         this.updateViewBookCount();
-    }
+    };
 
     Row.prototype.init = function() {
         var that = this;
@@ -126,7 +126,7 @@ $(document).ready(function() {
         if (this.bookCount == 0) {
             this.$packageSearchBook.addClass('disabled');
         }
-    }
+    };
 
     Row.prototype.showResultPrices = function() {
         var touristVal = this.$searchTouristsSelect.val(),
@@ -195,7 +195,7 @@ $(document).ready(function() {
             width: 'element'
         });
         this.$searchRoomsSelect.val(null).trigger('change');
-    }
+    };
 
     Row.prototype.showAccommodationAlert = function() {
         var date = new Date();
@@ -210,7 +210,7 @@ $(document).ready(function() {
             this.$packageSearchBook.removeClass('btn-danger');
             $warning.addClass('hide');
         }
-    }
+    };
 
     Row.prototype.showAccommodation = function() {
         var bookText = this.$row.find('.package-search-book-reservation-text'),
@@ -230,9 +230,8 @@ $(document).ready(function() {
             this.$packageSearchBook.removeClass('btn-primary btn-danger').addClass('btn-success');
             this.$packageSearchBook.prop('href', oldHref);
         }
-    }
+    };
 
-    var $tariffSelect = $('#s_tariff');
     var $packageSearchForm = $('form[name="s"]'); //#package-search-form //.search-form
     var successCallback = function(data) {
         $wrapper.html(data);
@@ -299,13 +298,6 @@ $(document).ready(function() {
             collapsedHeight: 35
         });
         updateBookButtons();
-        /*var $links = $('#package-search-tariffs li a');
-         $links.on('click', function (e) {
-         e.preventDefault();
-         $tariffSelect.val($(this).attr('data-id'));
-         window.location.hash = $packageSearchForm.serialize();
-         $packageSearchForm.submit();
-         });*/
     };
 
     var isNotNullAmount = function() {
@@ -325,7 +317,7 @@ $(document).ready(function() {
             },
             success: successCallback
         });
-    }
+    };
 
 
     //
@@ -441,4 +433,19 @@ $(document).ready(function() {
     $('#s_tourist').change(function () {
        updateBookButtons();
     });
+
+    (function() {
+        var tagIForDisabledIsOpen = document.querySelector('#icon_for_switcher_disabledIsOpen');
+        if (tagIForDisabledIsOpen !== null) {
+            $('#s_disabledIsOpen').on('switchChange.bootstrapSwitch', function(event, state) {
+                if (state) {
+                    tagIForDisabledIsOpen.classList.remove('fa-envelope-open-o');
+                    tagIForDisabledIsOpen.classList.add('fa-envelope-o');
+                } else {
+                    tagIForDisabledIsOpen.classList.remove('fa-envelope-o');
+                    tagIForDisabledIsOpen.classList.add('fa-envelope-open-o');
+                }
+            })
+        }
+    })()
 });

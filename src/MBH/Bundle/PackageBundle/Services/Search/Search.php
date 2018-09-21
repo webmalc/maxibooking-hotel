@@ -179,13 +179,13 @@ class Search implements SearchInterface
             }
         }
 
-        $isOpenInCacheInit = isset($groupedCaches['tariff']);
-        $isOpenInCache = true;
+        $HolderIdsTariffWhoIsOpen = [];
         //delete short cache chains
         foreach ($groupedCaches['room'] as $hotelId => $hotelA) {
             foreach ($hotelA as $roomTypeId => $caches) {
                 $quotes = false;
                 if (isset($groupedCaches['tariff'][$hotelId][$roomTypeId])) {
+                    /** @var RoomCache $tariffCache */
                     foreach ($groupedCaches['tariff'][$hotelId][$roomTypeId] as $tariffCache) {
                         if (!isset($tariffMin[$hotelId][$roomTypeId]) || $tariffMin[$hotelId][$roomTypeId] > $tariffCache->getLeftRooms()) {
                             $tariffMin[$hotelId][$roomTypeId] = $tariffCache->getLeftRooms();
@@ -200,8 +200,8 @@ class Search implements SearchInterface
                             $quotes = true;
                         }
 
-                        if (!$tariffCache->isOpen()) {
-                            $isOpenInCache = false;
+                        if ($tariffCache->isOpen() && !$query->isDisabledIsOpen()) {
+                            $HolderIdsTariffWhoIsOpen[] = $tariffCache->getTariff()->getId();
                         }
                     }
                 }
@@ -324,7 +324,7 @@ class Search implements SearchInterface
                 continue;
             }
 
-            if (!$tariff->isOpen() && $isOpenInCacheInit && !$isOpenInCache) {
+            if (!$tariff->isOpen() && !in_array($tariff->getId(), $HolderIdsTariffWhoIsOpen)) {
                 continue;
             }
 

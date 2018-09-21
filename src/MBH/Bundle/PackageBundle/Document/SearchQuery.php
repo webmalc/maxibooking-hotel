@@ -188,6 +188,11 @@ class SearchQuery extends Base
     public $forceBooking = false;
 
     /**
+     * @var bool
+     */
+    private $disabledIsOpen = false;
+
+    /**
      * @var int
      * @ODM\Field(type="integer")
      */
@@ -205,6 +210,23 @@ class SearchQuery extends Base
 
     /** @var  string */
     protected $querySavedId;
+
+    /**
+     * @return bool
+     */
+    public function isDisabledIsOpen(): bool
+    {
+        return $this->disabledIsOpen;
+    }
+
+    /**
+     * @param bool $disabledIsOpen
+     */
+    public function setDisabledIsOpen(bool $disabledIsOpen): void
+    {
+        $this->disabledIsOpen = $disabledIsOpen;
+    }
+
     /**
      * @param $id
      */
