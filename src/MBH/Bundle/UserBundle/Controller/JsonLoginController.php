@@ -49,9 +49,13 @@ class JsonLoginController extends BaseController
                 if (!$encoder->isPasswordValid($user->getPassword(), $password, $user->getSalt())) {
                     $result->setErrors(['Access denied']);
                 } else {
-                    $token = bin2hex(random_bytes(64)) . time();
-                    $user->setApiToken($token, new \DateTime($this->getParameter('token_lifetime_string')));
-                    $this->dm->flush();
+                    if (!$user->getApiToken() || $user->getApiToken()->getExpiredAt() < new \DateTime()) {
+                        $token = bin2hex(random_bytes(64)) . time();
+                        $user->setApiToken($token, new \DateTime($this->getParameter('token_lifetime_string')));
+                        $this->dm->flush();
+                    } else {
+                        $token = $user->getApiToken()->getToken();
+                    }
 
                     $result->setData([
                         'name' => $user->getUsername(),
