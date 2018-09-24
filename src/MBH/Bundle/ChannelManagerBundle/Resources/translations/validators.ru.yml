@@ -27,3 +27,4 @@ validator.document.expediaConfig.password_not_specified: 'Не указан па
 validator.rooms_type.empty_rooms_list: 'Не указано ни одного типа номера.'
 validator.rooms_type.empty_tariffs_list: 'Не указано ни одного тарифа'
 validator.airbnb_rooms_type.sync_url: 'Некорректная ссылка на календарь!'
+validator.airbnb_rooms_type.sync_urls: 'Укажите URL для синхронизации хотя бы одного типа номера'

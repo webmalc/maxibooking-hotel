@@ -137,34 +137,32 @@ class Airbnb extends AbstractChannelManagerService
         $begin = new \DateTime('midnight');
         $end = new \DateTime('midnight +' . self::PERIOD_LENGTH);
 
-        $warningsCompiler = $this->container->get('mbh.warnings_compiler');
-        $emptyPriceCachePeriods = $warningsCompiler
-            ->getEmptyCachePeriodsForRoomTypeAndTariff($roomType, $begin, $end, $tariff, PriceCache::class, 'price');
-        $emptyRoomCachePeriods = $warningsCompiler
-            ->getEmptyCachePeriodsForRoomTypeAndTariff($roomType, $begin, $end, $tariff, RoomCache::class, 'totalRooms');
-        $closedPeriods = $warningsCompiler->getClosedPeriods($begin, $end, $roomType, $tariff);
-
-        $emptyCachePeriods = array_map(function (EmptyCachePeriod $emptyCachePeriod) {
-            return ['begin' => $emptyCachePeriod->getBegin(), 'end' => $emptyCachePeriod->getEnd()];
-        }, array_merge($emptyPriceCachePeriods, $emptyRoomCachePeriods, $closedPeriods));
-
-        $busyPeriods = array_merge($this->getPackagePeriods($roomType, $begin, $end), $emptyCachePeriods);
-
-        $combinedPeriods = $this->container
-            ->get('mbh.periods_compiler')
-            ->combineIntersectedPeriods($busyPeriods);
-
         //TODO: Уточнить
         $calendar = new Calendar('maxibooking');
 
-        foreach ($combinedPeriods as $period) {
-            $vEvent = new Event();
-            $vEvent->setDtStart($period['begin']);
-            //if "notime" param is true, vendor increase end date by one day(class Event, line 263)
-            $vEvent->setDtEnd(($period['end'])->modify('-1 day'));
-            $vEvent->setNoTime(true);
+        if ($airbnbConfig->getIsEnabled()) {
+            $warningsCompiler = $this->container->get('mbh.warnings_compiler');
+            $emptyPriceCachePeriods = $warningsCompiler
+                ->getEmptyCachePeriodsForRoomTypeAndTariff($roomType, $begin, $end, $tariff, PriceCache::class, 'price');
+            $emptyRoomCachePeriods = $warningsCompiler
+                ->getEmptyCachePeriodsForRoomTypeAndTariff($roomType, $begin, $end, $tariff, RoomCache::class, 'totalRooms');
+            $closedPeriods = $warningsCompiler->getClosedPeriods($begin, $end, $roomType, $tariff);
 
-            $calendar->addComponent($vEvent);
+            $emptyCachePeriods = array_map(function (EmptyCachePeriod $emptyCachePeriod) {
+                return ['begin' => $emptyCachePeriod->getBegin(), 'end' => $emptyCachePeriod->getEnd()];
+            }, array_merge($emptyPriceCachePeriods, $emptyRoomCachePeriods, $closedPeriods));
+
+            $busyPeriods = array_merge($this->getPackagePeriods($roomType, $begin, $end), $emptyCachePeriods);
+
+            $combinedPeriods = $this->container
+                ->get('mbh.periods_compiler')
+                ->combineIntersectedPeriods($busyPeriods);
+
+            foreach ($combinedPeriods as $period) {
+                $this->addEvent($calendar, $period['begin'], $period['end']);
+            }
+        } else {
+            $this->addEvent($calendar, $begin, $end);
         }
 
         return $calendar->render();
@@ -234,6 +232,19 @@ class Airbnb extends AbstractChannelManagerService
             $this->dm->remove($deletedOrder);
             $this->dm->flush();
         }
+    }
+
+    private function addEvent(Calendar $calendar, \DateTime $begin, \DateTime $end)
+    {
+        $vEvent = new Event();
+        $vEvent->setDtStart($begin);
+        //if "notime" param is true, vendor increase end date by one day(class Event, line 263)
+        $vEvent->setDtEnd(($end)->modify('-1 day'));
+        $vEvent->setNoTime(true);
+
+        $calendar->addComponent($vEvent);
+
+        return $calendar;
     }
 
     /**

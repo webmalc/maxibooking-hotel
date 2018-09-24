@@ -134,6 +134,10 @@ class BaseControllerTest extends WebTestCase
         'ostrovok_room',
         'ostrovok_tariff',
         'ostrovok_service',
+        'airbnb',
+        'airbnb_room',
+        'airbnb_tariff',
+        'airbnb_all_packages_sync'
     ];
 
     public static function setUpBeforeClass()

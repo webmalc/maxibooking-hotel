@@ -18,7 +18,7 @@ class ChannelManagerControllerTest extends WebTestCase
 
     public static function tearDownAfterClass()
     {
-//        self::clearDB();
+        self::clearDB();
     }
 
     public function setUp()
@@ -86,26 +86,28 @@ class ChannelManagerControllerTest extends WebTestCase
     {
         $crawler = $this->client->request('GET', '/management/channelmanager/' . $serviceName . '/');
 
-        $this->assertEquals($this->client->getResponse()->getStatusCode(), 200);
+        if ($serviceName !== Airbnb::NAME) {
+            $this->assertEquals($this->client->getResponse()->getStatusCode(), 200);
 
-        $formName = $this->getIndexFormName($serviceName);
-        $indexFormCrawler = $crawler
-            ->filter('form[name="' . $formName . '"]');
-        $this->assertEquals(1, $indexFormCrawler->count());
-        $indexForm = $indexFormCrawler
-            ->form($this->getIndexFormData($serviceName, $formName));
+            $formName = $this->getIndexFormName($serviceName);
+            $indexFormCrawler = $crawler
+                ->filter('form[name="' . $formName . '"]');
+            $this->assertEquals(1, $indexFormCrawler->count());
+            $indexForm = $indexFormCrawler
+                ->form($this->getIndexFormData($serviceName, $formName));
 
-        $this->client->submit($indexForm);
-
-        if ($serviceName === 'myallocator') {
-            $indexCrawler = $this->client->followRedirect();
-            $indexForm = $indexCrawler
-                ->filter('form[name="' . $formName . '"]')
-                ->form([$formName . '[hotelId]' => 'ID1']);
             $this->client->submit($indexForm);
-        }
 
-        $this->client->followRedirect();
+            if ($serviceName === 'myallocator') {
+                $indexCrawler = $this->client->followRedirect();
+                $indexForm = $indexCrawler
+                    ->filter('form[name="' . $formName . '"]')
+                    ->form([$formName . '[hotelId]' => 'ID1']);
+                $this->client->submit($indexForm);
+            }
+
+            $this->client->followRedirect();
+        }
 
         $roomsCrawler = $this->client->followRedirect();
 
@@ -125,9 +127,8 @@ class ChannelManagerControllerTest extends WebTestCase
         $crawler = $this->client->request('GET', '/management/channelmanager/' . $serviceName . '/room');
         $roomsFormName = $this->getRoomsFormName($serviceName);
         $roomsFormCrawler = $crawler->filter('form[name="' . $roomsFormName . '"]');
-        $roomsSelectsCrawler = $roomsFormCrawler->filter('select');
-        $this->assertEquals(2, $roomsSelectsCrawler->count());
 
+        /** @var Hotel $hotel */
         $hotel = $this->getContainer()
             ->get('doctrine.odm.mongodb.document_manager')
             ->getRepository('MBHHotelBundle:Hotel')
@@ -135,20 +136,38 @@ class ChannelManagerControllerTest extends WebTestCase
 
         $roomTypes = $hotel->getRoomTypes();
 
-        $roomsForm = $roomsFormCrawler->form(
-            [
-                $this->getRoomFormName(
-                    $roomsFormName,
-                    ChannelManagerServiceMock::FIRST_ROOM_ID,
-                    $serviceName
-                ) => $roomTypes[0]->getId(),
-                $this->getRoomFormName(
-                    $roomsFormName,
-                    ChannelManagerServiceMock::SECOND_ROOM_ID,
-                    $serviceName
-                ) => $roomTypes[1]->getId(),
-            ]
-        );
+        if ($serviceName !== Airbnb::NAME) {
+            $roomsSelectsCrawler = $roomsFormCrawler->filter('select');
+            $this->assertEquals(2, $roomsSelectsCrawler->count());
+        } else {
+            $roomInputsCrawler = $roomsFormCrawler->filter('input:not([type="hidden"])');
+            $this->assertEquals(count($roomTypes), $roomInputsCrawler->count());
+        }
+
+        if ($serviceName !== Airbnb::NAME) {
+            $roomsForm = $roomsFormCrawler->form(
+                [
+                    $this->getRoomFormName(
+                        $roomsFormName,
+                        ChannelManagerServiceMock::FIRST_ROOM_ID,
+                        $serviceName
+                    ) => $roomTypes[0]->getId(),
+                    $this->getRoomFormName(
+                        $roomsFormName,
+                        ChannelManagerServiceMock::SECOND_ROOM_ID,
+                        $serviceName
+                    ) => $roomTypes[1]->getId(),
+                ]
+            );
+        } else {
+            $roomsFormData = [];
+            foreach ($roomTypes as $roomType) {
+                $inputName = $this->getRoomFormName($roomsFormName, $roomType->getId(), $serviceName);
+                $roomsFormData[$inputName] = Airbnb::SYNC_URL_BEGIN . $roomType->getId();
+            }
+
+            $roomsForm = $roomsFormCrawler->form($roomsFormData);
+        }
         $this->client->submit($roomsForm);
 
         $this->assertEquals(302, $this->client->getResponse()->getStatusCode());
@@ -167,7 +186,7 @@ class ChannelManagerControllerTest extends WebTestCase
     public function testTariffAction(string $serviceName)
     {
         $crawler = $this->client->request('GET', '/management/channelmanager/' . $serviceName . '/tariff');
-        $tariffsFormName = 'mbh_bundle_channelmanagerbundle_tariffs_type';
+        $tariffsFormName = $this->getTariffsFormName($serviceName);
         $tariffsFormCrawler = $crawler->filter('form[name="' . $tariffsFormName . '"]');
         $tariffsSelectsCrawler = $tariffsFormCrawler->filter('select');
         $this->assertEquals(1, $tariffsSelectsCrawler->count());
@@ -178,13 +197,20 @@ class ChannelManagerControllerTest extends WebTestCase
             ->getRepository('MBHHotelBundle:Hotel')
             ->findOneBy(['isDefault' => true]);
 
-        $tariffs = $hotel->getTariffs();
-
-        $roomsForm = $tariffsFormCrawler->form(
-            [
-                $tariffsFormName . '[' . ChannelManagerServiceMock::FIRST_TARIFF_ID . ']' => $tariffs[0]->getId(),
-            ]
-        );
+        $baseTariffId = $hotel->getBaseTariff()->getId();
+        if ($serviceName !== Airbnb::NAME) {
+            $roomsForm = $tariffsFormCrawler->form(
+                [
+                    $tariffsFormName . '[' . ChannelManagerServiceMock::FIRST_TARIFF_ID . ']' => $baseTariffId,
+                ]
+            );
+        } else {
+            $roomsForm = $tariffsFormCrawler->form(
+                [
+                    $tariffsFormName . '[tariff]' => $baseTariffId,
+                ]
+            );
+        }
         $this->client->submit($roomsForm);
 
         $dataWarningsCrawler = $this->client->followRedirect();
@@ -192,6 +218,13 @@ class ChannelManagerControllerTest extends WebTestCase
             'http://localhost/management/channelmanager/' . $serviceName . '/' . 'data_warnings',
             $dataWarningsCrawler->getUri()
         );
+    }
+
+    private function getTariffsFormName(string $serviceName)
+    {
+        return $serviceName === Airbnb::NAME
+            ? 'mbhchannel_manager_bundle_airbnb_tariff_type'
+            : 'mbh_bundle_channelmanagerbundle_tariffs_type';
     }
 
     /**
@@ -221,7 +254,14 @@ class ChannelManagerControllerTest extends WebTestCase
 
     private function getRoomsFormName(string $serviceName)
     {
-        return $serviceName === 'booking' ? 'mbh_bundle_channelmanagerbundle_booking_rooms_type' : 'mbh_bundle_channelmanagerbundle_rooms_type';
+        switch ($serviceName) {
+            case 'booking':
+                return 'mbh_bundle_channelmanagerbundle_booking_rooms_type';
+            case Airbnb::NAME:
+                return 'mbhchannel_manager_bundle_airbnb_room_form';
+
+        }
+        return 'mbh_bundle_channelmanagerbundle_rooms_type';
     }
 
     private function getIndexFormName(string $serviceName)

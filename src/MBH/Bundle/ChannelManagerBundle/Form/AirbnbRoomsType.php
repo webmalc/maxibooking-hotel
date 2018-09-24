@@ -30,19 +30,18 @@ class AirbnbRoomsType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $roomTypes = $this->dm
-            ->getRepository('MBHHotelBundle:RoomType')
-            ->findBy(['isEnabled' => true]);
-
         /** @var AirbnbConfig $config */
         $config = $options['config'];
 
+        $roomTypes = $config->getHotel()->getRoomTypes();
+
         foreach ($roomTypes as $roomType) {
+            if (!$roomType->getIsEnabled()) {
+                continue;
+            }
             $syncRoom = $config->getSyncRoomByRoomType($roomType);
             $syncUrl = $this->router->generate('airbnb_room_calendar', ['id' => $roomType->getId()], Router::ABSOLUTE_URL);
-            $help = !is_null($syncRoom)
-                ? $syncUrl
-                : '';
+            $help = $syncUrl;
 
             $builder
                 ->add($roomType->getId(), TextType::class, [
@@ -78,7 +77,7 @@ class AirbnbRoomsType extends AbstractType
             return !empty($syncUrl);
         });
         if (empty($notEmptySyncData)) {
-            $context->addViolation('Укажите URL для синхронизации хотя бы одного типа номера');
+            $context->addViolation('validator.airbnb_rooms_type.sync_urls');
         }
     }
 
