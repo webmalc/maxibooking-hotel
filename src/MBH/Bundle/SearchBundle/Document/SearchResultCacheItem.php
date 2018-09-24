@@ -93,6 +93,7 @@ class SearchResultCacheItem extends Base
     /**
      * @var string
      * @ODM\Field(type="string")
+     * @Assert\NotNull()
      */
     private $cacheResultKey;
 

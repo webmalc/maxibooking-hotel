@@ -49,7 +49,8 @@ class CacheSearchResults implements SearchCacheInterface
      * @param SearchQuery $searchQuery
      * @param bool $hydrated
      * @return mixed
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultCacheException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\CacheKeyFactoryException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
      */
     public function searchInCache(SearchQuery $searchQuery, $hydrated = false)
     {
@@ -67,16 +68,19 @@ class CacheSearchResults implements SearchCacheInterface
     /**
      * @param Result $result
      * @param SearchQuery $searchQuery
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultCacheException
+     * @throws SearchResultCacheException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\CacheKeyFactoryException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
      */
     public function saveToCache(Result $result, SearchQuery $searchQuery): void
     {
         $cacheItem = SearchResultCacheItem::createInstance($result);
+        $key = $this->keyCreator->createKey($searchQuery);
+        $cacheItem->setCacheResultKey($key);
         $dm = $this->cacheItemRepository->getDocumentManager();
         $dm->persist($cacheItem);
         $dm->flush($cacheItem);
 
-        $key = $this->keyCreator->createKey($searchQuery);
         $result->setCacheItemId($cacheItem->getId());
         $this->redis->set($key, $this->serializer->serialize($result));
     }
