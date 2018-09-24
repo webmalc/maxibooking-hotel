@@ -206,7 +206,7 @@ class CMWizardManager
             $this->warningsCompiler->getLastCacheByRoomTypesAndTariffs($cacheClass, $syncRoomTypeIds, $syncTariffIds);
 
         foreach ($syncRoomTypes as $roomType) {
-            foreach ($syncTariffs as $tariff) {
+            foreach ($syncTariffs as $tariffNumber => $tariff) {
                 $tariffId = $cacheClass === PriceCache::class ? $tariff->getId() : 0;
                 if (isset($lastCacheByRoomTypesAndTariffs[$roomType->getId()][$tariffId])) {
                     /** @var \DateTime $date */
@@ -231,9 +231,11 @@ class CMWizardManager
                     'status' => $status
                 ];
 
-                $cacheClass === RoomCache::class
-                    ? $lastDefinedCaches[] = $cacheData
-                    : $lastDefinedCaches[$roomType->getId()][] = $cacheData;
+                if ($cacheClass === RoomCache::class && $tariffNumber === 0) {
+                    $lastDefinedCaches[] = $cacheData;
+                } else {
+                    $lastDefinedCaches[$roomType->getId()][] = $cacheData;
+                }
             }
         }
 

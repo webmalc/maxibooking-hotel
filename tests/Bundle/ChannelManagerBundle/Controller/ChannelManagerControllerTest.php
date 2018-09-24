@@ -11,6 +11,9 @@ use Tests\Bundle\ChannelManagerBundle\Services\ChannelManagerServiceMock;
 
 class ChannelManagerControllerTest extends WebTestCase
 {
+    const NUMBER_OF_ROOMS_IN_MOCK_CM = 2;
+    const NUMBER_OF_TARIFFS_IN_MOCK_CM = 1;
+
     public static function setUpBeforeClass()
     {
         self::baseFixtures();
@@ -129,16 +132,13 @@ class ChannelManagerControllerTest extends WebTestCase
         $roomsFormCrawler = $crawler->filter('form[name="' . $roomsFormName . '"]');
 
         /** @var Hotel $hotel */
-        $hotel = $this->getContainer()
-            ->get('doctrine.odm.mongodb.document_manager')
-            ->getRepository('MBHHotelBundle:Hotel')
-            ->findOneBy(['isDefault' => true]);
+        $hotel = $this->getDefaultHotel();
 
         $roomTypes = $hotel->getRoomTypes();
 
         if ($serviceName !== Airbnb::NAME) {
             $roomsSelectsCrawler = $roomsFormCrawler->filter('select');
-            $this->assertEquals(2, $roomsSelectsCrawler->count());
+            $this->assertEquals(self::NUMBER_OF_ROOMS_IN_MOCK_CM, $roomsSelectsCrawler->count());
         } else {
             $roomInputsCrawler = $roomsFormCrawler->filter('input:not([type="hidden"])');
             $this->assertEquals(count($roomTypes), $roomInputsCrawler->count());
@@ -189,13 +189,10 @@ class ChannelManagerControllerTest extends WebTestCase
         $tariffsFormName = $this->getTariffsFormName($serviceName);
         $tariffsFormCrawler = $crawler->filter('form[name="' . $tariffsFormName . '"]');
         $tariffsSelectsCrawler = $tariffsFormCrawler->filter('select');
-        $this->assertEquals(1, $tariffsSelectsCrawler->count());
+        $this->assertEquals(self::NUMBER_OF_TARIFFS_IN_MOCK_CM, $tariffsSelectsCrawler->count());
 
         /** @var Hotel $hotel */
-        $hotel = $this->getContainer()
-            ->get('doctrine.odm.mongodb.document_manager')
-            ->getRepository('MBHHotelBundle:Hotel')
-            ->findOneBy(['isDefault' => true]);
+        $hotel = $this->getDefaultHotel();
 
         $baseTariffId = $hotel->getBaseTariff()->getId();
         if ($serviceName !== Airbnb::NAME) {
@@ -218,6 +215,28 @@ class ChannelManagerControllerTest extends WebTestCase
             'http://localhost/management/channelmanager/' . $serviceName . '/' . 'data_warnings',
             $dataWarningsCrawler->getUri()
         );
+    }
+
+    /**
+     * @depends testTariffAction
+     * @dataProvider channelManagersProvider
+     * @param string $serviceName
+     */
+    public function testDataWarnings(string $serviceName)
+    {
+        $crawler = $this->client->request('GET', '/management/channelmanager/' . $serviceName . '/data_warnings');
+        $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+
+        $hotel = $this->getDefaultHotel();
+        $lastCachesTableCrawler = $crawler->filter('#last-cashes-table');
+        $this->assertEquals(1, $lastCachesTableCrawler->count());
+
+        $numberOfConfiguredRooms = $serviceName === Airbnb::NAME
+            ? $hotel->getRoomTypes()->count()
+            : self::NUMBER_OF_ROOMS_IN_MOCK_CM;
+        $this->assertEquals($numberOfConfiguredRooms, $lastCachesTableCrawler->filter('li.last-room-caches')->count());
+        $this->assertEquals($numberOfConfiguredRooms, $lastCachesTableCrawler->filter('li.last-price-caches')->count());
+
     }
 
     private function getTariffsFormName(string $serviceName)
@@ -307,5 +326,16 @@ class ChannelManagerControllerTest extends WebTestCase
             default:
                 throw new \InvalidArgumentException('Incorrect service name: ' . $serviceName);
         }
+    }
+
+    /**
+     * @return Hotel
+     */
+    private function getDefaultHotel()
+    {
+        return $this->getContainer()
+            ->get('doctrine.odm.mongodb.document_manager')
+            ->getRepository('MBHHotelBundle:Hotel')
+            ->findOneBy(['isDefault' => true]);
     }
 }
