@@ -5,7 +5,6 @@ namespace MBH\Bundle\SearchBundle\Lib;
 
 
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
-use MBH\Bundle\SearchBundle\Validator\Constraints\ChildrenAgesSameAsChildren;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
