@@ -114,16 +114,17 @@ class BookingController extends Controller implements CheckHotelControllerInterf
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $this->dm->persist($config);
+
+            if (!$config->isReadyToSync()) {
+                $config->setIsMainSettingsFilled(true);
+                $this->get('mbh.messages_store')->sendMessageToTechSupportAboutNewConnection('Booking', $this->get('mbh.instant_notifier'));
+            }
             $this->dm->flush();
 
             $this->get('mbh.channelmanager.booking')->syncServices($config);
             $this->get('mbh.channelmanager')->updateInBackground();
 
             $this->addFlash('success','controller.bookingController.settings_saved_success');
-
-            if (!$config->isReadyToSync()) {
-                $this->get('mbh.messages_store')->sendMessageToTechSupportAboutNewConnection('Booking', $this->get('mbh.instant_notifier'));
-            }
 
             return $this->redirect($this->generateUrl('booking'));
         }
@@ -187,6 +188,9 @@ class BookingController extends Controller implements CheckHotelControllerInterf
 
             $userName = $this->getUser()->getUsername();
             $this->get('mbh.channelmanager')->logCollectionChanges($config, 'rooms', $userName, $prevRooms);
+            if (!$config->isReadyToSync()) {
+                $config->setIsRoomsConfigured(true);
+            }
 
             $this->dm->flush();
             $this->get('mbh.channelmanager')->updateInBackground();
@@ -243,6 +247,10 @@ class BookingController extends Controller implements CheckHotelControllerInterf
 
             $userName = $this->getUser()->getUsername();
             $this->get('mbh.channelmanager')->logCollectionChanges($config, 'tariffs', $userName, $prevTariffs);
+            if (!$config->isReadyToSync()) {
+                $config->setIsTariffsConfigured(true);
+            }
+
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();

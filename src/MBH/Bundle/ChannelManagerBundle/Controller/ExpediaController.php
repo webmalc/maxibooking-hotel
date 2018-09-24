@@ -79,15 +79,16 @@ class ExpediaController extends Controller
             $errorMessage = $this->get('mbh.channelmanager.expedia')->safeConfigDataAndGetErrorMessage();
             if ($errorMessage === '' || !$config->getIsEnabled()) {
                 $this->dm->persist($config);
-                $this->dm->flush();
 
-                $this->get('mbh.channelmanager')->updateInBackground();
-
-                $this->addFlash('success', 'controller.expediaController.settings_saved_success');
                 if (!$config->isReadyToSync()) {
+                    $config->setIsMainSettingsFilled(true);
                     $this->get('mbh.messages_store')
                         ->sendMessageToTechSupportAboutNewConnection('Expedia', $this->get('mbh.instant_notifier'));
                 }
+                $this->dm->flush();
+
+                $this->get('mbh.channelmanager')->updateInBackground();
+                $this->addFlash('success', 'controller.expediaController.settings_saved_success');
             } else {
                 $this->addFlash('danger', $errorMessage);
             }
@@ -142,6 +143,10 @@ class ExpediaController extends Controller
 
             $userName = $this->getUser()->getUsername();
             $this->get('mbh.channelmanager')->logCollectionChanges($config, 'tariffs', $userName, $prevTariffs);
+            if (!$config->isReadyToSync()) {
+                $config->setIsTariffsConfigured(true);
+            }
+
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();
@@ -208,6 +213,10 @@ class ExpediaController extends Controller
 
             $userName = $this->getUser()->getUsername();
             $this->get('mbh.channelmanager')->logCollectionChanges($config, 'rooms', $userName, $prevRooms);
+            if (!$config->isReadyToSync()) {
+                $config->setIsRoomsConfigured(true);
+            }
+
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();

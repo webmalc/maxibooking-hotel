@@ -450,6 +450,9 @@ class ChannelManager
         $config
             ->setIsEnabled(true)
             ->setIsConnectionSettingsRead(true);
+        if ($channelManagerName === Airbnb::NAME) {
+            $config->setIsMainSettingsFilled(true);
+        }
 
         $this->dm->flush();
         $this->dm->refresh($hotel);

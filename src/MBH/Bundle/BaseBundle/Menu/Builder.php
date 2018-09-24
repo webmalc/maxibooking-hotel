@@ -6,6 +6,7 @@ use Documents\User;
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\ItemInterface;
 use MBH\Bundle\BaseBundle\Lib\Menu\BadgesHolder;
+use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
 use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -752,9 +753,9 @@ class Builder
         ];
 
         $airbnb = [
-            'airbnb' => [
+            Airbnb::NAME => [
                 'options' => [
-                    'route' => 'airbnb',
+                    'route' => Airbnb::NAME,
                     'label' => 'Airbnb'
                 ],
                 'attributes' => ['icon' => 'fa fa-cloud-download'],

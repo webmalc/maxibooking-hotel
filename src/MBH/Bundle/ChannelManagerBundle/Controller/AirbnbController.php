@@ -31,12 +31,13 @@ class AirbnbController extends BaseController
      * @Template()
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \Throwable
      */
     public function indexAction(Request $request)
     {
         $config = $this->hotel->getAirbnbConfig();
 
-        $isReadyResult = $this->get('mbh.cm_wizard_manager')->checkForReadinessOrGetStepUrl($config, 'airbnb');
+        $isReadyResult = $this->get('mbh.cm_wizard_manager')->checkForReadinessOrGetStepUrl($config, Airbnb::NAME);
         if ($isReadyResult !== true) {
             return $this->redirect($isReadyResult);
         }
@@ -51,11 +52,17 @@ class AirbnbController extends BaseController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $this->dm->persist($config);
+
+            if (!$config->isReadyToSync()) {
+                $this->get('mbh.messages_store')
+                    ->sendMessageToTechSupportAboutNewConnection('Airbnb', $this->get('mbh.instant_notifier'));
+            }
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();
-
             $this->addFlash('success', 'controller.bookingController.settings_saved_success');
+
+            return $this->redirectToRoute(Airbnb::NAME);
         }
 
         return [
@@ -98,6 +105,10 @@ class AirbnbController extends BaseController
 
             $userName = $this->getUser()->getUsername();
             $this->get('mbh.channelmanager')->logCollectionChanges($config, 'rooms', $userName, $prevRooms);
+            if (!$config->isReadyToSync()) {
+                $config->setIsRoomsConfigured(true);
+            }
+
             $this->dm->flush();
 
             $this->addFlash('success', 'controller.bookingController.settings_saved_success');
@@ -145,8 +156,12 @@ class AirbnbController extends BaseController
 
             $userName = $this->getUser()->getUsername();
             $this->get('mbh.channelmanager')->logCollectionChanges($config, 'tariffs', $userName, $prevTariffs);
+            if (!$config->isReadyToSync()) {
+                $config->setIsTariffsConfigured(true);
+            }
 
             $this->dm->flush();
+
             $this->addFlash('success', 'controller.bookingController.settings_saved_success');
             $this->get('mbh.channelmanager')->updateInBackground();
 

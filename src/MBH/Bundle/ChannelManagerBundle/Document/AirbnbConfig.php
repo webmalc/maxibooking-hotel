@@ -148,14 +148,6 @@ class AirbnbConfig extends Base implements ChannelManagerConfigInterface
     }
 
     /**
-     * @return bool
-     */
-    public function isMainSettingsFilled()
-    {
-        return $this->getIsEnabled();
-    }
-
-    /**
      * @param RoomType $roomType
      * @return AirbnbRoom|mixed|null
      */

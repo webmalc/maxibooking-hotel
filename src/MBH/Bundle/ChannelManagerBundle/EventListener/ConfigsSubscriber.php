@@ -8,7 +8,6 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 class ConfigsSubscriber implements EventSubscriber
 {
     /**
@@ -38,6 +37,10 @@ class ConfigsSubscriber implements EventSubscriber
 
         if ($doc instanceof ChannelManagerConfigInterface && !$doc->getIsEnabled()) {
             $doc->setIsConfirmedWithDataWarnings(false);
+            $doc->setIsTariffsConfigured(false);
+            $doc->setIsRoomsConfigured(false);
+            $doc->setIsMainSettingsFilled(false);
+
             if (method_exists($doc, 'setIsConnectionSettingsRead')) {
                 $doc->setIsConnectionSettingsRead(false);
             }
@@ -45,6 +48,10 @@ class ConfigsSubscriber implements EventSubscriber
                 $doc->setIsAllPackagesPulled(false);
             }
             $this->container->get('mbh.channelmanager')->closeInBackground();
+
+            $dm = $this->container->get('doctrine.odm.mongodb.document_manager');
+            $meta = $dm->getClassMetadata(get_class($doc));
+            $dm->getUnitOfWork()->computeChangeSet($meta, $doc);
         }
     }
 

@@ -124,11 +124,11 @@ class CMWizardManager
             return $channelManagerName;
         }
 
-        if ($config->getRooms()->isEmpty()) {
+        if (!$config->isRoomsConfigured()) {
             return $channelManagerName . '_room';
         }
 
-        if ($config->getTariffs()->isEmpty()) {
+        if (!$config->isTariffsConfigured()) {
             return $channelManagerName . '_tariff';
         }
 

@@ -16,6 +16,7 @@ use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\LocalizableTrait;
 use MBH\Bundle\CashBundle\Document\CardType;
 use MBH\Bundle\ChannelManagerBundle\Document\AirbnbConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
 use MBH\Bundle\PackageBundle\Document\Organization;
@@ -717,7 +718,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     }
 
     /**
-     * @return mixed
+     * @return HundredOneHotelsConfig|null
      */
     public function getHundredOneHotelsConfig()
     {
@@ -1199,7 +1200,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
 
 
     /**
-     * @return mixed
+     * @return ExpediaConfig|null
      */
     public function getExpediaConfig()
     {
@@ -1359,7 +1360,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     }
 
     /**
-     * @return mixed
+     * @return MyallocatorConfig|null
      */
     public function getMyallocatorConfig()
     {
