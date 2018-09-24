@@ -111,6 +111,14 @@ services:
 
     mbh_search.cache_key_creator_factory:
         class: MBH\Bundle\SearchBundle\Services\Cache\CacheKeyCreatorFactory
+        arguments:
+            - '@service_container'
+
+    mbh_search.cache_key_no_children_ages:
+        class: MBH\Bundle\SearchBundle\Lib\Combinations\CacheKey\NoChildrenAgeKey
+
+    mbh_search.cache_key_with_children_ages:
+        class: MBH\Bundle\SearchBundle\Lib\Combinations\CacheKey\ChildrenAgeKey
 
     mbh_search.warm_up_searcher:
         class: MBH\Bundle\SearchBundle\Services\Search\WarmUpSearcher

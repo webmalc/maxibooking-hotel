@@ -64,31 +64,31 @@ class CacheWarmer
 
 
     /**
-     * @param \DateTime|null $date
+     * @param \DateTime|null $monthDate
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
      */
-    public function warmUp(\DateTime $date = null): void
+    public function warmUp(\DateTime $monthDate = null): void
     {
 
         $this->logger->info('Start cache warmUp');
-        if (null === $date) {
-            $date = new \DateTime('midnight');
+        if (null === $monthDate) {
+            $monthDate = new \DateTime('midnight');
         }
 
-        $month = (int)$date->format('m');
-        $year = (int)$date->format('Y');
+        $month = (int)$monthDate->format('m');
+        $year = (int)$monthDate->format('Y');
         $begin = new \DateTime("8-${month}-${year} midnight");
         $end = new \DateTime("22-${month}-${year} midnight");
 
         $sharedConditions = [
-            'begin' => '24.09.2018'/*$begin->format('d.m.Y')*/,
-            'end' => '01.10.2018'/*$end->format('d.m.Y')*/,
-            'additionalBegin' => 1/*9*/,
-            'additionalEnd' => 1/*10*/,
+            'begin' => $begin->format('d.m.Y'),
+            'end' => $end->format('d.m.Y'),
+            'additionalBegin' => 9,
+            'additionalEnd' => 10,
             'isUseCache' => true,
             'isThisWarmUp' => true
         ];
