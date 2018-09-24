@@ -12,9 +12,13 @@ class ChildrenAgesSameAsChildrenValidator extends ConstraintValidator
 {
     public function validate($object, Constraint $constraint): void
     {
-
+        $isThisWarmUp = false;
+        /** TODO: fixIT! */
+        if ($object instanceof SearchConditions) {
+            $isThisWarmUp = $object->isThisWarmUp();
+        }
         /** @var SearchConditions $object */
-        if (!$object->isThisWarmUp()) {
+        if (!$isThisWarmUp) {
             $children = (int)$object->getChildren();
             $ages = \count($object->getChildrenAges());
             if ($children !== $ages) {
