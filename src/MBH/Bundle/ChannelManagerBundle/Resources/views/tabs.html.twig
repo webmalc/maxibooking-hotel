@@ -12,11 +12,11 @@
     {% set active = active + 1 %}
 {% endif %}
 
-{% if base != 'airbnb' and not isReadyToSync %}
+{% if not (not isReadyToSync and base == 'airbnb') %}
     {% set menu = menu|merge([
         {'route': base, icon: 'fa-info-circle', titleTransId: 'views.tabs.main_settings'},
     ]) %}
-{% else %}
+{% elseif active > 1 %}
     {% set active = active - 1 %}
 {% endif %}
 
@@ -64,7 +64,7 @@
         {% set isActiveTab = loop.index == active %}
 
         {% if not (isActiveTab or (config and config.isReadyToSync())
-            or (loop.index in [1, 2] and active in [1, 2] and base != 'airbnb' and ((is_mb_user() and isConfiguredByTechSupport) or (not isConfiguredByTechSupport and (config and config.isConnectionSettingsRead())))
+            or (loop.index in [1, 2] and base != 'airbnb' and active in [1, 2] and ((is_mb_user() and isConfiguredByTechSupport) or (not isConfiguredByTechSupport and config and config.isConnectionSettingsRead()))
             and not (loop.index == 2 and active == 1 and isConfiguredByTechSupport and (config is empty or config.hotelId is empty)))) %}
             <li class="disabled">
                 <a href="#" role="tab">{{ title|raw }}</a>

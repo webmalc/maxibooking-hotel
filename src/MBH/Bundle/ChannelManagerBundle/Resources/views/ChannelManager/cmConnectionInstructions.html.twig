@@ -3,7 +3,7 @@
 <br>
 <p>{{ 'cm_connection_instructions.part2.text1'|trans|raw }}</p>
 
-{% set numberOfStepsByCMs = {booking: 8, expedia: 5, ostrovok: 6, hundred_one_hotels: 3, vashotel: 2, myallocator: 11, airbnb: 0} %}
+{% set numberOfStepsByCMs = {booking: 8, expedia: 5, ostrovok: 6, hundred_one_hotels: 3, vashotel: 2, myallocator: 11, airbnb: 1} %}
 
 <ol>
     {% for stepNumber in 1..numberOfStepsByCMs[channelManager] %}

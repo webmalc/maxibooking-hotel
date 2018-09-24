@@ -60,7 +60,8 @@ class AirbnbRoomsType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'config' => null
+            'config' => null,
+            'constraints' => [new Callback([$this, 'checkIsNotEmpty'])],
         ]);
     }
 
@@ -68,6 +69,16 @@ class AirbnbRoomsType extends AbstractType
     {
         if (!is_null($syncUrl) && !Utils::startsWith($syncUrl, Airbnb::SYNC_URL_BEGIN)) {
             $context->addViolation('validator.airbnb_rooms_type.sync_url');
+        }
+    }
+
+    public function checkIsNotEmpty(array $data, ExecutionContextInterface $context)
+    {
+        $notEmptySyncData = array_filter($data, function ($syncUrl) {
+            return !empty($syncUrl);
+        });
+        if (empty($notEmptySyncData)) {
+            $context->addViolation('Укажите URL для синхронизации хотя бы одного типа номера');
         }
     }
 
