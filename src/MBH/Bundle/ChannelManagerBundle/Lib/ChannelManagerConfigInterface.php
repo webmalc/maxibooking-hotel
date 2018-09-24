@@ -10,6 +10,7 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 interface ChannelManagerConfigInterface
 {
     public function getIsEnabled();
+    public function setIsEnabled($isEnabled);
 
     public function isMainSettingsFilled();
     public function isConfirmedWithDataWarnings(): ?bool;

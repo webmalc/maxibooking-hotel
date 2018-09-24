@@ -39,14 +39,13 @@ class ConfigsSubscriber implements EventSubscriber
         if ($doc instanceof ChannelManagerConfigInterface && !$doc->getIsEnabled()) {
             $doc->setIsConfirmedWithDataWarnings(false);
             if (method_exists($doc, 'setIsConnectionSettingsRead')) {
-                $doc->setIsConnectionSettingsRead(true);
+                $doc->setIsConnectionSettingsRead(false);
             }
             if (method_exists($doc, 'setIsAllPackagesPulled')) {
-                $doc->setIsAllPackagesPulled(true);
+                $doc->setIsAllPackagesPulled(false);
             }
             $this->container->get('mbh.channelmanager')->closeInBackground();
         }
-
     }
 
     /**

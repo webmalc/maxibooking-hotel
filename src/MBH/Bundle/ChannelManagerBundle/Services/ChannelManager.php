@@ -402,10 +402,11 @@ class ChannelManager
         $isExists = in_array($channelManagerName, $channelManagerNames);
 
         if (!$isExists && $throwException) {
-            throw new \InvalidArgumentException('Channel manager ' . $channelManagerName . ' does not exists');
+            throw new \InvalidArgumentException('Channel manager ' . $channelManagerName
+                . ' does not exists. Available services: ' . join($channelManagerNames));
         }
 
-        return $channelManagerName;
+        return $isExists;
     }
 
     /**
@@ -431,30 +432,28 @@ class ChannelManager
         return $this->container->getParameter('mbh.channelmanager.services')[$channelManagerName]['title'];
     }
 
-
     /**
      * @param Hotel $hotel
      * @param string $channelManagerName
      */
     public function setIsConnectionInstructionRead(Hotel $hotel, string $channelManagerName)
     {
-        if (!is_null($this->getConfigForHotel($hotel, $channelManagerName))) {
-            throw new \RuntimeException('There is existing config');
+        $config = $this->getConfigForHotel($hotel, $channelManagerName);
+        if (is_null($config)) {
+            /** @var ChannelManagerConfigInterface $config */
+            $configType = $this->getConfigFullName($channelManagerName);
+            $config = new $configType;
+            $config->setHotel($hotel);
+            $this->dm->persist($config);
         }
 
-        /** @var ChannelManagerConfigInterface $config */
-        $configType = $this->getConfigFullName($channelManagerName);
-        $config = new $configType;
         $config
-            ->setHotel($hotel)
+            ->setIsEnabled(true)
             ->setIsConnectionSettingsRead(true);
-
-        $this->dm->persist($config);
 
         $this->dm->flush();
         $this->dm->refresh($hotel);
     }
-
 
     /**
      * @param string $channelManagerName
