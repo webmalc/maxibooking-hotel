@@ -563,14 +563,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
      */
     public function confirmAction(Order $order, Package $package)
     {
-        $user = $this->getUser();
-        $order->setConfirmed(true);
-        $this->dm->flush();
-
-        /** SetOwner && ACL */
-        $om = $this->get('mbh.acl_document_owner_maker');
-        $om->assignOwnerToDocument($user, $order);
-        $om->assignOwnerToDocument($user, $package);
+        $this->get('mbh.order_manager')->confirmOrder($package, $this->getUser());
 
         return $this->redirectToRoute('package_order_edit', ['id' => $order->getId(), 'packageId' => $package->getId()]);
     }

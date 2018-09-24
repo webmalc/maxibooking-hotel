@@ -7,6 +7,7 @@ use MBH\Bundle\BillingBundle\Lib\Model\Result;
 use MBH\Bundle\HotelBundle\Service\FormFlow;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -140,6 +141,23 @@ class DashboardApiController extends BaseController
             ->getApiResponse();
 
         return new JsonResponse($response);
+    }
+
+    /**
+     * @Method("POST")
+     * @Route("/confirm_order/{id}")
+     * @param Package $package
+     * @return JsonResponse
+     * @throws \MBH\Bundle\BaseBundle\Lib\Exception
+     */
+    public function confirmOrder(Package $package)
+    {
+        $this->addAccessControlHeaders();
+        $this
+            ->get('mbh.order_manager')
+            ->confirmOrder($package, $this->getUser());
+
+        return new JsonResponse((new Result())->getApiResponse());
     }
 
     private function normalizePackages(array $packages)
