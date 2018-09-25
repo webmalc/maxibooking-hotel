@@ -214,7 +214,7 @@ class ExternalApiController extends BaseController
                 || $formConfig->getHotels()->count() == 0
                 || in_array($hotel, $formConfig->getHotels()->toArray())
             ) {
-                if ($request->get('locale')) {
+                if ($request->get('locale') && !$this->get('mbh.client_config_manager')->hasSingleLanguage()) {
                     $hotel->setLocale($request->getLocale());
                     $this->dm->refresh($hotel);
                 }
