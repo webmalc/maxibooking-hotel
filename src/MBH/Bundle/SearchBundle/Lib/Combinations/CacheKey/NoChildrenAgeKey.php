@@ -22,5 +22,14 @@ class NoChildrenAgeKey extends AbstractKey
         return $key;
     }
 
+    public function getWarmUpKey(SearchQuery $searchQuery): string
+    {
+        $key = $this->getSharedPartKey($searchQuery);
+        $key .= '_' . $searchQuery->getAdults();
+        $key .= '_' . $searchQuery->getChildren();
+
+        return $key;
+    }
+
 
 }

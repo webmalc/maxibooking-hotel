@@ -8,6 +8,7 @@ use MBH\Bundle\SearchBundle\Lib\Exceptions\CacheWarmerException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException;
 use MBH\Bundle\SearchBundle\Services\Search\CacheSearcher;
+use MBH\Bundle\SearchBundle\Services\Search\SearcherInterface;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 
@@ -19,9 +20,9 @@ class WarmUpConsumer implements ConsumerInterface
 
     /**
      * WarmUpConsumer constructor.
-     * @param CacheSearcher $cacheSearcher
+     * @param SearcherInterface $cacheSearcher
      */
-    public function __construct(CacheSearcher $cacheSearcher)
+    public function __construct(SearcherInterface $cacheSearcher)
     {
         $this->cacheSearcher = $cacheSearcher;
     }
