@@ -159,6 +159,22 @@ class PriceCacheGeneratorType extends AbstractType
                 'required' => false,
                 'help' => 'mbhpricebundle.form.pricecachegeneratortype.price_for_single_room_bookings'
             ])
+            ->add('childPrice', HiddenType::class, [
+                'required' => false,
+                'attr' => ['class' => 'hidden-price'],
+                'constraints' => [
+                    new Range(['min' => 0, 'minMessage' => 'mbhpricebundle.form.pricecachegeneratortype.price_cant_be_less_minus_one']),
+                ],
+            ])
+            ->add('childPriceFake', TextType::class, [
+                'label' => 'mbhpricebundle.form.pricecachegeneratortype.price_for_children_defaulp_place',
+                'attr' => [
+                    'class' => 'text-price',
+                    'placeholder' => $pricePlaceHolder
+                ],
+                'group' => 'mbhpricebundle.form.pricecachegeneratortype.price',
+                'required' => false,
+            ])
             ->add('additionalPrice', HiddenType::class, [
                 'required' => false,
                 'attr' => ['class' => 'hidden-price'],
@@ -176,22 +192,7 @@ class PriceCacheGeneratorType extends AbstractType
                 'required' => false,
                 'help' => 'mbhpricebundle.form.pricecachegeneratortype.price_for_single_room_bookings'
             ])
-            ->add('childPrice', HiddenType::class, [
-                'required' => false,
-                'attr' => ['class' => 'hidden-price'],
-                'constraints' => [
-                    new Range(['min' => 0, 'minMessage' => 'mbhpricebundle.form.pricecachegeneratortype.price_cant_be_less_minus_one']),
-                ],
-            ])
-            ->add('childPriceFake', TextType::class, [
-                'label' => 'mbhpricebundle.form.pricecachegeneratortype.price_for_children_defaulp_place',
-                'attr' => [
-                    'class' => 'text-price',
-                    'placeholder' => $pricePlaceHolder
-                ],
-                'group' => 'mbhpricebundle.form.pricecachegeneratortype.price',
-                'required' => false,
-            ])
+
             ->add('additionalPrice', HiddenType::class, [
                 'required' => false,
                 'attr' => ['class' => 'hidden-price'],
