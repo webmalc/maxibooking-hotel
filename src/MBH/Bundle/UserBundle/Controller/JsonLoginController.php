@@ -59,7 +59,8 @@ class JsonLoginController extends BaseController
 
                     $result->setData([
                         'name' => $user->getUsername(),
-                        'token' => $token
+                        'token' => $token,
+                        'expiredAt' => $user->getApiToken()->getExpiredAt()->format('d.m.Y H:i:s')
                     ]);
                 }
             }
