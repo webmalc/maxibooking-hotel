@@ -13,38 +13,8 @@ use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Data\Serializers\ResultSerializer;
 use Predis\Client;
 
-class CacheSearchResults implements SearchCacheInterface
+class CacheSearchResults extends AbstractCacheSearchResult
 {
-
-    /** @var SearchResultCacheItemRepository */
-    private $cacheItemRepository;
-
-    /** @var ResultSerializer */
-    private $serializer;
-
-    /** @var Client */
-    private $redis;
-    /**
-     * @var CacheKeyCreator
-     */
-    private $keyCreator;
-
-    /**
-     * SearchCache constructor.
-     * @param SearchResultCacheItemRepository $cacheItemRepository
-     * @param ResultSerializer $serializer
-     * @param Client $client
-     * @param CacheKeyCreator $keyCreator
-     */
-    public function __construct(SearchResultCacheItemRepository $cacheItemRepository, ResultSerializer $serializer, Client $client, CacheKeyCreator $keyCreator)
-    {
-        $this->cacheItemRepository = $cacheItemRepository;
-        $this->serializer = $serializer;
-        $this->redis = $client;
-        $this->keyCreator = $keyCreator;
-    }
-
-
     /**
      * @param SearchQuery $searchQuery
      * @param bool $hydrated

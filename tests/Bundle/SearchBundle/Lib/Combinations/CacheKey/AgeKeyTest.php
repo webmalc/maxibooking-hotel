@@ -15,12 +15,17 @@ class AgeKeyTest extends WebTestCase
      * @param $data
      * @param $expected
      */
-    public function testChildrenAgeGetKey($data, $expected): void
+    public function testChildrenAgeGetKey($data, $expected, $type): void
     {
 
         $searchQuery = $this->createSearchQuery($data);
         $keyCreator = new ChildrenAgeKey();
-        $actual = $keyCreator->getKey($searchQuery);
+        if ($type === 'no_warmup') {
+            $actual = $keyCreator->getKey($searchQuery);
+        }
+        if ($type === 'warmup') {
+            $actual = $keyCreator->getWarmUpKey($searchQuery);
+        }
         $this->assertEquals($expected['with_age'], $actual);
     }
 
@@ -28,11 +33,16 @@ class AgeKeyTest extends WebTestCase
      * @param $data
      * @param $expected
      */
-    public function testGetNoChildrenAgeKey($data, $expected): void
+    public function testGetNoChildrenAgeKey($data, $expected, $type): void
     {
         $searchQuery = $this->createSearchQuery($data);
         $keyCreator = new NoChildrenAgeKey();
-        $actual = $keyCreator->getKey($searchQuery);
+        if ($type === 'no_warmup') {
+            $actual = $keyCreator->getKey($searchQuery);
+        }
+        if ($type === 'warmup') {
+            $actual = $keyCreator->getWarmUpKey($searchQuery);
+        }
         $this->assertEquals($expected['no_age'], $actual);
     }
 
@@ -89,6 +99,7 @@ class AgeKeyTest extends WebTestCase
                         .'_'.'2'
                         .'_'.'1',
                 ],
+                'no_warmup'
 
             ],
             [
@@ -113,7 +124,7 @@ class AgeKeyTest extends WebTestCase
                         .'_'.'fakeTariffId'
                         .'_'.'2'
                         .'_'.'3'
-                        .'_'.'children_ages'.'_'.implode('_', [1, 8, 14])
+                        .'_'.'children_ages'.'_'.implode('_', [1, 8, 15])
                     ,
                     'no_age' =>
                         (new \DateTime('midnight'))->format('d.m.Y')
@@ -124,7 +135,78 @@ class AgeKeyTest extends WebTestCase
                         .'_'.'3'
                         .'_'.'1',
                 ],
+                'no_warmup'
+            ],
+            [
+                'data' => [
+                    'begin' => new \DateTime('midnight'),
+                    'end' => new \DateTime('midnight +1 day'),
+                    'roomTypeId' => 'fakeRoomTypeId',
+                    'tariffId' => 'fakeTariffId',
+                    'adults' => 2,
+                    'children' => 1,
+                    'childrenAges' => [4],
+                    'tariffInfantAge' => 2,
+                    'tariffChildAge' => 14,
+                    'withChildKey' => true,
+                ],
+                'expected' => [
+                    'with_age' =>
+                        (new \DateTime('midnight'))->format('d.m.Y')
+                        .'_'
+                        .(new \DateTime('midnight +1 day'))->format('d.m.Y')
+                        .'_'.'fakeRoomTypeId'
+                        .'_'.'fakeTariffId'
+                        .'_'.'2'
+                        .'_'.'1'
+                        .'_'.'children_ages'.'_'.implode('_', [4])
+                    ,
+                    'no_age' =>
+                        (new \DateTime('midnight'))->format('d.m.Y')
+                        .'_'
+                        .(new \DateTime('midnight +1 day'))->format('d.m.Y')
+                        .'_'.'fakeRoomTypeId'
+                        .'_'.'fakeTariffId'
+                        .'_'.'2'
+                        .'_'.'1',
+                ],
+                'warmup'
 
+            ],
+            [
+                'data' => [
+                    'begin' => new \DateTime('midnight'),
+                    'end' => new \DateTime('midnight +1 day'),
+                    'roomTypeId' => 'fakeRoomTypeId',
+                    'tariffId' => 'fakeTariffId',
+                    'adults' => 2,
+                    'children' => 3,
+                    'childrenAges' => [1, 8, 15],
+                    'tariffInfantAge' => 2,
+                    'tariffChildAge' => 14,
+                    'withChildKey' => true,
+                ],
+                'expected' => [
+                    'with_age' =>
+                        (new \DateTime('midnight'))->format('d.m.Y')
+                        .'_'
+                        .(new \DateTime('midnight +1 day'))->format('d.m.Y')
+                        .'_'.'fakeRoomTypeId'
+                        .'_'.'fakeTariffId'
+                        .'_'.'2'
+                        .'_'.'3'
+                        .'_'.'children_ages'.'_'.implode('_', [1, 8, 15])
+                    ,
+                    'no_age' =>
+                        (new \DateTime('midnight'))->format('d.m.Y')
+                        .'_'
+                        .(new \DateTime('midnight +1 day'))->format('d.m.Y')
+                        .'_'.'fakeRoomTypeId'
+                        .'_'.'fakeTariffId'
+                        .'_'.'2'
+                        .'_'.'3',
+                ],
+                'warmup'
             ],
         ];
     }

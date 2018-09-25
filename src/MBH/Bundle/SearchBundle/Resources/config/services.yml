@@ -96,11 +96,24 @@ services:
             - '@mbh_search.searcher'
             - '@mbh_search.cache_searcher'
 
+
+    #cache_searchers
+    mbh_search.abstract_cache_searcher:
+        class: MBH\Bundle\SearchBundle\Services\Search\AbstractCacheSearcher
+        abstract: true
+        arguments:
+        - '@mbh_search.searcher'
+        - '@mbh_search.cache_search'
+
     mbh_search.cache_searcher:
         class: MBH\Bundle\SearchBundle\Services\Search\CacheSearcher
+        parent: 'mbh_search.abstract_cache_searcher'
+
+    mbh_search.warm_up_cache_searcher:
+        class: MBH\Bundle\SearchBundle\Services\Search\WarmUpCacheSearcher
+        parent: 'mbh_search.abstract_cache_searcher'
         arguments:
-            - '@mbh_search.searcher'
-            - '@mbh_search.cache_search'
+            index_1: '@mbh_search.cache_warm_up_search'
 
     mbh_search.cache_key_creator:
         class: MBH\Bundle\SearchBundle\Services\Cache\CacheKeyCreator
@@ -183,7 +196,7 @@ services:
     mbh_search.warm_up_search:
         class: MBH\Bundle\SearchBundle\RabbitMQ\WarmUpConsumer
         arguments:
-            - '@mbh_search.cache_searcher'
+            - '@mbh_search.warm_up_cache_searcher'
 
 #search limit checker for refactoring
     mbh_search.search_limit_checker:
@@ -294,13 +307,22 @@ services:
         arguments: ['@mbh_search.client_config_repository']
 
 ##Cache Results
+    mbh_search.cache_search_abstract:
+        class: MBH\Bundle\SearchBundle\Services\Cache\AbstractCacheSearchResult
+        arguments:
+        - '@mbh_search.search_cache_item_repository'
+        - '@mbh_search.result_serializer'
+        - '@snc_redis.cache_results_client'
+        - '@mbh_search.cache_key_creator'
+        abstract: true
+
     mbh_search.cache_search:
         class: MBH\Bundle\SearchBundle\Services\Cache\CacheSearchResults
-        arguments:
-            - '@mbh_search.search_cache_item_repository'
-            - '@mbh_search.result_serializer'
-            - '@snc_redis.cache_results_client'
-            - '@mbh_search.cache_key_creator'
+        parent: 'mbh_search.cache_search_abstract'
+
+    mbh_search.cache_warm_up_search:
+        class: MBH\Bundle\SearchBundle\Services\Cache\WarmUpCacheSearchResult
+        parent: 'mbh_search.cache_search_abstract'
 
     mbh_search.cache_warmer:
         class: MBH\Bundle\SearchBundle\Services\Cache\CacheWarmer

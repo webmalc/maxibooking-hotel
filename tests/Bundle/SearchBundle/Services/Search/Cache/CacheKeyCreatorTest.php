@@ -12,7 +12,6 @@ use MBH\Bundle\SearchBundle\Lib\Combinations\CombinationCreator;
 use MBH\Bundle\SearchBundle\Lib\Events\GuestCombinationEvent;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Cache\CacheKeyCreator;
-use MBH\Bundle\SearchBundle\Services\Cache\CacheKeyCreatorFactory;
 use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -39,7 +38,7 @@ class CacheKeyCreatorTest extends WebTestCase
         });
 
         $dispatcher = $this->createMock(EventDispatcherInterface::class);
-        $dispatcher->expects($this->once())->method('dispatch')->willReturnCallback(
+        $dispatcher->expects($this->exactly(2))->method('dispatch')->willReturnCallback(
             function () {
                 /** @var GuestCombinationEvent $event */
                 $event = func_get_arg(1);
@@ -80,6 +79,7 @@ class CacheKeyCreatorTest extends WebTestCase
 
         $service = new CacheKeyCreator($dispatcher, $sharedFetcher, $keyFactory);
         $service->createKey($searchQuery);
+        $service->createWarmUpKey($searchQuery);
 
     }
 

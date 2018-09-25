@@ -74,6 +74,7 @@ class CacheWarmer
     public function warmUp(\DateTime $monthDate = null): void
     {
 
+
         $this->logger->info('Start cache warmUp');
         if (null === $monthDate) {
             $monthDate = new \DateTime('midnight');
@@ -87,10 +88,10 @@ class CacheWarmer
         $sharedConditions = [
             'begin' => $begin->format('d.m.Y'),
             'end' => $end->format('d.m.Y'),
-            'additionalBegin' => 9,
-            'additionalEnd' => 10,
+            'additionalBegin' => 1,
+            'additionalEnd' => 1,
             'isUseCache' => true,
-            'isThisWarmUp' => true
+            'isThisWarmUp' => true,
         ];
 
         $dm = $this->tariffRepository->getDocumentManager();
@@ -100,7 +101,11 @@ class CacheWarmer
         foreach ($combinationTypes as $combinationType) {
             $guestCombinations = $combinationType->getCombinations();
             foreach ($guestCombinations as $combination) {
-                $conditionsData = array_merge($sharedConditions, $combination, ['tariffs' => $combinationType->getTariffIds()]);
+                $conditionsData = array_merge(
+                    $sharedConditions,
+                    $combination,
+                    ['tariffs' => $combinationType->getTariffIds()]
+                );
                 $conditions = $this->conditionCreator->createSearchConditions($conditionsData);
                 $conditions->setId('warmerConditions');
                 $queries = $this->queryGenerator->generate($conditions, false);
@@ -108,6 +113,7 @@ class CacheWarmer
                 foreach ($queryChunks as $chunk) {
                     $this->warmUpSearcher->search($chunk);
                 }
+
             }
 
         }

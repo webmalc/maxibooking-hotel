@@ -22,4 +22,10 @@ class ChildrenAgeKey extends AbstractKey
         return $key;
     }
 
+    public function getWarmUpKey(SearchQuery $searchQuery): string
+    {
+        return $this->getKey($searchQuery);
+    }
+
+
 }
