@@ -41,7 +41,7 @@ class AirbnbRoomsType extends AbstractType
             }
             $syncRoom = $config->getSyncRoomByRoomType($roomType);
             $syncUrl = $this->router->generate('airbnb_room_calendar', ['id' => $roomType->getId()], Router::ABSOLUTE_URL);
-            $help = $syncUrl;
+            $help = $config->isReadyToSync() ? $syncUrl : '';
 
             $builder
                 ->add($roomType->getId(), TextType::class, [
