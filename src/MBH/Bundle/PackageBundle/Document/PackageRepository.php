@@ -583,7 +583,9 @@ class PackageRepository extends DocumentRepository
         $qb = $this->createQueryBuilder();
         $now = new \DateTime('midnight');
         $orderData = [];
-        $showDeleted = (isset($data['deleted']) && $data['deleted']) || (isset($data['dates']) && $data['dates'] === 'deletedAt');
+
+        $deletedAtFilter = isset($data['dates']) && $data['dates'] === 'deletedAt';
+        $showDeleted = (isset($data['deleted']) && $data['deleted']) || $deletedAtFilter;
 
         //confirmed
         if (isset($data['confirmed']) && $data['confirmed'] != null) {
@@ -680,6 +682,10 @@ class PackageRepository extends DocumentRepository
             if (isset($data['end']) && !empty($data['end'])) {
                 $qb->field($dateType)->lte($data['end']);
             }
+        }
+
+        if ($deletedAtFilter) {
+            $qb->field('deletedAt')->exists(true);
         }
 
         // filter
