@@ -206,7 +206,7 @@ parameters:
       !php/const:MBH\Bundle\ClientBundle\Document\PaymentSystem\NewRbk::KEY_ARRAY: 'NewRbk'
       paypal: 'PayPal'
       rnkb: 'Rnkb'
-      invoice: 'mbh.payment_systems.by_invoice'
+      !php/const:MBH\Bundle\ClientBundle\Document\PaymentSystem\Invoice::KEY_ARRAY: 'mbh.payment_systems.by_invoice'
       stripe: 'Stripe'
       tinkoff: Tinkoff
       sberbank: Sberbank

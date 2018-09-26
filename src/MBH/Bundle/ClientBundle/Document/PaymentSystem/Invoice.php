@@ -13,6 +13,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Invoice extends PaymentSystemDocument
 {
+    public const KEY_ARRAY = 'invoice';
+
     /**
      * @var DocumentTemplate
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\ClientBundle\Document\DocumentTemplate")
