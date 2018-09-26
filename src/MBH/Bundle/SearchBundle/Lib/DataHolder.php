@@ -7,6 +7,7 @@ namespace MBH\Bundle\SearchBundle\Lib;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\ClientBundle\Document\ClientConfigRepository;
+use MBH\Bundle\HotelBundle\Document\HotelRepository;
 use MBH\Bundle\HotelBundle\Document\RoomRepository;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
@@ -80,6 +81,9 @@ class DataHolder
     /** @var array */
     private $priceCaches;
 
+    /** @var array */
+    private $hotelIdsInSearch;
+
     /**
      * TariffHolder constructor.
      * @param TariffRepository $tariffRepository
@@ -101,9 +105,9 @@ class DataHolder
         RoomRepository $roomRepository,
         PackageAccommodationRepository $accommodationRepository,
         PriceCacheRepository $priceCacheRepository,
-        SearchConditionsRepository $conditionsRepository
-    )
-    {
+        SearchConditionsRepository $conditionsRepository,
+        HotelRepository $hotelRepository
+    ) {
         $this->tariffRepository = $tariffRepository;
         $this->roomTypeRepository = $roomTypeRepository;
         $this->tariffs = $tariffRepository->findAll();
@@ -114,7 +118,8 @@ class DataHolder
         $this->roomRepository = $roomRepository;
         $this->packageAccommodationRepository = $accommodationRepository;
         $this->priceCacheRepository = $priceCacheRepository;
-        $this->searchConditionsRepository = $configRepository;
+        $this->searchConditionsRepository = $conditionsRepository;
+        $this->hotelIdsInSearch = $hotelRepository->getSearchActiveIds();
     }
 
 
@@ -577,6 +582,11 @@ class DataHolder
         }
 
         throw new DataHolderException('Can not find SearchConditions by hash and Id');
+    }
+
+    public function getHotelIdsInSearch(): array
+    {
+        return $this->hotelIdsInSearch;
     }
 
 
