@@ -203,7 +203,7 @@ parameters:
       payanyway: 'PayAnyWay'
       uniteller: 'Uniteller'
       rbk: 'Rbk'
-      newRbk: 'NewRbk'
+      !php/const:MBH\Bundle\ClientBundle\Document\PaymentSystem\NewRbk::KEY_ARRAY: 'NewRbk'
       paypal: 'PayPal'
       rnkb: 'Rnkb'
       invoice: 'mbh.payment_systems.by_invoice'
