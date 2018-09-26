@@ -781,7 +781,7 @@ messages_store.channel_manager_confirmation.mail.text: 'The connection to %chann
 messages_store.new_connection.text: 'A user  "%client%"  initiated the configuration of "%channelManager%".'
 messages_store.new_connection.subject: 'Starting the configuration of "%channelManager%"'
 site_manager.empty_room_caches_warning: '%roomTypeName%: No rooms for sale for the periods: %periods%'
-cm_connection_instructions.part3.text2: 'If you have any questions, please, contact our support team: <a href="mailto:%supportEmail%">% supportEmail% </a>.'
+cm_connection_instructions.part3.text2: 'If you have any questions, please, contact our support team: <a href="mailto:%supportEmail%">%supportEmail% </a>.'
 cm_connection_instructions.part3.header: 'Part III. Conclusion'
 cm_connection_instructions.part3.text1: 'More detailed configuration process is described in the knowledge base <a href="%connectionLink%" target="_blank">here</a>.'
 site_manager.empty_price_caches_warning: '%roomTypeName%: No prices for the period %periods% for the rate "%tariffName%"'
