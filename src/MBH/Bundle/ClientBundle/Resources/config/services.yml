@@ -87,7 +87,7 @@ services:
 
     mbh.client_config_manager:
         class: MBH\Bundle\ClientBundle\Service\ClientConfigManager
-        arguments: ['@doctrine.odm.mongodb.document_manager', '%locale%']
+        arguments: ['@doctrine.odm.mongodb.document_manager']
 
     MBH\Bundle\ClientBundle\Service\DocumentSerialize\:
         resource: '%kernel.root_dir%/../src/MBH/Bundle/ClientBundle/Service/DocumentSerialize/*'

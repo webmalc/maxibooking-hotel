@@ -23,7 +23,8 @@ class DocumentFieldsManager
             'zipCode' => 'form.hotelExtendedType.zip_code',
             'settlement' => 'form.hotelExtendedType.settlement',
             'cityId' => 'form.hotelExtendedType.city',
-            'house' => 'form.hotelExtendedType.house'
+            'house' => 'form.hotelExtendedType.house',
+            'mapUrl' => 'form.hotel_contact_information_type.map_url'
         ],
         RoomType::class => [
             'description' => 'form.roomTypeType.description',

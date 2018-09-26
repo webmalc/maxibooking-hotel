@@ -323,6 +323,7 @@ class ClientConfig extends Base
 
     /**
      * @var array
+     * @Gedmo\Versioned
      * @ODM\Field(type="collection")
      * @Assert\NotBlank()
      */
