@@ -90,6 +90,16 @@ class BillingInstallCommand extends ContainerAwareCommand
                 $this->changeStatus($statusStorage, 'error');
                 $billingApi->sendClientInstallationResult($installResult, $clientName);
             }
+
+            try {
+                $client = $this->getContainer()->get('mbh.client_manager')->getClient();
+                $this->getContainer()->get('mbh.site_manager')->createOrUpdateForHotel($client);
+                $this->documentManager->flush();
+            } catch (\Throwable $exception) {
+                $this->logger->addCritical('An error occurred while creating the config of the site');
+            }
+
+
             /** Success Result sending only from service, but false result - here
              * Need to refactoring. Voter scheme move to service.
              */
