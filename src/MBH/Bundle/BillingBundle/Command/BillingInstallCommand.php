@@ -88,7 +88,7 @@ class BillingInstallCommand extends ContainerAwareCommand
             $billingApi = $this->getContainer()->get('mbh.billing.api');
             if (!$installResult->isSuccessful()) {
                 $this->changeStatus($statusStorage, 'error');
-                $billingApi->sendClientInstallationResult($installResult);
+                $billingApi->sendClientInstallationResult($installResult, $clientName);
             }
 
             try {
