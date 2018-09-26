@@ -2,3 +2,13 @@
 
 {% set title = 'menu.label.portie'|trans({}, 'MBHBaseBundle') %}
 {% set title_url = path('tourist') %}
+
+{% block scripts %}
+    {{ parent() }}
+
+    {% javascripts filter='uglifyjs2'
+        '@MBHPackageBundle/Resources/public/js/tourist/*'
+    %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}

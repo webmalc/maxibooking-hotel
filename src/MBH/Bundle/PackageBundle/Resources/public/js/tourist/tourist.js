@@ -64,12 +64,13 @@ var docReadyTourists = function () {
         $touristTable.dataTable().fnDraw();
     });
 
-    $('#mbh_bundle_packagebundle_touristtype_birthday, #mbh_bundle_packagebundle_package_guest_type_birthday, .guestBirthday').datepicker({
-        language: "ru",
-        autoclose: true,
-        startView: 2,
-        disableTouchKeyboard: true
-    });
+    $('#mbh_bundle_packagebundle_touristtype_birthday, #mbh_bundle_packagebundle_package_guest_type_birthday, .guestBirthday')
+        .datepicker({
+            language: "ru",
+            autoclose: true,
+            startView: 2,
+            disableTouchKeyboard: true
+        });
 
     var $guestForm = $('form[name=mbh_bundle_packagebundle_package_order_tourist_type]');
     var fillGuestForm = function (data) {
