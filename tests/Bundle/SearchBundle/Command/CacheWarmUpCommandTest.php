@@ -14,7 +14,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 class CacheWarmUpCommandTest extends KernelTestCase
 {
     /** @dataProvider dataProvider */
-    public function testExecute($input, $expected): void
+    public function testExecute($input): void
     {
         $kernel = self::bootKernel();
 
@@ -22,7 +22,11 @@ class CacheWarmUpCommandTest extends KernelTestCase
 
         $warmer = $this->createMock(CacheWarmer::class);
         $container->set('mbh_search.cache_warmer', $warmer);
-        $warmer->expects($this->exactly(\count($expected['num'])))->method('warmUp');
+        $warmer->expects($this->once())->method('warmUp')->willReturnCallback(
+            function ($begin, $end) {
+                $this->assertEquals(new \DateTime('01-01-2018'), $begin);
+                $this->assertEquals(new \DateTime('01-01-2019'), $end);
+            });
 
         $searchCache = $this->createMock(CacheSearchResults::class);
         $searchCache->expects($this->once())->method('flushCache');
@@ -38,9 +42,8 @@ class CacheWarmUpCommandTest extends KernelTestCase
         $commandTester->execute(
             [
                 'command' => $command->getName(),
-                '--include' => $input['include'],
-                '--exclude' => $input['exclude'],
-                '--year' => $input['year']
+                '--begin' => $input['begin'],
+                '--end' => $input['end'],
             ]
         );
 
@@ -48,44 +51,17 @@ class CacheWarmUpCommandTest extends KernelTestCase
 
     }
 
+
     public function dataProvider()
     {
-        $now = new \DateTime();
-        $nextYear = (clone $now)->modify('+1 year')->format('Y');
-
         return [
             [
                 'input' =>
                     [
-                        'include' => '',
-                        'exclude' => '6,5,6,7,7',
-                        'year' => $nextYear,
+                        'begin' => '01-01-2018',
+                        'end' => '01-01-2019',
 
                     ],
-                'excepted' => [
-                    'num' => [1, 2, 3, 4, 8, 9, 10, 11, 12],
-                ],
-
-            ],
-            [
-                [
-                    'include' => '',
-                    'exclude' => '',
-                    'year' => $nextYear,
-                ],
-                'expected' => [
-                    'num' => range(1, 12)
-                ] ,
-            ],
-            [
-                [
-                    'include' => '4',
-                    'exclude' => '4,5',
-                    'year' => $nextYear,
-                ],
-                'expected' => [
-                    'num' => []
-                ]
             ],
         ];
     }

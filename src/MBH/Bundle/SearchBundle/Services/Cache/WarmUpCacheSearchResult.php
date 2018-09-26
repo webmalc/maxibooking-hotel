@@ -5,20 +5,16 @@ namespace MBH\Bundle\SearchBundle\Services\Cache;
 
 
 use MBH\Bundle\SearchBundle\Document\SearchResultCacheItem;
-use MBH\Bundle\SearchBundle\Lib\Exceptions\CacheWarmerException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 
 class WarmUpCacheSearchResult extends AbstractCacheSearchResult
 {
-    /**
-     * @param SearchQuery $searchQuery
-     * @param bool $hydrated
-     * @throws CacheWarmerException
-     */
-    public function searchInCache(SearchQuery $searchQuery, $hydrated = true): void
+    public function searchInCache(SearchQuery $searchQuery, $hydrated = true): bool
     {
-        throw new CacheWarmerException('No need search In cache when warmUp!');
+        $key = $this->keyCreator->createWarmUpKey($searchQuery);
+
+        return $this->redis->exists($key);
     }
 
     /**
