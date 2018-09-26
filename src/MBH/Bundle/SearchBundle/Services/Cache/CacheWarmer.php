@@ -84,8 +84,16 @@ class CacheWarmer
 
         $this->logger->info('Start cache warmUp');
         $datesArray = $this->getDates($begin, $end);
+        $dm = $this->tariffRepository->getDocumentManager();
+        $hotelIds = $dm->getRepository(Hotel::class)->getSearchActiveIds();
+        $tariffs = $this->tariffRepository->getTariffsByHotelsIds($hotelIds);
+        $combinationTypes = $this->combinator->getCombinations($tariffs);
+        $totalDates = \count($datesArray);
         foreach ($datesArray as $dates) {
-            $this->warmUpDateCombination($dates['begin'], $dates['end']);
+            $this->logger->info('WarmUp for '.$dates['begin']->format('d.m.Y').'-'.$dates['end']->format('d.m.Y'));
+            $this->logger->info('Left '.$totalDates.' dates');
+            $totalDates--;
+            $this->warmUpDateCombination($dates['begin'], $dates['end'], $combinationTypes);
         }
 
     }
@@ -110,13 +118,13 @@ class CacheWarmer
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @param array $combinationTypes
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
      */
-    private function warmUpDateCombination(\DateTime $begin, \DateTime $end): void
+    private function warmUpDateCombination(\DateTime $begin, \DateTime $end, array $combinationTypes): void
     {
         $sharedConditions = [
             'begin' => $begin->format('d.m.Y'),
@@ -128,12 +136,9 @@ class CacheWarmer
             'isThisWarmUp' => true,
         ];
 
-        $dm = $this->tariffRepository->getDocumentManager();
-        $hotelIds = $dm->getRepository(Hotel::class)->getSearchActiveIds();
-        $tariffs = $this->tariffRepository->getTariffsByHotelsIds($hotelIds);
-        $combinationTypes = $this->combinator->getCombinations($tariffs);
         foreach ($combinationTypes as $combinationType) {
             $guestCombinations = $combinationType->getCombinations();
+            $this->logger->info('Combination.', $guestCombinations);
             foreach ($guestCombinations as $combination) {
                 $conditionsData = array_merge(
                     $sharedConditions,
