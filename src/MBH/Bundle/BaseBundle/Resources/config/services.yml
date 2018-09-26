@@ -497,6 +497,8 @@ services:
             - '@mbh.helper'
             - '@property_accessor'
             - '@stof_doctrine_extensions.listener.translatable'
+            - '@mbh.client_config_manager'
+            - '@translator'
             - '%locale%'
 
     mbh.menu_builder:

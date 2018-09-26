@@ -292,6 +292,8 @@ class Builder
             $this->isCurrent = true;
         }
 
+        $reg = '/\@Security\(\"is_granted\(\'(ROLE\_ . +?)\'\)(?:\s((?:or|\|\|)|(?:and|\&\&))\sis_granted\(\'(ROLE\_ . +?)\'\))?\"\)/ixu';
+
         foreach ($menu->getChildren() as $child) {
             if (empty($child->getUri())) {
                 continue;
@@ -314,7 +316,6 @@ class Builder
                 $menu->removeChild($child);
                 continue;
             }
-            $reg = '/\@Security\(\"is_granted\(\'(ROLE\_ . +?)\'\)(?:\s((?:or|\|\|)|(?:and|\&\&))\sis_granted\(\'(ROLE\_ . +?)\'\))?\"\)/ixu';
             preg_match($reg, $metadata, $roles);
 
             if (empty($metadata) || empty($roles[1])) {
@@ -898,7 +899,7 @@ class Builder
                     'route' => 'client_payment_systems',
                     'label' => 'menu.label.payment_systems',
                 ],
-                'attributes' => ['icon' => 'fa fa-paperclip'],
+                'attributes' => ['icon' => 'fa fa-credit-card'],
             ],
         ];
 

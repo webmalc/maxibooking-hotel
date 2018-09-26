@@ -433,15 +433,17 @@ class ChannelManager
      */
     public function setIsConnectionInstructionRead(Hotel $hotel, string $channelManagerName)
     {
-        if (!is_null($this->getConfigForHotel($hotel, $channelManagerName))) {
-            throw new \RuntimeException('There is existing config');
+        $config = $this->getConfigForHotel($hotel, $channelManagerName);
+        if (is_null($config)) {
+            /** @var ChannelManagerConfigInterface $config */
+            $configType = $this->getConfigFullName($channelManagerName);
+            $config = new $configType;
+            $config->setHotel($hotel);
+            $this->dm->persist($config);
         }
 
-        /** @var ChannelManagerConfigInterface $config */
-        $configType = $this->getConfigFullName($channelManagerName);
-        $config = new $configType;
         $config
-            ->setHotel($hotel)
+            ->setIsEnabled(true)
             ->setIsConnectionSettingsRead(true);
 
         $this->dm->persist($config);

@@ -70,7 +70,7 @@ class HotelContactInformationType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => Hotel::class,
+            'data_class' => Hotel::class
         ]);
     }
 

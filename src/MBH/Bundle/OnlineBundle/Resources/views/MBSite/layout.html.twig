@@ -1,27 +1,50 @@
 {% extends "MBHOnlineBundle::layout.html.twig" %}
 
-{% set title = 'views.mb_site.title'|trans %}
-{% set title_url = path('site_settings') %}
+{% set management_icon = true %}
+{% set title = 'menu.label.web_site'|trans %}
+
+
+{% set titlePaymentSystems %}
+    <i class="fa fa-credit-card"></i> {{ 'views.mb_site.index.paymentSystem.label'|trans }}
+    {% if not isSetUpPaymentSystems %}
+    <small class="label label-danger label-as-badge"><i
+                class="fa fa-exclamation"></i></small>
+    {% endif %}
+{% endset %}
+
+{% set titlePersonalDataPolicies %}
+    <i class="fa fa-expeditedssl"></i>
+    {{ 'views.mb_site.index.personal_data_policies'|trans }}
+    {% if siteConfig == null or siteConfig.personalDataPolicies is empty  %}
+        <small class="label label-danger label-as-badge"><i
+                    class="fa fa-exclamation"></i></small>
+    {% endif %}
+{% endset %}
+
 {% set layout = "tabs" %}
 {% set menu = [
-    {'route': 'site_settings', 'title': '<i class="fa fa-cogs"></i> '~ 'views.mb_site.index.main_settings'|trans}
+    {'route': 'site_settings', 'title': '<i class="fa fa-cogs"></i> '~ 'views.mb_site.index.main_settings'|trans},
 ] %}
 
-{% set numberOfNotHotelTabs = menu|length %}
-{% set active = 1 %}
+{% if active is not defined %}
+    {% set active = 1 %}
+{% endif %}
 
 {% for hotelInfo in hotelsSettings %}
     {% set iteratedHotel = hotelInfo.hotel %}
     {% if hotel is defined and hotel.id == iteratedHotel.id %}
-        {% set active = loop.index + numberOfNotHotelTabs %}
+        {% set active = loop.index + 1 %}
     {% endif %}
-    {% set hotelTitle = '<i class="fa fa-home"></i> ' ~ iteratedHotel.name
+    {% set hotelTitle = '<i class="fa fa-home"></i> ' ~ 'views.mb_site.index.hotel_settings.info'|trans ~ iteratedHotel.name
         ~ ' <small class="label label-danger label-as-badge">' ~ hotelInfo.numberOfWarnings ~ '</small>' %}
     {% set menu = menu|merge([
         {'route': 'site_hotel_settings', 'params': {'id': iteratedHotel.id}, 'title': hotelTitle }
     ]) %}
 {% endfor %}
-
+{% set menu = menu|merge([
+    {'route': 'site_hotel_personal_data_policies', 'title': titlePersonalDataPolicies},
+    {'route': 'site_hotel_payment_systems', 'title': titlePaymentSystems},
+]) %}
 
 {% block content %}
     {% include '@MBHBase/tabs.html.twig' with {'menu': menu, 'id': 'site_settings_tabs'} %}
@@ -41,7 +64,7 @@
 {% block styles %}
     {{ parent() }}
     {% stylesheets filter='cssrewrite, uglifycss'
-        '@MBHOnlineBundle/Resources/public/css/mb-site.css'
+        '@MBHOnlineBundle/Resources/public/css/mb-site/*'
     %}
         <link rel="stylesheet" href="{{ asset_url }}"/>
     {% endstylesheets %}

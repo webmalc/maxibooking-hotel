@@ -11,6 +11,12 @@ interface ChannelManagerConfigInterface
 {
     public function getIsEnabled();
 
+    /**
+     * @param $isEnabled
+     * @return self
+     */
+    public function setIsEnabled($isEnabled);
+
     public function isMainSettingsFilled();
     public function isConfirmedWithDataWarnings(): ?bool;
     public function setIsConfirmedWithDataWarnings(bool $isConfirmedWithDataWarnings);

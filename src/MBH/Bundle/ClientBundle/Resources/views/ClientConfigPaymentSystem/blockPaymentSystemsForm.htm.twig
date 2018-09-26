@@ -1,0 +1,20 @@
+{% block formStart %}
+    {{ form_start(form, {'action': path('client_payment_system_save', {'paymentSystemName': paymentSystemName}), 'attr': {'class': 'form-horizontal' }}) }}
+{% endblock %}
+{{ form_widget(form) }}
+{% if is_granted('ROLE_CLIENT_CONFIG_EDIT') %}
+    {% block btnActions %}
+        {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close' : false} %}
+    {% endblock %}
+{% endif %}
+{{ form_end(form) }}
+{% if paymentSystemName and paymentSystemName != 'invoice' %}
+    <div class="bg-gray color-palette alert">
+        <strong>{{ 'client.viwes.clientConfig.paymentSystem.urlNotification'|trans({},'MBHClientBundle') }}</strong>
+        : {{ url('online_form_check_order', {'paymentSystemName': paymentSystemName}) }}<br>
+        <strong>{{ 'client.viwes.clientConfig.paymentSystem.urlSuccesPayment'|trans({},'MBHClientBundle') }}</strong>
+        : {{ url('api_success_url') }}<br>
+        <strong>{{ 'client.viwes.clientConfig.paymentSystem.urlFailedPayment'|trans({},'MBHClientBundle') }}</strong>
+        : {{ url('api_fail_url') }}
+    </div>
+{% endif %}

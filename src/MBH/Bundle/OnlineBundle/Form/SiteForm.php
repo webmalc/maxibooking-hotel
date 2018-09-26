@@ -80,17 +80,23 @@ class SiteForm extends AbstractType
 //                'required' => false,
 //                'help' => 'sdfasdfasdf'
 //            ])
-            ->add('personalDataPolicies', TextareaType::class, [
-                'label' => 'site_form.pers_data_policy.label',
-                'attr' => ['class' => 'tinymce'],
-                'required' => false,
-            ])
+                // отдельный Type для политики
+//            ->add('personalDataPolicies', TextareaType::class, [
+//                'label' => 'site_form.pers_data_policy.label',
+//                'attr' => ['class' => 'tinymce'],
+//                'required' => false,
+//            ])
             ->add('paymentTypes', PaymentTypesType::class, [
                 'mapped' => false,
                 'help' => 'form.formType.reservation_payment_types_with_online_form',
                 'constraints' => [new NotBlank()],
                 'data' => $siteFormConfig->getPaymentTypes()
             ])
+            /**
+             * для select2 в colorTheme используется margin-bottom
+             * src/MBH/Bundle/OnlineBundle/Resources/public/css/mb-site/mb-site.css
+             * вместо help
+             */
             ->add('colorTheme', ChoiceType::class, [
                 'label' => 'site_config.color_theme.colors.label',
                 'choices' => SiteConfig::getThemes(),

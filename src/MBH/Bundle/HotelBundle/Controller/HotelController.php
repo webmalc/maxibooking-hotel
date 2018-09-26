@@ -131,7 +131,7 @@ class HotelController extends Controller
     /**
      * Edits an existing entity.
      *
-     * @Route("/{id}", name="hotel_update")
+     * @Route("/{id}/edit", name="hotel_update")
      * @Method("POST")
      * @Security("is_granted('ROLE_HOTEL_EDIT')")
      * @Template("MBHHotelBundle:Hotel:edit.html.twig")
@@ -145,10 +145,8 @@ class HotelController extends Controller
         $form = $this->createForm(HotelType::class, $entity);
         $form->handleRequest($request);
         if ($form->isValid()) {
-            if (!$this->get('mbh.client_config_manager')->hasSingleLanguage()) {
-                $this->get('mbh.form_data_handler')
-                    ->saveTranslationsFromMultipleFieldsForm($form, $request, ['description', 'fullTitle']);
-            }
+            $this->get('mbh.form_data_handler')
+                ->saveTranslationsFromMultipleFieldsForm($form, $request, ['description', 'fullTitle']);
             $this->dm->flush();
 
             $this->addFlash('success', 'controller.hotelController.record_edited_success');

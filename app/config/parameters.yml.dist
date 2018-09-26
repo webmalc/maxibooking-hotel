@@ -82,3 +82,4 @@ parameters:
   billing_url: 'https://billing.maxi-booking.com'
   api_domains: []
   token_lifetime_string: '+1 month'
+  chromedriver_path: ''

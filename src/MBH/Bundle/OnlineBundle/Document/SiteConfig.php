@@ -148,10 +148,10 @@ class SiteConfig extends Base
     }
 
     /**
-     * @param string $personalDataPolicies
+     * @param null|string $personalDataPolicies
      * @return SiteConfig
      */
-    public function setPersonalDataPolicies(string $personalDataPolicies): SiteConfig
+    public function setPersonalDataPolicies(?string $personalDataPolicies): SiteConfig
     {
         $this->personalDataPolicies = $personalDataPolicies;
 

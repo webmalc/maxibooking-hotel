@@ -148,7 +148,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         }
 
         $this->dm->flush();
-        $this->addFlash('success', 'controller.TaskTypeController.success_delete_photo');
+        $this->addFlash('success', 'controller.roomTypeController.success_delete_photo');
 
         $redirectUrl = $request->get('redirect_url')
             ? $request->get('redirect_url')
@@ -211,10 +211,8 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            if (!$this->get('mbh.client_config_manager')->hasSingleLanguage()) {
-                $this->get('mbh.form_data_handler')
-                    ->saveTranslationsFromMultipleFieldsForm($form, $request, ['description', 'fullTitle']);
-            }
+            $this->get('mbh.form_data_handler')
+                ->saveTranslationsFromMultipleFieldsForm($form, $request, ['description', 'fullTitle']);
 
             $this->dm->persist($entity);
             $this->dm->flush();
