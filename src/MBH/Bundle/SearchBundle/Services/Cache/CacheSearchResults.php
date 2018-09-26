@@ -36,26 +36,6 @@ class CacheSearchResults extends AbstractCacheSearchResult
     }
 
     /**
-     * @param Result $result
-     * @param SearchQuery $searchQuery
-     * @throws SearchResultCacheException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\CacheKeyFactoryException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
-     */
-    public function saveToCache(Result $result, SearchQuery $searchQuery): void
-    {
-        $cacheItem = SearchResultCacheItem::createInstance($result);
-        $key = $this->keyCreator->createKey($searchQuery);
-        $cacheItem->setCacheResultKey($key);
-        $dm = $this->cacheItemRepository->getDocumentManager();
-        $dm->persist($cacheItem);
-        $dm->flush($cacheItem);
-
-        $result->setCacheItemId($cacheItem->getId());
-        $this->redis->set($key, $this->serializer->serialize($result));
-    }
-
-    /**
      * @param \DateTime $begin
      * @param \DateTime|null $end
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
