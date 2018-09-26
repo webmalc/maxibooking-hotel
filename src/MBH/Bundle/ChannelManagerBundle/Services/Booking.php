@@ -141,7 +141,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
 
         $response = $this->sendXml(static::BASE_URL . 'roomrates', $request);
 
-        if ($this->checkResponse($response)) {
+        if (!$this->hasErrorNode($response)) {
             foreach ($response->room as $room) {
                 foreach ($room->rates->rate as $rate) {
                     if (isset($result[(string)$rate['id']]['rooms'])) {
@@ -183,7 +183,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
         );
 
         $response = $this->sendXml(static::BASE_URL . 'rooms', $request);
-        if ($this->checkResponse($result)) {
+        if (!$this->hasErrorNode($response)) {
             foreach ($response->xpath('room') as $room) {
                 $result[(string)$room['id']] = (string)$room;
             }
@@ -207,11 +207,21 @@ class Booking extends Base implements ChannelManagerServiceInterface
             return false;
         }
         $xml = simplexml_load_string($response);
-        if (count($xml->xpath('error')) || count($xml->xpath('fault'))) {
+        if ($this->hasErrorNode($xml)) {
             $this->addError($response);
             return false;
         }
+
         return count($xml->xpath('/'. ($params['element'] ?? 'ok'))) ? true : false;
+    }
+
+    /**
+     * @param \SimpleXMLElement $xml
+     * @return bool
+     */
+    private function hasErrorNode(\SimpleXMLElement $xml)
+    {
+        return count($xml->xpath('error')) || count($xml->xpath('fault'));
     }
 
     /**

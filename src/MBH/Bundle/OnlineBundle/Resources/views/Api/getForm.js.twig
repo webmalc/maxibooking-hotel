@@ -1,4 +1,4 @@
-/*global window, jQuery, document */
+/*global window, jQuery, document, isMobileDevice */
 var isDisplayChildAges = {{ isDisplayChildAges ? 'true' : 'false' }};
 jQuery(document).ready(function() {
     var wrapper = jQuery('#mbh-form-wrapper');
@@ -57,6 +57,34 @@ jQuery(document).ready(function() {
         window.attachEvent("onmessage", processMessage);
     }
 
+    var needChangePaddingLeft = (function() {
+        var need = false;
+
+        if (window['isMobileDevice'] !== undefined && isMobileDevice()) {
+            need = true
+        }
+
+        return function() {
+            return need;
+        }
+    })();
+
+    var paddingLeft = function(left) {
+        var widthDatePicker = 310;
+
+        return (function() {
+            if (needChangePaddingLeft()) {
+                var halfWidthScreen = window.screen.width / 2;
+
+                if (halfWidthScreen - widthDatePicker < 30 ) {
+                    return halfWidthScreen - (widthDatePicker / 2 );
+                }
+            }
+
+            return left;
+        })();
+    }
+
     var showCalendar = function() {
         var el = jQuery(this);
         last = el;
@@ -64,7 +92,7 @@ jQuery(document).ready(function() {
             type: 'mbh',
             action: 'showCalendar',
             top: el.offset().top + el.outerHeight(),
-            left: el.offset().left,
+            left: paddingLeft(el.offset().left),
             date: el.val()
         }, "*");
     };

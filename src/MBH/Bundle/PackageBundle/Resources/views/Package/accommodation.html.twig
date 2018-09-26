@@ -116,8 +116,8 @@
                 </div>
             {% endif %}
 
-            {% if package.deletedAt is empty %}
-                {% if optGroupRooms|length and emptyIntervalsAccommodation|length %}
+            {% if package.deletedAt is empty and emptyIntervalsAccommodation|length %}
+                {% if optGroupRooms|length %}
                     <div class="box box-default box-solid">
                         <div class="box-header with-border box-header_when-mobile">
                             <h3 class="box-title">

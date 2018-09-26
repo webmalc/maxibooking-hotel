@@ -1,3 +1,6 @@
+/**
+ * Для всех новых клиентов актуально loadResult.js.twig
+ */
 /*global window, document */
 if (typeof(mbh) !== 'undefined') {
     var configResults = mbh;
