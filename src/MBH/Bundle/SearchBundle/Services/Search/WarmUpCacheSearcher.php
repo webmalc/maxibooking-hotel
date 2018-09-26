@@ -15,8 +15,11 @@ class WarmUpCacheSearcher extends AbstractCacheSearcher
      */
     public function search(SearchQuery $searchQuery): void
     {
-        $result = $this->searcher->search($searchQuery);
-        $this->cache->saveToCache($result, $searchQuery);
+        if (!$this->cache->searchInCache($searchQuery)) {
+            $result = $this->searcher->search($searchQuery);
+            $this->cache->saveToCache($result, $searchQuery);
+        }
+
     }
 
 }

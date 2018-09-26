@@ -15,6 +15,14 @@ use Psr\Log\LoggerInterface;
 
 class CacheWarmer
 {
+
+    /** @var int */
+    private const QUEUE_CHUNK_NUM = 100;
+
+    public const MIN_BOOKING_LENGTH = 5;
+
+    public const MAX_BOOKING_LENGTH = 16;
+
     /** @var SearchQueryGenerator */
     private $queryGenerator;
 
@@ -62,35 +70,61 @@ class CacheWarmer
         $this->tariffRepository = $tariffRepository;
     }
 
-
     /**
-     * @param \DateTime|null $monthDate
+     * @param \DateTime $begin
+     * @param \DateTime $end
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
      */
-    public function warmUp(\DateTime $monthDate = null): void
+    public function warmUp(\DateTime $begin, \DateTime $end): void
     {
 
-
         $this->logger->info('Start cache warmUp');
-        if (null === $monthDate) {
-            $monthDate = new \DateTime('midnight');
+        $datesArray = $this->getDates($begin, $end);
+        foreach ($datesArray as $dates) {
+            $this->warmUpDateCombination($dates['begin'], $dates['end']);
         }
 
-        $month = (int)$monthDate->format('m');
-        $year = (int)$monthDate->format('Y');
-        $begin = new \DateTime("8-${month}-${year} midnight");
-        $end = new \DateTime("22-${month}-${year} midnight");
+    }
 
+    private function getDates(\DateTime $begin, \DateTime $end): array
+    {
+        $dates = [];
+        $period = new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day'));
+        foreach ($period as $beginDay) {
+            foreach (range(self::MIN_BOOKING_LENGTH, self::MAX_BOOKING_LENGTH) as $offset) {
+                /**@var \DateTime $beginDay */
+                $dates[] = [
+                    'begin' => clone $beginDay,
+                    'end' => (clone $beginDay)->modify("+ ${offset} days")
+                ];
+            }
+        }
+
+        return $dates;
+    }
+
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
+     */
+    private function warmUpDateCombination(\DateTime $begin, \DateTime $end): void
+    {
         $sharedConditions = [
             'begin' => $begin->format('d.m.Y'),
             'end' => $end->format('d.m.Y'),
-            'additionalBegin' => 1,
-            'additionalEnd' => 1,
+            'additionalBegin' => 0,
+            'additionalEnd' => 0,
             'isUseCache' => true,
+            // isThisWarmUp - Dirty hack for disable ChildrenAges validator when warmUp process /
             'isThisWarmUp' => true,
         ];
 
@@ -109,16 +143,12 @@ class CacheWarmer
                 $conditions = $this->conditionCreator->createSearchConditions($conditionsData);
                 $conditions->setId('warmerConditions');
                 $queries = $this->queryGenerator->generate($conditions, false);
-                $queryChunks = array_chunk($queries, 100);
+                $queryChunks = array_chunk($queries, self::QUEUE_CHUNK_NUM);
                 foreach ($queryChunks as $chunk) {
                     $this->warmUpSearcher->search($chunk);
                 }
-
             }
-
         }
-
     }
-
 
 }
