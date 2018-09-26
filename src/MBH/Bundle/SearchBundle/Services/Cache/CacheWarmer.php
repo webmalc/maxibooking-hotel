@@ -17,7 +17,7 @@ class CacheWarmer
 {
 
     /** @var int */
-    private const QUEUE_CHUNK_NUM = 100;
+    private const QUEUE_CHUNK_NUM = 75;
 
     public const MIN_BOOKING_LENGTH = 5;
 
