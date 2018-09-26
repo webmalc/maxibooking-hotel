@@ -102,6 +102,10 @@ class SearchQueryGenerator
         $roomTypeHotelIdsKeys = array_keys($roomTypeGroupedByHotelId);
         $tariffHotelIdsKeys = array_keys($tariffsGroupedByHotelId);
         $sharedHotelKeys = array_intersect($roomTypeHotelIdsKeys, $tariffHotelIdsKeys);
+
+        $hotelInSearch = $this->dataHolder->getHotelIdsInSearch();
+        $sharedHotelKeys = array_intersect($sharedHotelKeys, $hotelInSearch);
+
         if (empty($sharedHotelKeys)) {
             throw new SearchQueryGeneratorException('There is an error in combine Tariff with RoomType');
         }

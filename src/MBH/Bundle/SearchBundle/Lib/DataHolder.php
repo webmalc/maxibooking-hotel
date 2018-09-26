@@ -7,6 +7,7 @@ namespace MBH\Bundle\SearchBundle\Lib;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\ClientBundle\Document\ClientConfigRepository;
+use MBH\Bundle\HotelBundle\Document\HotelRepository;
 use MBH\Bundle\HotelBundle\Document\RoomRepository;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
@@ -24,7 +25,7 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
 
 /**
  * Class DataHolder
- * @deprecated 
+ * @deprecated
  * @package MBH\Bundle\SearchBundle\Lib
  */
 class DataHolder
@@ -80,6 +81,9 @@ class DataHolder
     /** @var array */
     private $priceCaches;
 
+    /** @var array */
+    private $hotelIdsInSearch;
+
     /**
      * TariffHolder constructor.
      * @param TariffRepository $tariffRepository
@@ -91,6 +95,7 @@ class DataHolder
      * @param PackageRepository $packageRepository
      * @param PriceCacheRepository $priceCacheRepository
      * @param SearchConditionsRepository $conditionsRepository
+     * @throws MongoDBException
      */
     public function __construct(
         TariffRepository $tariffRepository,
@@ -101,9 +106,9 @@ class DataHolder
         RoomRepository $roomRepository,
         PackageRepository $packageRepository,
         PriceCacheRepository $priceCacheRepository,
-        SearchConditionsRepository $conditionsRepository
-    )
-    {
+        SearchConditionsRepository $conditionsRepository,
+        HotelRepository $hotelRepository
+    ) {
         $this->tariffRepository = $tariffRepository;
         $this->roomTypeRepository = $roomTypeRepository;
         $this->tariffs = $tariffRepository->findAll();
@@ -115,6 +120,7 @@ class DataHolder
         $this->packageRepository = $packageRepository;
         $this->priceCacheRepository = $priceCacheRepository;
         $this->searchConditionsRepository = $conditionsRepository;
+        $this->hotelIdsInSearch = $hotelRepository->getSearchActiveIds();
     }
 
 
@@ -221,7 +227,9 @@ class DataHolder
             $roomTypeId = $searchQuery->getRoomTypeId();
             $restrictionBegin = $searchQuery->getBegin();
             $restrictionEnd = (clone $searchQuery->getEnd())->modify('+ 1 day');
-            foreach (new \DatePeriod($restrictionBegin, \DateInterval::createFromDateString('1 day'), $restrictionEnd) as $day) {
+            foreach (new \DatePeriod(
+                         $restrictionBegin, \DateInterval::createFromDateString('1 day'), $restrictionEnd
+                     ) as $day) {
                 $key = $this->getAccessRestrictionKey($day, $tariffId, $roomTypeId);
                 if (null !== $restriction = $accessor->getValue($hashedRestrictions, $key)) {
                     $restrictions[] = $restriction;
@@ -261,6 +269,7 @@ class DataHolder
         if ($date instanceof \MongoDate) {
             $date = Helper::convertMongoDateToDate($date);
         }
+
         return "{$date->format('d-m-Y')}_{$tariff['$id']}_{$roomType['$id']}";
     }
 
@@ -356,7 +365,10 @@ class DataHolder
             if (!($this->roomsGroupedByRoomType[$hash] ?? null)) {
                 $this->roomsGroupedByRoomType[$hash] = $this->getAllRoomsByRoomType();
             }
-            $allAccommodations = $this->packageRepository->getRawAccommodationByPeriod($conditions->getMaxBegin(), $conditions->getMaxEnd());
+            $allAccommodations = $this->packageRepository->getRawAccommodationByPeriod(
+                $conditions->getMaxBegin(),
+                $conditions->getMaxEnd()
+            );
             $this->setAccommodationsRooms($allAccommodations, $searchQuery);
 
             return $this->getAccommodationRooms($searchQuery);
@@ -385,9 +397,12 @@ class DataHolder
 
         $allRoomsIds = array_map('\strval', array_column($allRooms, '_id'));
         $accommodationRoomsIds = array_diff($allRoomsIds, $forExcludeRoomsIds);
-        $accommodationRooms = array_filter($allRooms, function ($room) use ($accommodationRoomsIds) {
-            return \in_array((string)$room['_id'], $accommodationRoomsIds, true);
-        });
+        $accommodationRooms = array_filter(
+            $allRooms,
+            function ($room) use ($accommodationRoomsIds) {
+                return \in_array((string)$room['_id'], $accommodationRoomsIds, true);
+            }
+        );
 
         return $accommodationRooms;
 
@@ -446,8 +461,11 @@ class DataHolder
         return $key;
     }
 
-    private function findIntersectWithDates(\DateTime $searchBegin, \DateTime $searchEnd, array $packageAccommodations): array
-    {
+    private function findIntersectWithDates(
+        \DateTime $searchBegin,
+        \DateTime $searchEnd,
+        array $packageAccommodations
+    ): array {
         $intersected = [];
         foreach ($packageAccommodations as $dateKey => $accommodations) {
             [$beginKey, $endKey] = explode('_', $dateKey);
@@ -508,7 +526,11 @@ class DataHolder
         $groupedPriceCaches = $priceCaches[$roomTypeId.'_'.$searchingTariffId] ?? [];
         $priceCaches = [];
         if (\count($groupedPriceCaches)) {
-            foreach (new \DatePeriod($priceCacheBegin, \DateInterval::createFromDateString('1 day'), (clone $priceCacheEnd)->modify('+1 days')) as $day) {
+            foreach (new \DatePeriod(
+                         $priceCacheBegin,
+                         \DateInterval::createFromDateString('1 day'),
+                         (clone $priceCacheEnd)->modify('+1 days')
+                     ) as $day) {
                 /** @var \DateTime $day */
                 $dateKey = $day->format('d-m-Y');
                 $priceCache = $groupedPriceCaches[$dateKey] ?? null;
@@ -538,7 +560,7 @@ class DataHolder
     private function createPriceCacheSetKey(array $priceCache, bool $isUseCategory): string
     {
         $roomTypeField = $isUseCategory ? 'roomTypeCategory' : 'roomType';
-        $key = (string)$priceCache[$roomTypeField]['$id'] . '_' . (string)$priceCache['tariff']['$id'];
+        $key = (string)$priceCache[$roomTypeField]['$id'].'_'.(string)$priceCache['tariff']['$id'];
 
         return $key;
     }
@@ -556,6 +578,7 @@ class DataHolder
         $end = $calcQuery->getPriceCacheEnd();
         $roomTypeId = $calcQuery->getPriceRoomTypeId();
         $isUseCategory = $calcQuery->isUseCategory();
+
         return $this->priceCacheRepository
             ->fetchRaw(
                 $begin,
@@ -587,7 +610,13 @@ class DataHolder
         }
         $isUseCategory = $calcQuery->isUseCategory();
 
-        return $this->priceCacheRepository->fetchRawPeriod($begin, $end, $roomTypeIds ??  [], $tariffIds ?? [], $isUseCategory);
+        return $this->priceCacheRepository->fetchRawPeriod(
+            $begin,
+            $end,
+            $roomTypeIds ?? [],
+            $tariffIds ?? [],
+            $isUseCategory
+        );
     }
 
     /**
@@ -612,6 +641,11 @@ class DataHolder
         }
 
         throw new DataHolderException('Can not find SearchConditions by hash and Id');
+    }
+
+    public function getHotelIdsInSearch(): array
+    {
+        return $this->hotelIdsInSearch;
     }
 
 

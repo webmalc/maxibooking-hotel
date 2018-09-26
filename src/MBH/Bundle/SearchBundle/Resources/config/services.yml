@@ -292,13 +292,23 @@ services:
       class: MBH\Bundle\SearchBundle\Document\SearchResultCacheItemRepository
       factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
       arguments:
-      - MBH\Bundle\SearchBundle\Document\SearchResultCacheItem
+            - MBH\Bundle\SearchBundle\Document\SearchResultCacheItem
 #
 
 # Блок работы с данными
     mbh_search.data_holder:
         class: MBH\Bundle\SearchBundle\Lib\DataHolder
-        arguments: ['@mbh_search.tariff_repository', '@mbh_search.room_type_repository', '@mbh_search.restriction_repository', '@mbh_search.client_config_repository', '@mbh_search.room_cache_repository', '@mbh_search.room_repository', '@mbh_search.package_repository', '@mbh_search.price_cache_repository', '@mbh_search.search_conditions_repository']
+        arguments:
+          - '@mbh_search.tariff_repository'
+          - '@mbh_search.room_type_repository'
+          - '@mbh_search.restriction_repository'
+          - '@mbh_search.client_config_repository'
+          - '@mbh_search.room_cache_repository'
+          - '@mbh_search.room_repository'
+          - '@mbh_search.package_repository'
+          - '@mbh_search.price_cache_repository'
+          - '@mbh_search.search_conditions_repository'
+          - '@mbh_search.hotel_repository'
         deprecated: 'The "%service_id%" service is deprecated. Should be replaced by shared data fetcher'
 
 ##Holders
