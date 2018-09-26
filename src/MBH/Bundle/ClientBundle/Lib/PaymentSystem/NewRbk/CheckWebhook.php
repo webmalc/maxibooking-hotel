@@ -9,6 +9,7 @@ namespace MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbk;
 
 
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
+use MBH\Bundle\ClientBundle\Exception\BadSignaturePaymentSystemException;
 use Symfony\Component\HttpFoundation\Request;
 
 class CheckWebhook
@@ -108,7 +109,7 @@ class CheckWebhook
 
         if (empty($signatureFromHeader)) {
             $this->errorResponse = function () {
-                throw new \Exception('Signature is missing');
+                throw new BadSignaturePaymentSystemException('Signature is missing');
             };
 
             return '';
