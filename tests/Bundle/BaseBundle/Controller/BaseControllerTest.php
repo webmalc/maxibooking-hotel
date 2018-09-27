@@ -204,7 +204,7 @@ class BaseControllerTest extends WebTestCase
     {
         $this->client->request('GET', $url);
 
-        $this->customAssertStatusCode($url, 302);
+        $this->assertStatusCodeWithMsg($url, 302);
     }
 
     /**
@@ -216,7 +216,7 @@ class BaseControllerTest extends WebTestCase
         $client = static::makeClient(false);
         $client->request('GET', $url);
 
-        $this->customAssertStatusCode($url, 401, $client);
+        $this->assertStatusCodeWithMsg($url, 401, $client);
     }
 
     /**
@@ -328,23 +328,5 @@ class BaseControllerTest extends WebTestCase
         }
 
         return self::$cacheExcludedFor200;
-    }
-
-    /**
-     * @param string $url
-     * @param int $expectedStatus
-     * @param Client|null $client
-     */
-    private function customAssertStatusCode(string $url, int $expectedStatus, Client $client = null): void
-    {
-        $format = "The expected response status code from the URL %s \"%s\", received \"%s\".";
-
-        $response = $client !== null ? $client->getResponse() : $this->client->getResponse();
-
-        $this->assertEquals(
-            $expectedStatus,
-            $response->getStatusCode(),
-            sprintf($format, $url, $expectedStatus, $response->getStatusCode())
-        );
     }
 }
