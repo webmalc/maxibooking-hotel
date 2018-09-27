@@ -84,7 +84,7 @@ class HotelManager
 
     public function runMapImageCreationCommand(Hotel $hotel)
     {
-        $command = 'mbh:hotel_map_image_save_command --hotelId=' . $hotel->getId();
+        $command = 'mbh:hotel_map_image_save_command ' . $hotel->getId();
         $kernel = $this->container->get('kernel');
 
         $command = sprintf(
@@ -94,8 +94,7 @@ class HotelManager
             $kernel->isDebug()? '' : '--no-debug'
         );
         $env = [
-            \AppKernel::CLIENT_VARIABLE => $this->container->getParameter('client'),
-            'webdriver.chrome.driver' => $this->container->getParameter('chromedriver_path')
+            \AppKernel::CLIENT_VARIABLE => $this->container->getParameter('client')
         ];
 
         $process = new Process($command, $kernel->getRootDir().'/../bin', $env, null, 60 * 10);
@@ -103,7 +102,7 @@ class HotelManager
         $process->run();
 
         if (!$process->isSuccessful()) {
-            throw new \RuntimeException($process->getOutput());
+            throw new \RuntimeException($process->getErrorOutput());
         }
     }
 

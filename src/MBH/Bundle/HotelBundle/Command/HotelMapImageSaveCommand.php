@@ -2,8 +2,8 @@
 
 namespace MBH\Bundle\HotelBundle\Command;
 
-use Facebook\WebDriver\Chrome\ChromeDriver;
-use Facebook\WebDriver\Remote\DesiredCapabilities;
+use Facebook\WebDriver\Remote\RemoteWebDriver;
+use Facebook\WebDriver\Remote\WebDriverCapabilityType;
 use Facebook\WebDriver\WebDriverDimension;
 use MBH\Bundle\BaseBundle\Document\Image;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class HotelMapImageSaveCommand extends ContainerAwareCommand
 {
+    const HOST = '127.0.0.1:8910';
     const MAP_IMAGE_WIDTH = 1960;
     const MAP_IMAGE_HEIGHT = 571;
 
@@ -25,7 +26,7 @@ class HotelMapImageSaveCommand extends ContainerAwareCommand
     {
         $this
             ->setName('mbh:hotel_map_image_save_command')
-            ->addOption('hotelId', null, InputOption::VALUE_REQUIRED)
+            ->addArgument('hotelId', InputOption::VALUE_REQUIRED)
             ->addOption('width', null, InputOption::VALUE_OPTIONAL)
             ->addOption('height', null, InputOption::VALUE_OPTIONAL)
             ->setDescription('Save image of map by url of google map');
@@ -37,11 +38,14 @@ class HotelMapImageSaveCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
-        $hotelId = $input->getOption('hotelId');
+        $hotelId = $input->getArgument('hotelId');
         /** @var Hotel $hotel */
         $hotel = $dm->find(Hotel::class, $hotelId);
 
-        $driver = ChromeDriver::start(DesiredCapabilities::chrome());
+        $driver = RemoteWebDriver::create(self::HOST, [
+            WebDriverCapabilityType::BROWSER_NAME => 'phantomjs',
+            'phantomjs.page.settings.userAgent' => 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:25.0) Gecko/20100101 Firefox/25.0'
+        ]);
         $driver->get($hotel->getMapUrl());
 
         $width = $input->getOption('width') ? (int)$input->getOption('width') : self::MAP_IMAGE_WIDTH;
@@ -63,6 +67,8 @@ class HotelMapImageSaveCommand extends ContainerAwareCommand
             ->getContainer()
             ->getParameter('kernel.project_dir') . '/web/upload/images/temp_map.png';
 
+        //waiting before picture would be created
+        sleep(3);
         $driver->takeScreenshot($path);
         $imageFile = new UploadedFile($path, 'temp_map.png', null, null, null, true);
         $mapImage = (new Image())
