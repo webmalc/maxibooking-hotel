@@ -5,15 +5,9 @@ namespace MBH\Bundle\SearchBundle\Document;
 
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
-use Gedmo\Timestampable\Traits\TimestampableDocument;
-use MBH\Bundle\BaseBundle\Document\Base;
-use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultCacheException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
-use MBH\Bundle\SearchBundle\Services\Data\Serializers\ResultSerializer;
-use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 
@@ -23,14 +17,13 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ODM\Document(collection="SearchResultCacheItems", repositoryClass="SearchResultCacheItemRepository")
  * @ODM\Index(keys={"begin"="asc","end"="asc","roomType"="asc","tariff"="asc", "adults"="asc", "children"="asc", "childrenAges"="asc"})
  */
-class SearchResultCacheItem extends Base
+class SearchResultCacheItem
 {
-
-    use TimestampableDocument;
-
-    use SoftDeleteableDocument;
-
-    use BlameableDocument;
+    /**
+     * @var string
+     * @ODM\Id
+     */
+    private $id;
 
     /**
      * @var \DateTime
@@ -102,6 +95,14 @@ class SearchResultCacheItem extends Base
         $this->id = $id;
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return $this->id;
     }
 
     /**
