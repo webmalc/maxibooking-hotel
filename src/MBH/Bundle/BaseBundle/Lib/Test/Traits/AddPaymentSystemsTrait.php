@@ -13,16 +13,27 @@ use Symfony\Component\DomCrawler\Crawler;
 
 trait AddPaymentSystemsTrait
 {
+    private function newValueFormField(): string
+    {
+        return '123';
+    }
+
     private function getUrlForAddPaymentSystem(): string
     {
        return '/management/client/config/payment_system/form';
     }
 
+    /**
+     * Возращает массив с записанным данными
+     *
+     * @param HolderNamePaymentSystem $holder
+     * @return array
+     */
     private function addToClientConfigPaymentSystem(HolderNamePaymentSystem $holder): array
     {
         $crawler = $this->getListCrawler($this->getUrlForAddPaymentSystem());
 
-        $dataForForm = $this->getDataFromForm($crawler, $holder, '123');
+        $dataForForm = $this->getDataFromForm($crawler, $holder, $this->newValueFormField());
 
         $form = $crawler->filter('button[name="save"]')
             ->form(
