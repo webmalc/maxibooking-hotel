@@ -257,7 +257,7 @@ $(function () {
     moment.locale("ru");
 
     var dateBeginDefaults = function () {
-            var defaultMinDate = '24.04.2018',
+            var defaultMinDate = '01.05.2019',
                 minDate = moment(defaultMinDate, "DD.MM.YYYY", true),
                 now = moment(),
                 startDate = moment(Math.max(minDate, now)),
