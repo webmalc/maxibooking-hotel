@@ -1,8 +1,11 @@
 <?php
+
 namespace MBH\Bundle\PackageBundle\EventListener;
 
 use Doctrine\Common\EventSubscriber;
+use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
+use Doctrine\ODM\MongoDB\Event\PreUpdateEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use MBH\Bundle\PackageBundle\Document\DeleteReason;
 
@@ -10,32 +13,39 @@ class DeleteReasonSubscriber implements EventSubscriber
 {
     public function getSubscribedEvents()
     {
-        return array(
-            Events::onFlush => 'onFlush'
-        );
+        return [
+            Events::preUpdate => 'preUpdate',
+            Events::prePersist => 'prePersist'
+        ];
     }
 
-    public function onFlush(OnFlushEventArgs $args)
+    public function preUpdate(PreUpdateEventArgs $args)
     {
-        $dm = $args->getDocumentManager();
-        $uow = $dm->getUnitOfWork();
+        $doc = $args->getDocument();
+        if ($doc instanceof DeleteReason && $args->hasChangedField('isDefault') && $doc->getIsDefault()) {
+            $this->setOtherReasonsNotDefault($args, $doc);
+        }
+    }
 
-        $docs = array_merge(
-            $uow->getScheduledDocumentUpdates(),
-            $uow->getScheduledDocumentInsertions()
-        );
+    public function prePersist(LifecycleEventArgs $args)
+    {
+        if ($args->getDocument() instanceof DeleteReason && $args->getDocument()->getIsDefault()) {
+            $this->setOtherReasonsNotDefault($args, $args->getDocument());
+        }
+    }
 
-        $lastEntity = $dm->getRepository('MBHPackageBundle:DeleteReason')
-            ->createQueryBuilder()
-            ->field('isDefault')->exists(true)->equals(true)
-            ->getQuery()
-            ->getSingleResult();
-
-        foreach ($docs as $doc) {
-            if ($doc instanceof DeleteReason && $doc->getIsDefault() && !is_null($lastEntity)) {
-                $lastEntity->setIsDefault(false);
-                $uow->recomputeSingleDocumentChangeSet($dm->getClassMetadata(get_class($lastEntity)), $lastEntity);
-            }
+    /**
+     * @param LifecycleEventArgs $args
+     * @param DeleteReason $reason
+     */
+    private function setOtherReasonsNotDefault(LifecycleEventArgs $args, DeleteReason $reason): void
+    {
+        $defaultReasons = $args
+            ->getDocumentManager()
+            ->getRepository('MBHPackageBundle:DeleteReason')
+            ->findBy(['isDefault' => true, 'id' => ['$ne' => $reason->getId()]]);
+        foreach ($defaultReasons as $defaultReason) {
+            $defaultReason->setIsDefault(false);
         }
     }
 }
