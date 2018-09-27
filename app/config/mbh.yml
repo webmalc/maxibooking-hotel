@@ -209,7 +209,7 @@ parameters:
       !php/const:MBH\Bundle\ClientBundle\Document\PaymentSystem\Invoice::KEY_ARRAY: 'mbh.payment_systems.by_invoice'
       stripe: 'Stripe'
       tinkoff: Tinkoff
-      sberbank: Sberbank
+      !php/const:MBH\Bundle\ClientBundle\Document\PaymentSystem\Sberbank::KEY_ARRAY: Sberbank
     mbh.payment_systems.default: uniteller
     mbh.payment_systems.change: "%mbh_payment_systems_change%"
 
