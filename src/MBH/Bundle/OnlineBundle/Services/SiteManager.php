@@ -36,7 +36,7 @@ class SiteManager
                 'settlement',
                 'house',
                 'contactInformation',
-                'mapUrl'
+//                'mapUrl'
             ],
         ],
         RoomType::class => [
