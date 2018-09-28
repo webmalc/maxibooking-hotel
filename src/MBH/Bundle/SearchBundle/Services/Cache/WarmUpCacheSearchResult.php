@@ -17,9 +17,15 @@ class WarmUpCacheSearchResult extends AbstractCacheSearchResult
      */
     public function searchInCache(SearchQuery $searchQuery, $hydrated = true): bool
     {
-        $key = $this->keyCreator->createWarmUpKey($searchQuery);
+        $key = $this->createKey($searchQuery);
 
         return $this->redis->exists($key);
     }
+
+    protected function createKey(SearchQuery $searchQuery): string
+    {
+        return $this->keyCreator->createWarmUpKey($searchQuery);
+    }
+
 
 }
