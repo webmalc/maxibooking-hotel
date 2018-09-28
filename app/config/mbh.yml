@@ -198,18 +198,18 @@ parameters:
 
     #платежные системы
     mbh.payment_systems:
-      moneymail: 'MoneyMail'
+      !php/const:MBH\Bundle\ClientBundle\Document\PaymentSystem\Moneymail::KEY: 'MoneyMail'
       robokassa: 'Robokassa'
       payanyway: 'PayAnyWay'
       uniteller: 'Uniteller'
       rbk: 'Rbk'
-      !php/const:MBH\Bundle\ClientBundle\Document\PaymentSystem\NewRbk::KEY_ARRAY: 'NewRbk'
+      !php/const:MBH\Bundle\ClientBundle\Document\PaymentSystem\NewRbk::KEY: 'NewRbk'
       paypal: 'PayPal'
       rnkb: 'Rnkb'
-      !php/const:MBH\Bundle\ClientBundle\Document\PaymentSystem\Invoice::KEY_ARRAY: 'mbh.payment_systems.by_invoice'
+      !php/const:MBH\Bundle\ClientBundle\Document\PaymentSystem\Invoice::KEY: 'mbh.payment_systems.by_invoice'
       stripe: 'Stripe'
       tinkoff: Tinkoff
-      !php/const:MBH\Bundle\ClientBundle\Document\PaymentSystem\Sberbank::KEY_ARRAY: Sberbank
+      !php/const:MBH\Bundle\ClientBundle\Document\PaymentSystem\Sberbank::KEY: Sberbank
     mbh.payment_systems.default: uniteller
     mbh.payment_systems.change: "%mbh_payment_systems_change%"
 

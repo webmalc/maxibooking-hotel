@@ -19,7 +19,7 @@ use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
  */
 class Sberbank extends PaymentSystemDocument implements TaxMapInterface, FiscalizationInterface
 {
-    public const KEY_ARRAY = 'sberbank';
+    public const KEY = 'sberbank';
 
     use FiscalizationTrait;
 

@@ -21,7 +21,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class NewRbk extends PaymentSystemDocument implements TaxMapInterface, FiscalizationInterface
 {
-    public const KEY_ARRAY = 'newRbk';
+    public const KEY = 'newRbk';
 
     use FiscalizationTrait;
 
