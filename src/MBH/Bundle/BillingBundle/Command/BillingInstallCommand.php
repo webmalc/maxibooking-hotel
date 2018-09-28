@@ -142,7 +142,7 @@ class BillingInstallCommand extends ContainerAwareCommand
     {
         $this->logger->info('begin creation of web site config');
 
-        $isSuccess = $this->executeProcess('mbh:add_client_site_command', $clientName);
+        $isSuccess = $this->executeProcess('mbh:add_client_site_command ' . $clientName, $clientName);
         if ($isSuccess) {
             $this->logger->info('Client site created');
         } else {
