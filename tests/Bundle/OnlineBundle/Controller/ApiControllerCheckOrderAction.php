@@ -8,7 +8,7 @@ namespace Tests\Bundle\OnlineBundle\Controller;
 
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use MBH\Bundle\BaseBundle\Lib\Test\Traits\AddPaymentSystemsTrait;
+use MBH\Bundle\ClientBundle\Lib\Test\Traits\AddPaymentSystemsTrait;
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;

@@ -4,7 +4,7 @@
  * Date: 26.09.18
  */
 
-namespace MBH\Bundle\BaseBundle\Lib\Test\Traits;
+namespace MBH\Bundle\ClientBundle\Lib\Test\Traits;
 
 
 use MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType;

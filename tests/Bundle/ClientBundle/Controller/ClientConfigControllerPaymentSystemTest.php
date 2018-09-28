@@ -7,7 +7,7 @@
 namespace Tests\Bundle\ClientBundle\Controller;
 
 
-use MBH\Bundle\BaseBundle\Lib\Test\Traits\AddPaymentSystemsTrait;
+use MBH\Bundle\ClientBundle\Lib\Test\Traits\AddPaymentSystemsTrait;
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType;
