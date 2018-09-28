@@ -146,7 +146,6 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
-     * @Assert\Url
      */
     protected $mapUrl;
 
