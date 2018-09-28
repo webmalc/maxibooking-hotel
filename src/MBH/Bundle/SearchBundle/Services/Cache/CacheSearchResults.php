@@ -25,7 +25,7 @@ class CacheSearchResults extends AbstractCacheSearchResult
     public function searchInCache(SearchQuery $searchQuery, $hydrated = false)
     {
         $result = null;
-        $key = $this->keyCreator->createKey($searchQuery);
+        $key = $this->createKey($searchQuery);
         $cacheResult = $this->redis->get($key);
         if ($cacheResult) {
             /** @var Result $result */
@@ -35,46 +35,10 @@ class CacheSearchResults extends AbstractCacheSearchResult
         return $result;
     }
 
-    /**
-     * @param \DateTime $begin
-     * @param \DateTime|null $end
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     */
-    public function invalidateCacheByDate(\DateTime $begin, \DateTime $end = null): void
+    protected function createKey(SearchQuery $searchQuery): string
     {
-        if (null === $end) {
-            $end = clone $begin;
-        }
-
-        $keys = $this->cacheItemRepository->fetchCachedKeys($begin, $end);
-        $this->redis->del($keys);
-        $this->cacheItemRepository->removeItemsByDates($begin, $end);
-
+        return $this->keyCreator->createKey($searchQuery);
     }
 
-
-    /**
-     * @param SearchResultCacheItem $cacheItem
-     * @throws SearchResultCacheException
-     */
-    public function invalidateCacheResultByCacheItem(SearchResultCacheItem $cacheItem): void
-    {
-        $key = $cacheItem->getCacheResultKey();
-        $deleted = $this->redis->del([$key]);
-
-        $dm = $this->cacheItemRepository->getDocumentManager();
-        $dm->remove($cacheItem);
-        $dm->flush($cacheItem);
-
-        if (1 === $deleted) {
-            throw new SearchResultCacheException('No removed cache item from cache while invalidate');
-        }
-    }
-
-    public function flushCache(): void
-    {
-        $this->redis->flushall();
-        $this->cacheItemRepository->flushCache();
-    }
 
 }

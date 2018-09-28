@@ -317,6 +317,18 @@ services:
         arguments: ['@mbh_search.client_config_repository']
 
 ##Cache Results
+    mbh_search.search_cache_invalidator:
+        class: MBH\Bundle\SearchBundle\Services\Cache\Invalidate\SearchCacheInvalidator
+        arguments:
+        - '@mbh_search.search_cache_item_repository'
+        - '@snc_redis.cache_results_client'
+        - '@mbh_search.invalidate_adapter_factory'
+
+    mbh_search.invalidate_adapter_factory:
+        class: MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateAdapterFactory
+        arguments:
+          - '@mbh.hotel.room_type_manager'
+
     mbh_search.cache_search_abstract:
         class: MBH\Bundle\SearchBundle\Services\Cache\AbstractCacheSearchResult
         arguments:

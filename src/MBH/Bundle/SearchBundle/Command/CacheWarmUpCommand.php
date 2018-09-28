@@ -52,7 +52,7 @@ class CacheWarmUpCommand extends ContainerAwareCommand
             return;
         }
 
-        $searchCache = $this->getContainer()->get('mbh_search.cache_search');
+        $searchCache = $this->getContainer()->get('mbh_search.search_cache_invalidator');
         $searchCache->flushCache();
         $warmer = $this->getContainer()->get('mbh_search.cache_warmer');
         $output->writeln('Start warmUp for '.$begin->format('d.m.Y').' - '. $end->format('d.m.Y'));

@@ -139,7 +139,7 @@ class SearchController extends Controller
      */
     public function flushCacheAction(): Response
     {
-        $cache = $this->get('mbh_search.cache_search');
+        $cache = $this->get('mbh_search.search_cache_invalidator');
         $cache->flushCache();
 
         return new JsonResponse(['result' => 'Cache flushed']);
@@ -153,7 +153,7 @@ class SearchController extends Controller
      */
     public function invalidateCacheItem(SearchResultCacheItem $cacheItem): Response
     {
-        $service = $this->get('mbh_search.cache_search');
+        $service = $this->get('mbh_search.search_cache_invalidator');
         try {
             $service->invalidateCacheResultByCacheItem($cacheItem);
             $result = ['result' => 'Cache item was invalidated'];

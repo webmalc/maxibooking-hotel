@@ -96,28 +96,6 @@ class CacheSearchResultsTest extends SearchWebTestCase
 
     }
 
-    /**
-     * @param $data
-     * @dataProvider dataProvider
-     */
-    public function testInvalidateCacheByDate($data)
-    {
-        /** @var SearchQuery $searchQuery */
-        $dataSearchQuery = $data['searchQuery'];
-        /** @var SearchConditions $conditions */
-        $conditions = $dataSearchQuery->getSearchConditions();
-        $service = $this->getContainer()->get('mbh_search.cache_search');
-        $service->flushCache();
-
-        $cacheSearcher = $this->getContainer()->get('mbh_search.cache_searcher');
-        $generator = $this->getContainer()->get('mbh_search.search_query_generator');
-        $searchQueries = $generator->generate($conditions);
-        foreach ($searchQueries as $searchQuery) {
-            $cacheSearcher->search($searchQuery);
-        }
-
-        $service->invalidateCacheByDate($conditions->getBegin(), $conditions->getEnd());
-    }
 
     public function dataProvider(): iterable
     {

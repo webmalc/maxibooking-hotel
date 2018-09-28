@@ -57,7 +57,7 @@ abstract class AbstractCacheSearchResult implements SearchCacheInterface
     public function saveToCache(Result $result, SearchQuery $searchQuery): void
     {
         $cacheItem = SearchResultCacheItem::createInstance($result);
-        $key = $this->keyCreator->createKey($searchQuery);
+        $key = $this->createKey($searchQuery);
         $cacheItem->setCacheResultKey($key);
         $this->dm->persist($cacheItem);
         $this->dm->flush($cacheItem);
@@ -65,4 +65,6 @@ abstract class AbstractCacheSearchResult implements SearchCacheInterface
         $result->setCacheItemId($cacheItem->getId());
         $this->redis->set($key, $this->serializer->serialize($result));
     }
+
+    abstract protected function createKey(SearchQuery $searchQuery): string;
 }
