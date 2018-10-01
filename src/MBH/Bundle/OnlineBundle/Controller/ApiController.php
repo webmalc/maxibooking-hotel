@@ -626,10 +626,11 @@ class ApiController extends Controller
             $form = $this->container->get('twig')->render(
                 'MBHClientBundle:PaymentSystem:'.$paymentSystemName.'.html.twig',
                 [
-                    'data' => array_merge(
+                    'referer' => '*',
+                    'data'    => array_merge(
                         [
-                            'test' => false,
-                            'currency' => strtoupper($this->clientConfig->getCurrency()),
+                            'test'       => false,
+                            'currency'   => strtoupper($this->clientConfig->getCurrency()),
                             'buttonText' => $this->get('translator')->trans(
                                 'views.api.make_payment_for_order_id',
                                 ['%total%' => number_format($requestJson->total, 2), '%order_id%' => $order->getId()],

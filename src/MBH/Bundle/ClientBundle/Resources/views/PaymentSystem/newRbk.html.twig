@@ -3,7 +3,7 @@
     <input type="hidden" name="packageId" value="{{ data.packageId }}">
     {% include 'MBHClientBundle:PaymentSystem:button.html.twig' with {'data': data} %}
 </form>
-<script src="{{ constant('MBH\\Bundle\\ClientBundle\\Document\\NewRbk::URL_FOR_CHECKOUT_JS') }}"></script>
+<script src="{{ constant('MBH\\Bundle\\ClientBundle\\Document\\PaymentSystem\\NewRbk::URL_FOR_CHECKOUT_JS') }}"></script>
 
 <script>
     {% include 'MBHClientBundle:PaymentSystem/newRbk:for_iframe.js.twig' %}
