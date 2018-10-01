@@ -4,14 +4,14 @@
  * Date: 26.09.18
  */
 
-namespace MBH\Bundle\ClientBundle\Lib\Test\Traits;
+namespace MBH\Bundle\ClientBundle\Lib\Test;
 
 
 use MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\HolderNamePaymentSystem;
 use Symfony\Component\DomCrawler\Crawler;
 
-trait AddPaymentSystemsTrait
+trait TraitForAddPaymentSystems
 {
     private function newValueFormField(): string
     {

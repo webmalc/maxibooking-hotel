@@ -7,28 +7,25 @@
 namespace Tests\Bundle\ClientBundle\Controller;
 
 
-use MBH\Bundle\ClientBundle\Lib\Test\Traits\AddPaymentSystemsTrait;
+use MBH\Bundle\ClientBundle\Lib\Test\TraitExtraData;
+use MBH\Bundle\ClientBundle\Lib\Test\TraitForAddPaymentSystems;
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType;
 use MBH\Bundle\ClientBundle\Form\PaymentSystem\PaymentSystemType;
 use MBH\Bundle\ClientBundle\Form\PaymentSystemsUrlsType;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystem\ExtraData;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\HolderNamePaymentSystem;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
-use Symfony\Component\DomCrawler\Crawler;
 
 class ClientConfigControllerPaymentSystemTest extends WebTestCase
 {
-    use AddPaymentSystemsTrait;
+    use TraitForAddPaymentSystems;
+    use TraitExtraData;
 
     private const URL_INDEX = '/management/client/config/payment_systems';
     private const URL_FORM = '/management/client/config/payment_system/form';
     private const URL_REMOVE = '/management/client/config/payment_system/remove/';
     private const URL_ADD_URL = '/management/client/config/payment_urls';
-
-    /** @var ExtraData */
-    private static $extraData;
 
     public static function setUpBeforeClass()
     {
@@ -417,18 +414,6 @@ class ClientConfigControllerPaymentSystemTest extends WebTestCase
     private function getClassNamePaymentSystemType(HolderNamePaymentSystem $holder): string
     {
         return "MBH\Bundle\ClientBundle\Form\PaymentSystem\\" . $holder->getName() . "Type";
-    }
-
-    /**
-     * @return ExtraData
-     */
-    private function getExtraData(): ExtraData
-    {
-        if (static::$extraData === null) {
-            static::$extraData = $this->getContainer()->get('mbh.payment_extra_data');
-        }
-
-        return static::$extraData;
     }
 
     /**
