@@ -30,8 +30,6 @@ class PackageApiController extends BaseApiController
      */
     public function packagesAction(Request $request)
     {
-        $this->addAccessControlHeaders();
-
         $responseCompiler = $this->get('mbh.api_response_compiler');
         $requestManager = $this->get('mbh.api_request_manager');
 
@@ -69,8 +67,6 @@ class PackageApiController extends BaseApiController
      */
     public function currentDayPackages($type = 'arrivals')
     {
-        $this->addAccessControlHeaders();
-
         $availableTypes = ['arrivals', 'out'];
         if (!in_array($type, $availableTypes)) {
             throw new RouteNotFoundException();
@@ -95,7 +91,6 @@ class PackageApiController extends BaseApiController
      */
     public function getNumberOfCurrentPackages()
     {
-        $this->addAccessControlHeaders();
         $packageTypes = ['arrivals', 'out'];
         $numberOfPackagesByTypes = [];
         $packageRepo = $this->dm->getRepository('MBHPackageBundle:Package');
@@ -120,7 +115,6 @@ class PackageApiController extends BaseApiController
      */
     public function confirmOrder(Package $package)
     {
-        $this->addAccessControlHeaders();
         $this
             ->get('mbh.order_manager')
             ->confirmOrder($package, $this->getUser());

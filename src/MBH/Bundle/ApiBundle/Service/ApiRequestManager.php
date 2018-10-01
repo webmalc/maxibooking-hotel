@@ -10,8 +10,8 @@ class ApiRequestManager
     const CRITERIA_PARAM = 'criteria';
     const LIMIT_PARAM = 'limit';
     const DEFAULT_LIMIT = 50;
-    const OFFSET_PARAM = 'offset';
-    const DEFAULT_OFFSET = 0;
+    const SKIP_PARAM = 'skip';
+    const DEFAULT_SKIP = 0;
     const DATE_FORMAT = 'd.m.Y';
 
     private $apiSerializer;
@@ -20,25 +20,25 @@ class ApiRequestManager
         $this->apiSerializer = $apiSerializer;
     }
 
-    public function getRequestOffset(ParameterBag $bag, ApiResponseCompiler $responseCompiler)
+    public function getRequestSkip(ParameterBag $bag, ApiResponseCompiler $responseCompiler)
     {
-        if (!$bag->has(self::OFFSET_PARAM)) {
-            return self::DEFAULT_OFFSET;
+        if (!$bag->has(self::SKIP_PARAM)) {
+            return self::DEFAULT_SKIP;
         }
 
-        $requestedOffset = (int)$bag->get(self::OFFSET_PARAM);
-        if ($requestedOffset < 0) {
-            $responseCompiler->addErrorMessage('The value of the field "offset" must be greater of equal to zero');
+        $requestedSkip = (int)$bag->get(self::SKIP_PARAM);
+        if ($requestedSkip < 0) {
+            $responseCompiler->addErrorMessage('The value of the field "skip" must be greater of equal to zero');
 
-            return self::DEFAULT_OFFSET;
+            return self::DEFAULT_SKIP;
         }
 
-        return $requestedOffset;
+        return $requestedSkip;
     }
 
     public function getRequestLimit(ParameterBag $bag, ApiResponseCompiler $responseCompiler, $default = self::DEFAULT_LIMIT)
     {
-        if (!$bag->has(self::OFFSET_PARAM)) {
+        if (!$bag->has(self::LIMIT_PARAM)) {
             return $default;
         }
 
@@ -47,7 +47,7 @@ class ApiRequestManager
             $responseCompiler->addErrorMessage('The value of the field "limit" must be greater of equal to zero');
         }
 
-        return $default;
+        return $requestedLimit;
     }
 
     public function getPackageCriteria(ParameterBag $bag, ApiResponseCompiler $responseCompiler)
@@ -61,7 +61,7 @@ class ApiRequestManager
 
         $packageCriteria = $this->apiSerializer->denormalizePackageCriteria($requestedCriteria);
         $packageCriteria->limit = $this->getRequestLimit($bag, $responseCompiler);
-        $packageCriteria->skip = $this->getRequestOffset($bag, $responseCompiler);
+        $packageCriteria->skip = $this->getRequestSkip($bag, $responseCompiler);
 
         return $packageCriteria;
     }

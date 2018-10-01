@@ -19,7 +19,6 @@ class DashboardApiController extends BaseApiController
      */
     public function flowProgressDataAction()
     {
-        $this->addAccessControlHeaders();
         $flowServiceIds = [
             'roomType' => 'mbh.room_type_flow',
             'hotel' => 'mbh.hotel_flow',

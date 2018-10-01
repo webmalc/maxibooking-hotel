@@ -13,6 +13,7 @@ services:
         class: MBH\Bundle\OnlineBundle\Services\ApiResponseCompiler
         arguments:
             - '@translator'
+            - '%api_domains%'
 
     mbh.api_handler:
         class: MBH\Bundle\OnlineBundle\Services\ApiHandler

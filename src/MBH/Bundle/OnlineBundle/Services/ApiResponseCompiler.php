@@ -14,9 +14,15 @@ class ApiResponseCompiler
 {
     /** @var  TranslatorInterface */
     private $translator;
+    private $domains;
+
     private $errors = [];
     private $data = [];
     private $isSuccess = true;
+    private $headers = [
+        'Access-Control-Allow-Methods' => 'GET, POST, OPTIONS, PUT, DELETE, PATCH',
+        'Access-Control-Allow-Headers' => 'Content-Type, *'
+    ];
 
     const COMMON_ERRORS_FIELD_NAME = 'common';
     const FORM_CONFIG_NOT_EXISTS = 'external_api_controller.online_form_config.not_found';
@@ -30,8 +36,10 @@ class ApiResponseCompiler
     const ORDER_WITH_SPECIFIED_ID_TO_EXISTS = 'external_api_controller.error.order_not_exists';
     const TARIFF_WITH_SPECIFIED_ID_NOT_EXISTS = 'external_api_controller.error.tariff_with_specified_id_not_exists';
 
-    public function __construct(TranslatorInterface $translator) {
+    public function __construct(TranslatorInterface $translator, array $domains)
+    {
         $this->translator = $translator;
+        $this->domains = $domains;
     }
 
     /**
@@ -81,16 +89,51 @@ class ApiResponseCompiler
     }
 
     /**
+     * @return array
+     */
+    public function getHeaders(): ?array
+    {
+        return [];
+    }
+
+    /**
+     * @param array $headers
+     * @return ApiResponseCompiler
+     */
+    public function setHeaders(array $headers): ApiResponseCompiler
+    {
+        $this->headers = $headers;
+
+        return $this;
+    }
+
+    /**
+     * @param $key
+     * @param $value
+     * @return ApiResponseCompiler
+     */
+    public function addHeader($key, $value)
+    {
+        $this->headers[$key] = $value;
+
+        return $this;
+    }
+
+    /**
+     * @param int $status
      * @return JsonResponse
      */
-    public function getResponse()
+    public function getResponse($status = 200)
     {
         $response = ['success' => $this->isSuccess];
         $response['data'] = $this->data;
         if (!$this->isSuccess) {
             $response['errors'] = $this->errors;
         }
+        foreach ($this->domains as $domain) {
+            $this->addHeader('Access-Control-Allow-Origin',  $domain);
+        }
 
-        return new JsonResponse($response);
+        return new JsonResponse($response, $status, $this->getHeaders());
     }
 }
