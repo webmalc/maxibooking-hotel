@@ -29,7 +29,7 @@ class JsonLoginController extends BaseController
         $requestContent = json_decode($request->getContent(), true);
 
         if (empty($requestContent) || !isset($requestContent['username']) || !isset($requestContent['password'])) {
-            $result->setErrors(['Incorrect request content']);
+            $result->addError('Incorrect request content');
         } else {
             $username = $requestContent['username'];
             $password = $requestContent['password'];
@@ -40,14 +40,14 @@ class JsonLoginController extends BaseController
                 ->findOneBy(['username' => $username]);
 
             if (is_null($user)) {
-                $result->setErrors(['Access denied']);
+                $result->addError('Access denied');
             } else {
                 $encoder = $this
                     ->get('security.encoder_factory')
                     ->getEncoder($user);
 
                 if (!$encoder->isPasswordValid($user->getPassword(), $password, $user->getSalt())) {
-                    $result->setErrors(['Access denied']);
+                    $result->addError('Access denied');
                 } else {
                     if (!$user->getApiToken() || $user->getApiToken()->getExpiredAt() < new \DateTime()) {
                         $token = bin2hex(random_bytes(64)) . time();

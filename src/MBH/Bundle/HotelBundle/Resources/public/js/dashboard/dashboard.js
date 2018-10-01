@@ -34,8 +34,9 @@ $(document).ready(function () {
 
     if (document.getElementById('not-confirmed-packages-box')) {
         $.ajax({
-            url: Routing.generate('not_confirmed', {asHtml: 'true'}),
+            url: Routing.generate('packages_list_api', {asHtml: 'true'}),
             dataType: 'json',
+            data: {criteria: {isConfirmed: false}, limit: 7},
             method: "GET",
             success: function (response) {
                 var $tableBody = $('#not-confirmed-packages-table tbody');

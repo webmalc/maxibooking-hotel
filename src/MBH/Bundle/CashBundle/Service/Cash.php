@@ -68,7 +68,6 @@ class Cash
 
     public function sendMailAtCashDocumentConfirmation(CashDocument $cashDocument)
     {
-        $order = $cashDocument->getOrder();
         $notifier = $this->container->get('mbh.notifier.mailer');
         $message = $notifier::createMessage();
 
@@ -84,10 +83,13 @@ class Cash
             . '</span>';
 
 
-        $getHotelName = function() use ($order) {
-            return $order->getFirstHotel()->getName();
-        };
-        $hotelName = $this->container->get('mbh.helper')->getWithoutFilter($getHotelName);
+        $helper = $this->container->get('mbh.helper');
+        $order = $helper->getWithoutFilter(function () use ($cashDocument) {
+            return $cashDocument->getOrder();
+        });
+        $hotel = $helper->getWithoutFilter(function() use ($order) {
+            return $order->getFirstHotel();
+        });
 
         $message
             ->setRecipients([$order->getPayer()])
@@ -95,12 +97,12 @@ class Cash
             ->setType('info')
             ->setLink('hide')
             ->setCategory('tourists')
-            ->setHotel($order->getFirstHotel())
+            ->setHotel($hotel)
             ->setOrder($order)
             ->setSubject('mailer.order.subject_text')
             ->setHeaderText('mailer.order.header_text')
             ->setTranslateParams([
-                '%hotelName%' => $hotelName,
+                '%hotelName%' => $hotel->getName(),
                 '%sum%' => $sumString
             ])
             ->setAdditionalData([

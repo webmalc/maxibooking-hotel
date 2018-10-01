@@ -1,4 +1,8 @@
 services:
-#    api.example:
-#        class: ApiBundle\Example
-#        arguments: ["@service_id", "plain_value", "%parameter%"]
+    mbh.api_serializer:
+        class: MBH\Bundle\ApiBundle\Service\ApiSerializer
+        arguments: []
+
+    mbh.api_request_manager:
+        class: MBH\Bundle\ApiBundle\Service\ApiRequestManager
+        arguments: ['@mbh.api_serializer']

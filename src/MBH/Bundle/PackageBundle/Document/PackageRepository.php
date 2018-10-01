@@ -131,9 +131,9 @@ class PackageRepository extends DocumentRepository
         $orderData = [];
 
         //confirmed
-        if (isset($criteria->confirmed)) {
+        if (isset($criteria->isConfirmed)) {
             $orderData['asIdsArray'] = true;
-            $orderData['confirmed'] = $criteria->confirmed;
+            $orderData['confirmed'] = $criteria->isConfirmed;
         }
         //paid status
         if (isset($criteria->paid) && in_array($criteria->paid, ['paid', 'part', 'not_paid'])) {
@@ -198,8 +198,8 @@ class PackageRepository extends DocumentRepository
         }
 
         // without accommodation
-        if ($criteria->isWithoutAccommodation()) {
-            $queryBuilder->field('accommodations.0')->exists(false);
+        if (!is_null($criteria->hasAccommodations())) {
+            $queryBuilder->field('accommodations.0')->exists($criteria->hasAccommodations());
         }
 
         // filter
@@ -1169,7 +1169,7 @@ class PackageRepository extends DocumentRepository
 
         if (!empty($roomTypesIds)) {
             foreach ($roomTypesIds as $roomTypeId) {
-                $queryCriteria->addRoomTypeCriteria($roomTypeId);
+                $queryCriteria->addRoomType($roomTypeId);
             }
         }
 

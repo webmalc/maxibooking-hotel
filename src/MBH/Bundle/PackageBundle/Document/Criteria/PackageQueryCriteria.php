@@ -4,14 +4,10 @@ namespace MBH\Bundle\PackageBundle\Document\Criteria;
 
 use MBH\Bundle\BaseBundle\Document\AbstractQueryCriteria;
 use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\HotelBundle\Document\Room;
-use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
-use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 
 /**
  * Class PackageQueryCriteria
-
  */
 class PackageQueryCriteria extends AbstractQueryCriteria
 {
@@ -74,7 +70,7 @@ class PackageQueryCriteria extends AbstractQueryCriteria
     /**
      * @var bool
      */
-    public $confirmed;
+    public $isConfirmed;
     /**
      * 'paid', 'part', 'not_paid'
      * @var string
@@ -106,38 +102,27 @@ class PackageQueryCriteria extends AbstractQueryCriteria
      */
     public $deleted = false;
     private $accommodations = [];
-    private $isWithoutAccommodation = false;
+    private $hasAccommodations;
     private $sources;
 
     /**
-     * @param $roomTypeCriteria
+     * @param string|\MongoId $roomTypeId
      * @return PackageQueryCriteria
      */
-    public function addRoomTypeCriteria($roomTypeCriteria)
+    public function addRoomType($roomTypeId)
     {
-        if ($roomTypeCriteria instanceof RoomType)
-        {
-            $this->roomTypes[] = $roomTypeCriteria->getId();
-        } else {
-            $this->roomTypes[] = $roomTypeCriteria;
-        }
+        $this->roomTypes[] = $roomTypeId;
 
         return $this;
     }
 
     /**
-     * @param $accommodation
+     * @param $accommodationId
      * @return PackageQueryCriteria
      */
-    public function addAccommodation($accommodation)
+    public function addAccommodation($accommodationId)
     {
-        if ($accommodation instanceof PackageAccommodation) {
-            $this->accommodations[] = $accommodation->getAccommodation()->getId();
-        } elseif (is_string($accommodation) || $accommodation instanceof \MongoId) {
-            $this->accommodations[] = $accommodation;
-        } else {
-            throw new \InvalidArgumentException('Passed accommodation argument of invalid type');
-        }
+        $this->accommodations[] = $accommodationId;
 
         return $this;
     }
@@ -155,21 +140,28 @@ class PackageQueryCriteria extends AbstractQueryCriteria
         return $this->roomTypes;
     }
 
-    /**
-     * @return boolean
-     */
-    public function isWithoutAccommodation() : bool
+    public function setRoomTypes(array $roomTypes)
     {
-        return $this->isWithoutAccommodation;
+        $this->roomTypes = $roomTypes;
+
+        return $this;
     }
 
     /**
-     * @param boolean $isWithoutAccommodation
+     * @return boolean
+     */
+    public function hasAccommodations() : ?bool
+    {
+        return $this->hasAccommodations;
+    }
+
+    /**
+     * @param boolean $hasAccommodations
      * @return PackageQueryCriteria
      */
-    public function setIsWithoutAccommodation(bool $isWithoutAccommodation) : PackageQueryCriteria
+    public function setHasAccommodations(bool $hasAccommodations) : PackageQueryCriteria
     {
-        $this->isWithoutAccommodation = $isWithoutAccommodation;
+        $this->hasAccommodations = $hasAccommodations;
 
         return $this;
     }

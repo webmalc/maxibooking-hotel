@@ -92,7 +92,7 @@ class BillingInstallCommand extends ContainerAwareCommand
             }
 
             try {
-                $client = $this->getContainer()->get('mbh.client_manager')->getClient();
+                $client = $this->getContainer()->get('mbh.billing.api')->getClient($clientName);
                 $this->getContainer()->get('mbh.site_manager')->createOrUpdateForHotel($client);
                 $this->documentManager->flush();
             } catch (\Throwable $exception) {

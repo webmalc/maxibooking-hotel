@@ -193,10 +193,10 @@ class ChessBoardDataBuilder
             //$packageQueryCriteria->confirmed
             $packageQueryCriteria->filter = 'live_between';
             $packageQueryCriteria->liveBegin = $this->beginDate;
-            $packageQueryCriteria->setIsWithoutAccommodation(true);
+            $packageQueryCriteria->setHasAccommodations(false);
             $packageQueryCriteria->liveEnd = $this->endDate;
             foreach ($this->getRoomTypeIds() as $roomTypeId) {
-                $packageQueryCriteria->addRoomTypeCriteria($roomTypeId);
+                $packageQueryCriteria->addRoomType($roomTypeId);
             }
             $packages = $this->dm
                 ->getRepository('MBHPackageBundle:Package')

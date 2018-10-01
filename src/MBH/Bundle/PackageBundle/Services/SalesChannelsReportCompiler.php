@@ -275,7 +275,7 @@ class SalesChannelsReportCompiler
     }
 
     /**
-     * @param $roomTypes
+     * @param RoomType[]|array $roomTypes
      * @return Package[]
      */
     private function getPackagesByFilters($roomTypes): array
@@ -285,7 +285,7 @@ class SalesChannelsReportCompiler
         $criteria->end = $this->end;
         $criteria->dateFilterBy = 'createdAt';
         foreach ($roomTypes as $roomType) {
-            $criteria->addRoomTypeCriteria($roomType);
+            $criteria->addRoomType($roomType->getId());
         }
         if (!empty($this->sourcesIds) && $this->filterType === 'source') {
             $criteria->setSources($this->sourcesIds);

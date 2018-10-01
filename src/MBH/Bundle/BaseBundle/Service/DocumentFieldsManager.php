@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\BaseBundle\Service;
 
-use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Collections\Collection;
 use Gedmo\Mapping\Annotation\Translatable;

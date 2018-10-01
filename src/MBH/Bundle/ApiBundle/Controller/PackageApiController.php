@@ -2,10 +2,8 @@
 
 namespace MBH\Bundle\ApiBundle\Controller;
 
-use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\BillingBundle\Lib\Model\Result;
 use MBH\Bundle\PackageBundle\Document\Package;
-use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,43 +16,42 @@ use Symfony\Component\Routing\Exception\RouteNotFoundException;
  * Class PackageApiController
  * @package MBH\Bundle\ApiBundle\Controller
  */
-class PackageApiController extends BaseController
+class PackageApiController extends BaseApiController
 {
     const NUMBER_OF_NOT_CONFIRMED_PACKAGES = 7;
     const DATE_FORMAT = 'd.m.Y';
 
     /**
+     * @Method("GET")
      * @Template()
-     * @Route("/not_confirmed", name="not_confirmed_packages", options={"expose"=true}, defaults={"_format"="json"})
+     * @Route("/", name="packages_list_api", options={"expose"=true}, defaults={"_format"="json"})
      * @param Request $request
      * @return array|JsonResponse
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     * @throws \MBH\Bundle\BaseBundle\Lib\Exception
      */
-    public function notConfirmedPackagesAction(Request $request)
+    public function packagesAction(Request $request)
     {
         $this->addAccessControlHeaders();
-        $asHtml = $request->get('asHtml') === 'true';
-        $notConfirmedOrderIds = $this->dm
-            ->getRepository('MBHPackageBundle:Order')
-            ->getNotConfirmedOrderIds();
+
+        $responseCompiler = $this->get('mbh.api_response_compiler');
+        $requestManager = $this->get('mbh.api_request_manager');
+
+        $requestCriteria = $requestManager->getPackageCriteria($request->query, $responseCompiler);
+        if (!$responseCompiler->isSuccessful()) {
+            return $responseCompiler->getResponse();
+        }
 
         $packages = $this->dm
             ->getRepository('MBHPackageBundle:Package')
-            ->findBy(
-                ['order.id' => ['$in' => $notConfirmedOrderIds]],
-                ['begin' => 1],
-                self::NUMBER_OF_NOT_CONFIRMED_PACKAGES
-            );
+            ->findByQueryCriteria($requestCriteria)
+            ->toArray();
 
+        $asHtml = $request->get('asHtml') === 'true';
         if (!$asHtml) {
-            $normalizedPackages = $this->normalizePackages($packages);
+            $normalizedPackages = array_map([$this->get('mbh.api_serializer'), 'normalizePackage'], $packages);
 
-            $apiResponseArr = (new Result())
+            return $responseCompiler
                 ->setData($normalizedPackages)
-                ->getApiResponse();
-
-            return new JsonResponse($apiResponseArr);
+                ->getResponse();
         }
 
         return [
@@ -70,7 +67,7 @@ class PackageApiController extends BaseController
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      * @throws \MBH\Bundle\BaseBundle\Lib\Exception
      */
-    public function getCurrentDayPackages($type = 'arrivals')
+    public function currentDayPackages($type = 'arrivals')
     {
         $this->addAccessControlHeaders();
 
@@ -84,11 +81,10 @@ class PackageApiController extends BaseController
             ->findByType($type)
             ->toArray();
 
-        $apiResponseArr = (new Result())
-            ->setData($this->normalizePackages($packages))
-            ->getApiResponse();
-
-        return new JsonResponse($apiResponseArr);
+        return $this
+            ->get('mbh.api_response_compiler')
+            ->setData(array_map([$this->get('mbh.api_serializer'), 'normalizePackage'], $packages))
+            ->getResponse();
     }
 
     /**
@@ -130,50 +126,5 @@ class PackageApiController extends BaseController
             ->confirmOrder($package, $this->getUser());
 
         return new JsonResponse((new Result())->getApiResponse());
-    }
-
-    private function normalizePackages(array $packages)
-    {
-        return $normalizedPackages = array_map(function (Package $package) {
-            $normalizedPackage = [
-                'id' => $package->getId(),
-                'numberWithPrefix' => $package->getNumberWithPrefix(),
-                'status' => $package->getStatus(),
-                'begin' => $package->getBegin()->format(self::DATE_FORMAT),
-                'end' => $package->getEnd()->format(self::DATE_FORMAT),
-                'roomType' => [
-                    'id' => $package->getRoomType()->getId(),
-                    'name' => $package->getRoomType()->getName(),
-                ],
-                'adults' => $package->getAdults(),
-                'children' => $package->getChildren(),
-                'accommodations' => array_map(function (PackageAccommodation $accommodation) {
-                    return [
-                        'begin' => $accommodation->getBegin()->format(self::DATE_FORMAT),
-                        'end' => $accommodation->getEnd()->format(self::DATE_FORMAT),
-                        'roomName' => $accommodation->getRoom()->getName(),
-                        'roomTypeName' => $accommodation->getRoomType()->getName()
-                    ];
-                }, $package->getAccommodations()->toArray())
-            ];
-
-            if ($package->getPayer()) {
-                $normalizedPackage['payer'] = [
-                    'id' => $package->getPayer()->getId(),
-                    'name' => $package->getPayer()->getName(),
-                    'phone' => $package->getPayer()->getPhone(),
-                    'email' => $package->getPayer()->getEmail()
-                ];
-            }
-
-            return $normalizedPackage;
-        }, $packages);
-    }
-
-    private function addAccessControlHeaders()
-    {
-        $this->addAccessControlAllowOriginHeaders($this->getParameter('api_domains'));
-        header('Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE, PATCH');
-        header('Access-Control-Allow-Headers: Content-Type, *');
     }
 }

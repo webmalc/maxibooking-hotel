@@ -857,12 +857,13 @@ class Order extends Base
     }
 
     /**
+     * @param bool $withDeleted
      * @return Package;
      */
-    public function getFirstPackage()
+    public function getFirstPackage($withDeleted = false)
     {
         foreach ($this->getPackages() as $package) {
-            if (!$package->getDeletedAt()) {
+            if ($withDeleted || !$package->getDeletedAt()) {
                 return $package;
             }
         }
