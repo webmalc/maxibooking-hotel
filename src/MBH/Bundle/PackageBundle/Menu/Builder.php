@@ -93,6 +93,7 @@ class Builder implements ContainerAwareInterface
             }
 
             if ($checker->isGranted('ROLE_ORDER_EDIT')
+                    && $package->getTotalOverwrite()
                 && $checker->isGranted('ROLE_PACKAGE_NEW')
                 && ($checker->isGranted('EDIT', $package->getOrder())
                     || $checker->isGranted('ROLE_PACKAGE_EDIT_ALL'))) {

@@ -163,7 +163,7 @@
                             <small>
                                 <i class="fa fa-question-circle" data-container="body" data-toggle="popover"
                                    data-placement="left"  data-html="true"
-                                   data-content="<small>{% for packagePrice in result.packagePrices(arr[0], arr[1]) %}{{ packagePrice.date|date('d.m.Y') }} - {{ packagePrice.price|number_format(2) }} - <i class='fa fa-sliders'></i> {{ packagePrice.tariff }}{% if packagePrice.promotion %} - <i class='fa fa-bookmark'></i> {{ packagePrice.promotion }}{% endif %}{% if packagePrice.special %} - <i class='fa fa-star'></i> {{ packagePrice.special }}{% endif %}<br>{% endfor %}</small>"></i>
+                                   data-content="<small>{% for packagePrice in result.getPackagePricesForCombination(arr[0], arr[1]) %}{{ packagePrice.date|date('d.m.Y') }} - {{ packagePrice.price|number_format(2) }} - <i class='fa fa-sliders'></i> {{ packagePrice.tariff }}{% if packagePrice.promotion %} - <i class='fa fa-bookmark'></i> {{ packagePrice.promotion }}{% endif %}{% if packagePrice.special %} - <i class='fa fa-star'></i> {{ packagePrice.special }}{% endif %}<br>{% endfor %}</small>"></i>
                             </small>
                         </li>
                     </ul>

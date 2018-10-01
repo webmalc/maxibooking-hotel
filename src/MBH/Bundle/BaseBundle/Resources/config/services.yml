@@ -548,3 +548,13 @@ services:
     mbh.exception_manager:
         class: MBH\Bundle\BaseBundle\Service\ExceptionManager
         arguments: ['@exception_notifier', '@kernel', '@security.token_storage']
+
+    mbh.object_normalizer:
+        class: Symfony\Component\Serializer\Normalizer\ObjectNormalizer
+        arguments:
+            - '@serializer.mapping.class_metadata_factory'
+            - null
+            - '@property_accessor'
+    mbh.serializer:
+        class: MBH\Bundle\BaseBundle\Service\MBHSerializer
+        arguments: ['@property_accessor', '@mbh.document_fields_manager', '@doctrine.odm.mongodb.document_manager']

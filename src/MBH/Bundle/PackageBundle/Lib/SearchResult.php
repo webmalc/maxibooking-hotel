@@ -308,12 +308,17 @@ class SearchResult
         return $this;
     }
 
+    public function getPricesByDate()
+    {
+        return $this->pricesByDate;
+    }
+
     /**
      * @param $adults
      * @param $children
      * @return null|array
      */
-    public function getPricesByDate($adults, $children)
+    public function getPricesByDateForCombination($adults, $children)
     {
         if (isset($this->pricesByDate[$adults . '_' . $children])) {
             return $this->pricesByDate[$adults . '_' . $children];
@@ -374,7 +379,6 @@ class SearchResult
         return $this;
     }
 
-
     /**
      * @param bool $full
      * @return null|string
@@ -408,11 +412,19 @@ class SearchResult
     }
 
     /**
+     * @return PackagePrice[]
+     */
+    public function getPackagePrices()
+    {
+        return $this->packagePrices;
+    }
+
+    /**
      * @param $adults
      * @param $children
      * @return null|array
      */
-    public function getPackagePrices($adults, $children)
+    public function getPackagePricesForCombination($adults, $children)
     {
         if (isset($this->packagePrices[$adults . '_' . $children])) {
             return $this->packagePrices[$adults . '_' . $children];
@@ -551,7 +563,7 @@ class SearchResult
         $packagePrices = [];
         $originalPrice = 0;
         /** @var PackagePrice $packagePrice */
-        foreach ($this->getPackagePrices($this->getAdults(), $this->getChildren()) as $packagePrice) {
+        foreach ($this->getPackagePricesForCombination($this->getAdults(), $this->getChildren()) as $packagePrice) {
             $packagePrices[] = $packagePrice->getJsonSerialized();
             $originalPrice += $packagePrice->getPriceWithoutPromotionDiscount();
         }
