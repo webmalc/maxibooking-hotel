@@ -181,10 +181,6 @@ class SiteManager
             $config = new SiteConfig();
             $this->dm->persist($config);
 
-            if (!is_null($hotel)) {
-                $config->addHotel($hotel);
-            }
-
             $siteDomain = $this->compileSiteDomain($client);
 
             $config->setSiteDomain($siteDomain);
@@ -192,6 +188,10 @@ class SiteManager
                 ->setUrl($this->compileSiteAddress($siteDomain))
                 ->setClient($client->getLogin());
             $this->billingApi->addClientSite($clientSite);
+        }
+
+        if (!is_null($hotel)) {
+            $config->addHotel($hotel);
         }
 
         $this->updateSiteFormConfig($config, $this->fetchFormConfig());
