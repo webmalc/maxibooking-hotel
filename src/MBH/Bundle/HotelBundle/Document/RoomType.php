@@ -16,6 +16,7 @@ use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\LocalizableTrait;
 use MBH\Bundle\HotelBundle\Document\Partials\RoomTypeTrait;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
+use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use MBH\Bundle\BaseBundle\Lib\Disableable as Disableable;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
@@ -28,7 +29,7 @@ use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
  * @Disableable\Disableable
  * @ODM\HasLifecycleCallbacks
  */
-class RoomType extends Base implements RoomTypeInterface
+class RoomType extends Base implements RoomTypeInterface, InvalidateInterface
 {
     /**
      * Hook timestampable behavior

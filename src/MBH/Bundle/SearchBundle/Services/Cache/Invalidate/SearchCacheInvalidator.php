@@ -6,7 +6,9 @@ namespace MBH\Bundle\SearchBundle\Services\Cache\Invalidate;
 
 use MBH\Bundle\SearchBundle\Document\SearchResultCacheItem;
 use MBH\Bundle\SearchBundle\Document\SearchResultCacheItemRepository;
+use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\AbstractInvalidateAdapter;
 use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateAdapterFactory;
+use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateAdapterInterface;
 use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateInterface;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultCacheException;
 use Predis\Client;
@@ -34,21 +36,47 @@ class SearchCacheInvalidator
         Client $redis,
         InvalidateAdapterFactory $factory
     ) {
-        $this->adapterFactory = $factory;
         $this->cacheItemRepository = $cacheItemRepository;
         $this->redis = $redis;
+        $this->adapterFactory = $factory;
     }
 
 
     /**
      * @param InvalidateInterface $document
+     * @param array|null $updateFields
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      * @throws \ReflectionException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\InvalidateException
      */
-    public function invalidate(InvalidateInterface $document): void
+    public function invalidateCauseUpdate(InvalidateInterface $document, ?array $updateFields = null): void
+    {
+        /** @var AbstractInvalidateAdapter|InvalidateInterface $adapter */
+        $adapter = $this->adapterFactory->create($document);
+        $adapter->setUpdateFields($updateFields);
+        if ($adapter->isMustInvalidateAfterUpdate()) {
+            $this->invalidate($adapter);
+        }
+
+    }
+
+    /**
+     * @param InvalidateInterface $document
+     * @throws \ReflectionException
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function invalidateCauseDelete(InvalidateInterface $document): void
     {
         $adapter = $this->adapterFactory->create($document);
+        $this->invalidate($adapter);
+    }
 
+    /**
+     * @param InvalidateAdapterInterface $adapter
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    private function invalidate(InvalidateAdapterInterface $adapter): void
+    {
         $begin = $adapter->getBegin();
         $end = $adapter->getEnd();
         $tariffIds = $adapter->getTariffIds();
@@ -65,12 +93,12 @@ class SearchCacheInvalidator
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function invalidateCacheByData(
-        \DateTime $begin,
+        \DateTime $begin = null,
         \DateTime $end = null,
         ?array $roomTypeIds = [],
         ?array $tariffIds = []
     ): void {
-        if (null === $end) {
+        if (null !== $begin && null === $end) {
             $end = clone $begin;
         }
 
