@@ -87,7 +87,6 @@ class PackageApiController extends BaseApiController
      * @Route("/current_packages", name="current_packages", options={"expose"=true})
      * @return JsonResponse
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     * @throws \MBH\Bundle\BaseBundle\Lib\Exception
      */
     public function getNumberOfCurrentPackages()
     {
@@ -99,11 +98,10 @@ class PackageApiController extends BaseApiController
                 = $packageRepo->countByType($packageType, true, $this->hotel);
         }
 
-        $response = (new Result())
+        return $this
+            ->get('mbh.api_response_compiler')
             ->setData($numberOfPackagesByTypes)
-            ->getApiResponse();
-
-        return new JsonResponse($response);
+            ->getResponse();
     }
 
     /**
@@ -111,7 +109,6 @@ class PackageApiController extends BaseApiController
      * @Route("/confirm_order/{id}")
      * @param Package $package
      * @return JsonResponse
-     * @throws \MBH\Bundle\BaseBundle\Lib\Exception
      */
     public function confirmOrder(Package $package)
     {
@@ -119,6 +116,8 @@ class PackageApiController extends BaseApiController
             ->get('mbh.order_manager')
             ->confirmOrder($package, $this->getUser());
 
-        return new JsonResponse((new Result())->getApiResponse());
+        return $this
+            ->get('mbh.api_response_compiler')
+            ->getResponse();
     }
 }

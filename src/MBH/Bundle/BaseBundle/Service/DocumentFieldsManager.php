@@ -27,6 +27,8 @@ use MBH\Bundle\HotelBundle\Document\ContactInfo;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\OnlineBundle\Document\Order;
+use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Tariff;
@@ -268,6 +270,33 @@ class DocumentFieldsManager
                 'forceBooking' => new BooleanFieldType(),
                 'infants' => new IntegerFieldType(),
                 'queryId' => new StringFieldType()
+            ],
+            PackageQueryCriteria::class => [
+                'begin' => new DateTimeFieldType(),
+                'end' => new DateTimeFieldType(),
+                'query' => new StringFieldType(),
+                'liveBegin' => new DateTimeFieldType(),
+                'liveEnd' => new DateTimeFieldType(),
+                'createdBy' => new StringFieldType(),
+                'filter' => new StringFieldType(),
+                'checkIn' => new DateTimeFieldType('d.m.Y'),
+                'checkOut' => new DateTimeFieldType('d.m.Y'),
+                'hotel' => new DocumentFieldType(Hotel::class),
+                'order' => new DocumentFieldType(Order::class),
+                'packageOrder' => new DocumentFieldType(Order::class),
+                'packageOrders' => new CollectionFieldType(),
+                'roomTypes' => new CollectionFieldType(),
+                'isConfirmed' => new BooleanFieldType(),
+                'paidStatus' => new StringFieldType(),
+                'status' => new StringFieldType(),
+                'sort' => new CollectionFieldType(),
+                'skip' => new IntegerFieldType(),
+                'limit' => new IntegerFieldType(),
+                'dateFilterBy' => new StringFieldType(),
+                'deleted' => new BooleanFieldType(),
+                'hasAccommodations' => new BooleanFieldType(),
+                'accommodations' => new CollectionFieldType(),
+                'sources' => new CollectionFieldType()
             ]
         ];
     }

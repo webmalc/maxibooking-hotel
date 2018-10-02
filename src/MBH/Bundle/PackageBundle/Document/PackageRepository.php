@@ -136,9 +136,9 @@ class PackageRepository extends DocumentRepository
             $orderData['confirmed'] = $criteria->isConfirmed;
         }
         //paid status
-        if (isset($criteria->paid) && in_array($criteria->paid, ['paid', 'part', 'not_paid'])) {
+        if (isset($criteria->paidStatus) && in_array($criteria->paidStatus, ['paid', 'part', 'not_paid'])) {
             $orderData['asIdsArray'] = true;
-            $orderData['paid'] = $criteria->paid;
+            $orderData['paid'] = $criteria->paidStatus;
         }
         //status
         if (isset($criteria->status)) {

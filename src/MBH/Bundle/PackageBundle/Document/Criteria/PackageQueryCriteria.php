@@ -75,7 +75,7 @@ class PackageQueryCriteria extends AbstractQueryCriteria
      * 'paid', 'part', 'not_paid'
      * @var string
      */
-    public $paid;
+    public $paidStatus;
     /**
      * @var string
      */

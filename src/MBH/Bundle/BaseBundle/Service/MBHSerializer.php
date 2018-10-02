@@ -16,6 +16,8 @@ class MBHSerializer
     private $fieldsManager;
     private $dm;
 
+    private $fieldTypes = [];
+
     public function __construct(PropertyAccessor $propertyAccessor, DocumentFieldsManager $fieldsManager, DocumentManager $dm)
     {
         $this->propertyAccessor = $propertyAccessor;
@@ -107,7 +109,7 @@ class MBHSerializer
             return null;
         }
 
-        $fieldType = $this->fieldsManager->getFieldType(new \ReflectionProperty($documentClass, $fieldName));
+        $fieldType = $this->getCashedFieldType($documentClass, $fieldName);
         if (!$fieldType instanceof NormalizableInterface) {
             throw new \InvalidArgumentException('Unexpected field type "' . get_class($fieldType) . '"');
         }
@@ -115,5 +117,23 @@ class MBHSerializer
         $options = ['dm' => $this->dm, 'serializer' => $this];
 
         return $fieldType->denormalize($value, $options);
+    }
+
+    /**
+     * @param string $documentClass
+     * @param string $fieldName
+     * @return NormalizableInterface
+     * @throws \ReflectionException
+     */
+    private function getCashedFieldType(string $documentClass, string $fieldName)
+    {
+        if (isset($this->fieldTypes[$documentClass][$fieldName])) {
+            return $this->fieldTypes[$documentClass][$fieldName];
+        }
+
+        $fieldType = $this->fieldsManager->getFieldType(new \ReflectionProperty($documentClass, $fieldName));
+        $this->fieldTypes[$documentClass][$fieldName] = $fieldType;
+
+        return $fieldType;
     }
 }

@@ -3,11 +3,11 @@
 $(document).ready(function () {
     if (document.getElementById('flow-widgets')) {
         $.ajax({
-            url: Routing.generate('flow_progress_data'),
+            url: Routing.generate('flow_progress'),
             dataType: 'json',
             method: "GET",
             success: function (response) {
-                if (response.status === true) {
+                if (response.success === true) {
                     var progressData = response.data;
                     for (var flowType in progressData) {
                         if (progressData.hasOwnProperty(flowType)) {
@@ -60,7 +60,7 @@ $(document).ready(function () {
             dataType: 'json',
             method: "GET",
             success: function (response) {
-                if (response.status === true) {
+                if (response.success === true) {
                     $('#number-of-check-out').text(response['data']['out'])
                     $('#number-of-check-in').text(response['data']['arrivals'])
                 }

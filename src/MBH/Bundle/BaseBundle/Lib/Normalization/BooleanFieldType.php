@@ -11,7 +11,7 @@ class BooleanFieldType implements NormalizableInterface
      */
     public function normalize($value, array $options)
     {
-        return (bool)$value;
+        return is_string($value) ? $value === 'true' : (bool)$value;
     }
 
     /**
@@ -21,6 +21,6 @@ class BooleanFieldType implements NormalizableInterface
      */
     public function denormalize($value, array $options)
     {
-        return (bool)$value;
+        return is_string($value) ? $value === 'true' : (bool)$value;
     }
 }
