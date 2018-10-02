@@ -33,7 +33,7 @@ class SearchResultCacheItemRepository extends DocumentRepository
      * @return iterable
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function fetchCachedKeys(\DateTime $begin, \DateTime $end, ?array $roomTypeIds = [], ?array $tariffIds = []): iterable
+    public function fetchCachedKeys(\DateTime $begin = null, \DateTime $end = null, ?array $roomTypeIds = [], ?array $tariffIds = []): iterable
     {
         $qb = $this->getInvalidateQB($begin, $end, $roomTypeIds, $tariffIds);
 
@@ -53,13 +53,13 @@ class SearchResultCacheItemRepository extends DocumentRepository
      * @param array|null $tariffIds
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function removeItemsByDates(\DateTime $begin, \DateTime $end, ?array $roomTypeIds = [], ?array $tariffIds = []): void
+    public function removeItemsByDates(?\DateTime $begin, ?\DateTime $end, ?array $roomTypeIds = [], ?array $tariffIds = []): void
     {
         $qb = $this->getInvalidateQB($begin, $end, $roomTypeIds, $tariffIds);
         $qb->remove()->getQuery()->execute();
     }
 
-    private function getInvalidateQB(\DateTime $begin, \DateTime $end, ?array $roomTypeIds, ?array $tariffIds)
+    private function getInvalidateQB(?\DateTime $begin, ?\DateTime $end, array $roomTypeIds = [], array $tariffIds = [])
     {
         $qb = $this->createQueryBuilder();
         if ($roomTypeIds) {
@@ -68,11 +68,15 @@ class SearchResultCacheItemRepository extends DocumentRepository
         if ($tariffIds) {
             $qb->field('tariffId')->in($tariffIds);
         }
+        if ($begin) {
+            $qb->field('begin')->lte($end);
+        }
 
-        return $qb
-            ->field('begin')->lte($end)
-            ->field('end')->gt($begin)
-            ;
+        if ($end) {
+            $qb->field('end')->gt($begin);
+        }
+
+        return $qb;
     }
 
 

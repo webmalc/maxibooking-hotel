@@ -8,21 +8,307 @@ use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\PriceCache;
+use MBH\Bundle\PriceBundle\Document\Restriction;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
-use MBH\Bundle\SearchBundle\Document\SearchConditions;
+use MBH\Bundle\SearchBundle\Document\SearchResultCacheItem;
 use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateInterface;
-use MBH\Bundle\SearchBundle\Lib\Result\Result;
-use MBH\Bundle\SearchBundle\Lib\Result\ResultConditions;
-use MBH\Bundle\SearchBundle\Lib\Result\ResultDayPrice;
-use MBH\Bundle\SearchBundle\Lib\Result\ResultPrice;
-use MBH\Bundle\SearchBundle\Lib\Result\ResultRoomType;
-use MBH\Bundle\SearchBundle\Lib\Result\ResultTariff;
-use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 
 class SearchCacheInvalidatorTest extends WebTestCase
 {
-    public function testInvalidate()
+    /** @var array */
+    protected const OFFSETS = [[0, 6], [4, 10], [8, 13]];
+
+    /** @dataProvider priceCacheInvalidateProvider */
+    public function testInvalidatePriceCache($data): void
+    {
+        $dateOffset = $data['offset'];
+        $date = new \DateTime("midnight + ${dateOffset} days");
+        $container = $this->getContainer();
+        $dm = $container->get('doctrine.odm.mongodb.document_manager');
+        $tariffId = $dm->getRepository(Tariff::class)->findOneBy(['fullTitle' => 'Основной тариф'])->getId();
+        $isUseCategory = $container->get('mbh.hotel.room_type_manager')->useCategories;
+        $excludeRoomTypeType = !$isUseCategory ? 'roomTypeCategory' : 'roomType';
+        /** @var InvalidateInterface $priceCache */
+        $priceCache = $dm->getRepository(PriceCache::class)->findOneBy(
+            ['date' => $date, 'tariff.id' => $tariffId, $excludeRoomTypeType => null]
+        );
+        $this->invalidate($priceCache, $data['expected']['keysNumToInvalidate']);
+    }
+
+    /** @dataProvider roomCacheInvalidateProvider */
+    public function testInvalidateRoomCache($data)
+    {
+        $dateOffset = $data['offset'];
+        $date = new \DateTime("midnight + ${dateOffset} days");
+        /** @var InvalidateInterface $roomCache */
+        $roomCache = $this->getContainer()->get('doctrine.odm.mongodb.document_manager')->getRepository(
+            RoomCache::class
+        )->findOneBy(['date' => $date]);
+
+        $this->invalidate($roomCache, $data['expected']['keysNumToInvalidate']);
+    }
+
+    /**
+     * @param $data
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\InvalidateException
+     * @throws \ReflectionException
+     * @dataProvider tariffInvalidateProvider
+     */
+    public function testInvalidateTariff($data): void
+    {
+        /** @var InvalidateInterface $tariff */
+        $tariff = $this->getContainer()->get('doctrine.odm.mongodb.document_manager')->getRepository(
+            Tariff::class
+        )->findOneBy(
+            []
+        );
+        $this->invalidate($tariff, $data['expected']['keysNumToInvalidate']);
+    }
+
+    /**
+     * @param $data
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\InvalidateException
+     * @throws \ReflectionException
+     * @dataProvider roomTypeInvalidateProvider
+     */
+    public function testInvalidateRoomType($data): void
+    {
+        /** @var InvalidateInterface $roomType */
+        $roomType = $this->getContainer()->get('doctrine.odm.mongodb.document_manager')->getRepository(
+            RoomType::class
+        )->findOneBy(
+            []
+        );
+        $this->invalidate($roomType, $data['expected']['keysNumToInvalidate']);
+    }
+
+    /**
+     * @param $data
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\InvalidateException
+     * @throws \ReflectionException
+     * @dataProvider restrictionInvalidateProvider
+     */
+    public function testInvalidateRestriction($data): void
+    {
+        $dateOffset = $data['offset'];
+        $date = new \DateTime("midnight + ${dateOffset} days");
+        /** @var InvalidateInterface $restriction */
+        $restriction = $this->getContainer()->get('doctrine.odm.mongodb.document_manager')->getRepository(
+            Restriction::class
+        )->findOneBy(
+            ['date' => $date]
+        );
+        $this->invalidate($restriction, $data['expected']['keysNumToInvalidate']);
+    }
+
+
+
+    /**
+     * @param InvalidateInterface $object
+     * @param int $expectedNumToInvalidate
+     * @param array $updateFields
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\InvalidateException
+     * @throws \ReflectionException
+     */
+    private function invalidate(InvalidateInterface $object, int $expectedNumToInvalidate, array $updateFields = []): void
+    {
+        $invalidator = $this->getContainer()->get('mbh_search.search_cache_invalidator');
+        $invalidator->flushCache();
+
+        $results = $this->cacheWarmUp();
+        $redis = $this->getContainer()->get('snc_redis.cache_results_client');
+        $cachedKeys = $redis->keys('*');
+        /** @var PriceCache $priceCache */
+        $this->assertCount(\count($results), $cachedKeys);
+        $invalidator->invalidateCauseUpdate($object, $updateFields ?:['any']);
+        $afterInvalidateKeys = $redis->keys('*');
+
+        $invalidatedKeys = array_diff($cachedKeys, $afterInvalidateKeys);
+
+        $this->assertCount($expectedNumToInvalidate, $invalidatedKeys);
+
+
+        $cacheResultItem = $this->getContainer()->get('doctrine.odm.mongodb.document_manager')->createQueryBuilder(
+            SearchResultCacheItem::class
+        )
+            ->field('cacheResultKey')->in(
+                [$invalidatedKeys]
+            )->getQuery()->execute()->toArray();
+
+        $this->assertEmpty($cacheResultItem);
+    }
+
+    public function restrictionInvalidateProvider(): array
+    {
+        return [
+            [
+                [
+                    'offset' => 3,
+                    'expected' => [
+                        'keysNumToInvalidate' => 1,
+                    ],
+                ],
+
+            ],
+            [
+                [
+                    'offset' => 5,
+                    'expected' => [
+                        'keysNumToInvalidate' => 2,
+                    ],
+                ],
+
+            ],
+            [
+                [
+                    'offset' => 10,
+                    'expected' => [
+                        'keysNumToInvalidate' => 1,
+                    ],
+                ],
+
+            ],
+        ];
+    }
+
+    public function roomTypeInvalidateProvider(): array
+    {
+        return [
+            [
+                [
+                    'offset' => 3,
+                    'expected' => [
+                        'keysNumToInvalidate' => 15,
+                    ],
+                ],
+
+            ],
+            [
+                [
+                    'offset' => 5,
+                    'expected' => [
+                        'keysNumToInvalidate' => 15,
+                    ],
+                ],
+
+            ],
+            [
+                [
+                    'offset' => 10,
+                    'expected' => [
+                        'keysNumToInvalidate' => 15,
+                    ],
+                ],
+
+            ],
+        ];
+    }
+
+    public function tariffInvalidateProvider(): array
+    {
+        return [
+            [
+                [
+                    'offset' => 3,
+                    'expected' => [
+                        'keysNumToInvalidate' => 21,
+                    ],
+                ],
+
+            ],
+            [
+                [
+                    'offset' => 5,
+                    'expected' => [
+                        'keysNumToInvalidate' => 21,
+                    ],
+                ],
+
+            ],
+            [
+                [
+                    'offset' => 10,
+                    'expected' => [
+                        'keysNumToInvalidate' => 21,
+                    ],
+                ],
+
+            ],
+        ];
+    }
+
+    public function priceCacheInvalidateProvider(): array
+    {
+        return [
+            [
+                [
+                    'offset' => 3,
+                    'expected' => [
+                        'keysNumToInvalidate' => 1,
+                    ],
+                ],
+
+            ],
+            [
+                [
+                    'offset' => 5,
+                    'expected' => [
+                        'keysNumToInvalidate' => 2,
+                    ],
+                ],
+
+            ],
+            [
+                [
+                    'offset' => 10,
+                    'expected' => [
+                        'keysNumToInvalidate' => 1,
+                    ],
+                ],
+
+            ],
+        ];
+    }
+
+    public function roomCacheInvalidateProvider(): array
+    {
+        return [
+            [
+                [
+                    'offset' => 3,
+                    'expected' => [
+                        'keysNumToInvalidate' => 5,
+                    ],
+                ],
+
+            ],
+            [
+                [
+                    'offset' => 5,
+                    'expected' => [
+                        'keysNumToInvalidate' => 10,
+                    ],
+                ],
+
+            ],
+            [
+                [
+                    'offset' => 10,
+                    'expected' => [
+                        'keysNumToInvalidate' => 5,
+                    ],
+                ],
+
+            ],
+        ];
+    }
+
+    private function cacheWarmUp(): array
     {
         $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
         $hotels = $dm->getRepository(Hotel::class)->findAll();
@@ -33,139 +319,22 @@ class SearchCacheInvalidatorTest extends WebTestCase
         $dm->flush();
         $dm->clear();
 
-        $invalidator = $this->getContainer()->get('mbh_search.search_cache_invalidator');
-        $invalidator->flushCache();
+        $search = $this->getContainer()->get('mbh_search.search');
+        $results = [];
+        foreach (self::OFFSETS as $offset) {
+            [$beginOffset, $endOffset] = $offset;
+            $begin = new  \DateTime("midnight + ${beginOffset} days");
+            $end = new  \DateTime("midnight + ${endOffset} days");
+            $conditionsBlank = [
+                'begin' => $begin->format('d.m.Y'),
+                'end' => $end->format('d.m.Y'),
+                'adults' => 2,
+                'children' => 0,
+                'isUseCache' => true,
+            ];
+            $results[] = $search->searchSync($conditionsBlank, false);
+        }
 
-        $startDate = new \DateTime('midnight');
-        $begin = (clone $startDate)->modify('+ 0 days');
-        $end = (clone $startDate)->modify('+ 6 days');
-        $data = [
-            'begin' =>$begin->format('d.m.Y'),
-            'end' => $end->format('d.m.Y'),
-            'adults' => 2,
-            'children' => 0,
-            'isUseCache' => true,
-        ];
-
-        $searcher = $this->getContainer()->get('mbh_search.search');
-        $result = $searcher->searchSync($data);
-
-
-        /** @var InvalidateInterface $data */
-//        $invalidator->invalidate($data['data']);
-
-        $redis = $this->getContainer()->get('snc_redis.cache_results_client');
-        $actual = $redis->keys('*');
-        $expected = $data['keysLeft'];
-
-        $this->assertCount($expected, $actual);
-
-    }
-
-    public function dataProvider()
-    {
-        $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
-        /** @var Hotel $hotel */
-        $hotel = $dm->getRepository(Hotel::class)->findAll()[0];
-        /** @var Tariff $tariff */
-        $tariff = $hotel->getTariffs()->first();
-        /** @var RoomType $roomType */
-        $roomType = $hotel->getRoomTypes()->first();
-
-        $priceCache1 = $this->createMock(PriceCache::class);
-        $priceCache1->expects($this->exactly(2))->method('getDate')->willReturn($startDate);
-//        $priceCache1->expects($this->once())->method('getTariffIds')->willReturn(['tariffId']);
-//        $priceCache1->expects($this->once())->method('getRoomTypeIds')->willReturn(['roomTypeIds1', 'roomTypeIds2']);
-
-        $priceCache1->setDate($startDate);
-        $priceCache2 = new PriceCache();
-        $tariff = new Tariff();
-        $roomCache1 = new RoomCache();
-        $roomCache2 = new RoomCache();
-        $dates = [
-            [
-                (clone $startDate)->modify('+ 0 days'),
-                (clone $startDate)->modify('+ 6 days'),
-
-            ],
-            [
-                (clone $startDate)->modify('+ 4 days'),
-                (clone $startDate)->modify('+ 10 days'),
-
-            ],
-            [
-                (clone $startDate)->modify('+ 8 days'),
-                (clone $startDate)->modify('+ 13 days'),
-            ],
-        ];
-
-        return [
-            [
-                [
-                    'data' => $priceCache1,
-                    'keysLeft' => 0,
-                    'dates' => $dates,
-                ],
-                [
-                    'data' => $priceCache2,
-                    'keysLeft' => 1,
-                ],
-            ],
-
-        ];
-    }
-
-    private function createResults(\DateTime $begin, \DateTime $end): array
-    {
-
-
-        $resultRoomType = ResultRoomType::createInstance($roomType);
-        $resultTariff = ResultTariff::createInstance($tariff);
-
-        $adults = 2;
-        $children = 2;
-        $childrenAges = [3, 7];
-
-        $conditions = new SearchConditions();
-        $conditions
-            ->setId('fakeConditionsId')
-            ->setBegin($begin)
-            ->setEnd($end)
-            ->setAdults($adults)
-            ->setChildren($children)
-            ->setChildrenAges($childrenAges)
-            ->setSearchHash('fakeSearchHash');
-
-        $dayPrice = ResultDayPrice::createInstance($begin, $adults, $children, 0, 333, $resultTariff);
-        $resultPrice = ResultPrice::createInstance($adults, $children, 33333, [$dayPrice]);
-        $resultConditions = ResultConditions::createInstance($conditions);
-
-        $result = Result::createInstance(
-            $begin,
-            $end,
-            $resultConditions,
-            $resultTariff,
-            $resultRoomType,
-            [$resultPrice],
-            5,
-            []
-        );
-        $result->setCacheItemId('fakeTestId');
-
-        $searchQuery = new SearchQuery();
-        $searchQuery
-            ->setBegin($begin)
-            ->setEnd($end)
-            ->setTariffId($tariff->getId())
-            ->setRoomTypeId($roomType->getId())
-            ->setAdults($adults)
-            ->setChildren($children)
-            ->setChildrenAges($childrenAges)
-            ->setSearchConditions($conditions);
-
-        return [
-            'result' => $result,
-            'query' => $searchQuery,
-        ];
+        return array_merge(...$results);
     }
 }

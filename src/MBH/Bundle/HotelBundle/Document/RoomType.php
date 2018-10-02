@@ -14,6 +14,7 @@ use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Partials\RoomTypeTrait;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
+use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -24,7 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ODM\HasLifecycleCallbacks
  */
-class RoomType extends Base implements RoomTypeInterface
+class RoomType extends Base implements RoomTypeInterface, InvalidateInterface
 {
 
     /**
