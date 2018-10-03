@@ -8,7 +8,6 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\HotelBundle\Model\RoomTypeInterface;
-use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use MBH\Bundle\BaseBundle\Lib\Disableable as Disableable;
 
@@ -22,7 +21,7 @@ use MBH\Bundle\BaseBundle\Lib\Disableable as Disableable;
  * @Disableable\Disableable
  * @ODM\Index(keys={"hotel"="asc","roomType"="asc","tariff"="asc","date"="asc"})
  */
-class PriceCache extends Base implements InvalidateInterface
+class PriceCache extends Base
 {
     /**
      * @var \MBH\Bundle\HotelBundle\Document\Hotel

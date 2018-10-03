@@ -199,7 +199,13 @@ services:
         arguments:
             - '@mbh_search.warm_up_cache_searcher'
 
-#search limit checker for refactoring
+
+    mbh_search.invalidate_consumer:
+        class: MBH\Bundle\SearchBundle\RabbitMQ\InvalidateConsumer
+        arguments:
+            - '@mbh_search.search_cache_invalidator'
+
+    #search limit checker for refactoring
     mbh_search.search_limit_checker:
         class: MBH\Bundle\SearchBundle\Services\Search\SearchLimitChecker
         arguments:
@@ -299,16 +305,16 @@ services:
     mbh_search.data_holder:
         class: MBH\Bundle\SearchBundle\Lib\DataHolder
         arguments:
-          - '@mbh_search.tariff_repository'
-          - '@mbh_search.room_type_repository'
-          - '@mbh_search.restriction_repository'
-          - '@mbh_search.client_config_repository'
-          - '@mbh_search.room_cache_repository'
-          - '@mbh_search.room_repository'
-          - '@mbh_search.package_repository'
-          - '@mbh_search.price_cache_repository'
-          - '@mbh_search.search_conditions_repository'
-          - '@mbh_search.hotel_repository'
+            - '@mbh_search.tariff_repository'
+            - '@mbh_search.room_type_repository'
+            - '@mbh_search.restriction_repository'
+            - '@mbh_search.client_config_repository'
+            - '@mbh_search.room_cache_repository'
+            - '@mbh_search.room_repository'
+            - '@mbh_search.package_repository'
+            - '@mbh_search.price_cache_repository'
+            - '@mbh_search.search_conditions_repository'
+            - '@mbh_search.hotel_repository'
         deprecated: 'The "%service_id%" service is deprecated. Should be replaced by shared data fetcher'
 
 ##Holders
@@ -330,25 +336,26 @@ services:
         arguments: ['@mbh_search.client_config_repository']
 
 ##Cache Results
-    mbh_search.search_cache_invalidator:
-        class: MBH\Bundle\SearchBundle\Services\Cache\Invalidate\SearchCacheInvalidator
-        arguments:
-        - '@mbh_search.search_cache_item_repository'
-        - '@snc_redis.cache_results_client'
-        - '@mbh_search.invalidate_adapter_factory'
 
     mbh_search.invalidate_adapter_factory:
         class: MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateAdapterFactory
         arguments:
-          - '@mbh.hotel.room_type_manager'
+            - '@mbh.hotel.room_type_manager'
+            - '@doctrine.odm.mongodb.document_manager'
+
+    mbh_search.search_cache_invalidator:
+        class: MBH\Bundle\SearchBundle\Services\Cache\Invalidate\SearchCacheInvalidator
+        arguments:
+            - '@mbh_search.search_cache_item_repository'
+            - '@snc_redis.cache_results_client'
 
     mbh_search.cache_search_abstract:
         class: MBH\Bundle\SearchBundle\Services\Cache\AbstractCacheSearchResult
         arguments:
-        - '@mbh_search.search_cache_item_repository'
-        - '@mbh_search.result_serializer'
-        - '@snc_redis.cache_results_client'
-        - '@mbh_search.cache_key_creator'
+            - '@mbh_search.search_cache_item_repository'
+            - '@mbh_search.result_serializer'
+            - '@snc_redis.cache_results_client'
+            - '@mbh_search.cache_key_creator'
         abstract: true
 
     mbh_search.cache_search:
