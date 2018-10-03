@@ -2,7 +2,10 @@
 
 namespace MBH\Bundle\ApiBundle\Controller;
 
+use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\HotelBundle\Service\FormFlow;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -11,9 +14,11 @@ use Symfony\Component\Routing\Annotation\Route;
  * Class DashboardApiController
  * @package MBH\Bundle\HotelBundle\Controller
  */
-class CommonDataApiController extends BaseApiController
+class CommonDataApiController extends BaseController
 {
     /**
+     * @Security("is_granted('ROLE_FLOW')")
+     * @Method("GET")
      * @Route("/flow_progress", name="flow_progress", options={"expose"=true})
      * @return JsonResponse
      */

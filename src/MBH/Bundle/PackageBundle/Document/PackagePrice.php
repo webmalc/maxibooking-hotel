@@ -3,7 +3,6 @@
 namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use MBH\Bundle\OnlineBundle\Controller\ExternalApiController;
 use MBH\Bundle\OnlineBundle\Services\ApiHandler;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;
@@ -51,14 +50,6 @@ class PackagePrice
      */
     protected $special;
 
-    /**
-     * @return \DateTime
-     */
-    public function getDate()
-    {
-        return $this->date;
-    }
-
     public function __construct(\DateTime $date, $price, Tariff $tariff, Promotion $promotion = null, Special $special = null)
     {
         $this->setDate($date)
@@ -67,6 +58,14 @@ class PackagePrice
             ->setPromotion($promotion)
             ->setSpecial($special)
         ;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getDate()
+    {
+        return $this->date;
     }
 
     /**
@@ -127,7 +126,7 @@ class PackagePrice
 
     /**
      * @param Promotion $promotion
-     * @return Promotion
+     * @return PackagePrice
      */
     public function setPromotion($promotion)
     {

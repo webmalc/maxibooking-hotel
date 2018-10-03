@@ -4,6 +4,7 @@ namespace Tests\Bundle\ApiBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\PackageBundle\Document\Package;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PackageApiControllerTest extends WebTestCase
 {
@@ -58,7 +59,26 @@ class PackageApiControllerTest extends WebTestCase
         $this->assertEquals([
             'id' => $expected->getRoomType()->getId(),
             'name' => $expected->getRoomType()->getName()
-        ], $actual['roomType']
-        );
+        ], $actual['roomType']);
+    }
+
+    public function testConfirmOrder()
+    {
+        $dm = $this->getDm();
+        $order = $dm->getRepository('MBHPackageBundle:Order')->findOneBy([]);
+        $order->setConfirmed(false);
+        $dm->flush();
+
+        $this->client->request('POST', '/api/v1/packages/confirm_order/' . $order->getFirstPackage()->getId());
+        $this->isSuccessful($this->client->getResponse(), true, 'application/json');
+
+        $dm->refresh($order);
+        $this->assertTrue($order->getConfirmed());
+    }
+
+    public function testConfirmNonExistentOrder()
+    {
+        $this->client->request('POST', '/api/v1/packages/confirm_order/' . 'id-of-non-existent-package');
+        $this->assertEquals(404, $this->client->getResponse()->getStatusCode());
     }
 }

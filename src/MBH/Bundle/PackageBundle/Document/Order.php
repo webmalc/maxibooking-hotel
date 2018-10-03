@@ -858,7 +858,7 @@ class Order extends Base
 
     /**
      * @param bool $withDeleted
-     * @return Package;
+     * @return Package
      */
     public function getFirstPackage($withDeleted = false)
     {

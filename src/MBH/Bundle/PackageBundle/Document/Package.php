@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\PersistentCollection;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -113,7 +114,7 @@ class Package extends Base implements \JsonSerializable
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Integer()
+     * @ODM\Field(type="int")
      * @ODM\Index()
      */
     protected $number;
@@ -1572,7 +1573,7 @@ class Package extends Base implements \JsonSerializable
     }
 
     /**
-     * @return PackagePrice[]|PersistentCollection
+     * @return PackagePrice[]|PersistentCollection|Cursor
      */
     public function getPrices()
     {

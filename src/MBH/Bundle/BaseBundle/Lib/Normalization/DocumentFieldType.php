@@ -2,9 +2,7 @@
 
 namespace MBH\Bundle\BaseBundle\Lib\Normalization;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Document\Base;
-use MBH\Bundle\BaseBundle\Service\MBHSerializer;
 use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 
 class DocumentFieldType implements NormalizableInterface

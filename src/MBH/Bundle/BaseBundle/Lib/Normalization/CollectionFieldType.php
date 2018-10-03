@@ -24,7 +24,7 @@ class CollectionFieldType implements NormalizableInterface
 
         return is_null($this->elementFieldType) ? (array)$value : array_map(function ($element) use ($options) {
             return $this->elementFieldType->normalize($element, $options);
-        }, $value);
+        }, (array)$value);
     }
 
     /**
@@ -38,7 +38,7 @@ class CollectionFieldType implements NormalizableInterface
 
         return is_null($this->elementFieldType) ? (array)$value : array_map(function ($element) use ($options) {
             return $this->elementFieldType->denormalize($element, $options);
-        }, $value);
+        }, (array)$value);
     }
 
     /**

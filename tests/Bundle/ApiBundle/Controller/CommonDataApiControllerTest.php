@@ -34,7 +34,7 @@ class CommonDataApiControllerTest extends WebTestCase
 
     private function loadFlowConfigs(): void
     {
-        $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
+        $dm = $this->getDm();
         $roomTypeFlowConfig = (new FlowConfig())
             ->setCurrentStep(3)
             ->setFlowData([])

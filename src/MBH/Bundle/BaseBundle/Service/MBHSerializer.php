@@ -4,13 +4,25 @@ namespace MBH\Bundle\BaseBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Lib\Normalization\NormalizableInterface;
+use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 class MBHSerializer
 {
+    const API_GROUP = 'api';
+    const NESTED_GROUP = 'nested';
+
     const DATE_FORMAT = 'd.m.Y';
     const DATETIME_FORMAT = 'd.m.Y H:i';
     const TIME_FORMAT = 'H:i';
+
+    const NORMALIZED_FIELDS_BY_GROUPS = [
+        Package::class => [
+            self::API_GROUP => [
+                'id', 'numberWithPrefix', 'begin', 'end', 'roomType', 'adults', 'children', 'accommodations'
+            ]
+        ]
+    ];
 
     private $propertyAccessor;
     private $fieldsManager;
@@ -26,37 +38,99 @@ class MBHSerializer
     }
 
     /**
+     * @param string $class
+     * @param $field
+     * @param NormalizableInterface $fieldType
+     * @return MBHSerializer
+     */
+    public function setSpecialFieldType(string $class, $field, NormalizableInterface $fieldType)
+    {
+        $this->fieldTypes[$class][$field] = $fieldType;
+
+        return $this;
+    }
+
+    /**
+     * @param string $class
+     * @param array $fieldTypesByFieldNames
+     * @return MBHSerializer
+     */
+    public function setSpecialFieldTypes(string $class, array $fieldTypesByFieldNames)
+    {
+        foreach ($fieldTypesByFieldNames as $fieldName => $fieldType) {
+            $this->fieldTypes[$class][$fieldName] = $fieldType;
+        }
+
+        return $this;
+    }
+
+    /**
      * @param $document
-     * @param array|null $includedFields
+     * @return array
+     * @throws \ReflectionException
+     */
+    public function normalize($document)
+    {
+        $reflClass = new \ReflectionClass(get_class($document));
+
+        return $this->normalizeByReflFields($document, $reflClass->getProperties());
+    }
+
+    /**
+     * @param $document
+     * @param array $fields
+     * @return array
+     * @throws \ReflectionException
+     */
+    public function normalizeByFields($document, array $fields)
+    {
+        $class = get_class($document);
+        $reflFields = array_map(function(string $field) use ($class) {
+            return new \ReflectionProperty($class, $field);
+        }, $fields);
+
+        return $this->normalizeByReflFields($document, $reflFields);
+    }
+
+    /**
+     * @param $document
      * @param array $excludedFields
      * @return array
      * @throws \ReflectionException
      */
-    public function normalize($document, array $includedFields = null, $excludedFields = [])
+    public function normalizeExcludingFields($document, array $excludedFields)
     {
-        $normalizedDocument = [];
         $reflClass = new \ReflectionClass(get_class($document));
+        $filteredFields = array_filter($reflClass->getProperties(), function(\ReflectionProperty $property) use ($excludedFields) {
+            return !in_array($property->name, $excludedFields);
+        });
 
-        foreach ($reflClass->getProperties() as $property) {
-            $propertyName = $property->getName();
-            if (in_array($propertyName, $excludedFields)
-                || (!is_null($includedFields) && !in_array($propertyName, $includedFields))) {
-                continue;
-            }
+        return $this->normalizeByReflFields($document, $filteredFields);
+    }
 
-            $fieldValue = $this->propertyAccessor->getValue($document, $propertyName);
-            $normalizedValue = $this->normalizeSingleField($fieldValue, $property);
-
-            $normalizedDocument[$propertyName] = $normalizedValue;
+    /**
+     * @param $document
+     * @param string $group
+     * @return array
+     * @throws \ReflectionException
+     */
+    public function normalizeByGroup($document, string $group)
+    {
+        $class = get_class($document);
+        if (!isset(self::NORMALIZED_FIELDS_BY_GROUPS[$class][$group])) {
+            throw new \InvalidArgumentException('There is no settings for class ' . $class . ' and group ' . $group);
         }
 
-        return $normalizedDocument;
+        $fields = self::NORMALIZED_FIELDS_BY_GROUPS[$class][$group];
+
+        return $this->normalizeByFields($document, $fields);
     }
 
     /**
      * @param $fieldValue
      * @param \ReflectionProperty $property
      * @return array|bool|float|int|null|string
+     * @throws \ReflectionException
      */
     public function normalizeSingleField($fieldValue, \ReflectionProperty $property)
     {
@@ -65,7 +139,7 @@ class MBHSerializer
         }
 
         $options = ['dm' => $this->dm, 'serializer' => $this];
-        $fieldType = $this->fieldsManager->getFieldType($property);
+        $fieldType = $this->getCashedFieldType($property->class, $property->getName());
         if (!$fieldType instanceof NormalizableInterface) {
             throw new \InvalidArgumentException('Unexpected field type "' . get_class($fieldType) . '"');
         }
@@ -76,19 +150,14 @@ class MBHSerializer
     /**
      * @param array $dataToDenormalize
      * @param $document
-     * @param array $excludedFields
      * @return object
      * @throws \ReflectionException
      */
-    public function denormalize(array $dataToDenormalize, $document, $excludedFields = [])
+    public function denormalize(array $dataToDenormalize, $document)
     {
         $documentClass = get_class($document);
 
         foreach ($dataToDenormalize as $fieldName => $value) {
-            if (in_array($fieldName, $excludedFields)) {
-                continue;
-            }
-
             $denormalizedValue = $this->denormalizeSingleField($value, $documentClass, $fieldName);
             $this->propertyAccessor->setValue($document, $fieldName, $denormalizedValue);
         }
@@ -135,5 +204,25 @@ class MBHSerializer
         $this->fieldTypes[$documentClass][$fieldName] = $fieldType;
 
         return $fieldType;
+    }
+
+    /**
+     * @param $document
+     * @param array $reflFields
+     * @return \ReflectionProperty[]
+     * @throws \ReflectionException
+     */
+    private function normalizeByReflFields($document, array $reflFields)
+    {
+        $normalizedDocument = [];
+
+        /** @var \ReflectionProperty $field */
+        foreach ($reflFields as $field) {
+            $fieldValue = $this->propertyAccessor->getValue($document, $field->name);
+            $normalizedValue = $this->normalizeSingleField($fieldValue, $field);
+            $normalizedDocument[$field->name] = $normalizedValue;
+        }
+
+        return $normalizedDocument;
     }
 }

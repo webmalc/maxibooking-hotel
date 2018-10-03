@@ -5,6 +5,7 @@ namespace MBH\Bundle\HotelBundle\Controller;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\HotelBundle\Form\HotelFlow\HotelFlow;
 use MBH\Bundle\HotelBundle\Form\RoomTypeFlow\RoomTypeFlow;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -16,6 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class FlowController extends BaseController
 {
     /**
+     * @Security("is_granted('ROLE_HOTEL_FLOW')")
      * @Template()
      * @Route("/hotel", name="hotel_flow")
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
@@ -40,6 +42,7 @@ class FlowController extends BaseController
     }
 
     /**
+     * @Security("is_granted('ROLE_ROOMTYPE_FLOW')")
      * @Template()
      * @Route("/room_type", name="room_type_flow")
      * @return array
@@ -60,6 +63,7 @@ class FlowController extends BaseController
     }
 
     /**
+     * @Security("is_granted('ROLE_MB_SITE_FLOW')")
      * @Route("/mb_site", name="mb_site")
      * @Template()
      * @return array

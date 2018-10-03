@@ -5,7 +5,6 @@ use Liip\FunctionalTestBundle\Test\WebTestCase as Base;
 use MBH\Bundle\BaseBundle\Lib\Test\Traits\FixturesTestTrait;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Component\DomCrawler\Crawler;
-use Symfony\Component\DomCrawler\Form;
 
 abstract class WebTestCase extends Base
 {
@@ -82,5 +81,12 @@ abstract class WebTestCase extends Base
     {
         $this->listUrl = $listUrl;
         return $this;
+    }
+
+    public function getDm()
+    {
+        return $this
+            ->getContainer()
+            ->get('doctrine.odm.mongodb.document_manager');
     }
 }

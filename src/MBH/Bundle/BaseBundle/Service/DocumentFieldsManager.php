@@ -10,6 +10,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\EmbedMany;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\EmbedOne;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Field;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
+use Doctrine\ODM\MongoDB\Mapping\Annotations\Integer;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceMany;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceOne;
 use MBH\Bundle\BaseBundle\Lib\Normalization\BooleanFieldType;
@@ -75,7 +76,8 @@ class DocumentFieldsManager
         EmbedOne::class => ['class' => EmbedOneFieldType::class, 'isDocument' => true],
         EmbedMany::class => ['class' => EmbedManyFieldType::class, 'isDocument' => true],
         Date::class => ['class' => DateTimeFieldType::class, 'isDocument' => false],
-        Id::class => ['class' => StringFieldType::class, 'isDocument' => false]
+        Id::class => ['class' => StringFieldType::class, 'isDocument' => false],
+        Integer::class => ['class' => IntegerFieldType::class, 'isDocument' => false]
     ];
 
     const CORRECT_FIELD_STATUS = 'correct';
@@ -317,11 +319,12 @@ class DocumentFieldsManager
                 case 'string':
                     return new StringFieldType();
                 case 'float':
+                case 'numeric':
                     return new FloatFieldType();
                 case 'collection':
                     return new CollectionFieldType();
-                case 'numeric':
                 case 'int':
+                case 'integer':
                     return new IntegerFieldType();
                 case 'date':
                     return new DateTimeFieldType();
@@ -348,7 +351,7 @@ class DocumentFieldsManager
             . $property->getName()
             . '" of class "'
             . $property->class
-            . '"';
+            . '". If it is deprecated annotation type, consider to replace it with modern field annotation.';
 
         throw new \InvalidArgumentException($exceptionMessage);
     }

@@ -42,12 +42,12 @@ class DocumentsCollectionFieldType implements NormalizableInterface
         /** @var DocumentRepository $documentRepo */
         $documentRepo = $dm->getRepository($this->documentClass);
 
-        return $documentRepo
+        return array_values($documentRepo
             ->createQueryBuilder()
             ->field('id')->in($value)
             ->getQuery()
             ->execute()
-            ->toArray();
+            ->toArray());
     }
 
 

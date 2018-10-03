@@ -2,9 +2,10 @@
 
 namespace MBH\Bundle\ApiBundle\Controller;
 
-use MBH\Bundle\BillingBundle\Lib\Model\Result;
+use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\PackageBundle\Document\Package;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,12 +17,10 @@ use Symfony\Component\Routing\Exception\RouteNotFoundException;
  * Class PackageApiController
  * @package MBH\Bundle\ApiBundle\Controller
  */
-class PackageApiController extends BaseApiController
+class PackageApiController extends BaseController
 {
-    const NUMBER_OF_NOT_CONFIRMED_PACKAGES = 7;
-    const DATE_FORMAT = 'd.m.Y';
-
     /**
+     * @Security("is_granted('ROLE_PACKAGE_VIEW')")
      * @Method("GET")
      * @Template()
      * @Route("/", name="packages_list_api", options={"expose"=true}, defaults={"_format"="json"})
@@ -59,11 +58,12 @@ class PackageApiController extends BaseApiController
     }
 
     /**
+     * @Method("GET")
+     * @Security("is_granted('ROLE_PACKAGE_VIEW')")
      * @Route("/current_packages_list/{type}", name="current_packages_list", options={"expose"=true})
      * @param string $type
      * @return JsonResponse
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     * @throws \MBH\Bundle\BaseBundle\Lib\Exception
      */
     public function currentDayPackages($type = 'arrivals')
     {
@@ -84,6 +84,8 @@ class PackageApiController extends BaseApiController
     }
 
     /**
+     * @Method("GET")
+     * @Security("is_granted('ROLE_PACKAGE_VIEW')")
      * @Route("/current_packages", name="current_packages", options={"expose"=true})
      * @return JsonResponse
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
@@ -105,8 +107,9 @@ class PackageApiController extends BaseApiController
     }
 
     /**
+     * @Security("is_granted('ROLE_PACKAGE_VIEW_ALL') or is_granted('ROLE_NO_OWN_ONLINE_VIEW') or (is_granted('EDIT', order) and is_granted('ROLE_PACKAGE_VIEW'))")
      * @Method("POST")
-     * @Route("/confirm_order/{id}")
+     * @Route("/confirm_order/{orderId}/{id}")
      * @param Package $package
      * @return JsonResponse
      */

@@ -271,3 +271,8 @@ ROLE_PROFILE: 'Личный кабинет - Профиль'
 ROLE_PAYMENTS: 'Личный кабинет — Платежи'
 ROLE_PACKAGE_DOCS: 'Документы заказа'
 ROLE_MB_SITE: 'Сайт для отеля'
+ROLE_DASHBOARD: Дашборд
+ROLE_FLOW: Визарды
+ROLE_HOTEL_FLOW: 'Визард отеля'
+ROLE_ROOMTYPE_FLOW: 'Визард типов номеров'
+ROLE_MB_SITE_FLOW: 'Визард сайта'
