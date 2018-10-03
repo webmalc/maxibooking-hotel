@@ -26,6 +26,7 @@ class PackageApiController extends BaseController
      * @Route("/", name="packages_list_api", options={"expose"=true}, defaults={"_format"="json"})
      * @param Request $request
      * @return array|JsonResponse
+     * @throws \ReflectionException
      */
     public function packagesAction(Request $request)
     {

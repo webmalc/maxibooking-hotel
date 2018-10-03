@@ -13,17 +13,6 @@ use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
  */
 class ApiSerializer
 {
-    public function denormalizePackageCriteria(array $requestCriteria)
-    {
-        $criteria = new PackageQueryCriteria();
-
-        if (isset($requestCriteria['isConfirmed'])) {
-            $criteria->isConfirmed = $requestCriteria['isConfirmed'] === 'true';
-        }
-
-        return $criteria;
-    }
-
     /**
      * @param Package $package
      * @return array

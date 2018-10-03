@@ -2,13 +2,14 @@
 
 namespace MBH\Bundle\BaseBundle\Lib\Normalization;
 
+use MBH\Bundle\BaseBundle\Service\MBHSerializer;
 use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 
 class DateTimeFieldType implements NormalizableInterface
 {
     private $format;
     
-    public function __construct(string $format = 'd.m.Y') {
+    public function __construct(string $format = MBHSerializer::DATE_FORMAT) {
         $this->format = $format;
     }
 
@@ -33,7 +34,12 @@ class DateTimeFieldType implements NormalizableInterface
      */
     public function denormalize($dateTimeString, array $options)
     {
-        $denormalizationResult = \DateTime::createFromFormat($this->format, $dateTimeString);
+        if ($this->format === MBHSerializer::DATE_FORMAT) {
+            $denormalizationResult = \DateTime::createFromFormat($this->format . ' H', $dateTimeString . ' 00');
+        } else {
+            $denormalizationResult = \DateTime::createFromFormat($this->format, $dateTimeString);
+        }
+
         if ($denormalizationResult instanceof \DateTime) {
             return $denormalizationResult;
         }

@@ -5,11 +5,6 @@ namespace MBH\Bundle\OnlineBundle\Services;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Translation\TranslatorInterface;
 
-/**
- * User: danya
- * Date: 10.07.17
- * Time: 10:11
- */
 class ApiResponseCompiler
 {
     /** @var  TranslatorInterface */
@@ -56,6 +51,14 @@ class ApiResponseCompiler
         $this->isSuccess = false;
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getErrors()
+    {
+        return $this->errors;
     }
 
     /**

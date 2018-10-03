@@ -4,7 +4,6 @@ namespace Tests\Bundle\ApiBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\PackageBundle\Document\Package;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class PackageApiControllerTest extends WebTestCase
 {
