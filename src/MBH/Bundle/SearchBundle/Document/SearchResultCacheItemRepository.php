@@ -84,4 +84,11 @@ class SearchResultCacheItemRepository extends DocumentRepository
     {
         $this->createQueryBuilder()->remove()->getQuery()->execute();
     }
+
+    public function countItems(): int
+    {
+        $count = $this->createQueryBuilder()->getQuery()->count();
+
+        return $count;
+    }
 }

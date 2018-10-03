@@ -1,0 +1,42 @@
+{% extends '@WebProfiler/Profiler/layout.html.twig' %}
+
+{% block toolbar %}
+    {% set icon %}
+        <span class="icon">{#<img src="" alt=""/>#}</span>
+        <span class="sf-toolbar-status">SearchCache</span>
+        <span class="sf-toolbar-value">D-{{ collector.DoctrineCacheItems }}:R-{{ collector.RedisCacheItems }}</span>
+    {% endset %}
+    {#{% set text %}#}
+        {##}
+    {#{% endset %}#}
+
+
+    {{ include('@WebProfiler/Profiler/toolbar_item.html.twig') }}
+{% endblock %}
+
+    {% block menu %}
+        {# This left-hand menu appears when using the full-screen profiler. #}
+        <span class="label">
+        <span class="icon"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAcCAYAAAB/E6/TAAABLUlEQVR42u3TP0vDQBiA8UK/gDiLzi0IhU4OEunk5OQUAhGSOBUCzqWfIKSzX8DRySF0URCcMjWLIJjFD9Cpk/D6HITecEPUuzhIAz8CIdyTP/f2iqI4qaqqDx8l5Ic2uIeP/bquezCokOAFF+oCN3t4gPzSEjc4NEPaCldQbzjELTYW0RJzHDchwwem+ons6ZBpLSJ7nueJC22h0V+FzmwWV0ee59vQNV67CGVZJmEYbkNjfpY6X6I0Qo4/3RMmTdDDspuQVsJvgkP3IdMbIkIjLPBoadG2646iKJI0Ta2wxm6OdnP0/Tk6DYJgHcfxpw21RtscDTDDnaVZ26474GkkSRIrrPEv5sgMTfHe+cA2O6wPH6vOBpYQNALneHb96XTEDI6dzpEZ0VzO0Rf3pP5LMLI4tAAAAABJRU5ErkJggg==" alt=""/></span>
+        <strong>CacheResult</strong>
+            <span class="count"><span>{{ collector.DoctrineCacheItems }}</span><span>{{ collector.RedisCacheItems }}</span></span>
+    </span>
+    {% endblock %}
+
+
+    {% block panel %}
+         Optional, for showing the most details.
+        <h2>Redis - Doctrine cache items</h2>
+        <table>
+            <tr>
+                <th>Current Cache Items</th>
+            </tr>
+
+            <tr>
+                <td>DoctrineCache-{{ collector.DoctrineCacheItems }}</td>
+            </tr>
+            <tr>
+                <td>RedisCache-{{ collector.RedisCacheItems }}</td>
+            </tr>
+        </table>
+    {% endblock %}
