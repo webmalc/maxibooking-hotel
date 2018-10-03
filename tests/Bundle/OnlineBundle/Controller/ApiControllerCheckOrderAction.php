@@ -8,20 +8,39 @@ namespace Tests\Bundle\OnlineBundle\Controller;
 
 
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
+use MBH\Bundle\UserBundle\DataFixtures\MongoDB\UserData;
+use MBH\Bundle\UserBundle\Document\User;
 
 
 class ApiControllerCheckOrderAction extends WebTestCase
 {
     private const PREFIX_URL = '/management/online/api/order/check/';
 
+    public static function setUpBeforeClass()
+    {
+        $userData = UserData::USERS['user-admin'];
+
+        $container = self::getContainerStat();
+
+        $manager = $container->get('doctrine.odm.mongodb.document_manager');
+
+        $user = new User();
+        $user->setUsername($userData['username'])
+            ->setEmail($userData['email'])
+            ->addRole($userData['role'])
+            ->setPlainPassword($userData['password'])
+            ->setEnabled(true)
+            ->setLocked(false);
+
+        $manager->persist($user);
+        $manager->flush();
+    }
+
     public function getMethodForInvalidStatus(): iterable
     {
-        /**
-         * при выполнении аутификацией тест фэйлится, но в проде все отрабатывет как надо
-         */
-//        yield 'method GET, auth TRUE' => ['GET', true];
+        yield 'method GET, auth TRUE' => ['GET', true];
         yield 'method GET, auth FALSE' => ['GET', false];
-//        yield 'method POST, auth TRUE' => ['POST', true];
+        yield 'method POST, auth TRUE' => ['POST', true];
         yield 'method POST, auth FALSE' => ['POST', false];
     }
 
