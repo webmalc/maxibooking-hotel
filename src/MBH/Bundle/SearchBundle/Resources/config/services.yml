@@ -335,6 +335,7 @@ services:
         arguments:
             - '@mbh_search.search_cache_item_repository'
             - '@snc_redis.cache_results_client'
+            - '@mbh_search.invalidate_adapter_factory'
 
     mbh_search.cache_search_abstract:
         class: MBH\Bundle\SearchBundle\Services\Cache\AbstractCacheSearchResult
@@ -516,3 +517,13 @@ services:
         calls:
             - [pushHandler, ['@mbh_search.cache_logger_handler']]
 
+    mbh_search.cache_collector:
+        class: MBH\Bundle\SearchBundle\DataCollector\ResultCachedCollector
+        arguments:
+            - '@snc_redis.cache_results_client'
+            - '@mbh_search.search_cache_item_repository'
+        tags:
+            -
+                name: data_collector
+                template: 'MBHSearchBundle:DataCollector:template.html.twig'
+                id: 'search.cache.collector'
