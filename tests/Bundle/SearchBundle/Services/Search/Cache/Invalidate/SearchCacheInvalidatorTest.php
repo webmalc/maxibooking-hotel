@@ -12,7 +12,7 @@ use MBH\Bundle\PriceBundle\Document\Restriction;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Document\SearchResultCacheItem;
-use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateInterface;
+use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateQuery;
 
 class SearchCacheInvalidatorTest extends WebTestCase
 {
@@ -29,11 +29,16 @@ class SearchCacheInvalidatorTest extends WebTestCase
         $tariffId = $dm->getRepository(Tariff::class)->findOneBy(['fullTitle' => 'Основной тариф'])->getId();
         $isUseCategory = $container->get('mbh.hotel.room_type_manager')->useCategories;
         $excludeRoomTypeType = !$isUseCategory ? 'roomTypeCategory' : 'roomType';
-        /** @var InvalidateInterface $priceCache */
         $priceCache = $dm->getRepository(PriceCache::class)->findOneBy(
             ['date' => $date, 'tariff.id' => $tariffId, $excludeRoomTypeType => null]
         );
-        $this->invalidate($priceCache, $data['expected']['keysNumToInvalidate']);
+        $invalidateQuery = new InvalidateQuery();
+        $invalidateQuery->setObject($priceCache)
+            ->setType(InvalidateQuery::PRICE_CACHE)
+
+        ;
+
+        $this->invalidate($invalidateQuery, $data['expected']['keysNumToInvalidate']);
     }
 
     /** @dataProvider roomCacheInvalidateProvider */
@@ -41,12 +46,15 @@ class SearchCacheInvalidatorTest extends WebTestCase
     {
         $dateOffset = $data['offset'];
         $date = new \DateTime("midnight + ${dateOffset} days");
-        /** @var InvalidateInterface $roomCache */
         $roomCache = $this->getContainer()->get('doctrine.odm.mongodb.document_manager')->getRepository(
             RoomCache::class
         )->findOneBy(['date' => $date]);
 
-        $this->invalidate($roomCache, $data['expected']['keysNumToInvalidate']);
+        $invalidateQuery = new InvalidateQuery();
+        $invalidateQuery->setObject($roomCache)
+            ->setType(InvalidateQuery::ROOM_CACHE);
+
+        $this->invalidate($invalidateQuery, $data['expected']['keysNumToInvalidate']);
     }
 
     /**
@@ -58,13 +66,17 @@ class SearchCacheInvalidatorTest extends WebTestCase
      */
     public function testInvalidateTariff($data): void
     {
-        /** @var InvalidateInterface $tariff */
         $tariff = $this->getContainer()->get('doctrine.odm.mongodb.document_manager')->getRepository(
             Tariff::class
         )->findOneBy(
             []
         );
-        $this->invalidate($tariff, $data['expected']['keysNumToInvalidate']);
+
+        $invalidateQuery = new InvalidateQuery();
+        $invalidateQuery->setObject($tariff)
+            ->setType(InvalidateQuery::TARIFF);
+
+        $this->invalidate($invalidateQuery, $data['expected']['keysNumToInvalidate']);
     }
 
     /**
@@ -76,13 +88,16 @@ class SearchCacheInvalidatorTest extends WebTestCase
      */
     public function testInvalidateRoomType($data): void
     {
-        /** @var InvalidateInterface $roomType */
         $roomType = $this->getContainer()->get('doctrine.odm.mongodb.document_manager')->getRepository(
             RoomType::class
         )->findOneBy(
             []
         );
-        $this->invalidate($roomType, $data['expected']['keysNumToInvalidate']);
+
+        $invalidateQuery = new InvalidateQuery();
+        $invalidateQuery->setObject($roomType)
+            ->setType(InvalidateQuery::ROOM_TYPE);
+        $this->invalidate($invalidateQuery, $data['expected']['keysNumToInvalidate']);
     }
 
     /**
@@ -96,27 +111,29 @@ class SearchCacheInvalidatorTest extends WebTestCase
     {
         $dateOffset = $data['offset'];
         $date = new \DateTime("midnight + ${dateOffset} days");
-        /** @var InvalidateInterface $restriction */
         $restriction = $this->getContainer()->get('doctrine.odm.mongodb.document_manager')->getRepository(
             Restriction::class
         )->findOneBy(
             ['date' => $date]
         );
-        $this->invalidate($restriction, $data['expected']['keysNumToInvalidate']);
+        $invalidateQuery = new InvalidateQuery();
+        $invalidateQuery->setObject($restriction)
+            ->setType(InvalidateQuery::RESTRICTIONS);
+        $this->invalidate($invalidateQuery, $data['expected']['keysNumToInvalidate']);
     }
 
 
-
     /**
-     * @param InvalidateInterface $object
+     * @param InvalidateQuery $invalidateQuery
      * @param int $expectedNumToInvalidate
-     * @param array $updateFields
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\InvalidateException
-     * @throws \ReflectionException
      */
-    private function invalidate(InvalidateInterface $object, int $expectedNumToInvalidate, array $updateFields = []): void
+    private function invalidate(InvalidateQuery $invalidateQuery, int $expectedNumToInvalidate): void
     {
+        $factory = $this->getContainer()->get('mbh_search.invalidate_adapter_factory');
+        $adapter = $factory->createAdapter($invalidateQuery);
+
         $invalidator = $this->getContainer()->get('mbh_search.search_cache_invalidator');
         $invalidator->flushCache();
 
@@ -125,7 +142,7 @@ class SearchCacheInvalidatorTest extends WebTestCase
         $cachedKeys = $redis->keys('*');
         /** @var PriceCache $priceCache */
         $this->assertCount(\count($results), $cachedKeys);
-        $invalidator->invalidateCauseUpdate($object, $updateFields ?:['any']);
+        $invalidator->invalidate($adapter);
         $afterInvalidateKeys = $redis->keys('*');
 
         $invalidatedKeys = array_diff($cachedKeys, $afterInvalidateKeys);

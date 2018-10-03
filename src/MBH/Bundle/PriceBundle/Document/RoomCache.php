@@ -7,7 +7,6 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
-use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateInterface;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -18,7 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @MongoDBUnique(fields={"roomType", "date", "tariff"}, message="RoomCache already exist.")
  * @ODM\Index(keys={"hotel"="asc","roomType"="asc","date"="asc"})
  */
-class RoomCache extends Base implements InvalidateInterface
+class RoomCache extends Base
 {
     use TimestampableDocument;
     use BlameableDocument;

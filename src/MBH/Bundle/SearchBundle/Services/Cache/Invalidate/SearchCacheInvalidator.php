@@ -6,24 +6,23 @@ namespace MBH\Bundle\SearchBundle\Services\Cache\Invalidate;
 
 use MBH\Bundle\SearchBundle\Document\SearchResultCacheItem;
 use MBH\Bundle\SearchBundle\Document\SearchResultCacheItemRepository;
-use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\AbstractInvalidateAdapter;
 use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateAdapterFactory;
 use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateAdapterInterface;
-use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateInterface;
+use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateQuery;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultCacheException;
 use Predis\Client;
 
 class SearchCacheInvalidator
 {
 
-    /** @var InvalidateAdapterFactory */
-    private $adapterFactory;
-
     /** @var SearchResultCacheItemRepository */
     private $cacheItemRepository;
 
     /** @var Client */
     private $redis;
+
+    /** @var InvalidateAdapterFactory */
+    private $invalidateAdapterFactory;
 
     /**
      * SearchCacheInvalidator constructor.
@@ -38,36 +37,17 @@ class SearchCacheInvalidator
     ) {
         $this->cacheItemRepository = $cacheItemRepository;
         $this->redis = $redis;
-        $this->adapterFactory = $factory;
+        $this->invalidateAdapterFactory = $factory;
     }
 
-
     /**
-     * @param InvalidateInterface $document
-     * @param array|null $updateFields
+     * @param InvalidateQuery $invalidateQuery
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     * @throws \ReflectionException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\InvalidateException
      */
-    public function invalidateCauseUpdate(InvalidateInterface $document, ?array $updateFields = null): void
+    public function invalidateByQuery(InvalidateQuery $invalidateQuery): void
     {
-        /** @var AbstractInvalidateAdapter|InvalidateInterface $adapter */
-        $adapter = $this->adapterFactory->create($document);
-        $adapter->setUpdateFields($updateFields);
-        if ($adapter->isMustInvalidateAfterUpdate()) {
-            $this->invalidate($adapter);
-        }
-
-    }
-
-    /**
-     * @param InvalidateInterface $document
-     * @throws \ReflectionException
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     */
-    public function invalidateCauseDelete(InvalidateInterface $document): void
-    {
-        $adapter = $this->adapterFactory->create($document);
+        $adapter = $this->invalidateAdapterFactory->createAdapter($invalidateQuery);
         $this->invalidate($adapter);
     }
 
@@ -75,38 +55,25 @@ class SearchCacheInvalidator
      * @param InvalidateAdapterInterface $adapter
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    private function invalidate(InvalidateAdapterInterface $adapter): void
+    public function invalidate(InvalidateAdapterInterface $adapter): void
     {
+
         $begin = $adapter->getBegin();
         $end = $adapter->getEnd();
         $tariffIds = $adapter->getTariffIds();
         $roomTypeIds = $adapter->getRoomTypeIds();
 
-        $this->invalidateCacheByData($begin, $end, $roomTypeIds, $tariffIds);
-    }
-
-    /**
-     * @param \DateTime $begin
-     * @param \DateTime|null $end
-     * @param array|null $roomTypeIds
-     * @param array|null $tariffIds
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     */
-    public function invalidateCacheByData(
-        \DateTime $begin = null,
-        \DateTime $end = null,
-        ?array $roomTypeIds = [],
-        ?array $tariffIds = []
-    ): void {
         if (null !== $begin && null === $end) {
             $end = clone $begin;
         }
 
         $keys = $this->cacheItemRepository->fetchCachedKeys($begin, $end, $roomTypeIds, $tariffIds);
-        $this->redis->del($keys);
-        $this->cacheItemRepository->removeItemsByDates($begin, $end, $roomTypeIds, $tariffIds);
-    }
+        if (\count($keys)) {
+            $this->redis->del($keys);
+            $this->cacheItemRepository->removeItemsByDates($begin, $end, $roomTypeIds, $tariffIds);
+        }
 
+    }
 
     /**
      * @param SearchResultCacheItem $cacheItem

@@ -13,6 +13,4 @@ interface InvalidateAdapterInterface
     public function getTariffIds(): ?array;
 
     public function getRoomTypeIds(): ?array;
-
-    public function isMustInvalidateAfterUpdate(): bool;
 }

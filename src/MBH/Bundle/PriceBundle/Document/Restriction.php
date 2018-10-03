@@ -6,7 +6,6 @@ use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use MBH\Bundle\BaseBundle\Document\Base;
-use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateInterface;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -17,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Gedmo\Loggable
  * @MongoDBUnique(fields={"roomType", "date", "tariff"}, message="Restriction already exist.")
  */
-class Restriction extends Base implements InvalidateInterface
+class Restriction extends Base
 {
     /**
      * @var \MBH\Bundle\HotelBundle\Document\Hotel

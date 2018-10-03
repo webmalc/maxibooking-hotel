@@ -15,7 +15,6 @@ use MBH\Bundle\OnlineBundle\Services\ApiHandler;
 use MBH\Bundle\PriceBundle\Document\Traits\ConditionsTrait;
 use MBH\Bundle\PriceBundle\Lib\ConditionsInterface;
 use MBH\Bundle\PriceBundle\Validator\Constraints as MBHValidator;
-use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -26,7 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @MongoDBUnique(fields={"fullTitle", "hotel"}, message="mbhpricebundle.document.tariff.takoy.tarif.uzhe.sushchestvuyet")
  * @ODM\HasLifecycleCallbacks
  */
-class Tariff extends Base implements ConditionsInterface, InvalidateInterface
+class Tariff extends Base implements ConditionsInterface
 {
     /**
      * Hook timestampable behavior
