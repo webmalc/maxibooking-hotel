@@ -214,6 +214,35 @@ services:
             - '@mbh_search.shared_data_fetcher'
             - '@mbh_search.room_cache_fetcher'
 
+#invalidate Cache
+    mbh_search.invalidate_adapter_factory:
+        class: MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateMessageFactory
+        arguments:
+        - '@mbh.hotel.room_type_manager'
+        - '@doctrine.odm.mongodb.document_manager'
+
+    mbh_search.search_cache_invalidator:
+        class: MBH\Bundle\SearchBundle\Services\Cache\Invalidate\SearchCacheInvalidator
+        arguments:
+        - '@mbh_search.search_cache_item_repository'
+        - '@snc_redis.cache_results_client'
+        - '@mbh_search.invalidate_adapter_factory'
+
+    mbh_search.abstract_invalidate_queue_creator:
+        class: MBH\Bundle\SearchBundle\Services\Cache\InvalidateQueue\AbstractInvalidateQueueCreator
+        abstract: true
+        arguments:
+            - '@old_sound_rabbit_mq.cache_invalidate_producer'
+            - '@mbh_search.invalidate_adapter_factory'
+
+    mbh_search.price_cache_invalidate_queue:
+        class: MBH\Bundle\SearchBundle\Services\Cache\InvalidateQueue\PriceCacheQueue
+        parent: 'mbh_search.abstract_invalidate_queue_creator'
+
+    mbh_search.generator_price_cache_invalidate_queue:
+        class: MBH\Bundle\SearchBundle\Services\Cache\InvalidateQueue\PriceCacheGeneratorQueue
+        parent: 'mbh_search.abstract_invalidate_queue_creator'
+
 # repositories
     mbh_search.hotel_repository:
       class: MBH\Bundle\HotelBundle\Document\HotelRepository
@@ -337,18 +366,6 @@ services:
 
 ##Cache Results
 
-    mbh_search.invalidate_adapter_factory:
-        class: MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateAdapterFactory
-        arguments:
-            - '@mbh.hotel.room_type_manager'
-            - '@doctrine.odm.mongodb.document_manager'
-
-    mbh_search.search_cache_invalidator:
-        class: MBH\Bundle\SearchBundle\Services\Cache\Invalidate\SearchCacheInvalidator
-        arguments:
-            - '@mbh_search.search_cache_item_repository'
-            - '@snc_redis.cache_results_client'
-            - '@mbh_search.invalidate_adapter_factory'
 
     mbh_search.cache_search_abstract:
         class: MBH\Bundle\SearchBundle\Services\Cache\AbstractCacheSearchResult

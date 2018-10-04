@@ -98,6 +98,41 @@ class CacheWarmer
 
     }
 
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param array|null $roomTypeIds
+     * @param array|null $tariffIds
+     * @param array|null $combination
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
+     */
+    public function warmUpSpecificQuery(
+        \DateTime $begin,
+        \DateTime $end,
+        ?array $roomTypeIds = [],
+        ?array $tariffIds = [],
+        ?array $combination = []
+    ): void {
+        $conditionsData = [
+            'begin' => $begin->format('d.m.Y'),
+            'end' => $end->format('d.m.Y'),
+            'additionalBegin' => 0,
+            'additionalEnd' => 0,
+            'isUseCache' => true,
+            // isThisWarmUp - Dirty hack for disable ChildrenAges validator when warmUp process /
+            'isThisWarmUp' => true,
+            'adults' => $combination['adults'],
+            'children' => $combination['children'],
+            'tariffs' => $tariffIds,
+            'roomTypes' => $roomTypeIds
+        ];
+
+        $this->doWarmUp($conditionsData);
+    }
+
     private function getDates(\DateTime $begin, \DateTime $end): array
     {
         $dates = [];
@@ -145,15 +180,26 @@ class CacheWarmer
                     $combination,
                     ['tariffs' => $combinationType->getTariffIds()]
                 );
-                $conditions = $this->conditionCreator->createSearchConditions($conditionsData);
-                $conditions->setId('warmerConditions');
-                $queries = $this->queryGenerator->generate($conditions, false);
-                $queryChunks = array_chunk($queries, self::QUEUE_CHUNK_NUM);
-                foreach ($queryChunks as $chunk) {
-                    $this->warmUpSearcher->search($chunk);
-                }
+                $this->doWarmUp($conditionsData);
             }
         }
     }
 
+    /**
+     * @param array $conditionsData
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
+     */
+    private function doWarmUp(array $conditionsData): void
+    {
+        $conditions = $this->conditionCreator->createSearchConditions($conditionsData);
+        $conditions->setId('warmerConditions');
+        $queries = $this->queryGenerator->generate($conditions, false);
+        $queryChunks = array_chunk($queries, self::QUEUE_CHUNK_NUM);
+        foreach ($queryChunks as $chunk) {
+            $this->warmUpSearcher->search($chunk);
+        }
+    }
 }

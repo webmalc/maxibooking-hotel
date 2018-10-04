@@ -104,7 +104,6 @@ class SearchCacheInvalidatorTest extends WebTestCase
      * @param $data
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\InvalidateException
-     * @throws \ReflectionException
      * @dataProvider restrictionInvalidateProvider
      */
     public function testInvalidateRestriction($data): void
@@ -132,7 +131,7 @@ class SearchCacheInvalidatorTest extends WebTestCase
     private function invalidate(InvalidateQuery $invalidateQuery, int $expectedNumToInvalidate): void
     {
         $factory = $this->getContainer()->get('mbh_search.invalidate_adapter_factory');
-        $adapter = $factory->createAdapter($invalidateQuery);
+        $adapter = $factory->createMessage($invalidateQuery);
 
         $invalidator = $this->getContainer()->get('mbh_search.search_cache_invalidator');
         $invalidator->flushCache();

@@ -14,7 +14,7 @@ use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\InvalidateException;
 
-class InvalidateAdapterFactory
+class InvalidateMessageFactory
 {
 
     /** @var RoomTypeManager */
@@ -37,10 +37,10 @@ class InvalidateAdapterFactory
 
     /**
      * @param InvalidateQuery $invalidateQuery
-     * @return InvalidateAdapterInterface
+     * @return InvalidateMessageInterface
      * @throws InvalidateException
      */
-    public function createAdapter(InvalidateQuery $invalidateQuery): InvalidateAdapterInterface
+    public function createMessage(InvalidateQuery $invalidateQuery): InvalidateMessageInterface
     {
         $type = $invalidateQuery->getType();
         if (InvalidateQuery::PRICE_CACHE === $type) {
@@ -82,24 +82,11 @@ class InvalidateAdapterFactory
 
     }
 
-    private function createPriceCache(InvalidateQuery $invalidateQuery): InvalidateAdapterInterface
-    {
-        $object = $invalidateQuery->getObject();
-        $adapter = new InvalidateAdapter();
-        $adapter
-            ->setBegin($object->getDate())
-            ->setEnd($object->getDate())
-            ->setTariffIds((array)$object->getTariff()->getId())
-            ->setRoomTypeIds((array)$object->getRoomType()->getId());
-
-        return $adapter;
-    }
-
-    private function createRestrictions(InvalidateQuery $invalidateQuery): InvalidateAdapterInterface
+    private function createPriceCache(InvalidateQuery $invalidateQuery): InvalidateMessageInterface
     {
         /** @var PriceCache $object */
         $object = $invalidateQuery->getObject();
-        $adapter = new InvalidateAdapter();
+        $message = new InvalidateMessage();
 
         $isUseCategory = $this->roomManager->useCategories;
         $roomTypeIds = [];
@@ -110,69 +97,82 @@ class InvalidateAdapterFactory
                 $roomTypeIds[] = $roomType->getId();
             }
         } else {
-            $roomTypeIds = (array)$object->getRoomType();
+            $roomTypeIds = (array)$object->getRoomType()->getId();
         }
-        $adapter
+        $message
             ->setBegin($object->getDate())
             ->setEnd($object->getDate())
             ->setTariffIds((array)$object->getTariff()->getId())
             ->setRoomTypeIds($roomTypeIds);
 
-        return $adapter;
+        return $message;
     }
 
-    private function createRoomCache(InvalidateQuery $invalidateQuery): InvalidateAdapterInterface
+    private function createRestrictions(InvalidateQuery $invalidateQuery): InvalidateMessageInterface
+    {
+        $object = $invalidateQuery->getObject();
+        $message = new InvalidateMessage();
+        $message
+            ->setBegin($object->getDate())
+            ->setEnd($object->getDate())
+            ->setTariffIds((array)$object->getTariff()->getId())
+            ->setRoomTypeIds((array)$object->getRoomType()->getId());
+
+        return $message;
+    }
+
+    private function createRoomCache(InvalidateQuery $invalidateQuery): InvalidateMessageInterface
     {
         /** @var RoomCache $object */
         $object = $invalidateQuery->getObject();
-        $adapter = new InvalidateAdapter();
-        $adapter
+        $message = new InvalidateMessage();
+        $message
             ->setBegin($object->getDate())
             ->setEnd($object->getDate())
             ->setRoomTypeIds((array)$object->getRoomType()->getId());
 
-        return $adapter;
+        return $message;
     }
 
-    private function createRoomType(InvalidateQuery $invalidateQuery): InvalidateAdapterInterface
+    private function createRoomType(InvalidateQuery $invalidateQuery): InvalidateMessageInterface
     {
         /** @var RoomType $object */
         $object = $invalidateQuery->getObject();
-        $adapter = new InvalidateAdapter();
-        $adapter->setRoomTypeIds((array)$object->getId());
+        $message = new InvalidateMessage();
+        $message->setRoomTypeIds((array)$object->getId());
 
-        return $adapter;
+        return $message;
     }
 
-    private function createTariff(InvalidateQuery $invalidateQuery): InvalidateAdapterInterface
+    private function createTariff(InvalidateQuery $invalidateQuery): InvalidateMessageInterface
     {
         /** @var Tariff $object */
         $object = $invalidateQuery->getObject();
-        $adapter = new InvalidateAdapter();
-        $adapter->setTariffIds((array)$object->getId());
+        $message = new InvalidateMessage();
+        $message->setTariffIds((array)$object->getId());
 
-        return $adapter;
+        return $message;
     }
 
-    private function createPackage(InvalidateQuery $invalidateQuery): InvalidateAdapterInterface
+    private function createPackage(InvalidateQuery $invalidateQuery): InvalidateMessageInterface
     {
         /** @var Package $object */
         $object = $invalidateQuery->getObject();
-        $adapter = new InvalidateAdapter();
-        $adapter->setRoomTypeIds((array)$object->getRoomType()->getId());
+        $message = new InvalidateMessage();
+        $message->setRoomTypeIds((array)$object->getRoomType()->getId());
 
-        return $adapter;
+        return $message;
     }
 
-    private function createPriceGenerator(InvalidateQuery $invalidateQuery): InvalidateAdapterInterface
+    private function createPriceGenerator(InvalidateQuery $invalidateQuery): InvalidateMessageInterface
     {
-        $adapter = new InvalidateAdapter();
+        $message = new InvalidateMessage();
 
         $isUseCategory = $this->roomManager->useCategories;
         $roomTypeIds = [];
         if ($isUseCategory) {
-            $categoryIds = $invalidateQuery->getCategoryIds();
-            $roomCategories = $this->dm->getRepository(RoomTypeCategory::class)->findBy(['id' => $categoryIds]);
+            $categoryIds = $invalidateQuery->getRoomTypeIds();
+            $roomCategories = $this->dm->getRepository(RoomTypeCategory::class)->findBy(['id' => ['$in' => $categoryIds]]);
             foreach ($roomCategories as $roomCategory) {
                 $roomTypes = $roomCategory->getTypes();
                 foreach ($roomTypes as $roomType) {
@@ -183,38 +183,38 @@ class InvalidateAdapterFactory
             $roomTypeIds = $invalidateQuery->getRoomTypeIds();
         }
 
-        $adapter
+        $message
             ->setBegin($invalidateQuery->getBegin())
             ->setEnd($invalidateQuery->getEnd())
             ->setTariffIds($invalidateQuery->getTariffIds())
             ->setRoomTypeIds($roomTypeIds);
 
-        return $adapter;
+        return $message;
     }
 
-    private function createRestrictionGenerator(InvalidateQuery $invalidateQuery): InvalidateAdapterInterface
+    private function createRestrictionGenerator(InvalidateQuery $invalidateQuery): InvalidateMessageInterface
     {
-        $adapter = new InvalidateAdapter();
-        $adapter
+        $message = new InvalidateMessage();
+        $message
             ->setBegin($invalidateQuery->getBegin())
             ->setEnd($invalidateQuery->getEnd())
             ->setRoomTypeIds($invalidateQuery->getRoomTypeIds())
             ->setTariffIds($invalidateQuery->getTariffIds());
 
-        return $adapter;
+        return $message;
     }
 
-    private function createRoomCacheGenerator(InvalidateQuery $invalidateQuery): InvalidateAdapterInterface
+    private function createRoomCacheGenerator(InvalidateQuery $invalidateQuery): InvalidateMessageInterface
     {
         /** @var RoomCache $object */
         $object = $invalidateQuery->getObject();
-        $adapter = new InvalidateAdapter();
-        $adapter
+        $message = new InvalidateMessage();
+        $message
             ->setBegin($object->getDate())
             ->setEnd($object->getDate())
             ->setRoomTypeIds((array)$object->getRoomType()->getId());
 
-        return $adapter;
+        return $message;
     }
 
 }

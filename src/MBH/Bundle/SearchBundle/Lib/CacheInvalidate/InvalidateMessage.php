@@ -7,7 +7,7 @@ namespace MBH\Bundle\SearchBundle\Lib\CacheInvalidate;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\InvalidateException;
 
-class InvalidateAdapter implements InvalidateAdapterInterface
+class InvalidateMessage implements InvalidateMessageInterface
 {
     /** @var \DateTime */
     protected $begin;
@@ -31,9 +31,9 @@ class InvalidateAdapter implements InvalidateAdapterInterface
 
     /**
      * @param \DateTime $begin
-     * @return InvalidateAdapter
+     * @return InvalidateMessage
      */
-    public function setBegin(\DateTime $begin): InvalidateAdapter
+    public function setBegin(\DateTime $begin): InvalidateMessage
     {
         $this->begin = $begin;
 
@@ -50,9 +50,9 @@ class InvalidateAdapter implements InvalidateAdapterInterface
 
     /**
      * @param \DateTime $end
-     * @return InvalidateAdapter
+     * @return InvalidateMessage
      */
-    public function setEnd(\DateTime $end): InvalidateAdapter
+    public function setEnd(\DateTime $end): InvalidateMessage
     {
         $this->end = $end;
 
@@ -69,9 +69,9 @@ class InvalidateAdapter implements InvalidateAdapterInterface
 
     /**
      * @param string[] $roomTypeIds
-     * @return InvalidateAdapter
+     * @return InvalidateMessage
      */
-    public function setRoomTypeIds(array $roomTypeIds): InvalidateAdapter
+    public function setRoomTypeIds(array $roomTypeIds): InvalidateMessage
     {
         $this->roomTypeIds = $roomTypeIds;
 
@@ -88,9 +88,9 @@ class InvalidateAdapter implements InvalidateAdapterInterface
 
     /**
      * @param string[] $tariffIds
-     * @return InvalidateAdapter
+     * @return InvalidateMessage
      */
-    public function setTariffIds(array $tariffIds): InvalidateAdapter
+    public function setTariffIds(array $tariffIds): InvalidateMessage
     {
         $this->tariffIds = $tariffIds;
 
