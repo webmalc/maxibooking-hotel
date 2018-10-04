@@ -40,11 +40,13 @@ class ApiSerializer
      * @param Package $package
      * @return array
      * @throws \ReflectionException
+     * @throws \MBH\Bundle\BaseBundle\Lib\Normalization\NormalizationException
      */
     public function normalizePackage(Package $package)
     {
         $this->initSpecialFields();
         $normalizedPackage = $this->serializer->normalizeByGroup($package, MBHSerializer::API_GROUP);
+        $normalizedPackage['status'] = $package->getStatus();
 
         return $normalizedPackage;
     }
@@ -67,7 +69,7 @@ class ApiSerializer
                             'roomName' => $accommodation->getRoom()->getName(),
                             'roomTypeName' => $accommodation->getRoomType()->getName()
                         ];
-                    }, (array)$accommodations);
+                    }, is_array($accommodations) ? $accommodations : iterator_to_array($accommodations));
                 }),
                 'payer' => new CustomFieldType(function ($payer) {
                     return [

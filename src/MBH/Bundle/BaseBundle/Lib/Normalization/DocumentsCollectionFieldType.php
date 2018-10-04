@@ -4,7 +4,6 @@ namespace MBH\Bundle\BaseBundle\Lib\Normalization;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Document\Base;
-use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 
 class DocumentsCollectionFieldType implements NormalizableInterface
 {
@@ -18,12 +17,17 @@ class DocumentsCollectionFieldType implements NormalizableInterface
      * @param $value
      * @param array $options
      * @return array
+     * @throws NormalizationException
      */
     public function normalize($value, array $options)
     {
         $this->checkIsIterable($value);
 
-        return array_map(function (Base $document) {
+        return array_map(function ($document) {
+            if (!$document instanceof Base) {
+                throw new NormalizationException('Passed value is not an instance of Base');
+            }
+
             return $document->getId();
         }, $this->castToArray($value));
     }
@@ -33,6 +37,7 @@ class DocumentsCollectionFieldType implements NormalizableInterface
      * @param array $options
      * @return mixed
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws NormalizationException
      */
     public function denormalize($value, array $options)
     {
@@ -50,7 +55,6 @@ class DocumentsCollectionFieldType implements NormalizableInterface
             ->toArray());
     }
 
-
     /**
      * @param $value
      * @return array
@@ -62,12 +66,12 @@ class DocumentsCollectionFieldType implements NormalizableInterface
 
     /**
      * @param $value
-     * @throws InvalidArgumentException
+     * @throws NormalizationException
      */
     private function checkIsIterable($value)
     {
         if (!is_iterable($value)) {
-            throw new InvalidArgumentException('Passed value is not iterable');
+            throw new NormalizationException('Passed value is not iterable');
         }
     }
 

@@ -3,7 +3,6 @@
 namespace MBH\Bundle\BaseBundle\Lib\Normalization;
 
 use MBH\Bundle\BaseBundle\Service\MBHSerializer;
-use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 
 class DateTimeFieldType implements NormalizableInterface
 {
@@ -17,11 +16,12 @@ class DateTimeFieldType implements NormalizableInterface
      * @param \DateTime $dateTime
      * @param array $options
      * @return string
+     * @throws NormalizationException
      */
     public function normalize($dateTime, array $options)
     {
         if (!$dateTime instanceof \DateTime) {
-            throw new InvalidArgumentException('Can not normalize value because it\'s not instance of DateTime');
+            throw new NormalizationException('Can not pass value because it\'s not instance of DateTime');
         }
 
         return $dateTime->format($this->format);
@@ -31,6 +31,7 @@ class DateTimeFieldType implements NormalizableInterface
      * @param $dateTimeString
      * @param array $options
      * @return bool|\DateTime
+     * @throws NormalizationException
      */
     public function denormalize($dateTimeString, array $options)
     {
@@ -44,6 +45,6 @@ class DateTimeFieldType implements NormalizableInterface
             return $denormalizationResult;
         }
 
-        throw new InvalidArgumentException('Can not denormalize ' . $dateTimeString . ' to datetime by format "' . $this->format . '"');
+        throw new NormalizationException('Can not denormalize ' . $dateTimeString . ' to datetime by format "' . $this->format . '"');
     }
 }

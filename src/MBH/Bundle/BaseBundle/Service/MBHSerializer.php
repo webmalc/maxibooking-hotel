@@ -4,6 +4,7 @@ namespace MBH\Bundle\BaseBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Lib\Normalization\NormalizableInterface;
+use MBH\Bundle\BaseBundle\Lib\Normalization\NormalizationException;
 use MBH\Bundle\PackageBundle\Document\Package;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
@@ -29,6 +30,7 @@ class MBHSerializer
     private $dm;
 
     private $fieldTypes = [];
+    private $catchExceptions = true;
 
     public function __construct(PropertyAccessor $propertyAccessor, DocumentFieldsManager $fieldsManager, DocumentManager $dm)
     {
@@ -68,6 +70,7 @@ class MBHSerializer
      * @param $document
      * @return array
      * @throws \ReflectionException
+     * @throws NormalizationException
      */
     public function normalize($document)
     {
@@ -81,6 +84,7 @@ class MBHSerializer
      * @param array $fields
      * @return array
      * @throws \ReflectionException
+     * @throws NormalizationException
      */
     public function normalizeByFields($document, array $fields)
     {
@@ -97,6 +101,7 @@ class MBHSerializer
      * @param array $excludedFields
      * @return array
      * @throws \ReflectionException
+     * @throws NormalizationException
      */
     public function normalizeExcludingFields($document, array $excludedFields)
     {
@@ -113,6 +118,7 @@ class MBHSerializer
      * @param string $group
      * @return array
      * @throws \ReflectionException
+     * @throws NormalizationException
      */
     public function normalizeByGroup($document, string $group)
     {
@@ -131,6 +137,7 @@ class MBHSerializer
      * @param \ReflectionProperty $property
      * @return array|bool|float|int|null|string
      * @throws \ReflectionException
+     * @throws NormalizationException
      */
     public function normalizeSingleField($fieldValue, \ReflectionProperty $property)
     {
@@ -152,6 +159,7 @@ class MBHSerializer
      * @param $document
      * @return object
      * @throws \ReflectionException
+     * @throws NormalizationException
      */
     public function denormalize(array $dataToDenormalize, $document)
     {
@@ -171,6 +179,7 @@ class MBHSerializer
      * @param string $fieldName
      * @return array|bool|\DateTime|float|int|null|string
      * @throws \ReflectionException
+     * @throws NormalizationException
      */
     public function denormalizeSingleField($value, string $documentClass, string $fieldName)
     {
@@ -186,6 +195,17 @@ class MBHSerializer
         $options = ['dm' => $this->dm, 'serializer' => $this];
 
         return $fieldType->denormalize($value, $options);
+    }
+
+    /**
+     * @param bool $catchExceptions
+     * @return MBHSerializer
+     */
+    public function setCatchExceptions(bool $catchExceptions): MBHSerializer
+    {
+        $this->catchExceptions = $catchExceptions;
+
+        return $this;
     }
 
     /**
@@ -211,6 +231,7 @@ class MBHSerializer
      * @param array $reflFields
      * @return \ReflectionProperty[]
      * @throws \ReflectionException
+     * @throws NormalizationException
      */
     private function normalizeByReflFields($document, array $reflFields)
     {

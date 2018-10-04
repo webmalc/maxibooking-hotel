@@ -3,7 +3,6 @@
 namespace MBH\Bundle\BaseBundle\Lib\Normalization;
 
 use MBH\Bundle\BaseBundle\Document\Base;
-use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 
 class DocumentFieldType implements NormalizableInterface
 {
@@ -17,15 +16,16 @@ class DocumentFieldType implements NormalizableInterface
      * @param $value
      * @param array $options
      * @return string
+     * @throws NormalizationException
      */
     public function normalize($value, array $options)
     {
         if (!is_object($value)) {
-            throw new InvalidArgumentException('Passed to normalization value is not an object');
+            throw new NormalizationException('Passed to normalization value is not an object');
         }
 
         if (!$value instanceof Base) {
-            throw new InvalidArgumentException('Object of class ' . get_class($value) . 'can not be normalized as document');
+            throw new NormalizationException('Object of class ' . get_class($value) . 'can not be normalized as document');
         }
 
         return $value->getId();
@@ -35,11 +35,12 @@ class DocumentFieldType implements NormalizableInterface
      * @param $value
      * @param array $options
      * @return object
+     * @throws NormalizationException
      */
     public function denormalize($value, array $options)
     {
         if (!\MongoId::isValid($value)) {
-            throw new InvalidArgumentException($value . ' is not a valid mongo ID');
+            throw new NormalizationException($value . ' is not a valid ID');
         }
         $dm = $options['dm'];
 

@@ -14,9 +14,12 @@ class FloatFieldType implements NormalizableInterface
      * @param $value
      * @param array $options
      * @return float
+     * @throws NormalizationException
      */
     public function normalize($value, array $options)
     {
+        $this->checkIsNumeric($value);
+
         return round(floatval($value), $this->numberOfDecimal);
     }
 
@@ -24,9 +27,23 @@ class FloatFieldType implements NormalizableInterface
      * @param $value
      * @param array $options
      * @return float
+     * @throws NormalizationException
      */
     public function denormalize($value, array $options)
     {
+        $this->checkIsNumeric($value);
+
         return round(floatval($value), $this->numberOfDecimal);
+    }
+
+    /**
+     * @param $value
+     * @throws NormalizationException
+     */
+    private function checkIsNumeric($value)
+    {
+        if (!is_numeric($value)) {
+            throw new NormalizationException('Passed value can not be casted to float type');
+        }
     }
 }

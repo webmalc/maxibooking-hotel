@@ -2,8 +2,6 @@
 
 namespace MBH\Bundle\BaseBundle\Lib\Normalization;
 
-use Symfony\Component\Serializer\Exception\InvalidArgumentException;
-
 class CollectionFieldType implements NormalizableInterface
 {
     /** @var NormalizableInterface */
@@ -17,6 +15,7 @@ class CollectionFieldType implements NormalizableInterface
      * @param $value
      * @param array $options
      * @return array
+     * @throws NormalizationException
      */
     public function normalize($value, array $options)
     {
@@ -31,6 +30,7 @@ class CollectionFieldType implements NormalizableInterface
      * @param $value
      * @param array $options
      * @return array
+     * @throws NormalizationException
      */
     public function denormalize($value, array $options)
     {
@@ -43,12 +43,12 @@ class CollectionFieldType implements NormalizableInterface
 
     /**
      * @param $value
-     * @throws InvalidArgumentException
+     * @throws NormalizationException
      */
     private function checkIsIterable($value)
     {
         if (!is_iterable($value)) {
-            throw new InvalidArgumentException('Passed value is not iterable');
+            throw new NormalizationException('Passed value is not iterable');
         }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\ApiBundle\Service;
 
+use MBH\Bundle\BaseBundle\Lib\Normalization\NormalizationException;
 use MBH\Bundle\BaseBundle\Service\MBHSerializer;
 use MBH\Bundle\OnlineBundle\Services\ApiResponseCompiler;
 use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
@@ -69,7 +70,13 @@ class ApiRequestManager
             $requestedCriteria = [];
         }
 
-        $packageCriteria = $this->serializer->denormalize($requestedCriteria, new PackageQueryCriteria());
+        $packageCriteria = new PackageQueryCriteria();
+        try {
+            $packageCriteria = $this->serializer->denormalize($requestedCriteria, $packageCriteria);
+        } catch (NormalizationException $exception) {
+            $responseCompiler->addErrorMessage($exception->getMessage(), 'criteria');
+        }
+
         $packageCriteria->limit = $this->getRequestLimit($bag, $responseCompiler);
         $packageCriteria->skip = $this->getRequestSkip($bag, $responseCompiler);
 

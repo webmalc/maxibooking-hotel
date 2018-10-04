@@ -108,9 +108,9 @@ class PackageApiController extends BaseController
     }
 
     /**
-     * @Security("is_granted('ROLE_PACKAGE_VIEW_ALL') or is_granted('ROLE_NO_OWN_ONLINE_VIEW') or (is_granted('EDIT', order) and is_granted('ROLE_PACKAGE_VIEW'))")
+     * @Security("is_granted('ROLE_PACKAGE_VIEW_ALL') or is_granted('ROLE_NO_OWN_ONLINE_VIEW')")
      * @Method("POST")
-     * @Route("/confirm_order/{orderId}/{id}")
+     * @Route("/confirm_order/{id}")
      * @param Package $package
      * @return JsonResponse
      */

@@ -2,6 +2,8 @@
 
 namespace MBH\Bundle\BaseBundle\Lib\Normalization;
 
+use MBH\Bundle\BaseBundle\Lib\Exception;
+
 class CustomFieldType implements NormalizableInterface
 {
     private $normalizeCallback;
@@ -12,19 +14,31 @@ class CustomFieldType implements NormalizableInterface
         $this->denormalizeCallback = $denormalizeCallback;
     }
 
+    /**
+     * @param $value
+     * @param array $options
+     * @return mixed
+     * @throws Exception
+     */
     public function normalize($value, array $options)
     {
         if (is_null($this->normalizeCallback)) {
-            throw new \InvalidArgumentException();
+            throw new Exception('There is no normalize callback for custom field type');
         }
 
         return ($this->normalizeCallback)($value);
     }
 
+    /**
+     * @param $value
+     * @param array $options
+     * @return mixed
+     * @throws Exception
+     */
     public function denormalize($value, array $options)
     {
         if (is_null($this->denormalizeCallback)) {
-            throw new \InvalidArgumentException();
+            throw new Exception('There is no denormalize callback for custom field type');
         }
 
         return ($this->denormalizeCallback)($value);

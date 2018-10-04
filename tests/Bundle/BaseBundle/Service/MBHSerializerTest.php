@@ -40,6 +40,7 @@ class MBHSerializerTest extends WebTestCase
 
     /**
      * @throws \ReflectionException
+     * @throws \MBH\Bundle\BaseBundle\Lib\Normalization\NormalizationException
      */
     public function testNormalizeByFields()
     {
@@ -74,6 +75,7 @@ class MBHSerializerTest extends WebTestCase
 
     /**
      * @throws \ReflectionException
+     * @throws \MBH\Bundle\BaseBundle\Lib\Normalization\NormalizationException
      */
     public function testNormalizeByGroup()
     {
@@ -86,6 +88,7 @@ class MBHSerializerTest extends WebTestCase
 
     /**
      * @throws \ReflectionException
+     * @throws \MBH\Bundle\BaseBundle\Lib\Normalization\NormalizationException
      */
     public function testNormalizeExcludingFields()
     {
@@ -160,6 +163,7 @@ class MBHSerializerTest extends WebTestCase
 
     /**
      * @throws \ReflectionException
+     * @throws \MBH\Bundle\BaseBundle\Lib\Normalization\NormalizationException
      */
     public function testWithSpecialFieldTypes()
     {
@@ -242,6 +246,7 @@ class MBHSerializerTest extends WebTestCase
 
     /**
      * @throws \ReflectionException
+     * @throws \MBH\Bundle\BaseBundle\Lib\Normalization\NormalizationException
      */
     public function testNormalizeSingleField()
     {
@@ -254,6 +259,7 @@ class MBHSerializerTest extends WebTestCase
 
     /**
      * @throws \ReflectionException
+     * @throws \MBH\Bundle\BaseBundle\Lib\Normalization\NormalizationException
      */
     public function testDenormalize()
     {
