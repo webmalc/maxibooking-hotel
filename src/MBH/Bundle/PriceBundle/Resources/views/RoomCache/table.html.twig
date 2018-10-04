@@ -89,7 +89,7 @@
                                         <input placeholder="{{ dayRoomCache is null ? '' : dayRoomCache.totalRooms }}"
                                                name="{{ roomCache is null ? 'newRoomCaches[' ~ roomType.id ~ '][' ~ tariffId ~'][' ~ date|date('d.m.Y') ~ '][rooms]' : 'updateRoomCaches[' ~ roomCache.id ~'][rooms]'}}"
                                                disabled type="text" class="mbh-grid-input form-control input-sm"
-                                               value="{{ roomCache is null ? '' : roomCache.totalRooms }}">
+                                               value="{{ roomCache is not null and roomCache.totalRooms != null ? roomCache.totalRooms : '' }}">
                                         <span class="disabled-detector"></span>
                                     </span>
                                 {% elseif categoryId == 'isClosed' and tariff is null and roomCache %}
@@ -113,14 +113,18 @@
                                 {% else %}
                                     <small>
                                         <span class="text-{{ categoryId == 'leftRooms' ? 'success bold' : 'info' }}">
-                                        {% if roomCache is not null and categoryId != 'packagesCountPercent' %}
-                                            {{ attribute(roomCache, categoryId) }}
-                                        {% elseif roomCache is not null and categoryId == 'packagesCountPercent' %}
-                                            <small>{{ roomCache.packagesCountPercent }}%</small>
-                                        {% elseif roomCache is null and dayRoomCache is not null and categoryId == 'packagesCount' %}
-                                            {{ dayRoomCache.getPackageCountByTariff(tariff) }}
-                                        {% elseif roomCache is null and dayRoomCache is not null and categoryId == 'leftRooms' %}
-                                            {{ dayRoomCache.leftRooms }}
+                                        {% if roomCache is not null and roomCache.totalRooms != null  %}
+                                            {% if categoryId != 'packagesCountPercent' %}
+                                                {{ attribute(roomCache, categoryId) }}
+                                            {% elseif categoryId == 'packagesCountPercent' %}
+                                                <small>{{ roomCache.packagesCountPercent }}%</small>
+                                            {% endif %}
+                                        {% elseif (roomCache is null or roomCache.totalRooms == null) and dayRoomCache is not null %}
+                                            {% if categoryId == 'packagesCount' %}
+                                                {{ dayRoomCache.getPackageCountByTariff(tariff) }}
+                                            {% elseif categoryId == 'leftRooms' %}
+                                                {{ dayRoomCache.leftRooms }}
+                                            {% endif %}
                                         {% endif %}
                                         </span>
                                     </small>

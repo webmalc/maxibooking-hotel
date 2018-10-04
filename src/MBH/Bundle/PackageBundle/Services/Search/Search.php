@@ -179,11 +179,12 @@ class Search implements SearchInterface
             }
         }
 
-        $HolderIdsTariffWhoIsOpen = [];
+        $holderIdsTariffWhoIsOpen = [];
         //delete short cache chains
         foreach ($groupedCaches['room'] as $hotelId => $hotelA) {
             foreach ($hotelA as $roomTypeId => $caches) {
                 $quotes = false;
+                $isAmountTariffIsOpenEquals = true;
                 if (isset($groupedCaches['tariff'][$hotelId][$roomTypeId])) {
                     /** @var RoomCache $tariffCache */
                     foreach ($groupedCaches['tariff'][$hotelId][$roomTypeId] as $tariffCache) {
@@ -192,20 +193,30 @@ class Search implements SearchInterface
                         }
 
                         $skip = false;
-                        if (in_array($tariffCache->getRoomType()->getId(), $query->excludeRoomTypes) && !empty($query->excludeBegin) && !empty($query->excludeEnd) && $tariffCache->getDate() >= $query->excludeBegin && $tariffCache->getDate() <= $query->excludeEnd) {
+                        if (
+                            in_array($tariffCache->getRoomType()->getId(), $query->excludeRoomTypes)
+                            && !empty($query->excludeBegin)
+                            && !empty($query->excludeEnd)
+                            && $tariffCache->getDate() >= $query->excludeBegin
+                            && $tariffCache->getDate() <= $query->excludeEnd
+                        ) {
                             $skip = true;
                         }
 
-                        if ($tariffCache->getLeftRooms() <= 0 && !$skip) {
+                        if ($tariffCache->getLeftRooms() !== null && $tariffCache->getLeftRooms() <= 0 && !$skip) {
                             $quotes = true;
                         }
 
                         if ($tariffCache->isOpen() && !$query->isDisabledIsOpen()) {
-                            $HolderIdsTariffWhoIsOpen[] = $tariffCache->getTariff()->getId();
+                            $holderIdsTariffWhoIsOpen[] = $tariffCache->getTariff()->getId();
                         }
                     }
+
+                    if (!$query->tariff->isOpen()) {
+                        $isAmountTariffIsOpenEquals = count($holderIdsTariffWhoIsOpen) === (int) $duration;
+                    }
                 }
-                if (count($caches) == $duration && !$quotes) {
+                if (count($caches) == $duration && !$quotes && $isAmountTariffIsOpenEquals) {
                     $deletedCaches[$hotelId][$roomTypeId] = $caches;
                 }
             }
@@ -324,7 +335,7 @@ class Search implements SearchInterface
                 continue;
             }
 
-            if (!$tariff->isOpen() && !in_array($tariff->getId(), $HolderIdsTariffWhoIsOpen)) {
+            if (!$tariff->isOpen() && !in_array($tariff->getId(), $holderIdsTariffWhoIsOpen)) {
                 continue;
             }
 

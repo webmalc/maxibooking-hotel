@@ -10,6 +10,8 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\Date;
@@ -86,18 +88,53 @@ class RoomCacheGeneratorType extends AbstractType
                         'required' => false,
                     ]
                 )
-                ->add('rooms', TextType::class, [
-                    'label' => 'mbhpricebundle.form.roomcachegeneratortype.kolichestvo.mest',
-                    'required' => true,
-                    'data' => null,
-                    'attr' => ['class' => 'spinner--1 delete-rooms'],
-                    'constraints' => [
-                        new Range(['min' => -1, 'minMessage' => 'mbhpricebundle.room_cache_generator_type.number_of_places_cannot_be_less_then_one']),
-                        new NotBlank()
-                    ],
-                    'help' => 'mbhpricebundle.form.roomcachegeneratortype.kolichestvomest',
-                ])
         ;
+
+        $formModifier = function (FormEvent $formEvent, string $formsEvents) {
+            $form = $formEvent->getForm();
+            if ($form->isSubmitted()) {
+                return;
+            }
+
+            $required = true;
+            $constraints = [
+                new Range([
+                    'min'        => -1,
+                    'minMessage' => 'mbhpricebundle.room_cache_generator_type.number_of_places_cannot_be_less_then_one',
+                ]),
+                new NotBlank(),
+            ];
+
+            if ($formsEvents === FormEvents::PRE_SUBMIT && isset($formEvent->getData()['isOpen'])) {
+                $required = false;
+                $constraints = [];
+            }
+
+            $form
+                ->add('rooms', TextType::class, [
+                    'label'       => 'mbhpricebundle.form.roomcachegeneratortype.kolichestvo.mest',
+                    'required'    => $required,
+                    'data'        => null,
+                    'attr'        => ['class' => 'spinner--1 delete-rooms'],
+                    'constraints' => $constraints,
+                    'help'        => 'mbhpricebundle.form.roomcachegeneratortype.kolichestvomest',
+                ]);
+
+        };
+
+        $builder->addEventListener(
+            FormEvents::PRE_SET_DATA,
+            function (FormEvent $formEvent) use ($formModifier) {
+                $formModifier($formEvent, FormEvents::PRE_SET_DATA);
+            }
+        );
+
+        $builder->addEventListener(
+            FormEvents::PRE_SUBMIT,
+            function (FormEvent $formEvent) use ($formModifier) {
+                $formModifier($formEvent, FormEvents::PRE_SUBMIT);
+            }
+        );
     }
 
     public function checkDates($data, ExecutionContextInterface $context)

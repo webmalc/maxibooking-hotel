@@ -6,6 +6,7 @@ $(document).ready(function () {
     //generator
     (function () {
         var rooms = $('input.delete-rooms'),
+            roomsSpanRequired = $(rooms).closest('.form-group').find('.required-star.text-danger'),
             quotas = $('#mbh_bundle_pricebundle_room_cache_generator_type_quotas'),
             showMessage = function () {
                 rooms.each(function () {
@@ -28,20 +29,29 @@ $(document).ready(function () {
                 divForIsOpen.show(200);
             },
             searchKey = function(value) {
-                if (mbh_tariffNotOpened[value]) {
-                    return true;
-                }
+                return mbh_tariffNotOpened[value] !== undefined;
             },
             showIsOpen = function (animation) {
                 var selected = $(tariffs).val();
 
-                if (selected === null) {
+                if (selected === null || (quotas.prop('checked') && !selected.some(searchKey))) {
                     hideDivForIsOpen(animation);
+                    changeRequired(true);
                     return;
                 }
 
                 if (quotas.prop('checked') && selected.some(searchKey)) {
                     showDivIsOpen();
+                    changeRequired(false);
+                }
+            },
+            changeRequired = function(required) {
+                if (required === true) {
+                    $(rooms).attr('required', true);
+                    $(roomsSpanRequired).html('*');
+                } else {
+                    $(rooms).attr('required', false);
+                    $(roomsSpanRequired).html('');
                 }
             };
 

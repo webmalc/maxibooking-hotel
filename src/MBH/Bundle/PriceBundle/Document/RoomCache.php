@@ -57,7 +57,6 @@ class RoomCache extends Base
     /**
      * @var int
      * @ODM\Integer()
-     * @Assert\NotNull()
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0)
      * @ODM\Index()
@@ -175,13 +174,13 @@ class RoomCache extends Base
     /**
      * Set totalRooms
      *
-     * @param int $totalRooms
+     * @param int|null $totalRooms
      * @return self
      */
-    public function setTotalRooms($totalRooms)
+    public function setTotalRooms(?int $totalRooms): self
     {
-        $this->totalRooms = (int) $totalRooms;
-        if ($this->totalRooms < 0) {
+        $this->totalRooms = $totalRooms !== null ? $totalRooms : null;
+        if ($this->totalRooms !== null && $this->totalRooms < 0) {
             $this->totalRooms = 0;
         }
         return $this;
@@ -190,9 +189,9 @@ class RoomCache extends Base
     /**
      * Get totalRooms
      *
-     * @return int $totalRooms
+     * @return int|null $totalRooms
      */
-    public function getTotalRooms()
+    public function getTotalRooms(): ?int
     {
         return $this->totalRooms;
     }
@@ -227,7 +226,9 @@ class RoomCache extends Base
      */
     public function packagesCountPercent()
     {
-        return $this->totalRooms > 0 ? round(($this->packagesCount * 100)/ $this->totalRooms, 2) : 0;
+        $totalRooms = $this->getTotalRooms();
+
+        return $totalRooms > 0 ? round(($this->packagesCount * 100)/ $totalRooms, 2) : 0;
     }
 
     /**
@@ -240,6 +241,14 @@ class RoomCache extends Base
     {
         $this->leftRooms = (int) $leftRooms;
         return $this;
+    }
+
+    /**
+     *
+     */
+    private function setLeftRoomsNull(): void
+    {
+        $this->leftRooms = null;
     }
 
     /**
@@ -273,7 +282,11 @@ class RoomCache extends Base
      */
     public function calcLeftRooms()
     {
-        $this->setLeftRooms($this->getTotalRooms() - $this->getPackagesCount());
+        if ($this->getTotalRooms() !== null) {
+            $this->setLeftRooms($this->getTotalRooms() - $this->getPackagesCount());
+        } else {
+            $this->setLeftRoomsNull();
+        }
 
         return $this;
     }
@@ -430,9 +443,10 @@ class RoomCache extends Base
      * @param boolean $isOpen
      * @return self
      */
-    public function setIsOpen($isOpen)
+    public function setIsOpen($isOpen): self
     {
         $this->isOpen = $isOpen;
+
         return $this;
     }
 

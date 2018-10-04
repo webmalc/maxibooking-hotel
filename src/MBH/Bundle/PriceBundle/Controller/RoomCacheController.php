@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PriceBundle\Controller;
 
+use Liip\FunctionalTestBundle\Validator\DataCollectingValidator;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -153,92 +154,12 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
      */
     public function saveAction(Request $request)
     {
-        $hotel = $this->get('mbh.hotel.selector')->getSelected();
-        $helper = $this->get('mbh.helper');
         $validator = $this->get('validator');
-        (empty($request->get('updateRoomCaches'))) ? $updateData = [] : $updateData = $request->get('updateRoomCaches');
-        (empty($request->get('newRoomCaches'))) ? $newData = [] : $newData = $request->get('newRoomCaches');
-        $availableTariffs = $this->helper->toIds(
-            $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchChildTariffs($this->hotel, 'rooms')
-        );
-
         $dates = [];
-
         $roomCachesByDates = [];
-        //new
-        foreach ($newData as $roomTypeId => $roomTypeArray) {
 
-            $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->find($roomTypeId);
-            if (!$roomType || $roomType->getHotel() != $hotel) {
-                continue;
-            }
-
-            foreach ($roomTypeArray as $tariffId => $tariffArray) {
-
-                if ($tariffId) {
-                    if (!in_array($tariffId, $availableTariffs)) {
-                        continue;
-                    }
-
-                    $tariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->find($tariffId);
-                    if (!$tariff || $tariff->getHotel() != $hotel) {
-                        continue;
-                    }
-                }
-
-                foreach ($tariffArray as $date => $totalRooms) {
-                    if (trim($totalRooms['rooms']) === '' || $totalRooms['rooms'] === null) {
-                        continue;
-                    }
-                    $newRoomCache = new RoomCache();
-                    $newRoomCache->setHotel($hotel)
-                        ->setRoomType($roomType)
-                        ->setDate($helper->getDateFromString($date))
-                        ->setTotalRooms((int) $totalRooms['rooms'])
-                        ->setIsOpen(!empty($totalRooms['isOpen']))
-                        ->setPackagesCount(0);
-
-                    $dates[] = $newRoomCache->getDate();
-                    
-                    $roomCachesByDates[$newRoomCache->getDate()->format('d.m.Y')][] = $newRoomCache;
-                    if ($tariffId && isset($tariff) && $tariff !== null) {
-                        $newRoomCache->setTariff($tariff);
-                    }
-
-                    if ($validator->validate($newRoomCache)) {
-                        $this->dm->persist($newRoomCache);
-                    }
-                }
-            }
-        }
-
-        //update
-        foreach ($updateData as $roomCacheId => $val) {
-            $roomCache = $this->dm->getRepository('MBHPriceBundle:RoomCache')->find($roomCacheId);
-            if (!$roomCache || $roomCache->getHotel() != $hotel) {
-                continue;
-            }
-
-            //delete
-            if (isset($val['rooms']) && (trim($val['rooms']) === '' || $val['rooms'] === null)) {
-                if ($roomCache->getPackagesCount() <= 0) {
-                    $this->dm->remove($roomCache);
-                }
-                continue;
-            }
-
-            if (isset($val['rooms'])) {
-                $roomCache->setTotalRooms((int) $val['rooms']);
-            }
-            $roomCache->setIsClosed(isset($val['closed']) && !empty($val['closed']) ? true : false);
-            $roomCache->setIsOpen(!empty($val['isOpen']));
-            if ($validator->validate($roomCache)) {
-                $this->dm->persist($roomCache);
-            }
-            $roomCachesByDates[$roomCache->getDate()->format('d.m.Y')][] = $roomCache;
-
-            $dates[] = $roomCache->getDate();
-        }
+        $this->handlerNewRoomCache($request, $validator,$roomCachesByDates, $dates);
+        $this->handlerUpdateRoomCache($request, $validator,$roomCachesByDates, $dates);
 
         $busyDays = [];
         $limitManager = $this->get('mbh.client_manager');
@@ -252,7 +173,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         if (count($busyDays) > 0) {
             $limitErrorMessage = $this->get('translator')
                 ->trans('room_cache_controller.limit_of_rooms_exceeded', [
-                    '%busyDays%' => join(', ', $busyDays),
+                    '%busyDays%' => implode(', ', $busyDays),
                     '%availableNumberOfRooms%' => $limitManager->getAvailableNumberOfRooms(),
                     '%overviewUrl%' => $this->generateUrl('total_rooms_overview'),
                 ]);
@@ -270,10 +191,148 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         }
 
         return $this->redirectToRoute('room_cache_overview', [
-            'begin' => $request->get('begin'),
-            'end' => $request->get('end'),
+            'begin'     => $request->get('begin'),
+            'end'       => $request->get('end'),
             'roomTypes' => $request->get('roomTypes'),
         ]);
+    }
+
+    /**
+     * @param Request $request
+     * @param DataCollectingValidator $validator
+     * @param array $roomCachesByDates
+     * @param array $dates
+     * @throws \Doctrine\ODM\MongoDB\LockException
+     * @throws \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    private function handlerNewRoomCache(Request $request, DataCollectingValidator $validator, array &$roomCachesByDates, array &$dates): void
+    {
+        $newData = $request->get('newRoomCaches') ?? [];
+
+        /** @var Tariff[] $availableTariffs */
+        $availableTariffs =  $this->dm->getRepository('MBHPriceBundle:Tariff')
+            ->fetchChildTariffs($this->hotel, 'rooms')
+            ->toArray();
+        $availableTariffIds = array_keys($availableTariffs);
+
+        //new
+        foreach ($newData as $roomTypeId => $roomTypeArray) {
+
+            $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->find($roomTypeId);
+            if (!$roomType || $roomType->getHotel() != $this->hotel) {
+                continue;
+            }
+
+            foreach ($roomTypeArray as $tariffId => $tariffArray) {
+
+                if ($tariffId) {
+                    if (!in_array($tariffId, $availableTariffIds)) {
+                        continue;
+                    }
+
+                    $tariff = $availableTariffs[$tariffId];
+                }
+
+                foreach ($tariffArray as $rawDate => $totalRooms) {
+                    $date = $this->helper->getDateFromString($rawDate);
+
+                    $isEmptyTotalRooms = trim($totalRooms['rooms']) === '';
+                    $isSetIsOpen = !empty($totalRooms['isOpen']);
+
+                    $parentRoomCache = null;
+
+                    if ($isEmptyTotalRooms) {
+                        if (empty($tariffId) || $tariff->getParent() === null || $tariff->isOpen() || !$isSetIsOpen) {
+                            continue;
+                        } else {
+//                            //сюда без тарифа попасть не можем (не должны)
+//                            /** @var RoomCache $parentRoomCache */
+//                            $parentRoomCache = $this->dm->getRepository('MBHPriceBundle:RoomCache')
+//                                ->findOneByDate($date,$roomType, $tariff->getParent());
+//
+//                            if ($parentRoomCache === null) {
+//                                $parentRoomCache = $this->dm->getRepository('MBHPriceBundle:RoomCache')
+//                                    ->findOneByDate($date,$roomType);
+//
+//                                if ($parentRoomCache === null) {
+//                                    continue;
+//                                }
+//                            }
+////                            $totalRooms['rooms'] = $rc->getTotalRooms();
+                        }
+                    }
+
+                    $newRoomCache = new RoomCache();
+                    $newRoomCache
+                        ->setHotel($this->hotel)
+                        ->setRoomType($roomType)
+                        ->setDate($date)
+                        ->setTotalRooms($isEmptyTotalRooms ? null : (int) $totalRooms['rooms'])
+                        ->setIsOpen($isSetIsOpen)
+                        ->setPackagesCount(0);
+
+                    $dates[] = $newRoomCache->getDate();
+
+                    $roomCachesByDates[$newRoomCache->getDate()->format('d.m.Y')][] = $newRoomCache;
+                    if ($tariffId) {
+                        $newRoomCache->setTariff($tariff);
+                    }
+
+                    if ($validator->validate($newRoomCache)) {
+                        $this->dm->persist($newRoomCache);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param DataCollectingValidator $validator
+     * @param array $roomCachesByDates
+     * @param array $dates
+     * @throws \Doctrine\ODM\MongoDB\LockException
+     * @throws \Doctrine\ODM\MongoDB\Mapping\MappingException
+     */
+    private function handlerUpdateRoomCache(Request $request, DataCollectingValidator $validator, array &$roomCachesByDates, array &$dates): void
+    {
+        $updateData = $request->get('updateRoomCaches') ?? [];
+
+        //update
+        foreach ($updateData as $roomCacheId => $val) {
+            /** @var RoomCache $roomCache */
+            $roomCache = $this->dm->getRepository('MBHPriceBundle:RoomCache')->find($roomCacheId);
+            if (!$roomCache || $roomCache->getHotel() != $this->hotel) {
+                continue;
+            }
+
+            if (isset($val['rooms'])) {
+
+                $valRooms = trim($val['rooms']);
+                $isEmptyIsOpen = empty($val['isOpen']);
+
+                if ($valRooms !== '' && $isEmptyIsOpen) {
+                    //delete
+                    if ($roomCache->getPackagesCount() <= 0) {
+                        $this->dm->remove($roomCache);
+                    }
+                    continue;
+                }
+
+                $roomCache->setTotalRooms((int)$valRooms);
+                $roomCache->setIsOpen(!$isEmptyIsOpen);
+
+            }
+
+            $roomCache->setIsClosed(isset($val['closed']) && !empty($val['closed']) ? true : false);
+            if ($validator->validate($roomCache)) {
+                $this->dm->persist($roomCache);
+            }
+            $roomCachesByDates[$roomCache->getDate()->format('d.m.Y')][] = $roomCache;
+
+            $dates[] = $roomCache->getDate();
+        }
     }
 
     /**
