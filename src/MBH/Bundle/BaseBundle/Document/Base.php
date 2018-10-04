@@ -73,6 +73,13 @@ class Base
         return (string) $this->getId();
     }
 
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
     /**
      * Get id
      *

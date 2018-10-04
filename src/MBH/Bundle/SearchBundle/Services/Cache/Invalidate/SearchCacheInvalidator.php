@@ -6,8 +6,8 @@ namespace MBH\Bundle\SearchBundle\Services\Cache\Invalidate;
 
 use MBH\Bundle\SearchBundle\Document\SearchResultCacheItem;
 use MBH\Bundle\SearchBundle\Document\SearchResultCacheItemRepository;
-use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateAdapterFactory;
-use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateAdapterInterface;
+use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateMessageFactory;
+use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateMessageInterface;
 use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateQuery;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultCacheException;
 use Predis\Client;
@@ -21,19 +21,19 @@ class SearchCacheInvalidator
     /** @var Client */
     private $redis;
 
-    /** @var InvalidateAdapterFactory */
+    /** @var InvalidateMessageFactory */
     private $invalidateAdapterFactory;
 
     /**
      * SearchCacheInvalidator constructor.
      * @param SearchResultCacheItemRepository $cacheItemRepository
      * @param Client $redis
-     * @param InvalidateAdapterFactory $factory
+     * @param InvalidateMessageFactory $factory
      */
     public function __construct(
         SearchResultCacheItemRepository $cacheItemRepository,
         Client $redis,
-        InvalidateAdapterFactory $factory
+        InvalidateMessageFactory $factory
     ) {
         $this->cacheItemRepository = $cacheItemRepository;
         $this->redis = $redis;
@@ -47,21 +47,21 @@ class SearchCacheInvalidator
      */
     public function invalidateByQuery(InvalidateQuery $invalidateQuery): void
     {
-        $adapter = $this->invalidateAdapterFactory->createAdapter($invalidateQuery);
-        $this->invalidate($adapter);
+        $message = $this->invalidateAdapterFactory->createMessage($invalidateQuery);
+        $this->invalidate($message);
     }
 
     /**
-     * @param InvalidateAdapterInterface $adapter
+     * @param InvalidateMessageInterface $message
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function invalidate(InvalidateAdapterInterface $adapter): void
+    public function invalidate(InvalidateMessageInterface $message): void
     {
 
-        $begin = $adapter->getBegin();
-        $end = $adapter->getEnd();
-        $tariffIds = $adapter->getTariffIds();
-        $roomTypeIds = $adapter->getRoomTypeIds();
+        $begin = $message->getBegin();
+        $end = $message->getEnd();
+        $tariffIds = $message->getTariffIds();
+        $roomTypeIds = $message->getRoomTypeIds();
 
         if (null !== $begin && null === $end) {
             $end = clone $begin;
@@ -72,7 +72,6 @@ class SearchCacheInvalidator
             $this->redis->del($keys);
             $this->cacheItemRepository->removeItemsByDates($begin, $end, $roomTypeIds, $tariffIds);
         }
-
     }
 
     /**

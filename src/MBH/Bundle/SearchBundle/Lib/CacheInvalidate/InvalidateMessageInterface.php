@@ -4,7 +4,7 @@
 namespace MBH\Bundle\SearchBundle\Lib\CacheInvalidate;
 
 
-interface InvalidateAdapterInterface
+interface InvalidateMessageInterface
 {
     public function getBegin(): ?\DateTime;
 

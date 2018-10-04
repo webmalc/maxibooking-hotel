@@ -49,9 +49,6 @@ class InvalidateQuery
     private $roomTypeIds = [];
 
     /** @var string[] */
-    private $categoryIds = [];
-
-    /** @var string[] */
     private $tariffIds = [];
 
     /**
@@ -168,22 +165,4 @@ class InvalidateQuery
         return $this;
     }
 
-    /**
-     * @return string[]
-     */
-    public function getCategoryIds(): array
-    {
-        return $this->categoryIds;
-    }
-
-    /**
-     * @param string[] $categoryIds
-     * @return InvalidateQuery
-     */
-    public function setCategoryIds(array $categoryIds): InvalidateQuery
-    {
-        $this->categoryIds = $categoryIds;
-
-        return $this;
-    }
 }

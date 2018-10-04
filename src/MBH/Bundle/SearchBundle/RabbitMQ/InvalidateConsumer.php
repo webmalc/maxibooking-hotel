@@ -4,12 +4,7 @@
 namespace MBH\Bundle\SearchBundle\RabbitMQ;
 
 
-use Doctrine\ODM\MongoDB\DocumentManager;
-use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateAdapterInterface;
-use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateInterface;
-use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateMessage\InvalidateMessage;
-use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateMessage\InvalidateMessageInterface;
-use MBH\Bundle\SearchBundle\Lib\Exceptions\InvalidateException;
+use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateMessage;
 use MBH\Bundle\SearchBundle\Services\Cache\Invalidate\SearchCacheInvalidator;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
@@ -37,9 +32,7 @@ class InvalidateConsumer implements ConsumerInterface
      */
     public function execute(AMQPMessage $msg)
     {
-        $body = json_decode($msg->getBody(), true);
-        /** @var  InvalidateAdapterInterface $message */
-        $message = unserialize($body, [InvalidateAdapterInterface::class => true]);
+        $message = unserialize($msg->getBody(), [InvalidateMessage::class => true]);
         $this->invalidator->invalidate($message);
     }
 

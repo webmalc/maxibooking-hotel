@@ -4,6 +4,7 @@ namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Lib\EmptyCachePeriod;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
@@ -12,6 +13,7 @@ use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PriceBundle\Document\PriceCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Form\PriceCacheGeneratorType;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\InvalidateException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -167,6 +169,8 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
         );
         $dates = [];
 
+
+        $priceCachesToInvalidate = [];
         //new
         foreach ($newData as $roomTypeId => $roomTypeArray) {
             $roomType = $this->manager->findRoom($roomTypeId);
@@ -200,6 +204,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
 
                     if ($validator->validate($newPriceCache)) {
                         $this->dm->persist($newPriceCache);
+                        $priceCachesToInvalidate[] = $newPriceCache;
                     }
 
                     $dates[] = $newPriceCache->getDate();
@@ -245,6 +250,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
 
             if ($validator->validate($newPriceCache) && !$priceCache->isSamePriceCaches($newPriceCache)) {
                 $this->dm->persist($newPriceCache);
+                $priceCachesToInvalidate[] = $newPriceCache;
                 $priceCache->setCancelDate(new \DateTime(), true);
             }
 
@@ -252,7 +258,6 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
         }
 
         $this->dm->flush();
-
         $this->addFlash('success', 'price.roomcachecontroller.change_successfully_saved');
 
         if (!empty($dates)) {
@@ -260,7 +265,12 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             $this->get('mbh.channelmanager')->updatePricesInBackground($minDate, $maxDate);
         }
 
-        $this->get('mbh.cache')->clear('price_cache');
+        $invalidateQueue = $this->get('mbh_search.price_cache_invalidate_queue');
+        try {
+            $invalidateQueue->addBatchToQueue($priceCachesToInvalidate);
+        } catch (InvalidateException $e) {
+            $this->addFlash('error', 'cache.invalidate.problem');
+        }
 
         return $this->redirect($this->generateUrl('price_cache_overview', [
             'begin' => $request->get('begin'),
@@ -332,6 +342,8 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
      * @Security("is_granted('ROLE_PRICE_CACHE_EDIT')")
      * @Template("MBHPriceBundle:PriceCache:generator.html.twig")
      * @param Request $request
+     * @return array
+     * @throws InvalidateException
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function generatorSaveAction(Request $request)
@@ -346,7 +358,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
 
         if ($form->isValid()) {
             $data = $form->getViewData();
-
+            /** @var Session $session */
             $session = $request->getSession();
 
             if ($data['saveForm']) {
@@ -389,8 +401,20 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
                 $childrenPrices
             );
 
-            $this->get('mbh.channelmanager')->updatePricesInBackground($data['begin'], $data['end']);
-            $this->get('mbh.cache')->clear('price_cache');
+            $this->get('mbh.channelmanager')->updatePricesInBackground();
+            $invalidateData = [
+                'begin' => $data['begin'],
+                'end' => $data['end'],
+                'roomTypeIds' => Helper::toIds($data['roomTypes']),
+                'tariffIds' => Helper::toIds($data['tariffs'])
+            ];
+            $cacheInvalidate = $this->get('mbh_search.generator_price_cache_invalidate_queue');
+            try {
+                $cacheInvalidate->addToQueue($invalidateData);
+            } catch (InvalidateException $e) {
+                $session->getFlashBag()->set('error', 'Cache invalidate Error!');
+            }
+
 
             $session->getFlashBag()->set('success', $this->container->get('translator')->trans('price.roomcachecontroller.data_successfully_generate'));
 
