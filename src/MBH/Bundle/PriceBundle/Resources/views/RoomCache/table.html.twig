@@ -76,7 +76,7 @@
 
                             {% set cssClass %}
                                 {% if (
-                                        (roomCache and roomCache.leftRooms < 0)
+                                        (roomCache and roomCache.totalRooms != null and roomCache.leftRooms < 0)
                                         or (tariff is not null and roomCache and dayRoomCache is null)
                                         or (tariff is not null and roomCache and dayRoomCache and roomCache.totalRooms > dayRoomCache.totalRooms)
                                         or (roomCache and roomCache.isClosed)

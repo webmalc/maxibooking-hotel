@@ -307,12 +307,13 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
                 continue;
             }
 
+            $isEmptyIsOpen = empty($val['isOpen']);
+
             if (isset($val['rooms'])) {
 
                 $valRooms = trim($val['rooms']);
-                $isEmptyIsOpen = empty($val['isOpen']);
 
-                if ($valRooms !== '' && $isEmptyIsOpen) {
+                if ($valRooms === '' && $isEmptyIsOpen) {
                     //delete
                     if ($roomCache->getPackagesCount() <= 0) {
                         $this->dm->remove($roomCache);
@@ -321,8 +322,10 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
                 }
 
                 $roomCache->setTotalRooms((int)$valRooms);
-                $roomCache->setIsOpen(!$isEmptyIsOpen);
+            }
 
+            if ($roomCache->getTariff() !== null && !$roomCache->getTariff()->isOpen()) {
+                $roomCache->setIsOpen(!$isEmptyIsOpen);
             }
 
             $roomCache->setIsClosed(isset($val['closed']) && !empty($val['closed']) ? true : false);
