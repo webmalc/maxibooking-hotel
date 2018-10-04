@@ -45,7 +45,7 @@ class PackageApiController extends BaseController
 
         $asHtml = $request->get('asHtml') === 'true';
         if (!$asHtml) {
-            $normalizedPackages = array_map([$this->get('mbh.api_serializer'), 'normalizePackage'], $packages);
+            $normalizedPackages = $this->get('mbh.api_serializer')->normalizePackages($packages);
 
             return $responseCompiler
                 ->setData($normalizedPackages)
@@ -80,7 +80,7 @@ class PackageApiController extends BaseController
 
         return $this
             ->get('mbh.api_response_compiler')
-            ->setData(array_map([$this->get('mbh.api_serializer'), 'normalizePackage'], $packages))
+            ->setData($this->get('mbh.api_serializer')->normalizePackages($packages))
             ->getResponse();
     }
 
