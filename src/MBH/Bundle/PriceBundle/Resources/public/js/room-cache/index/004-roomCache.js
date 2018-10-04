@@ -19,9 +19,16 @@ $(document).ready(function () {
                 },
                 inputs = function () {
                     var input = $('input.mbh-grid-input, span.disabled-detector');
-                    input.closest('td').click(function () {
-                        var td = $("td[data-id='" + $(this).attr('data-id') + "']"),
-                            field = $(this).children('span.input').find('input[disabled]');
+                    input.closest('tr').click(function (event) {
+                        var elementTd = $(event.target);
+
+                        if (event.target.localName !== 'td') {
+                            elementTd = $(event.target).closest('td');
+                        }
+
+                        var tr = $("tr[data-edit-col='" + $(this).attr('data-edit-col') + "']"),
+                            td = $(tr).find("td[data-id='" + $(elementTd).attr('data-id') + "']"),
+                            field = $(elementTd).children('span.input').find('input[disabled]');
 
                         td.children('span.input').find('input').removeAttr('disabled');
 

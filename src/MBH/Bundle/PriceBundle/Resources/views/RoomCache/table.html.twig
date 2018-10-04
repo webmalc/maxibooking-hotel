@@ -51,7 +51,10 @@
                 {% endif %}
 
                 {% for categoryId, category in cats %}
-                    <tr data-copy-row-id="{{ roomType.id }}">
+                    {% set attrForClick %}
+                        {% if categoryId in ['isOpen', 'totalRooms'] %} data-edit-col={{ tariffId ~ '_'~ roomType.id }}{% endif %}
+                    {% endset %}
+                    <tr data-copy-row-id="{{ roomType.id }}"{{ attrForClick }}>
                         <td class="first-td">
                             <small>{{ category }}</small>
                         </td>
