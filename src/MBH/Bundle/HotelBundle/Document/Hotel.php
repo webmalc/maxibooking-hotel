@@ -122,7 +122,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean(name="isDefault")
+     * @ODM\Field(type="bool", name="isDefault")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      * @ODM\Index()

@@ -13,8 +13,15 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\Id;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\Integer;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceMany;
 use Doctrine\ODM\MongoDB\Mapping\Annotations\ReferenceOne;
+use MBH\Bundle\ApiBundle\Lib\HotelIdsParamTrait;
+use MBH\Bundle\ApiBundle\Lib\LimitedTrait;
+use MBH\Bundle\ApiBundle\Lib\RequestParams;
+use MBH\Bundle\ApiBundle\Lib\RoomTypesRequestParams;
+use MBH\Bundle\ApiBundle\Lib\TariffRequestParams;
+use MBH\Bundle\BaseBundle\Document\Image;
 use MBH\Bundle\BaseBundle\Lib\Normalization\BooleanFieldType;
 use MBH\Bundle\BaseBundle\Lib\Normalization\CollectionFieldType;
+use MBH\Bundle\BaseBundle\Lib\Normalization\CustomFieldType;
 use MBH\Bundle\BaseBundle\Lib\Normalization\DateTimeFieldType;
 use MBH\Bundle\BaseBundle\Lib\Normalization\DocumentFieldType;
 use MBH\Bundle\BaseBundle\Lib\Normalization\DocumentsCollectionFieldType;
@@ -91,12 +98,19 @@ class DocumentFieldsManager
     /** @var PropertyAccessor */
     private $accessor;
     private $annotationReader;
+    private $helper;
 
-    public function __construct(TranslatorInterface $translator, PropertyAccessor $accessor, CachedReader $reader)
+    public function __construct(
+        TranslatorInterface $translator,
+        PropertyAccessor $accessor,
+        CachedReader $reader,
+        Helper $helper
+    )
     {
         $this->translator = $translator;
         $this->accessor = $accessor;
         $this->annotationReader = $reader;
+        $this->helper = $helper;
 
         $this->normalizationFieldTypes = $this->getSpecialNormalizationFieldsTypes();
     }
@@ -253,7 +267,22 @@ class DocumentFieldsManager
      */
     private function getSpecialNormalizationFieldsTypes(): array
     {
-        return [
+        $traitFields = [
+            LimitedTrait::class => [
+                'limit' => new IntegerFieldType(),
+                'skip' => new IntegerFieldType()
+            ],
+            HotelIdsParamTrait::class => [
+                'hotelIds' => new CollectionFieldType()
+            ]
+        ];
+
+        $requestParamsTypes = [
+            'isEnabled' => new BooleanFieldType(),
+            'ids' => new CollectionFieldType()
+        ];
+
+        $fieldTypes = [
             SearchResult::class => [
                 'begin' => new DateTimeFieldType(),
                 'end' => new DateTimeFieldType(),
@@ -281,8 +310,8 @@ class DocumentFieldsManager
                 'liveEnd' => new DateTimeFieldType(),
                 'createdBy' => new StringFieldType(),
                 'filter' => new StringFieldType(),
-                'checkIn' => new DateTimeFieldType('d.m.Y'),
-                'checkOut' => new DateTimeFieldType('d.m.Y'),
+                'checkIn' => new DateTimeFieldType(),
+                'checkOut' => new DateTimeFieldType(),
                 'hotel' => new DocumentFieldType(Hotel::class),
                 'order' => new DocumentFieldType(Order::class),
                 'packageOrder' => new DocumentFieldType(Order::class),
@@ -299,8 +328,27 @@ class DocumentFieldsManager
                 'hasAccommodations' => new BooleanFieldType(),
                 'accommodations' => new CollectionFieldType(),
                 'sources' => new CollectionFieldType()
+            ],
+            RequestParams::class => $requestParamsTypes,
+            RoomTypesRequestParams::class => array_merge(
+                $requestParamsTypes,
+                $traitFields[LimitedTrait::class],
+                $traitFields[HotelIdsParamTrait::class]
+            ),
+            TariffRequestParams::class => array_merge($requestParamsTypes, [
+                'isOnline' => new BooleanFieldType()
+            ]),
+            RoomType::class => [
+                'onlineImages' => new CollectionFieldType(new CustomFieldType([$this, 'getImageData']))
+            ],
+            Hotel::class => [
+                'images' => new CollectionFieldType(new CustomFieldType([$this, 'getImageData'])),
+                'mapImage' => new CustomFieldType([$this, 'getImageData']),
+                'file' => new CustomFieldType([$this, 'getImageData'])
             ]
         ];
+
+        return $fieldTypes;
     }
 
     /**
@@ -354,5 +402,23 @@ class DocumentFieldsManager
             . '". If it is deprecated annotation type, consider to replace it with modern field annotation.';
 
         throw new \InvalidArgumentException($exceptionMessage);
+    }
+
+    /**
+     * @param Image $image
+     * @return array
+     */
+    public function getImageData(Image $image)
+    {
+        $roomTypeImageData = ['isMain' => $image->getIsDefault()];
+        $roomTypeImageData['url'] = $this->helper->getImagePath($image);
+        if ($image->getWidth()) {
+            $roomTypeImageData['width'] = (int)$image->getWidth();
+        }
+        if ($image->getHeight()) {
+            $roomTypeImageData['height'] = (int)$image->getHeight();
+        }
+
+        return $roomTypeImageData;
     }
 }

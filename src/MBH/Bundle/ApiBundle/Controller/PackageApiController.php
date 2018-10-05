@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\ApiBundle\Controller;
 
-use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\PackageBundle\Document\Package;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -17,7 +16,7 @@ use Symfony\Component\Routing\Exception\RouteNotFoundException;
  * Class PackageApiController
  * @package MBH\Bundle\ApiBundle\Controller
  */
-class PackageApiController extends BaseController
+class PackageApiController extends BaseApiController
 {
     /**
      * @Security("is_granted('ROLE_PACKAGE_VIEW')")
@@ -30,12 +29,9 @@ class PackageApiController extends BaseController
      */
     public function packagesAction(Request $request)
     {
-        $responseCompiler = $this->get('mbh.api_response_compiler');
-        $requestManager = $this->get('mbh.api_request_manager');
-
-        $requestCriteria = $requestManager->getPackageCriteria($request->query, $responseCompiler);
-        if (!$responseCompiler->isSuccessful()) {
-            return $responseCompiler->getResponse();
+        $requestCriteria = $this->requestManager->getPackageCriteria($request->query, $this->responseCompiler);
+        if (!$this->responseCompiler->isSuccessful()) {
+            return $this->responseCompiler->getResponse();
         }
 
         $packages = $this->dm
@@ -47,7 +43,7 @@ class PackageApiController extends BaseController
         if (!$asHtml) {
             $normalizedPackages = $this->get('mbh.api_serializer')->normalizePackages($packages);
 
-            return $responseCompiler
+            return $this->responseCompiler
                 ->setData($normalizedPackages)
                 ->getResponse();
         }
@@ -78,8 +74,7 @@ class PackageApiController extends BaseController
             ->findByType($type)
             ->toArray();
 
-        return $this
-            ->get('mbh.api_response_compiler')
+        return $this->responseCompiler
             ->setData($this->get('mbh.api_serializer')->normalizePackages($packages))
             ->getResponse();
     }
@@ -101,8 +96,7 @@ class PackageApiController extends BaseController
                 = $packageRepo->countByType($packageType, true, $this->hotel);
         }
 
-        return $this
-            ->get('mbh.api_response_compiler')
+        return $this->responseCompiler
             ->setData($numberOfPackagesByTypes)
             ->getResponse();
     }
@@ -120,8 +114,6 @@ class PackageApiController extends BaseController
             ->get('mbh.order_manager')
             ->confirmOrder($package, $this->getUser());
 
-        return $this
-            ->get('mbh.api_response_compiler')
-            ->getResponse();
+        return $this->responseCompiler->getResponse();
     }
 }

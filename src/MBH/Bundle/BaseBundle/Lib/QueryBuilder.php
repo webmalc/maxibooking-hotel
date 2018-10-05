@@ -2,26 +2,16 @@
 
 namespace MBH\Bundle\BaseBundle\Lib;
 
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Query\Builder;
 
 class QueryBuilder extends Builder
 {
     /**
-     * @param DocumentManager $dm
-     * @param null $documentName
-     */
-    public function __constructor(DocumentManager $dm, $documentName = null)
-    {
-        parent::__construct($dm, $documentName);
-    }
-
-    /**
      * @param string $field
      * @param $value
      * @return $this
      */
-    public function equalsNotEmpty($field, $value)
+    public function equalsIfNotEmpty($field, $value)
     {
         if (!empty($value)) {
             $this->field($field)->equals($value);
@@ -35,7 +25,7 @@ class QueryBuilder extends Builder
      * @param $value
      * @return $this
      */
-    public function notEqualsNotEmpty($field, $value)
+    public function notEqualsIfNotEmpty($field, $value)
     {
         if (!empty($value)) {
             $this->field($field)->notEqual($value);
@@ -75,7 +65,7 @@ class QueryBuilder extends Builder
      * @param $value
      * @return $this
      */
-    public function inNotEmpty($field, $value)
+    public function inIfNotEmpty($field, $value)
     {
         if (!empty($value)) {
             $this->inToArray($field, $value);
@@ -89,7 +79,7 @@ class QueryBuilder extends Builder
      * @param $value
      * @return $this
      */
-    public function notInNotEmpty($field, $value)
+    public function notInIfNotEmpty($field, $value)
     {
         if (!empty($value)) {
             $this->notInToArray($field, $value);

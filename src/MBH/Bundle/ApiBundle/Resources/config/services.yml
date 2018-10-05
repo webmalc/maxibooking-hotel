@@ -6,3 +6,7 @@ services:
     mbh.api_request_manager:
         class: MBH\Bundle\ApiBundle\Service\ApiRequestManager
         arguments: ['@mbh.api_serializer', '@mbh.serializer']
+
+    mbh.api_manager:
+        class: MBH\Bundle\ApiBundle\Service\ApiManager
+        arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.api_request_manager']

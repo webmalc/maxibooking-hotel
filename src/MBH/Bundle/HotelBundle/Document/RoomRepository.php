@@ -205,8 +205,8 @@ class RoomRepository extends AbstractBaseRepository
         $qb = $this->createQueryBuilder()->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc'])
              ->field('isEnabled')->equals(true)
              ->inToArray('roomType.id', $hotelRoomTypes)
-             ->notInNotEmpty('id', $fullRoomsIds)
-             ->inNotEmpty('id', $rooms)
+             ->notInIfNotEmpty('id', $fullRoomsIds)
+             ->inIfNotEmpty('id', $rooms)
         ;
 
         $roomDocs = $qb->getQuery()->execute();

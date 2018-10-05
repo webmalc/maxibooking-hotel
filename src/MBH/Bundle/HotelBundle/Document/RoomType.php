@@ -802,7 +802,7 @@ class RoomType extends Base implements RoomTypeInterface
             'id' => $this->getId(),
             'isEnabled' => $this->getIsEnabled(),
             'hotel' => $this->getHotel()->getId(),
-            'title' => $this->getFullTitle() ? $this->getFullTitle() : $this->getInternationalTitle(),
+            'title' => $this->getFullTitle(),
             'internalTitle' => $this->getTitle(),
             'description' => $this->getDescription() ?? '',
             'numberOfPlaces' => $this->getPlaces(),

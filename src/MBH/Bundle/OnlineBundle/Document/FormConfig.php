@@ -47,7 +47,7 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
      * deletedAt field
      */
     use SoftDeleteableDocument;
-    
+
     /**
      * Hook blameable behavior
      * createdBy&updatedBy fields
@@ -398,6 +398,7 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
     public function setEnabled($enabled)
     {
         $this->enabled = $enabled;
+
         return $this;
     }
 
@@ -420,6 +421,7 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
     public function setRoomTypes($roomTypes)
     {
         $this->roomTypes = $roomTypes;
+
         return $this;
     }
 
@@ -442,6 +444,7 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
     public function setTourists($tourists)
     {
         $this->tourists = $tourists;
+
         return $this;
     }
 
@@ -464,6 +467,7 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
     public function setPaymentTypes($paymentTypes)
     {
         $this->paymentTypes = $paymentTypes;
+
         return $this;
     }
 
@@ -523,7 +527,7 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
 
         return $this;
     }
-    
+
     /**
      * @return ArrayCollection|RoomType[]
      */
@@ -543,7 +547,6 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
         return $this;
     }
 
-    
     /**
      * If form config is used for api, results url contains only domain address
      * @param bool $forResultsPage
@@ -561,6 +564,7 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
     public function setResultsUrl(string $resultsUrl = null)
     {
         $this->resultsUrl = $resultsUrl;
+
         return $this;
     }
 
@@ -582,5 +586,24 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
         $this->forMbSite = $forMbSite;
 
         return $this;
+    }
+
+    /**
+     * @param RoomType $roomType
+     * @return bool
+     */
+    public function isRoomTypeContainsInConfig(RoomType $roomType)
+    {
+        return $this->getHotels()->contains($roomType->getHotel()
+            && (!$this->getRoomTypes() || $this->getRoomTypeChoices()->contains($roomType)));
+    }
+
+    /**
+     * @param Hotel $hotel
+     * @return bool
+     */
+    public function isHotelContainsInConfig(Hotel $hotel)
+    {
+        return $this->getHotels()->contains($hotel);
     }
 }

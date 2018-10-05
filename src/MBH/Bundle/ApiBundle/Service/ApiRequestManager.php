@@ -2,10 +2,16 @@
 
 namespace MBH\Bundle\ApiBundle\Service;
 
+use MBH\Bundle\ApiBundle\Lib\RequestParams;
+use MBH\Bundle\ApiBundle\Lib\RoomTypesRequestParams;
+use MBH\Bundle\ApiBundle\Lib\TariffRequestParams;
 use MBH\Bundle\BaseBundle\Lib\Normalization\NormalizationException;
 use MBH\Bundle\BaseBundle\Service\MBHSerializer;
+use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Services\ApiResponseCompiler;
 use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 class ApiRequestManager
@@ -16,109 +22,151 @@ class ApiRequestManager
     const SKIP_PARAM = 'skip';
     const DEFAULT_SKIP = 0;
     const DATE_FORMAT = 'd.m.Y';
+    const PARAMS_CONFIG = [
+        RoomType::class => [
+            'paramsContainer' => RoomTypesRequestParams::class,
+            'arrayFields' => ['roomTypeIds', 'hotelIds'],
+        ],
+        Tariff::class => [
+            'paramsContainer' => TariffRequestParams::class,
+            'arrayFields' => ['hotelIds']
+        ],
+        Hotel::class => [
+            'paramsContainer' => RequestParams::class,
+        ]
+    ];
 
     private $apiSerializer;
     private $serializer;
+    /** @var ApiResponseCompiler */
+    private $responseCompiler;
 
-    public function __construct(ApiSerializer $apiSerializer, MBHSerializer $serializer) {
+    public function __construct(ApiSerializer $apiSerializer, MBHSerializer $serializer)
+    {
         $this->apiSerializer = $apiSerializer;
         $this->serializer = $serializer;
     }
 
-    public function getRequestSkip(ParameterBag $bag, ApiResponseCompiler $responseCompiler)
-    {
-        if (!$bag->has(self::SKIP_PARAM)) {
-            return self::DEFAULT_SKIP;
-        }
-
-        $requestedSkip = (int)$bag->get(self::SKIP_PARAM);
-        if ($requestedSkip < 0) {
-            $responseCompiler->addErrorMessage('The value of the field "skip" must be greater of equal to zero');
-
-            return self::DEFAULT_SKIP;
-        }
-
-        return $requestedSkip;
-    }
-
-    public function getRequestLimit(ParameterBag $bag, ApiResponseCompiler $responseCompiler, $default = self::DEFAULT_LIMIT)
-    {
-        if (!$bag->has(self::LIMIT_PARAM)) {
-            return $default;
-        }
-
-        $requestedLimit = (int)$bag->get(self::LIMIT_PARAM);
-        if ($requestedLimit < 0) {
-            $responseCompiler->addErrorMessage('The value of the field "limit" must be greater of equal to zero');
-        }
-
-        return $requestedLimit;
-    }
-
     /**
      * @param ParameterBag $bag
-     * @param ApiResponseCompiler $responseCompiler
      * @return PackageQueryCriteria|object
      * @throws \ReflectionException
      */
-    public function getPackageCriteria(ParameterBag $bag, ApiResponseCompiler $responseCompiler)
+    public function getPackageCriteria(ParameterBag $bag)
     {
-        if ($bag->has(self::CRITERIA_PARAM)) {
-            $requestedCriteria = $bag->get(self::CRITERIA_PARAM);
-            $this->checkIsArrayFields($bag, [self::CRITERIA_PARAM], $responseCompiler);
-        } else {
-            $requestedCriteria = [];
-        }
-
         $packageCriteria = new PackageQueryCriteria();
-        try {
-            $packageCriteria = $this->serializer->denormalize($requestedCriteria, $packageCriteria);
-        } catch (NormalizationException $exception) {
-            $responseCompiler->addErrorMessage($exception->getMessage(), 'criteria');
+
+        if (!$bag->has(self::CRITERIA_PARAM)) {
+            return $packageCriteria;
         }
 
-        $packageCriteria->limit = $this->getRequestLimit($bag, $responseCompiler);
-        $packageCriteria->skip = $this->getRequestSkip($bag, $responseCompiler);
+        $requestedCriteria = $bag->get(self::CRITERIA_PARAM);
+        $this->checkIsArrayFields($bag, [self::CRITERIA_PARAM]);
+        if (!$this->responseCompiler->isSuccessful()) {
+            return $packageCriteria;
+        }
+
+        $packageCriteria = $this->tryDenormalizeRequestData($requestedCriteria, $packageCriteria);
 
         return $packageCriteria;
     }
 
     /**
      * @param ParameterBag $queryData
-     * @param array $fieldNames
-     * @param ApiResponseCompiler $responseCompiler
-     * @return ApiResponseCompiler
+     * @param string $class
+     * @return RoomTypesRequestParams
+     * @throws \ReflectionException
      */
-    public function checkIsArrayFields(ParameterBag $queryData, array $fieldNames, ApiResponseCompiler $responseCompiler)
+    public function getCriteria(ParameterBag $queryData, string $class)
     {
-        foreach ($fieldNames as $fieldName) {
-            $fieldData = $queryData->get($fieldName);
-            if (!is_array($fieldData) && !is_null($fieldData)) {
-                $responseCompiler->addErrorMessage($responseCompiler::FIELD_MUST_BE_TYPE_OF_ARRAY, $fieldName, [
-                    '%field%' => $fieldName
-                ]);
-            }
+        $config = self::PARAMS_CONFIG[$class];
+        $requestParams = new $config['paramsContainer']();
+        $arrayFields = $config['arrayFields'] ?? [];
+        $this->checkIsArrayFields($queryData, $arrayFields);
+
+        if (!$this->responseCompiler->isSuccessful()) {
+            return $requestParams;
         }
 
-        return $responseCompiler;
+        return $this->tryDenormalizeRequestData($queryData->all(), $requestParams);
     }
 
     /**
      * @param ParameterBag $queryData
      * @param array $fieldNames
-     * @param ApiResponseCompiler $responseCompiler
-     * @return ApiResponseCompiler
+     * @return ApiRequestManager
      */
-    public function checkMandatoryFields(ParameterBag $queryData, array $fieldNames, ApiResponseCompiler $responseCompiler)
+    public function checkIsArrayFields(ParameterBag $queryData, array $fieldNames)
     {
         foreach ($fieldNames as $fieldName) {
-            if (is_null($queryData->get($fieldName))) {
-                $responseCompiler->addErrorMessage(ApiResponseCompiler::MANDATORY_FIELD_MISSING, $fieldName, [
+            $fieldData = $queryData->get($fieldName);
+            if (!is_array($fieldData) && !is_null($fieldData)) {
+                $this->addErrorMessage(ApiResponseCompiler::FIELD_MUST_BE_TYPE_OF_ARRAY, $fieldName, [
                     '%field%' => $fieldName
                 ]);
             }
         }
 
-        return $responseCompiler;
+        return $this;
+    }
+
+    /**
+     * @param ParameterBag $queryData
+     * @param array $fieldNames
+     */
+    public function checkMandatoryFields(ParameterBag $queryData, array $fieldNames)
+    {
+        foreach ($fieldNames as $fieldName) {
+            if (is_null($queryData->get($fieldName))) {
+                $this->addErrorMessage(ApiResponseCompiler::MANDATORY_FIELD_MISSING, $fieldName, [
+                    '%field%' => $fieldName
+                ]);
+            }
+        }
+    }
+
+    /**
+     * @param string $textId
+     * @param string $fieldName
+     * @param array $transParams
+     * @return ApiRequestManager
+     */
+    public function addErrorMessage(string $textId, string $fieldName = null, array $transParams = [])
+    {
+        if (is_null($this->responseCompiler)) {
+            throw new \RuntimeException('Instance of ApiResponseCompiler is not specified');
+        }
+
+        $this->responseCompiler->addErrorMessage($textId, $fieldName, $transParams);
+
+        return $this;
+    }
+
+    /**
+     * @param ApiResponseCompiler $responseCompiler
+     * @return ApiRequestManager
+     */
+    public function setResponseCompiler(ApiResponseCompiler $responseCompiler)
+    {
+        $this->responseCompiler = $responseCompiler;
+
+        return $this;
+    }
+
+    /**
+     * @param $requestedCriteria
+     * @param $requestParams
+     * @return mixed
+     * @throws \ReflectionException
+     */
+    private function tryDenormalizeRequestData($requestedCriteria, $requestParams)
+    {
+        try {
+            $requestParams = $this->serializer->denormalize($requestedCriteria, $requestParams);
+        } catch (NormalizationException $exception) {
+            $this->addErrorMessage($exception->getMessage());
+        }
+
+        return $requestParams;
     }
 }

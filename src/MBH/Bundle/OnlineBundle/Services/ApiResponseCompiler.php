@@ -7,18 +7,7 @@ use Symfony\Component\Translation\TranslatorInterface;
 
 class ApiResponseCompiler
 {
-    /** @var  TranslatorInterface */
-    private $translator;
-    private $domains;
-
-    private $errors = [];
-    private $data = [];
-    private $isSuccess = true;
-    private $headers = [
-        'Access-Control-Allow-Methods' => 'GET, POST, OPTIONS, PUT, DELETE, PATCH',
-        'Access-Control-Allow-Headers' => 'Content-Type, *'
-    ];
-
+    const ACCESS_CONTROL_ORIGIN_HEADER = 'Access-Control-Allow-Origin';
     const COMMON_ERRORS_FIELD_NAME = 'common';
     const FORM_CONFIG_NOT_EXISTS = 'external_api_controller.online_form_config.not_found';
     const FORM_CONFIG_NOT_ENABLED = 'external_api_controller.online_form_config.not_enabled';
@@ -30,6 +19,18 @@ class ApiResponseCompiler
     const FORM_CONFIG_NOT_CONTAINS_SPECIFIED_HOTEL = 'external_api_controller.error.specified_hotel_not_contains_in_form_config';
     const ORDER_WITH_SPECIFIED_ID_TO_EXISTS = 'external_api_controller.error.order_not_exists';
     const TARIFF_WITH_SPECIFIED_ID_NOT_EXISTS = 'external_api_controller.error.tariff_with_specified_id_not_exists';
+
+    /** @var  TranslatorInterface */
+    private $translator;
+    private $domains;
+
+    private $errors = [];
+    private $data = [];
+    private $isSuccess = true;
+    private $headers = [
+        'Access-Control-Allow-Methods' => 'GET, POST, OPTIONS, PUT, DELETE, PATCH',
+        'Access-Control-Allow-Headers' => 'Content-Type, *'
+    ];
 
     public function __construct(TranslatorInterface $translator, array $domains)
     {
@@ -134,7 +135,7 @@ class ApiResponseCompiler
             $response['errors'] = $this->errors;
         }
         foreach ($this->domains as $domain) {
-            $this->addHeader('Access-Control-Allow-Origin',  $domain);
+            $this->addHeader(self::ACCESS_CONTROL_ORIGIN_HEADER,  $domain);
         }
 
         return new JsonResponse($response, $status, $this->getHeaders());

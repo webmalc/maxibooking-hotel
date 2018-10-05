@@ -86,7 +86,7 @@ class ApiHandler
      * @param FormConfig|null $formConfig
      * @return array
      */
-    public function getFilteredRoomTypeIds($roomTypeIds, ApiResponseCompiler &$responseCompiler, ?FormConfig $formConfig)
+    public function getFilteredRoomTypeIds($roomTypeIds, ApiResponseCompiler $responseCompiler, ?FormConfig $formConfig)
     {
         $filteredRoomTypeIds = [];
         if (!is_null($roomTypeIds)) {
@@ -117,7 +117,7 @@ class ApiHandler
      * @param FormConfig|null $formConfig
      * @return array
      */
-    public function getFilteredHotels($hotelIds, ApiResponseCompiler &$responseCompiler, ?FormConfig $formConfig)
+    public function getFilteredHotels($hotelIds, ApiResponseCompiler $responseCompiler, ?FormConfig $formConfig)
     {
         $filteredHotels = [];
         foreach ($hotelIds as $hotelId) {

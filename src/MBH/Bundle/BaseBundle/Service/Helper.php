@@ -5,6 +5,7 @@ namespace MBH\Bundle\BaseBundle\Service;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Document\Image;
 use MBH\Bundle\BaseBundle\EventListener\OnRemoveSubscriber\DocumentsRelationships;
 use MBH\Bundle\BaseBundle\EventListener\OnRemoveSubscriber\Relationship;
 use MBH\Bundle\BaseBundle\Lib\Exception;
@@ -770,5 +771,18 @@ class Helper
     public function getDifferenceInDaysWithSign(\DateTime $date, \DateTime $date2)
     {
         return (int)($date->diff($date2)->format("%r%a"));
+    }
+
+    /**
+     * @param Image $image
+     * @return string
+     */
+    public function getImagePath(Image $image)
+    {
+        $uploaderHelper = $this->container->get('vich_uploader.templating.helper.uploader_helper');
+
+        return $this->container
+            ->get('liip_imagine.cache.manager')
+            ->getBrowserPath($uploaderHelper->asset($image, 'imageFile'), 'scaler');
     }
 }

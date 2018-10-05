@@ -9,7 +9,7 @@ class CustomFieldType implements NormalizableInterface
     private $normalizeCallback;
     private $denormalizeCallback;
 
-    public function __construct(callable $normalizeCallback = null, callable $denormalizeCallback = null) {
+    public function __construct($normalizeCallback = null, $denormalizeCallback = null) {
         $this->normalizeCallback = $normalizeCallback;
         $this->denormalizeCallback = $denormalizeCallback;
     }
