@@ -3,9 +3,12 @@
 namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Form\RoomCacheGeneratorType;
+use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateQuery;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\InvalidateException;
 use MBH\Bundle\PriceBundle\Services\GraphExtraData;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -154,6 +157,8 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         $dates = [];
 
         $roomCachesByDates = [];
+
+        $roomCachesToInvalidate = [];
         //new
         foreach ($newData as $roomTypeId => $roomTypeArray) {
 
@@ -187,7 +192,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
                         ->setPackagesCount(0);
 
                     $dates[] = $newRoomCache->getDate();
-                    
+
                     $roomCachesByDates[$newRoomCache->getDate()->format('d.m.Y')][] = $newRoomCache;
                     if ($tariffId && isset($tariff) && !is_null($tariff)) {
                         $newRoomCache->setTariff($tariff);
@@ -195,6 +200,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
 
                     if ($validator->validate($newRoomCache)) {
                         $this->dm->persist($newRoomCache);
+                        $roomCachesToInvalidate[] = $newRoomCache;
                     }
                 }
             }
@@ -221,6 +227,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
             $roomCache->setIsClosed(isset($val['closed']) && !empty($val['closed']) ? true : false);
             if ($validator->validate($roomCache)) {
                 $this->dm->persist($roomCache);
+                $roomCachesToInvalidate[] = $roomCache;
             }
             $roomCachesByDates[$roomCache->getDate()->format('d.m.Y')][] = $roomCache;
 
@@ -251,10 +258,17 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
             if (!empty($dates)) {
                 list($minDate, $maxDate) = $this->helper->getMinAndMaxDates($dates);
                 $this->get('mbh.channelmanager')->updateRoomsInBackground($minDate, $maxDate);
+                $invalidateQueue = $this->get('mbh_search.invalidate_queue_creator');
+                try {
+                    $invalidateQueue->addBatchToQueue($roomCachesToInvalidate);
+                } catch (InvalidateException $e) {
+                    $this->addFlash('error', 'Проблемы с инвалидацией кэша.');
+                }
             }
 
-            $this->get('mbh.cache')->clear('room_cache');
         }
+
+
 
         return $this->redirectToRoute('room_cache_overview', [
             'begin' => $request->get('begin'),
@@ -311,7 +325,18 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
             if (empty($error)) {
                 $this->addFlash('success', 'price.tariffcontroller.data_successfully_generated');
                 $this->get('mbh.channelmanager')->updateRoomsInBackground($data['begin'], $data['end']);
-                $this->get('mbh.cache')->clear('room_cache');
+                $invalidateData = [
+                    'begin' => $data['begin'],
+                    'end' => $data['end'],
+                    'roomTypeIds' => Helper::toIds($data['roomTypes']->toAarray()),
+                    'type' => InvalidateQuery::ROOM_CACHE_GENERATOR
+                ];
+                $cacheInvalidate = $this->get('mbh_search.invalidate_queue_creator');
+                try {
+                    $cacheInvalidate->addToQueue($invalidateData);
+                } catch (InvalidateException $e) {
+                    $this->addFlash('error', 'Cache invalidate Error!');
+                }
 
                 return $this->isSavedRequest() ?
                     $this->redirectToRoute('room_cache_generator') :

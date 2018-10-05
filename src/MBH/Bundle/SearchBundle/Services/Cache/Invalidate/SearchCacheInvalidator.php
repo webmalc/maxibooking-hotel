@@ -87,7 +87,7 @@ class SearchCacheInvalidator
         $dm->remove($cacheItem);
         $dm->flush($cacheItem);
 
-        if (1 === $deleted) {
+        if (1 !== $deleted) {
             throw new SearchResultCacheException('No removed cache item from cache while invalidate');
         }
     }

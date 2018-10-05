@@ -13,6 +13,7 @@ use MBH\Bundle\PriceBundle\Form\TariffPromotionsType;
 use MBH\Bundle\PriceBundle\Form\TariffServicesType;
 use MBH\Bundle\PriceBundle\Form\TariffType;
 use MBH\Bundle\PriceBundle\Lib\TariffFilter;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\InvalidateException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -188,6 +189,13 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             $this->dm->flush();
 
             $this->addFlash('success', 'price.tariffcontroller.tariff_successfully_created');
+            try {
+                $this->invalidateCache($entity);
+            } catch (InvalidateException $e) {
+                $request->getSession()->getFlashBag()
+                    ->set('error', 'Ошибка при инвалидации кэша.');
+            }
+
             return $this->afterSaveRedirect('tariff', $entity->getId());
         }
 
@@ -223,6 +231,12 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
 
             $this->addFlash('success', 'price.tariffcontroller.entry_successfully_updated');
 
+            try {
+                $this->invalidateCache($entity);
+            } catch (InvalidateException $e) {
+                $request->getSession()->getFlashBag()
+                    ->set('error', 'Ошибка при инвалидации кэша.');
+            }
             return $this->afterSaveRedirect('tariff', $entity->getId());
         }
 
@@ -280,6 +294,12 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
 
             $this->addFlash('success','price.tariffcontroller.entry_successfully_updated');
 
+            try {
+                $this->invalidateCache($tariff);
+            } catch (InvalidateException $e) {
+                $request->getSession()->getFlashBag()
+                    ->set('error', 'Ошибка в инвалидации кэша.');
+            }
             return $this->isSavedRequest() ?
                 $this->redirectToRoute('tariff_promotions_edit', ['id' => $tariff->getId()]) :
                 $this->redirectToRoute('tariff');
@@ -320,6 +340,12 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
 
             $this->addFlash('success','price.tariffcontroller.entry_successfully_updated');
 
+            try {
+                $this->invalidateCache($tariff);
+            } catch (InvalidateException $e) {
+                $request->getSession()->getFlashBag()
+                    ->set('error', 'Ошибка в инвалидации кэша.');
+            }
             return $this->isSavedRequest() ?
                 $this->redirectToRoute('tariff_inheritance_edit', ['id' => $tariff->getId()]) :
                 $this->redirectToRoute('tariff');
@@ -378,6 +404,15 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
     public function deleteAction($id)
     {
         return $this->deleteEntity($id, 'MBHPriceBundle:Tariff', 'tariff');
+    }
+
+    /**
+     * @param Tariff $tariff
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\InvalidateException
+     */
+    private function invalidateCache(Tariff $tariff)
+    {
+        $this->get('mbh_search.invalidate_queue_creator')->addToQueue($tariff);
     }
 
 }

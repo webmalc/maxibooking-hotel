@@ -11,6 +11,7 @@ use MBH\Bundle\HotelBundle\Form\ImagePriorityType;
 use MBH\Bundle\HotelBundle\Form\OnlineImageFileType;
 use MBH\Bundle\HotelBundle\Form\RoomTypeTasksType;
 use MBH\Bundle\HotelBundle\Form\RoomTypeType;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\InvalidateException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -105,6 +106,12 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
 
             $this->dm->persist($entity);
             $this->dm->flush();
+
+            try {
+                $this->invalidateCache($entity);
+            } catch (InvalidateException $e) {
+                $this->addFlash('error', 'Ошибка при инвалидации кэша.');
+            }
 
             $this->addFlash('success', 'controller.roomTypeController.success_room_type_creation');
 
@@ -211,6 +218,12 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             $this->dm->flush();
 
             $this->addFlash('success', 'controller.roomTypeController.record_edited_success');
+
+            try {
+                $this->invalidateCache($entity);
+            } catch (InvalidateException $e) {
+                $this->addFlash('error', 'Ошибка при инвалидации кэша.');
+            }
 
             return $this->afterSaveRedirect('room_type', $entity->getId(), ['tab' => $entity->getId()]);
         }
@@ -377,5 +390,14 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
 
         return $this->redirectToRoute('room_type_image_edit', ['id' => $roomType->getId()]);
 
+    }
+
+    /**
+     * @param RoomType $roomType
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\InvalidateException
+     */
+    private function invalidateCache(RoomType $roomType)
+    {
+        $this->get('mbh_search.invalidate_queue_creator')->addToQueue($roomType);
     }
 }

@@ -227,22 +227,17 @@ services:
         - '@snc_redis.cache_results_client'
         - '@mbh_search.invalidate_adapter_factory'
 
-    mbh_search.abstract_invalidate_queue_creator:
-        class: MBH\Bundle\SearchBundle\Services\Cache\InvalidateQueue\AbstractInvalidateQueueCreator
-        abstract: true
+    mbh_search.query_creator_factory:
+        class: MBH\Bundle\SearchBundle\Services\Cache\InvalidateQueue\QueryCreatorFactory
+
+    mbh_search.invalidate_queue_creator:
+        class: MBH\Bundle\SearchBundle\Services\Cache\InvalidateQueue\InvalidateQueueCreator
         arguments:
             - '@old_sound_rabbit_mq.cache_invalidate_producer'
             - '@mbh_search.invalidate_adapter_factory'
+            - '@mbh_search.query_creator_factory'
 
-    mbh_search.price_cache_invalidate_queue:
-        class: MBH\Bundle\SearchBundle\Services\Cache\InvalidateQueue\PriceCacheQueue
-        parent: 'mbh_search.abstract_invalidate_queue_creator'
-
-    mbh_search.generator_price_cache_invalidate_queue:
-        class: MBH\Bundle\SearchBundle\Services\Cache\InvalidateQueue\PriceCacheGeneratorQueue
-        parent: 'mbh_search.abstract_invalidate_queue_creator'
-
-# repositories
+    # repositories
     mbh_search.hotel_repository:
       class: MBH\Bundle\HotelBundle\Document\HotelRepository
       factory: ["@doctrine.odm.mongodb.document_manager", getRepository]

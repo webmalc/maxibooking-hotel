@@ -4,8 +4,11 @@ namespace MBH\Bundle\PriceBundle\Controller;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\PriceBundle\Document\Restriction;
 use MBH\Bundle\PriceBundle\Form\RestrictionGeneratorType;
+use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateQuery;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\InvalidateException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -153,6 +156,8 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
         );
         $dates = [];
 
+
+        $invalidateRestrictions = [];
         //new
         foreach ($newData as $roomTypeId => $roomTypeArray) {
             $roomType = $dm->getRepository('MBHHotelBundle:RoomType')->find($roomTypeId);
@@ -188,6 +193,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
 
                     if ($validator->validate($newRestriction)) {
                         $dm->persist($newRestriction);
+                        $invalidateRestrictions[] = $newRestriction;
                     }
                     $dates[] = $newRestriction->getDate();
                 }
@@ -220,6 +226,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
 
             if ($validator->validate($restriction)) {
                 $dm->persist($restriction);
+                $invalidateRestrictions[] = $restriction;
             }
 
             $dates[] = $restriction->getDate();
@@ -232,9 +239,15 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
             $this->get('mbh.channelmanager')->updateRestrictionsInBackground($minDate, $maxDate);
         }
 
-        $this->get('mbh.cache')->clear('restriction');
+
 
         $this->addFlash('success', 'price.controller.restrictioncontroller.change_successful_saved');
+        $invalidateQueue = $this->get('mbh_search.invalidate_queue_creator');
+        try {
+            $invalidateQueue->addBatchToQueue($invalidateRestrictions);
+        } catch (InvalidateException $e) {
+            $this->addFlash('error', 'Проблемы с инвалидацией кэша.');
+        }
 
         return $this->redirect($this->generateUrl('restriction_overview', [
             'begin' => $request->get('begin'),
@@ -318,7 +331,19 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
             );
 
             $this->get('mbh.channelmanager')->updateRestrictionsInBackground($data['begin'], $data['end']);
-            $this->get('mbh.cache')->clear('restriction');
+            $invalidateData = [
+                'begin' => $data['begin'],
+                'end' => $data['end'],
+                'roomTypeIds' => Helper::toIds($data['roomTypes']->toArray()),
+                'tariffIds' => Helper::toIds($data['tariffs']->toArray()),
+                'type' => InvalidateQuery::RESTRICTION_GENERATOR
+            ];
+            $cacheInvalidate = $this->get('mbh_search.invalidate_queue_creator');
+            try {
+                $cacheInvalidate->addToQueue($invalidateData);
+            } catch (InvalidateException $e) {
+                $request->getSession()->getFlashBag()->set('error', 'Cache invalidate Error!');
+            }
 
             if ($request->get('save') !== null) {
                 return $this->redirect($this->generateUrl('restriction_generator'));

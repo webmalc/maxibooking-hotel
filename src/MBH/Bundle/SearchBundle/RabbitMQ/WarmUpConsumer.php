@@ -9,13 +9,14 @@ use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException;
 use MBH\Bundle\SearchBundle\Services\Search\CacheSearcher;
 use MBH\Bundle\SearchBundle\Services\Search\SearcherInterface;
+use MBH\Bundle\SearchBundle\Services\Search\WarmUpCacheSearcher;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 
 class WarmUpConsumer implements ConsumerInterface
 {
 
-    /** @var CacheSearcher */
+    /** @var WarmUpCacheSearcher */
     private $cacheSearcher;
 
     /**
