@@ -237,9 +237,10 @@ class RoomCache extends Base
      * @param int $leftRooms
      * @return self
      */
-    public function setLeftRooms($leftRooms)
+    public function setLeftRooms(?int $leftRooms)
     {
-        $this->leftRooms = (int) $leftRooms;
+        $this->leftRooms = $leftRooms;
+
         return $this;
     }
 
@@ -254,9 +255,9 @@ class RoomCache extends Base
     /**
      * Get leftRooms
      *
-     * @return int $leftRooms
+     * @return int|null $leftRooms
      */
-    public function getLeftRooms()
+    public function getLeftRooms(): ?int
     {
         return $this->leftRooms;
     }

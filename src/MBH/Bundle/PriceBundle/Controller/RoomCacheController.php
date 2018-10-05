@@ -243,23 +243,10 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
                     $parentRoomCache = null;
 
                     if ($isEmptyTotalRooms) {
-                        if (empty($tariffId) || $tariff->getParent() === null || $tariff->isOpen() || !$isSetIsOpen) {
+                        if (empty($tariffId) || $tariff->isOpen() || !$isSetIsOpen) {
                             continue;
                         } else {
 //                            //сюда без тарифа попасть не можем (не должны)
-//                            /** @var RoomCache $parentRoomCache */
-//                            $parentRoomCache = $this->dm->getRepository('MBHPriceBundle:RoomCache')
-//                                ->findOneByDate($date,$roomType, $tariff->getParent());
-//
-//                            if ($parentRoomCache === null) {
-//                                $parentRoomCache = $this->dm->getRepository('MBHPriceBundle:RoomCache')
-//                                    ->findOneByDate($date,$roomType);
-//
-//                                if ($parentRoomCache === null) {
-//                                    continue;
-//                                }
-//                            }
-////                            $totalRooms['rooms'] = $rc->getTotalRooms();
                         }
                     }
 
@@ -321,7 +308,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
                     continue;
                 }
 
-                $roomCache->setTotalRooms((int)$valRooms);
+                $roomCache->setTotalRooms($valRooms !== '' ? (int)$valRooms : null);
             }
 
             if ($roomCache->getTariff() !== null && !$roomCache->getTariff()->isOpen()) {
