@@ -2,6 +2,8 @@
 
 namespace MBH\Bundle\BaseBundle\Lib\Normalization;
 
+use MBH\Bundle\BaseBundle\Service\Utils;
+
 class CollectionFieldType implements NormalizableInterface
 {
     /** @var NormalizableInterface */
@@ -17,13 +19,14 @@ class CollectionFieldType implements NormalizableInterface
      * @return array
      * @throws NormalizationException
      */
-    public function normalize($value, array $options)
+    public function normalize($value, array $options = [])
     {
         $this->checkIsIterable($value);
+        $arrayValue = Utils::castIterableToArray($value);
 
-        return is_null($this->elementFieldType) ? (array)$value : array_map(function ($element) use ($options) {
+        return is_null($this->elementFieldType) ? $arrayValue : array_map(function ($element) use ($options) {
             return $this->elementFieldType->normalize($element, $options);
-        }, (array)$value);
+        }, $arrayValue);
     }
 
     /**
@@ -32,13 +35,14 @@ class CollectionFieldType implements NormalizableInterface
      * @return array
      * @throws NormalizationException
      */
-    public function denormalize($value, array $options)
+    public function denormalize($value, array $options = [])
     {
         $this->checkIsIterable($value);
+        $arrayValue = Utils::castIterableToArray($value);
 
-        return is_null($this->elementFieldType) ? (array)$value : array_map(function ($element) use ($options) {
+        return is_null($this->elementFieldType) ? $arrayValue : array_map(function ($element) use ($options) {
             return $this->elementFieldType->denormalize($element, $options);
-        }, (array)$value);
+        }, $arrayValue);
     }
 
     /**

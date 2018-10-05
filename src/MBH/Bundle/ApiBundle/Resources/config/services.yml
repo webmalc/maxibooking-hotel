@@ -1,8 +1,8 @@
 services:
     mbh.api_serializer:
         class: MBH\Bundle\ApiBundle\Service\ApiSerializer
-        arguments: []
+        arguments: ['@mbh.serializer']
 
     mbh.api_request_manager:
         class: MBH\Bundle\ApiBundle\Service\ApiRequestManager
-        arguments: ['@mbh.api_serializer']
+        arguments: ['@mbh.api_serializer', '@mbh.serializer']

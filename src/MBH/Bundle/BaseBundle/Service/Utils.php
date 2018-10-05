@@ -49,4 +49,37 @@ class Utils
     {
         return is_bool($value) || in_array($value, ['true', 'false']);
     }
+
+    public static function canConvertToString($value)
+    {
+        return !is_array($value)
+            && ((!is_object($value) && settype($value, 'string') !== false) ||
+                (is_object($value) && method_exists($value, '__toString')));
+    }
+
+    /**
+     * @param $value
+     * @return string
+     */
+    public static function getStringValueOrType($value)
+    {
+        if (Utils::canConvertToString($value)) {
+            return (string)$value;
+        }
+
+        if (is_object($value)) {
+            return get_class($value);
+        }
+
+        return gettype($value);
+    }
+
+    public static function castIterableToArray($value)
+    {
+        if (!is_iterable($value)) {
+            throw new \InvalidArgumentException('Passed value should be iterable');
+        }
+
+        return is_array($value) ? $value : iterator_to_array($value);
+    }
 }

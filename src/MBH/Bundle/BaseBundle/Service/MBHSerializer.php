@@ -30,7 +30,6 @@ class MBHSerializer
     private $dm;
 
     private $fieldTypes = [];
-    private $catchExceptions = true;
 
     public function __construct(PropertyAccessor $propertyAccessor, DocumentFieldsManager $fieldsManager, DocumentManager $dm)
     {
@@ -198,14 +197,26 @@ class MBHSerializer
     }
 
     /**
-     * @param bool $catchExceptions
-     * @return MBHSerializer
+     * @param string $className
+     * @param array $normalizedData
+     * @return object
+     * @throws \ReflectionException
+     * @throws NormalizationException
      */
-    public function setCatchExceptions(bool $catchExceptions): MBHSerializer
+    public function instantiateClass(string $className, array $normalizedData)
     {
-        $this->catchExceptions = $catchExceptions;
+        $reflClass =  new \ReflectionClass($className);
+        $reflClass->getConstructor();
+        $constructorParams = [];
+        foreach ($reflClass->getConstructor()->getParameters() as $parameter) {
+            if (!$parameter->isDefaultValueAvailable()) {
+                $paramName = $parameter->getName();
+                $constructorParams[] = $this->denormalizeSingleField($normalizedData[$paramName], $className, $paramName);
+            }
+        }
 
-        return $this;
+
+        return $reflClass->newInstanceArgs($constructorParams);
     }
 
     /**

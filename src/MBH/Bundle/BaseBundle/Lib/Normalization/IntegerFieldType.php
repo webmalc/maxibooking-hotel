@@ -2,6 +2,8 @@
 
 namespace MBH\Bundle\BaseBundle\Lib\Normalization;
 
+use MBH\Bundle\BaseBundle\Service\Utils;
+
 class IntegerFieldType implements NormalizableInterface
 {
     /**
@@ -10,7 +12,7 @@ class IntegerFieldType implements NormalizableInterface
      * @return int
      * @throws NormalizationException
      */
-    public function normalize($value, array $options)
+    public function normalize($value, array $options = [])
     {
         $this->checkIsNumeric($value);
 
@@ -23,7 +25,7 @@ class IntegerFieldType implements NormalizableInterface
      * @return int
      * @throws NormalizationException
      */
-    public function denormalize($value, array $options)
+    public function denormalize($value, array $options = [])
     {
         $this->checkIsNumeric($value);
 
@@ -37,7 +39,7 @@ class IntegerFieldType implements NormalizableInterface
     private function checkIsNumeric($value)
     {
         if (!is_numeric($value)) {
-            throw new NormalizationException('Passed value can not be casted to float type');
+            throw new NormalizationException(Utils::getStringValueOrType($value) . ' can not be casted to int type');
         }
     }
 }

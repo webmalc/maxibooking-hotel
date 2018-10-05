@@ -20,7 +20,7 @@ class CustomFieldType implements NormalizableInterface
      * @return mixed
      * @throws Exception
      */
-    public function normalize($value, array $options)
+    public function normalize($value, array $options = [])
     {
         if (is_null($this->normalizeCallback)) {
             throw new Exception('There is no normalize callback for custom field type');
@@ -35,7 +35,7 @@ class CustomFieldType implements NormalizableInterface
      * @return mixed
      * @throws Exception
      */
-    public function denormalize($value, array $options)
+    public function denormalize($value, array $options = [])
     {
         if (is_null($this->denormalizeCallback)) {
             throw new Exception('There is no denormalize callback for custom field type');

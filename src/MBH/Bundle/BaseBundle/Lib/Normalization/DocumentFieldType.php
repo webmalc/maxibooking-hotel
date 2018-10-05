@@ -3,6 +3,7 @@
 namespace MBH\Bundle\BaseBundle\Lib\Normalization;
 
 use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Service\Utils;
 
 class DocumentFieldType implements NormalizableInterface
 {
@@ -18,7 +19,7 @@ class DocumentFieldType implements NormalizableInterface
      * @return string
      * @throws NormalizationException
      */
-    public function normalize($value, array $options)
+    public function normalize($value, array $options = [])
     {
         if (!is_object($value)) {
             throw new NormalizationException('Passed to normalization value is not an object');
@@ -40,7 +41,7 @@ class DocumentFieldType implements NormalizableInterface
     public function denormalize($value, array $options)
     {
         if (!\MongoId::isValid($value)) {
-            throw new NormalizationException($value . ' is not a valid ID');
+            throw new NormalizationException(Utils::getStringValueOrType($value) . ' is not a valid ID');
         }
         $dm = $options['dm'];
 

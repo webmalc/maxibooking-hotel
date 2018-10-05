@@ -2,6 +2,8 @@
 
 namespace MBH\Bundle\BaseBundle\Lib\Normalization;
 
+use MBH\Bundle\BaseBundle\Service\Utils;
+
 class StringFieldType implements NormalizableInterface
 {
     /**
@@ -10,7 +12,7 @@ class StringFieldType implements NormalizableInterface
      * @return string
      * @throws NormalizationException
      */
-    public function normalize($value, array $options)
+    public function normalize($value, array $options = [])
     {
         return $this->castToString($value);
     }
@@ -21,7 +23,7 @@ class StringFieldType implements NormalizableInterface
      * @return string
      * @throws NormalizationException
      */
-    public function denormalize($value, array $options)
+    public function denormalize($value, array $options = [])
     {
         return $this->castToString($value);
     }
@@ -33,12 +35,10 @@ class StringFieldType implements NormalizableInterface
      */
     private function castToString($value)
     {
-        try {
-            $result = (string)$value;
-        } catch (\Throwable $exception) {
-            throw new NormalizationException($exception->getMessage());
+        if (Utils::canConvertToString($value)) {
+            return (string)$value;
         }
 
-        return $result;
+        throw new NormalizationException(Utils::getStringValueOrType($value) . ' can not be casted to string');
     }
 }

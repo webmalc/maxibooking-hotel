@@ -4,6 +4,7 @@ namespace MBH\Bundle\BaseBundle\Lib\Normalization;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Service\Utils;
 
 class DocumentsCollectionFieldType implements NormalizableInterface
 {
@@ -19,13 +20,13 @@ class DocumentsCollectionFieldType implements NormalizableInterface
      * @return array
      * @throws NormalizationException
      */
-    public function normalize($value, array $options)
+    public function normalize($value, array $options = [])
     {
         $this->checkIsIterable($value);
 
         return array_map(function ($document) {
             if (!$document instanceof Base) {
-                throw new NormalizationException('Passed value is not an instance of Base');
+                throw new NormalizationException(Utils::getStringValueOrType($document) . ' is not an instance of Base');
             }
 
             return $document->getId();

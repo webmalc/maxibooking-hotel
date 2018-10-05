@@ -3,12 +3,14 @@
 namespace MBH\Bundle\BaseBundle\Lib\Normalization;
 
 use MBH\Bundle\BaseBundle\Service\MBHSerializer;
+use MBH\Bundle\BaseBundle\Service\Utils;
 
 class DateTimeFieldType implements NormalizableInterface
 {
     private $format;
-    
-    public function __construct(string $format = MBHSerializer::DATE_FORMAT) {
+
+    public function __construct(string $format = MBHSerializer::DATE_FORMAT)
+    {
         $this->format = $format;
     }
 
@@ -18,10 +20,12 @@ class DateTimeFieldType implements NormalizableInterface
      * @return string
      * @throws NormalizationException
      */
-    public function normalize($dateTime, array $options)
+    public function normalize($dateTime, array $options = [])
     {
         if (!$dateTime instanceof \DateTime) {
-            throw new NormalizationException('Can not pass value because it\'s not instance of DateTime');
+            throw new NormalizationException('Can not normalize '
+                . Utils::getStringValueOrType($dateTime)
+                . ' because it\'s not an instance of DateTime');
         }
 
         return $dateTime->format($this->format);
@@ -33,7 +37,7 @@ class DateTimeFieldType implements NormalizableInterface
      * @return bool|\DateTime
      * @throws NormalizationException
      */
-    public function denormalize($dateTimeString, array $options)
+    public function denormalize($dateTimeString, array $options = [])
     {
         if ($this->format === MBHSerializer::DATE_FORMAT) {
             $denormalizationResult = \DateTime::createFromFormat($this->format . ' H', $dateTimeString . ' 00');
