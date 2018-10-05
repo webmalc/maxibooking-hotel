@@ -22,6 +22,12 @@ class WarmUpCacheSearchResult extends AbstractCacheSearchResult
         return $this->redis->exists($key);
     }
 
+    /**
+     * @param SearchQuery $searchQuery
+     * @return string
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\CacheKeyFactoryException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
+     */
     protected function createKey(SearchQuery $searchQuery): string
     {
         return $this->keyCreator->createWarmUpKey($searchQuery);

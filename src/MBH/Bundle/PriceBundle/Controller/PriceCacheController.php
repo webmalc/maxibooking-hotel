@@ -12,6 +12,7 @@ use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PriceBundle\Document\PriceCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Form\PriceCacheGeneratorType;
+use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateQuery;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\InvalidateException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -272,7 +273,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
 
         $this->get('mbh.channelmanager')->updatePricesInBackground();
         /*$this->get('mbh.cache')->clear('price_cache');*/
-        $invalidateQueue = $this->get('mbh_search.price_cache_invalidate_queue');
+        $invalidateQueue = $this->get('mbh_search.invalidate_queue_creator');
         try {
             $invalidateQueue->addBatchToQueue($priceCachesToInvalidate);
         } catch (InvalidateException $e) {
@@ -360,8 +361,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
      * @Security("is_granted('ROLE_PRICE_CACHE_EDIT')")
      * @Template("MBHPriceBundle:PriceCache:generator.html.twig")
      * @param Request $request
-     * @return array
-     * @throws InvalidateException
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function generatorSaveAction(Request $request)
     {
@@ -430,18 +430,19 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             );
 
             $this->get('mbh.channelmanager')->updatePricesInBackground();
-            /*$this->get('mbh.cache')->clear('price_cache');*/
+
             $invalidateData = [
                 'begin' => $data['begin'],
                 'end' => $data['end'],
-                'roomTypeIds' => Helper::toIds($data['roomTypes']),
-                'tariffIds' => Helper::toIds($data['tariffs'])
+                'roomTypeIds' => Helper::toIds($data['roomTypes']->toArray()),
+                'tariffIds' => Helper::toIds($data['tariffs']->toArray()),
+                'type' => InvalidateQuery::PRICE_GENERATOR
             ];
-            $cacheInvalidate = $this->get('mbh_search.generator_price_cache_invalidate_queue');
+            $cacheInvalidate = $this->get('mbh_search.invalidate_queue_creator');
             try {
                 $cacheInvalidate->addToQueue($invalidateData);
             } catch (InvalidateException $e) {
-                $session->getFlashBag()->set('error', 'Cache invalidate Error!');
+                $session->getFlashBag()->set('error', 'Cache invalidate Error! '.$e->getMessage());
             }
 
 

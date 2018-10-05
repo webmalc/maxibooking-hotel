@@ -9,7 +9,7 @@ use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateMessageFactory;
 use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateQuery;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 
-abstract class AbstractInvalidateQueueCreator implements InvalidateQueueInterface
+class InvalidateQueueCreator implements InvalidateQueueInterface
 {
     /** @var ProducerInterface */
     protected $producer;
@@ -17,6 +17,9 @@ abstract class AbstractInvalidateQueueCreator implements InvalidateQueueInterfac
      * @var InvalidateMessageFactory
      */
     private $factory;
+
+    /** @var QueryCreatorFactory */
+    private $queryCreatorFactory;
 
     /** @var bool */
     private $isUseCache;
@@ -27,11 +30,12 @@ abstract class AbstractInvalidateQueueCreator implements InvalidateQueueInterfac
      * @param InvalidateMessageFactory $factory
      * @param bool $isUseCache
      */
-    public function __construct(ProducerInterface $producer, InvalidateMessageFactory $factory, bool $isUseCache = true)
+    public function __construct(ProducerInterface $producer, InvalidateMessageFactory $factory, QueryCreatorFactory $creatorFactory, bool $isUseCache = true)
     {
         $this->producer = $producer;
         $this->factory = $factory;
         $this->isUseCache = $isUseCache;
+        $this->queryCreatorFactory = $creatorFactory;
     }
 
     /**
@@ -69,5 +73,15 @@ abstract class AbstractInvalidateQueueCreator implements InvalidateQueueInterfac
 
     }
 
-    abstract protected function createInvalidateQuery($data): InvalidateQuery;
+    /**
+     * @param $data
+     * @return InvalidateQuery
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\InvalidateException
+     */
+    private function createInvalidateQuery($data): InvalidateQuery
+    {
+        $creator = $this->queryCreatorFactory->create($data);
+
+        return $creator->createInvalidateQuery($data);
+    }
 }

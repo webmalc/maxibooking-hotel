@@ -7,6 +7,7 @@ namespace MBH\Bundle\SearchBundle\Services\Cache;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\SearchBundle\Document\SearchResultCacheItem;
 use MBH\Bundle\SearchBundle\Document\SearchResultCacheItemRepository;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultCacheException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Data\Serializers\ResultSerializer;
@@ -50,9 +51,7 @@ abstract class AbstractCacheSearchResult implements SearchCacheInterface
     /**
      * @param Result $result
      * @param SearchQuery $searchQuery
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\CacheKeyFactoryException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultCacheException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
+     * @throws SearchResultCacheException
      */
     public function saveToCache(Result $result, SearchQuery $searchQuery): void
     {

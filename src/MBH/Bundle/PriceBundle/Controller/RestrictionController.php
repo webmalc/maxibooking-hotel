@@ -3,8 +3,11 @@
 namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\PriceBundle\Document\Restriction;
 use MBH\Bundle\PriceBundle\Form\RestrictionGeneratorType;
+use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateQuery;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\InvalidateException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -13,6 +16,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
  * @Route("restriction")
@@ -127,7 +131,9 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
      * @Security("is_granted('ROLE_RESTRICTION_EDIT')")
      * @Template("MBHPriceBundle:Restriction:index.html.twig")
      * @param Request $request
-     * @return array
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \Doctrine\ODM\MongoDB\LockException
+     * @throws \Doctrine\ODM\MongoDB\Mapping\MappingException
      */
     public function saveAction(Request $request)
     {
@@ -142,6 +148,8 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
             $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchChildTariffs($this->hotel, 'restrictions')
         );
 
+
+        $invalidateRestrictions = [];
         //new
         foreach ($newData as $roomTypeId => $roomTypeArray) {
             $roomType = $dm->getRepository('MBHHotelBundle:RoomType')->find($roomTypeId);
@@ -177,6 +185,7 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
 
                     if ($validator->validate($newRestriction)) {
                         $dm->persist($newRestriction);
+                        $invalidateRestrictions[] = $newRestriction;
                     }
                 }
             }
@@ -209,16 +218,25 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
 
             if ($validator->validate($restriction)) {
                 $dm->persist($restriction);
+                $invalidateRestrictions[] = $restriction;
             }
         }
         $dm->flush();
 
         $this->get('mbh.channelmanager')->updateRestrictionsInBackground();
-        $this->get('mbh.cache')->clear('restriction');
 
-        $request->getSession()->getFlashBag()
+        /** @var Session $session */
+        $session = $request->getSession();
+        $session->getFlashBag()
             ->set('success', 'Изменения успешно сохранены.')
         ;
+
+        $invalidateQueue = $this->get('mbh_search.invalidate_queue_creator');
+        try {
+            $invalidateQueue->addBatchToQueue($invalidateRestrictions);
+        } catch (InvalidateException $e) {
+            $session->getFlashBag()->set('error', 'Проблемы с инвалидацией кэша.');
+        }
 
         return $this->redirect($this->generateUrl('restriction_overview', [
             'begin' => $request->get('begin'),
@@ -303,7 +321,20 @@ class RestrictionController extends Controller implements CheckHotelControllerIn
             );
 
             $this->get('mbh.channelmanager')->updateRestrictionsInBackground();
-            $this->get('mbh.cache')->clear('restriction');
+
+            $invalidateData = [
+                'begin' => $data['begin'],
+                'end' => $data['end'],
+                'roomTypeIds' => Helper::toIds($data['roomTypes']->toArray()),
+                'tariffIds' => Helper::toIds($data['tariffs']->toArray()),
+                'type' => InvalidateQuery::RESTRICTION_GENERATOR
+            ];
+            $cacheInvalidate = $this->get('mbh_search.invalidate_queue_creator');
+            try {
+                $cacheInvalidate->addToQueue($invalidateData);
+            } catch (InvalidateException $e) {
+                $request->getSession()->getFlashBag()->set('error', 'Cache invalidate Error!');
+            }
 
             if ($request->get('save') !== null) {
                 return $this->redirect($this->generateUrl('restriction_generator'));

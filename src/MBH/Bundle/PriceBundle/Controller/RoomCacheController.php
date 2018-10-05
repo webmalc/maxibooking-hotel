@@ -3,16 +3,20 @@
 namespace MBH\Bundle\PriceBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\PriceBundle\Command\RoomCacheCompare1CCommand;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Form\RoomCacheCompare1CType;
 use MBH\Bundle\PriceBundle\Form\RoomCacheGeneratorType;
+use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateQuery;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\InvalidateException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Process\Process;
 
 /**
@@ -174,7 +178,9 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
      * @Security("is_granted('ROLE_ROOM_CACHE_EDIT')")
      * @Template("MBHPriceBundle:RoomCache:index.html.twig")
      * @param Request $request
-     * @return array
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \Doctrine\ODM\MongoDB\LockException
+     * @throws \Doctrine\ODM\MongoDB\Mapping\MappingException
      */
     public function saveAction(Request $request)
     {
@@ -187,6 +193,8 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
             $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchChildTariffs($this->hotel, 'rooms')
         );
 
+
+        $roomCachesToInvalidate = [];
         //new
         foreach ($newData as $roomTypeId => $roomTypeArray) {
 
@@ -226,6 +234,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
 
                     if ($validator->validate($newRoomCache)) {
                         $this->dm->persist($newRoomCache);
+                        $roomCachesToInvalidate[] = $newRoomCache;
                     }
                 }
             }
@@ -253,13 +262,23 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
             $roomCache->setIsClosed(isset($val['closed']) && !empty($val['closed']) ? true : false);
             if ($validator->validate($roomCache)) {
                 $this->dm->persist($roomCache);
+                $roomCachesToInvalidate[] = $roomCache;
             }
         }
         $this->dm->flush();
 
-        $request->getSession()->getFlashBag()->set('success', 'Изменения успешно сохранены.');
+        /** @var Session $session */
+        $session = $request->getSession();
+        $session->getFlashBag()->set('success', 'Изменения успешно сохранены.');
         $this->get('mbh.channelmanager')->updateRoomsInBackground();
-        $this->get('mbh.cache')->clear('room_cache');
+//        $this->get('mbh.cache')->clear('room_cache');
+
+        $invalidateQueue = $this->get('mbh_search.invalidate_queue_creator');
+        try {
+            $invalidateQueue->addBatchToQueue($roomCachesToInvalidate);
+        } catch (InvalidateException $e) {
+            $session->getFlashBag()->set('error', 'Проблемы с инвалидацией кэша.');
+        }
 
         return $this->redirectToRoute('room_cache_overview', [
             'begin' => $request->get('begin'),
@@ -308,7 +327,9 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $request->getSession()->getFlashBag()->set('success', 'Данные успешно сгенерированы.');
+            /** @var Session $session */
+            $session = $request->getSession();
+            $session->getFlashBag()->set('success', 'Данные успешно сгенерированы.');
 
             $data = $form->getData();
 
@@ -317,7 +338,22 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
             );
 
             $this->get('mbh.channelmanager')->updateRoomsInBackground();
-            $this->get('mbh.cache')->clear('room_cache');
+            /*$this->get('mbh.cache')->clear('room_cache');*/
+
+            $invalidateData = [
+                'begin' => $data['begin'],
+                'end' => $data['end'],
+                'roomTypeIds' => Helper::toIds($data['roomTypes']->toAarray()),
+                'type' => InvalidateQuery::ROOM_CACHE_GENERATOR
+            ];
+            $cacheInvalidate = $this->get('mbh_search.invalidate_queue_creator');
+            try {
+                $cacheInvalidate->addToQueue($invalidateData);
+            } catch (InvalidateException $e) {
+                $session->getFlashBag()->set('error', 'Cache invalidate Error!');
+            }
+
+
 
             return $this->isSavedRequest() ?
                 $this->redirectToRoute('room_cache_generator') :

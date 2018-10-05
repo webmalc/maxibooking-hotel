@@ -6,13 +6,12 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs;
 use Doctrine\ODM\MongoDB\Events;
-use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
-use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use MBH\Bundle\PriceBundle\Document\Special;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\InvalidateException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class PackageSubscriber implements EventSubscriber
 {
@@ -40,21 +39,10 @@ class PackageSubscriber implements EventSubscriber
         );
     }
 
-    /**
-     * @param \DateTime|null $begin
-     * @param \DateTime|null $end
-     */
-    private function _removeCache(\DateTime $begin = null, \DateTime $end = null)
-    {
-        $cache = $this->container->get('mbh.cache');
-        $cache->clear('accommodation_rooms', $begin, $end);
-        $cache->clear('room_cache', $begin, $end);
-        $cache->clear('packages', $begin, $end);
-    }
 
     public function preRemove(LifecycleEventArgs $args)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
+        /* @var $dm  DocumentManager */
         $dm = $this->container->get('doctrine_mongodb')->getManager();
         $entity = $args->getDocument();
 
@@ -79,8 +67,6 @@ class PackageSubscriber implements EventSubscriber
             $entity->setServicesPrice(0);
             $dm->persist($entity);
             $dm->flush($entity);
-
-//            $this->_removeCache(clone $entity->getBegin(), clone $entity->getEnd());
         }
 
     }
@@ -127,6 +113,23 @@ class PackageSubscriber implements EventSubscriber
 //            $this->packageEffectSpecials($args->getDocumentManager(), $package, false); //TODO: Реализация пересечения виртуальных номеров в спец и packages
 //            $request = $this->container->get('request_stack')->getCurrentRequest();
 //            $this->container->get('mbh.mbhs')->sendPackageInfo($package, $request ? $request->getClientIp() : null);
+            $this->cacheInvalidate($package);
+        }
+    }
+
+
+    private function cacheInvalidate(Package $package): void
+    {
+        try {
+            $this->container->get('mbh_search.invalidate_queue_creator')->addToQueue($package);
+        } catch (InvalidateException $e) {
+            $request = $this->container->get('request_stack')->getCurrentRequest();
+            if ($request) {
+                /** @var Session $session */
+                $session = $request->getSession();
+                $session->getFlashBag()->set('error', 'Invalidate cache error!');
+            }
+
         }
     }
 
@@ -180,7 +183,7 @@ class PackageSubscriber implements EventSubscriber
                 $doc->getBegin(), $end->modify('-1 day'), $doc->getRoomType(), $doc->getTariff(), false
             );
             $this->container->get('mbh.channelmanager')->updateRoomsInBackground($doc->getBegin(), $doc->getEnd());
-//            $this->_removeCache(clone $doc->getBegin(), clone $doc->getEnd());
+            $this->cacheInvalidate($doc);
         }
     }
 
@@ -229,7 +232,6 @@ class PackageSubscriber implements EventSubscriber
         if ($package->getTariff() && $package->getTariff()->getDefaultPromotion()) {
             $package->setPromotion($package->getTariff()->getDefaultPromotion());
         }
-        $this->_removeCache(clone $package->getBegin(), clone $package->getEnd());
     }
 
     public function preUpdate(LifecycleEventArgs $args)
@@ -247,7 +249,6 @@ class PackageSubscriber implements EventSubscriber
             $meta = $dm->getClassMetadata(get_class($package));
             $dm->getUnitOfWork()->recomputeSingleDocumentChangeSet($meta, $package);
         }
-        $this->_removeCache(clone $package->getBegin(), clone $package->getEnd());
     }
 
     public function postUpdate(LifecycleEventArgs $args)

@@ -5,13 +5,14 @@ namespace Tests\Bundle\SearchBundle\Services\Search\Cache\InvalidateQueue;
 
 
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\PriceCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateMessage;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 
-class AbstractInvalidateQueueCreatorTest extends WebTestCase
+class InvalidateQueueCreatorTest extends WebTestCase
 {
     /**
      * @param $serviceName
@@ -36,10 +37,7 @@ class AbstractInvalidateQueueCreatorTest extends WebTestCase
         );
 
         $factory = $this->getContainer()->get('mbh_search.invalidate_adapter_factory');
-        $nameSpace = 'MBH\\Bundle\\SearchBundle\\Services\\Cache\\InvalidateQueue\\';
-        $serviceName = $nameSpace.$serviceName;
-        /** @var \MBH\Bundle\SearchBundle\Services\Cache\InvalidateQueue\AbstractInvalidateQueueCreator $service */
-        $service = new $serviceName($producer, $factory);
+        $service = $this->getContainer()->get('mbh_search.invalidate_queue_creator');
         $service->addToQueue($data);
         $service->addBatchToQueue([$data]);
     }
@@ -48,6 +46,9 @@ class AbstractInvalidateQueueCreatorTest extends WebTestCase
     {
         $begin = new \DateTime('midnight');
         $end = new \DateTime('midnight +3 days');
+
+        $ids = $this->getIds();
+        ['roomTypeIds' => $roomTypeIds, 'tariffIds' => $tariffIds] = $ids;
 
         return [
             [
@@ -58,6 +59,22 @@ class AbstractInvalidateQueueCreatorTest extends WebTestCase
                     'end' => $begin,
                     'roomTypeIds' => ['fakeRoomTypeId'],
                     'tariffIds' => ['fakeTariffId']
+                ]
+            ],
+
+            [
+                'serviceName' =>  'PriceCacheGeneratorQueue',
+                'data' => [
+                    'begin' => $begin,
+                    'end' => $end,
+                    'roomTypeIds' => $roomTypeIds,
+                    'tariffIds' => $tariffIds
+                ],
+                'expected' => [
+                    'begin' => $begin,
+                    'end' => $end,
+                    'roomTypeIds' => $roomTypeIds,
+                    'tariffIds' => $tariffIds
                 ]
             ]
         ];
@@ -73,6 +90,17 @@ class AbstractInvalidateQueueCreatorTest extends WebTestCase
         ;
 
         return $priceCache;
+    }
+
+    private function getIds(): array
+    {
+        $tariffs = $this->getContainer()->get('doctrine.odm.mongodb.document_manager')->getRepository(Tariff::class)->findAll();
+        $roomTypes = $this->getContainer()->get('doctrine.odm.mongodb.document_manager')->getRepository(RoomType::class)->findAll();
+
+        return [
+            'roomTypeIds' => Helper::toIds($roomTypes),
+            'tariffIds' => Helper::toIds($tariffs),
+        ];
     }
 
 }

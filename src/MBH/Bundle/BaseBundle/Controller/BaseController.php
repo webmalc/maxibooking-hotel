@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Lib\DeleteException;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\InvalidateException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -147,6 +148,12 @@ class BaseController extends Controller
                 if (!$this->get('mbh.hotel.selector')->checkPermissions($entity)) {
                     throw $this->createNotFoundException();
                 }
+            }
+
+            try {
+                $this->get('mbh_search.invalidate_queue_creator')->addToQueue($entity);
+            } catch (InvalidateException $e) {
+
             }
 
             $this->dm->remove($entity);
