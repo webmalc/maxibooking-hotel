@@ -437,12 +437,8 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
                 $session->remove('priceCacheGeneratorForm');
             }
 
-            $childrenPrices = [
-                0 => $data['additionalChildrenPrice'],
-            ];
-            $additionalPrices = [
-                0 => $data['additionalPrice'],
-            ];
+            $additionalPrices = [];
+            $childrenPrices = [];
 
             if (!empty($data['additionalPricesCount'])) {
                 for ($i = 1; $i < $data['additionalPricesCount']; $i++) {
