@@ -20,8 +20,6 @@ use Psr\Container\ContainerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 
 /**
- * TODO добавить тест про добавление шаблона через форму
- *
  * Class DocumentTemplateControllerTest
  * @package Tests\Bundle\ClientBundle\Controller
  */
@@ -50,9 +48,11 @@ class DocumentTemplateControllerTest extends WebTestCase
     private static $packageWithoutData;
 
     /**
-     * @var Order
+     * Используется в тестах про добавление через форму
+     *
+     * @var DocumentTemplate|null
      */
-    private static $orderInvalid;
+    private static $documentTemplate;
 
     public static function setUpBeforeClass()
     {
@@ -127,7 +127,7 @@ class DocumentTemplateControllerTest extends WebTestCase
      */
     public function testDefaultDocumentAvailabilityInDB(string $title, string $originalTitle, string $fileName)
     {
-        $template = $this->getDocumentTemplate($title);
+        $template = $this->getDefaultDocumentTemplate($title);
 
         $templateInDb = $this->getDocumentManager()->getRepository('MBHClientBundle:DocumentTemplate')
             ->findOneBy(['title' => $title]);
@@ -147,7 +147,7 @@ class DocumentTemplateControllerTest extends WebTestCase
      */
     public function testDefaultDocumentAvailabilityForEdit(string $title, string $originalTitle, string $fileName)
     {
-        $template = $this->getDocumentTemplate($title);
+        $template = $this->getDefaultDocumentTemplate($title);
 
         $crawler = $this->getList();
 
@@ -183,7 +183,7 @@ class DocumentTemplateControllerTest extends WebTestCase
      */
     public function defaultDocumentAvailabilityForViewWithPackageWithoutData(string $title, string $originalTitle, string $fileName)
     {
-        $template = $this->getDocumentTemplate($title);
+        $template = $this->getDefaultDocumentTemplate($title);
 
         $url = $this->linkForView($template, $this->getPackageWithoutData());
 
@@ -201,7 +201,6 @@ class DocumentTemplateControllerTest extends WebTestCase
             $text = $crawler->filter('h1.exception-message')->text();
         }
 
-
         $this->assertEquals(
             200,
             $response->getStatusCode(),
@@ -212,6 +211,156 @@ class DocumentTemplateControllerTest extends WebTestCase
             'application/pdf',
             $this->client->getResponse()->headers->get('Content-Type')
         );
+    }
+
+    /**
+     * @depends testStatusCode
+     */
+    public function testAddEmptyDataTemplate()
+    {
+        $crawler = $this->getListCrawler(self::URL_LIST . 'new');
+
+        $form = $crawler->filter('form[name="' . DocumentTemplateType::FORM_NAME . '"]')->form();
+
+        $this->client->submit($form);
+
+        $this->assertValidationErrors(
+            ['data.title','data.content'],
+            $this->client->getContainer()
+        );
+    }
+
+    /**
+     * @depends testStatusCode
+     */
+    public function testAddValidDataTemplate()
+    {
+        $url = self::URL_LIST . 'new';
+        $this->client->followRedirects(true);
+
+        $crawler = $this->getListCrawler($url);
+
+        $form = $crawler->filter('form[name="' . DocumentTemplateType::FORM_NAME . '"]')->form();
+
+        $newTitle = 'testTitle_' . time();
+
+        $form->setValues(
+            [
+                DocumentTemplateType::FORM_NAME . '[title]'   => $newTitle,
+                DocumentTemplateType::FORM_NAME . '[content]' => 'testContent',
+            ]
+        );
+
+        $this->client->submit($form);
+
+        static::$documentTemplate = $newTemplate = $this->getDocumentManager()
+            ->getRepository('MBHClientBundle:DocumentTemplate')
+            ->findOneBy([
+                'title' => $newTitle
+            ]);
+
+        $this->assertStatusCodeWithMsg($url, 200);
+
+        $this->assertNotNull(
+            $newTemplate,
+            sprintf('Not found new template in DB with title "%s".', $newTitle)
+        );
+    }
+
+    /**
+     * @depends testAddValidDataTemplate
+     */
+    public function testViewNewDocumentTemplate()
+    {
+        $url = $this->linkForView($this->getDocumentTemplate(),$this->getPackageWithoutData());
+
+        $this->client->request('GET', $url);
+
+        $this->assertStatusCodeWithMsg($url, 200);
+
+        $this->assertContains(
+            'application/pdf',
+            $this->client->getResponse()->headers->get('Content-Type')
+        );
+    }
+
+    /**
+     * @depends testAddValidDataTemplate
+     */
+    public function testAvailbilityLinkNewDocumentTemplateInList()
+    {
+        $crawler = $this->getListCrawler(self::URL_LIST);
+
+        $amountLink = $crawler->filter('a[href*="edit/' . $this->getDocumentTemplate()->getId() . '"]')->count();
+
+        $expectedLink = 2;
+
+        $this->assertEquals(
+            $expectedLink,
+            $amountLink,
+            'Not found link for new document template in the list.'
+        );
+    }
+
+    /**
+     * @depends testAddValidDataTemplate
+     */
+    public function testEditNewDocumentTemplate()
+    {
+        $url = self::URL_LIST . 'edit/' . $this->getDocumentTemplate()->getId();
+        $this->client->followRedirects(true);
+
+        $crawler = $this->getListCrawler($url);
+
+        $form = $crawler->filter('form[name="' . DocumentTemplateType::FORM_NAME . '"]')->form();
+
+        $editTitle = 'testEditTitle_' . time();
+
+        $form->setValues(
+            [
+                DocumentTemplateType::FORM_NAME . '[title]'   => $editTitle,
+            ]
+        );
+
+        $this->client->submit($form);
+
+        $crawler = $this->getListCrawler($url);
+
+        $form = $crawler->filter('form[name="' . DocumentTemplateType::FORM_NAME . '"]')->form();
+
+        $formTitle = $form->get(DocumentTemplateType::FORM_NAME)['title'];
+
+        $this->assertEquals($editTitle, $formTitle->getValue());
+    }
+
+    /**
+     * @depends testEditNewDocumentTemplate
+     */
+    public function testRemoveNewDocumentTemplate()
+    {
+        $url = self::URL_LIST . 'delete/' . $this->getDocumentTemplate()->getId();
+
+        $this->client->request('GET', $url);
+
+        $crawler = $this->getListCrawler(self::URL_LIST);
+
+        $amountLink = $crawler->filter('a[href*="edit/' . $this->getDocumentTemplate()->getId() . '"]')->count();
+
+        $expectedLink = 0;
+
+        $this->assertEquals(
+            $expectedLink,
+            $amountLink,
+            'Found link for "new document template" in the list after remove.'
+        );
+    }
+
+    /**
+     * @return DocumentTemplate
+     */
+    private function getDocumentTemplate(): DocumentTemplate
+    {
+        return self::$documentTemplate;
     }
 
     /**
@@ -232,7 +381,7 @@ class DocumentTemplateControllerTest extends WebTestCase
         return static::$dm;
     }
 
-    private function getDocumentTemplate(string $title) : DocumentTemplate
+    private function getDefaultDocumentTemplate(string $title) : DocumentTemplate
     {
         return static::$holderDocumentTemplates[$title];
     }
