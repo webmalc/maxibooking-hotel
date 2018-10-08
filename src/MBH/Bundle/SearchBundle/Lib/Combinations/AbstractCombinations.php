@@ -13,6 +13,9 @@ abstract class AbstractCombinations implements CombinationInterface
 
     public const MAX_CHILDREN_RESTRICTION = 3;
 
+    /** @var int */
+    private $priority = 1;
+
     /** @var array */
     private $tariffIds = [];
 
@@ -50,4 +53,25 @@ abstract class AbstractCombinations implements CombinationInterface
 
         return $filteredCombinations;
     }
+
+    /**
+     * @return int
+     */
+    public function getPriority(): int
+    {
+        return $this->priority;
+    }
+
+    /**
+     * @param int $priority
+     * @return AbstractCombinations
+     */
+    public function setPriority(int $priority): AbstractCombinations
+    {
+        $this->priority = $priority;
+
+        return $this;
+    }
+
+
 }

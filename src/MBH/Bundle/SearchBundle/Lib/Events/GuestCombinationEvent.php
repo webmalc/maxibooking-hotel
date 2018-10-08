@@ -18,6 +18,9 @@ class GuestCombinationEvent extends Event
     /** @var string */
     private $combinationType = CombinationCreator::NO_CHILDREN_AGES;
 
+    /** @var int */
+    private $priority;
+
     /**
      * @return Tariff
      */
@@ -55,6 +58,27 @@ class GuestCombinationEvent extends Event
 
         return $this;
     }
+
+    /**
+     * @return int
+     */
+    public function getPriority(): int
+    {
+        return $this->priority;
+    }
+
+    /**
+     * @param int $priority
+     * @return GuestCombinationEvent
+     */
+    public function setPriority(int $priority): GuestCombinationEvent
+    {
+        $this->priority = $priority;
+
+        return $this;
+    }
+
+
 
 
 

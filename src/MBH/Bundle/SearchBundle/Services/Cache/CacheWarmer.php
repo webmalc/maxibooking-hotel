@@ -6,6 +6,7 @@ namespace MBH\Bundle\SearchBundle\Services\Cache;
 
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PriceBundle\Document\TariffRepository;
+use MBH\Bundle\SearchBundle\Lib\Combinations\CombinationInterface;
 use MBH\Bundle\SearchBundle\Services\GuestCombinator;
 use MBH\Bundle\SearchBundle\Services\Search\CacheSearcher;
 use MBH\Bundle\SearchBundle\Services\Search\WarmUpSearcher;
@@ -172,6 +173,7 @@ class CacheWarmer
         ];
 
         foreach ($combinationTypes as $combinationType) {
+            /** @var CombinationInterface $combinationType */
             $guestCombinations = $combinationType->getCombinations();
             $this->logger->info('Combination.', $guestCombinations);
             foreach ($guestCombinations as $combination) {
@@ -180,26 +182,27 @@ class CacheWarmer
                     $combination,
                     ['tariffs' => $combinationType->getTariffIds()]
                 );
-                $this->doWarmUp($conditionsData);
+                $this->doWarmUp($conditionsData, $combinationType->getPriority());
             }
         }
     }
 
     /**
      * @param array $conditionsData
+     * @param int $priority
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
      */
-    private function doWarmUp(array $conditionsData): void
+    private function doWarmUp(array $conditionsData, int $priority = 1): void
     {
         $conditions = $this->conditionCreator->createSearchConditions($conditionsData);
         $conditions->setId('warmerConditions');
         $queries = $this->queryGenerator->generate($conditions, false);
         $queryChunks = array_chunk($queries, self::QUEUE_CHUNK_NUM);
         foreach ($queryChunks as $chunk) {
-            $this->warmUpSearcher->search($chunk);
+            $this->warmUpSearcher->search($chunk, '', ['priority' => $priority]);
         }
     }
 }

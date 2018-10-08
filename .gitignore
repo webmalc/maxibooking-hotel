@@ -31,7 +31,7 @@ phpunit.xml
 /src/MBH/Bundle/TestBundle
 !var/cache/.gitkeep
 !var/logs/.gitkeep
-/build/
+build/
 /vendor/
 /bin/*
 !bin/console
