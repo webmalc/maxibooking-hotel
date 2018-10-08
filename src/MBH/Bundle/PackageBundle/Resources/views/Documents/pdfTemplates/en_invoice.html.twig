@@ -217,7 +217,7 @@
                 </tr>
                 <tr>
                     <td>Tel:</td>
-                    <td>{{ hotel.contactInformation.phoneNumber }}</td>
+                    <td>{{ hotel.contactInformation.phoneNumber is defined ? hotel.contactInformation.phoneNumber : ''}}</td>
                 </tr>
             </table>
         </div>
@@ -241,18 +241,18 @@
             <table>
                 <tr>
                     <td>Bill To:</td>
-                    <td>{{ payer.fullName }}</td>
+                    <td>{{ payer.fullName is defined ? payer.fullName : '' }}</td>
                 </tr>
                 <tr>
                     <td>Company:</td>
                     <td></td>
                 </tr>
                 <tr>
-                    <td>Name:</td><td>{{ payer.fullName }}</td>
+                    <td>Name:</td><td>{{ payer.fullName is defined ? payer.fullName : '' }}</td>
                 </tr>
                 {{ payerAddress }}
                 <tr>
-                    <td>Tel:</td><td>{{ payer.getPhone() }}</td>
+                    <td>Tel:</td><td>{{ payer.getPhone() is defined ? payer.getPhone() : '' }}</td>
                 </tr>
             </table>
         </div>
