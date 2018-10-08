@@ -15,15 +15,13 @@ scripts/deploy_to_test.sh
 /var/clients/
 /web/az/
 
-/build/
-/web/build/
 
 1C/
 nohup.out
 
 !var/cache/.gitkeep
 !var/logs/.gitkeep
-/build/
+build/
 /vendor/
 /bin/*
 !bin/console

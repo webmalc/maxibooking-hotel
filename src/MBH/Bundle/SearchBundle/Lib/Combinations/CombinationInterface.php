@@ -9,4 +9,7 @@ interface CombinationInterface
     public function getTariffIds(): array;
 
     public function getCombinations(): array;
+
+    public function getPriority(): int;
+
 }

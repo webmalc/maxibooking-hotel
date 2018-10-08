@@ -4,6 +4,8 @@
 namespace MBH\Bundle\SearchBundle\EventSubscriber;
 
 
+use MBH\Bundle\PackageBundle\EventListener\SearchSubscriber;
+use MBH\Bundle\SearchBundle\Lib\Combinations\CombinationCreator;
 use MBH\Bundle\SearchBundle\Lib\Events\GuestCombinationEvent;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -25,6 +27,14 @@ class GuestCombinatorSubscriber implements EventSubscriberInterface
     {
         /** @var GuestCombinationEvent $event */
         $tariff = $event->getTariff();
+        if (\in_array($tariff->getId(), SearchSubscriber::FREE_CHILD_HARD_IDS, true)) {
+            $event
+                ->setCombinationType(CombinationCreator::WITH_CHILDREN_AGES)
+                ->setPriority(1)
+                ->stopPropagation();
+        } else {
+            $event->setPriority(5);
+        }
 
     }
 

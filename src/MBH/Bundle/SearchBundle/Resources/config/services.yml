@@ -552,3 +552,9 @@ services:
                 name: data_collector
                 template: 'MBHSearchBundle:DataCollector:template.html.twig'
                 id: 'search.cache.collector'
+
+#subscriber
+    mbh_search.combination.event.subscriber:
+        class: MBH\Bundle\SearchBundle\EventSubscriber\GuestCombinatorSubscriber
+        tags:
+            - {name: kernel.event_subscriber, event: combination.childrenAges }

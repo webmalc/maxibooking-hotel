@@ -46,7 +46,9 @@ class GuestCombinator
             $this->dispatcher->dispatch(GuestCombinationEvent::CHILDREN_AGES, $event);
             $type = $event->getCombinationType();
             if (null === ($combinationTypesHolder[$type] ?? null)) {
+                /** @var AbstractCombinations $combinationType */
                 $combinationType = $this->combinationCreator->getCombinationType($type);
+                $combinationType->setPriority($event->getPriority());
                 $combinationTypesHolder[$type] = $combinationType;
             } else {
                 $combinationType = $combinationTypesHolder[$type];
