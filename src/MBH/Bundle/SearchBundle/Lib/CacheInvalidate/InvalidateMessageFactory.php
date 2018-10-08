@@ -206,13 +206,11 @@ class InvalidateMessageFactory
 
     private function createRoomCacheGenerator(InvalidateQuery $invalidateQuery): InvalidateMessageInterface
     {
-        /** @var RoomCache $object */
-        $object = $invalidateQuery->getObject();
         $message = new InvalidateMessage();
         $message
-            ->setBegin($object->getDate())
-            ->setEnd($object->getDate())
-            ->setRoomTypeIds((array)$object->getRoomType()->getId());
+            ->setBegin($invalidateQuery->getBegin())
+            ->setEnd($invalidateQuery->getEnd())
+            ->setRoomTypeIds($invalidateQuery->getRoomTypeIds());
 
         return $message;
     }

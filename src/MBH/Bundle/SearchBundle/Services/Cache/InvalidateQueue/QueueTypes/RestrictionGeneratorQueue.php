@@ -5,7 +5,7 @@ namespace MBH\Bundle\SearchBundle\Services\Cache\InvalidateQueue\QueueTypes;
 
 
 use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateQuery;
-use MBH\Bundle\SearchBundle\Services\Cache\InvalidateQueue\Traits\SharedGeneratorInvalidateQuery;
+use MBH\Bundle\SearchBundle\Services\Cache\InvalidateQueue\QueueTypes\Traits\SharedGeneratorInvalidateQuery;
 
 class RestrictionGeneratorQueue implements InvalidateQueryCreatorInterface
 {
