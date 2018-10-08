@@ -17,6 +17,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\ConstraintViolationList;
 
 /**
  * @Route("price_cache")
@@ -155,6 +156,9 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             $this->dm->getRepository('MBHPriceBundle:Tariff')->fetchChildTariffs($this->hotel, 'rooms')
         );
 
+        $holderErrorsAtCreate = [];
+        $holderErrorsAtUpdate = [];
+
         //new
         foreach ($newData as $roomTypeId => $roomTypeArray) {
 
@@ -198,12 +202,21 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
 
                     $newPriceCache = $this->addAdditionalPrices($roomType, $newPriceCache, $prices);
 
-                    if ($validator->validate($newPriceCache)) {
+                    $errorsAtCreate = $validator->validate($newPriceCache);
+                    $withoutErrorsAtCreate = $errorsAtCreate->count() === 0;
+
+                    if ($withoutErrorsAtCreate) {
                         $this->dm->persist($newPriceCache);
+                    } else {
+                        $this->container->get('logger')->error('Error at create price cache.', iterator_to_array($errorsAtCreate));
+                        $holderErrorsAtCreate[] = $errorsAtCreate;
                     }
                 }
             }
         }
+
+        $this->addFlashBag($request, isset($withoutErrorsAtCreate), $holderErrorsAtCreate, 'создании');
+
         $this->dm->flush();
 
         //update
@@ -252,15 +265,21 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
                 $prices
             );
 
-            if ($validator->validate($newPriceCache) && !$priceCache->isSamePriceCaches($newPriceCache)) {
+            $errorsArUpdate = $validator->validate($newPriceCache);
+            $withoutErrorsAtUpdate = $errorsArUpdate->count() === 0;
+
+            if ($withoutErrorsAtUpdate && !$priceCache->isSamePriceCaches($newPriceCache)) {
                 $this->dm->persist($newPriceCache);
                 $priceCache->setCancelDate(new \DateTime(), true);
+            } else {
+                $this->container->get('logger')->error('Error at update price cache.', iterator_to_array($errorsArUpdate));
+                $holderErrorsAtUpdate[] = $errorsArUpdate;
             }
         }
-        $this->dm->flush();
 
-        $request->getSession()->getFlashBag()
-            ->set('success', 'Изменения успешно сохранены.');
+        $this->addFlashBag($request, isset($withoutErrorsAtUpdate), $holderErrorsAtUpdate, 'обновлении');
+
+        $this->dm->flush();
 
         $this->get('mbh.channelmanager')->updatePricesInBackground();
         $this->get('mbh.cache')->clear('price_cache');
@@ -276,6 +295,35 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
                 ]
             )
         );
+    }
+
+    /**
+     * @param Request $request
+     * @param bool $isUse
+     * @param array $holderErrors
+     * @param string $action
+     */
+    private function addFlashBag(Request $request, bool $isUse, array $holderErrors, string $action): void
+    {
+        if ($isUse) {
+            $successMessage = 'Изменения при %s записи успешно сохранены.';
+            $errorMessage = 'Не удалось сохранить изменения при %s записей за %s. Попробуйте ещё раз или обратитесь к администратору.';
+            if ($holderErrors === []) {
+                $request->getSession()->getFlashBag()->add('success', sprintf($successMessage, $action));
+            } else {
+                $errDate = [];
+                /** @var ConstraintViolationList $violations */
+                foreach ($holderErrors as $violations) {
+                    foreach ($violations as $violation) {
+                        /** @var PriceCache $priceCacheErr */
+                        $priceCacheErr = $violation->getRoot();
+                        $errDate[] = $priceCacheErr->getDate()->format('d.m.Y');
+                    }
+                }
+
+                $request->getSession()->getFlashBag()->add('warning', sprintf($errorMessage, $action , implode(', ', $errDate)));
+            }
+        }
     }
 
     /**
@@ -295,11 +343,17 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
                 if (isset($prices['additionalChildrenPrice'.$i])) {
                     $childrenPrices[$i] = $prices['additionalChildrenPrice'.$i];
                 }
-
-                $priceCache->setAdditionalPrices($additionalPrices);
-                $priceCache->setAdditionalChildrenPrices($childrenPrices);
             }
         }
+
+        list($newAdditionalPrices, $newChildrenPrices) =
+            PriceCache::transformAdditionalPrices(
+                [0 => $priceCache->getAdditionalPrice()] + $additionalPrices,
+                [0 => $priceCache->getAdditionalChildrenPrice()] + $childrenPrices
+            );
+
+        $priceCache->setAdditionalPrices($newAdditionalPrices);
+        $priceCache->setAdditionalChildrenPrices($newChildrenPrices);
 
         return $priceCache;
     }
