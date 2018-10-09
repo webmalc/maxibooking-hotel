@@ -3,6 +3,7 @@ namespace MBH\Bundle\ChannelManagerBundle\EventListener;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
+use MBH\Bundle\ChannelManagerBundle\Document\AirbnbConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
@@ -40,6 +41,9 @@ class ConfigsSubscriber implements EventSubscriber
             $doc->setIsTariffsConfigured(false);
             $doc->setIsRoomsConfigured(false);
             $doc->setIsMainSettingsFilled(false);
+            if ($doc instanceof AirbnbConfig) {
+                $doc->setIsRoomLinksPageViewed(false);
+            }
 
             if (method_exists($doc, 'setIsConnectionSettingsRead')) {
                 $doc->setIsConnectionSettingsRead(false);

@@ -761,7 +761,14 @@ messages_store.new_connection.text: 'Клиент "%client%" начал наст
 messages_store.new_connection.subject: 'Начало настройки канала "%channelManager%"'
 
 cm_connection_instructions.part1.text1: '<strong>Для настройки взаимодействия %channelManagerName% и программы Максибукинг нужно  получить разрешение от системы бронирования.</strong>'
+cm_connection_instructions.airbnb.part1.text1: 'Для настройки взаимодействия AirBnb и программы Максибукинг нужно сопоставить объекты размещения, заведенные на AirBnb, типам номеров в программе Максибукинг'
 cm_connection_instructions.part1.text2: '<strong>Примечание</strong>: Обратите внимание, что количество продаваемых номеров и цены на них будут выгружаться из системы “Максибукинг”.'
+cm_connection_instructions.airbnb.part1.text2: '<strong>Примечание</strong>: Обратите внимание, что:'
+cm_connection_instructions.airbnb.part1.notes.text1: 'Стоимость размещения устанавливается на объект размещения(апартамент, дом или квартиру) в личном кабинете AirBnb'
+cm_connection_instructions.airbnb.part1.notes.text2: 'Каждому объекту размещения в AirBnb должен соответствовать определенный тип номера в Максибукинге'
+cm_connection_instructions.airbnb.part1.notes.text3: 'В типе номера, который синхронизируется с объектом на AirBnb не должно быть больше 1 апартамента(дома, квартиры или номера).'
+cm_connection_instructions.airbnb.part1.text3: 'Все бронирования, созданные гостями через систему AirBnb будут автоматически загружаться в Максибукинг. Если же объект размещения был забронирован через программу Максибукинг или другую систему бронирования, то в AirBnb будет передана информация о том, что бронирование на эти дни закрыто.'
+cm_connection_instructions.airbnb.part1.text4: 'Для начала настройки нажмите “<strong>Далее</strong>”.'
 cm_connection_instructions.part1.text3: 'Проверьте, что в программе созданы все типы номеров и тарифов, аналогичные созданным в системе бронирования. И установлены цены и количество номеров на весь период продаж.'
 
 cm_connection_instructions.part2.text1: '<strong>Чтобы получить разрешение от системы бронирования:</strong>'

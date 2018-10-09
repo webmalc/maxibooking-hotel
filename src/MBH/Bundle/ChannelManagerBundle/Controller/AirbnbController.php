@@ -114,7 +114,7 @@ class AirbnbController extends BaseController
             $this->addFlash('success', 'controller.bookingController.settings_saved_success');
             $this->get('mbh.channelmanager')->updateInBackground();
 
-            $redirectRouteName = $config->isReadyToSync() ? 'airbnb_room' : 'airbnb_tariff';
+            $redirectRouteName = $config->isReadyToSync() ? 'airbnb_room' : 'airbnb_room_links';
 
             return $this->redirect($this->generateUrl($redirectRouteName));
         }
@@ -126,6 +126,30 @@ class AirbnbController extends BaseController
         ];
     }
 
+    /**
+     * @Template()
+     * @Route("/room_links", name="airbnb_room_links")
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function roomLinksAction(Request $request)
+    {
+        $config = $this->hotel->getAirbnbConfig();
+        if ($request->isMethod('POST')) {
+            $config->setIsRoomLinksPageViewed(true);
+            $this->dm->flush();
+
+            if (!$config->isReadyToSync()) {
+                return $this->redirectToRoute('airbnb_tariff');
+            }
+        }
+
+        return [
+            'config' => $config,
+            'logs' => $this->logs($config)
+        ];
+    }
+    
     /**
      * Tariff configuration page
      * @Route("/tariff", name="airbnb_tariff")

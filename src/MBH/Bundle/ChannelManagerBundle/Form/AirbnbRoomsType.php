@@ -40,13 +40,13 @@ class AirbnbRoomsType extends AbstractType
                 continue;
             }
             $syncRoom = $config->getSyncRoomByRoomType($roomType);
-            $syncUrl = $this->router->generate('airbnb_room_calendar', ['id' => $roomType->getId()], Router::ABSOLUTE_URL);
-            $help = $config->isReadyToSync() ? $syncUrl : '';
+
+            $exampleUrl = 'https://www.airbnb.com/calendar/ical/12356789.ics?s=23987d97234e089734598f45';
+            $help = $this->translator->trans('forms.airbnb_rooms_type.sync_url.help', ['%exampleUrl%' => $exampleUrl]);
 
             $builder
                 ->add($roomType->getId(), TextType::class, [
                     'label' => $roomType->getName(),
-                    //TODO: Переименовать
                     'group' => 'forms.airbnb_rooms_type.sync_urls_group',
                     'required' => false,
                     'data' => !is_null($syncRoom) ? $syncRoom->getSyncUrl() : '',

@@ -6,7 +6,7 @@
 {% set title_url = path(channelManagerName) %}
 
 {% block content %}
-    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 4, 'base': channelManagerName} %}
+    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': channelManagerName == 'airbnb' ? 5 : 4, 'base': channelManagerName} %}
 
     <style>
         ul > li {

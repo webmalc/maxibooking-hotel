@@ -7,6 +7,7 @@ use MBH\Bundle\ChannelManagerBundle\Form\BookingRoomsType;
 use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\UserBundle\DataFixtures\MongoDB\UserData;
+use Symfony\Component\DomCrawler\Crawler;
 use Tests\Bundle\ChannelManagerBundle\Services\ChannelManagerServiceMock;
 
 class ChannelManagerControllerTest extends WebTestCase
@@ -48,8 +49,13 @@ class ChannelManagerControllerTest extends WebTestCase
         $this->assertEquals(1, $instructionBlock->count());
 
         $this->assertEquals(0, $crawler->filter('#connection-request-sent-message')->count());
-        $expectedMessage = 'Чтобы получить разрешение от системы бронирования';
+        $expectedMessage = $serviceName !== Airbnb::NAME
+            ? 'Чтобы получить разрешение от системы бронирования'
+            : 'Для настройки взаимодействия AirBnb и программы Максибукин';
         $this->assertContains($expectedMessage, $instructionBlock->text());
+
+        $serviceHumanName = $this->getContainer()->get('mbh.channelmanager')->getServiceHumanName($serviceName);
+        $this->assertEquals('1. Разрешение от "' . $serviceHumanName . '"', $this->getActiveTabCrawler($crawler)->text());
 
         $introFormCrawler = $crawler->filter('form[name="mbhchannel_manager_bundle_intro_type"]');
         $this->assertEquals(intval($hasForm), $introFormCrawler->count());
@@ -110,10 +116,10 @@ class ChannelManagerControllerTest extends WebTestCase
             }
 
             $this->client->followRedirect();
+            $this->assertEquals('2. Основные настройки', $this->getActiveTabCrawler($crawler)->text());
         }
 
         $roomsCrawler = $this->client->followRedirect();
-
         $this->assertEquals(
             'http://localhost/management/channelmanager/' . $serviceName . '/' . 'room',
             $roomsCrawler->getUri()
@@ -159,6 +165,8 @@ class ChannelManagerControllerTest extends WebTestCase
                     ) => $roomTypes[1]->getId(),
                 ]
             );
+
+            $activeTabText = '3. Типы номеров';
         } else {
             $roomsFormData = [];
             foreach ($roomTypes as $roomType) {
@@ -167,15 +175,34 @@ class ChannelManagerControllerTest extends WebTestCase
             }
 
             $roomsForm = $roomsFormCrawler->form($roomsFormData);
+            $activeTabText = '2. Объекты размещения';
         }
+
+        $this->assertEquals($activeTabText, $this->getActiveTabCrawler($crawler)->text());
         $this->client->submit($roomsForm);
 
         $this->assertEquals(302, $this->client->getResponse()->getStatusCode());
         $tariffsCrawler = $this->client->followRedirect();
         $this->assertEquals(
-            'http://localhost/management/channelmanager/' . $serviceName . '/' . 'tariff',
+            'http://localhost/management/channelmanager/' . $serviceName . '/' . ($serviceName !== Airbnb::NAME ? 'tariff' : 'room_links'),
             $tariffsCrawler->getUri()
         );
+    }
+
+    /**
+     * @depends testRoomAction
+     */
+    public function testRoomLinksAction()
+    {
+        $crawler = $this->client->request('GET', '/management/channelmanager/airbnb/room_links');
+        $roomLinksInstructionsCrawler = $crawler->filter('#room-links-instruction');
+        $this->assertEquals(1, $roomLinksInstructionsCrawler->count());
+        $this->assertContains('Для того, чтобы на AirBnb отображалась', $roomLinksInstructionsCrawler->text());
+        $this->assertContains('3. Ссылки для Airbnb', $this->getActiveTabCrawler($crawler)->text());
+
+        $this->client->submit($crawler->filter('#room-links-form')->form());
+        $tariffsCrawler = $this->client->followRedirect();
+        $this->assertEquals('http://localhost/management/channelmanager/airbnb/tariff', $tariffsCrawler->getUri());
     }
 
     /**
@@ -190,6 +217,7 @@ class ChannelManagerControllerTest extends WebTestCase
         $tariffsFormCrawler = $crawler->filter('form[name="' . $tariffsFormName . '"]');
         $tariffsSelectsCrawler = $tariffsFormCrawler->filter('select');
         $this->assertEquals(self::NUMBER_OF_TARIFFS_IN_MOCK_CM, $tariffsSelectsCrawler->count());
+        $this->assertEquals('4. Тарифы', $this->getActiveTabCrawler($crawler)->text());
 
         /** @var Hotel $hotel */
         $hotel = $this->getDefaultHotel();
@@ -218,7 +246,7 @@ class ChannelManagerControllerTest extends WebTestCase
     }
 
     /**
-     * @depends testTariffAction
+     * @depends      testTariffAction
      * @dataProvider channelManagersProvider
      * @param string $serviceName
      */
@@ -226,6 +254,7 @@ class ChannelManagerControllerTest extends WebTestCase
     {
         $crawler = $this->client->request('GET', '/management/channelmanager/' . $serviceName . '/data_warnings');
         $this->assertEquals(200, $this->client->getResponse()->getStatusCode());
+        $this->assertEquals('5. Проверка данных', $this->getActiveTabCrawler($crawler)->text());
 
         $hotel = $this->getDefaultHotel();
         $lastCachesTableCrawler = $crawler->filter('#last-cashes-table');
@@ -236,7 +265,6 @@ class ChannelManagerControllerTest extends WebTestCase
             : self::NUMBER_OF_ROOMS_IN_MOCK_CM;
         $this->assertEquals($numberOfConfiguredRooms, $lastCachesTableCrawler->filter('li.last-room-caches')->count());
         $this->assertEquals($numberOfConfiguredRooms, $lastCachesTableCrawler->filter('li.last-price-caches')->count());
-
     }
 
     private function getTariffsFormName(string $serviceName)
@@ -280,6 +308,7 @@ class ChannelManagerControllerTest extends WebTestCase
                 return 'mbhchannel_manager_bundle_airbnb_room_form';
 
         }
+
         return 'mbh_bundle_channelmanagerbundle_rooms_type';
     }
 
@@ -326,6 +355,15 @@ class ChannelManagerControllerTest extends WebTestCase
             default:
                 throw new \InvalidArgumentException('Incorrect service name: ' . $serviceName);
         }
+    }
+
+    /**
+     * @param Crawler $crawler
+     * @return Crawler
+     */
+    private function getActiveTabCrawler(Crawler $crawler)
+    {
+        return $crawler->filter('div.nav-tabs-custom > ul.nav.nav-tabs > li.active');
     }
 
     /**

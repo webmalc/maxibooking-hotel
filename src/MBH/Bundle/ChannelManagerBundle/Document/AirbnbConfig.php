@@ -51,6 +51,12 @@ class AirbnbConfig extends Base implements ChannelManagerConfigInterface
      */
     protected $tariffs;
 
+    /**
+     * @ODM\Field(type="bool")
+     * @var bool
+     */
+    private $isRoomLinksPageViewed = false;
+
     public function __construct()
     {
         $this->rooms = new ArrayCollection();
@@ -143,6 +149,25 @@ class AirbnbConfig extends Base implements ChannelManagerConfigInterface
     public function removeTariff(Tariff $tariff)
     {
         $this->tariffs->remove($tariff);
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRoomLinksPageViewed(): bool
+    {
+        return $this->isRoomLinksPageViewed;
+    }
+
+    /**
+     * @param bool $isRoomLinksPageViewed
+     * @return AirbnbConfig
+     */
+    public function setIsRoomLinksPageViewed(bool $isRoomLinksPageViewed): AirbnbConfig
+    {
+        $this->isRoomLinksPageViewed = $isRoomLinksPageViewed;
 
         return $this;
     }

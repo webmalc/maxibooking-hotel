@@ -6,6 +6,7 @@ use MBH\Bundle\BaseBundle\Service\DocumentFieldsManager;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\BaseBundle\Service\WarningsCompiler;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
+use MBH\Bundle\ChannelManagerBundle\Document\AirbnbConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Form\IntroType;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
@@ -126,6 +127,10 @@ class CMWizardManager
 
         if (!$config->isRoomsConfigured()) {
             return $channelManagerName . '_room';
+        }
+
+        if ($config instanceof AirbnbConfig && !$config->isRoomLinksPageViewed()) {
+            return 'airbnb_room_links';
         }
 
         if (!$config->isTariffsConfigured()) {
