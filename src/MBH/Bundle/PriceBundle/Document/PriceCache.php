@@ -144,7 +144,6 @@ class PriceCache extends Base
      * @Gedmo\Timestampable(on="create")
      * @ODM\Field(type="date")
      * @Assert\Date()
-     * @Assert\NotNull()
      */
     protected $createdAt;
 
@@ -498,25 +497,13 @@ class PriceCache extends Base
         $this->saveAdditionalPrices();
     }
 
-    private function saveAdditionalPrices()
+    private function saveAdditionalPrices(): void
     {
-        $this->additionalPrices = [0 => $this->getAdditionalPrice()] + $this->additionalPrices;
-        $this->additionalChildrenPrices = [0 => $this->getAdditionalChildrenPrice()] + $this->additionalChildrenPrices;
-
-        foreach ($this->additionalPrices as $key => $price) {
-            if ($price != '' && !is_null($price)) {
-                $this->additionalPrices[$key] = (float) $price;
-            } else {
-                $this->additionalPrices[$key] = null;
-            }
-        }
-        foreach ($this->additionalChildrenPrices as $key => $price) {
-            if ($price != '' && !is_null($price)) {
-                $this->additionalChildrenPrices[$key] = (float) $price;
-            } else {
-                $this->additionalChildrenPrices[$key] = null;
-            }
-        }
+        list($this->additionalPrices, $this->additionalChildrenPrices) =
+            self::transformAdditionalPrices(
+                [0 => $this->getAdditionalPrice()] + $this->additionalPrices,
+                [0 => $this->getAdditionalChildrenPrice()] + $this->additionalChildrenPrices
+                );
     }
 
     public function __call($name , array $arguments)
@@ -592,7 +579,7 @@ class PriceCache extends Base
             && $this->getSinglePrice() == $newPriceCache->getSinglePrice()
             && $this->isDataCollectionsEqual($this->getAdditionalPrices(),
                 $newPriceCache->getAdditionalPrices())
-            && $this->isDataCollectionsEqual($newPriceCache->getAdditionalChildrenPrices(),
+            && $this->isDataCollectionsEqual($this->getAdditionalChildrenPrices(),
                 $newPriceCache->getAdditionalChildrenPrices());
     }
 
@@ -609,6 +596,36 @@ class PriceCache extends Base
             return true;
         }
 
-        return true;
+        return false;
+    }
+
+    /**
+     * @param array $additionalPrices
+     * @param array $additionalChildrenPrices
+     * @return array
+     */
+    public static function transformAdditionalPrices(array $additionalPrices, array $additionalChildrenPrices): array
+    {
+        $newAdditionalPrices = [];
+        $newAdditionalChildrenPrices = [];
+
+        foreach ($additionalPrices as $key => $price) {
+            if ($price != '' && $price !== null) {
+                $value = (float) $price;
+            } else {
+                $value = null;
+            }
+            $newAdditionalPrices[$key] = $value;
+        }
+        foreach ($additionalChildrenPrices as $key => $price) {
+            if ($price != '' && $price !== null) {
+                $value = (float) $price;
+            } else {
+                $value = null;
+            }
+            $newAdditionalChildrenPrices[$key] = $value;
+        }
+
+        return [$newAdditionalPrices, $newAdditionalChildrenPrices];
     }
 }
