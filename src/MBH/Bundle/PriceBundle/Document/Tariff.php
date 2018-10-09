@@ -100,7 +100,7 @@ class Tariff extends Base implements ConditionsInterface
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean(name="isDefault")
+     * @ODM\Field(type="bool", name="isDefault")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      * @ODM\Index()
@@ -110,7 +110,7 @@ class Tariff extends Base implements ConditionsInterface
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean(name="isOnline")
+     * @ODM\Field(type="boolean", name="isOnline")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      * @ODM\Index()

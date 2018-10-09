@@ -9,6 +9,7 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -176,7 +177,7 @@ class SearchQuery extends Base
     public $range = 0;
 
     /**
-     * @var RoomTypes|array ids
+     * @var RoomType[]|array ids
      * @ODM\Field(type="collection")
      */
     public $availableRoomTypes = [];

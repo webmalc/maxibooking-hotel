@@ -3,6 +3,7 @@ namespace MBH\Bundle\BaseBundle\Lib\Test;
 
 use Liip\FunctionalTestBundle\Test\WebTestCase as Base;
 use MBH\Bundle\BaseBundle\Lib\Test\Traits\FixturesTestTrait;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -88,5 +89,16 @@ abstract class WebTestCase extends Base
         return $this
             ->getContainer()
             ->get('doctrine.odm.mongodb.document_manager');
+    }
+
+    /**
+     * @return null|Hotel
+     */
+    public function getDefaultHotel()
+    {
+        return $this
+            ->getDm()
+            ->getRepository(Hotel::class)
+            ->findOneBy(['isDefault' => true]);
     }
 }

@@ -9,7 +9,7 @@ class DateTimeFieldType implements NormalizableInterface
 {
     private $format;
 
-    public function __construct(string $format = MBHSerializer::DATE_FORMAT)
+    public function __construct(string $format = SerializerSettings::DATE_FORMAT)
     {
         $this->format = $format;
     }
@@ -39,7 +39,7 @@ class DateTimeFieldType implements NormalizableInterface
      */
     public function denormalize($dateTimeString, array $options = [])
     {
-        if ($this->format === MBHSerializer::DATE_FORMAT) {
+        if ($this->format === SerializerSettings::DATE_FORMAT) {
             $denormalizationResult = \DateTime::createFromFormat($this->format . ' H', $dateTimeString . ' 00');
         } else {
             $denormalizationResult = \DateTime::createFromFormat($this->format, $dateTimeString);

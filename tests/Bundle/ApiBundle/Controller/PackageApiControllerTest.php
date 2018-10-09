@@ -63,12 +63,12 @@ class PackageApiControllerTest extends WebTestCase
 
     public function testPackagesActionWithIncorrectGetData()
     {
-        $this->client->request('GET', '/api/v1/packages/?criteria[isConfirmed]=array_value');
+        $this->client->request('GET', '/api/v1/packages/?isConfirmed=array_value');
         $this->isSuccessful($this->client->getResponse(), true, 'application/json');
         $response = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertFalse($response['success']);
         $this->assertNotEmpty($response['errors']);
-        $this->assertEquals('Can not denormalize array_value to boolean value', $response['errors']['criteria']);
+        $this->assertEquals('Can not denormalize array_value to boolean value', $response['errors']['common']);
     }
 
     public function testConfirmOrder()

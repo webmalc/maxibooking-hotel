@@ -3,6 +3,7 @@
 namespace MBH\Bundle\ApiBundle\Service;
 
 use MBH\Bundle\BaseBundle\Lib\Normalization\CustomFieldType;
+use MBH\Bundle\BaseBundle\Lib\Normalization\SerializerSettings;
 use MBH\Bundle\BaseBundle\Service\MBHSerializer;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Package;
@@ -45,7 +46,7 @@ class ApiSerializer
     public function normalizePackage(Package $package)
     {
         $this->initSpecialFields();
-        $normalizedPackage = $this->serializer->normalizeByGroup($package, MBHSerializer::API_GROUP);
+        $normalizedPackage = $this->serializer->normalizeByGroup($package, SerializerSettings::API_GROUP);
         $normalizedPackage['status'] = $package->getStatus();
 
         return $normalizedPackage;

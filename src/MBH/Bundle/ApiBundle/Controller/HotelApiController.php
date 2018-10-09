@@ -2,7 +2,7 @@
 
 namespace MBH\Bundle\ApiBundle\Controller;
 
-use MBH\Bundle\BaseBundle\Service\MBHSerializer;
+use MBH\Bundle\BaseBundle\Lib\Normalization\SerializerSettings;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
@@ -20,7 +20,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Swagger\Annotations as SWG;
 
 /**
  * Class ExternalApiController
@@ -32,16 +31,6 @@ class HotelApiController extends BaseApiController
     /**
      * @Cache(expires="+1 hour", public=true)
      * @Method("GET")
-     * @SWG\Get(
-     *     path="/api/v1/roomTypes",
-     *     produces={"application/json"},
-     *     @SWG\Response(response="200", description="Return array of room types"),
-     *     @SWG\Parameter(name="onlineFormId", in="query", type="string", required=true, description="Id of the online form"),
-     *     @SWG\Parameter(name="ids", in="query", type="array", required=false, @SWG\Items(type="string"), description="List of room type ids"),
-     *     @SWG\Parameter(name="hotelIds", in="query", type="array", required=false, @SWG\Items(type="string"), description="List of hotel ids"),
-     *     @SWG\Parameter(name="isEnabled", in="query", type="boolean", required=false, description="Show enabled room types only?"),
-     *     @SWG\Parameter(name="locale", in="query", type="string", required=false, description="Response language"),
-     * )
      * @Route("/roomTypes")
      * @param Request $request
      * @return JsonResponse
@@ -58,9 +47,9 @@ class HotelApiController extends BaseApiController
             $responseData = [];
             /** @var RoomType $roomType */
             foreach ($roomTypes as $roomType) {
-                if (is_null($formConfig) || $formConfig->isRoomTypeContainsInConfig($roomType)) {
+                if (is_null($formConfig) || $formConfig->containsRoomType($roomType)) {
                     $this->refreshDocumentByLocale($request, $roomType);
-                    $responseData[] = $this->get('mbh.serializer')->normalizeByGroup($roomType, MBHSerializer::API_GROUP);
+                    $responseData[] = $this->get('mbh.serializer')->normalizeByGroup($roomType, SerializerSettings::API_GROUP);
                 }
             }
             $this->responseCompiler->setData($responseData);
@@ -72,20 +61,11 @@ class HotelApiController extends BaseApiController
     /**
      * @Cache(expires="+1 hour", public=true)
      * @Method("GET")
-     * @SWG\Get(
-     *     path="/api/v1/tariffs",
-     *     produces={"application/json"},
-     *     @SWG\Response(response="200", description="Return array of tariffs"),
-     *     @SWG\Parameter(name="onlineFormId", in="query", type="string", required=true, description="Id of the online form"),
-     *     @SWG\Parameter(name="isOnline", in="query", type="boolean", required=false, description="Show online tariffs only?"),
-     *     @SWG\Parameter(name="hotelIds", in="query", type="array", required=false, @SWG\Items(type="string"), description="List of hotel ids"),
-     *     @SWG\Parameter(name="isEnabled", in="query", type="boolean", required=false, description="Show enabled tariffs only?"),
-     *     @SWG\Parameter(name="locale", in="query", type="string", required=false, description="Locale of the response"),
-     * )
      * @Route("/tariffs")
      * @param Request $request
      * @return JsonResponse
      * @throws \ReflectionException
+     * @throws \MBH\Bundle\BaseBundle\Lib\Normalization\NormalizationException
      */
     public function getTariffsAction(Request $request)
     {
@@ -96,8 +76,8 @@ class HotelApiController extends BaseApiController
         $responseData = [];
         /** @var Tariff $tariff */
         foreach ($tariffs as $tariff) {
-            if (is_null($formConfig) || $formConfig->isHotelContainsInConfig($tariff->getHotel())) {
-                $responseData[] = $tariff->getJsonSerialized();
+            if (is_null($formConfig) || $formConfig->containsHotel($tariff->getHotel())) {
+                $responseData[] = $this->get('mbh.serializer')->normalizeByGroup($tariff, SerializerSettings::API_GROUP);
             }
         }
 
@@ -109,19 +89,11 @@ class HotelApiController extends BaseApiController
     /**
      * @Cache(expires="+1 hour", public=true)
      * @Method("GET")
-     * @SWG\Get(
-     *     path="/api/v1/hotels",
-     *     produces={"application/json"},
-     *     @SWG\Response(response="200", description="Return array of hotels"),
-     *     @SWG\Parameter(name="onlineFormId", in="query", type="string", required=true, description="Id of the online form"),
-     *     @SWG\Parameter(name="isOnline", in="query", type="boolean", required=false, description="Show only online hotels?"),
-     *     @SWG\Parameter(name="isEnabled", in="query", type="boolean", required=false, description="Show only enabled hotels?"),
-     *     @SWG\Parameter(name="locale", in="query", type="string", required=false, description="Locale of the response"),
-     * )
      * @Route("/hotels")
      * @param Request $request
      * @return JsonResponse
      * @throws \ReflectionException
+     * @throws \MBH\Bundle\BaseBundle\Lib\Normalization\NormalizationException
      */
     public function getHotelsAction(Request $request)
     {
@@ -129,18 +101,14 @@ class HotelApiController extends BaseApiController
         $formConfig = $this->getFormConfigAndAddOriginHeader($request->query);
 
         $hotels = $this->apiManager->getDocuments($request->query, Hotel::class);
-        if (!$this->responseCompiler->isSuccessful()) {
+        if ($this->responseCompiler->isSuccessful()) {
             $responseData = [];
             /** @var Hotel $hotel */
             foreach ($hotels as $hotel) {
-                if (is_null($formConfig) || $formConfig->isHotelContainsInConfig($hotel)) {
+                if (is_null($formConfig) || $formConfig->containsHotel($hotel)) {
                     $this->refreshDocumentByLocale($request, $hotel);
 
-                    $hotelData = $hotel->getJsonSerialized(
-                        true,
-                        $this->get('vich_uploader.templating.helper.uploader_helper'),
-                        $this->get('liip_imagine.cache.manager')
-                    );
+                    $hotelData = $this->get('mbh.serializer')->normalizeByGroup($hotel, SerializerSettings::API_GROUP);
                     if ($hotel->getCityId()) {
                         $hotelData['city'] = $this->get('mbh.billing.api')->getCityById($hotel->getCityId())->getName();
                     }
@@ -156,14 +124,6 @@ class HotelApiController extends BaseApiController
     /**
      * @Cache(expires="+1 hour", public=true)
      * @Method("GET")
-     * @SWG\Get(
-     *     path="/api/v1/services",
-     *     produces={"application/json"},
-     *     @SWG\Response(response="200", description="Return array of services for tariff"),
-     *     @SWG\Parameter(name="tariffId", in="query", type="string", required=true, description="The ID of the rate for which receive the services"),
-     *     @SWG\Parameter(name="locale", in="query", type="string", required=false, description="Locale of the response"),
-     *     @SWG\Parameter(name="onlineFormId", in="query", type="string", required=true, description="Id of the online form")
-     * )
      * @Route("/services")
      * @param Request $request
      * @return JsonResponse
@@ -174,8 +134,7 @@ class HotelApiController extends BaseApiController
 
         $this->getFormConfigAndAddOriginHeader($queryData);
 
-        $this
-            ->get('mbh.api_request_manager')
+        $this->requestManager
             ->checkMandatoryFields($queryData, ['tariffId']);
 
         if (!$this->responseCompiler->isSuccessful()) {
@@ -241,63 +200,26 @@ class HotelApiController extends BaseApiController
 
     /**
      * @Method("GET")
-     * @SWG\Get(
-     *     path="/api/v1/booking_options",
-     *     produces={"application/json"},
-     *     @SWG\Response(response="200", description="Return array of booking options"),
-     *     @SWG\Parameter(name="onlineFormId", in="query", type="string", required=true, description="Id of the online form"),
-     *     @SWG\Parameter(name="begin", in="query", type="string", required=true, description="Begin date"),
-     *     @SWG\Parameter(name="end", in="query", type="string", required=true, description="End date"),
-     *     @SWG\Parameter(name="adults", in="query", type="string", required=false, description="Number of adults"),
-     *     @SWG\Parameter(name="locale", in="query", type="string", required=false, description="Locale of the response"),
-     *     @SWG\Parameter(name="hotelIds", in="query", type="array", required=false, @SWG\Items(type="string"), description="List of hotel ids"),
-     *     @SWG\Parameter(name="roomTypeIds", in="query", type="array", required=false, @SWG\Items(type="string"), description="List of room type ids"),
-     *     @SWG\Parameter(name="childrenAges", in="query", type="array", required=false, @SWG\Items(type="string"), description="List of children ages")
-     * )
      * @Route("/booking_options")
      * @param Request $request
      * @return JsonResponse
+     * @throws \ReflectionException
      */
     public function getBookingOptions(Request $request)
     {
-        $requestHandler = $this->get('mbh.api_handler');
+        $this->setLocaleByRequest();
         $queryData = $request->query;
-
-        $this->responseCompiler = $requestHandler->checkIsArrayFields($queryData, ['hotelIds', 'roomTypeIds', 'childrenAges'], $this->responseCompiler);
-        $this->responseCompiler = $requestHandler->checkMandatoryFields($queryData, ['begin', 'end', 'adults'], $this->responseCompiler);
-
         $formConfig = $this->getFormConfigAndAddOriginHeader($queryData);
 
-        $hotelIds = $queryData->get('hotelIds');
-        $roomTypeIds = $queryData->get('roomTypeIds');
-        $this->setLocaleByRequest();
 
+        $query = $this->requestManager->getCriteria($queryData, SearchQuery::class);
         if (!$this->responseCompiler->isSuccessful()) {
             return $this->responseCompiler->getResponse();
         }
 
-        $query = new SearchQuery();
-        $query->isOnline = false;
-        $query->begin = $this->helper->getDateFromString($request->get('begin'));
-        $query->end = $this->helper->getDateFromString($request->get('end'));
-        $query->adults = (int)$request->get('adults');
-
-        $filteredRoomTypeIds = $requestHandler->getFilteredRoomTypeIds($roomTypeIds, $this->responseCompiler, $formConfig);
-        if (empty($filteredRoomTypeIds)) {
-            $filteredHotels = $requestHandler->getFilteredHotels($hotelIds, $this->responseCompiler, $formConfig);
-            $hotels = !empty($filteredHotels) ? $filteredHotels : $formConfig->getHotels();
-            foreach ($hotels as $hotel) {
-                $query->addHotel($hotel);
-            }
-        } else {
-            $query->roomTypes = $filteredRoomTypeIds;
-        }
-
-        $query->setChildrenAges(
-            !empty($request->get('childrenAges')) ? $request->get('childrenAges') : []
-        );
-
-        $query->children = !is_array($request->get('childrenAges')) ? 0 : count($request->get('childrenAges'));
+        $roomTypeIds = $this->requestManager->getFilteredRoomTypeIdsByFormConfig($queryData, $formConfig);
+        $query->roomTypes = $roomTypeIds;
+        $query->hotel = null;
 
         if (!$this->responseCompiler->isSuccessful()) {
             return $this->responseCompiler->getResponse();
@@ -306,7 +228,7 @@ class HotelApiController extends BaseApiController
         $responseData = [];
         $requestedTariffs = $request->get('tariffIds');
 
-        if (!is_null($requestedTariffs)) {
+        if (!is_null($requestedTariffs) && is_array($requestedTariffs)) {
             foreach ($requestedTariffs as $tariffId) {
                 $query->tariff = $tariffId;
                 $results = $this->get('mbh.package.search')->search($query);
@@ -342,7 +264,8 @@ class HotelApiController extends BaseApiController
         $requestHandler = $this->get('mbh.api_handler');
         $queryData = $request->query;
 
-        $this->responseCompiler = $requestHandler->checkMandatoryFields($queryData, ['hotelId', 'onlineFormId'], $this->responseCompiler);
+        $this->requestManager
+            ->checkMandatoryFields($queryData, ['hotelId', 'onlineFormId']);
         if (!$this->responseCompiler->isSuccessful()) {
             return $this->responseCompiler->getResponse();
         }
@@ -371,17 +294,18 @@ class HotelApiController extends BaseApiController
      */
     public function getFacilitiesData(Request $request)
     {
-        $requestHandler = $this->get('mbh.api_handler');
         $queryData = $request->query;
 
-        $this->responseCompiler = $requestHandler->checkMandatoryFields($queryData, ['hotelId', 'onlineFormId'], $this->responseCompiler);
+        $this->requestManager
+            ->checkMandatoryFields($queryData, ['hotelId', 'onlineFormId']);
         if (!$this->responseCompiler->isSuccessful()) {
             return $this->responseCompiler->getResponse();
         }
+
         $this->getFormConfigAndAddOriginHeader($queryData);
         $hotel = $this->dm->find('MBHHotelBundle:Hotel', $queryData->get('hotelId'));
 
-        $facilitiesData = $this->get('mbh.facility_repository')->getActualFacilitiesData($hotel, $queryData->get('locale'));
+        $facilitiesData = $this->get('mbh.facility_repository')->getActualFacilitiesData($hotel, $request->getLocale());
         $this->responseCompiler->setData($facilitiesData);
 
         return $this->responseCompiler->getResponse();
@@ -408,7 +332,7 @@ class HotelApiController extends BaseApiController
      * @param Request $request
      * @param $document
      */
-    private function refreshDocumentByLocale(Request $request, $document): void
+    private function refreshDocumentByLocale(Request $request, $document)
     {
         if ($request->get('locale') && !$this->get('mbh.client_config_manager')->hasSingleLanguage()) {
             $document->setLocale($request->getLocale());

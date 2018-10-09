@@ -21,7 +21,7 @@ class GoogleAnalyticConfig
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean(name="isEnabled")
+     * @ODM\Field(type="boolean", name="isEnabled")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */

@@ -32,6 +32,7 @@ class TariffRequestParams extends RequestParams
     public function fillQueryBuilder(QueryBuilder $builder)
     {
         parent::fillQueryBuilder($builder);
+        $this->addHotelIdsCondition($builder);
         $builder->field('isOnline')->equals($this->isOnline());
 
         return $builder;

@@ -592,7 +592,7 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
      * @param RoomType $roomType
      * @return bool
      */
-    public function isRoomTypeContainsInConfig(RoomType $roomType)
+    public function containsRoomType(RoomType $roomType)
     {
         return $this->getHotels()->contains($roomType->getHotel()
             && (!$this->getRoomTypes() || $this->getRoomTypeChoices()->contains($roomType)));
@@ -602,7 +602,7 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
      * @param Hotel $hotel
      * @return bool
      */
-    public function isHotelContainsInConfig(Hotel $hotel)
+    public function containsHotel(Hotel $hotel)
     {
         return $this->getHotels()->contains($hotel);
     }

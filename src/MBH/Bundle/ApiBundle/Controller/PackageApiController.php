@@ -29,7 +29,10 @@ class PackageApiController extends BaseApiController
      */
     public function packagesAction(Request $request)
     {
-        $requestCriteria = $this->requestManager->getPackageCriteria($request->query, $this->responseCompiler);
+        $requestCriteria = $this
+            ->get('mbh.api_request_manager')
+            ->setResponseCompiler($this->responseCompiler)
+            ->getCriteria($request->query, Package::class);
         if (!$this->responseCompiler->isSuccessful()) {
             return $this->responseCompiler->getResponse();
         }

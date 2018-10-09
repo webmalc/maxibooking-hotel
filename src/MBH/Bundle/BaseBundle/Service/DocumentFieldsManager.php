@@ -335,8 +335,8 @@ class DocumentFieldsManager
                 $traitFields[LimitedTrait::class],
                 $traitFields[HotelIdsParamTrait::class]
             ),
-            TariffRequestParams::class => array_merge($requestParamsTypes, [
-                'isOnline' => new BooleanFieldType()
+            TariffRequestParams::class => array_merge($requestParamsTypes, $traitFields[HotelIdsParamTrait::class], [
+                'isOnline' => new BooleanFieldType(),
             ]),
             RoomType::class => [
                 'onlineImages' => new CollectionFieldType(new CustomFieldType([$this, 'getImageData']))

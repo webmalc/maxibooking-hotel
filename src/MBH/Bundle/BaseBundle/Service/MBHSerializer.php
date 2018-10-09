@@ -5,91 +5,11 @@ namespace MBH\Bundle\BaseBundle\Service;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Lib\Normalization\NormalizableInterface;
 use MBH\Bundle\BaseBundle\Lib\Normalization\NormalizationException;
-use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\HotelBundle\Document\RoomType;
-use MBH\Bundle\PackageBundle\Document\Package;
-use MBH\Bundle\PriceBundle\Document\Tariff;
+use MBH\Bundle\BaseBundle\Lib\Normalization\SerializerSettings;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 class MBHSerializer
 {
-    const API_GROUP = 'api';
-    const NESTED_GROUP = 'nested';
-
-    const DATE_FORMAT = 'd.m.Y';
-    const DATETIME_FORMAT = 'd.m.Y H:i';
-    const TIME_FORMAT = 'H:i';
-
-    const NORMALIZED_FIELDS_BY_GROUPS = [
-        Package::class => [
-            self::API_GROUP => [
-                'id', 'numberWithPrefix', 'begin', 'end', 'roomType', 'adults', 'children', 'accommodations'
-            ]
-        ],
-        RoomType::class => [
-            self::API_GROUP => [
-                'id',
-                'isEnabled',
-                'hotel',
-                'fullTitle',
-                'description',
-                'places',
-                'additionalPlaces',
-                'places',
-                'additionalPlaces',
-                'isSmoking',
-                'isHostel',
-                'facilities',
-                'roomSpace',
-                'onlineImages',
-            ]
-        ],
-        Hotel::class => [
-            self::API_GROUP => [
-                'id',
-                'fullTitle',
-                'isEnabled',
-                'isDefault',
-                'isHostel',
-                'description',
-                'facilities',
-                'images',
-                'file',
-                'latitude',
-                'longitude',
-                'street',
-                'house',
-                'corpus',
-                'flat',
-                'zipCode',
-                'contactInformation',
-                'mapImage'
-            ]
-        ],
-        Tariff::class => [
-            self::API_GROUP => [
-                'id',
-                'title',
-                'description',
-                'hotel',
-                'isEnabled',
-                'isDefault',
-                'isOnline',
-            ]
-        ]
-    ];
-
-    const EXTERNAL_FIELD_NAMES_BY_INTERNAL = [
-        Hotel::class => [
-            'file' => 'logo',
-            'fullTitle' => 'title'
-        ],
-        RoomType::class => [
-            'title' => 'internalTitle',
-            'fullTitle' => 'title'
-        ]
-    ];
-
     private $propertyAccessor;
     private $fieldsManager;
     private $dm;
@@ -184,14 +104,14 @@ class MBHSerializer
      * @throws \ReflectionException
      * @throws NormalizationException
      */
-    public function normalizeByGroup($document, string $group = self::API_GROUP)
+    public function normalizeByGroup($document, string $group = SerializerSettings::API_GROUP)
     {
         $class = get_class($document);
-        if (!isset(self::NORMALIZED_FIELDS_BY_GROUPS[$class][$group])) {
+        if (!isset(SerializerSettings::NORMALIZED_FIELDS_BY_GROUPS[$class][$group])) {
             throw new \InvalidArgumentException('There is no settings for class ' . $class . ' and group ' . $group);
         }
 
-        $fields = self::NORMALIZED_FIELDS_BY_GROUPS[$class][$group];
+        $fields = SerializerSettings::NORMALIZED_FIELDS_BY_GROUPS[$class][$group];
 
         return $this->normalizeByFields($document, $fields);
     }
@@ -228,10 +148,13 @@ class MBHSerializer
     public function denormalize(array $dataToDenormalize, $document)
     {
         $documentClass = get_class($document);
+        $fieldsToDenormalize = $this->getFieldsToDenormalize(new \ReflectionClass($documentClass));
 
         foreach ($dataToDenormalize as $fieldName => $value) {
-            $denormalizedValue = $this->denormalizeSingleField($value, $documentClass, $fieldName);
-            $this->propertyAccessor->setValue($document, $fieldName, $denormalizedValue);
+            if (in_array($fieldName, $fieldsToDenormalize)) {
+                $denormalizedValue = $this->denormalizeSingleField($value, $documentClass, $fieldName);
+                $this->propertyAccessor->setValue($document, $fieldName, $denormalizedValue);
+            }
         }
 
         return $document;
@@ -284,6 +207,23 @@ class MBHSerializer
     }
 
     /**
+     * @param \ReflectionClass $reflClass
+     * @return array
+     */
+    private function getFieldsToDenormalize(\ReflectionClass $reflClass)
+    {
+        $result = [];
+        $excludedFields = SerializerSettings::EXCLUDED_FIELDS_BY_NORMALIZATION[$reflClass->name] ?? [];
+        foreach ($reflClass->getProperties() as $property) {
+            if (!in_array($property->name, $excludedFields)) {
+                $result[] = $property->name;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
      * @param string $documentClass
      * @param string $fieldName
      * @return NormalizableInterface
@@ -311,10 +251,11 @@ class MBHSerializer
     private function normalizeByReflFields($document, array $reflFields)
     {
         $normalizedDocument = [];
+        $documentClass = get_class($document);
 
         /** @var \ReflectionProperty $field */
         foreach ($reflFields as $field) {
-            $externalField = self::EXTERNAL_FIELD_NAMES_BY_INTERNAL[$field->name] ?? $field->name;
+            $externalField = SerializerSettings::EXTERNAL_FIELD_NAMES_BY_INTERNAL[$documentClass][$field->name] ?? $field->name;
             $fieldValue = $this->propertyAccessor->getValue($document, $field->name);
             $normalizedValue = $this->normalizeSingleField($fieldValue, $field);
             $normalizedDocument[$externalField] = $normalizedValue;

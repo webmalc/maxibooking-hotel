@@ -31,9 +31,9 @@ trait LimitedTrait
 
     /**
      * @param int $limit
-     * @return LimitedTrait
+     * @return static
      */
-    public function setLimit(int $limit): LimitedTrait
+    public function setLimit(int $limit): self
     {
         $this->limit = $limit;
 
@@ -50,9 +50,9 @@ trait LimitedTrait
 
     /**
      * @param int $skip
-     * @return LimitedTrait
+     * @return static
      */
-    public function setSkip(int $skip): LimitedTrait
+    public function setSkip(int $skip): self
     {
         $this->skip = $skip;
 

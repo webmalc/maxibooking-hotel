@@ -126,7 +126,7 @@ class Service extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean(name="isOnline")
+     * @ODM\Field(type="boolean", name="isOnline")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */

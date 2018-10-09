@@ -34,7 +34,9 @@ trait HotelIdsParamTrait
      */
     public function addHotelIdsCondition(QueryBuilder $builder)
     {
-        $builder->inIfNotEmpty('hotel.id', $this->getHotelIds());
+        if (!is_null($this->getHotelIds()) && is_array($this->getHotelIds())) {
+            $builder->field('hotel.id')->in($this->getHotelIds());
+        }
 
         return $builder;
     }

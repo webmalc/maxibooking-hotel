@@ -107,7 +107,7 @@ class DishMenuItem extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean(name="isMargin")
+     * @ODM\Field(type="boolean", name="isMargin")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */

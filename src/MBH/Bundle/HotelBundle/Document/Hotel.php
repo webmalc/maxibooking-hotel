@@ -27,6 +27,7 @@ use MBH\Bundle\PackageBundle\Lib\AddressInterface;
 use MBH\Bundle\PriceBundle\Document\Service;
 use MBH\Bundle\PriceBundle\Document\ServiceCategory;
 use MBH\Bundle\PriceBundle\Document\Special;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\RestaurantBundle\Document\DishMenuCategory;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -645,9 +646,9 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Add tariff
      *
-     * @param \MBH\Bundle\PriceBundle\Document\Tariff $tariff
+     * @param Tariff $tariff
      */
-    public function addTariff(\MBH\Bundle\PriceBundle\Document\Tariff $tariff)
+    public function addTariff(Tariff $tariff)
     {
         $this->tariffs[] = $tariff;
     }
@@ -655,9 +656,9 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Remove tariff
      *
-     * @param \MBH\Bundle\PriceBundle\Document\Tariff $tariff
+     * @param Tariff $tariff
      */
-    public function removeTariff(\MBH\Bundle\PriceBundle\Document\Tariff $tariff)
+    public function removeTariff(Tariff $tariff)
     {
         $this->tariffs->removeElement($tariff);
     }
@@ -670,6 +671,20 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     public function getTariffs()
     {
         return $this->tariffs;
+    }
+
+    /**
+     * @return Tariff|null
+     */
+    public function getBaseTariff()
+    {
+        foreach ($this->getTariffs() as $tariff) {
+            if ($tariff->getIsDefault()) {
+                return $tariff;
+            }
+        }
+
+        return null;
     }
 
     /**

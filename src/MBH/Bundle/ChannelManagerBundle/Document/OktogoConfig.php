@@ -74,7 +74,7 @@ class OktogoConfig extends Base implements BaseInterface
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean(name="enabled")
+     * @ODM\Field(type="boolean", name="enabled")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */

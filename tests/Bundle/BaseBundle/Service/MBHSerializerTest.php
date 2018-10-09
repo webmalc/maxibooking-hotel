@@ -4,6 +4,7 @@ namespace Tests\Bundle\BaseBundle\Service;
 
 use MBH\Bundle\BaseBundle\Lib\Normalization\CustomFieldType;
 use MBH\Bundle\BaseBundle\Lib\Normalization\EmbedManyFieldType;
+use MBH\Bundle\BaseBundle\Lib\Normalization\SerializerSettings;
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\BaseBundle\Service\MBHSerializer;
 use MBH\Bundle\HotelBundle\Document\Facility;
@@ -80,7 +81,7 @@ class MBHSerializerTest extends WebTestCase
     public function testNormalizeByGroup()
     {
         $package = $this->getDm()->getRepository('MBHPackageBundle:Package')->findOneBy([]);
-        $result = $this->serializer->normalizeByGroup($package, MBHSerializer::API_GROUP);
+        $result = $this->serializer->normalizeByGroup($package, SerializerSettings::API_GROUP);
 
         $expectedFields = ['id', 'numberWithPrefix', 'begin', 'end', 'roomType', 'adults', 'children', 'accommodations'];
         $this->assertEquals($expectedFields, array_keys($result));

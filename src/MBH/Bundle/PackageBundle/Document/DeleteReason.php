@@ -69,7 +69,7 @@ class DeleteReason extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean(name="isDefault")
+     * @ODM\Field(type="boolean", name="isDefault")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */

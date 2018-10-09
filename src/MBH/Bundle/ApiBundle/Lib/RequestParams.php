@@ -77,7 +77,9 @@ class RequestParams
     public function fillQueryBuilder(QueryBuilder $builder)
     {
         $builder->inIfNotEmpty('id', $this->getIds());
-        $builder->field('isEnabled')->equals($this->isEnabled());
+        if (!is_null($this->isEnabled())) {
+            $builder->field('isEnabled')->equals($this->isEnabled());
+        }
 
         return $builder;
     }
