@@ -25,7 +25,7 @@ class PriceCacheControllerTest extends WebTestCase
     private const BASE_URL = '/price/price_cache/';
     private const SPECIAL_TARIFFS = 'Special tariff';
 
-    private const FORM_NAME_NEW_RESTRICTION = 'newPriceCaches';
+    private const FORM_NAME_NEW_PRICE_CACHE = 'newPriceCaches';
     private const FORM_NAME_UPDATE_PRICE_CACHE = 'updatePriceCaches';
 
     private const FORM_NAME_GENERATION = 'mbh_price_bundle_price_cache_generator';
@@ -149,7 +149,7 @@ class PriceCacheControllerTest extends WebTestCase
             'POST',
             self::BASE_URL . 'save',
             [
-                self::FORM_NAME_NEW_RESTRICTION => [
+                self::FORM_NAME_NEW_PRICE_CACHE => [
                     $this->getRoomTypeId(self::TWIN_ROOM) => [
                         $this->getIdSpecialTariff() => [
                             $date->format('d.m.Y') => $data,
@@ -283,7 +283,7 @@ class PriceCacheControllerTest extends WebTestCase
         $this->assertEquals([], $this->getResultFromTable($date, self::TWIN_ROOM));
 
         $this->assertEquals(
-            $amountPrice + 1,
+            $amountPrice,
             $this->getQuantityPriceFromRepo(),
             'Quantity items in db not equals expected.'
         );
@@ -316,15 +316,14 @@ class PriceCacheControllerTest extends WebTestCase
         $this->assertValidationErrors(['children[price].data'], $this->client->getContainer());
     }
 
-    public function getRoomTypeData(): iterable
+    public function getRoomTypePlaces(): iterable
     {
         yield 'Room with Additional Places' => [self::TWIN_ROOM];
         yield 'Room without Additional Places' => [self::TRIPLE_ROOM];
-
     }
 
     /**
-     * @dataProvider getRoomTypeData
+     * @dataProvider getRoomTypePlaces
      */
     public function testGenerate(int $places)
     {
@@ -353,32 +352,7 @@ class PriceCacheControllerTest extends WebTestCase
             $this->getQuantityPriceFromRepo(),
             'Quantity items in db not equals expected.'
         );
-
-//        $this->assertCount($amountPrice + 6, $this->getQuantityPriceFromRepo());
     }
-
-//    public function testGenerateWithAdditionalPlaces()
-//    {
-//        $additionalQuantity = 5;
-//
-//        $data = $this->getRandomDataForForm(true, $additionalQuantity);
-//
-//        $form = $this->getGenerationFormWithValues(
-//            $data,
-//            self::TWIN_ROOM,
-//            [],
-//            new \DateTime('noon -3 days'),
-//            new \DateTime('noon +2 days'),
-//            [$this->getIdSpecialTariff()]
-//        );
-//
-//        $this->client->submit($form);
-//
-//        $this->assertEquals(
-//            $data,
-//            $this->getResultFromTable(null, self::TWIN_ROOM, [$this->getIdSpecialTariff()])
-//        );
-//    }
 
     /**
      * @depends testGenerate
@@ -409,11 +383,10 @@ class PriceCacheControllerTest extends WebTestCase
         );
 
         $this->assertEquals(
-            $amountPrice + 1,
+            $amountPrice,
             $this->getQuantityPriceFromRepo(),
             'Quantity items in db not equals expected.'
         );
-//        $this->assertCount($amountPrice, $this->getQuantityPriceFromRepo());
     }
 
     /**
@@ -530,8 +503,8 @@ class PriceCacheControllerTest extends WebTestCase
             'additionalChildrenPrice' => 0,
         ];
 
-        if ($additionalQuantity !== null && $additionalQuantity > 0) {
-            for ($i = 1; $i <= $additionalQuantity; $i++) {
+        if ($additionalQuantity !== null) {
+            for ($i = 1; $i < $additionalQuantity; $i++) {
                 $data['additionalPrice' . $i] = 0;
                 $data['additionalChildrenPrice' . $i] = 0;
             }
