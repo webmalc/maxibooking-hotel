@@ -7,7 +7,10 @@ services:
 
     mbh_search.search_conditions_roomtype_type:
         class: MBH\Bundle\SearchBundle\Form\RoomTypesType
-        arguments: ['@mbh_search.client_config_repository', '@mbh_search.hotel_repository']
+        arguments:
+            - '@mbh_search.client_config_repository'
+            - '@mbh_search.hotel_repository'
+            - '%kernel.environment%'
         tags:
             - { name: form.type, alias: MBH\Bundle\SearchBundle\Form\RoomTypesType }
 
@@ -83,6 +86,14 @@ services:
 
 
 #search
+
+    mbh_search.special_search:
+        class: MBH\Bundle\SearchBundle\Services\Search\SpecialSearch
+        arguments:
+           - '@mbh_search.special_repository'
+           - '@mbh.hotel.room_type_manager'
+           - '@mbh_search.room_type_category_repository'
+
     mbh_search.consumer_searcher:
         class: MBH\Bundle\SearchBundle\Services\Search\ConsumerSearcher
         arguments:

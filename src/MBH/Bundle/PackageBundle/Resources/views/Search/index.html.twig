@@ -1,161 +1,159 @@
 {% extends 'MBHPackageBundle:Search:layout.html.twig' %}
-
 {% set small_title = "search.index.search"|trans({}, "MBHPackageBundle") %}
 {% set layout = "box" %}
 
 {% block content %}
+    {#{% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'id': 'package-search-filter-widget' } %}#}
+        {#{% block content %}#}
 
-    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'id': 'package-search-filter-widget' } %}
-        {% block content %}
+            {#{{ form_start(form, {'action': path('package_search'), 'method': 'GET', 'attr': {'class': 'form-inline search-form filter-form mbh-start-date mbh-start-date-search', 'id': 'package-search-form'}}) }}#}
+            {#{{ form_errors(form) }}#}
+            {#<div class="input">#}
+                {#<i class="fa fa-calendar" title='{{ 'form.searchType.check_in'|trans() }}'#}
+                   {#data-toggle='tooltip'></i>&nbsp{{ form_widget(form.begin) }}#}
+            {#</div>#}
+            {#<div class="input hidden">#}
+                {#- &nbsp{{ form_widget(form.end) }}#}
+            {#</div>#}
+            {#<div class="input">#}
+                {#<i class="fa fa-calendar-plus-o " title='{{ 'form.searchType.range'|trans() }}'#}
+                   {#data-toggle='tooltip'></i>&nbsp{{ form_widget(form.range) }}#}
+            {#</div>#}
+            {#<div class="input">#}
+                {#<i class="fa fa-male" title='{{ 'form.searchType.adults'|trans() }}'#}
+                   {#data-toggle='tooltip'></i>&nbsp{{ form_widget(form.adults) }}#}
+            {#</div>#}
+            {#<div class="input">#}
+                {#<i class="fa fa-child" title='{{ 'form.searchType.children'|trans() }}'#}
+                   {#data-toggle='tooltip'></i>&nbsp{{ form_widget(form.children) }}#}
+					{#&nbsp;<i class="fa fa-sort-numeric-asc" id="search-children-ages"#}
+					{#title='{{ 'form.searchType.children_ages'|trans() }}'></i>#}
+            {#</div>#}
+            {#<div class="input">#}
+                {#<i class="fa fa-bed" title='{{ 'form.searchType.room_type'|trans() }}'#}
+					{#data-toggle='tooltip'></i>&nbsp{{ form_widget(form.roomType) }}#}
+            {#</div>#}
+            {#<div class="input">#}
+                {#<i class="fa fa-file-text-o" title='{{ 'form.searchType.order'|trans() }}'#}
+                   {#data-toggle='tooltip'></i>&nbsp{{ form_widget(form.order) }}#}
+            {#</div>#}
+            {#{% if is_granted('ROLE_FORCE_BOOKING') %}#}
+            {#<div class="input">#}
+                {#<i class="fa fa-exclamation-circle" title='{{ 'form.searchType.forceBooking'|trans() }}'#}
+                   {#data-toggle='tooltip'></i>&nbsp;{{ form_widget(form.forceBooking) }}#}
+            {#</div>#}
+            {#{% endif %}#}
 
-            {{ form_start(form, {'action': path('package_search'), 'method': 'GET', 'attr': {'class': 'form-inline search-form filter-form mbh-start-date mbh-start-date-search', 'id': 'package-search-form'}}) }}
-            {{ form_errors(form) }}
-            <div class="input">
-                <i class="fa fa-calendar" title='{{ 'form.searchType.check_in'|trans() }}'
-                   data-toggle='tooltip'></i>&nbsp{{ form_widget(form.begin) }}
-            </div>
-            <div class="input hidden">
-                - &nbsp{{ form_widget(form.end) }}
-            </div>
-            <div class="input">
-                <i class="fa fa-calendar-plus-o " title='{{ 'form.searchType.range'|trans() }}'
-                   data-toggle='tooltip'></i>&nbsp{{ form_widget(form.range) }}
-            </div>
-            <div class="input">
-                <i class="fa fa-male" title='{{ 'form.searchType.adults'|trans() }}'
-                   data-toggle='tooltip'></i>&nbsp{{ form_widget(form.adults) }}
-            </div>
-            <div class="input">
-                <i class="fa fa-child" title='{{ 'form.searchType.children'|trans() }}'
-                   data-toggle='tooltip'></i>&nbsp{{ form_widget(form.children) }}
-					&nbsp;<i class="fa fa-sort-numeric-asc" id="search-children-ages"
-					title='{{ 'form.searchType.children_ages'|trans() }}'></i>
-            </div>
-            <div class="input">
-                <i class="fa fa-bed" title='{{ 'form.searchType.room_type'|trans() }}'
-					data-toggle='tooltip'></i>&nbsp{{ form_widget(form.roomType) }}
-            </div>
-            <div class="input">
-                <i class="fa fa-file-text-o" title='{{ 'form.searchType.order'|trans() }}'
-                   data-toggle='tooltip'></i>&nbsp{{ form_widget(form.order) }}
-            </div>
-            {% if is_granted('ROLE_FORCE_BOOKING') %}
-            <div class="input">
-                <i class="fa fa-exclamation-circle" title='{{ 'form.searchType.forceBooking'|trans() }}'
-                   data-toggle='tooltip'></i>&nbsp;{{ form_widget(form.forceBooking) }}
-            </div>
-            {% endif %}
+            {#<div class="input">#}
+                {#<i class="fa fa-star" title='{{ 'form.searchType.specials'|trans() }}'#}
+                   {#data-toggle='tooltip'></i>&nbsp;{{ form_widget(form.isSpecialStrict) }}#}
+            {#</div>#}
 
-            <div class="input">
-                <i class="fa fa-star" title='{{ 'form.searchType.specials'|trans() }}'
-                   data-toggle='tooltip'></i>&nbsp;{{ form_widget(form.isSpecialStrict) }}
-            </div>
-
-            <div class="input">
-                <i class="fa fa-users" title='{{ 'form.searchType.payer'|trans() }}'
-                   data-toggle='tooltip'></i>&nbsp;{{ form_widget(form.tourist) }}&nbsp;
-                <small>
-                    <a href="{{ path('tourist_new') }}" id="add-guest" target="_blank"
-                       title='{{ 'form.searchType.payer_add'|trans() }}'
-                       data-toggle='tooltip'>
-                        <i class="fa fa-plus"></i>
-                    </a>
-                </small>
-            </div>
-            {% set clientConfig = client_config() %}
-            {% if not clientConfig or not clientConfig.isInstantSearch %}
-                <div class="input">
-                    <button class="btn btn-primary" id="search-submit-button">
-                        <i class="fa fa-search"></i> Найти
-                    </button>
-                </div>
-            {% endif %}
-            <div class="hide">
-                {{ form_end(form) }}
-            </div>
-
-
-        {% endblock content %}
-    {% endembed %}
-
-    <div id="package-search-results-wrapper">
-        <div class="bg-gray color-palette alert">
-            <i class="fa fa-search"> </i> {{ "search.index.enter_search_data"|trans({}, "MBHPackageBundle") }}
-        </div>
-    </div>
-
-    <div class="alert alert-danger hide" id="accommodation-alert">
-        <i class="fa fa-exclamation-circle"></i> {{ "accommodation.alert"|trans({}, "MBHPackageBundle") }}
-    </div>
+            {#<div class="input">#}
+                {#<i class="fa fa-users" title='{{ 'form.searchType.payer'|trans() }}'#}
+                   {#data-toggle='tooltip'></i>&nbsp;{{ form_widget(form.tourist) }}&nbsp;#}
+                {#<small>#}
+                    {#<a href="{{ path('tourist_new') }}" id="add-guest" target="_blank"#}
+                       {#title='{{ 'form.searchType.payer_add'|trans() }}'#}
+                       {#data-toggle='tooltip'>#}
+                        {#<i class="fa fa-plus"></i>#}
+                    {#</a>#}
+                {#</small>#}
+            {#</div>#}
+            {#{% set clientConfig = client_config() %}#}
+            {#{% if not clientConfig or not clientConfig.isInstantSearch %}#}
+                {#<div class="input">#}
+                    {#<button class="btn btn-primary" id="search-submit-button">#}
+                        {#<i class="fa fa-search"></i> Найти#}
+                    {#</button>#}
+                {#</div>#}
+            {#{% endif %}#}
+            {#<div class="hide">#}
+                {#{{ form_end(form) }}#}
+            {#</div>#}
 
 
-    <div class="modal fade" id="add-guest-modal">
-        <div class="modal-dialog modal-xxl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">Добавление гостя</h4>
-                </div>
-                <div class="modal-body">
-                    <div style="display: none" class="alert alert-danger" id="add-guest-modal-errors"></div>
-                    {% form_theme touristForm 'MBHBaseBundle:Form:fields.html.twig' %}
-                    {% form_theme documentForm 'MBHBaseBundle:Form:fields.html.twig' %}
-                    {% form_theme addressForm 'MBHBaseBundle:Form:fields.html.twig' %}
+        {#{% endblock content %}#}
+    {#{% endembed %}#}
 
-                    {% set menu = [
-                    {'title': '<i class="fa fa-info-circle"></i> '~ 'views.hotel.tabs.main_info'|trans({}, 'MBHHotelBundle')},
-                    {'title': '<i class="fa fa-book"></i> '~ 'views.hotel.tabs.document_relation'|trans({}, 'MBHHotelBundle')},
-                    {'title': '<i class="fa fa-map-marker"></i> '~ 'views.hotel.tabs.address'|trans({}, 'MBHHotelBundle')},
-                    ] %}
+    {#<div id="package-search-results-wrapper">#}
+        {#<div class="bg-gray color-palette alert">#}
+            {#<i class="fa fa-search"> </i> {{ "search.index.enter_search_data"|trans({}, "MBHPackageBundle") }}#}
+        {#</div>#}
+    {#</div>#}
 
-                    <form method="post" action="{{ path('tourist_create_ajax') }}" class="form-horizontal">
+    {#<div class="alert alert-danger hide" id="accommodation-alert">#}
+        {#<i class="fa fa-exclamation-circle"></i> {{ "accommodation.alert"|trans({}, "MBHPackageBundle") }}#}
+    {#</div>#}
 
-                        <ul class="nav nav-tabs">
-                            {% for item in menu %}
-                                <li {% if loop.index == 1 %}class="active"{% endif %}>
-                                    <a role="tab" data-toggle="tab"
-                                       href="#add-guest-modal-form-{{ loop.index }}">{{ item.title|raw }}</a>
-                                </li>
-                            {% endfor %}
-                        </ul>
 
-                        <div class="tab-content">
-                            <div id="add-guest-modal-form-1" class="tab-pane fade in active">
-                                {{ form_widget(touristForm) }}
-                            </div>
-                            <div id="add-guest-modal-form-2" class="tab-pane fade">
-                                {{ form_widget(documentForm) }}
-                            </div>
-                            <div id="add-guest-modal-form-3" class="tab-pane fade">
-                                {{ form_widget(addressForm) }}
-                            </div>
-                        </div>
+    {#<div class="modal fade" id="add-guest-modal">#}
+        {#<div class="modal-dialog modal-xxl">#}
+            {#<div class="modal-content">#}
+                {#<div class="modal-header">#}
+                    {#<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span#}
+                                {#aria-hidden="true">&times;</span></button>#}
+                    {#<h4 class="modal-title">Добавление гостя</h4>#}
+                {#</div>#}
+                {#<div class="modal-body">#}
+                    {#<div style="display: none" class="alert alert-danger" id="add-guest-modal-errors"></div>#}
+                    {#{% form_theme touristForm 'MBHBaseBundle:Form:fields.html.twig' %}#}
+                    {#{% form_theme documentForm 'MBHBaseBundle:Form:fields.html.twig' %}#}
+                    {#{% form_theme addressForm 'MBHBaseBundle:Form:fields.html.twig' %}#}
 
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">
-                        <i class="fa fa-ban"></i> {{ 'views.actions.saveButtons.cancel'|trans({}, 'MBHBaseBundle') }}
-                    </button>
-                    <button type="button" id="add-guest-modal-submit" class="btn btn-success">
-                        <i class="fa fa-check-square-o"></i> {{ 'views.actions.saveButtons.save'|trans({}, 'MBHBaseBundle') }}
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+                    {#{% set menu = [#}
+                    {#{'title': '<i class="fa fa-info-circle"></i> '~ 'views.hotel.tabs.main_info'|trans({}, 'MBHHotelBundle')},#}
+                    {#{'title': '<i class="fa fa-book"></i> '~ 'views.hotel.tabs.document_relation'|trans({}, 'MBHHotelBundle')},#}
+                    {#{'title': '<i class="fa fa-map-marker"></i> '~ 'views.hotel.tabs.address'|trans({}, 'MBHHotelBundle')},#}
+                    {#] %}#}
+
+                    {#<form method="post" action="{{ path('tourist_create_ajax') }}" class="form-horizontal">#}
+
+                        {#<ul class="nav nav-tabs">#}
+                            {#{% for item in menu %}#}
+                                {#<li {% if loop.index == 1 %}class="active"{% endif %}>#}
+                                    {#<a role="tab" data-toggle="tab"#}
+                                       {#href="#add-guest-modal-form-{{ loop.index }}">{{ item.title|raw }}</a>#}
+                                {#</li>#}
+                            {#{% endfor %}#}
+                        {#</ul>#}
+
+                        {#<div class="tab-content">#}
+                            {#<div id="add-guest-modal-form-1" class="tab-pane fade in active">#}
+                                {#{{ form_widget(touristForm) }}#}
+                            {#</div>#}
+                            {#<div id="add-guest-modal-form-2" class="tab-pane fade">#}
+                                {#{{ form_widget(documentForm) }}#}
+                            {#</div>#}
+                            {#<div id="add-guest-modal-form-3" class="tab-pane fade">#}
+                                {#{{ form_widget(addressForm) }}#}
+                            {#</div>#}
+                        {#</div>#}
+
+                    {#</form>#}
+                {#</div>#}
+                {#<div class="modal-footer">#}
+                    {#<button type="button" class="btn btn-default" data-dismiss="modal">#}
+                        {#<i class="fa fa-ban"></i> {{ 'views.actions.saveButtons.cancel'|trans({}, 'MBHBaseBundle') }}#}
+                    {#</button>#}
+                    {#<button type="button" id="add-guest-modal-submit" class="btn btn-success">#}
+                        {#<i class="fa fa-check-square-o"></i> {{ 'views.actions.saveButtons.save'|trans({}, 'MBHBaseBundle') }}#}
+                    {#</button>#}
+                {#</div>#}
+            {#</div>#}
+        {#</div>#}
+    {#</div>#}
 
     {{ render(controller('MBHSearchBundle:Search:searcher')) }}
 
 
 {% endblock %}
 
-{% block scripts %}
-    {{ parent() }}
-    <script>
-        $(document).ready(function () {
-            setSearchDatepickers('{{ 'now'|date_modify('-1 year')|date('Y-m-d') }}');
-        });
-    </script>
-{% endblock %}
+{#{% block scripts %}#}
+    {#{{ parent() }}#}
+    {#<script>#}
+        {#$(document).ready(function () {#}
+            {#setSearchDatepickers('{{ 'now'|date_modify('-1 year')|date('Y-m-d') }}');#}
+        {#});#}
+    {#</script>#}
+{#{% endblock %}#}

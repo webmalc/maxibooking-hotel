@@ -5,6 +5,8 @@ namespace MBH\Bundle\SearchBundle\Form;
 
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
+use MBH\Bundle\ClientBundle\Document\ClientConfigRepository;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
@@ -45,28 +47,22 @@ class SearchConditionsType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add(
-                'begin',
-                DateType::class,
-                [
-                    'format' => 'dd.MM.yyyy',
-                    'widget' => 'single_text',
-                    'attr' => [
-                        'class' => 'datepicker',
-                    ],
-                ]
-            )
-            ->add(
-                'end',
-                DateType::class,
-                [
-                    'format' => 'dd.MM.yyyy',
-                    'widget' => 'single_text',
-                    'attr' => [
-                        'class' => 'datepicker',
-                    ],
-                ]
-            )
+            ->add('begin', DateType::class, array(
+                'label' => 'form.searchType.check_in',
+                'widget' => 'single_text',
+                'format' => 'dd.MM.yyyy',
+                'required' => true,
+                'error_bubbling' => true,
+                'attr' => array('class' => 'datepicker begin-datepicker mbh-daterangepicker', 'data-date-format' => 'dd.mm.yyyy')
+            ))
+            ->add('end', DateType::class, array(
+                'label' => 'Отъезд',
+                'widget' => 'single_text',
+                'format' => 'dd.MM.yyyy',
+                'required' => true,
+                'error_bubbling' => true,
+                'attr' => array('class' => 'datepicker end-datepicker mbh-daterangepicker', 'data-date-format' => 'dd.mm.yyyy')
+            ))
             ->add(
                 'adults',
                 IntegerType::class,
@@ -203,6 +199,7 @@ class SearchConditionsType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver): void
     {
+
         $resolver
             ->setDefaults(
                 [

@@ -11,6 +11,7 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\HotelRepository;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\RoomTypesTypeException;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\ChoiceList\View\ChoiceView;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -20,6 +21,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/** @throws RoomTypesTypeException */
 class RoomTypesType extends AbstractType
 {
     /** @var bool */
@@ -29,10 +31,14 @@ class RoomTypesType extends AbstractType
      */
     private $hotelRepository;
 
-    public function __construct(ClientConfigRepository $configRepository, HotelRepository $hotelRepository)
+    /** @var string */
+    private $env;
+
+    public function __construct(ClientConfigRepository $configRepository, HotelRepository $hotelRepository, string $env)
     {
         $this->isUseCategory = $configRepository->fetchConfig()->getUseRoomTypeCategory();
         $this->hotelRepository = $hotelRepository;
+        $this->env = $env;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -78,6 +84,7 @@ class RoomTypesType extends AbstractType
      * @param FormView $view
      * @param FormInterface $form
      * @param array $options
+     * @throws RoomTypesTypeException
      */
     public function finishView(FormView $view, FormInterface $form, array $options): void
     {
@@ -90,7 +97,12 @@ class RoomTypesType extends AbstractType
                     return $choiceView->data === 'fakeData';
                 }));
                 if (!$isAllRoomsExists) {
-                    $hotelId = $this->hotelRepository->findOneBy(['title' => $hotelName])->getId();
+                    $hotel = $this->hotelRepository->findOneBy(['title' => $hotelName]);
+                    if (!$hotel ) {
+                        throw new RoomTypesTypeException('You MUST set title field (internal name) in hotel '.$hotelName);
+                    }
+                    $hotelId = $hotel->getId();
+
                     $choiceView = new ChoiceView('fakeData', 'allrooms_'.$hotelId, 'Все номера');
                     array_unshift($choices[$hotelName]->choices, $choiceView);
                 }

@@ -141,6 +141,8 @@ class Calculation
 
             /** TODO: В итоге откуда брать Promotion? Из PriceCache на каждый день? */
             $dayPrice -= PromotionConditionFactory::calcDiscount($promotion, $dayPrice, true);
+            $dayPrice = round($dayPrice, 0, PHP_ROUND_HALF_UP);
+
 
             $rawPriceDate = Helper::convertMongoDateToDate($rawPriceCache['date']);
             /** @var Tariff $tariff */

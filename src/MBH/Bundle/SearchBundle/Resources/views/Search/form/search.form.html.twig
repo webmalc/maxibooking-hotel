@@ -1,4 +1,4 @@
-{{ form_start(form, {'attr': {'class': 'form-inline search-form filter-form '}}) }}
+{{ form_start(form, {'attr': {'class': 'form-inline search-form filter-form mbh-start-date'}}) }}
 {{ form_errors(form) }}
 
 <div class="input">
@@ -65,11 +65,14 @@
             <i class="fa fa-search"></i> Найти
         </button>
     </div>
+    {% if app.environment == 'dev' %}
     <div class="input">
         <button class="btn btn-primary" id="searcher-sync-submit-button">
             <i class="fa fa-search"></i> Найти Sync
         </button>
     </div>
+    {% endif %}
+
     <div class="input">
         <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#additionalSearchSetup">
             <i class="fa fa-search-plus"></i>&nbsp;Доп настройки.

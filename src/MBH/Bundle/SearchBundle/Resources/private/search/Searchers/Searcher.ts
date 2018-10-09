@@ -17,7 +17,7 @@ export abstract class Searcher {
     private bindHandlers(): void {
         this.button.on('click', event => {
             event.preventDefault();
-            /*this.doSpecialSearch();*/
+            this.doSpecialSearch();
             this.doSearch();
         })
     }
