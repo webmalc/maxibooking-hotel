@@ -7,15 +7,16 @@ use MBH\Bundle\SearchBundle\Document\SearchResultCacheItem;
 use MBH\Bundle\SearchBundle\Form\SearchConditionsType;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\AsyncResultReceiverException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\GroupingFactoryException;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\RoomTypesTypeException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultCacheException;
-use PhpAmqpLib\Connection\AMQPSocketConnection;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
  * Class SearchController
@@ -119,18 +120,26 @@ class SearchController extends Controller
      * Uses direct from twig
      * @return Response
      */
-    public function searcherAction(): Response
+    public function searcherAction(Request $request): Response
     {
         $initSearchConditions = new SearchConditions();
         $initSearchConditions
-            ->setBegin(new \DateTime('midnight'))
-            ->setEnd(new \DateTime('midnight +1 day' ))
             ->setAdults(1)
             ->setChildren(0)
             ->setChildrenAges([]);
-        $form = $this->createForm(SearchConditionsType::class, $initSearchConditions);
 
-        return $this->render('@MBHSearch/Search/searcher.html.twig', ['form' => $form->createView()]);
+        $form = $this->createForm(SearchConditionsType::class, $initSearchConditions);
+        try {
+            $viewForm = $form->createView();
+        } catch (RoomTypesTypeException $exception) {
+            /** @var Session $session */
+            $session = $request->getSession();
+            $session->getFlashBag()->set('error', $exception->getMessage());
+
+            return new Response();
+        }
+
+        return $this->render('@MBHSearch/Search/searcher.html.twig', ['form' => $viewForm]);
     }
 
     /**

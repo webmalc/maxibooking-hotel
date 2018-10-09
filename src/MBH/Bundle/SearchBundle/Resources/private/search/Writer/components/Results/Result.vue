@@ -61,8 +61,7 @@
             night: function () {
                 const begin = moment.utc(this.result.begin);
                 const end = moment.utc(this.result.end);
-
-                return moment.duration(end.diff(begin)).days();
+                return moment.duration(end.diff(begin)).asDays();
             },
             isAdditionalDate: function () {
                 let conditionBegin = this.result.resultConditions.begin;

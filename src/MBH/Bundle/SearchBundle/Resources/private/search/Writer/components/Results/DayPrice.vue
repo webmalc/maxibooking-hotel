@@ -13,6 +13,7 @@
 
     import Vue from 'vue';
     import * as moment from 'moment';
+    import accounting from "accounting";
     moment.locale('ru');
     export default Vue.extend({
         name: "DayPrice",
@@ -22,7 +23,8 @@
                 let html: string = '';
                 for (let dayPrice of this.dayPrices) {
                     let day = moment(dayPrice['date']).format('DD MMM');
-                    html += `${day} - ${dayPrice['price']} - <i class='fa fa-sliders'></i> ${dayPrice['tariff']['name']}<br>`;
+                    let price = accounting.formatMoney(dayPrice['price'], "", 2, ",", ".");
+                    html += `${day} - ${price} - <i class='fa fa-sliders'></i> ${dayPrice['tariff']['name']}<br>`;
                 }
 
                 return `<small>${html}</small>`;

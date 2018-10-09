@@ -1,0 +1,134 @@
+{{ form_start(form, {'attr': {'class': 'form-inline search-form filter-form mbh-start-date'}}) }}
+{{ form_errors(form) }}
+
+<div class="input">
+    <i class="fa fa-calendar" title='{{ 'form.searchType.check_in'|trans() }}'
+       data-toggle='tooltip'></i>&nbsp{{ form_widget(form.begin, {'attr' : {'style': 'max-width:100px !important; width: 100px;'}}) }}
+</div>
+<div class="input">
+    - &nbsp{{ form_widget(form.end,{'attr' : {'style': 'max-width:100px !important; width: 100px;'}}) }}
+</div>
+
+<div class="input">
+    <i class="fa fa-calendar-plus-o " title='{{ 'form.searchType.range'|trans() }}'
+       data-toggle='tooltip'></i>&nbsp{{ form_widget(form.additionalBegin, {'attr': {'class': 'input-xxs'}}) }}
+</div>
+
+<div class="input">
+    <i class="fa fa-calendar-plus-o " title='{{ 'form.searchType.range'|trans() }}'
+       data-toggle='tooltip'></i>&nbsp{{ form_widget(form.additionalEnd, {'attr': {'class': 'input-xxs'}}) }}
+</div>
+
+<div class="input">
+    <i class="fa fa-male" title='{{ 'form.searchType.adults'|trans() }}'
+       data-toggle='tooltip'></i>&nbsp{{ form_widget(form.adults, {'attr': {'class': 'input-xxs'}}) }}
+</div>
+<div class="input children_age_holder_parent">
+    <i class="fa fa-child" title='{{ 'form.searchType.children'|trans() }}'
+       data-toggle='tooltip'></i>&nbsp{{ form_widget(form.children, {'attr': {'class': 'input-xxs'}}) }}
+    &nbsp;<i
+            id="search-children-ages-holder"
+            class="fa fa-sort-numeric-asc"
+            title='{{ 'form.searchType.children_ages'|trans() }}'
+            data-toggle="tooltip"
+    >
+    </i>
+    <div class="children_age_holder">{{ form_widget(form.childrenAges) }}</div>
+</div>
+
+<div class="input">
+    <i class="fa fa-bed" title='{{ 'form.searchType.room_type'|trans() }}'
+       data-toggle='tooltip'></i>&nbsp{{ form_widget(form.roomTypes) }}
+</div>
+
+<div class="input">
+    <i class="fa fa-file-text-o" title='{{ 'form.searchType.order'|trans() }}'
+       data-toggle='tooltip'></i>&nbsp{{ form_widget(form.order) }}
+</div>
+
+{% if is_granted('ROLE_FORCE_BOOKING') %}
+    <div class="input">
+        <i class="fa fa-exclamation-circle" title='{{ 'form.searchType.forceBooking'|trans() }}'
+           data-toggle='tooltip'></i>&nbsp;{{ form_widget(form.isForceBooking) }}
+    </div>
+{% endif %}
+
+<div class="input">
+    <i class="fa fa-star" title='{{ 'form.searchType.specials'|trans() }}'
+       data-toggle='tooltip'></i>&nbsp;{{ form_widget(form.isSpecialStrict) }}
+</div>
+
+{% set clientConfig = client_config() %}
+{% if not clientConfig or not clientConfig.isInstantSearch %}
+    <div class="input">
+        <button class="btn btn-primary" id="searcher-submit-button">
+            <i class="fa fa-search"></i> Найти
+        </button>
+    </div>
+    {% if app.environment == 'dev' %}
+    <div class="input">
+        <button class="btn btn-primary" id="searcher-sync-submit-button">
+            <i class="fa fa-search"></i> Найти Sync
+        </button>
+    </div>
+    {% endif %}
+
+    <div class="input">
+        <button class="btn btn-primary" type="button" data-toggle="modal" data-target="#additionalSearchSetup">
+            <i class="fa fa-search-plus"></i>&nbsp;Доп настройки.
+        </button>
+    </div>
+{% endif %}
+
+{% include '@MBHSearch/Search/form/modal.additional.html.twig' %}
+
+
+<div class="hide">
+    {{ form_end(form) }}
+</div>
+
+
+
+
+
+
+{#Для азовского выключаю туриста  ибо его придется описывать во VueJS#}
+{#<div class="input">#}
+    {#<i class="fa fa-users" title='{{ 'form.searchType.payer'|trans() }}'#}
+       {#data-toggle='tooltip'></i>&nbsp;{{ form_widget(form.tourist) }}&nbsp;#}
+    {#<small>#}
+        {#<a href="{{ path('tourist_new') }}" id="add-tourist" target="_blank"#}
+           {#title='{{ 'form.searchType.payer_add'|trans() }}'#}
+           {#data-toggle='tooltip'>#}
+            {#<i class="fa fa-plus"></i>#}
+        {#</a>#}
+    {#</small>#}
+{#</div>#}
+
+{#<div class="input">#}
+    {#<i class="fa fa-file-text-o" title='{{ 'form.searchType.order'|trans() }}'#}
+       {#data-toggle='tooltip'></i>&nbsp{{ form_widget(form.order) }}#}
+{#</div>#}
+{#{% if is_granted('ROLE_FORCE_BOOKING') %}#}
+    {#<div class="input">#}
+        {#<i class="fa fa-exclamation-circle" title='{{ 'form.searchType.forceBooking'|trans() }}'#}
+           {#data-toggle='tooltip'></i>&nbsp;{{ form_widget(form.forceBooking) }}#}
+    {#</div>#}
+{#{% endif %}#}
+
+{#<div class="input">#}
+    {#<i class="fa fa-star" title='{{ 'form.searchType.specials'|trans() }}'#}
+       {#data-toggle='tooltip'></i>&nbsp;{{ form_widget(form.isSpecialStrict) }}#}
+{#</div>#}
+
+{#<div class="input">#}
+    {#<i class="fa fa-users" title='{{ 'form.searchType.payer'|trans() }}'#}
+       {#data-toggle='tooltip'></i>&nbsp;{{ form_widget(form.tourist) }}&nbsp;#}
+    {#<small>#}
+        {#<a href="{{ path('tourist_new') }}" id="add-guest" target="_blank"#}
+           {#title='{{ 'form.searchType.payer_add'|trans() }}'#}
+           {#data-toggle='tooltip'>#}
+            {#<i class="fa fa-plus"></i>#}
+        {#</a>#}
+    {#</small>#}
+{#</div>#}

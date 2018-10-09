@@ -5,11 +5,20 @@ services:
             - '@mbh_search.additional_days_generator'
             - '@mbh_search.data_holder'
 
-    mbh_search.search_conditions_type:
-        class: MBH\Bundle\SearchBundle\Form\SearchConditionsType
-        arguments: ['@mbh_search.client_config_repository']
+    mbh_search.search_conditions_roomtype_type:
+        class: MBH\Bundle\SearchBundle\Form\RoomTypesType
+        arguments:
+            - '@mbh_search.client_config_repository'
+            - '@mbh_search.hotel_repository'
+            - '%kernel.environment%'
         tags:
-            - { name: form.type, alias: MBH\Bundle\SearchBundle\Form\SearchConditionsType }
+            - { name: form.type, alias: MBH\Bundle\SearchBundle\Form\RoomTypesType }
+
+    mbh_search.search_conditions_type:
+      class: MBH\Bundle\SearchBundle\Form\SearchConditionsType
+      arguments: ['@mbh_search.client_config_repository']
+      tags:
+      - { name: form.type, alias: MBH\Bundle\SearchBundle\Form\SearchConditionsType }
 
     mbh_search.search_condition_creator:
         class: MBH\Bundle\SearchBundle\Services\SearchConditionsCreator
@@ -184,6 +193,7 @@ services:
             - '@mbh_search.room_cache_fetcher'
             - '@mbh_search.shared_data_fetcher'
             - '@mbh_search.accommodation_room_searcher'
+            - '@event_dispatcher'
 
 # async receive results
     mbh_search.asycn_search:
@@ -250,6 +260,12 @@ services:
         factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
         arguments:
             - MBH\Bundle\HotelBundle\Document\RoomType
+
+    mbh_search.room_type_category_repository:
+        class: MBH\Bundle\HotelBundle\Document\RoomTypeCategoryRepository
+        factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
+        arguments:
+            - MBH\Bundle\HotelBundle\Document\RoomTypeCategory
 
     mbh_search.room_cache_repository:
         class: MBH\Bundle\PriceBundle\Document\RoomCacheRepository
@@ -322,7 +338,7 @@ services:
             - '@mbh_search.client_config_repository'
             - '@mbh_search.room_cache_repository'
             - '@mbh_search.room_repository'
-            - '@mbh_search.package_repository'
+            - '@mbh_search.package_accommodation_repository'
             - '@mbh_search.price_cache_repository'
             - '@mbh_search.search_conditions_repository'
             - '@mbh_search.hotel_repository'
