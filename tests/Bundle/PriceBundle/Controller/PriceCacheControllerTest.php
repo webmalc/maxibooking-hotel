@@ -9,6 +9,7 @@
 namespace Tests\Bundle\PriceBundle\Controller;
 
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Lib\Test\Traits\HotelIdTestTrait;
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\HotelBundle\Document\RoomType;
@@ -38,19 +39,22 @@ class PriceCacheControllerTest extends WebTestCase
 
 
     /**
-     * @var RoomType[]
+     * @var RoomType[]|null
      */
-    private $roomTypeCache;
+    private static $roomTypeCache;
 
     /**
-     * @var Tariff[]
+     * @var Tariff[]|null
      */
-    private $tariffs;
+    private static $tariffs;
+
+    /**
+     * @var DocumentManager|null
+     */
+    private static $dm;
 
     public static function setUpBeforeClass()
     {
-        parent::setUpBeforeClass();
-
         self::baseFixtures();
     }
 
@@ -102,7 +106,7 @@ class PriceCacheControllerTest extends WebTestCase
 
         /** @var RoomType $roomType */
         $roomType = $dm->getRepository('MBHHotelBundle:RoomType')
-            ->find($this->getRoomType(self::TRIPLE_ROOM))
+            ->find($this->getRoomTypeId(self::TRIPLE_ROOM))
             ->setIsEnabled(false);
 
         $dm->flush();
@@ -135,7 +139,7 @@ class PriceCacheControllerTest extends WebTestCase
 
     public function testPriceAdd()
     {
-        $amountRestriction = $this->getAmountPrice();
+        $amountRestriction = $this->getQuantityPriceFromRepo();
 
         $date = new \DateTime('noon yesterday');
 
@@ -146,7 +150,7 @@ class PriceCacheControllerTest extends WebTestCase
             self::BASE_URL . 'save',
             [
                 self::FORM_NAME_NEW_RESTRICTION => [
-                    $this->getRoomType(self::TWIN_ROOM) => [
+                    $this->getRoomTypeId(self::TWIN_ROOM) => [
                         $this->getIdSpecialTariff() => [
                             $date->format('d.m.Y') => $data,
                         ],
@@ -159,7 +163,11 @@ class PriceCacheControllerTest extends WebTestCase
 
         $this->assertEquals(array_values($data), $this->getResultFromTable($date, self::TWIN_ROOM));
 
-        $this->assertCount($amountRestriction + 1, $this->getPriceFromRepo());
+        $this->assertEquals(
+            $amountRestriction + 1,
+            $this->getQuantityPriceFromRepo(),
+            'Quantity items in db not equals expected.'
+        );
     }
 
     /**
@@ -167,7 +175,7 @@ class PriceCacheControllerTest extends WebTestCase
      */
     public function testPriceChange()
     {
-        $amountPrice = $this->getAmountPrice();
+        $amountPrice = $this->getQuantityPriceFromRepo();
 
         $date = new \DateTime('noon yesterday');
 
@@ -190,15 +198,68 @@ class PriceCacheControllerTest extends WebTestCase
 
         $this->assertEquals(array_values($data), $this->getResultFromTable($date, self::TWIN_ROOM));
 
-        $this->assertCount($amountPrice + 1, $this->getPriceFromRepo());
+        $this->assertEquals(
+            $amountPrice + 1,
+            $this->getQuantityPriceFromRepo(),
+            'Quantity items in db not equals expected.'
+        );
     }
 
     /**
      * @depends testPriceChange
      */
+    public function testWithIndividualAdditionalPrices()
+    {
+        $this->assertTrue(true);
+
+        $additionalQuantity = 5;
+
+        $date = new \DateTime('noon yesterday');
+
+        /** @var PriceCache $price */
+        $price = $this->getPrice(self::TWIN_ROOM, $this->getIdSpecialTariff(), $date);
+
+        $this->changeAdditionalQuantityForTwinRoom($additionalQuantity);
+
+        $data = $this->getRandomDataForForm(true, $additionalQuantity);
+
+        $this->client->request(
+            'POST',
+            self::BASE_URL . 'save',
+            [
+                self::FORM_NAME_UPDATE_PRICE_CACHE => [
+                    $price->getId() => $data,
+                ],
+            ]
+        );
+
+        $this->assertEquals([], $this->getResultFromTable($date, self::TRIPLE_ROOM));
+
+        $this->assertEquals(array_values($data), $this->getResultFromTable($date, self::TWIN_ROOM));
+
+    }
+
+    private function changeAdditionalQuantityForTwinRoom(int $additionalQuantity): void
+    {
+        $dm = $this->getDocumentManager();
+
+        /** @var RoomType $roomType */
+        $roomType = $dm->getRepository('MBHHotelBundle:RoomType')
+            ->find($this->getRoomTypeId(self::TWIN_ROOM));
+
+        $roomType
+            ->setAdditionalPlaces($additionalQuantity)
+            ->setIsIndividualAdditionalPrices(true);
+
+        $dm->flush();
+    }
+
+    /**
+     * @depends testWithIndividualAdditionalPrices
+     */
     public function testPriceClearSingle()
     {
-        $amountPrice = $this->getAmountPrice();
+        $amountPrice = $this->getQuantityPriceFromRepo();
 
         $date = new \DateTime('noon yesterday');
 
@@ -221,7 +282,11 @@ class PriceCacheControllerTest extends WebTestCase
 
         $this->assertEquals([], $this->getResultFromTable($date, self::TWIN_ROOM));
 
-        $this->assertCount($amountPrice, $this->getPriceFromRepo());
+        $this->assertEquals(
+            $amountPrice + 1,
+            $this->getQuantityPriceFromRepo(),
+            'Quantity items in db not equals expected.'
+        );
     }
 
     public function testInvalidDateInGeneration()
@@ -251,15 +316,25 @@ class PriceCacheControllerTest extends WebTestCase
         $this->assertValidationErrors(['children[price].data'], $this->client->getContainer());
     }
 
-    public function testGenerate()
+    public function getRoomTypeData(): iterable
     {
-        $amountPrice = $this->getAmountPrice();
+        yield 'Room with Additional Places' => [self::TWIN_ROOM];
+        yield 'Room without Additional Places' => [self::TRIPLE_ROOM];
 
-        $data = $this->getRandomDataForForm(false);
+    }
+
+    /**
+     * @dataProvider getRoomTypeData
+     */
+    public function testGenerate(int $places)
+    {
+        $amountPrice = $this->getQuantityPriceFromRepo();
+
+        $data = $this->getRandomDataForForm(false, $places === self::TWIN_ROOM ? 5 : null);
 
         $form = $this->getGenerationFormWithValues(
             $data,
-            self::TRIPLE_ROOM,
+            $places,
             [],
             new \DateTime('noon -3 days'),
             new \DateTime('noon +2 days'),
@@ -270,24 +345,51 @@ class PriceCacheControllerTest extends WebTestCase
 
         $this->assertEquals(
             array_values($data),
-            $this->getResultFromTable(null, self::TRIPLE_ROOM, [$this->getIdSpecialTariff()], false)
+            $this->getResultFromTable(null, $places, [$this->getIdSpecialTariff()], false)
         );
 
         $this->assertEquals(
-            [],
-            $this->getResultFromTable(new \DateTime('noon yesterday'), self::TWIN_ROOM, [$this->getIdSpecialTariff()])
+            $amountPrice + 6,
+            $this->getQuantityPriceFromRepo(),
+            'Quantity items in db not equals expected.'
         );
 
-        $this->assertCount($amountPrice + 6, $this->getPriceFromRepo());
+//        $this->assertCount($amountPrice + 6, $this->getQuantityPriceFromRepo());
     }
 
+//    public function testGenerateWithAdditionalPlaces()
+//    {
+//        $additionalQuantity = 5;
+//
+//        $data = $this->getRandomDataForForm(true, $additionalQuantity);
+//
+//        $form = $this->getGenerationFormWithValues(
+//            $data,
+//            self::TWIN_ROOM,
+//            [],
+//            new \DateTime('noon -3 days'),
+//            new \DateTime('noon +2 days'),
+//            [$this->getIdSpecialTariff()]
+//        );
+//
+//        $this->client->submit($form);
+//
+//        $this->assertEquals(
+//            $data,
+//            $this->getResultFromTable(null, self::TWIN_ROOM, [$this->getIdSpecialTariff()])
+//        );
+//    }
+
+    /**
+     * @depends testGenerate
+     */
     public function testCleareWithGenerator()
     {
-        $amountRestriction = $this->getAmountPrice();
+        $amountPrice = $this->getQuantityPriceFromRepo();
 
         $form = $this->getGenerationFormWithValues(
             ['price' => -1],
-            self::TRIPLE_ROOM,
+            null,
             [],
             new \DateTime('noon -3 days'),
             new \DateTime('noon +2 days'),
@@ -306,7 +408,12 @@ class PriceCacheControllerTest extends WebTestCase
             $this->getResultFromTable(new \DateTime('noon -3 days'), self::TWIN_ROOM, [$this->getIdSpecialTariff()])
         );
 
-        $this->assertCount($amountRestriction, $this->getPriceFromRepo());
+        $this->assertEquals(
+            $amountPrice + 1,
+            $this->getQuantityPriceFromRepo(),
+            'Quantity items in db not equals expected.'
+        );
+//        $this->assertCount($amountPrice, $this->getQuantityPriceFromRepo());
     }
 
     /**
@@ -346,7 +453,7 @@ class PriceCacheControllerTest extends WebTestCase
             self::FORM_NAME_GENERATION . '[begin]'     => $dateBegin->format('d.m.Y'),
             self::FORM_NAME_GENERATION . '[end]'       => $dateEnd->format('d.m.Y'),
             self::FORM_NAME_GENERATION . '[weekdays]'  => $weekdays,
-            self::FORM_NAME_GENERATION . '[roomTypes]' => $this->getRoomType($places),
+            self::FORM_NAME_GENERATION . '[roomTypes]' => $places !== null ? $this->getRoomTypeId($places) : $this->getRoomTypeIds(),
             self::FORM_NAME_GENERATION . '[tariffs]'   => $tariffs,
         ];
 
@@ -386,7 +493,7 @@ class PriceCacheControllerTest extends WebTestCase
             [
                 'hotel.id'    => $this->getHotelId(),
                 'tariff.id'   => $tariff,
-                'roomType.id' => $this->getRoomType($places),
+                'roomType.id' => $this->getRoomTypeId($places),
                 'date'        => $date,
                 'isEnabled'   => true,
             ]
@@ -397,13 +504,14 @@ class PriceCacheControllerTest extends WebTestCase
      * @param bool $without
      * @return array
      */
-    private function getRandomDataForForm(bool $without = true): array
+    private function getRandomDataForForm(bool $without = true, int $additionalQuantity = null): array
     {
         return $this->getDataForForm(
             function () {
                 return mt_rand(1, 200);
             },
-            $without
+            $without,
+            $additionalQuantity
         );
     }
 
@@ -412,7 +520,7 @@ class PriceCacheControllerTest extends WebTestCase
      * @param bool $validGuest
      * @return array
      */
-    private function getDataForForm($value, bool $without): array
+    private function getDataForForm($value, bool $without, int $additionalQuantity = null): array
     {
         $data = [
             'price'                   => 0,
@@ -421,6 +529,13 @@ class PriceCacheControllerTest extends WebTestCase
             'additionalPrice'         => 0,
             'additionalChildrenPrice' => 0,
         ];
+
+        if ($additionalQuantity !== null && $additionalQuantity > 0) {
+            for ($i = 1; $i <= $additionalQuantity; $i++) {
+                $data['additionalPrice' . $i] = 0;
+                $data['additionalChildrenPrice' . $i] = 0;
+            }
+        }
 
         foreach ($data as &$d) {
             $d = $value instanceof \Closure ? $value() : $value;
@@ -444,19 +559,20 @@ class PriceCacheControllerTest extends WebTestCase
     }
 
     /**
-     * @return array
+     * @return Tariff[]
      */
     private function getTariffs(): array
     {
-        if (empty($this->tariffs)) {
+        if (static::$tariffs === null) {
             $dm = $this->getDocumentManager();
             $tariffs = $dm->getRepository('MBHPriceBundle:Tariff')
                 ->findBy(['hotel.id' => $this->getHotelId()]);
             foreach ($tariffs as $tariff) {
-                $this->tariffs[$tariff->getFullTitle()] = $tariff->getId();
+                static::$tariffs[$tariff->getFullTitle()] = $tariff->getId();
             }
         }
-        return $this->tariffs;
+
+        return static::$tariffs;
     }
 
     /**
@@ -472,7 +588,7 @@ class PriceCacheControllerTest extends WebTestCase
         $selector = '';
 
         if ($places !== null) {
-            $selector .= 'tr[data-copy-row-id="' . $this->getRoomType($places) . '"] ';
+            $selector .= 'tr[data-copy-row-id="' . $this->getRoomTypeId($places) . '"] ';
         }
 
         $selector .= 'td[data-id$="_' . $date->format('d.m.Y') . '"] input';
@@ -539,77 +655,72 @@ class PriceCacheControllerTest extends WebTestCase
      */
     private function getDocumentManager(): \Doctrine\ODM\MongoDB\DocumentManager
     {
-        return $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
+        if (static::$dm === null) {
+            static::$dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
+        }
+
+        return static::$dm;
     }
 
     /**
-     * @param int|null $places
-     * @param bool $returnObject
-     * @return array|RoomType|string
+     * @return string[]
      */
-    private function getRoomType(int $places = null, $returnObject = false)
+    public function getRoomTypeIds(): array
     {
-        if ($places !== null && !in_array($places, [self::TWIN_ROOM, self::TRIPLE_ROOM], true)) {
-            throw new \LogicException('Needed true roomType');
-        }
-
         $typeRooms = [];
 
         /** @var RoomType $typeRoom */
         foreach ($this->getRoomTypeCache() as $typeRoom) {
-            if ($places === null) {
-                if ($returnObject) {
-                    $typeRooms[] = $typeRoom;
-                } else {
-                    $typeRooms[] = $typeRoom->getId();
-                }
-            } else {
-                if ($typeRoom->getPlaces() == $places) {
-                    if ($returnObject) {
-                        $typeRooms = $typeRoom;
-                    } else {
-                        $typeRooms = $typeRoom->getId();
-                    }
-                }
-            }
+            $typeRooms[] = $typeRoom->getId();
         }
 
         return $typeRooms;
     }
 
     /**
-     * @return array
+     * @param int $places
+     * @return string
      */
-    private function getRoomTypeCache(): array
+    private function getRoomTypeId(int $places): string
     {
-        if (empty($this->roomTypeCache)) {
-            $dm = $this->getDocumentManager();
-            $this->roomTypeCache = $dm
-                ->getRepository('MBHHotelBundle:RoomType')
-                ->findBy(['hotel.id' => $this->getHotelId()]);
+        if (!in_array($places, [self::TWIN_ROOM, self::TRIPLE_ROOM], true)) {
+            throw new \LogicException('Needed true roomType');
         }
-        return $this->roomTypeCache;
+
+        /** @var RoomType $typeRoom */
+        foreach ($this->getRoomTypeCache() as $typeRoom) {
+            if ($typeRoom->getPlaces() === $places) {
+                return $typeRoom->getId();
+            }
+        }
+
+        throw new \LogicException(sprintf('Not found roomType with %s places.', $places));
     }
 
     /**
-     * @return Restriction[]
+     * @return RoomType[]
      */
-    private function getPriceFromRepo(): array
+    private function getRoomTypeCache(bool $update = false): array
     {
-        $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
+        if (static::$roomTypeCache === null || $update) {
+            $dm = $this->getDocumentManager();
+            static::$roomTypeCache = $dm
+                ->getRepository('MBHHotelBundle:RoomType')
+                ->findBy(['hotel.id' => $this->getHotelId()]);
+        }
 
-        return $dm->getRepository('MBHPriceBundle:PriceCache')->findBy(
-            [
-                'hotel.id' => $this->getHotelId(),
-            ]
-        );
+        return static::$roomTypeCache;
     }
 
     /**
      * @return int
      */
-    private function getAmountPrice(): int
+    private function getQuantityPriceFromRepo(): int
     {
-        return count($this->getPriceFromRepo());
+        return $this->getDocumentManager()->getRepository('MBHPriceBundle:PriceCache')
+            ->createQueryBuilder()
+            ->field('hotel.id')->equals($this->getHotelId())
+            ->getQuery()
+            ->count();
     }
 }
