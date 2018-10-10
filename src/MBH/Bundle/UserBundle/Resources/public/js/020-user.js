@@ -279,25 +279,30 @@ function hangOnPayButtonHandler() {
             var $paymentTypesSelect = $('#payment-types-select');
             $paymentTypesSelect.find('option').remove();
             response['paymentTypes'].forEach(function (paymentType) {
-                var newState = new Option(paymentType.name, paymentType.id);
-                $paymentTypesSelect.append(newState);
-                if (paymentType.id === 'bill') {
-                    $('#bill-content').val(paymentType.html);
+                if (paymentType.id !== 'rbk') {
+                    var newState = new Option(paymentType.name, paymentType.id);
+                    $paymentTypesSelect.append(newState);
+                    if (paymentType.id === 'bill') {
+                        $('#bill-content').val(paymentType.html);
+                    }
                 }
             });
 
             var $selectPaymentSystemButton = $('#select-payment-system-button');
-
+            var $paymentDetailsModal = $('#payment-details-modal');
             $selectPaymentSystemButton.unbind('click').click(function () {
                 var url = Routing.generate('payment_system_details', {paymentSystemName: $paymentTypesSelect.val(), orderId: order.id});
-                $modalBody.find('iFrame').prop('src', url);
+                $paymentDetailsModal.find('iFrame').prop('src', url);
+                $paymentDetailsModal.find('h4.modal-title').html(orderInfo);
+                $paymentDetailsModal.modal('show');
             });
 
             $paymentTypesSelect.trigger('change');
 
             var $billButton = $('#download-bill-button');
             $paymentTypesSelect.change(function () {
-                $modalBody.find('iFrame').prop('src', 'about:blank');
+                $paymentDetailsModal.modal('hide');
+                $paymentDetailsModal.find('iFrame').prop('src', 'about:blank');
                 if ($paymentTypesSelect.val() === 'bill') {
                     $selectPaymentSystemButton.hide();
                     $billButton.show();

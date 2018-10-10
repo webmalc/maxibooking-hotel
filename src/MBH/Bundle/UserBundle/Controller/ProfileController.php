@@ -308,11 +308,6 @@ class ProfileController extends Controller
      */
     public function payOrderModalAction($orderId)
     {
-//        $errors = $this->get('mbh.client_payer_manager')->getErrorsCausedByUnfilledDataForPayment();
-//        if (!empty($errors)) {
-//            return ['errors' => $errors];
-//        }
-
         $billingApi = $this->get('mbh.billing.api');
         $order = $billingApi->getClientOrderById($orderId);
         $paymentSystemsResult = $billingApi->getPaymentSystemsForOrder($order);
