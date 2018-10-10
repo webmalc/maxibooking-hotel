@@ -78,20 +78,11 @@ class PriceCache
         is_numeric($childPrice) ? $childPrice = (float) $childPrice : $childPrice;
         is_numeric($additionalChildrenPrice) ? $additionalChildrenPrice = (float) $additionalChildrenPrice : $additionalChildrenPrice;
 
-        foreach ($additionalPrices as $key => $p) {
-            if ($p != '' && !is_null($p)) {
-                $additionalPrices[$key] = (float) $p;
-            } else {
-                $additionalPrices[$key] = null;
-            }
-        }
-        foreach ($additionalChildrenPrices as $key => $p) {
-            if ($p != '' && !is_null($p)) {
-                $additionalChildrenPrices[$key] = (float) $p;
-            } else {
-                $additionalChildrenPrices[$key] = null;
-            }
-        }
+        list($additionalPrices, $additionalChildrenPrices) =
+            \MBH\Bundle\PriceBundle\Document\PriceCache::transformAdditionalPrices(
+                [0 => $additionalPrice] + $additionalPrices,
+                [0 => $additionalChildrenPrice] + $additionalChildrenPrices
+            );
 
         $roomTypes = $availableRoomTypes;
         if (empty($roomTypes)) {
