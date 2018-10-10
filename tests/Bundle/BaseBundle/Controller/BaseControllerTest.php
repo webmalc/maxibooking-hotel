@@ -125,6 +125,11 @@ class BaseControllerTest extends WebTestCase
         'client_payment_system_save',
         'client_payment_urls',
         'client_save_payment_urls',
+        'document_templates',
+        'document_templates_new',
+        'document_templates_edit',
+        'document_templates_show',
+        'document_templates_delete',
     ];
 
     private const ROUTERS_CHANNEL_MANAGER = [
@@ -202,9 +207,11 @@ class BaseControllerTest extends WebTestCase
      */
     public function testRouteAlways302(string $url)
     {
+        $this->client->followRedirects(true);
+
         $this->client->request('GET', $url);
 
-        $this->assertStatusCodeWithMsg($url, 302);
+        $this->assertStatusCodeWithMsg($url, 200);
     }
 
     /**
