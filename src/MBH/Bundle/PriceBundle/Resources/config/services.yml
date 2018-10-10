@@ -68,7 +68,9 @@ services:
 
   mbh.price_cache_generator_type:
       class: MBH\Bundle\PriceBundle\Form\PriceCacheGeneratorType
-      arguments: ['@translator']
+      arguments:
+          - '@translator'
+          - '%mbh.weekdays%'
       tags:
           - {name: form.type}
 
