@@ -6,6 +6,7 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BillingBundle\Lib\Model\ClientService;
 use MBH\Bundle\BillingBundle\Lib\Model\PaymentOrder;
+use MBH\Bundle\BillingBundle\Lib\Model\PaymentSystem;
 use MBH\Bundle\BillingBundle\Service\BillingResponseHandler;
 use MBH\Bundle\UserBundle\Form\ClientContactsType;
 use MBH\Bundle\UserBundle\Form\ClientTariffType;
@@ -16,6 +17,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\FormError;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -299,11 +301,10 @@ class ProfileController extends Controller
     }
 
     /**
-     * @Template()
      * @Security("is_granted('ROLE_PAYMENTS')")
      * @Route("/payment_order/{orderId}/payment_systems", name="order_payment_systems", options={"expose"=true})
      * @param $orderId
-     * @return array
+     * @return JsonResponse
      */
     public function payOrderModalAction($orderId)
     {
@@ -316,10 +317,41 @@ class ProfileController extends Controller
         $order = $billingApi->getClientOrderById($orderId);
         $paymentSystemsResult = $billingApi->getPaymentSystemsForOrder($order);
 
-        return [
-            'paymentTypes' => $paymentSystemsResult->getData(),
-            'order' => $order
-        ];
+        $paymentSystems = [];
+        /** @var PaymentSystem $paymentSystem */
+        foreach ($paymentSystemsResult->getData() as $paymentSystem) {
+            $paymentSystemData = ['id' => $paymentSystem->getId(), 'name' => $paymentSystem->getName()];
+            if ($paymentSystem->getId() === 'bill') {
+                $paymentSystemData['html'] = $paymentSystem->getHtml();
+            }
+            $paymentSystems[] = $paymentSystemData;
+        }
+
+        return new JsonResponse([
+            'paymentTypes' => $paymentSystems,
+            'order' => [
+                'price' => $order->getPrice(),
+                'currency' => $order->getPrice_currency(),
+                'id' => $order->getId()
+            ]
+        ]);
+    }
+
+    /**
+     * @Template()
+     * @Route("/payment_system_details/{paymentSystemName}/{orderId}", name="payment_system_details", options={"expose"=true})
+     * @param string $paymentSystemName
+     * @param int $orderId
+     * @return array
+     */
+    public function paymentSystemDetailsAction(string $paymentSystemName, int $orderId)
+    {
+        /** @var PaymentSystem $paymentSystem */
+        $paymentSystem = $this
+            ->get('mbh.billing.api')
+            ->getPaymentSystemForOrderByName($paymentSystemName, $orderId);
+
+        return ['html' => $paymentSystem->getHtml()];
     }
 
     /**

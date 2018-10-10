@@ -186,6 +186,9 @@ function initPaymentPage() {
             $('#card-data-modal').modal('show');
         });
         handlePaymentCardForm();
+        $('#payments-list-modal').on('hidden.bs.modal', function () {
+            $('#payments-list-modal iFrame').prop('src', 'about:blank');
+        })
     }
 }
 
@@ -259,13 +262,69 @@ function handlePaymentCardForm() {
 }
 
 function hangOnPayButtonHandler() {
-    $('.show-payments-list').click(function () {
+    var $paymentListModal = $('.show-payments-list');
+    $paymentListModal.click(function () {
         var $modalBody = $('#payments-list-modal-body');
         $('#payments-list-modal').modal('show');
-
+        $modalBody.hide();
         var orderId = this.getAttribute('data-order-id');
-        $modalBody.find('iFrame').prop('src', Routing.generate('order_payment_systems', {orderId: orderId}));
-    })
+
+        $.get(Routing.generate('order_payment_systems', {orderId: orderId}), function (response) {
+            handleBillButton();
+
+            var order = response['order'];
+            var orderInfo = Translator.trans('view.pay_order_modal.payment_sum', {'price': order.price + ' ' + order.currency, 'orderNumber': order.id});
+            $('#payment-order-block').html(orderInfo);
+
+            var $paymentTypesSelect = $('#payment-types-select');
+            $paymentTypesSelect.find('option').remove();
+            response['paymentTypes'].forEach(function (paymentType) {
+                var newState = new Option(paymentType.name, paymentType.id);
+                $paymentTypesSelect.append(newState);
+                if (paymentType.id === 'bill') {
+                    $('#bill-content').val(paymentType.html);
+                }
+            });
+
+            var $selectPaymentSystemButton = $('#select-payment-system-button');
+
+            $selectPaymentSystemButton.unbind('click').click(function () {
+                var url = Routing.generate('payment_system_details', {paymentSystemName: $paymentTypesSelect.val(), orderId: order.id});
+                $modalBody.find('iFrame').prop('src', url);
+            });
+
+            $paymentTypesSelect.trigger('change');
+
+            var $billButton = $('#download-bill-button');
+            $paymentTypesSelect.change(function () {
+                $modalBody.find('iFrame').prop('src', 'about:blank');
+                if ($paymentTypesSelect.val() === 'bill') {
+                    $selectPaymentSystemButton.hide();
+                    $billButton.show();
+                } else {
+                    $selectPaymentSystemButton.show();
+                    $billButton.hide();
+                }
+            });
+
+            $modalBody.show();
+        })
+
+    });
+}
+
+function handleBillButton() {
+    var billButton = document.getElementById('download-bill-button');
+    if (billButton) {
+        $(billButton).hide();
+        billButton.onclick = function () {
+            var billContent = document.getElementById('bill-content').value;
+            var billWindow = window.open('about:blank');
+            setTimeout(function () {
+                billWindow.document.body.innerHTML += billContent;
+            }, 100);
+        };
+    }
 }
 
 function switchAuthOrganFieldsVisibility() {
@@ -323,7 +382,6 @@ function initTariffPage() {
         var $changeTariffFormWrapper = $('#change-tariff-form-wrapper');
 
         $changeTariffShowModalButton.click(function () {
-            console.log(this);
             $('#change-tariff-modal').modal('show');
             $changeTariffFormWrapper.html(mbh.loader.html);
             $.get(Routing.generate("update_tariff_modal")).done(function (modalBody) {
