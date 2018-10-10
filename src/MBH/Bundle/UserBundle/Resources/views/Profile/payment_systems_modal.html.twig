@@ -8,10 +8,40 @@
                 <h4 class="modal-title text-center">{{ 'view.payment_systems_modal.header_title'|trans }}</h4>
             </div>
             <div class="modal-body" id="payments-list-modal-body">
-                <iframe frameborder="0" width="100%" height="650px"></iframe>
+                <div class="panel-body">
+                    {% if errors is defined %}
+                        <div style="background-color: #dd4b39 !important; color: white" class="alert alert-danger"><i
+                                    class="fa fa-exclamation-circle"></i>&nbsp;
+                            {{ 'view.pay_order_modal.unfilled_data_message'|trans }}
+                            {% for error in errors %}
+                                {{ error|trans|lower }}{{ loop.index < errors|length ? ', ' : '' }}
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div id="payment-order-block"></div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label for="payment-types-select">Платежная система</label>
+                            </div>
+                            <div class="col-sm-6">
+                                <select name="payment-types" id="payment-types-select">
+                                </select>
+                            </div>
+                        </div>
+
+                        <br>
+                        <button class="btn btn-primary" id="select-payment-system-button">Выбрать</button>
+                        <button class="btn btn-primary" id="download-bill-button">
+                            {{ 'view.pay_order_modal.open_bill'|trans }}
+                        </button>
+                        <input type="hidden" id="bill-content">
+                    {% endif %}
+                </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times" aria-hidden="true"></i>
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-times"
+                                                                                      aria-hidden="true"></i>
                     &nbsp;{{ 'modal.chessBoard.close'|trans }}
                 </button>
             </div>
