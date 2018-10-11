@@ -238,7 +238,7 @@ class PriceCacheHolderDataGeneratorForm extends PriceCacheKit
             'holderRoomTypeIds',
             'holderTariffIds',
             'price',
-            'personPrice',
+            'isPersonPrice',
             'singlePrice',
             'singlePriceFake',
             'childPrice',
@@ -252,6 +252,12 @@ class PriceCacheHolderDataGeneratorForm extends PriceCacheKit
         ];
     }
 
+    /**
+     * @param DocumentManager $dm
+     * @param bool $useCategories
+     * @throws \Doctrine\ODM\MongoDB\LockException
+     * @throws \Doctrine\ODM\MongoDB\Mapping\MappingException
+     */
     public function afterUnserialize(DocumentManager $dm, bool $useCategories): void
     {
         $roomTypes = [];
@@ -270,6 +276,10 @@ class PriceCacheHolderDataGeneratorForm extends PriceCacheKit
         $this->tariffs = new ArrayCollection($tariffs);
     }
 
+    /**
+     * @param array $array
+     * @return array
+     */
     private function getIds(array $array): array
     {
         $ids = [];

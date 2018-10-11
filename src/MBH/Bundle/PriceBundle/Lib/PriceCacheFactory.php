@@ -14,7 +14,13 @@ class PriceCacheFactory extends PriceCacheKit
     public function create(array $data): PriceCache
     {
         foreach ($data as $property => $value) {
-            $this->$property = $value;
+            if ($value === '') {
+                continue;
+            }
+            if ($property === 'isPersonPrice') {
+                $value = (bool) $value;
+            }
+            $this->$property = is_numeric($value) ? (float) $value : $value;
         }
 
         return $this->createPriceCache();

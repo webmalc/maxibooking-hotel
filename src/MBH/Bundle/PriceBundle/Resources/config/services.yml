@@ -38,6 +38,11 @@ services:
           class: MBH\Bundle\PriceBundle\Services\PriceCache
           arguments: ['@service_container']
 
+  mbh.price.cache.result_update:
+      class: MBH\Bundle\PriceBundle\Services\PriceCacheResultUpdate
+      arguments:
+        - '@service_container'
+
   mbh.restriction:
             class: MBH\Bundle\PriceBundle\Services\Restriction
             arguments: ['@service_container']

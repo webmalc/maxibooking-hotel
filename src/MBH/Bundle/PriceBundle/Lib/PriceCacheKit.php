@@ -39,7 +39,7 @@ abstract class PriceCacheKit
     /**
      * @var bool
      */
-    protected $personPrice = false;
+    protected $isPersonPrice = false;
 
     /**
      * @var float|null
@@ -88,7 +88,7 @@ abstract class PriceCacheKit
      */
     public function isPersonPrice(): bool
     {
-        return $this->personPrice;
+        return $this->isPersonPrice;
     }
 
     /**
@@ -96,7 +96,7 @@ abstract class PriceCacheKit
      */
     public function setIsPersonPrice(bool $personPrice): void
     {
-        $this->personPrice = $personPrice;
+        $this->isPersonPrice = $personPrice;
     }
 
     /**
