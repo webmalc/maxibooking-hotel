@@ -550,3 +550,4 @@ total_rooms_overview_table.number_of_unused_rooms: 'Не использован�
 total_rooms_overview_table.total: Всего
 room_type_flow_type.room_type.label: 'Тип номера'
 room_type_flow_type.tariff.label: Тариф
+room_type_flow_type.hotel.label: Отель

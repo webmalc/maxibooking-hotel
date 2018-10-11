@@ -1,6 +1,15 @@
 <div id="actions" class="navbar navbar-default navbar-fixed-bottom main-footer">
     <div class="container-fluid">
         <ul class="nav navbar-nav">
+            {% if not flow.lastStep %}
+                <li>
+                    <button type="submit" name="next"
+                            class="btn btn-{{ flow.lastStep ? 'success' : 'primary' }} primary navbar-btn high-display-hidden">
+                        {{ 'views.flow.hotel_flow.next_button.title'|trans }}
+                        &nbsp;<i class="fa fa-arrow-right"></i>
+                    </button>
+                </li>
+            {% endif %}
             {% if flow.currentStepNumber > 1 %}
                 <li>
                     <button type="submit" class="btn btn-primary navbar-btn" name="back">
@@ -13,12 +22,12 @@
                 {% if flow.lastStep %}
                     <button type="submit" name="finish"
                             class="btn btn-{{ flow.lastStep ? 'success' : 'primary' }} primary navbar-btn">
-                        &nbsp;<i
-                                class="fa fa-check-square"></i>&nbsp; {{- 'views.flow.hotel_flow.finish_button.title' | trans -}}
+                        &nbsp;<i class="fa fa-check-square"></i>
+                        &nbsp; {{- 'views.flow.hotel_flow.finish_button.title' | trans -}}
                     </button>
                 {% else %}
                     <button type="submit" name="next"
-                            class="btn btn-{{ flow.lastStep ? 'success' : 'primary' }} primary navbar-btn">
+                            class="btn btn-{{ flow.lastStep ? 'success' : 'primary' }} primary navbar-btn mobile-hidden">
                         {{ 'views.flow.hotel_flow.next_button.title'|trans }}
                         &nbsp;<i class="fa fa-arrow-right"></i>
                     </button>

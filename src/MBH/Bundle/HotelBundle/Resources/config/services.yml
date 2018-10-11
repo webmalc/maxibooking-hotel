@@ -159,3 +159,7 @@ services:
         class: MBH\Bundle\HotelBundle\Form\MBSiteFlow\MBSiteFlowType
         arguments: ['@mbh.form_builder', '@mbh.site_manager', '@translator']
         tags: [{name: form.type}]
+
+    mbh.flow_manager:
+        class: MBH\Bundle\HotelBundle\Service\FlowManager
+        arguments: ['@service_container']

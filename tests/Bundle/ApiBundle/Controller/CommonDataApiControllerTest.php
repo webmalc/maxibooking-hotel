@@ -34,18 +34,20 @@ class CommonDataApiControllerTest extends WebTestCase
 
     private function loadFlowConfigs(): void
     {
+        //TODO: Исправить
         $dm = $this->getDm();
         $roomTypeFlowConfig = (new FlowConfig())
             ->setCurrentStep(3)
             ->setFlowData([])
-            ->setFlowId(RoomTypeFlow::getFlowId())
+//            ->setFlowId(RoomTypeFlow::getFlowId())
             ->setIsFinished(false);
         $dm->persist($roomTypeFlowConfig);
 
         $hotelFlowConfig = (new FlowConfig())
             ->setCurrentStep(8)
-            ->setIsFinished(true)
-            ->setFlowId(HotelFlow::getFlowId());
+            ->setIsFinished(true);
+            //TODO: Исправить
+//            ->setFlowId(HotelFlow::getFlowId());
         $dm->persist($hotelFlowConfig);
 
         $dm->flush();

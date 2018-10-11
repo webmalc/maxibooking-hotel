@@ -12,6 +12,8 @@ use Symfony\Component\Form\FormInterface;
 
 class HotelFlow extends FormFlow
 {
+    const FLOW_TYPE = 'hotel';
+
     /** @var Hotel */
     private $hotel;
     private $documentFieldsManager;
@@ -23,15 +25,9 @@ class HotelFlow extends FormFlow
         $this->formDataHandler = $formDataHandler;
     }
 
-    /**
-     * @param Hotel $hotel
-     * @return HotelFlow
-     */
-    public function setInitData(Hotel $hotel)
+    public static function getFlowType()
     {
-        $this->hotel = $hotel;
-
-        return $this;
+        return self::FLOW_TYPE;
     }
 
     /**

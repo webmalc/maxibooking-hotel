@@ -12,6 +12,8 @@ use Symfony\Component\Form\FormInterface;
 
 class MBSiteFlow extends FormFlow
 {
+    const FLOW_TYPE = 'site';
+
     private $siteManager;
     private $clientManager;
 
@@ -19,6 +21,11 @@ class MBSiteFlow extends FormFlow
     {
         $this->siteManager = $siteManager;
         $this->clientManager = $clientManager;
+    }
+
+    public static function getFlowType()
+    {
+        return self::FLOW_TYPE;
     }
 
     protected function getStepsConfig(): array

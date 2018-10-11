@@ -4,7 +4,23 @@ li.flow-step-tab {
     border-radius: 28px;
     padding: 0 17px;
     margin: 0 5px 5px 5px;
-    font-size: 35px;
+
+}
+@media (min-width: 768px) {
+    li.flow-step-tab {
+        -webkit-border-radius: 28px;
+        -moz-border-radius: 28px;
+        border-radius: 28px;
+        padding: 0 17px;
+        margin: 0 5px 5px 5px;
+        font-size: 35px;
+    }
+}
+@media (max-width: 767px) {
+    li.flow-step-tab {
+        font-size: 24px;
+        padding: 0 10px;
+    }
 }
 .flow-step-tab.not-passed-step {
     border: 3px solid #F3F2EE;

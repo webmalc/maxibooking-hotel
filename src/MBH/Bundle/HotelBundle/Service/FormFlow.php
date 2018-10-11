@@ -24,10 +24,29 @@ abstract class FormFlow
     protected $request;
     /** @var TranslatorInterface */
     protected $translator;
-    protected $customErrors = [];
-
+    protected $flowId;
 
     private $isFlowConfigInit = false;
+
+    abstract public static function getFlowType();
+    abstract protected function getStepsConfig(): array;
+    abstract protected function getFormData();
+    /**
+     * @param FormInterface $form
+     * @throws FlowRuntimeException
+     */
+    abstract protected function handleForm(FormInterface $form);
+
+    /**
+     * @param string|null $flowId
+     * @return static
+     */
+    public function init(string $flowId = null)
+    {
+        $this->flowId = $flowId;
+
+        return $this;
+    }
 
     public function setDm(DocumentManager $dm)
     {
@@ -51,16 +70,6 @@ abstract class FormFlow
     {
         $this->translator = $translator;
     }
-
-    abstract protected function getStepsConfig(): array;
-
-    abstract protected function getFormData();
-
-    /**
-     * @param FormInterface $form
-     * @throws FlowRuntimeException
-     */
-    abstract protected function handleForm(FormInterface $form);
 
     public function handleStepAndGetForm()
     {
@@ -101,7 +110,6 @@ abstract class FormFlow
     }
 
     /**
-     * @param $data
      * @param array $options
      * @return FormInterface
      */
@@ -110,7 +118,7 @@ abstract class FormFlow
         $data = $this->getFormData();
         if (!isset($this->getCurrentStepInfo()['form_type'])) {
             throw new \InvalidArgumentException(
-                'There is no "form_type" parameter in step config #'.$this->getCurrentStepNumber()
+                'There is no "form_type" parameter in step config #' . $this->getCurrentStepNumber()
             );
         }
 
@@ -243,13 +251,14 @@ abstract class FormFlow
     public function getFlowConfig()
     {
         if (!$this->isFlowConfigInit) {
-            $flowId = static::getFlowId();
+            $flowId = $this->getFlowId();
             $config = $this->dm
                 ->getRepository('MBHHotelBundle:FlowConfig')
                 ->findOneBy(['flowId' => $flowId, 'isEnabled' => true, 'isFinished' => false]);
 
             if (is_null($config)) {
                 $config = (new FlowConfig())
+                    ->setFlowType(static::getFlowType())
                     ->setFlowId($flowId);
             }
 
@@ -287,9 +296,13 @@ abstract class FormFlow
     /**
      * @return string
      */
-    public static function getFlowId(): string
+    public function getFlowId(): string
     {
-        return static::class;
+        if (empty($this->flowId)) {
+            throw new \RuntimeException('FormFlow is not initiated!');
+        }
+
+        return $this->flowId;
     }
 
     /**
@@ -308,7 +321,7 @@ abstract class FormFlow
         if (!$this->isFlowStarted()) {
             $finishedConfig = $this->dm
                 ->getRepository(FlowConfig::class)
-                ->findOneBy(['isFinished' => true, 'flowId' => self::getFlowId()]);
+                ->findOneBy(['isFinished' => true, 'flowId' => $this->getFlowId()]);
 
             return is_null($finishedConfig) ? 0 : 100;
         }

@@ -26,9 +26,10 @@ function drawLinesBetweenFlowTabs() {
 
     var firstTab = $stepTabs.get(0);
     var lineWidth = 10;
-    var tabWidth = parseInt(getComputedStyle(firstTab).width, 10);
+    var tabWidth = parseFloat(getComputedStyle(firstTab).width);
     var tabHeight = parseInt(getComputedStyle(firstTab).height, 10);
     var tabWidthPlusLineWidth = tabWidth + lineWidth;
+
 
     var top = Math.ceil(tabHeight / 2);
     var container = document.getElementById('tabs-container');

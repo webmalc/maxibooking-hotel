@@ -36,6 +36,20 @@ class RoomTypeFlowType extends AbstractType
         switch ($options['flow_step']) {
             case 1:
                 $builder
+                    ->add('hotel', DocumentType::class, [
+                        [
+                            'label' => 'room_type_flow_type.hotel.label',
+                            'required' => true,
+                            'class' => 'MBHHotelBundle:RoomType',
+                            'query_builder' => function (RoomTypeRepository $dr) use ($options) {
+                                return $dr->fetchQueryBuilder($options['hotel']);
+                            },
+                            'data' => $options['roomType'],
+                        ]
+                    ]);
+                break;
+            case 2:
+                $builder
                     ->add(
                         'roomType',
                         DocumentType::class,
@@ -50,7 +64,7 @@ class RoomTypeFlowType extends AbstractType
                         ]
                     );
                 break;
-            case 2:
+            case 3:
                 $this->mbhFormBuilder->mergeFormFields(
                     $builder,
                     RoomTypeType::class,
@@ -58,7 +72,7 @@ class RoomTypeFlowType extends AbstractType
                     ['roomSpace', 'facilities', 'description']
                 );
                 break;
-            case 4:
+            case 5:
                 $this->mbhFormBuilder->mergeFormFields(
                     $builder,
                     RoomTypeType::class,
@@ -66,7 +80,7 @@ class RoomTypeFlowType extends AbstractType
                     ['places', 'additionalPlaces']
                 );
                 break;
-            case 5:
+            case 6:
                 $builder
                     ->add(
                         'rooms',
@@ -86,20 +100,6 @@ class RoomTypeFlowType extends AbstractType
                                 new NotBlank(),
                             ],
                             'help' => 'room_type_flow_type.rooms.help',
-                        ]
-                    );
-                break;
-            case 6:
-                $builder
-                    ->add(
-                        'isPersonPrice',
-                        CheckboxType::class,
-                        [
-                            'label' => 'mbhpricebundle.form.pricecachegeneratortype.price_for_people',
-                            'group' => 'mbhpricebundle.form.pricecachegeneratortype.price',
-                            'required' => false,
-                            'help' => 'mbhpricebundle.form.pricecachegeneratortype.price_for_people_or_number',
-                            'attr' => ($options['isPersonPrice'] ? ['checked' => 'checked'] : [])
                         ]
                     );
                 break;

@@ -17,6 +17,7 @@ use Symfony\Component\Form\FormInterface;
 class RoomTypeFlow extends FormFlow
 {
     const DATE_FORMAT = 'd.m.Y H:i:s';
+    const FLOW_TYPE = 'roomType';
 
     private $hotel;
     private $documentFieldsManager;
@@ -29,18 +30,20 @@ class RoomTypeFlow extends FormFlow
         FormDataHandler $formDataHandler,
         RoomCache $roomCacheService,
         PriceCache $priceCacheService
-    ) {
+    )
+    {
         $this->documentFieldsManager = $documentFieldsManager;
         $this->formDataHandler = $formDataHandler;
         $this->roomCacheService = $roomCacheService;
         $this->priceCacheService = $priceCacheService;
     }
 
-    public function setInitData(Hotel $hotel)
+    /**
+     * @return string
+     */
+    public static function getFlowType()
     {
-        $this->hotel = $hotel;
-
-        return $this;
+        return self::FLOW_TYPE;
     }
 
     protected function getStepsConfig(): array
@@ -48,14 +51,17 @@ class RoomTypeFlow extends FormFlow
         $flowData = $this->getFlowData();
         $begin = isset($flowData['begin']) ? $this->getDateFromFlowData('begin') : new \DateTime();
         $end = isset($flowData['end']) ? $this->getDateFromFlowData('end') : new \DateTime('+14 days');
-        $isPersonPrice = $flowData['isPersonPrice'] ?? false;
         $price = $flowData['price'] ?? null;
         $additionalPrice = $flowData['additionalPrice'] ?? null;
         $roomCaches = $flowData['rooms'] ?? null;
 
         return [
             [
-                'label' => 'Тип номера',
+                'label' => 'room_type_flow.step_labels.hotel',
+                'form_type' => RoomTypeFlowType::class
+            ],
+            [
+                'label' => 'room_type_flow.step_labels.room_type',
                 'form_type' => RoomTypeFlowType::class,
                 'options' => [
                     'hotel' => $this->hotel,
@@ -82,14 +88,6 @@ class RoomTypeFlow extends FormFlow
                 'form_type' => RoomTypeFlowType::class,
                 'options' => [
                     'rooms' => $roomCaches,
-                ],
-            ],
-            [
-                'label' => 'room_type_flow.step_labels.prices_type',
-                'form_type' => RoomTypeFlowType::class,
-                'options' => [
-                    'hotel' => $this->hotel,
-                    'isPersonPrice' => $isPersonPrice,
                 ],
             ],
             [
@@ -154,37 +152,44 @@ class RoomTypeFlow extends FormFlow
         if (in_array($this->getCurrentStepNumber(), [1, 5, 6, 7, 8, 9])) {
             $flowConfig = $this->getFlowConfig();
             $flowData = $flowConfig->getFlowData();
-            if ($this->getCurrentStepNumber() === 1) {
-                /** @var RoomType $roomType */
-                $roomType = $formData['roomType'];
-                $flowData['roomTypeId'] = $roomType->getId();
-            } elseif ($this->getCurrentStepNumber() === 8) {
-                /** @var Tariff $tariff */
-                $tariff = $formData['tariff'];
-                $flowData['pricesTariffId'] = $tariff->getId();
-            } elseif ($this->getCurrentStepNumber() === 7) {
-                /** @var \DateTime $begin */
-                $begin = $formData['begin'];
-                /** @var \DateTime $end */
-                $end = $formData['end'];
+            switch ($this->getCurrentStepNumber()) {
+                case 1:
+                    break;
+                case 2:
+                    /** @var RoomType $roomType */
+                    $roomType = $formData['roomType'];
+                    $flowData['roomTypeId'] = $roomType->getId();
+                    break;
+                case 7:
+                    /** @var \DateTime $begin */
+                    $begin = $formData['begin'];
+                    /** @var \DateTime $end */
+                    $end = $formData['end'];
 
-                $flowData['begin'] = $begin->format(self::DATE_FORMAT);
-                $flowData['end'] = $end->format(self::DATE_FORMAT);
-            } else {
-                $flowData = array_replace($flowData, $formData);
+                    $flowData['begin'] = $begin->format(self::DATE_FORMAT);
+                    $flowData['end'] = $end->format(self::DATE_FORMAT);
+                    break;
+                case 8:
+                    /** @var Tariff $tariff */
+                    $tariff = $formData['tariff'];
+                    $flowData['pricesTariffId'] = $tariff->getId();
+                    break;
+                default:
+                    $flowData = array_replace($flowData, $formData);
+                    break;
             }
 
             $flowConfig->setFlowData($flowData);
         }
 
-        if (in_array($this->getCurrentStepNumber(), [2])) {
+        if (in_array($this->getCurrentStepNumber(), [3])) {
             $multiLangFields = $this->documentFieldsManager
                 ->getPropertiesByAnnotationClass(RoomType::class);
             $this->formDataHandler
                 ->saveTranslationsFromMultipleFieldsForm($form, $this->request, $multiLangFields);
         }
 
-        if ($this->getCurrentStepNumber() === 3 && $form->getData() && $form->getData()->getImageFile()) {
+        if ($this->getCurrentStepNumber() === 4 && $form->getData() && $form->getData()->getImageFile()) {
             $onlineImage = $form->getData();
             $roomType = $this->getManagedRoomType();
             $roomType->addOnlineImage($onlineImage);

@@ -6,8 +6,6 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
-use MBH\Bundle\HotelBundle\Form\HotelFlow\HotelFlow;
-use MBH\Bundle\HotelBundle\Form\RoomTypeFlow\RoomTypeFlow;
 
 /**
  * @ODM\Document()
@@ -42,6 +40,31 @@ class FlowConfig extends Base
      * @ODM\Field(type="bool")
      */
     private $isFinished = false;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     */
+    private $flowType;
+
+    /**
+     * @return string
+     */
+    public function getFlowType(): ?string
+    {
+        return $this->flowType;
+    }
+
+    /**
+     * @param string $flowType
+     * @return FlowConfig
+     */
+    public function setFlowType(string $flowType): FlowConfig
+    {
+        $this->flowType = $flowType;
+
+        return $this;
+    }
 
     /**
      * @return bool
@@ -137,16 +160,5 @@ class FlowConfig extends Base
         $this->flowId = $flowId;
 
         return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public static function getFlowTypes()
-    {
-        return [
-            RoomTypeFlow::getFlowId(),
-            HotelFlow::getFlowId()
-        ];
     }
 }
