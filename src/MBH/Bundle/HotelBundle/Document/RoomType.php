@@ -20,6 +20,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use MBH\Bundle\BaseBundle\Lib\Disableable as Disableable;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
+use Swagger\Annotations as SWG;
 
 /**
  * @ODM\Document(collection="RoomTypes", repositoryClass="MBH\Bundle\HotelBundle\Document\RoomTypeRepository")
@@ -61,9 +62,11 @@ class RoomType extends Base implements RoomTypeInterface
     /**
      * @var Hotel
      * @Groups({"full"})
+     *
      * @ODM\ReferenceOne(targetDocument="Hotel", inversedBy="roomTypes")
      * @Assert\NotNull(message="validator.document.roomType.hotel_in_not_select")
      * @ODM\Index()
+     * @SWG\Property(type="string", description="1121231231231")
      */
     protected $hotel;
 

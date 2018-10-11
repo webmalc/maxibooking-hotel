@@ -517,6 +517,7 @@ services:
             - '@translator'
             - '@property_accessor'
             - '@annotation_reader'
+            - '@mbh.helper'
 
     mbh.messages_store:
         class: MBH\Bundle\BaseBundle\Service\Messenger\MessagesStore

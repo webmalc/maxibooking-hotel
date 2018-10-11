@@ -5,6 +5,7 @@ namespace MBH\Bundle\BaseBundle\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
+use Swagger\Annotations as SWG;
 
 
 /**
@@ -15,6 +16,7 @@ class Base
 {
     /**
      * @var string
+     * @SWG\Property(type="string", description="identifier of object")
      * @ODM\Id
      */
     protected $id;

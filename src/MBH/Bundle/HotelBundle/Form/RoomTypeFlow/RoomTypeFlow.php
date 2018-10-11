@@ -233,7 +233,7 @@ class RoomTypeFlow extends FormFlow
      */
     private function getDateFromFlowData($fieldName)
     {
-        return \DateTime::createFromFormat(self::DATE_FORMAT, $this->getFlowData()[$fieldName] . ' 00:00:00');
+        return \DateTime::createFromFormat(self::DATE_FORMAT, $this->getFlowData()[$fieldName]);
     }
 
     /**

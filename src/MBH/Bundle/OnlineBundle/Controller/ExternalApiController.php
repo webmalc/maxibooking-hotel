@@ -14,6 +14,7 @@ use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Service;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -30,12 +31,14 @@ use Swagger\Annotations as SWG;
 class ExternalApiController extends BaseController
 {
     /**
+     * Return list of room types by requested conditions
+     *
      * @Cache(expires="+1 hour", public=true)
      * @Method("GET")
      * @SWG\Get(
      *     path="/management/online/api/roomTypes",
      *     produces={"application/json"},
-     *     @SWG\Response(response="200", description="Return array of room types"),
+     *     @SWG\Response(response="200", description="Return array of room types", @Model(type="MBH\Bundle\HotelBundle\Document\RoomType::class")),
      *     @SWG\Parameter(name="onlineFormId", in="query", type="string", required=true, description="Id of the online form"),
      *     @SWG\Parameter(name="roomTypeIds", in="query", type="array", required=false, @SWG\Items(type="string"), description="List of room type ids"),
      *     @SWG\Parameter(name="hotelIds", in="query", type="array", required=false, @SWG\Items(type="string"), description="List of hotel ids"),
@@ -111,6 +114,8 @@ class ExternalApiController extends BaseController
     }
 
     /**
+     * Return list of tariffs
+     *
      * @Cache(expires="+1 hour", public=true)
      * @Method("GET")
      * @SWG\Get(
