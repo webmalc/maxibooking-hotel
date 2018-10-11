@@ -4,6 +4,8 @@ namespace MBH\Bundle\PriceBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PriceBundle\Lib\PriceCacheHolderDataGeneratorForm;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -22,12 +24,26 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  */
 class PriceCacheGeneratorType extends AbstractType
 {
+    /**
+     * @var string[]
+     */
+    private $weekdays;
+
+    public function __construct(array $weekdays) {
+        $this->weekdays = $weekdays;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $isIndividualAdditionalPrices = 0;
 
-        if ($options['hotel']) {
-            foreach ($options['hotel']->getRoomTypes() as $roomType) {
+        /** @var PriceCacheHolderDataGeneratorForm $generator */
+        $generator = $builder->getData();
+        $hotel = $generator->getHotel();
+
+        if ($hotel !== null) {
+            /** @var RoomType $roomType */
+            foreach ($hotel->getRoomTypes() as $roomType) {
                 if ($options['useCategories']) {
                     if ($roomType->getCategory() && $roomType->getCategory()->getIsIndividualAdditionalPrices() && $roomType->getAdditionalPlaces() > $isIndividualAdditionalPrices) {
                         $isIndividualAdditionalPrices = $roomType->getAdditionalPlaces();
@@ -77,7 +93,7 @@ class PriceCacheGeneratorType extends AbstractType
                 'required' => false,
                 'group' => 'Настройки',
                 'multiple' => true,
-                'choices' => $options['weekdays'],
+                'choices' => $this->weekdays,
                 'help' => 'Дни недели для которых будет произведена генерация наличия мест',
                 'attr' => array('placeholder' => 'все дни недели'),
             ])
@@ -87,11 +103,11 @@ class PriceCacheGeneratorType extends AbstractType
                 'group' => 'Настройки',
                 'multiple' => true,
                 'class' => $repo,
-                'query_builder' => function (DocumentRepository $dr) use ($options) {
-                    return $dr->fetchQueryBuilder($options['hotel']);
+                'query_builder' => function (DocumentRepository $dr) use ($hotel) {
+                    return $dr->fetchQueryBuilder($hotel);
                 },
                 'help' => 'Типы номеров для которых будет произведена генерация цен',
-                'attr' => array('placeholder' => $options['hotel'] . ': все типы номеров', 'class' => 'select-all'),
+                'attr' => array('placeholder' => $hotel . ': все типы номеров', 'class' => 'select-all'),
             ])
             ->add('tariffs', DocumentType::class, [
                 'label' => 'Тарифы',
@@ -99,11 +115,11 @@ class PriceCacheGeneratorType extends AbstractType
                 'group' => 'Настройки',
                 'multiple' => true,
                 'class' => 'MBHPriceBundle:Tariff',
-                'query_builder' => function (DocumentRepository $dr) use ($options) {
-                    return $dr->fetchChildTariffsQuery($options['hotel'], 'prices');
+                'query_builder' => function (DocumentRepository $dr) use ($hotel) {
+                    return $dr->fetchChildTariffsQuery($hotel, 'prices');
                 },
                 'help' => 'Тарифы для которых будет произведена генерация цен',
-                'attr' => array('placeholder' => $options['hotel'] . ': все тарифы', 'class' => 'select-all'),
+                'attr' => array('placeholder' => $hotel . ': все тарифы', 'class' => 'select-all'),
             ])
             ->add('price', TextType::class, [
                 'label' => 'Цена',
@@ -249,7 +265,6 @@ class PriceCacheGeneratorType extends AbstractType
                         'required' => false
                     ]);
             }
-            $builder->add('additionalPricesCount', HiddenType::class, ['data' => $isIndividualAdditionalPrices]);
         }
 
         $builder->add('saveForm', CheckboxType::class, [
@@ -259,12 +274,12 @@ class PriceCacheGeneratorType extends AbstractType
         ]);
     }
 
-    public function checkDates($data, ExecutionContextInterface $context)
+    public function checkDates(PriceCacheHolderDataGeneratorForm $data, ExecutionContextInterface $context)
     {
-        if ($data['begin'] >= $data['end']) {
+        if ($data->getBegin() > $data->getEnd()) {
             $context->addViolation('Начало периода должно быть меньше конца периода.');
         }
-        if ($data['end']->diff($data['begin'])->format("%a") > 370) {
+        if ($data->getEnd()->diff($data->getBegin())->format("%a") > 370) {
             $context->addViolation('Период не может быть больше года.');
         }
     }
@@ -272,10 +287,9 @@ class PriceCacheGeneratorType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'weekdays' => [],
-            'hotel' => null,
+            'data_class'    => PriceCacheHolderDataGeneratorForm::class,
             'useCategories' => false,
-            'constraints' => new Callback([$this, 'checkDates'])
+            'constraints'   => new Callback([$this, 'checkDates']),
         ]);
     }
 

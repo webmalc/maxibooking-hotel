@@ -30,6 +30,18 @@ services:
           class: MBH\Bundle\PriceBundle\Services\PriceCache
           arguments: ['@service_container']
 
+  mbh.price.cache.result_update:
+      class: MBH\Bundle\PriceBundle\Services\PriceCacheResultUpdate
+      arguments:
+        - '@service_container'
+
+  mbh.price_cache_generator_type:
+      class: MBH\Bundle\PriceBundle\Form\PriceCacheGeneratorType
+      arguments:
+        - '%mbh.weekdays%'
+      tags:
+        - {name: form.type}
+
   mbh.restriction:
             class: MBH\Bundle\PriceBundle\Services\Restriction
             arguments: ['@service_container']
