@@ -15,13 +15,13 @@ use Symfony\Component\HttpFoundation\Session\Session;
 
 class PriceCacheResultUpdate
 {
-    private const TEXT_NO_DATA_UPDATE = 'Нет данных для обновления.';
-    private const TEXT_REMOVE = 'Удалено записей: %s.';
-    private const TEXT_CREATE = 'Создано записей: %s .';
-    private const TEXT_UPDATE = 'Обновлено записей: %s.';
-    private const TEXT_WEEKDAYS = 'На указанные даты: %s, нет выбранных дней недели.';
-    private const TEXT_SAME = 'Т.к. предложенные цены совпадают с раннее установленными, изменения не были применены для дат: %s.';
-    private const TEXT_ERROR = 'Некорректные данные для следующих дней: %s.';
+    private const TEXT_NO_DATA_UPDATE = 'price.result_update.no_data_for_update';
+    private const TEXT_REMOVE = 'price.result_update.removed';
+    private const TEXT_CREATE = 'price.result_update.create';
+    private const TEXT_UPDATE = 'price.result_update.update';
+    private const TEXT_WEEKDAYS = 'price.result_update.weekdays';
+    private const TEXT_SAME = 'price.result_update.same';
+    private const TEXT_ERROR = 'price.result_update.error';
 
     /**
      * @var ContainerInterface
@@ -60,6 +60,7 @@ class PriceCacheResultUpdate
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
+        $this->trans = $container->get('translator');
     }
 
     /**
@@ -82,11 +83,16 @@ class PriceCacheResultUpdate
             $this->addMsgToFlashBag($flashBag, $this->makeMsgForCreate());
 
             if ($this->haveRemoves()) {
-                $flashBag->add('success', sprintf(self::TEXT_REMOVE, $this->getAmountRemove()));
+                $flashBag->add('success', sprintf($this->trans(self::TEXT_REMOVE), $this->getAmountRemove()));
             }
         } else {
-            $session->getFlashBag()->add('info', self::TEXT_NO_DATA_UPDATE);
+            $session->getFlashBag()->add('info', $this->trans(self::TEXT_NO_DATA_UPDATE));
         }
+    }
+
+    private function trans(string $string): string
+    {
+        return $this->trans->trans($string);
     }
 
     /**
@@ -115,10 +121,10 @@ class PriceCacheResultUpdate
         $errorDates = $this->getGroupAtUpdate(PriceCacheSkippingDate::REASON_ERROR);
 
         if ($this->haveUpdates()) {
-            $fullMsg['new'] = sprintf(self::TEXT_UPDATE, $this->getAmountUpdate());
+            $fullMsg['new'] = sprintf($this->trans(self::TEXT_UPDATE), $this->getAmountUpdate());
         }
         if ($sameDates !== []) {
-            $fullMsg[] = sprintf(self::TEXT_SAME, implode(', ', $sameDates));
+            $fullMsg[] = sprintf($this->trans(self::TEXT_SAME), implode(', ', $sameDates));
         }
 
         $this->commonMsg($weekdaysDates, $errorDates, $fullMsg);
@@ -134,11 +140,11 @@ class PriceCacheResultUpdate
     private function commonMsg(array $weekdaysDates, array $errorDates, array &$fullMsg): void
     {
         if ($weekdaysDates !== []) {
-            $fullMsg[] = sprintf(self::TEXT_WEEKDAYS, implode(', ', $weekdaysDates));
+            $fullMsg[] = sprintf($this->trans(self::TEXT_WEEKDAYS), implode(', ', $weekdaysDates));
         }
 
         if ($errorDates !== []) {
-            $fullMsg[] = sprintf(self::TEXT_ERROR, implode(', ', $errorDates));
+            $fullMsg[] = sprintf($this->trans(self::TEXT_ERROR), implode(', ', $errorDates));
         }
     }
 
@@ -153,7 +159,7 @@ class PriceCacheResultUpdate
         $errorDates = $this->getGroupAtCreate(PriceCacheSkippingDate::REASON_ERROR);
 
         if ($this->haveCreates()) {
-            $fullMsg['new'] = sprintf(self::TEXT_CREATE, $this->getAmountCreate());
+            $fullMsg['new'] = sprintf($this->trans(self::TEXT_CREATE), $this->getAmountCreate());
         }
 
         $this->commonMsg($weekdaysDates, $errorDates, $fullMsg);
