@@ -288,7 +288,7 @@ class PriceCacheGeneratorType extends AbstractType
 
     public function checkDates(PriceCacheHolderDataGeneratorForm $data, ExecutionContextInterface $context)
     {
-        if ($data->getBegin() >= $data->getEnd()) {
+        if ($data->getBegin() > $data->getEnd()) {
             $context->addViolation('mbhpricebundle.form.pricecachegeneratortype.beginning_period_should_be_less_than_end_period');
         }
         if ($data->getEnd()->diff($data->getBegin())->format("%a") > 370) {
