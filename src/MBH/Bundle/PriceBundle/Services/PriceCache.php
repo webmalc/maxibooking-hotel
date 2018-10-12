@@ -2,7 +2,8 @@
 
 namespace MBH\Bundle\PriceBundle\Services;
 
-use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\PriceBundle\Lib\PriceCacheHolderDataGeneratorForm;
+use MBH\Bundle\PriceBundle\Lib\PriceCacheSkippingDate;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -27,77 +28,53 @@ class PriceCache
     protected $helper;
     private $roomManager;
 
+    /**
+     * @var PriceCacheResultUpdate
+     */
+    private $resultUpdate;
+
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
         $this->dm = $container->get('doctrine_mongodb')->getManager();
         $this->helper = $this->container->get('mbh.helper');
         $this->roomManager = $this->container->get('mbh.hotel.room_type_manager');
+        $this->resultUpdate = $this->container->get('mbh.price.cache.result_update');
     }
 
     /**
-     * @param \DateTime $begin
-     * @param \DateTime $end
-     * @param Hotel $hotel
-     * @param $price
-     * @param bool|false $isPersonPrice
-     * @param null $singlePrice
-     * @param null $additionalPrice
-     * @param null $additionalChildrenPrice
-     * @param array $availableRoomTypes
-     * @param array $availableTariffs
-     * @param array $weekdays
-     * @param null $childPrice
-     * @param array $additionalPrices
-     * @param array $additionalChildrenPrices
-     * @throws \Exception
+     * @param PriceCacheHolderDataGeneratorForm $holderDataForm
+     * @return PriceCacheResultUpdate
+     * @throws \MongoException
      */
-    public function update(
-        \DateTime $begin,
-        \DateTime $end,
-        Hotel $hotel,
-        $price,
-        $isPersonPrice = false,
-        $singlePrice = null,
-        $additionalPrice = null,
-        $additionalChildrenPrice = null,
-        array $availableRoomTypes = [],
-        array $availableTariffs = [],
-        array $weekdays = [],
-        $childPrice = null,
-        array $additionalPrices = [],
-        array $additionalChildrenPrices = []
-    ) {
+    public function update(PriceCacheHolderDataGeneratorForm $holderDataForm): PriceCacheResultUpdate
+    {
+        $priceCachesUpdate = $priceCachesCreate = $updateCaches = $updates = $remove = [];;
+
+        $begin = $holderDataForm->getBegin();
+        $end = $holderDataForm->getEnd();
+        $hotel = $holderDataForm->getHotel();
+        $price = $holderDataForm->getPrice();
+        $isPersonPrice = $holderDataForm->isPersonPrice();
+        $singlePrice = $holderDataForm->getSinglePrice();
+        $additionalPrice = $holderDataForm->getAdditionalPrice();
+        $additionalChildrenPrice = $holderDataForm->getAdditionalChildrenPrice();
+        $availableRoomTypes = $holderDataForm->getRoomTypesAsArray();
+        $availableTariffs = $holderDataForm->getTariffsAsArray();
+        $weekdays = $holderDataForm->getWeekdays();
+        $childPrice = $holderDataForm->getChildPrice();
+        $additionalPrices = $holderDataForm->getAdditionalPrices();
+        $additionalChildrenPrices = $holderDataForm->getAdditionalChildrenPrices();
+
         $endWithDay = clone $end;
         $endWithDay->modify('+1 day');
-        $priceCaches = $updateCaches = $updates = $remove = [];
-
-        is_numeric($singlePrice) ? $singlePrice = (float) $singlePrice : $singlePrice;
-        is_numeric($additionalPrice) ? $additionalPrice = (float) $additionalPrice : $additionalPrice;
-        is_numeric($childPrice) ? $childPrice = (float) $childPrice : $childPrice;
-        is_numeric($additionalChildrenPrice) ? $additionalChildrenPrice = (float) $additionalChildrenPrice : $additionalChildrenPrice;
-
-        foreach ($additionalPrices as $key => $p) {
-            if ($p != '' && !is_null($p)) {
-                $additionalPrices[$key] = (float) $p;
-            } else {
-                $additionalPrices[$key] = null;
-            }
-        }
-        foreach ($additionalChildrenPrices as $key => $p) {
-            if ($p != '' && !is_null($p)) {
-                $additionalChildrenPrices[$key] = (float) $p;
-            } else {
-                $additionalChildrenPrices[$key] = null;
-            }
-        }
 
         $roomTypes = $availableRoomTypes;
-        if (empty($roomTypes)) {
+        if ($roomTypes === []) {
             $roomTypes = $this->roomManager->getRooms($hotel)->toArray();
         }
 
-        (empty($availableTariffs)) ? $tariffs = $hotel->getTariffs()->toArray() : $tariffs = $availableTariffs;
+        $availableTariffs === [] ? $tariffs = $hotel->getTariffs()->toArray() : $tariffs = $availableTariffs;
 
         // find && group old caches
         $oldPriceCachesCallback = function () use ($begin, $end, $hotel, $roomTypes, $tariffs) {
@@ -111,21 +88,21 @@ class PriceCache
         /** @var \MBH\Bundle\PriceBundle\Document\PriceCache $oldPriceCache */
         foreach ($oldPriceCaches as $oldPriceCache) {
 
-            if (!empty($weekdays) && !in_array($oldPriceCache->getDate()->format('w'), $weekdays)) {
+            if ($weekdays !== [] && !in_array($oldPriceCache->getDate()->format('w'), $weekdays)) {
+                $this
+                    ->resultUpdate
+                    ->addSkippedDaysAtUpdate(new PriceCacheSkippingDate(PriceCacheSkippingDate::REASON_WEEKDAYS,$oldPriceCache->getDate()));
                 continue;
             }
 
             $updateCaches[$oldPriceCache->getDate()->format('d.m.Y')][$oldPriceCache->getTariff()->getId()][$oldPriceCache->getCategoryOrRoomType($this->roomManager->useCategories)->getId()] = $oldPriceCache;
 
-            if ($oldPriceCache->getPrice() == $price
-                && $oldPriceCache->getChildPrice() == $childPrice
-                && $oldPriceCache->getIsPersonPrice() == $isPersonPrice
-                && $oldPriceCache->getSinglePrice() == $singlePrice
-                && $oldPriceCache->getAdditionalPrice() == $additionalPrice
-                && $oldPriceCache->getAdditionalChildrenPrice() == $additionalChildrenPrice
-                && $oldPriceCache->getAdditionalPrices() == $additionalPrices
-                && $oldPriceCache->getAdditionalChildrenPrices() == $additionalChildrenPrices
-            ) {
+            $tempPriceCache = $holderDataForm->createPriceCache();
+
+            if ($oldPriceCache->isSamePriceCaches($tempPriceCache)) {
+                $this
+                    ->resultUpdate
+                    ->addSkippedDaysAtUpdate(new PriceCacheSkippingDate(PriceCacheSkippingDate::REASON_SAME, $oldPriceCache->getDate()));
                 continue;
             }
 
@@ -148,13 +125,13 @@ class PriceCache
             }
 
             if ($price != -1) {
-                $priceCaches[] = [
+                $priceCachesUpdate[] = [
                     'hotel' => \MongoDBRef::create('Hotels', new \MongoId($hotel->getId())),
                     $field => \MongoDBRef::create($collection, new \MongoId($collectionId)),
                     'tariff' => \MongoDBRef::create('Tariffs', new \MongoId($oldPriceCache->getTariff()->getId())),
                     'createdAt' => new \MongoDate((new \DateTime())->getTimestamp()),
                     'date' => new \MongoDate($oldPriceCache->getDate()->getTimestamp()),
-                    'price' => (float) $price,
+                    'price' => $price,
                     'childPrice' => $childPrice,
                     'isPersonPrice' => $isPersonPrice,
                     'singlePrice' => $singlePrice,
@@ -167,6 +144,9 @@ class PriceCache
             }
         }
 
+        $this->resultUpdate->setAmountRemove(count($updates));
+        $this->resultUpdate->setAmountUpdate(count($priceCachesUpdate));
+
         if ($price != -1) {
             foreach ($tariffs as $tariff) {
                 foreach ($roomTypes as $roomType) {
@@ -176,7 +156,10 @@ class PriceCache
                         if (isset($updateCaches[$date->format('d.m.Y')][$tariff->getId()][$roomType->getId()])) {
                             continue;
                         }
-                        if (!empty($weekdays) && !in_array($date->format('w'), $weekdays)) {
+                        if ($weekdays !== [] && !in_array($date->format('w'), $weekdays)) {
+                            $this
+                                ->resultUpdate
+                                ->addSkippedDaysAtCreate(new PriceCacheSkippingDate(PriceCacheSkippingDate::REASON_WEEKDAYS, $date));
                             continue;
                         }
 
@@ -188,13 +171,13 @@ class PriceCache
                             $collection = 'RoomTypes';
                         }
 
-                        $priceCaches[] = [
+                        $priceCachesCreate[] = [
                             'hotel' => \MongoDBRef::create('Hotels', new \MongoId($hotel->getId())),
                             $field => \MongoDBRef::create($collection, new \MongoId($roomType->getId())),
                             'tariff' => \MongoDBRef::create('Tariffs', new \MongoId($tariff->getId())),
                             'date' => new \MongoDate($date->getTimestamp()),
                             'createdAt' => new \MongoDate((new \DateTime())->getTimestamp()),
-                            'price' => (float)$price,
+                            'price' => $price,
                             'childPrice' => $childPrice,
                             'isPersonPrice' => $isPersonPrice,
                             'singlePrice' => $singlePrice,
@@ -209,7 +192,12 @@ class PriceCache
             }
         }
 
-        $this->container->get('mbh.mongo')->batchInsert('PriceCache', $priceCaches);
+        $this->resultUpdate->setAmountCreate(count($priceCachesCreate));
+
+        $this->container->get('mbh.mongo')
+            ->batchInsert('PriceCache', array_merge($priceCachesUpdate, $priceCachesCreate));
         $this->container->get('mbh.mongo')->update('PriceCache', $updates);
+
+        return $this->resultUpdate;
     }
 }

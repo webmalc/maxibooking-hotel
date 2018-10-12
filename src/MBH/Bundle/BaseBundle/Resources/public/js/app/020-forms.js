@@ -408,26 +408,25 @@ var docReadyForms = function () {
     };
 
     var helperDate = {
-        returnPlusOneDay: function(date) {
-            if (date === undefined || date === null) {
-                return date;
+            returnPlusOneDay: function(date) {
+                if (date === undefined || date === null) {
+                    return date;
+                }
+                var newDate = moment(date);
+                newDate.add(1, 'day');
+
+                return newDate.format('DD.MM.YYYY');
             }
-            var newDate = moment(date);
-            newDate.add(1, 'day');
+        },
+        changeEndDate = function(divElement, key) {
+            var cssClass = new CssClassName(key),
+                inputBegin = divElement.querySelector('.datepicker.begin-datepicker'),
+                inputEnd = divElement.querySelector('.datepicker.end-datepicker');
 
-            return newDate.format('DD.MM.YYYY');
-        }
-    };
+            inputBegin.classList.add(cssClass.getBegin());
+            inputEnd.classList.add(cssClass.getEnd());
 
-    document.querySelectorAll('.filter-form_group-date .filter-form_input-group').forEach(function(divElement, key) {
-        var cssClass = new CssClassName(key),
-            inputBegin = divElement.querySelector('.datepicker.begin-datepicker'),
-            inputEnd = divElement.querySelector('.datepicker.end-datepicker');
-
-        inputBegin.classList.add(cssClass.getBegin());
-        inputEnd.classList.add(cssClass.getEnd());
-
-        $(inputBegin).datepicker(optionForDatepicker.common())
+            $(inputBegin).datepicker(optionForDatepicker.common())
             .on('changeDate', function() {
                 var dateEnd = $(inputEnd).datepicker('getUTCDate'),
                     dateBegin = $(inputBegin).datepicker('getUTCDate');
@@ -439,11 +438,19 @@ var docReadyForms = function () {
                 }
             });
 
-        $(inputEnd).datepicker(
-            optionForDatepicker.addStartDate(
-                helperDate.returnPlusOneDay($(inputBegin).datepicker('getUTCDate'))
-            )
-        );
+            $(inputEnd).datepicker(
+                optionForDatepicker.addStartDate(
+                    helperDate.returnPlusOneDay($(inputBegin).datepicker('getUTCDate'))
+                )
+            );
+        };
+
+    document.querySelectorAll('.change-date-in-end-datepicker').forEach(function(divElement, key) {
+        changeEndDate(divElement, key);
+    });
+
+    document.querySelectorAll('.filter-form_group-date .filter-form_input-group').forEach(function(divElement, key) {
+        changeEndDate(divElement, key);
     });
 
     $('.datepicker:not([class^="' + CssClassName.prototype.getPrefix() + '"])').datepicker(optionForDatepicker.common());
@@ -464,10 +471,10 @@ var docReadyForms = function () {
         }
         var str = $(this).val().replace(/[^0-9]/g, '').substr(0, 8);
         if (str.length > 1) {
-            var str = [str.slice(0, 2), '.', str.slice(2)].join('');
+            str = [str.slice(0, 2), '.', str.slice(2)].join('');
         }
         if (str.length > 4) {
-            var str = [str.slice(0, 5), '.', str.slice(5)].join('');
+            str = [str.slice(0, 5), '.', str.slice(5)].join('');
         }
         $(this).val(str);
 

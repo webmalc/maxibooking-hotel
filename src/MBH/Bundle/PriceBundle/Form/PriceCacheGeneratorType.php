@@ -8,6 +8,7 @@ use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
 use MBH\Bundle\PriceBundle\Document\TariffRepository;
+use MBH\Bundle\PriceBundle\Lib\PriceCacheHolderDataGeneratorForm;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -32,17 +33,27 @@ class PriceCacheGeneratorType extends AbstractType
      */
     private $translator;
 
-    public function __construct(TranslatorInterface $translator) {
+    /**
+     * @var string[]
+     */
+    private $weekdays;
+
+    public function __construct(TranslatorInterface $translator, array $weekdays) {
         $this->translator = $translator;
+        $this->weekdays = $weekdays;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $isIndividualAdditionalPrices = 0;
 
-        if ($options['hotel']) {
+        /** @var PriceCacheHolderDataGeneratorForm $generator */
+        $generator = $builder->getData();
+        $hotel = $generator->getHotel();
+
+        if ($hotel !== null) {
             /** @var RoomType $roomType */
-            foreach ($options['hotel']->getRoomTypes() as $roomType) {
+            foreach ($hotel->getRoomTypes() as $roomType) {
                 if ($options['useCategories']) {
                     if ($roomType->getCategory() && $roomType->getCategory()->getIsIndividualAdditionalPrices() && $roomType->getAdditionalPlaces() > $isIndividualAdditionalPrices) {
                         $isIndividualAdditionalPrices = $roomType->getAdditionalPlaces();
@@ -92,7 +103,7 @@ class PriceCacheGeneratorType extends AbstractType
                 'required' => false,
                 'group' => 'mbhpricebundle.form.pricecachegeneratortype.settings',
                 'multiple' => true,
-                'choices' => $options['weekdays'],
+                'choices' => $this->weekdays,
                 'help' => 'mbhpricebundle.form.pricecachegeneratortype.dninedelidlyagotorykhbudetproizvedenageneratsiyanalichiyamest',
                 'attr' => array('placeholder' => 'mbhpricebundle.form.pricecachegeneratortype.vse.dni.nedeli'),
             ])
@@ -102,12 +113,12 @@ class PriceCacheGeneratorType extends AbstractType
                 'group' => 'mbhpricebundle.form.pricecachegeneratortype.settings',
                 'multiple' => true,
                 'class' => $repo,
-                'query_builder' => function (DocumentRepository $dr) use ($options) {
+                'query_builder' => function (DocumentRepository $dr) use ($hotel) {
                     /** @var RoomTypeRepository $dr */
-                    return $dr->fetchQueryBuilder($options['hotel']);
+                    return $dr->fetchQueryBuilder($hotel);
                 },
                 'help' => 'mbhpricebundle.form.pricecachegeneratortype.tipynomerovdlyagotorykhbudetproizvedenageneratsiyatsen',
-                'attr' => array('placeholder' => $options['hotel'] . ': mbhpricebundle.form.pricecachegeneratortype.vse.tipy.nomerov', 'class' => 'select-all'),
+                'attr' => array('placeholder' => $hotel . ': mbhpricebundle.form.pricecachegeneratortype.vse.tipy.nomerov', 'class' => 'select-all'),
             ])
             ->add('tariffs', DocumentType::class, [
                 'label' => 'mbhpricebundle.form.pricecachegeneratortype.tarify',
@@ -115,12 +126,12 @@ class PriceCacheGeneratorType extends AbstractType
                 'group' => 'mbhpricebundle.form.pricecachegeneratortype.settings',
                 'multiple' => true,
                 'class' => 'MBHPriceBundle:Tariff',
-                'query_builder' => function (DocumentRepository $dr) use ($options) {
+                'query_builder' => function (DocumentRepository $dr) use ($hotel) {
                     /** @var TariffRepository $dr */
-                    return $dr->fetchChildTariffsQuery($options['hotel'], 'prices');
+                    return $dr->fetchChildTariffsQuery($hotel, 'prices');
                 },
                 'help' => 'mbhpricebundle.form.pricecachegeneratortype.tarifydlyagotorykhbudetproizvedenageneratsiyatsen',
-                'attr' => array('placeholder' => $options['hotel'] . ': mbhpricebundle.form.pricecachegeneratortype.vse.tarify', 'class' => 'select-all'),
+                'attr' => array('placeholder' => $hotel . ': mbhpricebundle.form.pricecachegeneratortype.vse.tarify', 'class' => 'select-all'),
             ])
             ->add('price', TextType::class, [
                 'label' => 'mbhpricebundle.form.pricecachegeneratortype.tsena',
@@ -266,7 +277,6 @@ class PriceCacheGeneratorType extends AbstractType
                         'required' => false
                     ]);
             }
-            $builder->add('additionalPricesCount', HiddenType::class, ['data' => $isIndividualAdditionalPrices]);
         }
 
         $builder->add('saveForm', CheckboxType::class, [
@@ -276,12 +286,12 @@ class PriceCacheGeneratorType extends AbstractType
         ]);
     }
 
-    public function checkDates($data, ExecutionContextInterface $context)
+    public function checkDates(PriceCacheHolderDataGeneratorForm $data, ExecutionContextInterface $context)
     {
-        if ($data['begin'] >= $data['end']) {
+        if ($data->getBegin() > $data->getEnd()) {
             $context->addViolation('mbhpricebundle.form.pricecachegeneratortype.beginning_period_should_be_less_than_end_period');
         }
-        if ($data['end']->diff($data['begin'])->format("%a") > 370) {
+        if ($data->getEnd()->diff($data->getBegin())->format("%a") > 370) {
             $context->addViolation('mbhpricebundle.form.pricecachegeneratortype.period_can_not_be_more_than_year');
         }
     }
@@ -289,8 +299,7 @@ class PriceCacheGeneratorType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'weekdays' => [],
-            'hotel' => null,
+            'data_class' => PriceCacheHolderDataGeneratorForm::class,
             'useCategories' => false,
             'constraints' => new Callback([$this, 'checkDates'])
         ]);

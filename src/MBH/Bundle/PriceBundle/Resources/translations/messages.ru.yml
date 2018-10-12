@@ -547,3 +547,10 @@ total_rooms_overview_table.rooms_at_sale: 'Номера в продаже'
 total_rooms_overview_table.rooms_count: Номеров
 total_rooms_overview_table.number_of_unused_rooms: 'Не использовано номеров'
 total_rooms_overview_table.total: Всего
+price.result_update.no_data_for_update: 'Нет данных для обновления.'
+price.result_update.removed: 'Удалено записей: %s.'
+price.result_update.update: 'Обновлено записей: %s.'
+price.result_update.create: 'Создано записей: %s.'
+price.result_update.weekdays: 'На указанные даты: %s, нет выбранных дней недели.'
+price.result_update.same: 'Т.к. предложенные цены совпадают с ранее установленными, изменения не были применены для дат: %s.'
+price.result_update.error: 'Некорректные данные для следующих дат: %s.'
