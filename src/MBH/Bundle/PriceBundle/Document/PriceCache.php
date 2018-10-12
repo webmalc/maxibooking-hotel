@@ -91,7 +91,7 @@ class PriceCache extends Base
     protected $isPersonPrice = false;
 
     /**
-     * @var int
+     * @var float
      * @ODM\Field(type="float")
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0)
@@ -283,9 +283,10 @@ class PriceCache extends Base
      * @param float $price
      * @return self
      */
-    public function setPrice($price)
+    public function setPrice(float $price): self
     {
-        $this->price = (float) $price;
+        $this->price = $price;
+
         return $this;
     }
 
@@ -294,7 +295,7 @@ class PriceCache extends Base
      *
      * @return float $price
      */
-    public function getPrice()
+    public function getPrice(): float
     {
         return $this->price;
     }
@@ -305,9 +306,10 @@ class PriceCache extends Base
      * @param boolean $isPersonPrice
      * @return self
      */
-    public function setIsPersonPrice($isPersonPrice)
+    public function setIsPersonPrice(bool $isPersonPrice): self
     {
-        $this->isPersonPrice = (boolean) $isPersonPrice;
+        $this->isPersonPrice = $isPersonPrice;
+
         return $this;
     }
 
@@ -316,7 +318,7 @@ class PriceCache extends Base
      *
      * @return boolean $isPersonPrice
      */
-    public function getIsPersonPrice()
+    public function getIsPersonPrice(): bool
     {
         return $this->isPersonPrice;
     }
@@ -327,13 +329,9 @@ class PriceCache extends Base
      * @param int $additionalPrice
      * @return self
      */
-    public function setAdditionalPrice($additionalPrice)
+    public function setAdditionalPrice(?float $additionalPrice): self
     {
-        if ($additionalPrice != '' && !is_null($additionalPrice)) {
-            $this->additionalPrice = (float) $additionalPrice;
-        } else {
-            $this->additionalPrice = null;
-        }
+        $this->additionalPrice = $additionalPrice;
 
         return $this;
     }
@@ -341,9 +339,9 @@ class PriceCache extends Base
     /**
      * Get additionalPrice
      *
-     * @return int $additionalPrice
+     * @return float|null $additionalPrice
      */
-    public function getAdditionalPrice()
+    public function getAdditionalPrice(): ?float
     {
         return $this->additionalPrice;
     }
@@ -351,16 +349,12 @@ class PriceCache extends Base
     /**
      * Set additionalChildrenPrice
      *
-     * @param int $additionalChildrenPrice
+     * @param float|null $additionalChildrenPrice
      * @return self
      */
-    public function setAdditionalChildrenPrice($additionalChildrenPrice)
+    public function setAdditionalChildrenPrice(?float $additionalChildrenPrice): self
     {
-        if ($additionalChildrenPrice != '' && !is_null($additionalChildrenPrice)) {
-            $this->additionalChildrenPrice = (float) $additionalChildrenPrice;
-        } else {
-            $this->additionalChildrenPrice = null;
-        }
+        $this->additionalChildrenPrice = $additionalChildrenPrice;
 
         return $this;
     }
@@ -368,9 +362,9 @@ class PriceCache extends Base
     /**
      * Get additionalChildrenPrice
      *
-     * @return int $additionalChildrenPrice
+     * @return float|null $additionalChildrenPrice
      */
-    public function getAdditionalChildrenPrice()
+    public function getAdditionalChildrenPrice(): ?float
     {
         return $this->additionalChildrenPrice;
     }
@@ -378,15 +372,11 @@ class PriceCache extends Base
     /**
      * Set singlePrice
      *
-     * @param int $singlePrice
+     * @param float|null $singlePrice
      * @return self
      */
-    public function setSinglePrice($singlePrice)
+    public function setSinglePrice(?float $singlePrice)
     {
-        if (is_numeric($singlePrice)) {
-            $singlePrice = (float) $singlePrice;
-        }
-
         $this->singlePrice = $singlePrice;
 
         return $this;
@@ -395,9 +385,9 @@ class PriceCache extends Base
     /**
      * Get singlePrice
      *
-     * @return int $singlePrice
+     * @return float|null $singlePrice
      */
-    public function getSinglePrice()
+    public function getSinglePrice(): ?float
     {
         return $this->singlePrice;
     }
@@ -445,9 +435,9 @@ class PriceCache extends Base
     }
 
     /**
-     * @return array
+     * @return float[]
      */
-    public function getAdditionalPrices()
+    public function getAdditionalPrices(): array
     {
         return $this->additionalPrices;
     }
@@ -464,9 +454,9 @@ class PriceCache extends Base
     }
 
     /**
-     * @return array
+     * @return float[]
      */
-    public function getAdditionalChildrenPrices()
+    public function getAdditionalChildrenPrices(): array
     {
         return $this->additionalChildrenPrices;
     }
@@ -499,11 +489,6 @@ class PriceCache extends Base
 
     private function saveAdditionalPrices(): void
     {
-        list($this->additionalPrices, $this->additionalChildrenPrices) =
-            self::transformAdditionalPrices(
-                [0 => $this->getAdditionalPrice()] + $this->additionalPrices,
-                [0 => $this->getAdditionalChildrenPrice()] + $this->additionalChildrenPrices
-                );
     }
 
     public function __call($name , array $arguments)
@@ -597,35 +582,5 @@ class PriceCache extends Base
         }
 
         return false;
-    }
-
-    /**
-     * @param array $additionalPrices
-     * @param array $additionalChildrenPrices
-     * @return array
-     */
-    public static function transformAdditionalPrices(array $additionalPrices,array $additionalChildrenPrices): array
-    {
-        $newAdditionalPrices = [];
-        $newAdditionalChildrenPrices = [];
-
-        foreach ($additionalPrices as $key => $price) {
-            if ($price != '' && $price !== null) {
-                $value = (float) $price;
-            } else {
-                $value = null;
-            }
-            $newAdditionalPrices[$key] = $value;
-        }
-        foreach ($additionalChildrenPrices as $key => $price) {
-            if ($price != '' && $price !== null) {
-                $value = (float) $price;
-            } else {
-                $value = null;
-            }
-            $newAdditionalChildrenPrices[$key] = $value;
-        }
-
-        return [$newAdditionalPrices, $newAdditionalChildrenPrices];
     }
 }
