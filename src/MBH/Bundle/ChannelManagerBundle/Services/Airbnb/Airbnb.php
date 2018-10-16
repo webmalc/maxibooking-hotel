@@ -22,7 +22,7 @@ use Symfony\Component\HttpFoundation\Request;
 class Airbnb extends AbstractChannelManagerService
 {
     const NAME = 'airbnb';
-    const SYNC_URL_BEGIN = 'https://www.airbnb.ru/calendar/ical/';
+    const SYNC_URL_BEGIN = 'https://www.airbnb.';
     const CONFIG = 'AirbnbConfig';
     const PERIOD_LENGTH = '1 year';
 
