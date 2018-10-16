@@ -1,0 +1,19 @@
+{% extends 'MBHBaseBundle:Form:fields.html.twig' %}
+
+
+{% block drawForm %}
+    {% if items[0] != 'combo_tariff' %}
+        {% for item in items %}
+            {{ form_row(form[item]) }}
+        {% endfor %}
+    {% endif %}
+{% endblock %}
+
+{% block tariff_combination_widget %}
+    {% spaceless %}
+        <div class="tariff_combination_item">
+            {{ form_widget(form.children.combinationTariffId) }}
+            {{ form_widget(form.children.position) }}
+        </div>
+    {% endspaceless %}
+{% endblock %}

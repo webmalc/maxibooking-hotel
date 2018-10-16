@@ -67,7 +67,7 @@ services:
 
   mbh.tariff_type:
       class: MBH\Bundle\PriceBundle\Form\TariffType
-      arguments: ['@translator']
+      arguments: ['@service_container']
       tags:
           - {name : form.type}
 

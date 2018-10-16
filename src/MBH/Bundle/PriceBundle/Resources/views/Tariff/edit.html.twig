@@ -3,12 +3,98 @@
 {% set small_title = 'mbhpricebundle.view.tariff.edit.redaktirovaniye'|trans ~ " <" ~ entity.name ~ ">" %}
 {% set layout = 'tabs' %}
 
+{% block scripts %}
+    {{ parent() }}
+
+    <script type="text/javascript" src={{ asset('js/jquery.collection.js') }}></script>
+
+    <script type="text/javascript">
+        window.addEventListener('load', function(ev) {
+            (function() {
+
+                var mbh_combination_tariff = {
+                    max: {{ form.vars['max_amount_tariffs'] }},
+                    position_field_selector: '.my-position',
+                    add_at_the_end: true,
+                    add: '<a href="#" class="btn btn-success" title="Add element"><span class="fa fa-plus-square"></span></a>\n',
+                    up: '<a href="#" class="btn btn-default" title="Move element up"><span class="fa fa-arrow-up"></span></a>',
+                    down: '<a href="#" class="btn btn-default" title="Move element down"><span class="fa fa-arrow-down"></span></a>\n',
+                    remove: '<a href="#" class="btn btn-default" title="Delete element"><span class="fa fa-trash"></span></a>\n'
+                };
+
+                console.log(mbh_combination_tariff);
+
+                $('.my-selector').collection(mbh_combination_tariff);
+
+                document.querySelector('.my-selector').addEventListener('change', function(evt) {
+                    var nodeList = [].slice.call(document.querySelectorAll('.tariff_combination_item select:not(#' + evt.target.id + ')'));
+                    // var nodeList = [].slice.call(document.querySelectorAll('.tariff_combination_item select'));
+
+                    if (nodeList.every(function(value) {return value.value === this.value}, evt.target) ) {
+                        evt.target.style.border = '1px solid red';
+                    } else {
+                        evt.target.style.border = '1px solid green';
+                    }
+
+                    // console.log(evt.target);
+
+                    // console.log('change')
+                });
+
+                // document.querySelectorAll('.tariff_combination_item select').forEach(function(element) {
+                //     element.addEventListener('change', function(evt) {
+                //         document.querySelectorAll('.tariff_combination_item select:not(#' + this.id + ')').forEach(function(value) {
+                //             if (value.value === this.value) {
+                //                 console.error('dublicate');
+                //                 this.style.border = '1px solid red';
+                //                 return false;
+                //             } else {
+                //                 this.style.border = '1px solid green';
+                //             }
+                //         }, this);
+                //         console.dir(this);
+                //         console.log(this.value);
+                //     })
+                // });
+
+            })();
+        });
+    </script>
+{% endblock %}
+
+{% block styles %}
+    {{ parent() }}
+    <style>
+        .tariff_combination_item,
+        .tariff_combination_item > div {
+            display: flex;
+        }
+
+        .tariff_combination_item {
+            align-items: center;
+        }
+
+        .tariff_combination_item > div {
+            min-width: 125px;
+            justify-content: flex-end;
+        }
+    </style>
+
+{% endblock %}
+
+{#'jquery.collection.html.twig'#}
+
 {% block content %}
 
     {% include 'MBHPriceBundle:Tariff:editTabs.html.twig' with {'active' : 1, 'entity': entity} %}
-
     <div class="tab-content">
         <div class="tab-pane active" id="general_info">
+        {%
+            form_theme form
+                'jquery.collection.html.twig'
+                '@MBHPrice/Tariff/form/sortable_field.html.twig'
+        %}
+        {#{% form_theme form 'jquery.collection.html.twig' %}#}
         {{ form_start(form, {'action': path('tariff_update', {'id': entity.id}),  'attr': {'class': 'form-horizontal'}}) }}
         {{ form_widget(form) }}
         {% include 'MBHBaseBundle:Actions:update.html.twig' with {'entity': entity, 'delete_route': entity.isDefault ? null : 'tariff_delete' } %}

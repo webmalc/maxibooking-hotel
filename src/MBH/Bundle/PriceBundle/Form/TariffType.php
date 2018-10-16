@@ -3,17 +3,23 @@
 namespace MBH\Bundle\PriceBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use Doctrine\ODM\MongoDB\Query\Builder;
 use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Document\TariffRepository;
+use MBH\Bundle\PriceBundle\Lib\TariffCombinationHolder;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Translation\TranslatorInterface;
 
@@ -21,13 +27,20 @@ class TariffType extends AbstractType
 {
     private $translator;
 
-    public function __construct(TranslatorInterface $translator)
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
+
+    public function __construct(ContainerInterface $container)
     {
-        $this->translator = $translator;
+        $this->container = $container;
+        $this->translator = $this->container->get('translator');
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        /** @var Tariff $formTariff */
         $formTariff = $builder->getData();
         $builder
             ->add('fullTitle', TextType::class, [
@@ -159,49 +172,157 @@ class TariffType extends AbstractType
                     'attr' => array('class' => 'input-xxs plain-html'),
                     'help' => 'price.form.what_age_is_client_considered_infant'
                 ]
-            )
-            ->add('mergingTariff', DocumentType::class, [
-                'label' => 'price.form.use_combination',
-                'group' => 'configuration',
-                'class' => Tariff::class,
-                'query_builder' => function(TariffRepository $repository) use ($options, $formTariff) {
-                    $qb = $repository->createQueryBuilder();
-                    $qb
-                        ->field('hotel')->equals($options['hotel'])
-                        ->field('isEnabled')->equals(true);
-                    if (!is_null($formTariff)) {
-                        $qb->field('id')->notEqual($formTariff->getId());
-                    }
+            );
 
-                    return $qb;
-                },
-                'required' => false,
-                'help' => 'mbhpricebundle.form.tarifftype.ispolzovatdlyakombinirovaniya.help'
-            ])
+//        $builder
+//            ->add('mergingTariff', DocumentType::class, [
+//                'label' => 'price.form.use_combination',
+//                'group' => 'configuration',
+//                'class' => Tariff::class,
+//                'multiple' => false,
+//                'query_builder' => function(TariffRepository $repository) use ($options, $formTariff) {
+//                    $qb = $repository->createQueryBuilder();
+//                    $qb
+//                        ->field('hotel')->equals($options['hotel'])
+//                        ->field('isEnabled')->equals(true);
+//                    if (!is_null($formTariff)) {
+//                        $qb->field('id')->notEqual($formTariff->getId());
+//                    }
+//
+//                    return $qb;
+//                },
+//                'required' => false,
+//                'help' => 'mbhpricebundle.form.tarifftype.ispolzovatdlyakombinirovaniya.help'
+//            ]);
+//            ->add('mergingTariffs',
+//                DocumentType::class,
+//                [
+////                    'label'         => 'price.form.use_combination',
+//                    'group'         => 'configuration',
+//                    'class'         => Tariff::class,
+//                    'multiple'      => true,
+//                    'query_builder' => function (TariffRepository $repository) use ($options, $formTariff) {
+//                        $qb = $repository->createQueryBuilder();
+//                        $qb
+//                            ->field('hotel')->equals($options['hotel'])
+//                            ->field('isEnabled')->equals(true);
+//                        if (!is_null($formTariff)) {
+//                            $qb->field('id')->notEqual($formTariff->getId());
+//                        }
+//
+//                        return $qb;
+//                    },
+//                    'required'      => false,
+////                    'help'          => 'mbhpricebundle.form.tarifftype.ispolzovatdlyakombinirovaniya.help',
+//                ]
+//            )
+//            ->add(
+//                'mergingTariffsSort',
+//                TariffSortableType::class,
+//                [
+//                    'group' => 'configuration',
+//                    'data'  => $formTariff,
+//                    'class'         => Tariff::class,
+//                    'query_builder' => function (TariffRepository $repository) use ($options, $formTariff) {
+//                        $qb = $repository->createQueryBuilder();
+//                        $qb
+//                            ->field('hotel')->equals($options['hotel'])
+//                            ->field('isEnabled')->equals(true);
+//                        if (!is_null($formTariff)) {
+//                            $qb->field('id')->notEqual($formTariff->getId());
+//                        }
+//
+//                        return $qb;
+//                    },
+////                    'hotel' => $options['hotel'],
+//                ]
+//            )
+
+        $hotel = $options['hotel'];
+
+        /** @var Builder $qb */
+        $qb = $this->container->get('doctrine.odm.mongodb.document_manager')
+            ->getRepository('MBHPriceBundle:Tariff')
+            ->createQueryBuilder()
+            ->field('hotel')->equals($hotel)
+            ->field('isEnabled')->equals(true);
+
+        if ($formTariff !== null) {
+            $qb->field('id')->notEqual($formTariff->getId());
+        }
+
+        $qb->select('fullTitle');
+        $qb->hydrate(false);
+
+        $data = [];
+
+        foreach ($qb->getQuery()->execute() as $id => $value) {
+            $data[$id] = $value['fullTitle'];
+        }
+
+        $builder->setAttribute('max_amount_tariffs', count($data));
+
+        if ($formTariff !== null) {
+
+            $builder
+                ->add(
+                    'mergingTariffsSort',
+                    CollectionType::class,
+                    [
+                        'group'          => 'configuration',
+                        'label'          => 'Tariffs Combination',
+                        'entry_type'     => TariffCombinationType::class,
+                        'entry_options'  => [
+                            'label'              => false,
+                            'tariffs_for_select' => $data,
+                            'group'              => 'no-group',
+                            'parent_tariff'      => $formTariff,
+                        ],
+                        'prototype_name' => 'combo_tariff',
+                        'allow_add'      => true,
+                        'allow_delete'   => true,
+                        'prototype'      => true,
+                        'attr'           => [
+                            'class' => 'my-selector',
+                        ],
+                    ]
+                );
+        }
+
+        $builder
             ->add('position', NumberType::class, [
-                'label' => 'position',
-                'help' => 'position.help',
-                'group' => 'configuration',
+                'label'    => 'position',
+                'help'     => 'position.help',
+                'group'    => 'configuration',
                 'required' => true,
-                'attr' => [
+                'attr'     => [
                     'class' => 'spinner-0',
                 ],
             ])
             ->add('isEnabled', CheckboxType::class, [
-                'label' => 'price.form.on',
-                'group' => 'configuration',
-                'value' => true,
+                'label'    => 'price.form.on',
+                'group'    => 'configuration',
+                'value'    => true,
                 'required' => false,
-                'help' => 'price.form.tariff_used_search'
+                'help'     => 'price.form.tariff_used_search',
             ]);
+    }
+
+    public function buildView(FormView $view, FormInterface $form, array $options)
+    {
+        parent::buildView($view, $form, $options);
+
+        $view->vars['max_amount_tariffs'] = $form->getConfig()->getAttribute('max_amount_tariffs');
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
-            'data_class' => 'MBH\Bundle\PriceBundle\Document\Tariff',
-            'hotel' => null
-        ));
+        $resolver->setDefined('max_amount_tariffs');
+
+        $resolver->setDefaults([
+            'data_class' => Tariff::class,
+            'hotel'      => null,
+        ]);
     }
 
     public function getBlockPrefix()

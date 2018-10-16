@@ -218,6 +218,11 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
         $form->handleRequest($request);
 
         if ($form->isValid()) {
+
+            $d = $form->getData()->getMergingTariffsSort();
+
+//            foreach ()
+
             $this->dm->persist($entity);
             $this->dm->flush();
 

@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a5cbc5b53bfea6b7d560c9e0cfe0aea7",
+    "content-hash": "afe9ad6da654b9320307d3477bd46d2c",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -305,7 +305,7 @@
             "support": {
                 "source": "https://github.com/webmalc/MongoDBAclBundle/tree/master"
             },
-            "time": "2017-06-28 10:42:05"
+            "time": "2017-06-28T10:42:05+00:00"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -1230,7 +1230,7 @@
                 "mongodb",
                 "persistence"
             ],
-            "time": "2017-08-09 13:56:03"
+            "time": "2017-08-09T13:56:03+00:00"
         },
         {
             "name": "doctrine/mongodb-odm",
@@ -1313,7 +1313,7 @@
                 "odm",
                 "persistence"
             ],
-            "time": "2017-08-17 07:43:06"
+            "time": "2017-08-17T07:43:06+00:00"
         },
         {
             "name": "doctrine/mongodb-odm-bundle",
@@ -1387,7 +1387,7 @@
                 "persistence",
                 "symfony"
             ],
-            "time": "2017-08-15 12:49:26"
+            "time": "2017-08-15T12:49:26+00:00"
         },
         {
             "name": "egulias/email-validator",
@@ -3387,7 +3387,7 @@
                 "i18n",
                 "translation"
             ],
-            "time": "2017-07-16 15:18:56"
+            "time": "2017-07-16T15:18:56+00:00"
         },
         {
             "name": "liip/imagine-bundle",
@@ -3845,7 +3845,7 @@
                 "manager",
                 "myallocator"
             ],
-            "time": "2017-02-06 23:10:05"
+            "time": "2017-02-06T23:10:05+00:00"
         },
         {
             "name": "nelmio/api-doc-bundle",
@@ -3979,6 +3979,39 @@
                 "php"
             ],
             "time": "2017-07-28T14:45:09+00:00"
+        },
+        {
+            "name": "ninsuo/symfony-collection",
+            "version": "2.1.30",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ninsuo/symfony-collection.git",
+                "reference": "88db2caea7bba13cd7a7beb938fa706a340b38e9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ninsuo/symfony-collection/zipball/88db2caea7bba13cd7a7beb938fa706a340b38e9",
+                "reference": "88db2caea7bba13cd7a7beb938fa706a340b38e9",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "ScriptHandler.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alain Tiemblo",
+                    "email": "ninsuo@gmail.com"
+                }
+            ],
+            "description": "A jQuery plugin that manages adding, deleting and moving elements from a Symfony collection",
+            "time": "2018-07-01T15:06:12+00:00"
         },
         {
             "name": "ob/highcharts-bundle",
@@ -4188,7 +4221,7 @@
                 "templating",
                 "twig"
             ],
-            "time": "2016-02-09 14:23:53"
+            "time": "2016-02-09T14:23:53+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -5295,7 +5328,7 @@
                 "translatable",
                 "tree"
             ],
-            "time": "2017-01-13 18:32:32"
+            "time": "2017-01-13T18:32:32+00:00"
         },
         {
             "name": "stripe/stripe-php",

@@ -71,7 +71,8 @@
     "symfony/workflow": "3.4.*@stable",
     "sentry/sentry": "^1.8",
     "nelmio/api-doc-bundle": "3.0.0",
-    "facebook/webdriver": "^1.6"
+    "facebook/webdriver": "^1.6",
+    "ninsuo/symfony-collection": "^2.1"
   },
   "require-dev": {
     "sensio/generator-bundle": "^3.0",
@@ -88,10 +89,12 @@
       "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::prepareDeploymentTarget"
     ],
     "post-install-cmd": [
-      "@symfony-scripts"
+      "@symfony-scripts",
+      "Fuz\\Symfony\\Collection\\ScriptHandler::postInstall"
     ],
     "post-update-cmd": [
-      "@symfony-scripts"
+      "@symfony-scripts",
+      "Fuz\\Symfony\\Collection\\ScriptHandler::postUpdate"
     ]
   },
   "config": {},

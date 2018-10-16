@@ -237,10 +237,22 @@ class Tariff extends Base implements ConditionsInterface
      */
     protected $mergingTariff;
 
+
+    /**
+     * @var Tariff[]|ArrayCollection
+     * ODM\ReferenceMany(targetDocument="Tariff")
+     */
+    protected $mergingTariffs;
+
+    /**
+     * @var string
+     * @ODM\ReferenceMany(targetDocument="TariffCombinationHolder", cascade={"persist"}, orphanRemoval=true)
+     */
+    protected $mergingTariffsSort;
+
     /**
      * Tariff constructor.
      */
-
     public function __construct()
     {
         $this->promotions = new ArrayCollection();
@@ -624,7 +636,36 @@ class Tariff extends Base implements ConditionsInterface
         return $this;
     }
 
+//    /**
+//     * @return ArrayCollection|Tariff[]
+//     */
+//    public function getMergingTariffs()
+//    {
+//        return $this->mergingTariffs;
+//    }
+//
+//    /**
+//     * @param ArrayCollection|Tariff[] $mergingTariffs
+//     */
+//    public function setMergingTariffs($mergingTariffs): void
+//    {
+//        $this->mergingTariffs = $mergingTariffs;
+//    }
+
+
+    public function getMergingTariffsSort()
+    {
+        return $this->mergingTariffsSort;
+    }
+
+
+    public function setMergingTariffsSort($mergingTariffsSort): void
+    {
+        $this->mergingTariffsSort = $mergingTariffsSort;
+    }
+
     /**
+     * @deprecated
      * @return Tariff
      */
     public function getMergingTariff(): ?Tariff
@@ -633,6 +674,7 @@ class Tariff extends Base implements ConditionsInterface
     }
 
     /**
+     * @deprecated
      * @param Tariff $mergingTariff
      * @return Tariff
      */
