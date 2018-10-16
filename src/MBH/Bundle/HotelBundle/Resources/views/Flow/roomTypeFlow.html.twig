@@ -1,19 +1,63 @@
 {% extends 'MBHHotelBundle:Flow:layout.html.twig' %}
 
 {% set small_title = 'views.flow.rooms_flow.title'|trans({}, 'MBHHotelBundle') %}
+{% set flowClass = 'MBH\\Bundle\\HotelBundle\\Form\\RoomTypeFlow\\RoomTypeFlow' %}
+
+{% if flow.getStepId() == constant(flowClass ~ '::ROOM_TYPE_STEP') %}
+    {% form_theme form.roomType _self %}
+    {% block choice_widget_expanded %}
+        {% spaceless %}
+            {% set roomTypeColumnClasses = 'col-xs-8 col-lg-4' %}
+            {% set progressClasses = 'col-xs-4 col-lg-2 text-right' %}
+            <div {{ block('widget_container_attributes') }}>
+                <div class="row success" style="font-weight: 600; margin-bottom: 5px">
+                    <div class="{{ roomTypeColumnClasses }}">{{ 'room_type_flow.room_type_columns.title'|trans }}</div>
+                    <div class="{{ progressClasses }}">{{ 'room_type_flow.room_type_columns.progress'|trans }}</div>
+                </div>
+
+                {% for child in form %}
+                    {% set isRoomChecked = form.vars.selectedRoomTypeId == child.vars.value or (form.vars.selectedRoomTypeId is empty and loop.index == 1) %}
+                    <div class="row">
+                        <div class="{{ roomTypeColumnClasses }}">
+                            <label>
+                                <input type="radio" {{ block('widget_attributes') }} value="{{ child.vars.value }}"
+                                        {{ isRoomChecked ? 'checked="true"' }}/>
+                                <span style="padding-left: 10px">{{ child.vars.label|trans }}</span>
+                            </label>
+                        </div>
+                        <div class="{{ progressClasses }}">
+                            {{ form.vars.flowProgressRates[child.vars.value] ~ '%' }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endspaceless %}
+    {% endblock choice_widget_expanded %}
+{% endif %}
 
 {% block flowBody %}
-    {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
+    {% set pathParams = {type: 'roomType'} %}
+    {% if flow.flowConfig.flowId is empty %}
+        {% if flow.stepId in constant(flowClass ~ '::PREPARATORY_STEPS') %}
+            {% set pathParams = pathParams|merge({'prevStep': flow.stepId}) %}
+        {% endif %}
+    {% else %}
+        {% set pathParams = pathParams|merge({'flowId': flow.flowConfig.flowId}) %}
+    {% endif %}
+
+    {% set path = path('mb_flow', pathParams) %}
+
+    {{ form_start(form, {'attr': {'class': 'form-horizontal'}, 'action': path }) }}
     {{ form_widget(form) }}
 
-    {% if flow.currentStepNumber == 3 %}
+    {% if flow.stepId == 'photos' %}
         {% include '@MBHHotel/Hotel/image-list.html.twig' with {
             entityType: 'roomType',
             images: roomType.onlineImages,
             entity: roomType,
             showMakeMainButton: false,
             showDeleteButton: true,
-            redirect_url: path('room_type_flow')
+            redirect_url: path
         } %}
     {% endif %}
 

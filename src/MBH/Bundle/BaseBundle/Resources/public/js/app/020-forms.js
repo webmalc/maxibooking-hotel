@@ -1401,7 +1401,7 @@ $(document).ready(function () {
     onHideCheckboxChange();
     disableCheckboxListen();
     initLabelTips();
-    initAddTipModal();
+    // initAddTipModal();
     runGuides();
     handleAddingNewBillingEntity();
     makeDateRangepickerReadonlyForMobileDevices();

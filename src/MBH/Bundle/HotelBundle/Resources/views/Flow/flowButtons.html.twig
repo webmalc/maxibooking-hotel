@@ -10,7 +10,14 @@
                     </button>
                 </li>
             {% endif %}
-            {% if flow.currentStepNumber > 1 %}
+            {% if flow.isFirstStep() %}
+                <li>
+                    <a class="btn btn-primary navbar-btn navbar-link-button" href="{{ path('dashboard') }}">
+                        <i class="fa fa-times"></i>
+                        &nbsp;{{- 'views.flow.hotel_flow.close_flow_button.title'| trans -}}
+                    </a>
+                </li>
+            {% else %}
                 <li>
                     <button type="submit" class="btn btn-primary navbar-btn" name="back">
                         <i class="fa fa-arrow-left"></i>
@@ -18,10 +25,11 @@
                     </button>
                 </li>
             {% endif %}
+
             <li>
                 {% if flow.lastStep %}
                     <button type="submit" name="finish"
-                            class="btn btn-{{ flow.lastStep ? 'success' : 'primary' }} primary navbar-btn">
+                            class="btn btn-{{ flow.lastStep ? 'success' : 'primary' }} navbar-btn">
                         &nbsp;<i class="fa fa-check-square"></i>
                         &nbsp; {{- 'views.flow.hotel_flow.finish_button.title' | trans -}}
                     </button>
@@ -33,6 +41,13 @@
                     </button>
                 {% endif %}
             </li>
+            {% if flow.isFirstStep() %}
+                <li>
+                    <button type="button" class="btn btn-success navbar-btn">
+                        &nbsp;<i class="fa fa-plus"></i> {{ 'views.flow.hotel_flow.add_room_type.title'|trans }}
+                    </button>
+                </li>
+            {% endif %}
         </ul>
     </div>
 </div>

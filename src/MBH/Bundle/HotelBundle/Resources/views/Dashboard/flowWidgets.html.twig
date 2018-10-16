@@ -1,10 +1,11 @@
 {% set flowWidgetsData = [
-    {id: 'roomType', title: 'views.dashboard.index.widgets.roomTypes', routeName: 'room_type_flow', icon: 'bed'},
-    {id: 'hotel', title: 'views.dashboard.index.widgets.hotel', routeName: 'hotel_flow', icon: 'home'},
-    {id: 'site', title: 'views.dashboard.index.widgets.site', routeName: 'mb_site', icon: 'globe'}
+    {id: 'roomType', title: 'views.dashboard.index.widgets.roomTypes', icon: 'bed'},
+    {id: 'hotel', title: 'views.dashboard.index.widgets.hotel', icon: 'home'},
+    {id: 'site', title: 'views.dashboard.index.widgets.site', icon: 'globe'}
 ]  %}
 
 <div class="row" id="flow-widgets">
+    <input type="radio">
     {% for widgetData in flowWidgetsData %}
         {% include '@MBHHotel/Dashboard/widget.html.twig' with widgetData %}
     {% endfor %}

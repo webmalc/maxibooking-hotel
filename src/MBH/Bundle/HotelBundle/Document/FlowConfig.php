@@ -36,12 +36,6 @@ class FlowConfig extends Base
     private $flowData;
 
     /**
-     * @var bool
-     * @ODM\Field(type="bool")
-     */
-    private $isFinished = false;
-
-    /**
      * @var string
      * @ODM\Field(type="string")
      */
@@ -62,25 +56,6 @@ class FlowConfig extends Base
     public function setFlowType(string $flowType): FlowConfig
     {
         $this->flowType = $flowType;
-
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isFinished(): ?bool
-    {
-        return $this->isFinished;
-    }
-
-    /**
-     * @param bool $isFinished
-     * @return FlowConfig
-     */
-    public function setIsFinished(bool $isFinished): FlowConfig
-    {
-        $this->isFinished = $isFinished;
 
         return $this;
     }
@@ -155,7 +130,7 @@ class FlowConfig extends Base
      * @param string $flowId
      * @return FlowConfig
      */
-    public function setFlowId(string $flowId): FlowConfig
+    public function setFlowId(?string $flowId): FlowConfig
     {
         $this->flowId = $flowId;
 

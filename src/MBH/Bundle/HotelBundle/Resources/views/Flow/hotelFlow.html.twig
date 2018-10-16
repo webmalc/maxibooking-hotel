@@ -17,7 +17,11 @@
 
     {% if isImagesStep %}
         {% include '@MBHHotel/Hotel/image-list.html.twig' with {
-            images: hotel.images, entity: hotel, showMakeMainButton: false, showDeleteButton: true, redirect_url: path('hotel_flow')
+            images: hotel.images,
+            entity: hotel,
+            showMakeMainButton: false,
+            showDeleteButton: true,
+            redirect_url: path('mb_flow', {'type': 'hotel', 'flowId': flow.flowConfig.id})
         } %}
     {% endif %}
 

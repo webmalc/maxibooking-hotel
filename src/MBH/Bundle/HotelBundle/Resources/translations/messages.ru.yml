@@ -285,6 +285,8 @@ views.facility.list.description_title: Описание
 views.facility.list.save_changes_button.title: 'Сохранить изменения'
 views.flow.hotel_flow.finish_button.title: Завершить
 views.flow.hotel_flow.back_button.title: Назад
+views.flow.hotel_flow.add_room_type.title: 'Добавить номер'
+views.flow.hotel_flow.close_flow_button.title: Закрыть
 views.flow.hotel_flow.next_button.title: Вперед
 views.dashboard.title: 'Дашборд'
 views.dashboard.index.widgets.roomTypes: Номера
@@ -315,6 +317,8 @@ room_type_flow.step_labels.room_caches: 'Укажите максимальное
 room_type_flow.step_labels.period: 'Укажите даты начала и окончания продаж'
 room_type_flow.step_labels.tariff: 'Выберите тариф, по которому будут продоваться номера'
 room_type_flow.step_labels.price: 'Укажите цену за номер/заданное количество основных мест'
+room_type_flow.room_type_columns.title: Название
+room_type_flow.room_type_columns.progress: 'Прогресс настройки'
 hotel_flow.step_labels.hotel_name: 'Ввод имени отеля'
 hotel_flow.step_labels.hotel_description: 'Ввод описания отеля'
 hotel_flow.step_labels.hotel_logo: 'Логотип отеля'

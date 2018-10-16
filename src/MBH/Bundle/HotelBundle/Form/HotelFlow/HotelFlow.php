@@ -14,6 +14,15 @@ class HotelFlow extends FormFlow
 {
     const FLOW_TYPE = 'hotel';
 
+    const NAME_STEP = 'hotelName';
+    const DESC_STEP = 'hotelDescription';
+    const LOGO_STEP = 'logo';
+    const ADDRESS_STEP = 'address';
+    const COORDINATES_STEP = 'coordinates';
+    const CONTACTS_STEP = 'contacts';
+    const MAIN_PHOTO_STEP = 'mainPhoto';
+    const PHOTOS_STEP = 'photos';
+
     /** @var Hotel */
     private $hotel;
     private $documentFieldsManager;
@@ -30,6 +39,11 @@ class HotelFlow extends FormFlow
         return self::FLOW_TYPE;
     }
 
+    public function getTemplateParameters()
+    {
+        return ['hotel' => $this->hotel];
+    }
+
     /**
      * @return array
      */
@@ -37,34 +51,42 @@ class HotelFlow extends FormFlow
     {
         return [
             [
+                'id' => self::NAME_STEP,
                 'label' => 'hotel_flow.step_labels.hotel_name',
                 'form_type' => HotelFlowType::class,
             ],
             [
+                'id' => self::DESC_STEP,
                 'label' => 'hotel_flow.step_labels.hotel_description',
                 'form_type' => HotelFlowType::class,
             ],
             [
+                'id' => self::LOGO_STEP,
                 'label' => 'hotel_flow.step_labels.hotel_logo',
                 'form_type' => HotelFlowType::class,
             ],
             [
+                'id' => self::ADDRESS_STEP,
                 'label' => 'hotel_flow.step_labels.hotel_address',
                 'form_type' => HotelAddressType::class,
             ],
             [
+                'id' => self::COORDINATES_STEP,
                 'label' => 'hotel_flow.step_labels.hotel_coordinates',
                 'form_type' => HotelLocationType::class,
             ],
             [
+                'id' => self::CONTACTS_STEP,
                 'label' => 'hotel_flow.step_labels.contacts',
                 'form_type' => HotelFlowType::class,
             ],
             [
+                'id' => self::MAIN_PHOTO_STEP,
                 'label' => 'hotel_flow.step_labels.main_photo',
                 'form_type' => HotelFlowType::class,
             ],
             [
+                'id' => self::PHOTOS_STEP,
                 'label' => 'hotel_flow.step_labels.photos',
                 'form_type' => HotelImageType::class,
                 'options' => [
@@ -80,7 +102,7 @@ class HotelFlow extends FormFlow
      */
     protected function getFormData()
     {
-        return in_array($this->getCurrentStepNumber(), [8]) ? null : $this->hotel;
+        return in_array($this->getStepId(), [self::MAIN_PHOTO_STEP]) ? null : $this->hotel;
     }
 
     /**
@@ -89,18 +111,18 @@ class HotelFlow extends FormFlow
      */
     protected function handleForm(FormInterface $form)
     {
-        if (in_array($this->getCurrentStepNumber(), [1, 2, 4])) {
+        if (in_array($this->getStepId(), [self::NAME_STEP, self::DESC_STEP, self::ADDRESS_STEP])) {
             $multiLangFields = $this->documentFieldsManager
                 ->getPropertiesByAnnotationClass(Hotel::class, Translatable::class);
             $this->formDataHandler
                 ->saveTranslationsFromMultipleFieldsForm($form, $this->request, $multiLangFields);
         }
 
-        if ($this->getCurrentStepNumber() === 7) {
+        if ($this->getStepId() === self::MAIN_PHOTO_STEP) {
             $this->dm->persist($this->hotel->getDefaultImage());
         }
 
-        if ($this->getCurrentStepNumber() === 8 && !$this->isBackButtonClicked()) {
+        if ($this->getStepId() === self::PHOTOS_STEP && !$this->isBackButtonClicked()) {
             $savedImage = $form->getData();
             $this->hotel->addImage($savedImage);
             $this->dm->persist($savedImage);

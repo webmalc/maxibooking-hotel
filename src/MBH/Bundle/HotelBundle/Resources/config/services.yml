@@ -136,10 +136,11 @@ services:
             - '@mbh.form_data_handler'
             - '@mbh.room.cache'
             - '@mbh.price.cache'
+            - '@mbh.hotel.selector'
 
     mbh.room_type_flow_type:
         class: MBH\Bundle\HotelBundle\Form\RoomTypeFlow\RoomTypeFlowType
-        arguments: ['@mbh.form_builder', '@doctrine.odm.mongodb.document_manager']
+        arguments: ['@mbh.form_builder', '@doctrine.odm.mongodb.document_manager', '@mbh.flow_manager']
         tags: [{name: form.type}]
 
     mbh.form_flow:

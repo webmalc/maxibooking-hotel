@@ -3,10 +3,6 @@
 namespace MBH\Bundle\HotelBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
-use MBH\Bundle\HotelBundle\Form\HotelFlow\HotelFlow;
-use MBH\Bundle\HotelBundle\Form\RoomTypeFlow\RoomTypeFlow;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -17,66 +13,28 @@ use Symfony\Component\Routing\Annotation\Route;
 class FlowController extends BaseController
 {
     /**
-     * @Security("is_granted('ROLE_HOTEL_FLOW')")
-     * @Template()
-     * @Route("/hotel", name="hotel_flow")
-     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     * @Route("/{type}/{flowId}", name="mb_flow")
+     * @param string $type
+     * @param string $flowId
+     * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function hotelFlowAction()
+    public function flowAction(string $type, string $flowId = null)
     {
-        //TODO: Пока что для текущего отеля
-        $hotel = $this->hotel;
+        $flowManager = $this->get('mbh.flow_manager');
+        if ($this->isGranted($flowManager->getFlowRole($type))) {
+            $this->createAccessDeniedException();
+        }
 
-        /** @var HotelFlow $flow */
-        $flow = $this
-            ->get('mbh.hotel_flow')
-            ->setInitData($hotel);
-
+        $flow = $flowManager->initFlowService($type, $flowId);
         $form = $flow->handleStepAndGetForm();
 
-        return [
+        if ($flow->getFlowConfig()->getFlowId() && (empty($flowId) || $flowId !== $flow->getFlowConfig()->getFlowId())) {
+            return $this->redirectToRoute('mb_flow', ['type' => $type, 'flowId' => $flow->getFlowConfig()->getFlowId()]);
+        }
+
+        return $this->render($flowManager->getFlowTemplate($type), array_merge($flow->getTemplateParameters(), [
             'form' => $form->createView(),
             'flow' => $flow,
-            'hotel' => $hotel
-        ];
-    }
-
-    /**
-     * @Security("is_granted('ROLE_ROOMTYPE_FLOW')")
-     * @Template()
-     * @Route("/room_type", name="room_type_flow")
-     * @return array
-     */
-    public function roomTypeFlowAction()
-    {
-        /** @var RoomTypeFlow $flow */
-        $flow = $this
-            ->get('mbh.room_type_flow')
-            ->setInitData($this->hotel);
-        $form = $flow->handleStepAndGetForm();
-
-        return [
-            'flow' => $flow,
-            'form' => $form->createView(),
-            'roomType' => $flow->getManagedRoomType()
-        ];
-    }
-
-    /**
-     * @Security("is_granted('ROLE_MB_SITE_FLOW')")
-     * @Route("/mb_site", name="mb_site")
-     * @Template()
-     * @return array
-     */
-    public function mbSiteFlowAction()
-    {
-        /** @var RoomTypeFlow $flow */
-        $flow = $this->get('mbh.mb_site_flow');
-        $form = $flow->handleStepAndGetForm();
-
-        return [
-            'flow' => $flow,
-            'form' => $form->createView(),
-        ];
+        ]));
     }
 }

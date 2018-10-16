@@ -5,16 +5,20 @@ namespace MBH\Bundle\HotelBundle\Form\RoomTypeFlow;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Service\MBHFormBuilder;
+use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\HotelRepository;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
 use MBH\Bundle\HotelBundle\Form\RoomTypeType;
+use MBH\Bundle\HotelBundle\Service\FlowManager;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Document\TariffRepository;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Date;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -24,36 +28,40 @@ class RoomTypeFlowType extends AbstractType
 {
     private $mbhFormBuilder;
     private $dm;
+    private $flowManager;
 
-    public function __construct(MBHFormBuilder $mbhFormBuilder, DocumentManager $dm)
+    public function __construct(MBHFormBuilder $mbhFormBuilder, DocumentManager $dm, FlowManager $flowManager)
     {
         $this->mbhFormBuilder = $mbhFormBuilder;
         $this->dm = $dm;
+        $this->flowManager = $flowManager;
     }
 
+    /**
+     * @param FormBuilderInterface $builder
+     * @param array $options
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         switch ($options['flow_step']) {
-            case 1:
-                $builder
-                    ->add('hotel', DocumentType::class, [
-                        [
-                            'label' => 'room_type_flow_type.hotel.label',
-                            'required' => true,
-                            'class' => 'MBHHotelBundle:RoomType',
-                            'query_builder' => function (RoomTypeRepository $dr) use ($options) {
-                                return $dr->fetchQueryBuilder($options['hotel']);
-                            },
-                            'data' => $options['roomType'],
-                        ]
-                    ]);
-                break;
-            case 2:
+            case RoomTypeFlow::HOTEL_STEP:
                 $builder
                     ->add(
-                        'roomType',
-                        DocumentType::class,
-                        [
+                        'hotel', DocumentType::class, [
+                            'label' => 'room_type_flow_type.hotel.label',
+                            'required' => true,
+                            'class' => Hotel::class,
+                            'query_builder' => function (HotelRepository $repository) {
+                                return $repository->getQBWithAvailable();
+                            },
+                            'data' => $options['hotel']
+                        ]
+                    );
+                break;
+            case RoomTypeFlow::ROOM_TYPE_STEP:
+                $builder
+                    ->add(
+                        'roomType', DocumentType::class, [
                             'label' => 'room_type_flow_type.room_type.label',
                             'required' => true,
                             'class' => 'MBHHotelBundle:RoomType',
@@ -61,10 +69,12 @@ class RoomTypeFlowType extends AbstractType
                                 return $dr->fetchQueryBuilder($options['hotel']);
                             },
                             'data' => $options['roomType'],
+                            'expanded' => true,
+                            'multiple' => false
                         ]
                     );
                 break;
-            case 3:
+            case RoomTypeFlow::ROOM_DESCRIPTION_STEP:
                 $this->mbhFormBuilder->mergeFormFields(
                     $builder,
                     RoomTypeType::class,
@@ -72,7 +82,7 @@ class RoomTypeFlowType extends AbstractType
                     ['roomSpace', 'facilities', 'description']
                 );
                 break;
-            case 5:
+            case RoomTypeFlow::NUM_OF_ROOMS_STEP:
                 $this->mbhFormBuilder->mergeFormFields(
                     $builder,
                     RoomTypeType::class,
@@ -80,7 +90,7 @@ class RoomTypeFlowType extends AbstractType
                     ['places', 'additionalPlaces']
                 );
                 break;
-            case 6:
+            case RoomTypeFlow::ROOM_CACHES_STEP:
                 $builder
                     ->add(
                         'rooms',
@@ -88,7 +98,7 @@ class RoomTypeFlowType extends AbstractType
                         [
                             'label' => 'mbhpricebundle.form.roomcachegeneratortype.kolichestvo.mest',
                             'required' => true,
-                            'data' => $options['rooms'],
+                            'data' => is_null($options['rooms']) ? 0 : $options['rooms'],
                             'attr' => ['class' => 'spinner'],
                             'constraints' => [
                                 new Range(
@@ -103,7 +113,7 @@ class RoomTypeFlowType extends AbstractType
                         ]
                     );
                 break;
-            case 7:
+            case RoomTypeFlow::PERIOD_STEP:
                 $builder
                     ->add(
                         'begin',
@@ -140,7 +150,7 @@ class RoomTypeFlowType extends AbstractType
                         )
                     );
                 break;
-            case 8:
+            case RoomTypeFlow::TARIFF_STEP:
                 $builder
                     ->add(
                         'tariff',
@@ -158,7 +168,7 @@ class RoomTypeFlowType extends AbstractType
                         ]
                     );
                 break;
-            case 9:
+            case RoomTypeFlow::PRICE_STEP:
                 $builder
                     ->add(
                         'price',
@@ -225,6 +235,25 @@ class RoomTypeFlowType extends AbstractType
                     'rooms' => null
                 ]
             );
+    }
+
+    /**
+     * @param FormView $view
+     * @param FormInterface $form
+     * @param array $options
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function finishView(FormView $view, FormInterface $form, array $options)
+    {
+        if ($options['flow_step'] === RoomTypeFlow::ROOM_TYPE_STEP) {
+            $roomTypes = $this->dm->getRepository(RoomType::class)->fetch($options['hotel']);
+            $roomTypeIds = array_map(function (RoomType $roomType) {
+                return $roomType->getId();
+            }, $roomTypes->toArray());
+            $progressRates = $this->flowManager->getProgressRateByFlowId(RoomTypeFlow::FLOW_TYPE, array_values($roomTypeIds));
+            $view->children['roomType']->vars['flowProgressRates'] = $progressRates;
+            $view->children['roomType']->vars['selectedRoomTypeId'] = $options['roomType'] ? $options['roomType']->getId() : null;
+        }
     }
 
     public function getBlockPrefix()

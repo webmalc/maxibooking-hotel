@@ -2,10 +2,11 @@
 
 namespace MBH\Bundle\HotelBundle\Form\RoomTypeFlow;
 
+use MBH\Bundle\BaseBundle\Document\Image;
 use MBH\Bundle\BaseBundle\Form\ImageType;
 use MBH\Bundle\BaseBundle\Service\DocumentFieldsManager;
 use MBH\Bundle\BaseBundle\Service\FormDataHandler;
-use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\BaseBundle\Service\HotelSelector;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Model\FlowRuntimeException;
 use MBH\Bundle\HotelBundle\Service\FormFlow;
@@ -18,6 +19,18 @@ class RoomTypeFlow extends FormFlow
 {
     const DATE_FORMAT = 'd.m.Y H:i:s';
     const FLOW_TYPE = 'roomType';
+    const PREPARATORY_STEPS = [self::HOTEL_STEP, self::ROOM_TYPE_STEP];
+    const PREV_STEP_NAME = 'prevStep';
+
+    const HOTEL_STEP = 'hotel';
+    const ROOM_TYPE_STEP = 'roomType';
+    const ROOM_DESCRIPTION_STEP = 'roomDescription';
+    const PHOTOS_STEP = 'photos';
+    const NUM_OF_ROOMS_STEP = 'numberOfRooms';
+    const ROOM_CACHES_STEP = 'roomCaches';
+    const PERIOD_STEP = 'period';
+    const TARIFF_STEP = 'tariff';
+    const PRICE_STEP = 'price';
 
     private $hotel;
     private $documentFieldsManager;
@@ -25,17 +38,26 @@ class RoomTypeFlow extends FormFlow
     private $roomCacheService;
     private $priceCacheService;
 
+    private $hasSingleHotel;
+    private $hasSingleHotelInit = false;
+    private $hasSingleRoomType;
+    private $hasSingleRoomTypeInit = false;
+
+    private $canChangeStep = true;
+
     public function __construct(
         DocumentFieldsManager $documentFieldsManager,
         FormDataHandler $formDataHandler,
         RoomCache $roomCacheService,
-        PriceCache $priceCacheService
+        PriceCache $priceCacheService,
+        HotelSelector $hotelSelector
     )
     {
         $this->documentFieldsManager = $documentFieldsManager;
         $this->formDataHandler = $formDataHandler;
         $this->roomCacheService = $roomCacheService;
         $this->priceCacheService = $priceCacheService;
+        $this->hotel = $hotelSelector->getSelected();
     }
 
     /**
@@ -46,6 +68,47 @@ class RoomTypeFlow extends FormFlow
         return self::FLOW_TYPE;
     }
 
+    /**
+     * @param string|null $flowId
+     * @return $this|FormFlow
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function init(string $flowId = null)
+    {
+        parent::init($flowId);
+
+        if (empty($flowId)) {
+            if ($this->request->get(self::PREV_STEP_NAME) === self::ROOM_TYPE_STEP) {
+                $stepNumber = $this->hasSingleHotel() ? 1 : 2;
+                $this->getFlowConfig()->setCurrentStep($stepNumber);
+            }
+
+            if ($this->hasSingleRoomType()) {
+                $roomType = $this->dm
+                    ->getRepository('MBHHotelBundle:RoomType')
+                    ->fetchQueryBuilder($this->getManagedHotel())
+                    ->getQuery()
+                    ->getSingleResult();
+                $this->getFlowConfig()
+                    ->setFlowId($roomType->getId())
+                    ->setCurrentStep(3);
+                $this->dm->persist($this->getFlowConfig());
+                $this->dm->flush();
+            }
+        }
+
+        return $this;
+    }
+
+    public function getTemplateParameters()
+    {
+        return ['roomType' => $this->getManagedRoomType()];
+    }
+
+    /**
+     * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
     protected function getStepsConfig(): array
     {
         $flowData = $this->getFlowData();
@@ -55,24 +118,37 @@ class RoomTypeFlow extends FormFlow
         $additionalPrice = $flowData['additionalPrice'] ?? null;
         $roomCaches = $flowData['rooms'] ?? null;
 
-        return [
-            [
+        $stepsConfig = [];
+        if (!$this->hasSingleHotel()) {
+            $stepsConfig[] = [
+                'id' => self::HOTEL_STEP,
                 'label' => 'room_type_flow.step_labels.hotel',
-                'form_type' => RoomTypeFlowType::class
-            ],
-            [
+                'form_type' => RoomTypeFlowType::class,
+                'options' => [
+                    'hotel' => $this->getManagedHotel()
+                ]
+            ];
+        }
+        if (!$this->hasSingleRoomType()) {
+            $stepsConfig[] = [
+                'id' => self::ROOM_TYPE_STEP,
                 'label' => 'room_type_flow.step_labels.room_type',
                 'form_type' => RoomTypeFlowType::class,
                 'options' => [
-                    'hotel' => $this->hotel,
+                    'hotel' => $this->getManagedHotel(),
                     'roomType' => $this->getManagedRoomType(),
                 ],
-            ],
+            ];
+        }
+
+        return array_merge($stepsConfig, [
             [
+                'id' => self::ROOM_DESCRIPTION_STEP,
                 'label' => 'room_type_flow.step_labels.room_info',
                 'form_type' => RoomTypeFlowType::class,
             ],
             [
+                'id' => self::PHOTOS_STEP,
                 'label' => 'room_type_flow.step_labels.photos',
                 'form_type' => ImageType::class,
                 'options' => [
@@ -80,10 +156,12 @@ class RoomTypeFlow extends FormFlow
                 ],
             ],
             [
+                'id' => self::NUM_OF_ROOMS_STEP,
                 'label' => 'room_type_flow.step_labels.number_of_places',
                 'form_type' => RoomTypeFlowType::class,
             ],
             [
+                'id' => self::ROOM_CACHES_STEP,
                 'label' => 'room_type_flow.step_labels.room_caches',
                 'form_type' => RoomTypeFlowType::class,
                 'options' => [
@@ -91,23 +169,26 @@ class RoomTypeFlow extends FormFlow
                 ],
             ],
             [
+                'id' => self::PERIOD_STEP,
                 'label' => 'room_type_flow.step_labels.period',
                 'form_type' => RoomTypeFlowType::class,
                 'options' => [
-                    'hotel' => $this->hotel,
+                    'hotel' => $this->getManagedHotel(),
                     'begin' => $begin,
                     'end' => $end,
                 ],
             ],
             [
+                'id' => self::TARIFF_STEP,
                 'label' => 'room_type_flow.step_labels.tariff',
                 'form_type' => RoomTypeFlowType::class,
                 'options' => [
-                    'hotel' => $this->hotel,
+                    'hotel' => $this->getManagedHotel(),
                     'tariff' => $this->getFlowDataTariff(),
                 ],
             ],
             [
+                'id' => self::PRICE_STEP,
                 'label' => 'room_type_flow.step_labels.price',
                 'form_type' => RoomTypeFlowType::class,
                 'options' => [
@@ -116,7 +197,7 @@ class RoomTypeFlow extends FormFlow
                     'additionalPrice' => $additionalPrice,
                 ],
             ],
-        ];
+        ]);
     }
 
     /**
@@ -131,9 +212,14 @@ class RoomTypeFlow extends FormFlow
             : null;
     }
 
+    protected function getManagedHotel()
+    {
+        return $this->getManagedRoomType() ? $this->getManagedRoomType()->getHotel() : $this->hotel;
+    }
+
     protected function getFormData()
     {
-        if (in_array($this->getCurrentStepNumber(), [2, 4])) {
+        if (in_array($this->getStepId(), [self::ROOM_DESCRIPTION_STEP, self::NUM_OF_ROOMS_STEP])) {
             return $this->getManagedRoomType();
         }
 
@@ -149,18 +235,37 @@ class RoomTypeFlow extends FormFlow
     protected function handleForm(FormInterface $form)
     {
         $formData = $form->getData();
-        if (in_array($this->getCurrentStepNumber(), [1, 5, 6, 7, 8, 9])) {
+        if (in_array($this->getStepId(), [
+            self::HOTEL_STEP,
+            self::ROOM_TYPE_STEP,
+            self::ROOM_CACHES_STEP,
+            self::PERIOD_STEP,
+            self::TARIFF_STEP,
+            self::PRICE_STEP
+        ])) {
             $flowConfig = $this->getFlowConfig();
             $flowData = $flowConfig->getFlowData();
-            switch ($this->getCurrentStepNumber()) {
-                case 1:
+
+            switch ($this->getStepId()) {
+                case self::HOTEL_STEP:
+                    $this->hotel = $formData['hotel'];
                     break;
-                case 2:
+                case self::ROOM_TYPE_STEP:
                     /** @var RoomType $roomType */
                     $roomType = $formData['roomType'];
                     $flowData['roomTypeId'] = $roomType->getId();
+                    $existingConfig = $this->findFlowConfig($roomType->getId());
+                    if (!is_null($existingConfig)) {
+                        if ($existingConfig->getCurrentStepNumber() !== $this->getCurrentStepNumber()) {
+                            $this->canChangeStep = false;
+                        }
+                        $this->flowConfig = $existingConfig;
+                    } else {
+                        $flowConfig->setFlowId($roomType->getId());
+                        $this->dm->persist($flowConfig);
+                    }
                     break;
-                case 7:
+                case self::PERIOD_STEP:
                     /** @var \DateTime $begin */
                     $begin = $formData['begin'];
                     /** @var \DateTime $end */
@@ -169,7 +274,7 @@ class RoomTypeFlow extends FormFlow
                     $flowData['begin'] = $begin->format(self::DATE_FORMAT);
                     $flowData['end'] = $end->format(self::DATE_FORMAT);
                     break;
-                case 8:
+                case self::TARIFF_STEP:
                     /** @var Tariff $tariff */
                     $tariff = $formData['tariff'];
                     $flowData['pricesTariffId'] = $tariff->getId();
@@ -182,14 +287,14 @@ class RoomTypeFlow extends FormFlow
             $flowConfig->setFlowData($flowData);
         }
 
-        if (in_array($this->getCurrentStepNumber(), [3])) {
+        if (in_array($this->getStepId(), [self::ROOM_DESCRIPTION_STEP])) {
             $multiLangFields = $this->documentFieldsManager
                 ->getPropertiesByAnnotationClass(RoomType::class);
             $this->formDataHandler
                 ->saveTranslationsFromMultipleFieldsForm($form, $this->request, $multiLangFields);
         }
 
-        if ($this->getCurrentStepNumber() === 4 && $form->getData() && $form->getData()->getImageFile()) {
+        if ($this->getStepId() === self::PHOTOS_STEP && $form->getData() instanceOf Image && $form->getData()->getImageFile()) {
             $onlineImage = $form->getData();
             $roomType = $this->getManagedRoomType();
             $roomType->addOnlineImage($onlineImage);
@@ -203,7 +308,7 @@ class RoomTypeFlow extends FormFlow
                 ->update(
                     $this->getDateFromFlowData('begin'),
                     $this->getDateFromFlowData('end'),
-                    $this->hotel,
+                    $this->getManagedHotel(),
                     $this->getFlowData()['rooms'],
                     false,
                     [$this->getManagedRoomType()]
@@ -218,9 +323,9 @@ class RoomTypeFlow extends FormFlow
                 ->update(
                     $this->getDateFromFlowData('begin'),
                     $this->getDateFromFlowData('end'),
-                    $this->hotel,
+                    $this->getManagedHotel(),
                     $this->getFlowData()['price'],
-                    $this->getFlowData()['isPersonPrice'],
+                    false,
                     null,
                     $this->getFlowData()['additionalPrice'] ?? null,
                     null,
@@ -230,6 +335,19 @@ class RoomTypeFlow extends FormFlow
         }
 
         $this->dm->flush();
+    }
+
+    protected function mustChangeStep(): bool
+    {
+        return $this->canChangeStep && parent::mustChangeStep();
+    }
+
+    /**
+     * @return bool|int|null
+     */
+    protected function isPreparatoryStep()
+    {
+        return in_array($this->getFlowConfig()->getCurrentStepNumber(), self::PREPARATORY_STEPS);
     }
 
     /**
@@ -249,5 +367,61 @@ class RoomTypeFlow extends FormFlow
         return isset($this->getFlowData()['pricesTariffId'])
             ? $this->dm->find('MBHPriceBundle:Tariff', $this->getFlowData()['pricesTariffId'])
             : null;
+    }
+
+    /**
+     * @param int $currentStep
+     */
+    protected function updateConfigCausedByLimitedNumberOfProperties($currentStep)
+    {
+        $roomTypesCollection = $this->getManagedHotel()->getRoomTypes();
+        if ($currentStep === 2 && ($roomTypesCollection->count() === 1 || $this->getManagedRoomType())) {
+            if (!$this->getManagedRoomType()) {
+                $flowData = $this->getFlowConfig()->getFlowData();
+                /** @var RoomType $roomType */
+                $roomType = $roomTypesCollection->first();
+                $flowData['roomTypeId'] = $roomType->getId();
+                $this->getFlowConfig()->setFlowId($roomType->getId());
+            }
+        }
+
+        $this->getFlowConfig()->setCurrentStep($currentStep);
+    }
+
+    /**
+     * @return bool
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    protected function hasSingleHotel()
+    {
+        if (!$this->hasSingleHotelInit) {
+            $this->hasSingleHotel = $this->dm
+                    ->getRepository('MBHHotelBundle:Hotel')
+                    ->getQBWithAvailable()
+                    ->count()
+                    ->getQuery()
+                    ->execute() === 1;
+            $this->hasSingleHotelInit = true;
+        }
+
+        return $this->hasSingleHotel;
+    }
+
+    /**
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    protected function hasSingleRoomType()
+    {
+        if (!$this->hasSingleRoomTypeInit) {
+            $this->hasSingleRoomType = $this->dm
+                    ->getRepository('MBHHotelBundle:RoomType')
+                    ->fetchQueryBuilder($this->getManagedHotel())
+                    ->count()
+                    ->getQuery()
+                    ->execute() === 1;
+            $this->hasSingleRoomTypeInit = true;
+        }
+
+        return $this->hasSingleRoomType;
     }
 }

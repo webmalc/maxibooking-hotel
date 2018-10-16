@@ -59,7 +59,7 @@ class HotelFlowType extends AbstractType
                     'logo_image_download_url' => $this->getDownloadUrl($hotel->getLogoImage()),
                     'logo_image_delete_url' => $this->router->generate('hotel_delete_logo_image', [
                         'id' => $hotel->getId(),
-                        'redirect_url' => $this->router->generate('hotel_flow')
+                        'redirect_url' => $this->router->generate('mb_flow', ['type' => HotelFlow::FLOW_TYPE])
                     ])
                 ]);
                 break;

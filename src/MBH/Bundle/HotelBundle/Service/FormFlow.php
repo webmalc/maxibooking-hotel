@@ -4,6 +4,7 @@ namespace MBH\Bundle\HotelBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\HotelBundle\Document\FlowConfig;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Model\FlowRuntimeException;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormFactory;
@@ -24,13 +25,18 @@ abstract class FormFlow
     protected $request;
     /** @var TranslatorInterface */
     protected $translator;
+
     protected $flowId;
 
+    private $isFlowInitiated = false;
     private $isFlowConfigInit = false;
 
     abstract public static function getFlowType();
+
     abstract protected function getStepsConfig(): array;
+
     abstract protected function getFormData();
+
     /**
      * @param FormInterface $form
      * @throws FlowRuntimeException
@@ -38,12 +44,14 @@ abstract class FormFlow
     abstract protected function handleForm(FormInterface $form);
 
     /**
+     * @param Hotel $hotel
      * @param string|null $flowId
-     * @return static
+     * @return self
      */
     public function init(string $flowId = null)
     {
         $this->flowId = $flowId;
+        $this->isFlowInitiated = true;
 
         return $this;
     }
@@ -78,9 +86,6 @@ abstract class FormFlow
         $flowExceptions = [];
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($this->isFirstStep()) {
-                $this->dm->persist($this->getFlowConfig());
-            }
             try {
                 $this->handleForm($form);
             } catch (FlowRuntimeException $exception) {
@@ -88,14 +93,17 @@ abstract class FormFlow
             }
 
             if (empty($flowExceptions)) {
-                if ($this->isNextButtonClicked() || $this->isBackButtonClicked()) {
-                    $this->nextStep();
+                if ($this->mustChangeStep()) {
+                    $this->changeStep();
                 }
 
                 if ($this->isFinishButtonClicked()) {
-                    $this->getFlowConfig()->setIsFinished(true);
-                    $this->isFlowConfigInit = false;
+                    $this->onFinishButtonClick();
                 }
+            }
+
+            if (!$this->isPreparatoryStep()) {
+                $this->dm->persist($this->getFlowConfig());
             }
 
             $this->dm->flush();
@@ -118,7 +126,7 @@ abstract class FormFlow
         $data = $this->getFormData();
         if (!isset($this->getCurrentStepInfo()['form_type'])) {
             throw new \InvalidArgumentException(
-                'There is no "form_type" parameter in step config #' . $this->getCurrentStepNumber()
+                'There is no "form_type" parameter in step config with id "' . $this->getStepId() . '"'
             );
         }
 
@@ -132,7 +140,7 @@ abstract class FormFlow
                 $definedOptions,
                 $options,
                 [
-                    'flow_step' => $this->getCurrentStepNumber(),
+                    'flow_step' => $this->getStepId(),
                     'hasGroups' => false,
                 ]
             )
@@ -142,11 +150,11 @@ abstract class FormFlow
     /**
      * @return bool
      */
-    public function nextStep()
+    public function changeStep()
     {
         if ($this->isButtonClicked('back')) {
             if ($this->isFirstStep()) {
-                throw new \RuntimeException('So this is the first step!');
+                throw new \RuntimeException('There are no steps before current!');
             }
             $this->getFlowConfig()->decreaseStepNumber();
         } else {
@@ -157,7 +165,7 @@ abstract class FormFlow
             $this->getFlowConfig()->increaseStepNumber();
         }
 
-        $this->dm->flush($this->getFlowConfig());
+        $this->dm->flush();
 
         return true;
     }
@@ -181,6 +189,11 @@ abstract class FormFlow
     public function getCurrentStepNumber()
     {
         return $this->getFlowConfig()->getCurrentStepNumber();
+    }
+
+    public function getStepId()
+    {
+        return $this->getCurrentStepInfo()['id'] ?? $this->getCurrentStepNumber();
     }
 
     public function getNumberOfSteps()
@@ -235,16 +248,6 @@ abstract class FormFlow
         return $this->getCurrentStepInfo()['label'];
     }
 
-    public function isStepSkipped()
-    {
-        return false;
-    }
-
-    public function isStepDone()
-    {
-        return true;
-    }
-
     /**
      * @return FlowConfig
      */
@@ -252,14 +255,14 @@ abstract class FormFlow
     {
         if (!$this->isFlowConfigInit) {
             $flowId = $this->getFlowId();
-            $config = $this->dm
-                ->getRepository('MBHHotelBundle:FlowConfig')
-                ->findOneBy(['flowId' => $flowId, 'isEnabled' => true, 'isFinished' => false]);
+            $config = $this->findFlowConfig($flowId);
 
             if (is_null($config)) {
-                $config = (new FlowConfig())
-                    ->setFlowType(static::getFlowType())
-                    ->setFlowId($flowId);
+//                if (!empty($flowId)) {
+//                    throw new \RuntimeException('Can not find ' . static::getFlowType() . ' flow config with id ' . $flowId);
+//                }
+
+                $config = (new FlowConfig())->setFlowType(static::getFlowType());
             }
 
             $this->flowConfig = $config;
@@ -267,6 +270,42 @@ abstract class FormFlow
         }
 
         return $this->flowConfig;
+    }
+
+
+    /**
+     * @return bool
+     */
+    public function isFlowStarted()
+    {
+        return !empty($this->getFlowConfig()->getId());
+    }
+
+    /**
+     * @return float|int
+     */
+    public function getProgressRate()
+    {
+        if (!$this->isFlowStarted()) {
+            return 0;
+        }
+
+        return round(($this->getCurrentStepNumber() - 1) / $this->getNumberOfSteps(), 2) * 100;
+    }
+
+    /**
+     * @param $flowId
+     * @return FlowConfig|null|object
+     */
+    public function findFlowConfig($flowId)
+    {
+        return $this->dm
+            ->getRepository('MBHHotelBundle:FlowConfig')
+            ->findOneBy([
+                'flowId' => $flowId,
+                'isEnabled' => true,
+                'flowType' => static::getFlowType()
+            ]);
     }
 
     /**
@@ -296,36 +335,35 @@ abstract class FormFlow
     /**
      * @return string
      */
-    public function getFlowId(): string
+    public function getFlowId(): ?string
     {
-        if (empty($this->flowId)) {
+        if (!$this->isFlowInitiated) {
             throw new \RuntimeException('FormFlow is not initiated!');
         }
 
         return $this->flowId;
     }
 
-    /**
-     * @return bool
-     */
-    public function isFlowStarted()
+    public function getTemplateParameters()
     {
-        return !empty($this->getFlowConfig()->getId());
+        return [];
+    }
+
+    protected function isPreparatoryStep()
+    {
+        return false;
     }
 
     /**
-     * @return float|int
+     * @return bool
      */
-    public function getProgressRate()
+    protected function mustChangeStep(): bool
     {
-        if (!$this->isFlowStarted()) {
-            $finishedConfig = $this->dm
-                ->getRepository(FlowConfig::class)
-                ->findOneBy(['isFinished' => true, 'flowId' => $this->getFlowId()]);
+        return $this->isNextButtonClicked() || $this->isBackButtonClicked();
+    }
 
-            return is_null($finishedConfig) ? 0 : 100;
-        }
-
-        return round(($this->getCurrentStepNumber() - 1) / $this->getNumberOfSteps(), 2) * 100;
+    protected function onFinishButtonClick(): void
+    {
+        $this->flowConfig->setCurrentStep(1);
     }
 }
