@@ -92,9 +92,7 @@ class BillingInstallCommand extends ContainerAwareCommand
             }
 
             try {
-                $client = $this->getContainer()->get('mbh.billing.api')->getClient($clientName);
-                $this->getContainer()->get('mbh.site_manager')->createOrUpdateForHotel($client);
-                $this->documentManager->flush();
+                $this->createWebSiteConfig($clientName);
             } catch (\Throwable $exception) {
                 $this->logger->addCritical('An error occurred while creating the config of the site');
             }
@@ -138,6 +136,20 @@ class BillingInstallCommand extends ContainerAwareCommand
             );
             $this->documentManager->flush($statusStorage);
         }
+    }
+
+    private function createWebSiteConfig(string $clientName)
+    {
+        $this->logger->info('begin creation of web site config');
+
+        $isSuccess = $this->executeProcess('mbh:add_client_site_command ' . $clientName, $clientName);
+        if ($isSuccess) {
+            $this->logger->info('Client site created');
+        } else {
+            $this->logger->err('An error occurred while creating a site');
+        }
+
+        return $isSuccess;
     }
 
     private function credentialsInstall(string $clientName): bool

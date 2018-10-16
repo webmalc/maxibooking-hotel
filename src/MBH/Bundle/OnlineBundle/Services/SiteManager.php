@@ -36,7 +36,7 @@ class SiteManager
                 'settlement',
                 'house',
                 'contactInformation',
-                'mapUrl'
+//                'mapUrl'
             ],
         ],
         RoomType::class => [
@@ -181,10 +181,6 @@ class SiteManager
             $config = new SiteConfig();
             $this->dm->persist($config);
 
-            if (!is_null($hotel)) {
-                $config->addHotel($hotel);
-            }
-
             $siteDomain = $this->compileSiteDomain($client);
 
             $config->setSiteDomain($siteDomain);
@@ -193,6 +189,10 @@ class SiteManager
                 ->setClient($client->getLogin());
             $this->billingApi->addClientSite($clientSite);
         } elseif (!$config->getHotels()->contains($hotel)) {
+            $config->addHotel($hotel);
+        }
+
+        if (!is_null($hotel)) {
             $config->addHotel($hotel);
         }
 

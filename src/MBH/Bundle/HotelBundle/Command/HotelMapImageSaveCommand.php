@@ -3,6 +3,7 @@
 namespace MBH\Bundle\HotelBundle\Command;
 
 use Facebook\WebDriver\Chrome\ChromeDriver;
+use Facebook\WebDriver\Chrome\ChromeDriverService;
 use Facebook\WebDriver\Chrome\ChromeOptions;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\WebDriverDimension;
@@ -43,10 +44,13 @@ class HotelMapImageSaveCommand extends ContainerAwareCommand
         $hotel = $dm->find(Hotel::class, $hotelId);
 
         $options = new ChromeOptions();
-        $options->addArguments(['--headless', '--disable-gpu', '--no-sandbox', '--screenshot', '--window-size=1280,768']);
+        $options->addArguments(['--headless', '--disable-gpu', '--no-sandbox']);
 
-        $capabilities = (DesiredCapabilities::chrome())->setCapability(ChromeOptions::CAPABILITY, $options);
-        $driver = ChromeDriver::start($capabilities);
+        $capabilities = (DesiredCapabilities::chrome())
+            ->setCapability(ChromeOptions::CAPABILITY, $options);
+
+        $driver = ChromeDriver::start($capabilities, $this->createChromeDriverService());
+
         $driver->get($hotel->getMapUrl());
 
         $width = $input->getOption('width') ? (int)$input->getOption('width') : self::MAP_IMAGE_WIDTH;
@@ -57,13 +61,16 @@ class HotelMapImageSaveCommand extends ContainerAwareCommand
             ->setSize(new WebDriverDimension($width, $height));
 
         $driver->wait(5);
+
         sleep(1);
         $driver->executeScript(
             'var selectorsToDelete = ["#consent-bump", "#vasquette", ".scene-footer-container",'
-            .'".app-viewcard-strip", "#watermark"];selectorsToDelete.forEach(function(selector) {var elem = '
+            .'".app-viewcard-strip", "#watermark", "#omnibox-container"];selectorsToDelete.forEach(function(selector) {var elem = '
             .'document.querySelector(selector);elem.parentNode.removeChild(elem);}); var btn = '
             .'document.querySelector(\'#pane button.widget-pane-toggle-button\');btn.click(); btn.parentNode.removeChild(btn);'
         );
+        sleep(1);
+
         $driver->wait(3);
         $path = $this
             ->getContainer()
@@ -78,5 +85,13 @@ class HotelMapImageSaveCommand extends ContainerAwareCommand
         $dm->persist($mapImage);
         $dm->flush();
         $driver->quit();
+    }
+
+    private function createChromeDriverService()
+    {
+        $port = 9515;
+        $args = ["--port=$port"];
+        $exePath = $this->getContainer()->getParameter('chromedriver_path');
+        return new ChromeDriverService($exePath, $port, $args);
     }
 }

@@ -550,6 +550,8 @@ notifier.config.label.online_payment_confirm: 'Онлайн оплата'
 notifier.config.label.confirm_order: Подтверждение
 notifier.config.label.channel_manager_configuration: 'Настройка ChannelManager'
 notifier.config.label.unpaid: Неоплата
+notifier.config.label.channel_manager_configuration: 'Настройка ChannelManager'
+notifier.config.title.channel_manager_configuration: 'Уведомление о настройке ChannelManager'
 notifier.config.label.task: Задачи
 notifier.config.label.error: Ошибки
 notifier.config.title.error: 'Уведомление об ошибках'

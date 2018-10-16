@@ -46,13 +46,13 @@ class HotelSubscriber implements EventSubscriber
             if ($args->hasChangedField('cityId')) {
                 $this->updateHotelAddressData($hotel, $args->getDocumentManager());
             }
-            if ($args->hasChangedField('mapUrl')) {
-                if (!empty($hotel->getMapUrl())) {
-                    $this->hotelManager->runMapImageCreationCommand($hotel);
-                } else {
-                    $hotel->setMapImage(null);
-                }
-            }
+//            if ($args->hasChangedField('mapUrl')) {
+//                if (!empty($hotel->getMapUrl())) {
+//                    $this->hotelManager->runMapImageCreationCommand($hotel);
+//                } else {
+//                    $hotel->setMapImage(null);
+//                }
+//            }
         }
     }
 
