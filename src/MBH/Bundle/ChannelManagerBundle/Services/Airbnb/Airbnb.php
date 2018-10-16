@@ -131,8 +131,6 @@ class Airbnb extends AbstractChannelManagerService
     {
         $hotel = $roomType->getHotel();
         $airbnbConfig = $hotel->getAirbnbConfig();
-        /** @var Tariff $tariff */
-        $tariff = $airbnbConfig->getTariffs()->first()->getTariff();
 
         $begin = new \DateTime('midnight');
         $end = new \DateTime('midnight +' . self::PERIOD_LENGTH);
@@ -140,7 +138,10 @@ class Airbnb extends AbstractChannelManagerService
         //TODO: Уточнить
         $calendar = new Calendar('maxibooking');
 
-        if ($airbnbConfig->getIsEnabled()) {
+        if ($airbnbConfig->isReadyToSync()) {
+            /** @var Tariff $tariff */
+            $tariff = $airbnbConfig->getTariffs()->first()->getTariff();
+
             $warningsCompiler = $this->container->get('mbh.warnings_compiler');
             $emptyPriceCachePeriods = $warningsCompiler
                 ->getEmptyCachePeriodsForRoomTypeAndTariff($roomType, $begin, $end, $tariff, PriceCache::class, 'price');
