@@ -7,6 +7,7 @@ use MBH\Bundle\BaseBundle\Lib\ClientDataTableParams;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Document\TariffChildOptions;
+use MBH\Bundle\PriceBundle\Document\TariffCombinationHolder;
 use MBH\Bundle\PriceBundle\Form\TariffFilterType;
 use MBH\Bundle\PriceBundle\Form\TariffInheritanceType;
 use MBH\Bundle\PriceBundle\Form\TariffPromotionsType;
@@ -57,7 +58,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             return $this->render('MBHPriceBundle:Tariff:index.json.twig', [
                 'entities' => $entities,
                 'draw' => $request->get('draw'),
-                'total' => $entities->count()
+                'total' => $entities->count(),
             ]);
         }
 
@@ -157,7 +158,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
     {
         $entity = new Tariff();
         $form = $this->createForm(TariffType::class, $entity, [
-            'hotel' => $this->hotel
+            'hotel' => $this->hotel,
         ]);
 
         return [
@@ -179,7 +180,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
         $entity->setHotel($this->get('mbh.hotel.selector')->getSelected());
 
         $form = $this->createForm(TariffType::class, $entity, [
-            'hotel' => $this->hotel
+            'hotel' => $this->hotel,
         ]);
         $form->handleRequest($request);
 
@@ -213,16 +214,11 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
         }
 
         $form = $this->createForm(TariffType::class, $entity, [
-            'hotel' => $this->hotel
+            'hotel' => $this->hotel,
         ]);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-
-            $d = $form->getData()->getMergingTariffsSort();
-
-//            foreach ()
-
             $this->dm->persist($entity);
             $this->dm->flush();
 
@@ -233,8 +229,8 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
 
         return [
             'entity' => $entity,
-            'form' => $form->createView(),
-            'logs' => $this->logs($entity)
+            'form'   => $form->createView(),
+            'logs'   => $this->logs($entity),
         ];
     }
 
@@ -254,13 +250,13 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
         }
 
         $form = $this->createForm(TariffType::class, $entity, [
-            'hotel' => $this->hotel
+            'hotel' => $this->hotel,
         ]);
 
         return [
             'entity' => $entity,
             'form' => $form->createView(),
-            'logs' => $this->logs($entity)
+            'logs' => $this->logs($entity),
         ];
     }
 
@@ -293,7 +289,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
         return [
             'entity' => $tariff,
             'form' => $form->createView(),
-            'logs' => $this->logs($tariff)
+            'logs' => $this->logs($tariff),
         ];
     }
 
@@ -351,7 +347,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
 
         $form = $this->createForm(TariffServicesType::class, $tariff, [
             'services_all' => $this->dm->getRepository('MBHPriceBundle:Service')->getAvailableServicesForTariff($tariff, true),
-            'services' => $this->dm->getRepository('MBHPriceBundle:Service')->getAvailableServicesForTariff($tariff)
+            'services' => $this->dm->getRepository('MBHPriceBundle:Service')->getAvailableServicesForTariff($tariff),
         ]);
 
         $form->handleRequest($request);

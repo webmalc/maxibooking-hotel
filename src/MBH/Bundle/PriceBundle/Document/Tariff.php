@@ -5,6 +5,7 @@ namespace MBH\Bundle\PriceBundle\Document;
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\PersistentCollection;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
@@ -237,18 +238,11 @@ class Tariff extends Base implements ConditionsInterface
      */
     protected $mergingTariff;
 
-
     /**
-     * @var Tariff[]|ArrayCollection
-     * ODM\ReferenceMany(targetDocument="Tariff")
-     */
-    protected $mergingTariffs;
-
-    /**
-     * @var string
+     * @var TariffCombinationHolder[]|ArrayCollection
      * @ODM\ReferenceMany(targetDocument="TariffCombinationHolder", cascade={"persist"}, orphanRemoval=true)
      */
-    protected $mergingTariffsSort;
+    protected $tariffCombinationHolders;
 
     /**
      * Tariff constructor.
@@ -636,32 +630,20 @@ class Tariff extends Base implements ConditionsInterface
         return $this;
     }
 
-//    /**
-//     * @return ArrayCollection|Tariff[]
-//     */
-//    public function getMergingTariffs()
-//    {
-//        return $this->mergingTariffs;
-//    }
-//
-//    /**
-//     * @param ArrayCollection|Tariff[] $mergingTariffs
-//     */
-//    public function setMergingTariffs($mergingTariffs): void
-//    {
-//        $this->mergingTariffs = $mergingTariffs;
-//    }
-
-
-    public function getMergingTariffsSort()
+    /**
+     * @return PersistentCollection|TariffCombinationHolder[]
+     */
+    public function getTariffCombinationHolders() : ?PersistentCollection
     {
-        return $this->mergingTariffsSort;
+        return $this->tariffCombinationHolders;
     }
 
-
-    public function setMergingTariffsSort($mergingTariffsSort): void
+    /**
+     * @param PersistentCollection|TariffCombinationHolder[] $tariffCombinationHolders
+     */
+    public function setTariffCombinationHolders(?PersistentCollection $tariffCombinationHolders): void
     {
-        $this->mergingTariffsSort = $mergingTariffsSort;
+        $this->tariffCombinationHolders = $tariffCombinationHolders;
     }
 
     /**

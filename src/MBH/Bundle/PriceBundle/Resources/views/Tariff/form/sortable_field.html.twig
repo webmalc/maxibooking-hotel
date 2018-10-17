@@ -38,7 +38,7 @@
                     {% if errors|length > 0 %}
                         <span class="text-danger text-left input-errors">{{ form_errors(form) }}</span>
                     {% endif %}
-                    {% if form.vars['name'] == 'mergingTariffsSort' %}
+                    {% if form.vars['name'] == 'tariffCombinationHolders' %}
                         <div class="msg_about_duplication" style="display: none;">
                             <span><span class="duplication">Дублирующие</span> записи будут удалены.</span>
                         </div>

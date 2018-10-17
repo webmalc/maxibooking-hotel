@@ -174,70 +174,6 @@ class TariffType extends AbstractType
                 ]
             );
 
-//        $builder
-//            ->add('mergingTariff', DocumentType::class, [
-//                'label' => 'price.form.use_combination',
-//                'group' => 'configuration',
-//                'class' => Tariff::class,
-//                'multiple' => false,
-//                'query_builder' => function(TariffRepository $repository) use ($options, $formTariff) {
-//                    $qb = $repository->createQueryBuilder();
-//                    $qb
-//                        ->field('hotel')->equals($options['hotel'])
-//                        ->field('isEnabled')->equals(true);
-//                    if (!is_null($formTariff)) {
-//                        $qb->field('id')->notEqual($formTariff->getId());
-//                    }
-//
-//                    return $qb;
-//                },
-//                'required' => false,
-//                'help' => 'mbhpricebundle.form.tarifftype.ispolzovatdlyakombinirovaniya.help'
-//            ]);
-//            ->add('mergingTariffs',
-//                DocumentType::class,
-//                [
-////                    'label'         => 'price.form.use_combination',
-//                    'group'         => 'configuration',
-//                    'class'         => Tariff::class,
-//                    'multiple'      => true,
-//                    'query_builder' => function (TariffRepository $repository) use ($options, $formTariff) {
-//                        $qb = $repository->createQueryBuilder();
-//                        $qb
-//                            ->field('hotel')->equals($options['hotel'])
-//                            ->field('isEnabled')->equals(true);
-//                        if (!is_null($formTariff)) {
-//                            $qb->field('id')->notEqual($formTariff->getId());
-//                        }
-//
-//                        return $qb;
-//                    },
-//                    'required'      => false,
-////                    'help'          => 'mbhpricebundle.form.tarifftype.ispolzovatdlyakombinirovaniya.help',
-//                ]
-//            )
-//            ->add(
-//                'mergingTariffsSort',
-//                TariffSortableType::class,
-//                [
-//                    'group' => 'configuration',
-//                    'data'  => $formTariff,
-//                    'class'         => Tariff::class,
-//                    'query_builder' => function (TariffRepository $repository) use ($options, $formTariff) {
-//                        $qb = $repository->createQueryBuilder();
-//                        $qb
-//                            ->field('hotel')->equals($options['hotel'])
-//                            ->field('isEnabled')->equals(true);
-//                        if (!is_null($formTariff)) {
-//                            $qb->field('id')->notEqual($formTariff->getId());
-//                        }
-//
-//                        return $qb;
-//                    },
-////                    'hotel' => $options['hotel'],
-//                ]
-//            )
-
         $hotel = $options['hotel'];
 
         /** @var Builder $qb */
@@ -266,8 +202,8 @@ class TariffType extends AbstractType
 
             $builder
                 ->add(
-                    'mergingTariffsSort',
-                    CollectionType::class,
+                    'tariffCombinationHolders',
+                    TariffCombinationFilterType::class,
                     [
                         'group'          => 'configuration',
                         'label'          => 'Tariffs Combination',

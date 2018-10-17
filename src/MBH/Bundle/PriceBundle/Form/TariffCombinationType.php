@@ -46,8 +46,7 @@ class TariffCombinationType extends AbstractType
                 [
                     'attr' => [
                         'readonly' => true,
-                        'class'    => 'my-position', // selector is the one used on the js side
-                        'autocomplete' => 'off',
+                        'class'    => 'tariff-position',
                     ]
                 ]
             )
@@ -55,11 +54,9 @@ class TariffCombinationType extends AbstractType
                 'combinationTariffId',
                 InvertChoiceType::class,
                 [
-//                    'choices' => ['Выберете'] + $options['tariffs_for_select'],
-                    'choices' => [23=>23,24=>24,25=>25],
+                    'choices' => $options['tariffs_for_select'],
                     'placeholder' => 'Выберете',
                     'label' => false,
-//                    'mapped' => false,
                     'attr' => [
                         'class' => 'plain-html'
                     ],
@@ -68,8 +65,6 @@ class TariffCombinationType extends AbstractType
             )
         ;
     }
-
-
 
     public function configureOptions(OptionsResolver $resolver)
     {

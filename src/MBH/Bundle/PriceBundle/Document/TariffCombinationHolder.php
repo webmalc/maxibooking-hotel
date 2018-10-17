@@ -48,14 +48,6 @@ class TariffCombinationHolder
         return $this->id;
     }
 
-//    /**
-//     * @param string $id
-//     */
-//    public function setId(string $id): void
-//    {
-//        $this->id = $id;
-//    }
-
     /**
      * @return string
      */
@@ -83,7 +75,7 @@ class TariffCombinationHolder
     /**
      * @param string $combinationTariffId
      */
-    public function setCombinationTariffId(string $combinationTariffId): void
+    public function setCombinationTariffId(?string $combinationTariffId): void
     {
         $this->combinationTariffId = $combinationTariffId;
     }
