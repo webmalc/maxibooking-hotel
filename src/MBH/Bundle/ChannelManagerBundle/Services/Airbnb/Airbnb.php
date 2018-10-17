@@ -108,7 +108,9 @@ class Airbnb extends AbstractChannelManagerService
                     $this->notifyErrorRequest(self::NAME, 'channelManager.commonCM.notification.request_error.pull_orders');
                     $logErrorMessage = $this->container
                             ->get('translator')
-                            ->trans('channelManager.commonCM.notification.request_error.pull_orders', [], 'MBHChannelManagerBundle')
+                            ->trans('channelManager.commonCM.notification.request_error.pull_orders', [
+                                '%channelManagerName%' => 'Airbnb'
+                            ], 'MBHChannelManagerBundle')
                         . '. URL:' . $room->getSyncUrl()
                         . '. Response: '
                         . $result->getData();
@@ -134,6 +136,7 @@ class Airbnb extends AbstractChannelManagerService
 
         $begin = new \DateTime('midnight');
         $end = new \DateTime('midnight +' . self::PERIOD_LENGTH);
+        $this->logger->info('Request availability data from Airbnb for room type with id:' . $roomType->getId());
 
         //TODO: Уточнить
         $calendar = new Calendar('maxibooking');
