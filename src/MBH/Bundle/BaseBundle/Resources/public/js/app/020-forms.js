@@ -384,9 +384,14 @@ var docReadyForms = function () {
             }
         },
         changeEndDate = function(divElement, key) {
-            var cssClass = new CssClassName(key),
-                inputBegin = divElement.querySelector('.datepicker.begin-datepicker'),
+            var inputBegin = divElement.querySelector('.datepicker.begin-datepicker'),
                 inputEnd = divElement.querySelector('.datepicker.end-datepicker');
+
+            if (inputBegin === null || inputEnd === null) {
+                return;
+            }
+
+            var cssClass = new CssClassName(key);
 
             inputBegin.classList.add(cssClass.getBegin());
             inputEnd.classList.add(cssClass.getEnd());
