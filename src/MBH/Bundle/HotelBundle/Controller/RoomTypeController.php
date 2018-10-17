@@ -4,18 +4,22 @@ namespace MBH\Bundle\HotelBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Document\Image;
+use MBH\Bundle\BillingBundle\Lib\Model\Result;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\TaskSettings;
 use MBH\Bundle\HotelBundle\Form\ImagePriorityType;
 use MBH\Bundle\HotelBundle\Form\OnlineImageFileType;
 use MBH\Bundle\HotelBundle\Form\RoomTypeTasksType;
 use MBH\Bundle\HotelBundle\Form\RoomTypeType;
+use MBH\Bundle\HotelBundle\Form\ShortRoomTypeForm;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -30,6 +34,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
      * @Method("GET")
      * @Security("is_granted('ROLE_ROOM_TYPE_VIEW')")
      * @Template()
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function indexAction()
     {
@@ -39,7 +44,9 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
             $filterCollection->enable('disableable');
         }
 
-        $entities = $this->dm->getRepository('MBHHotelBundle:RoomType')->createQueryBuilder('s')
+        $entities = $this->dm
+            ->getRepository('MBHHotelBundle:RoomType')
+            ->createQueryBuilder()
             ->field('hotel.id')->equals($this->hotel->getId())
             ->sort('fullTitle', 'asc')
             ->getQuery()
@@ -142,7 +149,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         if ($image) {
             $roomType->removeOnlineImage($image);
             $imageWasMain = $image->isMain();
-            if($imageWasMain) {
+            if ($imageWasMain) {
                 $roomType->makeFirstImageAsMain();
             }
         }
@@ -152,7 +159,7 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
 
         $redirectUrl = $request->get('redirect_url')
             ? $request->get('redirect_url')
-            : $this->generateUrl('room_type_image_edit', ['id' => $roomType->getId(), 'imageTab' => 'active']) ;
+            : $this->generateUrl('room_type_image_edit', ['id' => $roomType->getId(), 'imageTab' => 'active']);
 
         return $this->redirect($redirectUrl);
     }
@@ -307,7 +314,6 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
     }
 
 
-
     /**
      * Update room.
      *
@@ -360,13 +366,14 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
 
     /**
      * @param Request $request
+     * @param RoomType $roomType
      * @param Image $image
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      * @Route("/images/{id}/{imageId}/priority/edit", name="room_type_image_edit_priority", options={"expose" = true })
      * @ParamConverter("roomType", class="MBHHotelBundle:RoomType",options={"id" = "id"})
      * @ParamConverter("image", class="MBHBaseBundle:Image",options={"id" = "imageId"})
      * @Method({"GET","POST"})
      * @Security("is_granted('ROLE_ROOM_TYPE_EDIT')")
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function changeImagePriority(Request $request, RoomType $roomType, Image $image)
     {
@@ -383,6 +390,43 @@ class RoomTypeController extends Controller implements CheckHotelControllerInter
         }
 
         return $this->redirectToRoute('room_type_image_edit', ['id' => $roomType->getId()]);
+    }
 
+    /**
+     * @Route("/short_create/{hotelId}", name="room_type_short_create", options={"expose"=true})
+     * @ParamConverter("hotel", class="MBHHotelBundle:Hotel",options={"id" = "hotelId"})
+     * @Method({"POST", "GET"})
+     * @Security("is_granted('ROLE_ROOM_TYPE_NEW')")
+     * @param Request $request
+     * @param Hotel $hotel
+     * @return JsonResponse
+     * @throws \MBH\Bundle\BaseBundle\Lib\Exception
+     */
+    public function shortCreateAction(Request $request, Hotel $hotel)
+    {
+        $isSuccess = true;
+        $roomType = (new RoomType())
+            ->setHotel($hotel);
+        $form = $this->createForm(ShortRoomTypeForm::class, $roomType);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $this->dm->persist($roomType);
+                $this->dm->flush();
+
+                $data = ['id' => $roomType->getId(), 'name' => $roomType->getName()];
+            } else {
+                $isSuccess = false;
+                $data = ['form' => $this->renderView('@MBHBase/formHtmlForModals.html.twig', ['form' => $form->createView()])];
+            }
+        } else {
+            $data = ['form' => $this->renderView('@MBHBase/formHtmlForModals.html.twig', ['form' => $form->createView()])];
+        }
+
+        return new JsonResponse([
+            'success' => $isSuccess,
+            'data' => $data
+        ]);
     }
 }

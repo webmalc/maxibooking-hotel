@@ -12,11 +12,13 @@ class FlowManager
 {
     private $container;
     private $dm;
+    private $helper;
 
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
         $this->dm = $container->get('doctrine.odm.mongodb.document_manager');
+        $this->helper = $container->get('mbh.helper');
     }
 
     const FLOW_SETTINGS = [
@@ -70,11 +72,27 @@ class FlowManager
     }
 
     /**
+     * @return array
+     */
+    public function getAverageProgressRatesByTypes()
+    {
+        $result = [];
+        foreach (array_keys(self::FLOW_SETTINGS) as $flowType) {
+            $flowIds = $this->getFlowIdsForType($flowType);
+            $progressRates = $this->getProgressRateByFlowIds($flowType, $flowIds);
+            $averageProgress = array_sum(array_values($progressRates)) / count($progressRates);
+            $result[$flowType] = round($averageProgress);
+        }
+
+        return $result;
+    }
+
+    /**
      * @param string $flowType
      * @param array $flowIds
      * @return array
      */
-    public function getProgressRateByFlowId(string $flowType, array $flowIds)
+    public function getProgressRateByFlowIds(string $flowType, array $flowIds)
     {
         $numberOfSteps = $this
             ->initFlowService($flowType)
@@ -88,9 +106,7 @@ class FlowManager
             ]);
 
         /** @var FlowConfig[] $configsByFlowIds */
-        $configsByFlowIds = $this->container
-            ->get('mbh.helper')
-            ->sortByValue($flowConfigs, false, 'getFlowId');
+        $configsByFlowIds = $this->helper->sortByValue($flowConfigs, false, 'getFlowId');
 
         $result = [];
         foreach ($flowIds as $flowId) {
@@ -128,5 +144,32 @@ class FlowManager
         }
 
         return round(($config->getCurrentStepNumber() - 1) / $numberOfSteps, 2) * 100;
+    }
+
+    /**
+     * @param $flowType
+     * @return array
+     */
+    protected function getFlowIdsForType($flowType): array
+    {
+        switch ($flowType) {
+            case RoomTypeFlow::FLOW_TYPE:
+                $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')->findBy(['isEnabled' => true]);
+
+                return $this->helper->toIds($roomTypes);
+            case HotelFlow::FLOW_TYPE:
+                $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findBy(['isEnabled' => true]);
+
+                return $this->helper->toIds($hotels);
+            case MBSiteFlow::FLOW_TYPE:
+                $siteConfig = $this->dm->getRepository('MBHOnlineBundle:SiteConfig')->findOneBy([]);
+                if (!is_null($siteConfig)) {
+                    return [$siteConfig->getId()];
+                }
+
+                return [];
+            default:
+                throw new \InvalidArgumentException('Flow ids are not specified for flow with type ' . $flowType);
+        }
     }
 }

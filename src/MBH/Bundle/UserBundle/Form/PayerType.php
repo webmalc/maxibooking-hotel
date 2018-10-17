@@ -94,7 +94,7 @@ class PayerType extends AbstractType
             ])
             ->add('city', TextType::class, [
                 'attr' => [
-                    'class' => 'billing-text-select',
+                    'class' => 'billing-text-select billing-city',
                     'data-endpoint-name' => 'cities'
                 ],
                 'group' => 'form.payer_type.address_group',

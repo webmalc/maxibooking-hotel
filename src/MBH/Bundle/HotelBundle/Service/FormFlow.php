@@ -11,6 +11,7 @@ use Symfony\Component\Form\FormFactory;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Translation\TranslatorInterface;
 
 abstract class FormFlow
@@ -25,6 +26,8 @@ abstract class FormFlow
     protected $request;
     /** @var TranslatorInterface */
     protected $translator;
+    /** @var Session */
+    protected $session;
 
     protected $flowId;
 
@@ -77,6 +80,11 @@ abstract class FormFlow
     public function setTranslator(TranslatorInterface $translator)
     {
         $this->translator = $translator;
+    }
+
+    public function setSession(Session $session)
+    {
+        $this->session = $session;
     }
 
     public function handleStepAndGetForm()
@@ -191,9 +199,11 @@ abstract class FormFlow
         return $this->getFlowConfig()->getCurrentStepNumber();
     }
 
-    public function getStepId()
+    public function getStepId(int $stepNumber = null)
     {
-        return $this->getCurrentStepInfo()['id'] ?? $this->getCurrentStepNumber();
+        $stepInfo = is_null($stepNumber) ? $this->getCurrentStepInfo() : $this->getStepsConfig()[$stepNumber];
+
+        return $stepInfo['id'] ?? $this->getCurrentStepNumber();
     }
 
     public function getNumberOfSteps()
@@ -255,13 +265,9 @@ abstract class FormFlow
     {
         if (!$this->isFlowConfigInit) {
             $flowId = $this->getFlowId();
-            $config = $this->findFlowConfig($flowId);
+            $config = is_null($flowId) ? null : $this->findFlowConfig($flowId);
 
             if (is_null($config)) {
-//                if (!empty($flowId)) {
-//                    throw new \RuntimeException('Can not find ' . static::getFlowType() . ' flow config with id ' . $flowId);
-//                }
-
                 $config = (new FlowConfig())->setFlowType(static::getFlowType());
             }
 
@@ -349,7 +355,7 @@ abstract class FormFlow
         return [];
     }
 
-    protected function isPreparatoryStep()
+    public function isPreparatoryStep()
     {
         return false;
     }
@@ -364,6 +370,16 @@ abstract class FormFlow
 
     protected function onFinishButtonClick(): void
     {
-        $this->flowConfig->setCurrentStep(1);
+        $this->reset();
+        $this->addSuccessFinishFlash();
+    }
+
+    protected function addFlash(string $message, string $type = 'success')
+    {
+        $this->session->getFlashBag()->add($type, $message);
+    }
+
+    protected function addSuccessFinishFlash() {
+        $this->addFlash('Настройка успешно завершена!');
     }
 }

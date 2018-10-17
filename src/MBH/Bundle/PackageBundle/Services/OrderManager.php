@@ -955,15 +955,21 @@ class OrderManager implements Searchable
         return $servicePrice;
     }
 
-    public function confirmOrder(Package $package, User $user)
+    /**
+     * @param Order $order
+     * @param User $user
+     * @param Package|null $package
+     */
+    public function confirmOrder(Order $order, User $user, Package $package = null)
     {
-        $order = $package->getOrder();
         $order->setConfirmed(true);
         $this->dm->flush();
 
         /** SetOwner && ACL */
         $om = $this->container->get('mbh.acl_document_owner_maker');
         $om->assignOwnerToDocument($user, $order);
-        $om->assignOwnerToDocument($user, $package);
+        if (!is_null($package)) {
+            $om->assignOwnerToDocument($user, $package);
+        }
     }
 }

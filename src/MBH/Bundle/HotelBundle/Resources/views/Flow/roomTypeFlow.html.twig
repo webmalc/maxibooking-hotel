@@ -2,34 +2,53 @@
 
 {% set small_title = 'views.flow.rooms_flow.title'|trans({}, 'MBHHotelBundle') %}
 {% set flowClass = 'MBH\\Bundle\\HotelBundle\\Form\\RoomTypeFlow\\RoomTypeFlow' %}
+{% set isRoomTypeStep = flow.getStepId() == constant(flowClass ~ '::ROOM_TYPE_STEP') %}
+{% set isHotelStep = flow.getStepId() == constant(flowClass ~ '::HOTEL_STEP') %}
 
-{% if flow.getStepId() == constant(flowClass ~ '::ROOM_TYPE_STEP') %}
+{% if isRoomTypeStep %}
     {% form_theme form.roomType _self %}
     {% block choice_widget_expanded %}
         {% spaceless %}
             {% set roomTypeColumnClasses = 'col-xs-8 col-lg-4' %}
             {% set progressClasses = 'col-xs-4 col-lg-2 text-right' %}
             <div {{ block('widget_container_attributes') }}>
-                <div class="row success" style="font-weight: 600; margin-bottom: 5px">
-                    <div class="{{ roomTypeColumnClasses }}">{{ 'room_type_flow.room_type_columns.title'|trans }}</div>
-                    <div class="{{ progressClasses }}">{{ 'room_type_flow.room_type_columns.progress'|trans }}</div>
-                </div>
 
-                {% for child in form %}
-                    {% set isRoomChecked = form.vars.selectedRoomTypeId == child.vars.value or (form.vars.selectedRoomTypeId is empty and loop.index == 1) %}
-                    <div class="row">
-                        <div class="{{ roomTypeColumnClasses }}">
-                            <label>
-                                <input type="radio" {{ block('widget_attributes') }} value="{{ child.vars.value }}"
-                                        {{ isRoomChecked ? 'checked="true"' }}/>
-                                <span style="padding-left: 10px">{{ child.vars.label|trans }}</span>
-                            </label>
-                        </div>
-                        <div class="{{ progressClasses }}">
-                            {{ form.vars.flowProgressRates[child.vars.value] ~ '%' }}
-                        </div>
+                {% set roomsListData = [] %}
+                {% set existRooms = form.children|length > 0 %}
+                {% if existRooms %}
+                    {% for child in form.children %}
+                        {% set roomsListData = roomsListData|merge([{id: child.vars.value, label: child.vars.label}]) %}
+                    {% endfor %}
+                {% else %}
+                    {% set roomsListData = [{id: '', label: ''}] %}
+                {% endif %}
+
+                <div {{ not existRooms ? 'style="display: none"'}}>
+                    <div class="row success" style="font-weight: 600; margin-bottom: 5px">
+                        <div class="{{ roomTypeColumnClasses }}">{{ 'room_type_flow.room_type_columns.title'|trans }}</div>
+                        <div class="{{ progressClasses }}">{{ 'room_type_flow.room_type_columns.progress'|trans }}</div>
                     </div>
-                {% endfor %}
+
+                    {% for roomData in roomsListData %}
+                        {% set isRoomChecked = form.vars.selectedRoomTypeId == roomData.id or (form.vars.selectedRoomTypeId is empty and loop.index == 1) %}
+                        <div class="row">
+                            <div class="{{ roomTypeColumnClasses }}">
+                                <label>
+                                    <input type="radio" {{ block('widget_attributes') }} value="{{ roomData.id }}"
+                                            {{ isRoomChecked ? 'checked="true"' }}/>
+                                    <span style="padding-left: 10px">{{ roomData.label|trans }}</span>
+                                </label>
+                            </div>
+                            <div class="{{ progressClasses }}">
+                                {% set progressRate = existRooms ? form.vars.flowProgressRates[roomData.id] : 0 %}
+                                {{ progressRate ~ '%' }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                {% if not existRooms %}
+                    <div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> {{ 'room_type_flow.no_room_types.warning'|trans }}</div>
+                {% endif %}
             </div>
         {% endspaceless %}
     {% endblock choice_widget_expanded %}
@@ -38,8 +57,8 @@
 {% block flowBody %}
     {% set pathParams = {type: 'roomType'} %}
     {% if flow.flowConfig.flowId is empty %}
-        {% if flow.stepId in constant(flowClass ~ '::PREPARATORY_STEPS') %}
-            {% set pathParams = pathParams|merge({'prevStep': flow.stepId}) %}
+        {% if flow.stepId == constant(flowClass ~ '::ROOM_TYPE_STEP') %}
+            {% set pathParams = pathParams|merge({'prevStep': flow.stepId, 'hotelId': flow.getManagedHotel().id}) %}
         {% endif %}
     {% else %}
         {% set pathParams = pathParams|merge({'flowId': flow.flowConfig.flowId}) %}
@@ -50,7 +69,7 @@
     {{ form_start(form, {'attr': {'class': 'form-horizontal'}, 'action': path }) }}
     {{ form_widget(form) }}
 
-    {% if flow.stepId == 'photos' %}
+    {% if flow.stepId == constant(flowClass ~ '::PHOTOS_STEP') %}
         {% include '@MBHHotel/Hotel/image-list.html.twig' with {
             entityType: 'roomType',
             images: roomType.onlineImages,
@@ -61,9 +80,26 @@
         } %}
     {% endif %}
 
-    {% include '@MBHHotel/Flow/flowButtons.html.twig' %}
+    {% embed '@MBHHotel/Flow/flowButtons.html.twig' %}
+        {% block additionalButtons %}
+            {% if isRoomTypeStep or isHotelStep %}
+                {% set titleId = isHotelStep ? 'views.flow.hotel_flow.add_hotel.title' : 'views.flow.hotel_flow.add_room_type.title' %}
+                {% set buttonId = isHotelStep ? 'add-hotel-button' : 'add-roomtype-button' %}
+                <li>
+                    <button type="button" class="btn btn-success navbar-btn" id="{{ buttonId }}">
+                        &nbsp;<i class="fa fa-plus"></i> {{ titleId|trans }}
+                    </button>
+                </li>
+            {% endif %}
+        {% endblock %}
+    {% endembed %}
 
     {{ form_end(form) }}
+
+    {% if isRoomTypeStep or isHotelStep %}
+        <input type="hidden" value="{{ flow.managedHotel.id }}" id="flow-hotel-id">
+        {% include '@MBHBase/modalWithForm.html.twig' with {modalTitle: 'Создание типа номера'} %}
+    {% endif %}
 {% endblock %}
 
 {% block scripts %}

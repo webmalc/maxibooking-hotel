@@ -4,6 +4,8 @@ $(document).ready(function () {
         $addImageInput.closest('form').submit();
     });
 
+    handleCreationOfNewRoomType();
+    handleCreationOfNewHotel();
     drawLinesBetweenFlowTabs();
     setInterval(drawLinesBetweenFlowTabs, 1500);
 
@@ -29,7 +31,6 @@ function drawLinesBetweenFlowTabs() {
     var tabWidth = parseFloat(getComputedStyle(firstTab).width);
     var tabHeight = parseInt(getComputedStyle(firstTab).height, 10);
     var tabWidthPlusLineWidth = tabWidth + lineWidth;
-
 
     var top = Math.ceil(tabHeight / 2);
     var container = document.getElementById('tabs-container');
@@ -60,4 +61,52 @@ function drawLinesBetweenFlowTabs() {
             top += tabHeight + 5;
         }
     }
+}
+
+function handleCreationOfNewRoomType() {
+    $('#add-roomtype-button').click(function () {
+        var route = Routing.generate('room_type_short_create', {hotelId: $('#flow-hotel-id').val()});
+        var handleSuccessFunc = function(result) {
+            var newRoomData = result['data'];
+            var $lastRoomTypeChoice = $('#mbhhotel_bundle_room_type_flow_roomType').find('.row:last');
+            var $newRoomChoice;
+
+            if ($lastRoomTypeChoice.parent().css('display') === 'none') {
+                $lastRoomTypeChoice.parent().show();
+                $newRoomChoice = $lastRoomTypeChoice;
+                $('.alert.alert-warning').remove();
+            } else {
+                $newRoomChoice = $lastRoomTypeChoice.clone();
+                $newRoomChoice.insertAfter($lastRoomTypeChoice);
+            }
+
+            $newRoomChoice
+                .find('input')
+                .val(newRoomData['id'])
+                .attr('checked', true);
+            $newRoomChoice
+                .find('span')
+                .html(newRoomData['name']);
+        };
+        var initFormFunc = function(response) {
+            $('#modal-with-form-body').html(response.data.form);
+        };
+
+        onOpenModalWithFormButtonClick(route, handleSuccessFunc, initFormFunc);
+    });
+}
+
+function handleCreationOfNewHotel() {
+    $('#add-hotel-button').click(function () {
+        var route = Routing.generate('hotel_short_create');
+        var handleSuccessFunc = function(result) {
+            var newRoomData = result['data'];
+            addAndSetSelect2Option($('#mbhhotel_bundle_room_type_flow_hotel'), newRoomData['id'], newRoomData['name']);
+        };
+        var initFormFunc = function(response) {
+            $('#modal-with-form-body').html(response.data.form);
+        };
+
+        onOpenModalWithFormButtonClick(route, handleSuccessFunc, initFormFunc);
+    });
 }

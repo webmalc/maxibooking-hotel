@@ -8,7 +8,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Security("is_granted('ROLE_DASHBOARD')")
  * @Route("/dashboard")
  * Class DashboardController
  * @package MBH\Bundle\HotelBundle\Controller
@@ -16,6 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class DashboardController extends BaseController
 {
     /**
+     * @Security("is_granted('ROLE_DASHBOARD')")
      * @Route("/", name="dashboard")
      * @Template()
      */

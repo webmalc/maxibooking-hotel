@@ -26,7 +26,12 @@ class FlowController extends BaseController
         }
 
         $flow = $flowManager->initFlowService($type, $flowId);
+
         $form = $flow->handleStepAndGetForm();
+
+        if (!empty($flowId) && $flow->isFirstStep()) {
+            return $this->redirectToRoute('mb_flow', ['type' => $type]);
+        }
 
         if ($flow->getFlowConfig()->getFlowId() && (empty($flowId) || $flowId !== $flow->getFlowConfig()->getFlowId())) {
             return $this->redirectToRoute('mb_flow', ['type' => $type, 'flowId' => $flow->getFlowConfig()->getFlowId()]);

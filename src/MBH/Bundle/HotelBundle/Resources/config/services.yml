@@ -150,6 +150,7 @@ services:
             - [ setFormFactory, ['@form.factory']]
             - [ setRequestStack, ['@request_stack']]
             - [ setTranslator, ['@translator']]
+            - [ setSession, ['@session']]
 
     mbh.mb_site_flow:
         class: MBH\Bundle\HotelBundle\Form\MBSiteFlow\MBSiteFlow
@@ -164,3 +165,13 @@ services:
     mbh.flow_manager:
         class: MBH\Bundle\HotelBundle\Service\FlowManager
         arguments: ['@service_container']
+
+    mbh.short_room_type_form:
+        class: MBH\Bundle\HotelBundle\Form\ShortRoomTypeForm
+        arguments: ['@mbh.form_builder']
+        tags: [{name: form.type}]
+
+    mbh.short_hotel_form:
+        class: MBH\Bundle\HotelBundle\Form\ShortHotelForm
+        arguments: ['@mbh.form_builder']
+        tags: [{name: form.type}]

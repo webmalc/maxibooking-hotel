@@ -4,7 +4,6 @@ namespace MBH\Bundle\BillingBundle\Controller;
 
 use MBH\Bundle\BillingBundle\Form\CityType;
 use MBH\Bundle\BillingBundle\Form\RegionType;
-use MBH\Bundle\BillingBundle\Lib\Model\City;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;

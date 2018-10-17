@@ -36,7 +36,7 @@ $(document).ready(function () {
         $.ajax({
             url: Routing.generate('packages_list_api', {asHtml: 'true'}),
             dataType: 'json',
-            data: {criteria: {isConfirmed: false}, limit: 7},
+            data: {isConfirmed: false, limit: 7},
             method: "GET",
             success: function (response) {
                 var $tableBody = $('#not-confirmed-packages-table tbody');
@@ -49,6 +49,32 @@ $(document).ready(function () {
                     });
 
                     $tableBody.append(tableLine);
+                    $('.confirm-order-link').each(function () {
+                        var $button = $(this);
+                        var orderId = this.getAttribute('data-order-id');
+                        $button.attr('href', '#');
+                        var isSent = false;
+
+                        $button.click(function (event) {
+                            event.preventDefault();
+                            $button.html('<i class="fa fa-spinner fa-spin"></i>');
+                            $button.attr('disabled', true);
+                            if (!isSent) {
+                                $.ajax({
+                                    url: Routing.generate('api_confirm_order', {orderId: orderId}),
+                                    method: 'POST',
+                                    success: function (response) {
+                                        if (response.success === true) {
+                                            $button.closest('tr').remove()
+                                        } else {
+                                            addFLashMessage(Translator.trans('action_manager.message.unexpected_error'));
+                                        }
+                                    }
+                                });
+                            }
+                            isSent = true;
+                        });
+                    })
                 });
             }
         });
@@ -61,7 +87,7 @@ $(document).ready(function () {
             method: "GET",
             success: function (response) {
                 if (response.success === true) {
-                    $('#number-of-check-out').text(response['data']['out'])
+                    $('#number-of-check-out').text(response['data']['out']);
                     $('#number-of-check-in').text(response['data']['arrivals'])
                 }
             }

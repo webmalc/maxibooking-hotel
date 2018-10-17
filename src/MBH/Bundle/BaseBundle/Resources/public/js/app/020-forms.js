@@ -525,12 +525,7 @@ var docReadyForms = function () {
             if (needRestrict()) {
                 // 31536000 this seconds in 365 days
                 if ((picker.endDate.unix() - picker.startDate.unix()) >  31536000) {
-                    $('#messages').html(
-                        '<div class="alert alert-warning alert-dismissable">\n' +
-                        ' <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>\n' +
-                            alertMsg +
-                        '</div>'
-                    );
+                    addFLashMessage(alertMsg);
 
                     return;
                 }
@@ -1292,59 +1287,75 @@ function initDataTableUpdatedByCallbackWithDataFromForm($table, $form, url, $upd
     }
 }
 
+function onOpenModalWithFormButtonClick(route, handleSuccessFunc, initFormFunc) {
+    var $formModal = $("#modal-with-form");
+    $formModal.modal('show');
+    var $modalBody = $formModal.find('#modal-with-form-body');
+    var $saveButton = $formModal.find('#modal-with-form-save-button');
+    $modalBody.html(mbh.loader.html);
+    $saveButton.attr('disabled', true);
+
+    $.ajax({
+        url: route,
+        method: 'GET',
+        error: function () {
+            $modalBody.html(mbh.error.html);
+        },
+        success: function (response) {
+            if (initFormFunc) {
+                initFormFunc(response);
+            }
+
+            $saveButton.removeAttr('disabled');
+            $saveButton.click(function () {
+                $saveButton.attr('disabled', true);
+                var entityData = $modalBody.find('form').serialize();
+                $modalBody.html(mbh.loader.html);
+
+                $.ajax({
+                    url: route,
+                    method: "POST",
+                    data: entityData,
+                    success: function (result) {
+                        $saveButton.removeAttr('disabled');
+                        if (result.success) {
+                            handleSuccessFunc(result);
+                            $modalBody.html('');
+                            $formModal.modal('hide');
+                        } else {
+                            if (initFormFunc) {
+                                initFormFunc(response);
+                            }
+                        }
+                        $saveButton.unbind('click');
+                    },
+                    error: function () {
+                        $modalBody.html(mbh.error.html);
+                    }
+                });
+            });
+        }
+    });
+}
+
 function handleAddingNewBillingEntity() {
     $('.add-billing-entity-button').click(function () {
-        var saveButton = this;
-        var $formModal = $("#modal-with-form");
-        $formModal.modal('show');
-        var $modalBody = $formModal.find('#modal-with-form-body');
-        $modalBody.html(mbh.loader.html);
-
-        var entityType = saveButton.getAttribute('data-entity-type');
+        var entityType = this.getAttribute('data-entity-type');
         var entitySettings = BILLING_API_SETTINGS[entityType];
+
         var entityRoute = Routing.generate(entitySettings['creationRouteName']);
         var initFormFunc = entitySettings['initFormFunc'];
-
-        $.ajax({
-            url: entityRoute,
-            method: 'GET',
-            error: function () {
-                $modalBody.html(mbh.error.html);
-            },
-            success: function (response) {
-                initFormFunc(response);
-                saveButton.removeAttribute('disabled');
-                $('#modal-with-form-save-button').click(function () {
-                    var saveButton = this;
-                    saveButton.setAttribute('disabled', true);
-                    var entityData = $modalBody.find('form').serialize();
-                    $modalBody.html(mbh.loader.html);
-                    $.ajax({
-                        url: entityRoute,
-                        method: "POST",
-                        data: entityData,
-                        success: function (result) {
-                            saveButton.removeAttribute('disabled');
-                            if (result.success) {
-                                var entity = result['data'];
-                                var newEntitySelectOptionTitle = entity[entitySettings['text']];
-                                if (entitySettings['checkable'] !== undefined && entity['is_checked'] !== true) {
-                                    newEntitySelectOptionTitle += ' (' + Translator.trans('020-forms.on_moderation') + ')';
-                                }
-
-                                addAndSetSelect2Option($('.' + entitySettings['fieldClass']), entity[entitySettings['id']], newEntitySelectOptionTitle);
-                                $formModal.modal('hide');
-                            } else {
-                                initFormFunc(result);
-                            }
-                        },
-                        error: function () {
-                            $modalBody.html(mbh.error.html);
-                        }
-                    });
-                });
+        var handleSuccessFunc = function(result) {
+            var entity = result['data'];
+            var newEntitySelectOptionTitle = entity[entitySettings['text']];
+            if (entitySettings['checkable'] !== undefined && entity['is_checked'] !== true) {
+                newEntitySelectOptionTitle += ' (' + Translator.trans('020-forms.on_moderation') + ')';
             }
-        })
+
+            addAndSetSelect2Option($('.' + entitySettings['fieldClass']), entity[entitySettings['id']], newEntitySelectOptionTitle);
+        };
+
+        onOpenModalWithFormButtonClick(entityRoute, handleSuccessFunc, initFormFunc);
     });
 }
 

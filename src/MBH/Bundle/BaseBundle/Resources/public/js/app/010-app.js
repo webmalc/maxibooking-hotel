@@ -465,3 +465,13 @@ function initSupportModal() {
         }
     });
 }
+
+function addFLashMessage(text, type) {
+    type = type || 'warning';
+    $('#messages').append(
+        '<div class="alert alert-' + type + ' alert-dismissable">\n'
+        + ' <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>\n'
+        + text
+        + '</div>'
+    );
+}

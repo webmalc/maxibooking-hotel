@@ -78,7 +78,7 @@ class PackageApiControllerTest extends WebTestCase
         $order->setConfirmed(false);
         $dm->flush();
 
-        $this->client->request('POST', '/api/v1/packages/confirm_order/' . $order->getFirstPackage()->getId());
+        $this->client->request('POST', '/api/v1/packages/confirm_order/' . $order->getId());
         $this->isSuccessful($this->client->getResponse(), true, 'application/json');
 
         $dm->refresh($order);
@@ -87,7 +87,7 @@ class PackageApiControllerTest extends WebTestCase
 
     public function testConfirmNonExistentOrder()
     {
-        $this->client->request('POST', '/api/v1/packages/confirm_order/' . 'id-of-non-existent-package');
+        $this->client->request('POST', '/api/v1/packages/confirm_order/' . 'id-of-non-existent-order');
         $this->assertEquals(404, $this->client->getResponse()->getStatusCode());
     }
 }

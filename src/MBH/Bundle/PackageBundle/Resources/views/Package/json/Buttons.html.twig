@@ -9,7 +9,7 @@
         {#Ссылка на подтверждение и редирект на редактирование#}
 
         {% if (is_granted('ROLE_NO_OWN_ONLINE_VIEW') or (is_granted('ROLE_ORDER_EDIT') and (is_granted('EDIT', entity) or is_granted('ROLE_PACKAGE_EDIT_ALL')))) and not entity.confirmed and (showConfirmBtn is not defined or showConfirmBtn) %}
-            <a href='{{ path('package_order_confirm', { 'packageId': entity.id, "id": entity.order.id }) }}' class='btn btn-primary btn-xs' title='{{ "package.jsonButtons.confirm_order"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'>
+            <a href='{{ path('package_order_confirm', { 'packageId': entity.id, "id": entity.order.id }) }}' class='btn btn-primary btn-xs confirm-order-link' data-order-id='{{ entity.order.id }}' title='{{ "package.jsonButtons.confirm_order"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'>
                 <i class='fa fa-check'></i>
             </a>
         {% endif %}

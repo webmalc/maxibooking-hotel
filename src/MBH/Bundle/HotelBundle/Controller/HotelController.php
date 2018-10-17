@@ -10,6 +10,7 @@ use MBH\Bundle\HotelBundle\Form\HotelContactInformationType;
 use MBH\Bundle\HotelBundle\Form\HotelExtendedType;
 use MBH\Bundle\HotelBundle\Form\HotelImageType;
 use MBH\Bundle\HotelBundle\Form\HotelType;
+use MBH\Bundle\HotelBundle\Form\ShortHotelForm;
 use MBH\Bundle\PriceBundle\Document\Service;
 use MBH\Bundle\PriceBundle\Document\ServiceCategory;
 use MBH\Bundle\PriceBundle\Document\Tariff;
@@ -18,6 +19,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -503,5 +505,39 @@ class HotelController extends Controller
         $response = $this->deleteEntity($hotel->getId(), 'MBHHotelBundle:Hotel', 'hotel');
 
         return $response;
+    }
+
+    /**
+     * @Route("/short_create", name="hotel_short_create", options={"expose"=true})
+     * @Method({"POST", "GET"})
+     * @Security("is_granted('ROLE_HOTEL_NEW')")
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function shortCreateAction(Request $request)
+    {
+        $isSuccess = true;
+        $roomType = (new Hotel());
+        $form = $this->createForm(ShortHotelForm::class, $roomType);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $this->dm->persist($roomType);
+                $this->dm->flush();
+
+                $data = ['id' => $roomType->getId(), 'name' => $roomType->getName()];
+            } else {
+                $isSuccess = false;
+                $data = ['form' => $this->renderView('@MBHBase/formHtmlForModals.html.twig', ['form' => $form->createView()])];
+            }
+        } else {
+            $data = ['form' => $this->renderView('@MBHBase/formHtmlForModals.html.twig', ['form' => $form->createView()])];
+        }
+
+        return new JsonResponse([
+            'success' => $isSuccess,
+            'data' => $data
+        ]);
     }
 }

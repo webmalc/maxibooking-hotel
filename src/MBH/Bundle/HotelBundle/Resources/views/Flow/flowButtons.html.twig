@@ -41,13 +41,7 @@
                     </button>
                 {% endif %}
             </li>
-            {% if flow.isFirstStep() %}
-                <li>
-                    <button type="button" class="btn btn-success navbar-btn">
-                        &nbsp;<i class="fa fa-plus"></i> {{ 'views.flow.hotel_flow.add_room_type.title'|trans }}
-                    </button>
-                </li>
-            {% endif %}
+            {% block additionalButtons %}{% endblock %}
         </ul>
     </div>
 </div>

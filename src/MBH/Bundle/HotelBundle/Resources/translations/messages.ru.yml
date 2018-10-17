@@ -286,6 +286,7 @@ views.facility.list.save_changes_button.title: 'Сохранить измене�
 views.flow.hotel_flow.finish_button.title: Завершить
 views.flow.hotel_flow.back_button.title: Назад
 views.flow.hotel_flow.add_room_type.title: 'Добавить номер'
+views.flow.hotel_flow.add_hotel.title: 'Добавить отель'
 views.flow.hotel_flow.close_flow_button.title: Закрыть
 views.flow.hotel_flow.next_button.title: Вперед
 views.dashboard.title: 'Дашборд'
@@ -318,6 +319,7 @@ room_type_flow.step_labels.period: 'Укажите даты начала и ок
 room_type_flow.step_labels.tariff: 'Выберите тариф, по которому будут продоваться номера'
 room_type_flow.step_labels.price: 'Укажите цену за номер/заданное количество основных мест'
 room_type_flow.room_type_columns.title: Название
+room_type_flow.no_room_types.warning: 'У выбранного отеля отсутствуют типы номеров. Для добавления нажмите кнопку "Добавить номер".'
 room_type_flow.room_type_columns.progress: 'Прогресс настройки'
 hotel_flow.step_labels.hotel_name: 'Ввод имени отеля'
 hotel_flow.step_labels.hotel_description: 'Ввод описания отеля'
@@ -327,3 +329,5 @@ hotel_flow.step_labels.hotel_coordinates: 'Координаты отеля на 
 hotel_flow.step_labels.contacts: Контакты
 hotel_flow.step_labels.main_photo: 'Главная фотография'
 hotel_flow.step_labels.photos: Фотографии
+form_flow.success_finish_message: 'Настройка успешно завершена!'
+room_type_flow.success_finish_message: 'Настройка типа номера "%roomTypeName%" успешно завершена!'

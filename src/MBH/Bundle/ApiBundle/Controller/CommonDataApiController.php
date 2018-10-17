@@ -24,18 +24,7 @@ class CommonDataApiController extends BaseController
      */
     public function flowProgressDataAction()
     {
-        $flowServiceIds = [
-            'roomType' => 'mbh.room_type_flow',
-            'hotel' => 'mbh.hotel_flow',
-            'site' => 'mbh.mb_site_flow',
-        ];
-
-        $data = [];
-        foreach ($flowServiceIds as $flowId => $flowServiceId) {
-            /** @var FormFlow $flow */
-            $flow = $this->get($flowServiceId);
-            $data[$flowId] = $flow->getProgressRate();
-        }
+        $data = $this->get('mbh.flow_manager')->getAverageProgressRatesByTypes();
 
         return $this
             ->get('mbh.api_response_compiler')

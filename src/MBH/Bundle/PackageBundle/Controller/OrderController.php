@@ -563,7 +563,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
      */
     public function confirmAction(Order $order, Package $package)
     {
-        $this->get('mbh.order_manager')->confirmOrder($package, $this->getUser());
+        $this->get('mbh.order_manager')->confirmOrder($order, $this->getUser(), $package);
 
         return $this->redirectToRoute('package_order_edit', ['id' => $order->getId(), 'packageId' => $package->getId()]);
     }

@@ -653,6 +653,14 @@ class RoomTypeControllerTest extends WebTestCase
         $this->assertTrue($deleteRoomType, 'no remove RoomType');
     }
 
+    public function testShortCreateAction()
+    {
+        $this->getListCrawler(self::URL_INDEX . 'short_create/' . $this->getHotelId());
+        $this->isSuccessful($this->client->getResponse(), true, 'application/json');
+        $decodedResponse = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertTrue($decodedResponse['status']);
+    }
+
     private function getDocumentManager()
     {
         return $this->getContainer()->get('doctrine.odm.mongodb.document_manager');

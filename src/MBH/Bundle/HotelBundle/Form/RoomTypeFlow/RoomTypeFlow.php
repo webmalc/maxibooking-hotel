@@ -7,6 +7,7 @@ use MBH\Bundle\BaseBundle\Form\ImageType;
 use MBH\Bundle\BaseBundle\Service\DocumentFieldsManager;
 use MBH\Bundle\BaseBundle\Service\FormDataHandler;
 use MBH\Bundle\BaseBundle\Service\HotelSelector;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Model\FlowRuntimeException;
 use MBH\Bundle\HotelBundle\Service\FormFlow;
@@ -37,11 +38,7 @@ class RoomTypeFlow extends FormFlow
     private $formDataHandler;
     private $roomCacheService;
     private $priceCacheService;
-
-    private $hasSingleHotel;
-    private $hasSingleHotelInit = false;
-    private $hasSingleRoomType;
-    private $hasSingleRoomTypeInit = false;
+    private $hotelSelector;
 
     private $canChangeStep = true;
 
@@ -57,7 +54,7 @@ class RoomTypeFlow extends FormFlow
         $this->formDataHandler = $formDataHandler;
         $this->roomCacheService = $roomCacheService;
         $this->priceCacheService = $priceCacheService;
-        $this->hotel = $hotelSelector->getSelected();
+        $this->hotelSelector = $hotelSelector;
     }
 
     /**
@@ -71,7 +68,6 @@ class RoomTypeFlow extends FormFlow
     /**
      * @param string|null $flowId
      * @return $this|FormFlow
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function init(string $flowId = null)
     {
@@ -79,21 +75,7 @@ class RoomTypeFlow extends FormFlow
 
         if (empty($flowId)) {
             if ($this->request->get(self::PREV_STEP_NAME) === self::ROOM_TYPE_STEP) {
-                $stepNumber = $this->hasSingleHotel() ? 1 : 2;
-                $this->getFlowConfig()->setCurrentStep($stepNumber);
-            }
-
-            if ($this->hasSingleRoomType()) {
-                $roomType = $this->dm
-                    ->getRepository('MBHHotelBundle:RoomType')
-                    ->fetchQueryBuilder($this->getManagedHotel())
-                    ->getQuery()
-                    ->getSingleResult();
-                $this->getFlowConfig()
-                    ->setFlowId($roomType->getId())
-                    ->setCurrentStep(3);
-                $this->dm->persist($this->getFlowConfig());
-                $this->dm->flush();
+                $this->getFlowConfig()->setCurrentStep(2);
             }
         }
 
@@ -107,7 +89,6 @@ class RoomTypeFlow extends FormFlow
 
     /**
      * @return array
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     protected function getStepsConfig(): array
     {
@@ -118,19 +99,16 @@ class RoomTypeFlow extends FormFlow
         $additionalPrice = $flowData['additionalPrice'] ?? null;
         $roomCaches = $flowData['rooms'] ?? null;
 
-        $stepsConfig = [];
-        if (!$this->hasSingleHotel()) {
-            $stepsConfig[] = [
+        return [
+            [
                 'id' => self::HOTEL_STEP,
                 'label' => 'room_type_flow.step_labels.hotel',
                 'form_type' => RoomTypeFlowType::class,
                 'options' => [
                     'hotel' => $this->getManagedHotel()
                 ]
-            ];
-        }
-        if (!$this->hasSingleRoomType()) {
-            $stepsConfig[] = [
+            ],
+            [
                 'id' => self::ROOM_TYPE_STEP,
                 'label' => 'room_type_flow.step_labels.room_type',
                 'form_type' => RoomTypeFlowType::class,
@@ -138,10 +116,7 @@ class RoomTypeFlow extends FormFlow
                     'hotel' => $this->getManagedHotel(),
                     'roomType' => $this->getManagedRoomType(),
                 ],
-            ];
-        }
-
-        return array_merge($stepsConfig, [
+            ],
             [
                 'id' => self::ROOM_DESCRIPTION_STEP,
                 'label' => 'room_type_flow.step_labels.room_info',
@@ -197,7 +172,7 @@ class RoomTypeFlow extends FormFlow
                     'additionalPrice' => $additionalPrice,
                 ],
             ],
-        ]);
+        ];
     }
 
     /**
@@ -212,9 +187,24 @@ class RoomTypeFlow extends FormFlow
             : null;
     }
 
-    protected function getManagedHotel()
+    /**
+     * @return Hotel|null|object
+     */
+    public function getManagedHotel()
     {
-        return $this->getManagedRoomType() ? $this->getManagedRoomType()->getHotel() : $this->hotel;
+        if (isset($this->hotel)) {
+            return $this->hotel;
+        }
+
+        if ($this->request->query->has('hotelId')) {
+            return $this->dm->find(Hotel::class, $this->request->query->get('hotelId'));
+        }
+
+        if ($this->getManagedRoomType()) {
+            return $this->getManagedRoomType()->getHotel();
+        }
+
+        return $this->hotelSelector->getSelected();
     }
 
     protected function getFormData()
@@ -256,13 +246,15 @@ class RoomTypeFlow extends FormFlow
                     $flowData['roomTypeId'] = $roomType->getId();
                     $existingConfig = $this->findFlowConfig($roomType->getId());
                     if (!is_null($existingConfig)) {
-                        if ($existingConfig->getCurrentStepNumber() !== $this->getCurrentStepNumber()) {
+                        if ($existingConfig->getCurrentStepNumber() !== $this->getCurrentStepNumber()
+                            && !in_array($this->getStepId(), self::PREPARATORY_STEPS)) {
                             $this->canChangeStep = false;
+                        } else {
+                            $existingConfig->setCurrentStep(2);
                         }
                         $this->flowConfig = $existingConfig;
                     } else {
                         $flowConfig->setFlowId($roomType->getId());
-                        $this->dm->persist($flowConfig);
                     }
                     break;
                 case self::PERIOD_STEP:
@@ -345,9 +337,9 @@ class RoomTypeFlow extends FormFlow
     /**
      * @return bool|int|null
      */
-    protected function isPreparatoryStep()
+    public function isPreparatoryStep()
     {
-        return in_array($this->getFlowConfig()->getCurrentStepNumber(), self::PREPARATORY_STEPS);
+        return in_array($this->getStepId(), self::PREPARATORY_STEPS);
     }
 
     /**
@@ -369,59 +361,10 @@ class RoomTypeFlow extends FormFlow
             : null;
     }
 
-    /**
-     * @param int $currentStep
-     */
-    protected function updateConfigCausedByLimitedNumberOfProperties($currentStep)
+    public function addSuccessFinishFlash()
     {
-        $roomTypesCollection = $this->getManagedHotel()->getRoomTypes();
-        if ($currentStep === 2 && ($roomTypesCollection->count() === 1 || $this->getManagedRoomType())) {
-            if (!$this->getManagedRoomType()) {
-                $flowData = $this->getFlowConfig()->getFlowData();
-                /** @var RoomType $roomType */
-                $roomType = $roomTypesCollection->first();
-                $flowData['roomTypeId'] = $roomType->getId();
-                $this->getFlowConfig()->setFlowId($roomType->getId());
-            }
-        }
-
-        $this->getFlowConfig()->setCurrentStep($currentStep);
-    }
-
-    /**
-     * @return bool
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     */
-    protected function hasSingleHotel()
-    {
-        if (!$this->hasSingleHotelInit) {
-            $this->hasSingleHotel = $this->dm
-                    ->getRepository('MBHHotelBundle:Hotel')
-                    ->getQBWithAvailable()
-                    ->count()
-                    ->getQuery()
-                    ->execute() === 1;
-            $this->hasSingleHotelInit = true;
-        }
-
-        return $this->hasSingleHotel;
-    }
-
-    /**
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     */
-    protected function hasSingleRoomType()
-    {
-        if (!$this->hasSingleRoomTypeInit) {
-            $this->hasSingleRoomType = $this->dm
-                    ->getRepository('MBHHotelBundle:RoomType')
-                    ->fetchQueryBuilder($this->getManagedHotel())
-                    ->count()
-                    ->getQuery()
-                    ->execute() === 1;
-            $this->hasSingleRoomTypeInit = true;
-        }
-
-        return $this->hasSingleRoomType;
+        $this->addFlash($this->translator->trans('room_type_flow.success_finish_message', [
+            '%roomTypeName%' => $this->getManagedRoomType()->getName()
+        ]));
     }
 }

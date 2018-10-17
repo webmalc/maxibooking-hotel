@@ -2,8 +2,10 @@
 
 namespace MBH\Bundle\ApiBundle\Controller;
 
+use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -107,15 +109,26 @@ class PackageApiController extends BaseApiController
     /**
      * @Security("is_granted('ROLE_PACKAGE_VIEW_ALL') or is_granted('ROLE_NO_OWN_ONLINE_VIEW')")
      * @Method("POST")
-     * @Route("/confirm_order/{id}")
-     * @param Package $package
+     * @Route("/confirm_order/{orderId}/{packageId}", name="api_confirm_order", options={"expose"=true})
+     * @ParamConverter("order", options={"id" = "orderId"})
+     * @param Order $order
+     * @param null $packageId
      * @return JsonResponse
      */
-    public function confirmOrder(Package $package)
+    public function confirmOrder(Order $order, $packageId = null)
     {
+        $package = $this->dm->find(Package::class, $packageId);
+        if ($order->getConfirmed()) {
+            $errorMessage = $this
+                ->get('translator')
+                ->trans('package_api_controller.order_confirm.error.order_is_already_confirmed');
+            $this->responseCompiler
+                ->addErrorMessage($errorMessage);
+        }
+
         $this
             ->get('mbh.order_manager')
-            ->confirmOrder($package, $this->getUser());
+            ->confirmOrder($order, $this->getUser(), $package);
 
         return $this->responseCompiler->getResponse();
     }
