@@ -639,9 +639,9 @@ class Tariff extends Base implements ConditionsInterface
     }
 
     /**
-     * @param PersistentCollection|TariffCombinationHolder[] $tariffCombinationHolders
+     * @param ArrayCollection|TariffCombinationHolder[] $tariffCombinationHolders
      */
-    public function setTariffCombinationHolders(?PersistentCollection $tariffCombinationHolders): void
+    public function setTariffCombinationHolders(?ArrayCollection $tariffCombinationHolders): void
     {
         $this->tariffCombinationHolders = $tariffCombinationHolders;
     }
