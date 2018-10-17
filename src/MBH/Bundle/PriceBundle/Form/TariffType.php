@@ -174,28 +174,7 @@ class TariffType extends AbstractType
                 ]
             );
 
-        $hotel = $options['hotel'];
-
-        /** @var Builder $qb */
-        $qb = $this->container->get('doctrine.odm.mongodb.document_manager')
-            ->getRepository('MBHPriceBundle:Tariff')
-            ->createQueryBuilder()
-            ->field('hotel')->equals($hotel)
-            ->field('isEnabled')->equals(true);
-
-        if ($formTariff !== null) {
-            $qb->field('id')->notEqual($formTariff->getId());
-        }
-
-        $qb->select('fullTitle');
-        $qb->hydrate(false);
-
-        $data = [];
-
-        foreach ($qb->getQuery()->execute() as $id => $value) {
-            $data[$id] = $value['fullTitle'];
-        }
-
+        $data = $this->getUseTariffs($formTariff, $options);
         $builder->setAttribute('max_amount_tariffs', count($data));
 
         if ($formTariff !== null) {
@@ -206,7 +185,7 @@ class TariffType extends AbstractType
                     TariffCombinationFilterType::class,
                     [
                         'group'          => 'configuration',
-                        'label'          => 'Tariffs Combination',
+                        'label'          => 'price.form.use_combination',
                         'entry_type'     => TariffCombinationType::class,
                         'entry_options'  => [
                             'label'              => false,
@@ -218,9 +197,11 @@ class TariffType extends AbstractType
                         'allow_add'      => true,
                         'allow_delete'   => true,
                         'prototype'      => true,
+                        'required'       => false,
                         'attr'           => [
                             'class' => 'my-selector',
                         ],
+//                        'help'           => 'mbhpricebundle.form.tarifftype.ispolzovatdlyakombinirovaniya.help',
                     ]
                 );
         }
@@ -264,6 +245,39 @@ class TariffType extends AbstractType
     public function getBlockPrefix()
     {
         return 'mbh_bundle_pricebundle_tariff_main_type';
+    }
+
+    /**
+     * @param Tariff|null $tariff
+     * @param array $options
+     * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    private function getUseTariffs(?Tariff $tariff, array $options): array
+    {
+        $hotel = $options['hotel'];
+
+        /** @var Builder $qb */
+        $qb = $this->container->get('doctrine.odm.mongodb.document_manager')
+            ->getRepository('MBHPriceBundle:Tariff')
+            ->createQueryBuilder()
+            ->field('hotel')->equals($hotel)
+            ->field('isEnabled')->equals(true);
+
+        if ($tariff !== null) {
+            $qb->field('id')->notEqual($tariff->getId());
+        }
+
+        $qb->select('fullTitle');
+        $qb->hydrate(false);
+
+        $data = [];
+
+        foreach ($qb->getQuery()->execute() as $id => $value) {
+            $data[$id] = $value['fullTitle'];
+        }
+
+        return $data;
     }
 
 }

@@ -47,23 +47,22 @@ class TariffCombinationType extends AbstractType
                     'attr' => [
                         'readonly' => true,
                         'class'    => 'tariff-position',
-                    ]
+                    ],
                 ]
             )
             ->add(
                 'combinationTariffId',
                 InvertChoiceType::class,
                 [
-                    'choices' => $options['tariffs_for_select'],
-                    'placeholder' => 'Выберете',
-                    'label' => false,
-                    'attr' => [
-                        'class' => 'plain-html'
+                    'choices'     => $options['tariffs_for_select'],
+                    'placeholder' => 'mbhpricebundle.form.tariff_combination_holder.choose',
+                    'label'       => false,
+                    'attr'        => [
+                        'class' => 'plain-html',
                     ],
-                    'group' => 'no-group'
+                    'group'       => 'no-group',
                 ]
-            )
-        ;
+            );
     }
 
     public function configureOptions(OptionsResolver $resolver)

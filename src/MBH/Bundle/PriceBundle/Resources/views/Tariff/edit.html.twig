@@ -7,12 +7,16 @@
     {{ parent() }}
 
     <script type="text/javascript" src={{ asset('js/jquery.collection.js') }}></script>
-
     <script type="text/javascript">
         window.addEventListener('load', function(ev) {
             (function() {
-                var divWithMsg = document.querySelector('.msg_about_duplication'),
-                    checkOnDuplicates = function() {
+                var divWithMsg = document.querySelector('.msg_about_duplication');
+
+                if (divWithMsg === null) {
+                    return;
+                }
+
+                var checkOnDuplicates = function() {
                         var nodeList = [].slice.call(document.querySelectorAll('.tariff_combination_item select')),
                             showMessage = false,
                             selectedItems = {};
@@ -37,10 +41,10 @@
                         max: {{ form.vars['max_amount_tariffs'] }},
                         position_field_selector: '.tariff-position',
                         add_at_the_end: true,
-                        add: '<a href="#" class="btn btn-success" title="Add element"><span class="fa fa-plus-square"></span></a>\n',
-                        up: '<a href="#" class="btn btn-default" title="Move element up"><span class="fa fa-arrow-up"></span></a>',
-                        down: '<a href="#" class="btn btn-default" title="Move element down"><span class="fa fa-arrow-down"></span></a>\n',
-                        remove: '<a href="#" class="btn btn-default" title="Delete element"><span class="fa fa-trash"></span></a>\n',
+                        add: '<a href="#" class="btn btn-success" title="{{ 'mbhpricebundle.form.tariff_combination_holder.add_element' | trans }}"><span class="fa fa-plus-square"></span></a>\n',
+                        up: '<a href="#" class="btn btn-default" title="{{ 'mbhpricebundle.form.tariff_combination_holder.move_element_up' | trans }}"><span class="fa fa-arrow-up"></span></a>',
+                        down: '<a href="#" class="btn btn-default" title="{{ 'mbhpricebundle.form.tariff_combination_holder.move_element_down' | trans }}"><span class="fa fa-arrow-down"></span></a>\n',
+                        remove: '<a href="#" class="btn btn-default" title="{{ 'mbhpricebundle.form.tariff_combination_holder.delete_element' | trans }}"><span class="fa fa-trash"></span></a>\n',
                         after_remove: function(collection, element) {
                             checkOnDuplicates();
                         }
