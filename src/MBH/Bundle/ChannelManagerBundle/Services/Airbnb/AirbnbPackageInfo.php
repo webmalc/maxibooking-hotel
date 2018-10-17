@@ -85,7 +85,7 @@ class AirbnbPackageInfo extends AbstractPackageInfo
 
     public function getNote()
     {
-        return $this->packageData['DESCRIPTION'] ?? '';
+        return (!empty($this->note) ?  ($this->note . "\n") : '')  . ($this->packageData['DESCRIPTION'] ?? '');
     }
 
     public function getIsCorrupted()
