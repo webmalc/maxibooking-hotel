@@ -1,7 +1,7 @@
 .default-service {
   ul {
     list-style-type: none;
-    padding-left: 0px;
+    padding-left: 0;
     li {
       margin-bottom: 5px;
       i.fa-times {
@@ -12,4 +12,22 @@
       }
     }
   }
+}
+
+.tariff_combination_item,
+.tariff_combination_item > div {
+  display: flex;
+}
+
+.tariff_combination_item {
+  align-items: center;
+}
+
+.tariff_combination_item > div {
+  min-width: 125px;
+  justify-content: flex-end;
+}
+
+.duplication {
+  border: 1px solid red;
 }

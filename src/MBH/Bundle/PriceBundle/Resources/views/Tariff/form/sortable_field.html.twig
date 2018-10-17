@@ -17,3 +17,34 @@
         </div>
     {% endspaceless %}
 {% endblock %}
+
+{% block form_row %}
+    {% spaceless %}
+        {% if form.vars['embedded'] is defined and form.vars['embedded'] == true %}
+            {{ form_widget(form) }}
+        {% else %}
+            {% set isMultiLanguageField = form.vars['languages'] is defined %}
+            <div class="form-group{% if errors|length > 0 %} has-error{% endif %}{% if isMultiLanguageField %} multi-languages-field{% endif %}"
+                    {% if isMultiLanguageField %} data-language="{{ form.vars['language'] }}"{% endif %}
+                    {% if isMultiLanguageField and form.vars['languages']|length != 1 and form.vars['language'] != form.vars['defaultLang'] %} style="display: none;"{% endif %}>
+                {{ form_label(form) }}
+                <div class="col-sm-6">
+                    {{ form_widget(form) }}
+                    {% if help is not null %}
+                        <span class="help-block"><small>{{ help|trans|raw }}</small></span>
+                    {% endif %}
+                </div>
+                <div class="col-sm-4">
+                    {% if errors|length > 0 %}
+                        <span class="text-danger text-left input-errors">{{ form_errors(form) }}</span>
+                    {% endif %}
+                    {% if form.vars['name'] == 'mergingTariffsSort' %}
+                        <div class="msg_about_duplication" style="display: none;">
+                            <span><span class="duplication">Дублирующие</span> записи будут удалены.</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    {% endspaceless %}
+{% endblock form_row %}
