@@ -297,6 +297,7 @@ class SiteManager
      */
     public function getSiteAddress()
     {
+        return 'http://localhost:4200';
         return $this->getSiteConfig() && $this->getSiteConfig()->getSiteDomain()
             ? $this->compileSiteAddress($this->getSiteConfig()->getSiteDomain())
             : null;

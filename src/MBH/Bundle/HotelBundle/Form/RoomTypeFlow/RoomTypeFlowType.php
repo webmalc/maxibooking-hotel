@@ -20,9 +20,11 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\Date;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Range;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class RoomTypeFlowType extends AbstractType
 {
@@ -96,7 +98,7 @@ class RoomTypeFlowType extends AbstractType
                         'rooms',
                         TextType::class,
                         [
-                            'label' => 'mbhpricebundle.form.roomcachegeneratortype.kolichestvo.mest',
+                            'label' => 'room_type_flow_type.rooms.label',
                             'required' => true,
                             'data' => is_null($options['rooms']) ? 0 : $options['rooms'],
                             'attr' => ['class' => 'spinner'],
@@ -119,7 +121,7 @@ class RoomTypeFlowType extends AbstractType
                         'begin',
                         DateType::class,
                         array(
-                            'label' => 'mbhpricebundle.form.pricecachegeneratortype.nachaloperioda',
+                            'label' => 'room_type_flow_type.begin.label',
                             'widget' => 'single_text',
                             'format' => 'dd.MM.yyyy',
                             'group' => 'mbhpricebundle.form.pricecachegeneratortype.settings',
@@ -136,7 +138,7 @@ class RoomTypeFlowType extends AbstractType
                         'end',
                         DateType::class,
                         array(
-                            'label' => 'mbhpricebundle.form.pricecachegeneratortype.konetsperioda',
+                            'label' => 'room_type_flow_type.end.label',
                             'widget' => 'single_text',
                             'format' => 'dd.MM.yyyy',
                             'group' => 'mbhpricebundle.form.pricecachegeneratortype.settings',
@@ -174,7 +176,7 @@ class RoomTypeFlowType extends AbstractType
                         'price',
                         TextType::class,
                         [
-                            'label' => 'mbhpricebundle.form.pricecachegeneratortype.tsena',
+                            'label' => 'room_type_flow_type.price.label',
                             'group' => 'mbhpricebundle.form.pricecachegeneratortype.price',
                             'required' => true,
                             'attr' => [
@@ -232,9 +234,19 @@ class RoomTypeFlowType extends AbstractType
                     'isPersonPrice' => false,
                     'price' => null,
                     'additionalPrice' => null,
-                    'rooms' => null
+                    'rooms' => null,
+                    'constraints' => [new Callback([$this, 'check'])]
                 ]
             );
+    }
+
+    public function check($data, ExecutionContextInterface $context)
+    {
+        if (is_array($data) && isset($data['begin']) && isset($data['begin'])) {
+            if ($data['begin'] >= $data['end']) {
+                $context->addViolation('mbhpricebundle.form.pricecachegeneratortype.beginning_period_should_be_less_than_end_period');
+            }
+        }
     }
 
     /**

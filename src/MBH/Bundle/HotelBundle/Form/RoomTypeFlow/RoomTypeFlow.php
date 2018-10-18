@@ -22,6 +22,7 @@ class RoomTypeFlow extends FormFlow
     const FLOW_TYPE = 'roomType';
     const PREPARATORY_STEPS = [self::HOTEL_STEP, self::ROOM_TYPE_STEP];
     const PREV_STEP_NAME = 'prevStep';
+    const HOTEL_ID_PARAM = 'hotelId';
 
     const HOTEL_STEP = 'hotel';
     const ROOM_TYPE_STEP = 'roomType';
@@ -196,8 +197,8 @@ class RoomTypeFlow extends FormFlow
             return $this->hotel;
         }
 
-        if ($this->request->query->has('hotelId')) {
-            return $this->dm->find(Hotel::class, $this->request->query->get('hotelId'));
+        if ($this->request->query->has(self::HOTEL_ID_PARAM)) {
+            return $this->dm->find(Hotel::class, $this->request->query->get(self::HOTEL_ID_PARAM));
         }
 
         if ($this->getManagedRoomType()) {
@@ -241,20 +242,22 @@ class RoomTypeFlow extends FormFlow
                     $this->hotel = $formData['hotel'];
                     break;
                 case self::ROOM_TYPE_STEP:
-                    /** @var RoomType $roomType */
-                    $roomType = $formData['roomType'];
-                    $flowData['roomTypeId'] = $roomType->getId();
-                    $existingConfig = $this->findFlowConfig($roomType->getId());
-                    if (!is_null($existingConfig)) {
-                        if ($existingConfig->getCurrentStepNumber() !== $this->getCurrentStepNumber()
-                            && !in_array($this->getStepId(), self::PREPARATORY_STEPS)) {
-                            $this->canChangeStep = false;
+                    if ($this->isNextButtonClicked()) {
+                        /** @var RoomType $roomType */
+                        $roomType = $formData['roomType'];
+                        $flowData['roomTypeId'] = $roomType->getId();
+                        $existingConfig = $this->findFlowConfig($roomType->getId());
+                        if (!is_null($existingConfig)) {
+                            if ($existingConfig->getCurrentStepNumber() !== $this->getCurrentStepNumber()
+                                && !in_array($this->getStepId(), self::PREPARATORY_STEPS)) {
+                                $this->canChangeStep = false;
+                            } else {
+                                $existingConfig->setCurrentStep(2);
+                            }
+                            $this->flowConfig = $existingConfig;
                         } else {
-                            $existingConfig->setCurrentStep(2);
+                            $flowConfig->setFlowId($roomType->getId());
                         }
-                        $this->flowConfig = $existingConfig;
-                    } else {
-                        $flowConfig->setFlowId($roomType->getId());
                     }
                     break;
                 case self::PERIOD_STEP:

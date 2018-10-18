@@ -517,16 +517,15 @@ class HotelController extends Controller
     public function shortCreateAction(Request $request)
     {
         $isSuccess = true;
-        $roomType = (new Hotel());
-        $form = $this->createForm(ShortHotelForm::class, $roomType);
+        $hotel = (new Hotel());
+        $form = $this->createForm(ShortHotelForm::class, $hotel);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()) {
             if ($form->isValid()) {
-                $this->dm->persist($roomType);
-                $this->dm->flush();
+                $this->get('mbh.hotel.hotel_manager')->create($hotel);
 
-                $data = ['id' => $roomType->getId(), 'name' => $roomType->getName()];
+                $data = ['id' => $hotel->getId(), 'name' => $hotel->getName()];
             } else {
                 $isSuccess = false;
                 $data = ['form' => $this->renderView('@MBHBase/formHtmlForModals.html.twig', ['form' => $form->createView()])];

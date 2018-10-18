@@ -551,3 +551,7 @@ total_rooms_overview_table.total: Всего
 room_type_flow_type.room_type.label: 'Тип номера'
 room_type_flow_type.tariff.label: Тариф
 room_type_flow_type.hotel.label: Отель
+room_type_flow_type.rooms.label: 'Количество номеров'
+room_type_flow_type.begin.label: 'Дата начала продаж'
+room_type_flow_type.end.label: 'Дата окончания продаж'
+room_type_flow_type.price.label: 'Цена за номер'

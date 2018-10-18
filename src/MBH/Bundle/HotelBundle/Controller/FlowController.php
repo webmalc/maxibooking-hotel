@@ -3,6 +3,7 @@
 namespace MBH\Bundle\HotelBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
