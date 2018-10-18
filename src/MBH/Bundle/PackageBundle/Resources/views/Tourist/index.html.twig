@@ -21,6 +21,11 @@
             </div>
             {% include 'MBHBaseBundle:Partials:datepickerPeriodSelect.html.twig' %}
             <div class="filter-form_input">
+                <i class="fa fa-home" title="{{ 'tourist.index.hotel' | trans }}"
+                   data-toggle="tooltip"></i>
+                {{ form_widget(form.hotels) }}
+            </div>
+            <div class="filter-form_input">
                 <i class="fa fa-male" title="{{ 'tourist.index.foreign_citizens'|trans }}"
                    data-toggle="tooltip"></i>
                 {{ form_widget(form.citizenship) }}
