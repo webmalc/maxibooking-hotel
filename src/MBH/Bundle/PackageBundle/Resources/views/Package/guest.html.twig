@@ -9,8 +9,18 @@
     {% include 'MBHPackageBundle:Package:orderPackages.html.twig' with {'entity': package} %}
 {% endblock %}
 
-{% block content %}
+{% block scripts %}
+    {{ parent() }}
 
+    {% javascripts filter='uglifyjs2'
+        '@MBHPackageBundle/Resources/public/js/tourist/tourist.js'
+    %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+{% endblock %}
+
+{% block content %}
+{% spaceless %}
     {% if app.request.isxmlhttprequest is empty %}
         {% include 'MBHPackageBundle:Package:editTabs.html.twig' with {'active': 4 , 'entity': package} %}
     {% endif %}
@@ -123,5 +133,5 @@
 
         </div>
     </div>
-
+{% endspaceless %}
 {% endblock %}
