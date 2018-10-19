@@ -31,6 +31,7 @@ class HotelAddressType extends AbstractType
                 'attr' => [
                     'class' => 'citySelect  billing-city',
                     'placeholder' => 'form.hotelExtendedType.city',
+                    'required' => true
                 ],
                 'help' => $cityHelp
             ]);

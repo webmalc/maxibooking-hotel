@@ -34,10 +34,10 @@
     {{ form_end(form) }}
 {% endblock %}
 
-{% block styles %}
-    {{ parent() }}
-
-    {% stylesheets filter='cssrewrite, uglifycss' '@MBHOnlineBundle/Resources/public/css/mb-site.css'%}
-        <link rel="stylesheet" href="{{ asset_url }}"/>
-    {% endstylesheets %}
-{% endblock %}
+{#{% block styles %}#}
+    {#{{ parent() }}#}
+{##}
+    {#{% stylesheets filter='cssrewrite, uglifycss' '@MBHOnlineBundle/Resources/public/css/mb-site.css'%}#}
+        {#<link rel="stylesheet" href="{{ asset_url }}"/>#}
+    {#{% endstylesheets %}#}
+{#{% endblock %}#}

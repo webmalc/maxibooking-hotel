@@ -120,7 +120,7 @@ services:
 
     mbh.hotel_flow_type:
         class: MBH\Bundle\HotelBundle\Form\HotelFlow\HotelFlowType
-        arguments: ['@mbh.form_builder', '@router']
+        arguments: ['@mbh.form_builder', '@router', '@mbh.flow_manager', '@doctrine.odm.mongodb.document_manager']
         tags: [{name: form.type}]
 
     mbh.hotel_flow:

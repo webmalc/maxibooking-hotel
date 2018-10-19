@@ -254,6 +254,7 @@ class RoomTypeFlow extends FormFlow
                             } else {
                                 $existingConfig->setCurrentStep(2);
                             }
+                            $existingConfig->setIsFinished(false);
                             $this->flowConfig = $existingConfig;
                         } else {
                             $flowConfig->setFlowId($roomType->getId());

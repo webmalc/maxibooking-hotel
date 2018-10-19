@@ -1,0 +1,51 @@
+{% block choice_widget_expanded %}
+    {% spaceless %}
+        {% set titleColumnClasses = 'col-xs-8 col-lg-4' %}
+        {% set progressClasses = 'col-xs-4 col-lg-2 text-right' %}
+        <div {{ block('widget_container_attributes') }}>
+            {% set tableData = [] %}
+            {% set hasLines = form.children|length > 0 %}
+            {% if hasLines %}
+                {% for child in form.children %}
+                    {% set tableData = tableData|merge([{id: child.vars.value, label: child.vars.label}]) %}
+                {% endfor %}
+            {% else %}
+                {% set tableData = [{id: '', label: ''}] %}
+            {% endif %}
+
+            <div {{ not hasLines ? 'style="display: none"'}}>
+                <div class="row success" style="font-weight: 600; margin-bottom: 5px">
+                    <div class="{{ titleColumnClasses }}">{{ 'room_type_flow.room_type_columns.title'|trans }}</div>
+                    <div class="{{ progressClasses }}">{{ 'room_type_flow.room_type_columns.progress'|trans }}</div>
+                </div>
+
+                {% for rowData in tableData %}
+                    {% set isChecked = form.vars.selectedId == rowData.id or (form.vars.selectedId is empty and loop.index == 1) %}
+                    <div class="row">
+                        <div class="{{ titleColumnClasses }}">
+                            <label>
+                                <input type="radio" {{ block('widget_attributes') }} value="{{ rowData.id }}"
+                                        {{ isChecked ? 'checked="true"' }}/>
+                                <span style="padding-left: 10px">{{ rowData.label|trans }}</span>
+                            </label>
+                        </div>
+                        {% set progressRate = hasLines ? form.vars.flowProgressRates[rowData.id] : 0 %}
+                        {% if progressRate == 0 %}
+                            {% set indicatorClass = 'alert-danger'%}
+                        {% elseif progressRate == 100 %}
+                            {% set indicatorClass = 'alert-success' %}
+                        {% else %}
+                            {% set indicatorClass = 'alert-warning' %}
+                        {% endif %}
+                        <div class="{{ progressClasses ~ ' alert ' ~ indicatorClass }}" style="padding: 5px 15px; margin-bottom: 5px;">
+                            {{ progressRate ~ '%' }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            {% if not hasLines %}
+                <div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> {{ 'room_type_flow.no_room_types.warning'|trans }}</div>
+            {% endif %}
+        </div>
+    {% endspaceless %}
+{% endblock choice_widget_expanded %}

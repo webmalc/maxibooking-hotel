@@ -142,6 +142,9 @@ class FlowManager
         if (is_null($config)) {
             return 0;
         }
+        if ($config->isFinished()) {
+            return 100;
+        }
 
         return round(($config->getCurrentStepNumber() - 1) / $numberOfSteps, 2) * 100;
     }

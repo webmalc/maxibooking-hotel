@@ -27,7 +27,7 @@ class MBSiteFlowType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         switch ($options['flow_step']) {
-            case 1:
+            case MBSiteFlow::NAME_STEP:
                 $builder->add(
                     'siteDomain',
                     TextType::class,
@@ -39,10 +39,10 @@ class MBSiteFlowType extends AbstractType
                     ]
                 );
                 break;
-            case 2:
+            case MBSiteFlow::PAYMENT_TYPES_STEP:
                 $this->mbhFormBuilder->mergeFormFields($builder, SiteForm::class, $builder->getData(), ['paymentTypes']);
                 break;
-            case 3:
+            case MBSiteFlow::COLOR_THEME_STEP:
                 $builder->add('colorTheme', ChoiceType::class, [
                 'label' => 'site_config.color_theme.colors.label',
                 'choices' => array_keys(SiteConfig::COLORS_BY_THEMES),
@@ -53,11 +53,8 @@ class MBSiteFlowType extends AbstractType
                     . $this->translator->trans('site_form.site_domain.go_to_site_button.text'). '</a>'
                 ]);
                 break;
-            case 4:
+            case MBSiteFlow::KEY_WORDS_STEP:
                 $this->mbhFormBuilder->mergeFormFields($builder, SiteForm::class, $builder->getData(), ['keyWords']);
-                break;
-            case 5:
-                $this->mbhFormBuilder->mergeFormFields($builder, SiteForm::class, $builder->getData(), ['personalDataPolicies']);
                 break;
         }
     }

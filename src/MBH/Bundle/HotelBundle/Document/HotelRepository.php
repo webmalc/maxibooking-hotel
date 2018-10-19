@@ -53,4 +53,12 @@ class HotelRepository extends DocumentRepository
 
         return $qb->getQuery()->execute();
     }
+
+    /**
+     * @return array
+     */
+    public function getEnabled()
+    {
+        return $this->findBy(['isEnabled' => true]);
+    }
 }

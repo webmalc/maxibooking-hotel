@@ -6,52 +6,7 @@
 {% set isHotelStep = flow.getStepId() == constant(flowClass ~ '::HOTEL_STEP') %}
 
 {% if isRoomTypeStep %}
-    {% form_theme form.roomType _self %}
-    {% block choice_widget_expanded %}
-        {% spaceless %}
-            {% set roomTypeColumnClasses = 'col-xs-8 col-lg-4' %}
-            {% set progressClasses = 'col-xs-4 col-lg-2 text-right' %}
-            <div {{ block('widget_container_attributes') }}>
-
-                {% set roomsListData = [] %}
-                {% set existRooms = form.children|length > 0 %}
-                {% if existRooms %}
-                    {% for child in form.children %}
-                        {% set roomsListData = roomsListData|merge([{id: child.vars.value, label: child.vars.label}]) %}
-                    {% endfor %}
-                {% else %}
-                    {% set roomsListData = [{id: '', label: ''}] %}
-                {% endif %}
-
-                <div {{ not existRooms ? 'style="display: none"'}}>
-                    <div class="row success" style="font-weight: 600; margin-bottom: 5px">
-                        <div class="{{ roomTypeColumnClasses }}">{{ 'room_type_flow.room_type_columns.title'|trans }}</div>
-                        <div class="{{ progressClasses }}">{{ 'room_type_flow.room_type_columns.progress'|trans }}</div>
-                    </div>
-
-                    {% for roomData in roomsListData %}
-                        {% set isRoomChecked = form.vars.selectedRoomTypeId == roomData.id or (form.vars.selectedRoomTypeId is empty and loop.index == 1) %}
-                        <div class="row">
-                            <div class="{{ roomTypeColumnClasses }}">
-                                <label>
-                                    <input type="radio" {{ block('widget_attributes') }} value="{{ roomData.id }}"
-                                            {{ isRoomChecked ? 'checked="true"' }}/>
-                                    <span style="padding-left: 10px">{{ roomData.label|trans }}</span>
-                                </label>
-                            </div>
-                            <div class="{{ progressClasses }}">
-                                {% set progressRate = existRooms ? form.vars.flowProgressRates[roomData.id] : 0 %}
-                                {{ progressRate ~ '%' }}
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-                {% if not existRooms %}
-                    <div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> {{ 'room_type_flow.no_room_types.warning'|trans }}</div>
-                {% endif %}
-            </div>
-        {% endspaceless %}
-    {% endblock choice_widget_expanded %}
+    {% form_theme form.roomType '@MBHHotel/Flow/docsListWithFlowProgressRates.html.twig' %}
 {% endif %}
 
 {% block flowBody %}

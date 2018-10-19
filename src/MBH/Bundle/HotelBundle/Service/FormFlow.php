@@ -47,7 +47,6 @@ abstract class FormFlow
     abstract protected function handleForm(FormInterface $form);
 
     /**
-     * @param Hotel $hotel
      * @param string|null $flowId
      * @return self
      */
@@ -265,7 +264,7 @@ abstract class FormFlow
     {
         if (!$this->isFlowConfigInit) {
             $flowId = $this->getFlowId();
-            $config = is_null($flowId) ? null : $this->findFlowConfig($flowId);
+            $config = is_null($flowId) && $this->hasMultipleConfigs() ? null : $this->findFlowConfig($flowId);
 
             if (is_null($config)) {
                 $config = (new FlowConfig())->setFlowType(static::getFlowType());
@@ -305,13 +304,17 @@ abstract class FormFlow
      */
     public function findFlowConfig($flowId)
     {
+        $searchCriteria = [
+            'isEnabled' => true,
+            'flowType' => static::getFlowType()
+        ];
+        if (!is_null($flowId)) {
+            $searchCriteria['flowId'] = $flowId;
+        }
+
         return $this->dm
             ->getRepository('MBHHotelBundle:FlowConfig')
-            ->findOneBy([
-                'flowId' => $flowId,
-                'isEnabled' => true,
-                'flowType' => static::getFlowType()
-            ]);
+            ->findOneBy($searchCriteria);
     }
 
     /**
@@ -372,6 +375,7 @@ abstract class FormFlow
     {
         $this->reset();
         $this->addSuccessFinishFlash();
+        $this->getFlowConfig()->setIsFinished(true);
     }
 
     protected function addFlash(string $message, string $type = 'success')
@@ -379,7 +383,13 @@ abstract class FormFlow
         $this->session->getFlashBag()->add($type, $message);
     }
 
-    protected function addSuccessFinishFlash() {
+    protected function addSuccessFinishFlash()
+    {
         $this->addFlash('Настройка успешно завершена!');
+    }
+
+    public function hasMultipleConfigs()
+    {
+        return true;
     }
 }

@@ -66,30 +66,11 @@ function drawLinesBetweenFlowTabs() {
 function handleCreationOfNewRoomType() {
     $('#add-roomtype-button').click(function () {
         var route = Routing.generate('room_type_short_create', {hotelId: $('#flow-hotel-id').val()});
-        var handleSuccessFunc = function(result) {
-            var newRoomData = result['data'];
-            var $lastRoomTypeChoice = $('#mbhhotel_bundle_room_type_flow_roomType').find('.row:last');
-            var $newRoomChoice;
-
-            if ($lastRoomTypeChoice.parent().css('display') === 'none') {
-                $lastRoomTypeChoice.parent().show();
-                $newRoomChoice = $lastRoomTypeChoice;
-                $('.alert.alert-warning').remove();
-            } else {
-                $newRoomChoice = $lastRoomTypeChoice.clone();
-                $newRoomChoice.insertAfter($lastRoomTypeChoice);
-            }
-
-            $newRoomChoice
-                .find('input')
-                .val(newRoomData['id'])
-                .attr('checked', true);
-            $newRoomChoice
-                .find('span')
-                .html(newRoomData['name']);
-        };
         var initFormFunc = function(response) {
             $('#modal-with-form-body').html(response.data.form);
+        };
+        var handleSuccessFunc = function(result) {
+            return handleSuccessNewFlowItemWithProgressRate(result, $('#mbhhotel_bundle_room_type_flow_roomType'));
         };
 
         onOpenModalWithFormButtonClick(route, handleSuccessFunc, initFormFunc);
@@ -101,7 +82,14 @@ function handleCreationOfNewHotel() {
         var route = Routing.generate('hotel_short_create');
         var handleSuccessFunc = function(result) {
             var newRoomData = result['data'];
-            addAndSetSelect2Option($('#mbhhotel_bundle_room_type_flow_hotel'), newRoomData['id'], newRoomData['name']);
+            var $hotelSelect = $('#mbhhotel_bundle_room_type_flow_hotel');
+            if ($hotelSelect.length === 1) {
+                addAndSetSelect2Option($('#mbhhotel_bundle_room_type_flow_hotel'), newRoomData['id'], newRoomData['name']);
+            } else {
+                var $hotelRadioInputs = $('#mbhhotel_bundle_hotel_flow_hotel');
+                handleSuccessNewFlowItemWithProgressRate(result, $hotelRadioInputs);
+            }
+
         };
         var initFormFunc = function(response) {
             $('#modal-with-form-body').html(response.data.form);
@@ -110,3 +98,35 @@ function handleCreationOfNewHotel() {
         onOpenModalWithFormButtonClick(route, handleSuccessFunc, initFormFunc);
     });
 }
+
+var handleSuccessNewFlowItemWithProgressRate = function(result, $radioField) {
+    var data = result['data'];
+    var $lastChoice = $radioField.find('.row:last');
+    var $newChoice;
+
+    if ($lastChoice.parent().css('display') === 'none') {
+        $lastChoice.parent().show();
+        $newChoice = $lastChoice;
+        $('.alert.alert-warning').remove();
+    } else {
+        $newChoice = $lastChoice.clone();
+        $newChoice.insertAfter($lastChoice);
+    }
+    var $newChoiceRateBlock = $newChoice.find('.alert');
+
+    $newChoice
+        .find('input')
+        .val(data['id'])
+        .attr('checked', true);
+    $newChoice
+        .find('span')
+        .html(data['name']);
+    $newChoiceRateBlock.html('0%');
+
+    if (!$newChoiceRateBlock.hasClass('alert-danger')) {
+        $newChoiceRateBlock
+            .removeClass('alert-success')
+            .removeClass('alert-warning')
+            .addClass('alert-danger');
+    }
+};

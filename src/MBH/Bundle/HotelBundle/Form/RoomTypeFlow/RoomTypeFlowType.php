@@ -264,7 +264,7 @@ class RoomTypeFlowType extends AbstractType
             }, $roomTypes->toArray());
             $progressRates = $this->flowManager->getProgressRateByFlowIds(RoomTypeFlow::FLOW_TYPE, array_values($roomTypeIds));
             $view->children['roomType']->vars['flowProgressRates'] = $progressRates;
-            $view->children['roomType']->vars['selectedRoomTypeId'] = $options['roomType'] ? $options['roomType']->getId() : null;
+            $view->children['roomType']->vars['selectedId'] = $options['roomType'] ? $options['roomType']->getId() : null;
         }
     }
 

@@ -28,7 +28,7 @@ class MBHFormBuilder
      */
     public function addMultiLangField(FormBuilderInterface $builder, string $fieldType, string $fieldName, array $fieldOptions)
     {
-        $isDocumentExists = !empty($builder->getData()->getId());
+        $isDocumentExists = !is_null($builder->getData()) && !empty($builder->getData()->getId());
         if (!$isDocumentExists || $this->clientConfigManager->hasSingleLanguage()) {
             $builder->add($fieldName, $fieldType, $fieldOptions);
         } else {

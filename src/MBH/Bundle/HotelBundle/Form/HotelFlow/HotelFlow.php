@@ -3,6 +3,7 @@
 namespace MBH\Bundle\HotelBundle\Form\HotelFlow;
 
 use Gedmo\Mapping\Annotation\Translatable;
+use MBH\Bundle\BaseBundle\Document\Image;
 use MBH\Bundle\BaseBundle\Service\DocumentFieldsManager;
 use MBH\Bundle\BaseBundle\Service\FormDataHandler;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -14,7 +15,7 @@ class HotelFlow extends FormFlow
 {
     const FLOW_TYPE = 'hotel';
 
-    const NAME_STEP = 'hotelName';
+    const HOTEL_STEP = 'hotel';
     const DESC_STEP = 'hotelDescription';
     const LOGO_STEP = 'logo';
     const ADDRESS_STEP = 'address';
@@ -23,10 +24,10 @@ class HotelFlow extends FormFlow
     const MAIN_PHOTO_STEP = 'mainPhoto';
     const PHOTOS_STEP = 'photos';
 
-    /** @var Hotel */
-    private $hotel;
     private $documentFieldsManager;
     private $formDataHandler;
+
+    private $canChangeStep = true;
 
     public function __construct(DocumentFieldsManager $documentFieldsManager, FormDataHandler $formDataHandler)
     {
@@ -41,7 +42,7 @@ class HotelFlow extends FormFlow
 
     public function getTemplateParameters()
     {
-        return ['hotel' => $this->hotel];
+        return ['hotel' => $this->getManagedHotel()];
     }
 
     /**
@@ -51,7 +52,7 @@ class HotelFlow extends FormFlow
     {
         return [
             [
-                'id' => self::NAME_STEP,
+                'id' => self::HOTEL_STEP,
                 'label' => 'hotel_flow.step_labels.hotel_name',
                 'form_type' => HotelFlowType::class,
             ],
@@ -102,7 +103,28 @@ class HotelFlow extends FormFlow
      */
     protected function getFormData()
     {
-        return in_array($this->getStepId(), [self::MAIN_PHOTO_STEP]) ? null : $this->hotel;
+        return in_array($this->getStepId(), [self::PHOTOS_STEP, self::HOTEL_STEP])
+            ? null
+            : $this->getManagedHotel();
+    }
+
+    /**
+     * @return Hotel|null|object
+     */
+    private function getManagedHotel()
+    {
+        if ($this->getFlowConfig()->getFlowId()) {
+            return $this->dm->find(Hotel::class, $this->getFlowConfig()->getFlowId());
+        }
+
+        return null;
+    }
+    /**
+     * @return bool
+     */
+    protected function mustChangeStep(): bool
+    {
+        return $this->canChangeStep && parent::mustChangeStep();
     }
 
     /**
@@ -111,20 +133,35 @@ class HotelFlow extends FormFlow
      */
     protected function handleForm(FormInterface $form)
     {
-        if (in_array($this->getStepId(), [self::NAME_STEP, self::DESC_STEP, self::ADDRESS_STEP])) {
+        if ($this->getStepId() === self::HOTEL_STEP) {
+            /** @var Hotel $hotel */
+            $hotel = $form->getData()['hotel'];
+            $existingConfig = $this->findFlowConfig($hotel->getId());
+            if (!is_null($existingConfig)) {
+                if ($existingConfig->getCurrentStepNumber() !== $this->getCurrentStepNumber()) {
+                    $this->canChangeStep = false;
+                }
+                $existingConfig->setIsFinished(false);
+                $this->flowConfig = $existingConfig;
+            } else {
+                $this->getFlowConfig()->setFlowId($hotel->getId());
+            }
+        }
+
+        if (in_array($this->getStepId(), [self::DESC_STEP, self::ADDRESS_STEP])) {
             $multiLangFields = $this->documentFieldsManager
                 ->getPropertiesByAnnotationClass(Hotel::class, Translatable::class);
             $this->formDataHandler
                 ->saveTranslationsFromMultipleFieldsForm($form, $this->request, $multiLangFields);
         }
 
-        if ($this->getStepId() === self::MAIN_PHOTO_STEP) {
-            $this->dm->persist($this->hotel->getDefaultImage());
+        if ($this->getStepId() === self::MAIN_PHOTO_STEP && $this->getManagedHotel()->getDefaultImage()) {
+            $this->dm->persist($this->getManagedHotel()->getDefaultImage());
         }
 
-        if ($this->getStepId() === self::PHOTOS_STEP && !$this->isBackButtonClicked()) {
+        if ($this->getStepId() === self::PHOTOS_STEP && $form->getData() instanceOf Image && $form->getData()->getImageFile()) {
             $savedImage = $form->getData();
-            $this->hotel->addImage($savedImage);
+            $this->getManagedHotel()->addImage($savedImage);
             $this->dm->persist($savedImage);
         }
 

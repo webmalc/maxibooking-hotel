@@ -15,13 +15,13 @@ class HotelLocationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('mapUrl', TextType::class, [
-                'label' => 'form.hotel_contact_information_type.map_url',
-                'required' => false,
-                'group' => 'form.hotelExtendedType.location',
-                'help' => '<a target="_blank" href="' . self::MAP_URL . '">' . self::MAP_URL . '</a>',
-                'constraints' => [new Callback([$this, 'checkMapUrl'])],
-            ])
+//            ->add('mapUrl', TextType::class, [
+//                'label' => 'form.hotel_contact_information_type.map_url',
+//                'required' => false,
+//                'group' => 'form.hotelExtendedType.location',
+//                'help' => '<a target="_blank" href="' . self::MAP_URL . '">' . self::MAP_URL . '</a>',
+//                'constraints' => [new Callback([$this, 'checkMapUrl'])],
+//            ])
             ->add('latitude', TextType::class, [
                 'label' => 'form.hotelExtendedType.latitude',
                 'group' => 'form.hotelExtendedType.location',

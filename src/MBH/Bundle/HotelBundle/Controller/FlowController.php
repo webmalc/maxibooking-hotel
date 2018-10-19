@@ -3,7 +3,6 @@
 namespace MBH\Bundle\HotelBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -34,7 +33,10 @@ class FlowController extends BaseController
             return $this->redirectToRoute('mb_flow', ['type' => $type]);
         }
 
-        if ($flow->getFlowConfig()->getFlowId() && (empty($flowId) || $flowId !== $flow->getFlowConfig()->getFlowId())) {
+        if ($flow->getFlowConfig()->getFlowId()
+            && $flow->hasMultipleConfigs()
+            && (empty($flowId) || $flowId !== $flow->getFlowConfig()->getFlowId())
+        ) {
             return $this->redirectToRoute('mb_flow', ['type' => $type, 'flowId' => $flow->getFlowConfig()->getFlowId()]);
         }
 

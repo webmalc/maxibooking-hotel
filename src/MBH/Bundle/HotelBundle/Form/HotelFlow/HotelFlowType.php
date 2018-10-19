@@ -2,28 +2,34 @@
 
 namespace MBH\Bundle\HotelBundle\Form\HotelFlow;
 
+use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Document\Image;
 use MBH\Bundle\BaseBundle\Service\MBHFormBuilder;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\HotelRepository;
 use MBH\Bundle\HotelBundle\Form\ContactInfoType;
 use MBH\Bundle\HotelBundle\Form\LogoImageType;
+use MBH\Bundle\HotelBundle\Service\FlowManager;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class HotelFlowType extends AbstractType
 {
     private $mbhFormBuilder;
     private $router;
+    private $flowManager;
+    private $dm;
 
-    public function __construct(MBHFormBuilder $mbhFormBuilder, Router $router) {
+    public function __construct(MBHFormBuilder $mbhFormBuilder, Router $router, FlowManager $flowManager, DocumentManager $dm) {
         $this->mbhFormBuilder = $mbhFormBuilder;
         $this->router = $router;
+        $this->flowManager = $flowManager;
+        $this->dm = $dm;
     }
 
     /**
@@ -36,14 +42,22 @@ class HotelFlowType extends AbstractType
         $hotel = $builder->getData();
 
         switch ($options['flow_step']) {
-            case 1:
-                $this->mbhFormBuilder->addMultiLangField($builder, TextType::class, 'fullTitle', [
-                    'group' => 'form.hotelType.general_info',
-                    'attr' => ['placeholder' => 'form.hotelType.placeholder_my_hotel'],
-                    'label' => 'form.hotelType.name'
-                ]);
+            case HotelFlow::HOTEL_STEP:
+                $builder
+                    ->add(
+                        'hotel', DocumentType::class, [
+                            'label' => 'room_type_flow_type.hotel.label',
+                            'required' => true,
+                            'class' => Hotel::class,
+                            'query_builder' => function (HotelRepository $repository) {
+                                return $repository->getQBWithAvailable();
+                            },
+                            'expanded' => true,
+                            'multiple' => false
+                        ]
+                    );
                 break;
-            case 2:
+            case HotelFlow::DESC_STEP:
                 $this->mbhFormBuilder->addMultiLangField($builder, TextareaType::class, 'description', [
                     'attr' => ['class' => 'tinymce'],
                     'label' => 'form.hotelType.description',
@@ -51,7 +65,7 @@ class HotelFlowType extends AbstractType
                     'required' => false
                 ]);
                 break;
-            case 3:
+            case HotelFlow::LOGO_STEP:
                 $builder->add('logoImage', LogoImageType::class, [
                     'label' => 'form.hotel_logo.image_file.help',
                     'group' => 'form.hotelType.settings',
@@ -63,13 +77,13 @@ class HotelFlowType extends AbstractType
                     ])
                 ]);
                 break;
-            case 6:
+            case HotelFlow::CONTACTS_STEP:
                 $builder->add('contactInformation', ContactInfoType::class, [
                     'group' => 'no-group',
                     'hasGroups' => false
                 ]);
                 break;
-            case 7:
+            case HotelFlow::MAIN_PHOTO_STEP:
                 $builder->add('defaultImage', LogoImageType::class, [
                     'label' => 'Главная',
                     'group' => 'form.hotelType.settings',
@@ -96,15 +110,24 @@ class HotelFlowType extends AbstractType
 
     public function finishView(FormView $view, FormInterface $form, array $options)
     {
-        if (isset($view->children['contactInformation'])) {
+        if ($options['flow_step'] === HotelFlow::CONTACTS_STEP) {
             $view->children['contactInformation']->vars['embedded'] = true;
+        } elseif ($options['flow_step'] === HotelFlow::HOTEL_STEP) {
+            $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->getEnabled();
+            $hotelIds = array_map(function (Hotel $roomType) {
+                return $roomType->getId();
+            }, $hotels);
+            $progressRates = $this->flowManager->getProgressRateByFlowIds(HotelFlow::FLOW_TYPE, array_values($hotelIds));
+            $view->children['hotel']->vars['flowProgressRates'] = $progressRates;
+            $view->children['hotel']->vars['selectedId'] = null;
         }
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    /**
+     * @return null|string
+     */
+    public function getBlockPrefix()
     {
-        $resolver->setDefaults([
-            'data_class' => Hotel::class
-        ]);
+        return 'mbhhotel_bundle_hotel_flow';
     }
 }

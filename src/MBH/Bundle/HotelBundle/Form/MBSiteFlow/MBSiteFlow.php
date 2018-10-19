@@ -7,12 +7,19 @@ use MBH\Bundle\ClientBundle\Service\ClientManager;
 use MBH\Bundle\HotelBundle\Model\FlowRuntimeException;
 use MBH\Bundle\HotelBundle\Service\FormFlow;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
+use MBH\Bundle\OnlineBundle\Form\SitePersonalDataPoliciesType;
 use MBH\Bundle\OnlineBundle\Services\SiteManager;
 use Symfony\Component\Form\FormInterface;
 
 class MBSiteFlow extends FormFlow
 {
     const FLOW_TYPE = 'site';
+
+    const NAME_STEP = 'name';
+    const PAYMENT_TYPES_STEP = 'payment_types';
+    const COLOR_THEME_STEP = 'color_theme';
+    const KEY_WORDS_STEP = 'key_words';
+    const PERSONAL_DATA_POLICY = 'pers-data-policy';
 
     private $siteManager;
     private $clientManager;
@@ -32,24 +39,29 @@ class MBSiteFlow extends FormFlow
     {
         return [
             [
+                'id' => self::NAME_STEP,
                 'label' => 'mb_site_flow.step_labels.site_name',
                 'form_type' => MBSiteFlowType::class,
             ],
             [
+                'id' => self::PAYMENT_TYPES_STEP,
                 'label' => 'mb_site_flow.step_labels.payment_types',
                 'form_type' => MBSiteFlowType::class,
             ],
             [
+                'id' => self::COLOR_THEME_STEP,
                 'label' => 'mb_site_flow.step_labels.color_theme',
                 'form_type' => MBSiteFlowType::class,
             ],
             [
+                'id' => self::KEY_WORDS_STEP,
                 'label' => 'mb_site_flow.step_labels.key_words',
                 'form_type' => MBSiteFlowType::class,
             ],
             [
+                'id' => self::PERSONAL_DATA_POLICY,
                 'label' => 'mb_site_flow.step_labels.pers_data_policy',
-                'form_type' => MBSiteFlowType::class,
+                'form_type' => SitePersonalDataPoliciesType::class,
             ],
         ];
     }
@@ -66,7 +78,7 @@ class MBSiteFlow extends FormFlow
     protected function handleForm(FormInterface $form)
     {
         $siteConfig = $this->getSiteConfig();
-        if ($this->getCurrentStepNumber() === 1) {
+        if ($this->getStepId() === self::NAME_STEP) {
             $newSiteAddress = $this->siteManager->compileSiteAddress($this->getFormData()->getSiteDomain());
             $client = $this->clientManager->getClient();
             $clientSite = $this->clientManager->getClientSite() ?? (new WebSite())->setClient($client);
@@ -83,12 +95,22 @@ class MBSiteFlow extends FormFlow
                     throw new FlowRuntimeException($error);
                 }
             }
-        } elseif ($this->getCurrentStepNumber() === 2) {
+            $this->flowConfig->setIsFinished(false);
+        } elseif ($this->getStepId() === self::PAYMENT_TYPES_STEP) {
             $formConfig = $this->getSiteFormConfig();
             $this->siteManager->updateSiteFormConfig($siteConfig, $formConfig, $this->request->get($form->getName())['paymentTypes']);
         }
 
         $this->dm->flush();
+
+        if (empty($this->getFlowConfig()->getFlowId())) {
+            $this->getFlowConfig()->setFlowId($siteConfig->getId());
+        }
+    }
+
+    public function hasMultipleConfigs()
+    {
+        return false;
     }
 
     /**

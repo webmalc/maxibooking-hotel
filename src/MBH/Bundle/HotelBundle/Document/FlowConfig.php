@@ -42,6 +42,31 @@ class FlowConfig extends Base
     private $flowType;
 
     /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    private $isFinished = false;
+
+    /**
+     * @return bool
+     */
+    public function isFinished(): ?bool
+    {
+        return $this->isFinished;
+    }
+
+    /**
+     * @param bool $isFinished
+     * @return FlowConfig
+     */
+    public function setIsFinished(bool $isFinished): FlowConfig
+    {
+        $this->isFinished = $isFinished;
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getFlowType(): ?string

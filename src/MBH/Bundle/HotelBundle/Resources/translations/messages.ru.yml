@@ -321,13 +321,13 @@ room_type_flow.step_labels.price: 'Укажите цену за номер/за�
 room_type_flow.room_type_columns.title: Название
 room_type_flow.no_room_types.warning: 'У выбранного отеля отсутствуют типы номеров. Для добавления нажмите кнопку "Добавить номер".'
 room_type_flow.room_type_columns.progress: 'Прогресс настройки'
-hotel_flow.step_labels.hotel_name: 'Ввод имени отеля'
-hotel_flow.step_labels.hotel_description: 'Ввод описания отеля'
-hotel_flow.step_labels.hotel_logo: 'Логотип отеля'
-hotel_flow.step_labels.hotel_address: 'Адрес отеля'
-hotel_flow.step_labels.hotel_coordinates: 'Координаты отеля на карте'
-hotel_flow.step_labels.contacts: Контакты
-hotel_flow.step_labels.main_photo: 'Главная фотография'
-hotel_flow.step_labels.photos: Фотографии
+hotel_flow.step_labels.hotel_name: 'Выберите отель для настройки'
+hotel_flow.step_labels.hotel_description: 'Опишите отель и укажите его удобства'
+hotel_flow.step_labels.hotel_logo: 'Загрузите логотип отеля'
+hotel_flow.step_labels.hotel_address: 'Укажите адрес отеля'
+hotel_flow.step_labels.hotel_coordinates: 'Укажите координаты отеля на карте'
+hotel_flow.step_labels.contacts: 'Укажите контакты отеля'
+hotel_flow.step_labels.main_photo: 'Загрузите главную фотографию отеля на сайте'
+hotel_flow.step_labels.photos: 'Загрузите фотографии отеля для галерии на сайте'
 form_flow.success_finish_message: 'Настройка успешно завершена!'
 room_type_flow.success_finish_message: 'Настройка типа номера "%roomTypeName%" успешно завершена!'
