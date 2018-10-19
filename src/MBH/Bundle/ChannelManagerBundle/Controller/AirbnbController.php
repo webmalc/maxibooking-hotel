@@ -208,15 +208,18 @@ class AirbnbController extends BaseController
      * @Route("/packages/sync_all", name="airbnb_all_packages_sync")
      * @Method("GET")
      * @Security("is_granted('ROLE_AIRBNB')")
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function syncAllPackages()
+    public function syncAllPackages(Request $request)
     {
+        $returnUrl = $request->query->get('returnUrl');
         $config = $this->hotel->getBookingConfig();
         if ($config) {
             $this->get('mbh.channelmanager')->pullOrdersInBackground(Airbnb::NAME, true);
             $this->addFlash('warning', 'controller.bookingController.packages_sync_start');
         }
 
-        return $this->redirect($this->generateUrl(Airbnb::NAME));
+        return $this->redirect($returnUrl ?? $this->generateUrl(Airbnb::NAME));
     }
 }

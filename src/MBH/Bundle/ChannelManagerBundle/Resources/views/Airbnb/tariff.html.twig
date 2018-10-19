@@ -9,7 +9,7 @@
 
             {{ form_start(form, {'action': path('airbnb_tariff'), 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
-            {% include 'MBHChannelManagerBundle::actions.html.twig'%}
+            {% include '@MBHChannelManager/Airbnb/actions.html.twig' with {route: 'airbnb_tariff'} %}
             {{ form_end(form) }}
 
             {% if config %}

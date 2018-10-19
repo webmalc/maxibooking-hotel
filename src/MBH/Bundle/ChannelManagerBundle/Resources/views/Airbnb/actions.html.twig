@@ -1,0 +1,14 @@
+{% embed 'MBHChannelManagerBundle::actions.html.twig' %}
+    {% block additional_actions %}
+        {% if config and config.isReadyToSync() %}
+            <li>
+                <a type="button" style="margin-right: 5px"
+                   href="{{ path('airbnb_all_packages_sync', {returnUrl : path(route)}) }}"
+                   class="btn btn-primary navbar-btn navbar-link-button">
+                    <i class="fa fa-paper-plane-o"> </i>
+                    {{ 'views.booking.actions.sync_old'|trans({}, 'MBHChannelManagerBundle') }}
+                </a>
+            </li>
+        {% endif %}
+    {% endblock %}
+{% endembed %}

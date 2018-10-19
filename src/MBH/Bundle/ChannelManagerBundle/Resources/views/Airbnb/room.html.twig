@@ -22,7 +22,7 @@
             </div>
             {{ form_start(form, {'action': path('airbnb_room'), 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
-            {% include 'MBHChannelManagerBundle::actions.html.twig' %}
+            {% include '@MBHChannelManager/Airbnb/actions.html.twig' with {route: 'airbnb_room'}%}
             {{ form_end(form) }}
 
             {% if config %}

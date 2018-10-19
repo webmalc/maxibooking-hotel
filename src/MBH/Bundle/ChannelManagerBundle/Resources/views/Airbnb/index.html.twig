@@ -6,20 +6,7 @@
         <div class="tab-pane active" id="home">
             {{ form_start(form, {'action': path('airbnb'), 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}
-            {% embed 'MBHChannelManagerBundle::actions.html.twig' %}
-                {% block additional_actions %}
-                    {% if config and config.isReadyToSync() %}
-                        <li>
-                            <a type="button" style="margin-right: 5px"
-                                    href="{{ path('airbnb_all_packages_sync') }}"
-                                    class="btn btn-primary navbar-btn navbar-link-button">
-                                <i class="fa fa-paper-plane-o"> </i>
-                                {{ 'views.booking.actions.sync_old'|trans({}, 'MBHChannelManagerBundle') }}
-                            </a>
-                        </li>
-                    {% endif %}
-                {% endblock %}
-            {% endembed %}
+            {% include '@MBHChannelManager/Airbnb/actions.html.twig' with {route: 'airbnb'} %}
             {{ form_end(form) }}
 
             {% if config %}

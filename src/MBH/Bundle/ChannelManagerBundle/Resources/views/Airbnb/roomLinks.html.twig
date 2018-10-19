@@ -38,7 +38,7 @@
                     </div>
                 {% endfor %}
             <form method="post" id="room-links-form">
-                {% include 'MBHChannelManagerBundle::actions.html.twig' %}
+                {% include '@MBHChannelManager/Airbnb/actions.html.twig' with {route: 'airbnb_room_links'} %}
             </form>
             {% if config %}
                 {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': config, 'logs': logs} %}
