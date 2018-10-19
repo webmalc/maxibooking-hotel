@@ -7,28 +7,28 @@
         {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'id': 'user-payment-filter-widget'} %}
         {% block content %}
         <form method="post" id="user-payment-filter" class="form-inline filter-form" role="form">
-            <div class="input">
+            <div class="filter-form_input">
                 <i class="fa fa-calendar" title='{{ 'view.personal_account.orders.begin_date.title'|trans }}'
                    data-toggle='tooltip'></i>&nbsp;
                 <input type="text" name="begin" id="user-payment-filter-begin"
-                       class="datepicker form-control input-sm"
+                       class="datepicker form-control"
                        data-date-format="dd.mm.yyyy" value="{{ beginDate|date('d.m.Y') }}">
             </div>
-            <div class="input">
+            <div class="filter-form_input">
                 <i class="fa fa-calendar" title='{{ 'view.personal_account.orders.end_date.title'|trans }}'
                    data-toggle='tooltip'></i>&nbsp;
                 <input type="text" name="end" id="user-payment-filter-end"
-                       class="datepicker form-control input-sm"
+                       class="datepicker form-control"
                        data-date-format="dd.mm.yyyy" value="{{ endDate|date('d.m.Y') }}">
             </div>
-            <div class="input">
-                <select style="width: 120px !important;" name="paidStatus" id="order-paid-status">
+            <div class="filter-form_input">
+                <select name="paidStatus" id="order-paid-status">
                     <option value="all">{{ 'view.personal_account.orders.paid_status.all'|trans }}</option>
                     <option value="paid">{{ 'view.personal_account.orders.paid_status.paid'|trans }}</option>
                     <option value="not-paid">{{ 'view.personal_account.orders.paid_status.not-paid'|trans }}</option>
                 </select>
             </div>
-            <div class="input">
+            <div class="filter-form_input">
                 <button type="button" class="btn btn-primary navbar-btn"
                         id="filter-button">{{ 'view.personal_account.orders.apply_button.title'|trans }}</button>
             </div>
