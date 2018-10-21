@@ -4,7 +4,6 @@ namespace MBH\Bundle\HotelBundle\Document;
 
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentRepository;
-use MBH\Bundle\BaseBundle\Menu\Builder;
 
 /**
  * Class HotelRepository
@@ -64,4 +63,17 @@ class HotelRepository extends DocumentRepository
             ->execute();
     }
 
+    /**
+     * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function getSearchActiveIds(): array
+    {
+        return $this->createQueryBuilder()
+            ->field('isSearchActive')->equals(true)
+            ->distinct('id')
+            ->getQuery()
+            ->execute()
+            ->toArray();
+    }
 }

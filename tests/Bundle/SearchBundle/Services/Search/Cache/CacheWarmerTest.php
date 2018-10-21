@@ -70,7 +70,7 @@ class CacheWarmerTest extends WebTestCase
         ];
 
         $combinator = $this->createMock(GuestCombinator::class);
-        $combinator->expects($this->exactly(1 * $dateMultiplier))->method('getCombinations')->willReturn(
+        $combinator->expects($this->exactly(1))->method('getCombinations')->willReturn(
             $combinationInterfaces
         );
         $container->set('mbh_search.combinator', $combinator);
@@ -89,7 +89,7 @@ class CacheWarmerTest extends WebTestCase
 
 
         $searcher = $this->createMock(WarmUpSearcher::class);
-        $searcher->expects($this->exactly(40 * $dateMultiplier))->method('search')->with($this->isType('array'));
+        $searcher->expects($this->exactly(4 * 10 * $dateMultiplier))->method('search')->with($this->isType('array'));
         $container->set('mbh_search.warm_up_searcher', $searcher);
 
         $queryGenerator = $this->createMock(SearchQueryGenerator::class);

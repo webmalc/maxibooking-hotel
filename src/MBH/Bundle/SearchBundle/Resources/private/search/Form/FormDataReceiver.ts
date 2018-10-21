@@ -1,5 +1,3 @@
-import * as moment from 'moment';
-
 export class FormDataReceiver implements DataReceiverInterface {
     private readonly $form: JQuery;
     private readonly formName: string;

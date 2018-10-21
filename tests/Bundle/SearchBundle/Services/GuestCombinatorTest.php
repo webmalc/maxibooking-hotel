@@ -30,6 +30,7 @@ class GuestCombinatorTest extends WebTestCase
                 if ($tariff->getId() === 'child_free') {
                     $event->setCombinationType(CombinationCreator::WITH_CHILDREN_AGES);
                 }
+                $event->setPriority(1);
             }
         );
 

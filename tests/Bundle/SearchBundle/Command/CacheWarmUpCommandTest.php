@@ -7,6 +7,7 @@ namespace Tests\Bundle\SearchBundle\Command;
 use MBH\Bundle\SearchBundle\Command\CacheWarmUpCommand;
 use MBH\Bundle\SearchBundle\Services\Cache\CacheSearchResults;
 use MBH\Bundle\SearchBundle\Services\Cache\CacheWarmer;
+use MBH\Bundle\SearchBundle\Services\Cache\Invalidate\SearchCacheInvalidator;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -29,9 +30,12 @@ class CacheWarmUpCommandTest extends KernelTestCase
             });
 
         $searchCache = $this->createMock(CacheSearchResults::class);
-        $searchCache->expects($this->once())->method('flushCache');
+
         $container->set('mbh_search.cache_search', $searchCache);
 
+        $invalidator = $this->createMock(SearchCacheInvalidator::class);
+        $invalidator->expects($this->once())->method('flushCache');
+        $container->set('mbh_search.search_cache_invalidator', $invalidator);
 
         $application = new Application($kernel);
 

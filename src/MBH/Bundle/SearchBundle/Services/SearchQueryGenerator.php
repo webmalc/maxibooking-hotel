@@ -104,6 +104,9 @@ class SearchQueryGenerator
         $sharedHotelKeys = array_intersect($roomTypeHotelIdsKeys, $tariffHotelIdsKeys);
 
         $hotelInSearch = $this->dataHolder->getHotelIdsInSearch();
+        if (!$hotelInSearch) {
+            throw new SearchQueryGeneratorException('There are no  at least one hotel in search');
+        }
         $sharedHotelKeys = array_intersect($sharedHotelKeys, $hotelInSearch);
 
         if (empty($sharedHotelKeys)) {

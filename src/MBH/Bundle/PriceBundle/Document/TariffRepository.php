@@ -329,4 +329,14 @@ class TariffRepository extends DocumentRepository
 
         return $qb->getQuery()->execute();
     }
+    public function getTariffsByHotelsIds(array $hotelIds): array
+    {
+        $qb = $this->createQueryBuilder();
+
+        return $qb
+            ->field('hotel.id')->in($hotelIds)
+            ->field('isEnabled')->equals(true)
+            ->getQuery()
+            ->toArray();
+    }
 }

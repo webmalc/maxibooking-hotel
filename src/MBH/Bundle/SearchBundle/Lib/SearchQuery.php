@@ -441,7 +441,7 @@ class SearchQuery
             ->setChildAge($tariffRoomType['tariff']['childAge'])
             ->setInfantAge($tariffRoomType['tariff']['infantAge'])
             ->setSearchConditions($conditions)
-            ->setIgnoreRestrictions($conditions->isIgnoreRestrictoins())
+            ->setIgnoreRestrictions($conditions->isIgnoreRestrictions())
             ->setChildren($conditions->getChildren())
             ->setAdults($conditions->getAdults())
             ->setChildrenAges($conditions->getChildrenAges())

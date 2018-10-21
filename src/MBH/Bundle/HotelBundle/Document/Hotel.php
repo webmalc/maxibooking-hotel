@@ -352,6 +352,15 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     protected $description;
 
     /**
+     * @var bool
+     * @ODM\Integer
+     * @ODM\Boolean
+     * @Assert\Type(type="boolean")
+     * @Assert\NotNull
+     */
+    protected $isSearchActive;
+
+    /**
      * @var ContactInfo
      * @Assert\Valid()
      * @ODM\EmbedOne(targetDocument="ContactInfo")
@@ -1902,5 +1911,20 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
         }
 
         return $data;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSearchActive(): bool
+    {
+        return (bool)$this->isSearchActive;
+    }
+
+    public function setIsSearchActive(bool $isSearchActive)
+    {
+        $this->isSearchActive = $isSearchActive;
+
+        return $this;
     }
 }

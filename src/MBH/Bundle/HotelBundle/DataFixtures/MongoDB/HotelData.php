@@ -41,7 +41,9 @@ class HotelData extends AbstractFixture implements OrderedFixtureInterface
                 $hotel = new Hotel();
                 $hotel
                     ->setFullTitle($this->container->get('translator')->trans($hotelData['title']))
-                    ->setIsDefault($hotelData['default']);
+                    ->setIsDefault($hotelData['default'])
+                    ->setIsSearchActive(true)
+                ;
 
                 $manager->persist($hotel);
                 $manager->flush();

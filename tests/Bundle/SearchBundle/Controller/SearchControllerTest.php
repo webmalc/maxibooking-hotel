@@ -71,7 +71,7 @@ class SearchControllerTest extends SearchWebTestCase
         $response = $this->client->getResponse();
         $json = $response->getContent();
         if ($result) {
-            $this->assertTrue($response->isSuccessful());
+            $this->assertTrue($response->isSuccessful(), 'status code = '.$response->getStatusCode());
             $this->assertJson($json);
             $answer = json_decode($json, true);
             $this->assertArrayHasKey('conditionsId', $answer);
