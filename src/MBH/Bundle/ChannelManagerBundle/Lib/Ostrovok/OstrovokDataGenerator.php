@@ -159,7 +159,7 @@ class OstrovokDataGenerator
      * @param $hotelId
      * @return array
      */
-    private function getRnaOccupanciesData($occupancyId, $roomCategory, $ratePlan, $price = null, \DateTime $start, \DateTime $end, $hotelId)
+    public function getRnaOccupanciesData($occupancyId, $roomCategory, $ratePlan, $price = null, \DateTime $start, \DateTime $end, $hotelId)
     {
         return [
             'hotel' => $hotelId,

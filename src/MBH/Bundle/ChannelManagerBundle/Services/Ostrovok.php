@@ -188,17 +188,16 @@ class Ostrovok extends Base
                             $day,
                             $hotelId);
                 }
-                $request_data[] = $this->findPeriods($roomCategoryRNA, 'count');
+                $request_data[] = $this->splitByPeriod($roomCategoryRNA, 'count');
             }
         }
 
-//        $rna_request_data = array_merge_recursive(...$rna_request_data);
         $rna_request_data['room_categories'] = array_merge(...$request_data);
 
         return $this->sendApiRequest($rna_request_data, __METHOD__) && $result;
     }
 
-    private function findPeriods(array $data, string $valueField)
+    private function splitByPeriod(array $data, string $valueField)
     {
         $periods = [];
         $currentPeriod = null;
@@ -248,13 +247,10 @@ class Ostrovok extends Base
         $end = $this->getDefaultEnd($begin, $end);
 
         // iterate hotels
-        $rna_request_data = [];
+        $data = [];
         /** @var ChannelManagerConfigInterface $config */
         foreach ($this->getConfig() as $config) {
-            $roomTypes = $this->getRoomTypes($config);
-            $roomTypeIds = $roomType ? $this->getRoomTypeArray($roomType) : \array_keys($roomTypes);
             $allOccupancies = $this->apiBrowser->getOccupancies(['hotel' => $config->getHotelId()], true);
-
             $rooms = $config->getRooms()->toArray();
             if (null !== $roomType) {
                 $rooms = array_filter($rooms, function ($room) use ($roomType) {
@@ -266,7 +262,6 @@ class Ostrovok extends Base
             $tariffs = $this->getTariffs($config, true);
             $ratePlans = $this->getRatePlansArray($config->getHotelId());
 
-            $data = [];
             foreach ($rooms as $room) {
                 /** @var Room $room */
                 $roomType = $room->getRoomType();
@@ -276,125 +271,42 @@ class Ostrovok extends Base
                 });
                 foreach ($updateRatePlans as $ratePlanId => $ratePlan) {
                     $tariff = $tariffs[$ratePlanId]['doc'];
-                    foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
-                        $prices = $this->calculation->calcPrices($roomType, $tariff, $day, $day);
                         $occupancies = array_intersect_key($allOccupancies, array_flip($ratePlan['possible_occupancies']));
                         foreach ($occupancies as $occupancy) {
-                            $capacity = $occupancy['capacity'].'_0';
-                            $price = $prices[$capacity]['total'] ?? 0;
-                            $data[] = $this->dataGenerator->getRequestDataRnaPrice(
-                                $occupancy['id'],
-                                $CMRoomId,
-                                $ratePlanId,
-                                $price,
-                                $day,
-                                $day,
-                                $config->getHotelId()
-                            );
-                        }
-                    }
+                            foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
+                                $prices = $this->calculation->calcPrices($roomType, $tariff, $day, $day);
+                                $capacity = $occupancy['capacity'].'_0';
+                                $price = $prices[$capacity]['total'] ?? 0;
+                                $occupancyData[] = $this->dataGenerator->getRnaOccupanciesData(
+                                    $occupancy['id'],
+                                    $CMRoomId,
+                                    $ratePlanId,
+                                    $price,
+                                    $day,
+                                    $day,
+                                    $config->getHotelId()
+                                );
 
+                            }
+                            $data[] = $this->splitByPeriod($occupancyData, 'price');
+                            unset($occupancyData);
+                        }
                 }
             }
-
-
-            $a = 'b';
-
-            foreach ($ratePlans as $ratePlanId => $ratePlan) {
-                $CMRoomCategory = $ratePlan['room_category'];
-            }
-
-            $a = 'b';
-//
-//            $octrovokRoomTypes = $this->getRoomTypes($config, true);
-//            $ostrovokTariffs = $this->getTariffs($config, true);
-//            $ostrovokRatePlans = $this->getRatePlansArray($config->getHotelId());
-//            $occupancies = $this->apiBrowser->getOccupancies(['hotel' => $config->getHotelId()], true);
-//
-//            $serviceTariffs = $this->pullTariffs($config);
-//
-//
-//            foreach ($octrovokRoomTypes as $ostrovokRoomTypeId => $roomTypeInfo) {
-//                $roomType = $roomTypeInfo['doc'];
-//                /** @var RoomType $roomType */
-//                $roomTypeId = $roomType->getId();
-//                foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
-//                    foreach ($ostrovokTariffs as $ostrovokTariffId => $tariffInfo) {
-//                        /** @var Tariff $tariff */
-//                        if ($serviceTariffs[$ostrovokTariffId]['is_child_rate']) {
-//                            continue;
-//                        }
-//                        /** @var \MBH\Bundle\PriceBundle\Document\Tariff $tariff */
-//                        $tariff = $tariffInfo['doc'];
-//                        $tariffId = $tariff->getId();
-//
-//                        if (isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
-//                            foreach ($ostrovokRatePlans[$ostrovokTariffId]['possible_occupancies'] as $occupancyId) {
-//                                if ($occupancies[$occupancyId]['room_category'] !== $ostrovokRoomTypeId) {
-//                                    continue;
-//                                }
-//                                $adults = $occupancies[$occupancyId]['capacity'];
-//                                $children = 0;
-//                                $price = $this->calculation->calcPrices(
-//                                    $roomType,
-//                                    $tariff,
-//                                    $day,
-//                                    $day,
-//                                    $adults,
-//                                    $children,
-//                                    null,
-//                                    false
-//                                );
-//                                $price = $price[$adults.'_'.$children]['total']??null;
-//                                if (!$price) {
-//                                    $message = $this->container->get('translator')->trans('services.ostrovok.error_getting_price_for_number', [
-//                                        '%roomTypeName%' => $roomType->getFullTitle(),
-//                                        '%numberOfAdults%' => $adults
-//                                    ]);
-//                                    $this->log('Error! '.$message);
-//                                    $result = false;
-//                                    continue;
-//                                    /*throw new \Exception($message);*/
-//                                }
-//                                $rna_request_data = array_merge_recursive(
-//                                    $rna_request_data,
-//                                    $this->dataGenerator->getRequestDataRnaPrice(
-//                                        $occupancyId,
-//                                        $ostrovokRoomTypeId,
-//                                        $ostrovokTariffId,
-//                                        $price,
-//                                        $day,
-//                                        $day,
-//                                        $config->getHotelId()
-//                                    )
-//                                );
-//                            }
-//                        } else {
-//                            foreach ($ostrovokRatePlans[$ostrovokTariffId]['possible_occupancies'] as $occupancyId) {
-//                                if ($occupancies[$occupancyId]['room_category'] !== $ostrovokRoomTypeId) {
-//                                    continue;
-//                                }
-//                                $price = 0;
-//                                $rna_request_data = array_merge_recursive(
-//                                    $rna_request_data,
-//                                    $this->dataGenerator->getRequestDataRnaPrice(
-//                                        $occupancyId,
-//                                        $ostrovokRoomTypeId,
-//                                        $ostrovokTariffId,
-//                                        $price,
-//                                        $day,
-//                                        $day,
-//                                        $config->getHotelId()
-//                                    )
-//                                );
-//                            }
-//                        }
-//                    }
-//                }
-//            }
         }
 
-        return $this->sendApiRequest($rna_request_data, __METHOD__) && $result;
+
+        $data = array_merge(...$data);
+        $chunkSize = 40;
+        if (\count($data) < $chunkSize) {
+            $result = $this->sendApiRequest(['occupancies' => $data], __METHOD__);
+        } else {
+            foreach (array_chunk($data, $chunkSize) as $chunk) {
+                $result = $result && $this->sendApiRequest(['occupancies' => $chunk], __METHOD__);
+            }
+        }
+
+        return $result;
     }
 
     /**
