@@ -33,7 +33,7 @@
                     </div>
                     <div class="box-body">
                         <table id="accommodations-table"
-                               class="table table-actions table-striped table-hover table-actions table-condensed not-auto-datatable">
+                               class="table table-actions table-striped table-hover table-condensed not-auto-datatable">
                             <thead>
                             <tr>
                                 <th class="td-xs"></th>
@@ -89,7 +89,7 @@
                                                     <i class="fa fa-trash-o"></i>
                                                 </a>
                                             </div>
-                                            <div class="pull-right">
+                                            <div class="pull-right accommodation-action">
                                                 <a data-accommodation-id="{{ accommodation.id }}"
                                                    data-package-id="{{ package.id }}"
                                                    data-roomType-id="{{ accommodation.room.roomType.id }}"
@@ -140,7 +140,7 @@
                         </div>
                         <div class="box-body">
                             <table id="accommodation-select-table"
-                                   class="table table-actions table-striped table-hover table-actions table-condensed">
+                                   class="table table-actions table-striped table-hover table-condensed">
                                 <thead>
                                 <tr>
                                     <th class="td-xs"></th>
@@ -180,7 +180,7 @@
                                                        class="fa mbf-{{ facility }}"></i>
                                                 {% endfor %}
                                             </td>
-                                            <td class="text-center">
+                                            <td class="text-center accommodation-action">
                                                 <a data-package-id="{{ package.id }}"
                                                    data-room-id="{{ room.id }}"
                                                    data-roomType-id="{{ room.roomType.id }}"
