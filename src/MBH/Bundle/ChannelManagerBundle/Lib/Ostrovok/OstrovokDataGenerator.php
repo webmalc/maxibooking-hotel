@@ -187,7 +187,7 @@ class OstrovokDataGenerator
      * @param bool|null $closeOnDeparture
      * @return array
      */
-    private function getRnaRestrictionData(int $roomCategory, int $ratePlan, int $hotelId, \DateTime $start, \DateTime $end, int $minStayArrival = null, int $maxStayArrival = null, int $minStayThrough = null, int $maxStayThroug = null, bool $closeOnArrival = false, bool $closeOnDeparture = false, bool $disableFlexible = false)
+    public function getRnaRestrictionData(int $roomCategory, int $ratePlan, int $hotelId, \DateTime $start, \DateTime $end, int $minStayArrival = null, int $maxStayArrival = null, int $minStayThrough = null, int $maxStayThroug = null, bool $closeOnArrival = false, bool $closeOnDeparture = false, bool $disableFlexible = false)
     {
         return [
             'disable_flexible' => $disableFlexible,

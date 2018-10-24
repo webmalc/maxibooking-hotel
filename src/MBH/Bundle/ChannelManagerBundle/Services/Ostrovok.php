@@ -97,10 +97,7 @@ class Ostrovok extends Base
         $endDate = (clone $startDate)->modify("+1 year");
         $hotelId = $config->getHotelId();
         foreach ($rooms as $roomId => $roomName) {
-            $rna_request_data = array_merge_recursive(
-                $rna_request_data,
-                $this->dataGenerator->getRequestDataRnaRoomAmount($roomId, 0, $startDate, $endDate, $hotelId)
-            );
+            $rna_request_data['room_categories'][] = $this->dataGenerator->getRnaRoomCategoriesData($roomId, 0, $startDate, $endDate, $hotelId);
         }
         //Цены
         $rate_plans = $this->apiBrowser->getRatePlans(['hotel' => $hotelId]);
@@ -108,36 +105,29 @@ class Ostrovok extends Base
             if ($rate_plan['parent']) {
                 continue;
             }
-            if (count($rate_plan['possible_occupancies'])) {
+            if (\count($rate_plan['possible_occupancies'])) {
                 foreach ($rate_plan['possible_occupancies'] as $occupancyId) {
-                    $rna_request_data = array_merge_recursive(
-                        $rna_request_data,
-                        $this->dataGenerator->getRequestDataRnaPrice(
-                            $occupancyId,
-                            $rate_plan['room_category'],
-                            $rate_plan['id'],
-                            0,
-                            $startDate,
-                            $endDate,
-                            $hotelId
-                        )
-                    );
+                    $rna_request_data['occupancies'][] = $this->dataGenerator->getRnaOccupanciesData(
+                        $occupancyId,
+                        $rate_plan['room_category'],
+                        $rate_plan['id'],
+                        0,
+                        $startDate,
+                        $endDate,
+                        $hotelId);
                 }
             }
         }
 
         //Ограничения
         foreach ($rate_plans as $rate_plan) {
-            $rna_request_data = array_merge_recursive(
-                $rna_request_data,
-                $this->dataGenerator->getRequestDataRnaRestrictions(
-                    $rate_plan['room_category'],
-                    $rate_plan['id'],
-                    $config->getHotelId(),
-                    $startDate,
-                    $endDate,
-                    1
-                )
+            $rna_request_data['rate_plans'][] = $this->dataGenerator->getRnaRestrictionData(
+                $rate_plan['room_category'],
+                $rate_plan['id'],
+                $config->getHotelId(),
+                $startDate,
+                $endDate,
+                1
             );
         }
 
@@ -215,7 +205,7 @@ class Ostrovok extends Base
             $endCurrent = new \DateTime("$endCurrentPeriod midnight");
             $startNew = new \DateTime("$startNewPeriod midnight");
 
-            $diff = (int) $endCurrent->diff($startNew)->format('a');
+            $diff = (int)$endCurrent->diff($startNew)->format('a');
             $moreThanDay = $diff > 1;
 
             $isDiffValue = $currentPeriod[$valueField] !== $dayData[$valueField];
@@ -233,8 +223,6 @@ class Ostrovok extends Base
 
         return $periods;
     }
-
-
 
 
     /**
@@ -271,26 +259,26 @@ class Ostrovok extends Base
                 });
                 foreach ($updateRatePlans as $ratePlanId => $ratePlan) {
                     $tariff = $tariffs[$ratePlanId]['doc'];
-                        $occupancies = array_intersect_key($allOccupancies, array_flip($ratePlan['possible_occupancies']));
-                        foreach ($occupancies as $occupancy) {
-                            foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
-                                $prices = $this->calculation->calcPrices($roomType, $tariff, $day, $day);
-                                $capacity = $occupancy['capacity'].'_0';
-                                $price = $prices[$capacity]['total'] ?? 0;
-                                $occupancyData[] = $this->dataGenerator->getRnaOccupanciesData(
-                                    $occupancy['id'],
-                                    $CMRoomId,
-                                    $ratePlanId,
-                                    $price,
-                                    $day,
-                                    $day,
-                                    $config->getHotelId()
-                                );
+                    $occupancies = array_intersect_key($allOccupancies, array_flip($ratePlan['possible_occupancies']));
+                    foreach ($occupancies as $occupancy) {
+                        foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
+                            $prices = $this->calculation->calcPrices($roomType, $tariff, $day, $day);
+                            $capacity = $occupancy['capacity'] . '_0';
+                            $price = $prices[$capacity]['total'] ?? 0;
+                            $occupancyData[] = $this->dataGenerator->getRnaOccupanciesData(
+                                $occupancy['id'],
+                                $CMRoomId,
+                                $ratePlanId,
+                                $price,
+                                $day,
+                                $day,
+                                $config->getHotelId()
+                            );
 
-                            }
-                            $data[] = $this->splitByPeriod($occupancyData, 'price');
-                            unset($occupancyData);
                         }
+                        $data[] = $this->splitByPeriod($occupancyData, 'price');
+                        unset($occupancyData);
+                    }
                 }
             }
         }
@@ -336,7 +324,7 @@ class Ostrovok extends Base
                         $data
                     );
                 } catch (OstrovokApiServiceException $exception) {
-                    $this->log('Не удалось обновить ограничения для тарифов'.$exception->getMessage());
+                    $this->log('Не удалось обновить ограничения для тарифов' . $exception->getMessage());
                     $result = false;
                 }
             }
@@ -450,7 +438,7 @@ class Ostrovok extends Base
                 'hotel' => $config->getHotelId(),
                 'modified_at_start_at' => $date
             ]);
-            $this->log('There are '.count($bookings).' total '.$date);
+            $this->log('There are ' . count($bookings) . ' total ' . $date);
             if (!$bookings) {
                 continue;
             }
@@ -486,19 +474,19 @@ class Ostrovok extends Base
                 if ((string)$reservation['status'] === 'normal' && !$order) {
                     $result = $this->createPackage($reservation, $config);
                     $this->notify($result, 'ostrovok', 'new');
-                    $this->log('Order '.$result->getId().'was created.');
+                    $this->log('Order ' . $result->getId() . 'was created.');
                 }
 
                 //If modified
                 if ((string)$reservation['status'] === 'normal' && $order && $isModified) {
                     if (new \DateTime($order->getChannelManagerEditDateTime()) != new \DateTime(
-                        $reservation['modified_at']
-                    )
+                            $reservation['modified_at']
+                        )
                     ) {
                         $order->setChannelManagerEditDateTime($reservation['modified_at']);
                         $result = $this->createPackage($reservation, $config, $order);
                         $this->notify($result, 'ostrovok', 'edit');
-                        $this->log('Order '.$order->getId().'was changed.');
+                        $this->log('Order ' . $order->getId() . 'was changed.');
                     }
                 }
                 //If Cancelled
@@ -511,9 +499,9 @@ class Ostrovok extends Base
                         $this->notify($order, 'ostrovok', 'delete');
                         $this->dm->remove($order);
                         $this->dm->flush();
-                        $this->log('Order '.$order->getId().'was cancelled.');
+                        $this->log('Order ' . $order->getId() . 'was cancelled.');
                     } else {
-                        $this->logger->addInfo('The order already deleted in Ostrovok '. $order->getChannelManagerId());
+                        $this->logger->addInfo('The order already deleted in Ostrovok ' . $order->getChannelManagerId());
                     }
 
 
@@ -526,7 +514,7 @@ class Ostrovok extends Base
                         '#'.$reservation['uuid'].' '.
                         $reservation['last_name'].' '.$reservation['first_name']
                     );*/
-                    $this->log('Error! Бронь существует, но нет в базе. '.$reservation['uuid']);
+                    $this->log('Error! Бронь существует, но нет в базе. ' . $reservation['uuid']);
                 }
             }
         }
@@ -548,7 +536,7 @@ class Ostrovok extends Base
             null,
             null,
             null,
-            $reservation['email']??null
+            $reservation['email'] ?? null
         );
 
         //Order
@@ -593,7 +581,7 @@ class Ostrovok extends Base
                 ]
             );
             $corrupted = true;
-            $errorMessage = 'ERROR: invalid roomType #'.(string)$reservation['room_category'];
+            $errorMessage = 'ERROR: invalid roomType #' . (string)$reservation['room_category'];
         }
 
         $guest = $payer;
@@ -611,7 +599,7 @@ class Ostrovok extends Base
             if (!$tariff) {
                 $tariff = $this->createTariff($config, $rateId);
                 $corrupted = true;
-                $errorMessage .= 'ERROR: Not mapped rate <'.$tariff->getName();
+                $errorMessage .= 'ERROR: Not mapped rate <' . $tariff->getName();
 
                 if (!$tariff) {
                     continue;
@@ -619,7 +607,7 @@ class Ostrovok extends Base
             }
 
             $total += (float)$price;
-            $date = (new \DateTime($reservation['arrive_at']))->modify('+ '.$dayIndex.' days');
+            $date = (new \DateTime($reservation['arrive_at']))->modify('+ ' . $dayIndex . ' days');
             $priceByDate[$date->format('d_m_Y')] = $price;
             $packagePrices[] = new PackagePrice($date, (float)$price, $tariff);
             $dayTariffs[] = [
@@ -718,7 +706,7 @@ class Ostrovok extends Base
                 'is_child_rate' => empty($rate['parent']) ? false : true,
             ];
             if (!empty($rooms[$rate['room_category']])) {
-                $rates[$rate['id']]['title'] .= '<br><small>'.$rooms[$rate['room_category']].'</small>';
+                $rates[$rate['id']]['title'] .= '<br><small>' . $rooms[$rate['room_category']] . '</small>';
             }
         }
 
@@ -810,7 +798,7 @@ class Ostrovok extends Base
         if (\count($rna_request_data)) {
             try {
                 $response = $this->apiBrowser->updateRNA($rna_request_data);
-                $this->log('Ostrovok ' . $action . ' success. '.json_encode($response));
+                $this->log('Ostrovok ' . $action . ' success. ' . json_encode($response));
             } catch (OstrovokApiServiceException $e) {
                 $result = false;
                 $this->log('Ostrovok ' . $action . ' failed. ' . $e->getMessage());
