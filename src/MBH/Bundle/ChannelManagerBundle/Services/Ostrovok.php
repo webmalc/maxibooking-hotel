@@ -90,6 +90,7 @@ class Ostrovok extends Base
      */
     public function closeForConfig(ChannelManagerConfigInterface $config)
     {
+        //** Alarma! Островок -  */
         $result = true;
         $rna_request_data = [];
         //Закрыли на год вперед комнаты
@@ -103,15 +104,17 @@ class Ostrovok extends Base
         $result = $result && $this->sendApiRequest($rna_request_data, __METHOD__);
         $rna_request_data = [];
 
+
         //Цены
         $rate_plans = $this->apiBrowser->getRatePlans(['hotel' => $hotelId]);
+        $data = [];
         foreach ($rate_plans as $rate_plan) {
             if ($rate_plan['parent']) {
                 continue;
             }
             if (\count($rate_plan['possible_occupancies'])) {
                 foreach ($rate_plan['possible_occupancies'] as $occupancyId) {
-                    $rna_request_data['occupancies'][] = $this->dataGenerator->getRnaOccupanciesData(
+                    $data[] = $this->dataGenerator->getRnaOccupanciesData(
                         $occupancyId,
                         $rate_plan['room_category'],
                         $rate_plan['id'],
@@ -122,8 +125,18 @@ class Ostrovok extends Base
                 }
             }
         }
+        $chunkSize = 5;
+        if (\count($data) > $chunkSize) {
+            $chunks = array_chunk($data, $chunkSize);
+            foreach ($chunks as $chunk) {
+                $rna_request_data['occupancies'] = $chunk;
+                $result = $result && $this->sendApiRequest($rna_request_data, __METHOD__);
+            }
+        } else {
+            $rna_request_data['occupancies'] = $data;
+            $result = $result && $this->sendApiRequest($rna_request_data, __METHOD__);
+        }
 
-        $result = $result && $this->sendApiRequest($rna_request_data, __METHOD__);
         $rna_request_data = [];
 
         //Ограничения
