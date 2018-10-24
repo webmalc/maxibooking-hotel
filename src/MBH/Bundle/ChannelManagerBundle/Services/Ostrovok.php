@@ -788,7 +788,7 @@ class Ostrovok extends Base
     {
     }
 
-    private function getRatePlansArray($hotelId)
+    private function getRatePlansArray($hotelId): array
     {
         $result = [];
         $ratePlans = $this->apiBrowser->getRatePlans(['hotel' => $hotelId]);
@@ -799,22 +799,24 @@ class Ostrovok extends Base
         return $result;
     }
 
-    private function sendApiRequest(array $rna_request_data, string $action)
+    /**
+     * @param array $rna_request_data
+     * @param string $action
+     * @return bool
+     */
+    private function sendApiRequest(array $rna_request_data, string $action): bool
     {
-
-        try {
-            if (count($rna_request_data)) {
-                $this->apiBrowser->updateRNA($rna_request_data);
-                $result = true;
-                $this->log('Ostrovok '.$action.' success');
-            } else {
-                $result = true;
-                $this->log('Ostrovok '.$action.' empty $rna_request_data!');
+        $result = true;
+        if (\count($rna_request_data)) {
+            try {
+                $response = $this->apiBrowser->updateRNA($rna_request_data);
+                $this->log('Ostrovok ' . $action . ' success. '.json_encode($response));
+            } catch (OstrovokApiServiceException $e) {
+                $result = false;
+                $this->log('Ostrovok ' . $action . ' failed. ' . $e->getMessage());
             }
-        } catch (OstrovokApiServiceException $exception) {
-            $result = false;
-            $this->log('Ostrovok '.$action.' error '.$exception->getMessage());
-            $this->logger->addAlert($action.' error. ', $rna_request_data);
+        } else {
+            $this->log('Ostrovok ' . $action . ' empty $rna_request_data!', 'alert');
         }
 
         return $result;
