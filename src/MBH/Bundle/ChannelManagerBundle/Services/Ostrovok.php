@@ -90,6 +90,7 @@ class Ostrovok extends Base
      */
     public function closeForConfig(ChannelManagerConfigInterface $config)
     {
+        $result = true;
         $rna_request_data = [];
         //Закрыли на год вперед комнаты
         $rooms = $this->pullRooms($config);
@@ -99,6 +100,9 @@ class Ostrovok extends Base
         foreach ($rooms as $roomId => $roomName) {
             $rna_request_data['room_categories'][] = $this->dataGenerator->getRnaRoomCategoriesData($roomId, 0, $startDate, $endDate, $hotelId);
         }
+        $result = $result && $this->sendApiRequest($rna_request_data, __METHOD__);
+        $rna_request_data = [];
+
         //Цены
         $rate_plans = $this->apiBrowser->getRatePlans(['hotel' => $hotelId]);
         foreach ($rate_plans as $rate_plan) {
@@ -119,6 +123,9 @@ class Ostrovok extends Base
             }
         }
 
+        $result = $result && $this->sendApiRequest($rna_request_data, __METHOD__);
+        $rna_request_data = [];
+
         //Ограничения
         foreach ($rate_plans as $rate_plan) {
             $rna_request_data['rate_plans'][] = $this->dataGenerator->getRnaRestrictionData(
@@ -131,7 +138,9 @@ class Ostrovok extends Base
             );
         }
 
-        return $this->sendApiRequest($rna_request_data, __METHOD__);
+        $result = $result && $this->sendApiRequest($rna_request_data, __METHOD__);
+
+        return $result;
     }
 
     /**
