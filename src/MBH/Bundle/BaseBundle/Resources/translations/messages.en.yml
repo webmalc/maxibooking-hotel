@@ -303,8 +303,8 @@ facilities.sign-in: 'Emergency exit'
 facilities.telephone: Telephone
 facilities.fan: Fan
 facilities.conditioner: 'Air conditioning'
-facilities.modern-tv: 'Modern TV'
-facilities.old-tv: TV
+facilities.modern-tv: 'TV'
+facilities.old-tv: 'CRT TV'
 facilities.homecinema: 'Home Theater'
 facilities.washmachine: 'Washing machine'
 facilities.radio: Radio
