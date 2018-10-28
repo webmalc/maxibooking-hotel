@@ -71,7 +71,7 @@ class HotelManager
 
         $this->container
             ->get('mbh.site_manager')
-            ->createOrUpdateForHotel($client, $hotel);
+            ->createOrUpdateForHotel($hotel);
         $this->container->get('doctrine.odm.mongodb.document_manager')->persist($hotel);
 
         $this->container

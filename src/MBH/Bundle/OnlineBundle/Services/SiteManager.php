@@ -6,8 +6,6 @@ use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Service\DocumentFieldsManager;
 use MBH\Bundle\BaseBundle\Service\WarningsCompiler;
-use MBH\Bundle\BillingBundle\Lib\Model\Client;
-use MBH\Bundle\BillingBundle\Lib\Model\WebSite;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\ClientBundle\Service\ClientManager;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -171,17 +169,21 @@ class SiteManager
 
     /**
      * @param Hotel $hotel
-     * @param Client $client
      * @return SiteConfig
      */
-    public function createOrUpdateForHotel(Client $client, Hotel $hotel = null)
+    public function createOrUpdateForHotel(Hotel $hotel = null)
     {
         $config = $this->getSiteConfig();
         if (is_null($config)) {
             $config = new SiteConfig();
             $this->dm->persist($config);
 
-            $siteDomain = $this->clientManager->getClientSite()->getUrl();
+            $clientSite = $this->clientManager->getClientSite();
+            if (is_null($clientSite)) {
+                throw new \RuntimeException('There is no created client site');
+            }
+
+            $siteDomain = $clientSite->getUrl();
             $config->setSiteDomain($siteDomain);
         }
 
