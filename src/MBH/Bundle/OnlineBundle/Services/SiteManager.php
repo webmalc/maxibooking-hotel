@@ -181,8 +181,7 @@ class SiteManager
             $config = new SiteConfig();
             $this->dm->persist($config);
 
-            $siteDomain = $this->compileSiteDomain($client);
-
+            $siteDomain = $this->clientManager->getClientSite()->getUrl();
             $config->setSiteDomain($siteDomain);
             $clientSite = (new WebSite())
                 ->setUrl($this->compileSiteAddress($siteDomain))
@@ -307,31 +306,5 @@ class SiteManager
     public function compileSiteAddress(string $siteDomain)
     {
         return self::SITE_PROTOCOL . $siteDomain . self::SITE_DOMAIN;
-    }
-
-    /**
-     * @param Client $client
-     * @return null|string
-     */
-    private function compileSiteDomain(Client $client)
-    {
-        $siteDomain = '';
-        if ($this->checkSiteDomain($client->getLogin())) {
-            $siteDomain = $client->getLogin();
-        } elseif ($client->getCity()) {
-            $domainWithCityName = $client->getLogin().'-'.$this->billingApi->getCityById(
-                    $client->getCity(),
-                    'en'
-                )->getName();
-            if ($this->checkSiteDomain($domainWithCityName)) {
-                $siteDomain = $domainWithCityName;
-            }
-        }
-
-        if (empty($siteDomain)) {
-            $siteDomain = $client->getLogin().rand(0, 1000000);
-        }
-
-        return $siteDomain;
     }
 }
