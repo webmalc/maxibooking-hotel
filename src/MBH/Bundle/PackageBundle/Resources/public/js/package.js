@@ -632,7 +632,6 @@ $(document).ready(function() {
         actionWhenXS.scrollWhenChangeTabs();
         docReadyForms();
         docReadyTables();
-        docReadyTourists();
         docReadyServices();
         docReadyPackages();
         docReadyCash();
