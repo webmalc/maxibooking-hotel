@@ -17,6 +17,7 @@ parameters:
       kzt: {text: 'currency.kzt.text', small: 'currency.kzt.small', icon: 'fa fa-money'}
       uzs: {text: 'currency.uzs.text', small: 'currency.uzs.small', icon: 'fa fa-money'}
       gel: {text: 'Lari', small: 't', icon: 'fa fa-money'}
+      inr: {text: '₹', small: 'paisa', icon: 'fa fa-inr'}
 
     # ReCaptcha
     mbh.recaptcha:
