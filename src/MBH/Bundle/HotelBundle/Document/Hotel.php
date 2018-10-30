@@ -146,7 +146,6 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
-     * @Assert\Url
      */
     protected $mapUrl;
 
@@ -1884,7 +1883,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     {
         $data = [
             'id' => $this->getId(),
-            'title' => $this->getName(),
+            'title' => $this->getFullTitle() ?? $this->getInternationalTitle(),
         ];
 
         if ($isFull) {

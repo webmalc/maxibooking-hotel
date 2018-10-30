@@ -135,10 +135,13 @@ class OstrovokConfig extends Base implements BaseInterface
      * Add room
      *
      * @param \MBH\Bundle\ChannelManagerBundle\Document\Room $room
+     * @return OstrovokConfig
      */
     public function addRoom(\MBH\Bundle\ChannelManagerBundle\Document\Room $room)
     {
         $this->rooms[] = $room;
+
+        return $this;
     }
 
     /**
@@ -154,7 +157,7 @@ class OstrovokConfig extends Base implements BaseInterface
     /**
      * Get rooms
      *
-     * @return \Doctrine\Common\Collections\Collection $rooms
+     * @return \Doctrine\Common\Collections\Collection|Room[] $rooms
      */
     public function getRooms()
     {
@@ -169,6 +172,8 @@ class OstrovokConfig extends Base implements BaseInterface
     public function addTariff(\MBH\Bundle\ChannelManagerBundle\Document\Tariff $tariff)
     {
         $this->tariffs[] = $tariff;
+
+        return $this;
     }
 
     /**

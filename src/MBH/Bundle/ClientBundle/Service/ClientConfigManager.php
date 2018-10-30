@@ -7,14 +7,12 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 class ClientConfigManager
 {
     private $dm;
-    private $defaultLanguage;
 
     private $clientConfig;
     private $isClientConfigInit = false;
 
-    public function __construct(DocumentManager $dm, string $defaultLanguage) {
+    public function __construct(DocumentManager $dm) {
         $this->dm = $dm;
-        $this->defaultLanguage = $defaultLanguage;
     }
 
     /**
@@ -60,6 +58,6 @@ class ClientConfigManager
         $config = $this->fetchConfig();
         $languages = $config->getLanguages();
 
-        return empty($languages) || (count($languages) === 1 && current($languages) === $this->defaultLanguage);
+        return empty($languages) || count($languages) === 1;
     }
 }

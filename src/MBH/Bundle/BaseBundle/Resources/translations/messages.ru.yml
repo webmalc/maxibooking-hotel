@@ -100,7 +100,7 @@ controller.baseController.document_is_deleted: 'Документ уже удал
 eventListener.orderSubscriber.impossible_delete_record_with_existing_reservations: 'Нельзя удалить запись с существующими бронями'
 mailer.to_order: 'Перейти к заказу'
 mailer.order.subject_text: 'Подтверждение оплаты бронирования отеля'
-mailer.order.prepend_text: 'От Вас получена оплата в размере %paymentSum%!'
+mailer.order.prepend_text: '<span style="font-size: 18px;">От Вас получена оплата в размере %paymentSum%!</span>'
 mailer.order.header_text: 'Вас приветствует %hotelName%'
 mailer.to_package: 'Перейти к брони'
 mailer.base.linkText: 'Перейти в «МаксиБукинг»'
@@ -549,6 +549,8 @@ notifier.config.label.channel_manager_order: 'Channel Manager'
 notifier.config.label.online_payment_confirm: 'Онлайн оплата'
 notifier.config.label.confirm_order: Подтверждение
 notifier.config.label.unpaid: Неоплата
+notifier.config.label.channel_manager_configuration: 'Настройка ChannelManager'
+notifier.config.title.channel_manager_configuration: 'Уведомление о настройке ChannelManager'
 notifier.config.label.task: Задачи
 notifier.config.label.error: Ошибки
 notifier.config.title.error: 'Уведомление об ошибках'

@@ -198,7 +198,7 @@
                             </table>
                         </div>
                     </div>
-                {% else %}
+                {% elseif package.accommodations.empty %}
                     <div class="alert alert-warning">
                         {{ 'package.accommodation.rooms_not_found'|trans }}.
                     </div>
