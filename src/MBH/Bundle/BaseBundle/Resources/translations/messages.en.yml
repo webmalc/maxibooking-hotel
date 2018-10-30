@@ -677,7 +677,7 @@ mbh.hotel.themes.romantic_vacation: 'Romantic holidays / Honeymoon'
 mbh.hotel.themes.interior_design: 'Designer interior'
 mbh.hotel.themes.luxury_holidays: 'Luxury leisure'
 mailer.order.subject_text: 'Booking payment confirmation'
-mailer.order.prepend_text: 'We received a payment of %paymentSum% from you!'
+mailer.order.prepend_text: '<span style="font-size: 18px;">We received a payment of %paymentSum% from you!</span>'
 mailer.order.header_text: '%hotelName% welcomes you'
 pacakge.edit.children_ages: Age
 pacakge.edit.number_of_children: 'Number of children'
