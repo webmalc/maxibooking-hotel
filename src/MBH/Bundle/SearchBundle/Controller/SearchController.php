@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 /**
  * Class SearchController
  * @package MBH\Bundle\SearchBundle\Controller
- * @Route("/search")
+ * @Route("/")
  */
 class SearchController extends Controller
 {

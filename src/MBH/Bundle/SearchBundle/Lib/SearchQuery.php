@@ -404,7 +404,7 @@ class SearchQuery
         $actualChildrenAges = array_filter(
             $this->childrenAges,
             function ($age) {
-                return $age >= $this->infantAge && $age <= $this->childAge;
+                return $age > $this->infantAge && $age <= $this->childAge;
             }
         );
 

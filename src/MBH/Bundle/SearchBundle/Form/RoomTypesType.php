@@ -73,7 +73,6 @@ class RoomTypesType extends AbstractType
                     $event->setData(array_unique($data));
                 }
 
-
             }
         );
 
@@ -139,7 +138,8 @@ class RoomTypesType extends AbstractType
 
                 return $dr->createQueryBuilder()->field('hotel.id')->in($hotelIds)->sort('title', 'asc');
             },
-            'choice_label' => 'name'
+            'choice_label' => 'name',
+            'isForceDisableCategory' => false
         ]);
     }
 

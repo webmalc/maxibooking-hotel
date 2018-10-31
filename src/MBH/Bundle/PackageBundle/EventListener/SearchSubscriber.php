@@ -44,16 +44,19 @@ class SearchSubscriber implements EventSubscriberInterface
     public function calculateFreeChild(SearchCalculateEvent $event): void
     {
         $eventData = $event->getEventData();
-        $tariff = $eventData['tariff'];
-        $roomType = $eventData['roomType'];
-        $begin = $eventData['begin'];
-        $end = $eventData['end'];
-        $adults = (int)$eventData['adults'];
-        $children = (int)$eventData['children'];
-        $childrenAges = $eventData['childrenAges'] ?? [];
-        $promotion = $eventData['promotion'];
-        $isUseCategory = $eventData['isUseCategory'];
-        $special = $eventData['special'];
+        [
+            'tariff' => $tariff,
+            'roomType' => $roomType,
+            'begin' => $begin,
+            'end' => $end,
+            'adults' => $adults,
+            'children' => $children,
+            'childrenAges' => $childrenAges,
+            'promotion' => $promotion,
+            'isUseCategory' => $isUseCategory,
+            'special' => $special
+
+        ] = $eventData;
 
         /** @var Tariff $tariff */
 

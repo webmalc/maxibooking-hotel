@@ -88,7 +88,7 @@ class CacheWarmer
         $dm = $this->tariffRepository->getDocumentManager();
         $hotelIds = $dm->getRepository(Hotel::class)->getSearchActiveIds();
         $tariffs = $this->tariffRepository->getTariffsByHotelsIds($hotelIds);
-        $combinationTypes = $this->combinator->getCombinations($tariffs);
+        $combinationTypes = $this->getCombinations($tariffs);
         $totalDates = \count($datesArray);
         foreach ($datesArray as $dates) {
             $this->logger->info('WarmUp for '.$dates['begin']->format('d.m.Y').'-'.$dates['end']->format('d.m.Y'));
@@ -97,6 +97,15 @@ class CacheWarmer
             $this->warmUpDateCombination($dates['begin'], $dates['end'], $combinationTypes);
         }
 
+    }
+
+    /**
+     * @param array $tariffs
+     * @return array
+     */
+    protected function getCombinations(array $tariffs = []): array
+    {
+        return $this->combinator->getCombinations($tariffs);
     }
 
     /**
@@ -195,7 +204,7 @@ class CacheWarmer
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
      */
-    private function doWarmUp(array $conditionsData, int $priority = 1): void
+    protected function doWarmUp(array $conditionsData, int $priority = 1): void
     {
         $conditions = $this->conditionCreator->createSearchConditions($conditionsData);
         $conditions->setId('warmerConditions');

@@ -191,8 +191,8 @@ class SearchResultComposer
             'tariff' => $tariff,
             'begin' => $searchQuery->getBegin(),
             'end' => (clone $searchQuery->getEnd())->modify('-1 day'),
-            'adults' => $searchQuery->getAdults(),
-            'children' => $searchQuery->getChildren(),
+            'adults' => (int)$searchQuery->getAdults(),
+            'children' => (int)$searchQuery->getChildren(),
             'promotion' => null,
             'special' => null,
             'isUseCategory' => $this->roomManager->useCategories,
@@ -203,7 +203,7 @@ class SearchResultComposer
         $prices = $event->getPrices();
         if (null !== $prices) {
             if (false === $prices) {
-                throw new CalculationException('No price for subcsriber');
+                throw new CalculationException('No price for subscriber');
             }
 
             return $prices;

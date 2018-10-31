@@ -82,7 +82,9 @@ class SearchQueryGenerator
         $tariffIds = $this->getEntryIds($conditions->getTariffs()->toArray());
         $tariffsGroupedByHotelId = $this->getTariffs($tariffIds, $hotelIds, $conditions->isOnline());
 
+        //**TODO: В $conditions->getRoomTypes() может жить категория  */
         $roomTypeIds = $this->getEntryIds($conditions->getRoomTypes());
+        //**TODO: А вот тут как раз уже берем точно roomtypeIds возможно стоит забирать ID типов комнат сразу из формы использую трансормер  */
         $roomTypeIdsGroupedByHotel = $this->getRoomTypeIds($roomTypeIds, $hotelIds);
 
         return $this->combineTariffWithRoomType($roomTypeIdsGroupedByHotel, $tariffsGroupedByHotelId);

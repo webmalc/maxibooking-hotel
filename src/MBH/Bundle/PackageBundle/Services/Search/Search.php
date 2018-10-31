@@ -425,8 +425,8 @@ class Search implements SearchInterface
                     'tariff' => $tariff,
                     'begin' => $query->begin,
                     'end' => $end,
-                    'adults' => $tourists['adults'],
-                    'children' => $tourists['children'],
+                    'adults' => $query->adults,
+                    'children' => $query->children,
                     'promotion' => $promotion,
                     'isUseCategory' => $this->manager->useCategories,
                     'special' => $query->getSpecial(),
@@ -435,7 +435,6 @@ class Search implements SearchInterface
                 $event->setEventData($eventData);
                 $dispatcher->dispatch(SearchCalculateEvent::SEARCH_CALCULATION_NAME, $event);
                 $prices = $event->getPrices();
-
                 if (null === $prices) {
                     $prices = $calc->calcPrices(
                         $roomType,
@@ -448,12 +447,16 @@ class Search implements SearchInterface
                         $this->manager->useCategories,
                         $query->getSpecial()
                     );
+                    if (($query->adults + $query->children) != 0 && !isset($prices[$tourists['adults'].'_'.$tourists['children']])) {
+                        continue;
+                    }
+                } else {
+                    $result->setAdults($query->adults)->setChildren($query->children);
+                    if (($query->adults + $query->children) != 0 && !isset($prices[$query->adults.'_'.$query->children])) {
+                        continue;
+                    }
                 }
 
-
-                if (!$prices || (($query->adults + $query->children) != 0 && !isset($prices[$tourists['adults'] . '_' . $tourists['children']]))) {
-                    continue;
-                }
                 foreach ($prices as $price) {
                     $result->addPrice($price['total'], $price['adults'], $price['children'])
                         ->setPricesByDate($price['prices'], $price['adults'], $price['children'])

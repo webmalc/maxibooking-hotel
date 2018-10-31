@@ -35,6 +35,9 @@ class HotelSelector
      */
     public function checkPermissions(Hotel $hotel, User $user = null)
     {
+        if ('cli' === PHP_SAPI) {
+            return true;
+        }
         if (!$user && !$this->container->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             return true;
         }

@@ -35,7 +35,7 @@ class SearchConditionsType extends AbstractType
     /**
      * @int
      */
-    public const MAX_CHILDREN_AGE = 13;
+    public const MAX_CHILDREN_AGE = 15;
 
     /**
      * @param FormBuilderInterface $builder
@@ -135,6 +135,7 @@ class SearchConditionsType extends AbstractType
                     'class' => Tariff::class,
                     'required' => false,
                     'multiple' => true,
+
                 ]
             )
             ->add(
@@ -205,6 +206,7 @@ class SearchConditionsType extends AbstractType
                 [
                     'data_class' => SearchConditions::class,
                     'csrf_protection' => false,
+                    'isForceDisableCategory' => false
 
                 ]
             );

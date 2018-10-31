@@ -399,6 +399,8 @@ services:
             - '@mbh_search.combinator'
             - '@mbh_search.tariff_repository'
             - '@mbh_search.cache_logger'
+
+
     ### Combinations
     mbh_search.combinator:
         class: MBH\Bundle\SearchBundle\Services\GuestCombinator
@@ -543,16 +545,30 @@ services:
             - '@mbh_search.serializer'
             - '@mbh_search.normalizer'
 
-#logger
+#loggers
     mbh_search.cache_logger_handler:
         class: Monolog\Handler\StreamHandler
         arguments: ["%kernel.logs_dir%/%kernel.environment%.cache.log", 200]
+        public: false
+
     mbh_search.cache_logger:
         class: Monolog\Logger
         arguments: ['cache']
         calls:
             - [pushHandler, ['@mbh_search.cache_logger_handler']]
 
+    mbh_search.compare_logger_handler:
+        class: Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.search_compare.log", 200]
+        public: false
+
+    mbh_search.compare_logger:
+        class: Monolog\Logger
+        arguments: ['search_compare']
+        calls:
+        - [pushHandler, ['@mbh_search.compare_logger_handler']]
+
+#data collector
     mbh_search.cache_collector:
         class: MBH\Bundle\SearchBundle\DataCollector\ResultCachedCollector
         arguments:
@@ -569,3 +585,17 @@ services:
         class: MBH\Bundle\SearchBundle\EventSubscriber\GuestCombinatorSubscriber
         tags:
             - {name: kernel.event_subscriber, event: combination.childrenAges }
+
+#compare command
+    mbh_search.compare.command:
+        class: MBH\Bundle\SearchBundle\Command\SearchCompareCommand
+        arguments:
+            - '@mbh_search.search'
+            - '@mbh.package.search'
+            - '@mbh_search.compare_logger'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@mbh.package.search_simple'
+        tags:
+            - { name: console.command }
+
+

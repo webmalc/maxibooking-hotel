@@ -56,10 +56,10 @@ class Searcher implements SearcherInterface
             if (!$conditions) {
                 throw new SearcherException('There is a problem in SearchQuery. No conditions. ');
             }
-            if (!\count($errors) && !$conditions->isThisWarmUp()) {
+            if ($errors->count() && !$conditions->isThisWarmUp()) {
                 $errors = $this->validator->validate($searchQuery, new ChildrenAgesSameAsChildren());
             }
-            if (\count($errors)) {
+            if ($errors->count()) {
                 /** @var string $errors */
                 throw new SearcherException('There is a problem in SearchQuery. '. $errors);
             }
