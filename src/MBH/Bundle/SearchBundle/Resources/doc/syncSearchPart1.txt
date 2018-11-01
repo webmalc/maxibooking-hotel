@@ -1,0 +1,127 @@
+title SyncSearch
+
+boundary MaxibookingSearch
+control SearchController
+
+participant Search
+participant ConditionCreator
+participant SearchQueryGenerator
+participant AdditionalDatesGenerator
+participant DateSorter
+participant DataHolder
+
+participantgroup #lightgreen **SearcherGroup**
+
+participantgroup #grey
+participant CacheSearcher
+end
+
+participantgroup #grey
+participant Searcher
+end
+
+end
+
+
+participant Cache
+database MONGO
+
+
+MaxibookingSearch-->SearchController: sendJson()
+activate SearchController
+note over SearchController:SyncSearchAction()\njson_decode()
+SearchController->Search: SearchSync($data)
+activate Search
+deactivate SearchController
+
+Search->ConditionCreator:createSearchConditions($data)
+
+activate ConditionCreator
+note over ConditionCreator:1.Created Form SearchConditionsType\n2.Submit form\n3.Form Validation\n4.Get SearchConditions document\n5.Generate unique **id**, set it to **searchHash**\n   property
+
+Search<-ConditionCreator:SearchConditions
+deactivate ConditionCreator
+Search->>MONGO:insert SearchConditions
+Search->SearchQueryGenerator:generate($searchConditions, $grouped = false)
+activate SearchQueryGenerator
+SearchQueryGenerator->AdditionalDatesGenerator:dates generate\n($begin, $end, \n$addBegin,$addEnd\n$sorterName)
+activate AdditionalDatesGenerator
+AdditionalDatesGenerator->AdditionalDatesGenerator:generateDates
+AdditionalDatesGenerator->AdditionalDatesGenerator:createSorter($sorterName)
+AdditionalDatesGenerator->DateSorter: sort($dates)
+activate DateSorter
+note over DateSorter:Sorting dates\nwith some conditions
+DateSorter->AdditionalDatesGenerator:$sortedDates
+deactivate DateSorter
+AdditionalDatesGenerator->SearchQueryGenerator:$dates
+deactivate AdditionalDatesGenerator
+SearchQueryGenerator->SearchQueryGenerator:getTariffRoomTypeCombination
+activate SearchQueryGenerator
+entryspacing 0.2
+SearchQueryGenerator->DataHolder:getTariffsRaw
+activate DataHolder
+DataHolder->SearchQueryGenerator: $tariffsRaw
+
+SearchQueryGenerator->DataHolder:getRoomTypesRaw
+DataHolder->SearchQueryGenerator: $roomTypesRaw
+deactivate DataHolder
+entryspacing 1
+SearchQueryGenerator->SearchQueryGenerator:combineTariffWithRoomType
+activate SearchQueryGenerator
+SearchQueryGenerator->DataHolder:getHotelIdsInSearch
+activate DataHolder
+
+DataHolder->SearchQueryGenerator: $hotelIds
+deactivate DataHolder
+SearchQueryGenerator->SearchQueryGenerator:mixRoomTypeTariff
+
+abox right of SearchQueryGenerator:Там есть костыль\nКоторый надо чинить
+deactivate SearchQueryGenerator
+deactivate SearchQueryGenerator
+note over SearchQueryGenerator:[SearchQuery] or\n[GroupSearchQuery]
+SearchQueryGenerator->Search:array($searchQueries)||array($groupsSearchQuery)
+deactivate SearchQueryGenerator
+Search->Search:getSearcher
+note over Search:CacheSearcher or plain Searcher
+
+
+
+
+loop
+note over Search: iterate over $searchQueries
+Search->CacheSearcher: search($searchQuery)
+activate CacheSearcher
+
+alt #red founded
+CacheSearcher->Cache: searchInCache
+activate Cache
+Cache->CacheSearcher: $result
+deactivate Cache
+else notfounded
+CacheSearcher->Cache: searchInCache()
+activate Cache
+Cache->CacheSearcher: null
+deactivate Cache
+
+CacheSearcher->Searcher:search()
+
+Searcher->CacheSearcher: $result
+
+CacheSearcher->Cache: saveToCache($result)
+
+end
+
+
+CacheSearcher->Search: $result
+deactivate CacheSearcher
+end
+
+
+
+Search->Search: ResultBuilder->getResultes()
+Search->SearchController: array $results
+deactivate Search
+activate SearchController
+SearchController->SearchController: json_encode($results)
+SearchController->MaxibookingSearch: {json}
+deactivate SearchController

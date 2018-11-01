@@ -144,6 +144,7 @@ class SearchLimitChecker
             throw new SearchLimitCheckerException('There are no free rooms left');
         }
 
+        //** TODO: need to check roomcache quotas inheritance. Some service ? */
         $roomCacheWithQuotasNoLeftRooms = array_filter($roomCaches,
             function ($roomCache) use ($currentTariff) {
                 $isQuotedCache = array_key_exists('tariff', $roomCache) && (string)$roomCache['tariff']['$id'] === $currentTariff->getId();

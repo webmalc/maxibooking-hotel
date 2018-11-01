@@ -1,0 +1,61 @@
+title Result Compose
+
+participant SearchResultComposer
+participant Dispatcher
+participant Calculation
+participant PriceCacheMerger
+participant RoomCacheFetcher
+
+
+note over SearchResultComposer:composeResult($searchQuery)
+
+SearchResultComposer->Dispatcher:dispatch(calculation event)
+activate SearchResultComposer
+alt prices
+SearchResultComposer<-Dispatcher:$prices
+else null
+SearchResultComposer<-Dispatcher:null
+
+SearchResultComposer->Calculation:calcPrices($calcQuery)
+activate Calculation
+Calculation->PriceCacheMerger:getMergedPriceCaches(calcQuery)
+
+activate PriceCacheMerger
+
+
+abox right of PriceCacheMerger:Учесть с новой функцией\nкоторую Георгий пилил
+abox right of Calculation:Promotion берется из тарифа\nпо которому ведется поиск.\nТ.е. не учитывается на каждый\nдень при смердженых тарифах.\n\n
+
+
+Calculation<-PriceCacheMerger:$priceCaches
+deactivate PriceCacheMerger
+Calculation->Calculation:calc Prices  with priceCaches
+SearchResultComposer<-Calculation:$prices
+
+deactivate Calculation
+end
+
+
+
+SearchResultComposer->SearchResultComposer:ResultRoomType
+SearchResultComposer->SearchResultComposer:ResultTariff
+loop resultPrices
+SearchResultComposer->SearchResultComposer:ResultPrice
+activate SearchResultComposer
+loop packagePrice
+SearchResultComposer->SearchResultComposer:ResultTariff
+SearchResultComposer->SearchResultComposer:ResulDayPrice
+deactivate SearchResultComposer
+end
+end
+SearchResultComposer->SearchResultComposer:ResultConditions
+SearchResultComposer->SearchResultComposer:getMinCacheValue
+activate SearchResultComposer
+SearchResultComposer->RoomCacheFetcher:fetchNecessaryDataSet($roomCacheFetchQuery)
+activate RoomCacheFetcher
+SearchResultComposer<-RoomCacheFetcher:$roomCaches
+deactivate RoomCacheFetcher
+deactivate SearchResultComposer
+SearchResultComposer->SearchResultComposer:Result
+note over SearchResultComposer:return $result
+deactivate SearchResultComposer
