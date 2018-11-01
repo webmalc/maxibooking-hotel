@@ -74,13 +74,13 @@ class MagicCalculation extends Calculation
             $asAdultAge = array_filter($ages, function ($age) use (&$tempResult){
 
                         if (!$tempResult) {
-                            $tempResult = (bool)($age > 7);
+                            $tempResult = $age > 7;
 
                             return $tempResult;
                         }
                         return false;
                     });
-            $childAsAdult = $adults == 1 && count($ages) >= 2 && $asAdultAge;
+            $childAsAdult = $adults == 1 && \count($ages) >= 2 && $asAdultAge;
             if ($childAsAdult) {
                 $adults ++;
                 $ages = array_diff_key($ages, $asAdultAge);
@@ -113,9 +113,9 @@ class MagicCalculation extends Calculation
 
                 //count children price by ageGroups
                 $discountPercent = null;
-                foreach ($ageGroups as $groupName => $ages) {
-                    foreach ($ages as $index => $age) {
-                        $discountPercent = $table[(string)(($index+1).$groupName)]['discount'];
+                foreach ($ageGroups as $groupName => $groupAges) {
+                    foreach ($groupAges as $index => $age) {
+                        $discountPercent = $table[($index+1).$groupName]['discount'];
                         if ($discountPercent) {
                             $discount = $bulkPrice * $discountPercent / 100;
                         } else {

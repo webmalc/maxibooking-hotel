@@ -1,0 +1,40 @@
+title DataFetcher
+
+participant AbstractDataFetcher
+participant DataHolderInterface
+participant Cache
+
+note over AbstractDataFetcher: fetchNecessaryDataSet(DataFetchQueryInterface)
+
+
+activate AbstractDataFetcher
+alt nodata
+
+AbstractDataFetcher->DataHolderInterface:get($fetchQuery)
+activate DataHolderInterface
+AbstractDataFetcher<-DataHolderInterface:null
+deactivate DataHolderInterface
+AbstractDataFetcher->AbstractDataFetcher:getData($fetchQuery)
+activate AbstractDataFetcher
+alt has
+AbstractDataFetcher->Cache:has($hash)
+activate Cache
+AbstractDataFetcher<-Cache:true
+AbstractDataFetcher->Cache:get($hash)
+AbstractDataFetcher<-Cache:$data
+else noHas
+AbstractDataFetcher->Cache:has($hash)
+AbstractDataFetcher<-Cache:false
+AbstractDataFetcher->AbstractDataFetcher:fetchData($fetchQuery)
+AbstractDataFetcher->Cache:has($hash)
+AbstractDataFetcher<-Cache:false
+AbstractDataFetcher->Cache:set($hash, $data)
+end
+deactivate AbstractDataFetcher
+AbstractDataFetcher->DataHolderInterface:set($fetchQuery, $data)
+activate DataHolderInterface
+AbstractDataFetcher->DataHolderInterface:get($fetchQuery)
+AbstractDataFetcher<-DataHolderInterface:$necessaryData
+deactivate DataHolderInterface
+else data
+end

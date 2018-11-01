@@ -105,6 +105,8 @@ class Calculation
     {
         $total = 0;
         $packagePrices = $dayPrices = [];
+
+        /** TODO: В итоге откуда брать Promotion? Из PriceCache на каждый день? */
         $rawPromotion = $calcQuery->getPromotion();
         if (null === $rawPromotion) {
             $rawPromotion = $calcQuery->getTariff()->getDefaultPromotion();
@@ -139,7 +141,6 @@ class Calculation
 
             $dayPrice = $mainAdultPrice + $mainChildrenPrice + $additionalAdultPrice + $additionalChildrenPrice;
 
-            /** TODO: В итоге откуда брать Promotion? Из PriceCache на каждый день? */
             $dayPrice -= PromotionConditionFactory::calcDiscount($promotion, $dayPrice, true);
             $dayPrice = round($dayPrice, 0, PHP_ROUND_HALF_UP);
 

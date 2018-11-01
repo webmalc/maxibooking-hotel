@@ -1,0 +1,77 @@
+title Searcher
+
+participant Searcher
+participant SearchLimitChecker
+participant RestrictionChecker
+participant ResultComposer
+participant RoomCacheFetcher
+participant RestrictionFetcher
+participant SharedDataFetcher
+
+entryspacing 0.6
+parallel
+abox right of SearchLimitChecker:TODO: create service with\nlimit checkers
+abox left of RoomCacheFetcher:need Separated description
+note over SharedDataFetcher:construct(findAll tariffs, roomTypes, rooms)
+note over Searcher:do search($searchQuery)
+parallel off
+
+
+assert Catch SearchException
+
+activate Searcher
+Searcher->Searcher:validate($searchQuery)
+Searcher->Searcher:validate ChildrenAges
+Searcher->SearchLimitChecker:checkRoomCacheLimit
+
+activate SearchLimitChecker
+SearchLimitChecker->SearchLimitChecker:createRoomCacheQuery
+SearchLimitChecker->RoomCacheFetcher:fetcNecessaryDataSet\n($roomCacheQuery)
+activate RoomCacheFetcher
+RoomCacheFetcher->SearchLimitChecker: $roomCaches
+deactivate RoomCacheFetcher
+SearchLimitChecker->SharedDataFetcher: getFetchedTariff
+activate SharedDataFetcher
+SearchLimitChecker<-SharedDataFetcher:$currentTariff
+deactivate SharedDataFetcher
+
+
+note over SearchLimitChecker:check(\nfilterRoomCachesNoQuota\nfilterRoomCacheWithQuota\n)
+abox right of SearchLimitChecker:TODO: Potential error in quotasCheck\nNeed to check parent tariff
+deactivate SearchLimitChecker
+
+Searcher->RestrictionChecker:check()
+activate RestrictionChecker
+RestrictionChecker->RestrictionFetcher:fetchNecessaryDataSet($searchQuery)
+activate RestrictionFetcher
+RestrictionChecker<-RestrictionFetcher:$restrictions
+deactivate RestrictionFetcher
+RestrictionChecker->RestrictionChecker:check($searchQuery, $restrictions)
+Searcher<-RestrictionChecker:true/false
+deactivate RestrictionChecker
+Searcher->SearchLimitChecker:checkDateLimit
+activate SearchLimitChecker
+note over SearchLimitChecker:Check Dates of Tariff
+deactivate SearchLimitChecker
+Searcher->SearchLimitChecker:checkTariffConditions
+activate SearchLimitChecker
+note over SearchLimitChecker:check by PromotionConditionFactory::checkCOnditions
+deactivate SearchLimitChecker
+Searcher->SearchLimitChecker:checkRoomTypePopulationLimit
+activate SearchLimitChecker
+SearchLimitChecker->SharedDataFetcher:getFetchedRoomType
+activate SharedDataFetcher
+SearchLimitChecker<-SharedDataFetcher:$roomType
+deactivate SharedDataFetcher
+abox right of SearchLimitChecker #lightgrey :Для ребенка бесплатно, например,\nтут путаница. Проверка происходит\n с учетом возрастов(дети->взрослые)\nа подсчет цены идет как в запросе.\n
+deactivate SearchLimitChecker
+Searcher->ResultComposer:composeResult
+activate ResultComposer
+note over ResultComposer:Compose Result describes in separated file
+abox right of ResultComposer:Calculation in wrong place
+Searcher<-ResultComposer:$result/CalculationException
+deactivate ResultComposer
+Searcher->SearchLimitChecker:checkWindows($result)
+note over Searcher:return $result
+deactivate Searcher
+

@@ -72,6 +72,7 @@ class Searcher implements SearcherInterface
 
             $this->searchLimitChecker->checkDateLimit($searchQuery);
             $this->searchLimitChecker->checkTariffConditions($searchQuery);
+            /** TODO: some conditions may be various (child free etc...) */
             $this->searchLimitChecker->checkRoomTypePopulationLimit($searchQuery);
 
             $result = $this->resultComposer->composeResult($searchQuery);

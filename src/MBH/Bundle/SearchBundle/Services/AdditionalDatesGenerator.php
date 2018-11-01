@@ -9,6 +9,15 @@ use MBH\Bundle\SearchBundle\Services\DateSorters\SorterFactory;
 class AdditionalDatesGenerator
 {
 
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param int|null $additionalBegin
+     * @param int|null $additionalEnd
+     * @param null|string $sorterName
+     * @return array
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException
+     */
     public function generate(
         \DateTime $begin,
         \DateTime $end,
