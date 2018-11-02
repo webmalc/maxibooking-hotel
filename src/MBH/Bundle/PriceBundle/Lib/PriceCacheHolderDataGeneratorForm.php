@@ -72,6 +72,13 @@ class PriceCacheHolderDataGeneratorForm extends PriceCacheKit
      */
     private $saveForm = false;
 
+    public function __construct()
+    {
+        $this->tariffs = new ArrayCollection();
+        $this->roomTypes = new ArrayCollection();
+    }
+
+
     /**
      * @return bool
      */
@@ -168,7 +175,7 @@ class PriceCacheHolderDataGeneratorForm extends PriceCacheKit
         $this->childPriceFake = $childPriceFake;
     }
 
-    public function getTariffs(): ?ArrayCollection
+    public function getTariffs(): ArrayCollection
     {
         return $this->tariffs;
     }
@@ -189,7 +196,7 @@ class PriceCacheHolderDataGeneratorForm extends PriceCacheKit
         $this->tariffs = $tariffs;
     }
 
-    public function getRoomTypes(): ?ArrayCollection
+    public function getRoomTypes(): ArrayCollection
     {
         return $this->roomTypes;
     }
