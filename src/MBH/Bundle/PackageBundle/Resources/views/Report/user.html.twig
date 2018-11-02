@@ -5,6 +5,18 @@
 {% set title_url = path('report_users') %}
 {% set layout = 'box' %}
 
+{% block styles %}
+    {{ parent() }}
+
+    {% stylesheets filter='cssrewrite, uglifycss'
+
+        '@MBHPackageBundle/Resources/public/css/report/user_report/*'
+    %}
+        <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+
+{% endblock %}
+
 {% block content %}
     {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'users-report-filter-widget'} %}
         <form id="users-report-filter" class="form-inline filter-form remember" role="form">

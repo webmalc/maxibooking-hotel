@@ -12,8 +12,9 @@ var docReadyTourists = function () {
     var touristFilterFormCallback = function () {
         return $.param({'form': getTouristFilterFormData($touristForm, $citizenshipSelect)});
     };
+
     $touristTable.dataTable({
-        'language'    : mbh.datatablesOptions.language,
+        language      : mbh.datatablesOptions.language,
         pageLength    : mbh.datatablesOptions.pageLength,
         dom: "12<'row'<'col-sm-6'Bl><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
         buttons       : {
@@ -26,23 +27,22 @@ var docReadyTourists = function () {
                 getExportButtonSettings('tourist', 'csv', touristFilterFormCallback)
             ]
         },
-        "processing": true,
-        "serverSide": true,
-        "ordering": false,
-        "ajax": {
-            "method": "POST",
-            "url": Routing.generate('tourist_json'),
-            "data": function (requestData) {
+        processing: true,
+        serverSide: true,
+        ordering: false,
+        ajax: {
+            method: "POST",
+            url: Routing.generate('tourist_json'),
+            data: function (requestData) {
                 requestData.form = getTouristFilterFormData($touristForm, $citizenshipSelect);
                 return requestData;
             }
         },
-        "drawCallback": function (settings) {
+        drawCallback: function (settings) {
             var $popover = $touristTable.find('[data-toggle="popover"]');
             $popover.popover({html: true});
 
-            var value = $citizenshipSelect.val();
-            if (value === 'native') {
+            if ($citizenshipSelect.val() === 'native') {
                 $('#tourist-table').find('.show-on-print').addClass('hide')
                 //$touristTable.find('.show-on-print').addClass('hide');
                 //add print column
@@ -53,23 +53,29 @@ var docReadyTourists = function () {
             }
             deleteLink();
         },
-        "columnDefs": [
-            {className: "hide-on-print", "targets": [6, 11]},
-            {className: "show-on-print", "targets": [3, 4, 5, 9, 10]}
+        columnDefs: [
+            {className: "hide-on-print", targets: [6, 11]},
+            {className: "show-on-print", targets: [3, 4, 5, 9, 10]}
         ]
     });
     $touristTable.dataTable().fnSetFilteringDelay();
 
+    var timerId = null;
+
     $touristForm.find('input, select').on('change', function () {
-        $touristTable.dataTable().fnDraw();
+        clearTimeout(timerId);
+        timerId = setTimeout(function () {
+            $touristTable.dataTable().fnDraw();
+        }, 500);
     });
 
-    $('#mbh_bundle_packagebundle_touristtype_birthday, #mbh_bundle_packagebundle_package_guest_type_birthday, .guestBirthday').datepicker({
-        language: "ru",
-        autoclose: true,
-        startView: 2,
-        disableTouchKeyboard: true
-    });
+    $('#mbh_bundle_packagebundle_touristtype_birthday, #mbh_bundle_packagebundle_package_guest_type_birthday, .guestBirthday')
+        .datepicker({
+            language: "ru",
+            autoclose: true,
+            startView: 2,
+            disableTouchKeyboard: true
+        });
 
     var $guestForm = $('form[name=mbh_bundle_packagebundle_package_order_tourist_type]');
     var fillGuestForm = function (data) {
@@ -139,7 +145,7 @@ var docReadyTourists = function () {
             $.each(detail, function (key, value) {
                 $('#organization_' + key).val(value);
             });
-            $('#organization_city').select2("val", [detail.city])
+            $('#organization_city').select2("val", [detail.city]);
             $('#organization_city').append('<option value="' + detail.city + '">' + detail.city_name + '</option>').val(detail.city).trigger('change');
         });
     }());
@@ -188,12 +194,13 @@ function switchAuthOrganFieldsVisibility() {
 
 function getTouristFilterFormData($touristForm, $citizenshipSelect) {
     return {
-        begin: $touristForm.find('#mbhpackage_bundle_tourist_filter_form_begin').val(),
-        end: $touristForm.find('#mbhpackage_bundle_tourist_filter_form_end').val(),
+        begin      : $touristForm.find('#mbhpackage_bundle_tourist_filter_form_begin').val(),
+        end        : $touristForm.find('#mbhpackage_bundle_tourist_filter_form_end').val(),
         citizenship: $citizenshipSelect.val(),
-        _token: $touristForm.find('#mbhpackage_bundle_tourist_filter_form__token').val(),
-        search: $('#tourist-table_filter').find('input[type="search"]').val()
-    }
+        _token     : $touristForm.find('#mbhpackage_bundle_tourist_filter_form__token').val(),
+        search     : $('#tourist-table_filter').find('input[type="search"]').val(),
+        hotels     : $touristForm.find('#mbhpackage_bundle_tourist_filter_form_hotels').val()
+    };
 }
 
 function hangOnExportToKonturButtonClick() {

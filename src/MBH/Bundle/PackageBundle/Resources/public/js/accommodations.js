@@ -121,4 +121,7 @@ function loadModalContent(modal, modalBody, isEdit, $accommodateButton) {
 $(document).ready(function () {
     'use strict';
     docReadyAccommodations();
+    $('#accommodation-select-table').on('draw.dt', function() {
+        docReadyAccommodations();
+    })
 });

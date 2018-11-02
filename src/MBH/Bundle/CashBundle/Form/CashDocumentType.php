@@ -119,6 +119,10 @@ class CashDocumentType extends AbstractType
                 'group' => $options['groupName'],
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
+                'attr' => [
+                    'class' => 'datepicker',
+                    'data-date-format' => 'dd.mm.yyyy'
+                ]
             ])
             ->add(
                 'isPaid', CheckboxType::class, [
@@ -142,6 +146,10 @@ class CashDocumentType extends AbstractType
                 'group' => $options['groupName'],
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
+                'attr' => [
+                    'class' => 'datepicker',
+                    'data-date-format' => 'dd.mm.yyyy'
+                ]
             ])
             ->add('number', $options['number'] ? TextType::class : HiddenType::class, [
                 'label' => 'form.cashDocumentType.number',

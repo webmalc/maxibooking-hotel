@@ -13,6 +13,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Extension extends \Twig_Extension
 {
+    /**
+     * @var bool|null
+     */
+    private $cacheIsRussianClient;
 
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
@@ -287,9 +291,13 @@ class Extension extends \Twig_Extension
     /**
      * @return bool
      */
-    public function isRussianClient()
+    public function isRussianClient(): bool
     {
-        return $this->getClient()->getCountry() === Country::RUSSIA_TLD;
+        if ($this->cacheIsRussianClient === null) {
+            $this->cacheIsRussianClient = $this->getClient()->getCountry() === Country::RUSSIA_TLD;
+        }
+
+        return $this->cacheIsRussianClient;
     }
 
     /**

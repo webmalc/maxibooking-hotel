@@ -7,25 +7,25 @@
 namespace Tests\Bundle\ClientBundle\Controller;
 
 
+use MBH\Bundle\ClientBundle\Lib\Test\TraitExtraData;
+use MBH\Bundle\ClientBundle\Lib\Test\TraitForAddPaymentSystems;
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType;
 use MBH\Bundle\ClientBundle\Form\PaymentSystem\PaymentSystemType;
 use MBH\Bundle\ClientBundle\Form\PaymentSystemsUrlsType;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystem\ExtraData;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\HolderNamePaymentSystem;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
-use Symfony\Component\DomCrawler\Crawler;
 
 class ClientConfigControllerPaymentSystemTest extends WebTestCase
 {
+    use TraitForAddPaymentSystems;
+    use TraitExtraData;
+
     private const URL_INDEX = '/management/client/config/payment_systems';
     private const URL_FORM = '/management/client/config/payment_system/form';
     private const URL_REMOVE = '/management/client/config/payment_system/remove/';
     private const URL_ADD_URL = '/management/client/config/payment_urls';
-
-    /** @var ExtraData */
-    private static $extraData;
 
     public static function setUpBeforeClass()
     {
@@ -85,7 +85,7 @@ class ClientConfigControllerPaymentSystemTest extends WebTestCase
 
     public function testInvalid_EmptyPaymentSystem()
     {
-        $crawler = $this->getListCrawler(self::URL_FORM);
+        $crawler = $this->getListCrawler($this->getUrlForAddPaymentSystem());
 
         $form = $crawler->filter('button[name="save"]')
             ->form(
@@ -108,7 +108,7 @@ class ClientConfigControllerPaymentSystemTest extends WebTestCase
      */
     public function testInvalid_SubmitEmptyData($holder)
     {
-        $crawler = $this->getListCrawler(self::URL_FORM);
+        $crawler = $this->getListCrawler($this->getUrlForAddPaymentSystem());
 
         $form = $crawler->filter('button[name="save"]')
             ->form(
@@ -179,6 +179,26 @@ class ClientConfigControllerPaymentSystemTest extends WebTestCase
     /**
      * @depends testPaymentUrl_DefaultData
      */
+    public function testPaymnetUrl_CheckStatusCode_SuccessUrl()
+    {
+        $this->client->request('GET', '/management/online/api/success/url');
+
+        $this->assertStatusCode(404, $this->client);
+    }
+
+    /**
+     * @depends testPaymentUrl_DefaultData
+     */
+    public function testPaymnetUrl_CheckStatusCode_FailUrl()
+    {
+        $this->client->request('GET', '/management/online/api/fail/url');
+
+        $this->assertStatusCode(404, $this->client);
+    }
+
+    /**
+     * @depends testPaymentUrl_DefaultData
+     */
     public function testPaymentUrl_InvalidData()
     {
         $crawler = $this->getListCrawler(self::URL_ADD_URL);
@@ -227,6 +247,25 @@ class ClientConfigControllerPaymentSystemTest extends WebTestCase
         $this->assertEquals($urlFail, $clientConfig->getFailUrl(), 'Data in clientConfig->getFailUrl');
     }
 
+    /**
+     * @depends testPaymnetUrl_AddUrl
+     */
+    public function testPaymnetUrl_CheckStatusCodeAfterAdd_SuccessUrl()
+    {
+        $this->client->request('GET', '/management/online/api/success/url');
+
+        $this->assertStatusCode(302, $this->client);
+    }
+
+    /**
+     * @depends testPaymnetUrl_AddUrl
+     */
+    public function testPaymnetUrl_CheckStatusCodeAfterAdd_FailUrl()
+    {
+        $this->client->request('GET', '/management/online/api/fail/url');
+
+        $this->assertStatusCode(302, $this->client);
+    }
 
     /**
      * @param string $url
@@ -270,7 +309,7 @@ class ClientConfigControllerPaymentSystemTest extends WebTestCase
      */
     private function compareData(string $msg, array $data, HolderNamePaymentSystem $holder): void
     {
-        $crawler = $this->getListCrawler(self::URL_FORM . '/' . $holder->getKey());
+        $crawler = $this->getListCrawler($this->getUrlForAddPaymentSystem() . '/' . $holder->getKey());
 
         $this->assertEquals(
             $data,
@@ -285,7 +324,7 @@ class ClientConfigControllerPaymentSystemTest extends WebTestCase
      */
     private function editPaymentSystem(HolderNamePaymentSystem $holder): array
     {
-        $url = self::URL_FORM . '/' . $holder->getKey();
+        $url = $this->getUrlForAddPaymentSystem() . '/' . $holder->getKey();
 
         $this->findLinkInPage($url, 'edit');
 
@@ -308,79 +347,12 @@ class ClientConfigControllerPaymentSystemTest extends WebTestCase
     }
 
     /**
-     * @param Crawler $crawler
-     * @param HolderNamePaymentSystem $holder
-     * @param string|null $writeData
-     * @return array
-     */
-    private function getDataFromForm(Crawler $crawler, HolderNamePaymentSystem $holder, string $writeData = null): array
-    {
-        // данные для формы
-        $nameFields = $crawler->filter(
-            '[name^="' . ClientPaymentSystemType::FORM_NAME . '[' . $holder->getKey() . ']"]'
-        );
-
-        $dataForm = [];
-
-        foreach ($nameFields as $field) {
-            if (!empty($field->getAttribute('disabled'))) {
-                continue;
-            }
-
-            $attr = $field->getAttribute('name');
-
-            switch ($field->nodeName) {
-                case 'select':
-                    $option = $crawler->filter('[name^="' . $attr . '"] option:last-child');
-                    $value = $option->getNode(0)->getAttribute('value');
-                    break;
-                case 'textarea':
-                    $value = $field->nodeValue;
-                    break;
-                default:
-                    $value = $field->getAttribute('value');
-            }
-
-            $newValue = $value;
-
-            if ($writeData !== null) {
-                if (empty($value)) {
-                    /** Для полей где нужен url, имя поля должно содержать текст "Url" */
-                    if (strpos($attr,'Url') !== false) {
-                        $newValue = sprintf('https://%s.address.com', $writeData);
-                    } else {
-                        $newValue = $writeData;
-                    }
-                }
-            }
-
-            $dataForm[$attr] = $newValue;
-        }
-
-        return $dataForm;
-    }
-
-    /**
      * @param HolderNamePaymentSystem $holder
      * @return array
      */
     private function addPaymentSystem(HolderNamePaymentSystem $holder): array
     {
-        $crawler = $this->getListCrawler(self::URL_FORM);
-
-        $dataForForm = $this->getDataFromForm($crawler, $holder, '123');
-
-        $form = $crawler->filter('button[name="save"]')
-            ->form(
-                [
-                    ClientPaymentSystemType::FORM_NAME . '[paymentSystem]' => $holder->getKey(),
-                ]
-            );
-
-        $form->setValues($dataForForm);
-
-        // сабмитим форму
-        $this->client->submit($form);
+        $dataForForm = $this->addToClientConfigPaymentSystem($holder);
 
         // проверяем статус
         $this->assertStatusCode(302, $this->client);
@@ -442,18 +414,6 @@ class ClientConfigControllerPaymentSystemTest extends WebTestCase
     private function getClassNamePaymentSystemType(HolderNamePaymentSystem $holder): string
     {
         return "MBH\Bundle\ClientBundle\Form\PaymentSystem\\" . $holder->getName() . "Type";
-    }
-
-    /**
-     * @return ExtraData
-     */
-    private function getExtraData(): ExtraData
-    {
-        if (static::$extraData === null) {
-            static::$extraData = $this->getContainer()->get('mbh.payment_extra_data');
-        }
-
-        return static::$extraData;
     }
 
     /**

@@ -86,4 +86,22 @@ abstract class WebTestCase extends Base
         $this->listUrl = $listUrl;
         return $this;
     }
+
+    /**
+     * @param string $url
+     * @param int $expectedStatus
+     * @param Client|null $client
+     */
+    protected function assertStatusCodeWithMsg(string $url, int $expectedStatus, Client $client = null): void
+    {
+        $format = "The expected response status code from the URL %s \"%s\", received \"%s\".";
+
+        $response = $client !== null ? $client->getResponse() : $this->client->getResponse();
+
+        $this->assertEquals(
+            $expectedStatus,
+            $response->getStatusCode(),
+            sprintf($format, $url, $expectedStatus, $response->getStatusCode())
+        );
+    }
 }

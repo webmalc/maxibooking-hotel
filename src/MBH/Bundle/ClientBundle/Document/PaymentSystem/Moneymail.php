@@ -10,6 +10,8 @@ use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
  */
 class Moneymail extends PaymentSystemDocument
 {
+    public const KEY = 'moneymail';
+
     /**
      * @var string
      * @ODM\Field(type="string")
