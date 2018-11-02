@@ -74,7 +74,7 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-
+            $isSuccess = true;
             if (!$config->getToken()) {
                 $username = $form->get('username')->getData();
                 $password = $form->get('password')->getData();
@@ -84,19 +84,25 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
                 if ($token) {
                     $config->setToken($token);
                 } else {
+                    $isSuccess = false;
                     $this->addFlash('danger', 'controller.myallocatorController.invalid_credentials');
                 }
             }
 
-            $this->dm->persist($config);
-            $this->dm->flush();
+            if ($isSuccess) {
+                $this->dm->persist($config);
+                $this->dm->flush();
 
-            $this->get('mbh.channelmanager')->updateInBackground();
+                $this->get('mbh.channelmanager')->updateInBackground();
 
-            $this->addFlash('success', 'controller.myallocatorController.settings_saved_success');
+                $this->addFlash('success', 'controller.myallocatorController.settings_saved_success');
 
-            if ($config->isReadyToSync()) {
-                $this->get('mbh.messages_store')->sendMessageToTechSupportAboutNewConnection('MyAllocator', $this->get('mbh.instant_notifier'));
+                if (!$config->isReadyToSync()) {
+                    $this->get('mbh.messages_store')->sendMessageToTechSupportAboutNewConnection(
+                        'MyAllocator',
+                        $this->get('mbh.instant_notifier')
+                    );
+                }
             }
 
             return $this->redirect($this->generateUrl('myallocator'));
@@ -141,6 +147,7 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
     public function roomAction(Request $request)
     {
         $config = $this->hotel->getMyallocatorConfig();
+        $prevRooms = $config->getRooms()->toArray();
 
         if (!$config) {
             throw $this->createNotFoundException();
@@ -162,6 +169,9 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
                     $this->dm->persist($config);
                 }
             }
+
+            $userName = $this->getUser()->getUsername();
+            $this->get('mbh.channelmanager')->logCollectionChanges($config, 'rooms', $userName, $prevRooms);
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();
@@ -192,6 +202,7 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
     public function tariffAction(Request $request)
     {
         $config = $this->hotel->getMyallocatorConfig();
+        $prevTariffs = $config->getTariffs()->toArray();
         $inGuide = !$config->isReadyToSync();
 
         if (!$config) {
@@ -215,6 +226,9 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
                     $this->dm->persist($config);
                 }
             }
+
+            $userName = $this->getUser()->getUsername();
+            $this->get('mbh.channelmanager')->logCollectionChanges($config, 'tariffs', $userName, $prevTariffs);
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();

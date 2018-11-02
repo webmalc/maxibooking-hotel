@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PriceBundle\Form;
 
+use MBH\Bundle\PriceBundle\Document\Service;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -9,6 +10,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * Class ServiceType
@@ -103,9 +106,15 @@ class ServiceType extends AbstractType
                 'required' => false,
                 'attr' => ['class' => 'spinner price-spinner', 'placeholder' => 'mbhpricebundle.form.servicetype.inner_price.placeholder']
             ])
-            ->add('isSubtracted', CheckboxType::class, [
-                'label' => 'mbhpricebundle.form.servicetype.is_subtracted.label',
-                'help' => 'mbhpricebundle.form.servicetype.is_subtracted.help',
+            ->add('includeInAccommodationPrice', CheckboxType::class, [
+                'label' => 'mbhpricebundle.form.servicetype.include_in_accommodation_price.label',
+                'help' => 'mbhpricebundle.form.servicetype.include_in_accommodation_price.help',
+                'group' => 'price.form.public_information',
+                'required' => false
+            ])
+            ->add('subtractFromAccommodationPrice', CheckboxType::class, [
+                'label' => 'mbhpricebundle.form.servicetype.subtract_from_accommodation_price.label',
+                'help' => 'mbhpricebundle.form.servicetype.subtract_from_accommodation_price.help',
                 'group' => 'price.form.public_information',
                 'required' => false
             ])
@@ -139,9 +148,17 @@ class ServiceType extends AbstractType
             ]);
     }
 
+    public function validate(Service $service, ExecutionContextInterface $context)
+    {
+        if ($service->isIncludeInAccommodationPrice() && $service->subtractFromAccommodationPrice()) {
+            $context->addViolation('service_type.service_price_can_not_be_subtracted_and_added_in_accommodation_price');
+        }
+    }
+
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
+            'constraints' => [new Callback([$this, 'validate'])],
             'data_class' => 'MBH\Bundle\PriceBundle\Document\Service',
             'calcTypes' => []
         ));

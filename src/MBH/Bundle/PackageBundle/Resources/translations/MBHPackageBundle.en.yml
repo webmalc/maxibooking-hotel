@@ -237,6 +237,7 @@ package.new.reservation_error: 'Reservation error'
 package.new.reservation_error_try_again: 'An error accured during reservation process. Please try again.'
 package.pdf.executor: 'Executor:'
 package.pdf.address: Address
+package.pdf.address_hotel: 'Address (hotel)'
 package.pdf.short_home_extend: 'house #'
 package.pdf.count_paid_total: 'Services total cost:'
 package.pdf.customer: 'Guest:'
@@ -250,6 +251,11 @@ package.pdf.unit: Units
 package.pdf.price: Price
 package.pdf.sum: Sum
 package.pdf.night: night
+package.pdf.bank.name: 'Bank name'
+package.pdf.bank.bik: 'BIK'
+package.pdf.bank.correspondent_account: 'corr'
+package.pdf.bank.checking_account: 'check'
+package.pdf.bank.address: 'in'
 package.service.edit_reservation: 'Edit reservation'
 package.service.paid: Paid
 package.service.not_paid: 'Not paid'

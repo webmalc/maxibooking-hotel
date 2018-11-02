@@ -11,8 +11,21 @@ use MBH\Bundle\BaseBundle\Document\Traits\AllowNotificationTypesTrait;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\Invoice;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\Moneymail;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\NewRbk;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\Payanyway;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\Paypal;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\Rbk;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\RNKB;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\Robokassa;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\Sberbank;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\Stripe;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\Tinkoff;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\Uniteller;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\CheckResultHolder;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystemInterface;
+use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -113,63 +126,78 @@ class ClientConfig extends Base
 
     /**
      * @var Robokassa
-     * @ODM\EmbedOne(targetDocument="Robokassa")
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\ClientBundle\Document\PaymentSystem\Robokassa")
      */
     protected $robokassa;
 
     /**
      * @var Payanyway
-     * @ODM\EmbedOne(targetDocument="Payanyway")
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\ClientBundle\Document\PaymentSystem\Payanyway")
      */
     protected $payanyway;
 
     /**
      * @var Moneymail
-     * @ODM\EmbedOne(targetDocument="Moneymail")
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\ClientBundle\Document\PaymentSystem\Moneymail")
      */
     protected $moneymail;
 
     /**
      * @var Uniteller
-     * @ODM\EmbedOne(targetDocument="Uniteller")
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\ClientBundle\Document\PaymentSystem\Uniteller")
      */
     protected $uniteller;
 
     /**
      * @var RNKB
-     * @ODM\EmbedOne(targetDocument="RNKB")
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\ClientBundle\Document\PaymentSystem\RNKB")
      */
     protected $rnkb;
 
     /**
      * @var Rbk
-     * @ODM\EmbedOne(targetDocument="Rbk")
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\ClientBundle\Document\PaymentSystem\Rbk")
      */
     protected $rbk;
 
     /**
      * @var PayPal
-     * @ODM\EmbedOne(targetDocument="Paypal")
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\ClientBundle\Document\PaymentSystem\Paypal")
      */
     protected $paypal;
 
     /**
      * @var Invoice
-     * @ODM\EmbedOne(targetDocument="Invoice")
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\ClientBundle\Document\PaymentSystem\Invoice")
+     * @Assert\Type(type="MBH\Bundle\ClientBundle\Document\PaymentSystem\Invoice")
      */
     protected $invoice;
 
     /**
      * @var Stripe
-     * @ODM\EmbedOne(targetDocument="Stripe")
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\ClientBundle\Document\PaymentSystem\Stripe")
      */
     protected $stripe;
 
     /**
      * @var NewRbk
-     * @ODM\EmbedOne(targetDocument="NewRbk")
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\ClientBundle\Document\PaymentSystem\NewRbk")
      */
     protected $newRbk;
+
+    /**
+     * @var Tinkoff
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\ClientBundle\Document\PaymentSystem\Tinkoff")
+     * @Assert\Type(type="MBH\Bundle\ClientBundle\Document\PaymentSystem\Tinkoff")
+     */
+    protected $tinkoff;
+
+    /**
+     * @var Sberbank
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\ClientBundle\Document\PaymentSystem\Sberbank")
+     * @Assert\Type(type="MBH\Bundle\ClientBundle\Document\PaymentSystem\Sberbank")
+     */
+    protected $sberbank;
 
     /**
      * @var string
@@ -295,6 +323,7 @@ class ClientConfig extends Base
 
     /**
      * @var array
+     * @Gedmo\Versioned
      * @ODM\Field(type="collection")
      * @Assert\NotBlank()
      */
@@ -390,6 +419,22 @@ class ClientConfig extends Base
         $this->isCacheValid = $isCacheValid;
 
         return $this;
+    }
+
+    /**
+     * @return Sberbank
+     */
+    public function getSberbank(): ?Sberbank
+    {
+        return $this->sberbank;
+    }
+
+    /**
+     * @param Sberbank $sberbank
+     */
+    public function setSberbank(Sberbank $sberbank): void
+    {
+        $this->sberbank = $sberbank;
     }
 
     /**
@@ -792,6 +837,21 @@ class ClientConfig extends Base
         $this->rbk = $rbk;
     }
 
+    /**
+     * @return null|Tinkoff
+     */
+    public function getTinkoff(): ?Tinkoff
+    {
+        return $this->tinkoff;
+    }
+
+    /**
+     * @param Tinkoff $tinkoff
+     */
+    public function setTinkoff(Tinkoff $tinkoff): void
+    {
+        $this->tinkoff = $tinkoff;
+    }
 
     /**
      * @param boolean $paymentSystem
@@ -802,6 +862,33 @@ class ClientConfig extends Base
         if (!in_array($paymentSystem, $this->paymentSystems)) {
             $this->paymentSystems[] = $paymentSystem;
         }
+
+        return $this;
+    }
+
+    /**
+     * @param FormInterface $form
+     * @param string $paymentSystemName
+     * @return ClientConfig
+     * @throws \Exception
+     */
+    public function addPaymentSystemFromForm(FormInterface $form, string $paymentSystemName): self
+    {
+        /** @var PaymentSystemDocument $paymentSystem */
+        $paymentSystem = $form->get($paymentSystemName)->getData();
+        $setterName = 'set' . $paymentSystem::fileClassName();
+        if (!method_exists($this, $setterName)) {
+            throw new \Exception(
+                sprintf(
+                    'Not found setter(%s) for payment system "%s" in the configClient',
+                    $setterName,
+                    $paymentSystemName
+                )
+            );
+        }
+
+        $this->$setterName($paymentSystem);
+        $this->addPaymentSystem($paymentSystemName);
 
         return $this;
     }
@@ -886,12 +973,12 @@ class ClientConfig extends Base
 
     /**
      * @param $paymentSystemName
-     * @return PaymentSystemInterface
+     * @return PaymentSystemDocument
      * @throws Exception
      */
     public function getPaymentSystemDocByName($paymentSystemName)
     {
-        if (empty($this->$paymentSystemName) || !($this->$paymentSystemName instanceof PaymentSystemInterface)) {
+        if (empty($this->$paymentSystemName) || !($this->$paymentSystemName instanceof PaymentSystemDocument)) {
             throw new Exception('Specified payment system "' . $paymentSystemName . '" is not valid!');
         }
 
@@ -1164,21 +1251,5 @@ class ClientConfig extends Base
     public static function getTimeZonesList()
     {
         return \DateTimeZone::listIdentifiers();
-    }
-
-    /**
-     * @return array
-     */
-    public static function getAvailablePaymentSystems()
-    {
-        return [
-            "robokassa",
-            "payanyway",
-            "moneymail",
-            "uniteller",
-            "paypal",
-            "rbk",
-            "rnkb"
-        ];
     }
 }

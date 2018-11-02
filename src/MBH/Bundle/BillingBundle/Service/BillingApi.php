@@ -391,6 +391,20 @@ class BillingApi
     }
 
     /**
+     * @param string $paymentSystem
+     * @param int $orderId
+     * @return object
+     */
+    public function getPaymentSystemForOrderByName(string $paymentSystem, int $orderId)
+    {
+        $settings = self::PAYMENT_SYSTEMS_ENDPOINT_SETTINGS;
+
+        $url = $this->getBillingUrl($settings['endpoint'], $paymentSystem, null, ['order' => $orderId]);
+
+        return $this->getBillingEntityByUrl($url, $settings['model']);
+    }
+
+    /**
      * @param array $newTariffData
      * @return Result
      */
@@ -504,6 +518,7 @@ class BillingApi
 
         $url = $this->getBillingUrl('authentications');
         $data = $this->serializer->normalize($clientAuth);
+        $requestResult = new Result();
         try {
             $response = $this->sendPost($url, $data, true);
         } catch (RequestException $exception) {

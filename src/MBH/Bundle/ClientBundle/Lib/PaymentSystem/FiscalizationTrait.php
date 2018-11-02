@@ -6,6 +6,7 @@
 
 namespace MBH\Bundle\ClientBundle\Lib\PaymentSystem;
 
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 trait FiscalizationTrait
 {
@@ -13,7 +14,7 @@ trait FiscalizationTrait
      * @var bool
      * @ODM\Field(type="bool")
      */
-    protected $isWithFiscalization = true;
+    protected $isWithFiscalization = false;
 
     /**
      * @return bool

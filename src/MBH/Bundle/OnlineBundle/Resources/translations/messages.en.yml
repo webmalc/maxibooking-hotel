@@ -136,15 +136,33 @@ api.payment_form.result_search.order_has_been_paid: 'Order has been paid'
 api.payment_form.pay_order.total: Total
 api.payment_form.pay_order.submit: Pay
 api.payment_form.search.not_valid_fields: 'Field phone/email not valid'
-site_manager.photos_tab: Pictures
+site_manager.description.hotel: 'Description of the object'
+site_manager.photos_tab.hotel: 'Photos of the object'
+site_manager.photos_tab.room: Photo
+site_manager.contactInformation.label: 'Phone and email'
 analytics_form.is_enabled.label: 'Active?'
-site_form.hotels.hotel_data: 'Hotel Description'
+site_form.hotels.hotel_data: 'The data of the accommodation facility (hotel, hostel, apartment)'
 site_form.hotels.label: Properties
 site_form.contract.label: Contract
 site_form.web_address.label: 'WEB address'
+site_form.site_domain.go_to_site_button.text: 'Go to the site'
 site_form.key_words.label: Tags
 site_form.is_enabled.label: 'Active?'
 views.mb_site.index.main_settings: Settings
+views.mb_site.index.paymentSystem.label: 'Payment System'
+views.mb_site.index.paymentSystem.link_to_list: 'Go to the list of payment systems'
+views.mb_site.index.paymentSystem.create: Create
+views.mb_site.index.paymentSystem.save: Save
+views.mb_site.index.paymentSystem.update: Update
+views.mb_site.index.paymentSystem.disabled: Disabled
+views.mb_site.index.paymentSystem.title.open_new_window: 'Open in new window'
+views.mb_site.index.paymentSystem.title.save_changes: 'Saved changes'
+views.mb_site.index.paymentSystem.title.add_system: 'Add Payment System'
+views.mb_site.index.paymentSystem.title.breadcrumbs.add: 'Add a payment system'
+views.mb_site.index.paymentSystem.title.breadcrumbs.edit: 'Changing the payment system'
+views.mb_site.index.paymentSystem.link_to_list_if_more_than_one: 'Set up the use of more than one payment system, for editing click on the <a target="_blank" href="%href%">link</a>.'
+views.mb_site.index.personal_data_policies: 'Privacy Policy'
+views.mb_site.index.hotel_settings.info: 'Info - '
 views.mb_site.title: Website
 views.mb_site.hotel_settings.empty_fields_error: 'Required fields are not filled: %fields%'
 site_form.pers_data_policy.label: 'Privacy Policy'
@@ -167,3 +185,10 @@ site_config.color_theme.colors.black01: 'Black 1'
 site_config.color_theme.colors.autumn: Autumn
 site_form.hotels.required_fields.price_caches: Prices
 site_form.hotels.required_fields.room_caches: 'Room in sale'
+payment.receipt.common_description.hotel_name_and_date: 'Accomdation in the "%1$s" from %2$s to %3$s.'
+payment.receipt.common_description.package: 'Reservation № '
+payment.receipt.common_description.packages: 'Reservations № '
+payment.receipt.item_description.package: 'Accommodation in the hotel room "%1$s". Reservation № %2$s'
+payment.receipt.item_description.service: 'Service: '
+payment.receipt.item.quantity.night: night
+payment.receipt.item.quantity.units: units

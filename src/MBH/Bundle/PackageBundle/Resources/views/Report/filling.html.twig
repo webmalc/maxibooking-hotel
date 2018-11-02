@@ -1,6 +1,6 @@
 {% extends 'MBHPackageBundle:Report:layout.html.twig' %}
 
-{% set title = 'menu.label.financial_analytics'|trans({}, 'MBHBaseBundle') %}
+{% set title = 'menu.label.financial_analytics'|trans %}
 {% set small_title = "source.index.filling"|trans({}, "MBHPackageBundle") %}
 {% set layout = 'box' %}
 {% set title_url = path('report_filling') %}
@@ -22,7 +22,7 @@
             <div class="filter-form_group-date">
                 <div class="filter-form_input">
                     <i class="fa fa-calendar" title="{{ 'report.filling.filling.dates'|trans }}" data-toggle='tooltip'></i>
-                    <div class="filter-form_input">
+                    <div class="filter-form_input-group">
                         <input type="text" name="begin" id="accommodation-report-filter-begin" class="datepicker accommodation-report-filter begin-datepicker not-set-date form-control" data-date-format="dd.mm.yyyy" value="{{ begin|date('d.m.Y') }}">
                         <span class="filter-form_separator"></span>
                         <input type="text" name="end" id="accommodation-report-filter-end" class="datepicker accommodation-report-filter end-datepicker not-set-date form-control" data-date-format="dd.mm.yyyy" value="{{ end|date('d.m.Y') }}">
@@ -62,11 +62,18 @@
                 </select>
             </div>
             <div class="filter-form_input">
+                <i class="fa fa-calculator" title="{{ 'report.filling.filling.recalculate_price_of_accommodation'|trans }}" data-toggle="tooltip" aria-hidden="true"></i>
+                <input type="checkbox" id="filling-report-filter-recalculate-accommodation">
+            </div>
+            <div class="filter-form_input">
                 <i class="fa fa-toggle-on" title="{{ 'report.filling.filling.only_enabled'|trans }}" data-toggle="tooltip" aria-hidden="true"></i>
                 <input type="checkbox" id="filling-report-filter-isEnabled">
             </div>
             <div class="filter-form_input">
                 <button type="button" class="btn btn-primary navbar-btn" id="filling-filter-button">{{ 'chessboard_manager.filter.button.text'|trans }}</button>
+            </div>
+            <div class="filter-form_input">
+                <button type="button" class="btn btn-primary navbar-btn" id="filling-filter-export-button">{{ 'report.filling_report.export_to_csv_button.title'|trans }}</button>
             </div>
         </form>
         {% endblock content %}

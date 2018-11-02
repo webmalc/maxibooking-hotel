@@ -33,7 +33,7 @@ class DocumentFieldsManagerTest extends WebTestCase
     public function testGetFieldName()
     {
         $descriptionTransId = $this->documentFieldsManager->getFieldName(Hotel::class, 'description', false);
-        $this->assertEquals($descriptionTransId, 'form.hotelType.description');
+        $this->assertEquals($descriptionTransId, 'site_manager.description.hotel');
 
         $latitudeFieldName = $this->translator->trans('form.hotelExtendedType.latitude');
         $expectedLatitudeFieldName = $this->documentFieldsManager->getFieldName(Hotel::class, 'latitude');

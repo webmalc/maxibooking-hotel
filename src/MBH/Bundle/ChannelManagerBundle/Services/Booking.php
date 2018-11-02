@@ -129,6 +129,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
 
     /**
      * {@inheritDoc}
+     * @throws \Throwable
      */
     public function pullTariffs(ChannelManagerConfigInterface $config)
     {
@@ -140,28 +141,38 @@ class Booking extends Base implements ChannelManagerServiceInterface
 
         $response = $this->sendXml(static::BASE_URL . 'roomrates', $request);
 
-        foreach ($response->room as $room) {
-            foreach ($room->rates->rate as $rate) {
-                if (isset($result[(string)$rate['id']]['rooms'])) {
-                    $rooms = $result[(string)$rate['id']]['rooms'];
-                } else {
-                    $rooms = [];
-                }
-                $rooms[(string)$room['id']] = (string)$room['id'];
+        if (!$this->hasErrorNode($response)) {
+            foreach ($response->room as $room) {
+                foreach ($room->rates->rate as $rate) {
+                    if (isset($result[(string)$rate['id']]['rooms'])) {
+                        $rooms = $result[(string)$rate['id']]['rooms'];
+                    } else {
+                        $rooms = [];
+                    }
+                    $rooms[(string)$room['id']] = (string)$room['id'];
 
-                $result[(string)$rate['id']] = [
-                    'title' => (string)$rate['rate_name'],
-                    'readonly' => empty((int)$rate['readonly']) ? false : true,
-                    'is_child_rate' => empty((int)$rate['is_child_rate']) ? false : true,
-                    'rooms' => $rooms
-                ];
+                    $result[(string)$rate['id']] = [
+                        'title' => (string)$rate['rate_name'],
+                        'readonly' => empty((int)$rate['readonly']) ? false : true,
+                        'is_child_rate' => empty((int)$rate['is_child_rate']) ? false : true,
+                        'rooms' => $rooms
+                    ];
+                }
             }
+        } else {
+            $this->log($response->asXML());
+            $this->notifyErrorRequest(
+                'Booking.com',
+                'channelManager.commonCM.notification.request_error.pull_tariffs'
+            );
         }
+
         return $result;
     }
 
     /**
      * {@ inheritDoc}
+     * @throws \Throwable
      */
     public function pullRooms(ChannelManagerConfigInterface $config)
     {
@@ -170,12 +181,20 @@ class Booking extends Base implements ChannelManagerServiceInterface
             'MBHChannelManagerBundle:Booking:get.xml.twig',
             ['config' => $config, 'params' => $this->params]
         );
-        $response = $this->sendXml(static::BASE_URL . 'rooms', $request);
-        //$this->log($response->asXML());
 
-        foreach ($response->xpath('room') as $room) {
-            $result[(string)$room['id']] = (string)$room;
+        $response = $this->sendXml(static::BASE_URL . 'rooms', $request);
+        if (!$this->hasErrorNode($response)) {
+            foreach ($response->xpath('room') as $room) {
+                $result[(string)$room['id']] = (string)$room;
+            }
+        } else {
+            $this->log($response->asXML());
+            $this->notifyErrorRequest(
+                'Booking.com',
+                'channelManager.commonCM.notification.request_error.pull_rooms'
+            );
         }
+
         return $result;
     }
 
@@ -188,11 +207,21 @@ class Booking extends Base implements ChannelManagerServiceInterface
             return false;
         }
         $xml = simplexml_load_string($response);
-        if (count($xml->xpath('error')) || count($xml->xpath('fault'))) {
+        if ($this->hasErrorNode($xml)) {
             $this->addError($response);
             return false;
         }
+
         return count($xml->xpath('/'. ($params['element'] ?? 'ok'))) ? true : false;
+    }
+
+    /**
+     * @param \SimpleXMLElement $xml
+     * @return bool
+     */
+    private function hasErrorNode(\SimpleXMLElement $xml)
+    {
+        return count($xml->xpath('error')) || count($xml->xpath('fault'));
     }
 
     /**
@@ -644,7 +673,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
         if (!empty((string)$reservation->reservation_extra_info)
             && !empty((string)$reservation->reservation_extra_info->payer)
             && !empty((string)$reservation->reservation_extra_info->payer->payments)) {
-            foreach ($reservation->payer->payments->payment as $paymentNode) {
+            foreach ($reservation->reservation_extra_info->payer->payments->payment as $paymentNode) {
                 $attributes = $paymentNode->attributes();
                 $note = (isset($attributes['payment_type']) ? ('payment_type:' . (string)$attributes['payment_type']) : '')
                     . (isset($attributes['payout_type']) ? (' payout_type:' . (string)$attributes['payout_type']) : '');

@@ -127,8 +127,10 @@ mbhpricebundle.form.servicetype.vnutrenneyenazvaniye: 'Внутреннее на
 mbhpricebundle.form.servicetype.tsena: Цена
 mbhpricebundle.form.servicetype.inner_price.label: 'Цена для пересчета'
 mbhpricebundle.form.servicetype.inner_price.placeholder: 'Не используется'
-mbhpricebundle.form.servicetype.is_subtracted.label: 'Вычетается?'
-mbhpricebundle.form.servicetype.is_subtracted.help: 'При внутреннем расчете стоимости проживания, цена вычитается или добавляется?'
+mbhpricebundle.form.servicetype.include_in_accommodation_price.label: 'Включить в стоимость проживания?'
+mbhpricebundle.form.servicetype.include_in_accommodation_price.help: 'При внутреннем расчете стоимости проживания, цена услуги добавляется к стоимости проживания?'
+mbhpricebundle.form.servicetype.subtract_from_accommodation_price.label: 'Вычесть из стоимости проживания?'
+mbhpricebundle.form.servicetype.subtract_from_accommodation_price.help: 'При внутреннем расчете стоимости проживания, цена услуги вычитается из стоимости проживания?'
 mbhpricebundle.form.servicetype.inner_price.help: 'Цена используется для пересчета стоимости проживания'
 mbhpricebundle.form.servicetype.usluganeispolzuyetsya: 'Услуга не используется'
 mbhpricebundle.form.servicetype.data: 'Дата?'

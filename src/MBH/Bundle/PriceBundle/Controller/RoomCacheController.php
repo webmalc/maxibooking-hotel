@@ -94,9 +94,9 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
 
         $response = [
             'period' => iterator_to_array($period),
-            'begin' => $begin,
-            'end' => $end,
-            'hotel' => $hotel
+            'begin'  => $begin,
+            'end'    => $end,
+            'hotel'  => $hotel,
         ];
 
         //get roomTypes

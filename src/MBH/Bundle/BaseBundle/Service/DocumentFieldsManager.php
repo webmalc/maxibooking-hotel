@@ -36,23 +36,24 @@ class DocumentFieldsManager
 {
     const NAMES_TRANS_IDS = [
         Hotel::class => [
-            'description' => 'form.hotelType.description',
+            'description' => 'site_manager.description.hotel',
             'logoImage' => 'form.hotel_logo.image_file.help',
-            'contactInformation' => 'form.hotel_contact_information.contact_info.group',
+            'contactInformation' => 'site_manager.contactInformation.label',
             'latitude' => 'form.hotelExtendedType.latitude',
             'longitude' => 'form.hotelExtendedType.longitude',
-            'images' => 'site_manager.photos_tab',
+            'images' => 'site_manager.photos_tab.hotel',
             'street' => 'form.hotelExtendedType.street',
             'zipCode' => 'form.hotelExtendedType.zip_code',
             'settlement' => 'form.hotelExtendedType.settlement',
             'cityId' => 'form.hotelExtendedType.city',
-            'house' => 'form.hotelExtendedType.house'
+            'house' => 'form.hotelExtendedType.house',
+            'mapUrl' => 'form.hotel_contact_information_type.map_url'
         ],
         RoomType::class => [
             'description' => 'form.roomTypeType.description',
             'roomSpace' => 'form.roomTypeType.room_space',
             'facilities' => 'form.facilitiesType.label',
-            'onlineImages' => 'site_manager.photos_tab'
+            'onlineImages' => 'site_manager.photos_tab.room'
         ]
     ];
 

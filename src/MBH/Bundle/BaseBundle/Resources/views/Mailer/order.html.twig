@@ -46,7 +46,7 @@
                     <small style="color:#888;">{{ package.nights }} {{ 'nights'|transchoice(package.nights) }}</small>
                 </td>
                 <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
-                    {{ isSomeLanguage is not defined or isSomeLanguage or not package.roomType.internationalTitle ? package.roomType.name : package.roomType.internationalTitle }}
+                    {{ isSomeLanguage is not defined or isSomeLanguage or not package.roomType.internationalTitle ? package.roomType.fullTitle : package.roomType.internationalTitle }}
                     <br>
                     <small style="color:#888;">
                         {{ '%hotel%'|trans(transParams) }}

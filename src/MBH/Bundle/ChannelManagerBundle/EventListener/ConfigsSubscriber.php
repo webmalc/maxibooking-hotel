@@ -25,7 +25,7 @@ class ConfigsSubscriber implements EventSubscriber
     {
         return array(
             'preUpdate',
-            'preRemove'
+//            'preRemove'
         );
     }
 
@@ -39,14 +39,17 @@ class ConfigsSubscriber implements EventSubscriber
         if ($doc instanceof ChannelManagerConfigInterface && !$doc->getIsEnabled()) {
             $doc->setIsConfirmedWithDataWarnings(false);
             if (method_exists($doc, 'setIsConnectionSettingsRead')) {
-                $doc->setIsConnectionSettingsRead(true);
+                $doc->setIsConnectionSettingsRead(false);
             }
             if (method_exists($doc, 'setIsAllPackagesPulled')) {
-                $doc->setIsAllPackagesPulled(true);
+                $doc->setIsAllPackagesPulled(false);
             }
             $this->container->get('mbh.channelmanager')->closeInBackground();
-        }
 
+            $dm = $this->container->get('doctrine.odm.mongodb.document_manager');
+            $meta = $dm->getClassMetadata(get_class($doc));
+            $dm->getUnitOfWork()->computeChangeSet($meta, $doc);
+        }
     }
 
     /**

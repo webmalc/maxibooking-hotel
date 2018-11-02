@@ -25,13 +25,13 @@
                     <div class="filter-form_input">
                         <i class="fa fa-bed" title='{{ 'views.report.packages_daily_report.calculation_dates.title'|trans }}'
                            data-toggle='tooltip'></i>
-                        <div class="filter-form_input">
+                        <div class="filter-form_input-group">
                             <input type="text" id="daily-report-filter-calc-begin"
-                                   class="datepicker daily-report-filter form-control input-sm"
+                                   class="datepicker begin-datepicker daily-report-filter form-control input-sm"
                                    data-date-format="dd.mm.yyyy" value="{{ calculationBegin|date('d.m.Y') }}">
                             <span class="filter-form_separator"></span>
                             <input type="text" id="daily-report-filter-calc-end"
-                                   class="datepicker daily-report-filter form-control input-sm"
+                                   class="datepicker end-datepicker daily-report-filter form-control input-sm"
                                    data-date-format="dd.mm.yyyy" value="{{ calculationEnd|date('d.m.Y') }}">
                         </div>
 

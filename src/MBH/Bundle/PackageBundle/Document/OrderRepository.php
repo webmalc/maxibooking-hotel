@@ -128,7 +128,8 @@ class OrderRepository extends DocumentRepository
 
     /**
      * @param $ordersIds
-     * @return mixed
+     * @return Cursor|Order[]
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getByOrdersIds($ordersIds)
     {

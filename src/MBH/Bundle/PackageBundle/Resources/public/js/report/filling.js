@@ -9,6 +9,7 @@ $(document).ready(function ($) {
             $fillingTableWrapper.html(mbh.loader.html);
             var filterData = $fillingForm.serializeObject();
             filterData['isEnabled'] = $fillingForm.find('#filling-report-filter-isEnabled').bootstrapSwitch('state');
+            filterData['recalculate-accommodation'] = $fillingForm.find('#filling-report-filter-recalculate-accommodation').bootstrapSwitch('state');
             updateRoomTypesForm(filterData);
         }
     });
@@ -25,5 +26,9 @@ $(document).ready(function ($) {
                 inProcess = false;
             }
         });
-    }
+    };
+
+    $('#filling-filter-export-button').on('touchstart click', function () {
+        $('#filling-table').tableToCSV();
+    });
 });

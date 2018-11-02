@@ -12,6 +12,7 @@ use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\InvalidateException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Routing\Router;
 use Symfony\Component\HttpFoundation\Session\Session;
 
 class PackageSubscriber implements EventSubscriber
@@ -115,7 +116,7 @@ class PackageSubscriber implements EventSubscriber
                     ->setEnd(new \DateTime('+10 minute'))
                     ->setLinkText('mailer.to_package')
                     ->setMessageType(NotificationType::ERROR)
-                    ->setLink($this->container->get('router')->generate('package_edit', ['id' => $package->getId()], true));
+                    ->setLink($this->container->get('router')->generate('package_edit', ['id' => $package->getId()], Router::ABSOLUTE_URL));
                 $notifier->setMessage($message)->notify();
             }
 

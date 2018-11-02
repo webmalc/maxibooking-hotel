@@ -4,35 +4,71 @@ namespace MBH\Bundle\BaseBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Gedmo\Translatable\Document\Translation;
+use Gedmo\Translatable\TranslatableListener;
 use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\ClientBundle\Service\ClientConfigManager;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class MultiLangTranslator
 {
     private $dm;
     private $helper;
+    private $propertyAccessor;
+    private $translatableListener;
+    private $clientConfigManager;
+    private $translator;
+    private $defaultLocale;
 
-    public function __construct(DocumentManager $dm, Helper $helper) {
+    public function __construct(
+        DocumentManager $dm,
+        Helper $helper,
+        PropertyAccessor $propertyAccessor,
+        TranslatableListener $translatableListener,
+        ClientConfigManager $clientConfigManager,
+        TranslatorInterface $translator,
+        string $defaultLocale
+    ) {
         $this->dm = $dm;
         $this->helper = $helper;
+        $this->propertyAccessor = $propertyAccessor;
+        $this->translatableListener = $translatableListener;
+        $this->clientConfigManager = $clientConfigManager;
+        $this->translator = $translator;
+        $this->defaultLocale = $defaultLocale;
     }
 
     /**
      * @param $document
      * @param array $translationsByFields
-     * @param bool $withFlush
      */
-    public function saveByMultiLanguagesFields($document, array $translationsByFields, $withFlush = true)
+    public function saveByMultiLanguagesFields($document, array $translationsByFields)
     {
-        $repository = $this->dm->getRepository('GedmoTranslatable:Translation');
+        if (!$this->clientConfigManager->hasSingleLanguage()) {
+            foreach ($translationsByFields as $fieldName => $translationsByLanguages) {
+                foreach ($translationsByLanguages as $language => $translation) {
+                    if ($fieldName === 'fullTitle' && $translation === '') {
+                        continue;
+                    }
 
-        foreach ($translationsByFields as $fieldName => $translationsByLanguages) {
-            foreach ($translationsByLanguages as $language => $translation) {
-                $repository->translate($document, $fieldName, $language, $translation);
+                    $this->forceSaveTranslation($document, $fieldName, $language, $translation);
+                }
             }
-        }
 
-        if ($withFlush) {
             $this->dm->flush();
+        } else {
+            foreach ($translationsByFields as $fieldName => $value) {
+                $this->forceSaveTranslation($document, $fieldName, $this->defaultLocale, $value);
+            }
+
+            if ($this->defaultLocale !== $this->translator->getLocale()) {
+                //Set temporarily another default locale for saving field value in document, not in translation unit
+                $this->translatableListener->setDefaultLocale($this->translator->getLocale());
+                $this->dm->flush();
+                $this->translatableListener->setDefaultLocale($this->defaultLocale);
+            } else {
+                $this->dm->flush();
+            }
         }
     }
 
@@ -45,7 +81,11 @@ class MultiLangTranslator
      */
     public function getTranslationsByLanguages(Base $document, string $translatableField, array $languages)
     {
-        $result = [];
+        $this->translatableListener->setPersistDefaultLocaleTranslation(true);
+        $result = [
+            $this->translatableListener->getListenerLocale() => $this->propertyAccessor->getValue($document, $translatableField)
+        ];
+
         /** @var Translation[] $translations */
         $translations = $this->dm
             ->getRepository('GedmoTranslatable:Translation')
@@ -60,7 +100,23 @@ class MultiLangTranslator
         foreach ($translations as $translation) {
             $result[$translation->getLocale()] = $translation->getContent();
         }
+        $this->translatableListener->setPersistDefaultLocaleTranslation(false);
 
         return $result;
+    }
+
+    /**
+     * @param Base $document
+     * @param string $field
+     * @param string $locale
+     * @param $value
+     */
+    public function forceSaveTranslation(Base $document, string $field, string $locale, $value)
+    {
+        //set temporarily "persistDefaultLocaleTranslation" param for saving field values in translation units
+        $repo = $this->dm->getRepository('GedmoTranslatable:Translation');
+        $this->translatableListener->setPersistDefaultLocaleTranslation(true);
+        $repo->translate($document, $field, $locale, $value);
+        $this->translatableListener->setPersistDefaultLocaleTranslation(false);
     }
 }

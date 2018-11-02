@@ -90,6 +90,14 @@ class BillingInstallCommand extends ContainerAwareCommand
                 $this->changeStatus($statusStorage, 'error');
                 $billingApi->sendClientInstallationResult($installResult, $clientName);
             }
+
+            try {
+                $this->createWebSiteConfig($clientName);
+            } catch (\Throwable $exception) {
+                $this->logger->addCritical('An error occurred while creating the config of the site');
+            }
+
+
             /** Success Result sending only from service, but false result - here
              * Need to refactoring. Voter scheme move to service.
              */
@@ -128,6 +136,20 @@ class BillingInstallCommand extends ContainerAwareCommand
             );
             $this->documentManager->flush($statusStorage);
         }
+    }
+
+    private function createWebSiteConfig(string $clientName)
+    {
+        $this->logger->info('begin creation of web site config');
+
+        $isSuccess = $this->executeProcess('mbh:add_client_site_command ' . $clientName, $clientName);
+        if ($isSuccess) {
+            $this->logger->info('Client site created');
+        } else {
+            $this->logger->err('An error occurred while creating a site');
+        }
+
+        return $isSuccess;
     }
 
     private function credentialsInstall(string $clientName): bool

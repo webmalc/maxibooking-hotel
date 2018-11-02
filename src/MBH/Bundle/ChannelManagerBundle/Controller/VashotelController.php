@@ -113,6 +113,7 @@ class VashotelController extends Controller implements CheckHotelControllerInter
     public function roomAction(Request $request)
     {
         $config = $this->hotel->getVashotelConfig();
+        $prevRooms = $config->getRooms()->toArray();
 
         if (!$config) {
             throw $this->createNotFoundException();
@@ -134,6 +135,9 @@ class VashotelController extends Controller implements CheckHotelControllerInter
                     $this->dm->persist($config);
                 }
             }
+
+            $userName = $this->getUser()->getUsername();
+            $this->get('mbh.channelmanager')->logCollectionChanges($config, 'rooms', $userName, $prevRooms);
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();
@@ -165,6 +169,7 @@ class VashotelController extends Controller implements CheckHotelControllerInter
     public function tariffAction(Request $request)
     {
         $config = $this->hotel->getVashotelConfig();
+        $prevTariffs = $config->getTariffs()->toArray();
         $inGuide = !$config->isReadyToSync();
 
         if (!$config) {
@@ -188,6 +193,9 @@ class VashotelController extends Controller implements CheckHotelControllerInter
                     $this->dm->persist($config);
                 }
             }
+
+            $userName = $this->getUser()->getUsername();
+            $this->get('mbh.channelmanager')->logCollectionChanges($config, 'tariffs', $userName, $prevTariffs);
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();

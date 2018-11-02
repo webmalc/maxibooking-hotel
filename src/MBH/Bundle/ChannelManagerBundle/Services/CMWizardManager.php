@@ -156,9 +156,10 @@ class CMWizardManager
                     $emptyFields
                 );
 
-                $result[] = 'Заполните информацию об отеле в '
-                    .(count($emptyFields) === 1 ? 'поле' : 'полях')
-                    .': '.join(', ', $emptyFieldNames);
+                $result[] = $this->translator
+                    ->transChoice('cm_wizard.unfilled_data_error', count($emptyFieldNames), [
+                        '%emptyFieldNames%' => join(',', $emptyFieldNames)
+                    ]);
             }
         }
 
@@ -186,15 +187,15 @@ class CMWizardManager
     public function getLastCachesData(ChannelManagerConfigInterface $config, string $cacheClass)
     {
         /** @var RoomType[] $syncRoomTypes */
-        $syncRoomTypes = array_map(function(Room $room) {
+        $syncRoomTypes = array_unique(array_map(function(Room $room) {
             return $room->getRoomType();
-        }, $config->getRooms()->toArray());
+        }, $config->getRooms()->toArray()), SORT_REGULAR);
         $syncRoomTypeIds = $this->helper->toIds($syncRoomTypes);
 
         /** @var Tariff[] $syncTariffs */
-        $syncTariffs = array_map(function(\MBH\Bundle\ChannelManagerBundle\Document\Tariff $tariff) {
+        $syncTariffs = array_unique(array_map(function(\MBH\Bundle\ChannelManagerBundle\Document\Tariff $tariff) {
             return $tariff->getTariff();
-        }, $config->getTariffs()->toArray());
+        }, $config->getTariffs()->toArray()), SORT_REGULAR);
         $syncTariffIds = $this->helper->toIds($syncTariffs);
 
         $lastDefinedCaches = [];

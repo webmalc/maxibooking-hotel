@@ -108,6 +108,7 @@ class ExpediaController extends Controller
     public function tariffAction(Request $request)
     {
         $config = $this->hotel->getExpediaConfig();
+        $prevTariffs = $config->getTariffs()->toArray();
         $inGuide = !$config->isReadyToSync();
 
         if (!$config) {
@@ -138,6 +139,9 @@ class ExpediaController extends Controller
                     $this->dm->persist($config);
                 }
             }
+
+            $userName = $this->getUser()->getUsername();
+            $this->get('mbh.channelmanager')->logCollectionChanges($config, 'tariffs', $userName, $prevTariffs);
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();
@@ -170,6 +174,7 @@ class ExpediaController extends Controller
     {
         /** @var ExpediaConfig $config */
         $config = $this->hotel->getExpediaConfig();
+        $prevRooms = $config->getRooms()->toArray();
 
         if (!$config) {
             throw $this->createNotFoundException();
@@ -200,6 +205,9 @@ class ExpediaController extends Controller
                     $this->dm->persist($config);
                 }
             }
+
+            $userName = $this->getUser()->getUsername();
+            $this->get('mbh.channelmanager')->logCollectionChanges($config, 'rooms', $userName, $prevRooms);
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();

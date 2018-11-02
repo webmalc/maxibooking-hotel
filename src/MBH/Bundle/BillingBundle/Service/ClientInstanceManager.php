@@ -29,6 +29,7 @@ use Symfony\Component\Workflow\Workflow;
 
 class ClientInstanceManager
 {
+    const INSTALLATION_COMMAND_PRIORITY = 2;
     const MAX_NUMBER_OF_REQUEST_ATTEMPTS = 3;
     const FIXTURES_FOR_NEW_HOTELS = [
         "../src/MBH/Bundle/PriceBundle/DataFixtures/MongoDB/ServiceData.php",
@@ -179,7 +180,7 @@ class ClientInstanceManager
         $result = (new Result())->setData(['client' => $clientName]);
         $this->logger->addRecord(Logger::INFO, 'Start generate queue message for '.$taskName.' command');
         $command = new Command($command, $params, \AppKernel::DEFAULT_CLIENT, $this->kernelEnv, $this->isDebug);
-        $this->producer->publish(serialize($command));
+        $this->producer->publish(serialize($command), '', ['priority' => self::INSTALLATION_COMMAND_PRIORITY]);
         $this->logger->addRecord(Logger::INFO, 'Queue message for '.$taskName.' command was generated');
 
         return $result;

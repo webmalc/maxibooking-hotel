@@ -292,6 +292,21 @@
                        class="datepicker accommodation-report-filter end-datepicker mbh-daterangepicker not-set-date form-control input-sm"
                        data-date-format="dd.mm.yyyy" value="{{ endDate|date('d.m.Y') }}">
             </div>
+            {% if hotels|length > 1 %}
+            <div class="input">
+                <i class="fa fa-home hide-field-button" title='{{ 'chessboard_manager.hotel.title'|trans }}'
+                   data-toggle='tooltip'></i>&nbsp;
+                <select name="filter_hotel[]" multiple
+                        data-placeholder="{{ 'chessboard_manager.hotel.title'|trans }}"
+                        id="accommodation-report-filter-hotel"
+                        class="accommodation-report-filter form-control input-sm">
+                    <option></option>
+                    {% for hotel in hotels %}
+                        <option {{ hotel.id in selectedHotelIds ? 'selected' }} value="{{ hotel.id }}">{{ hotel.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
             <div class="input">
                 <i class="fa fa-bed hide-field-button" title='{{ 'chessboard_manager.room_type.title'|trans }}'
                    data-toggle='tooltip'></i>&nbsp;
@@ -302,7 +317,7 @@
                     <option></option>
                     {% for roomType in roomTypes %}
                         <option value="{{ roomType.id }}"
-                                {% if roomTypesData[roomType.id] is defined and roomTypes|length != roomTypesData|length %}selected{% endif %}>{{ roomType.name }}</option>
+                                {% if roomType.id in  app.request.get('filter_roomType') %}selected{% endif %}>{{ roomType.name }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -397,7 +412,7 @@
                     {% for day in days %}
                         {% set isWeekend = day|date('N') in [6,7] %}
                         {% set isNow = day|date('d.m.Y') == 'now'|date('d.m.Y') %}
-                        <li class="tile tile-bookable tile-free both {% if isWeekend %}weekend{% endif %}">
+                        <li class="tile tile-bookable tile-free both {{ isNow ? 'today' }} {% if isWeekend %}weekend{% endif %}">
                             <div class="day">
                                 <div class="{{ isWeekend ? 'text-danger' }}{{ isNow ? 'text-info' }}">{{ day|date('d.m') }}
                                     <span>{{ day|date('Y') == 'now'|date('Y') ? weekdays[day|date('N')]|trans({}, 'front_messages')|lower : day|date('Y') }}</span>

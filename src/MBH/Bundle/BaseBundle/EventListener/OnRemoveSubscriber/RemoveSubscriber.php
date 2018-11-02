@@ -50,7 +50,9 @@ class RemoveSubscriber implements EventSubscriber
             throw new DeleteException('exception.relation_delete.document_already_deleted');
         }
 
-        $relatedDocumentsData = $this->container->get('mbh.helper')->getRelatedDocuments($document);
+        $relatedDocumentsData = $this->container
+            ->get('mbh.helper')
+            ->getRelatedDocuments($document);
 
         foreach ($relatedDocumentsData as $relatedDocumentData) {
             $quantity = $relatedDocumentData['quantity'];

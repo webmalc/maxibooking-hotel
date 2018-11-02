@@ -631,6 +631,7 @@ class HundredOneHotels extends Base
      * Pull rooms from service server
      * @param ChannelManagerConfigInterface $config
      * @return array
+     * @throws \Throwable
      */
     public function pullRooms(ChannelManagerConfigInterface $config)
     {
@@ -641,8 +642,16 @@ class HundredOneHotels extends Base
         $response = json_decode($jsonResponse, true);
 
         $rooms = [];
-        foreach ($response['data']['rooms'] as $roomType) {
-            $rooms[$roomType['id']] = $roomType['name'];
+        if ($this->checkResponse($jsonResponse)) {
+            foreach ($response['data']['rooms'] as $roomType) {
+                $rooms[$roomType['id']] = $roomType['name'];
+            }
+        } else {
+            $this->log($jsonResponse);
+            $this->notifyErrorRequest(
+                '101hotels.ru',
+                'channelManager.commonCM.notification.request_error.pull_rooms'
+            );
         }
 
         return $rooms;
@@ -652,6 +661,7 @@ class HundredOneHotels extends Base
      * Pull tariffs from service server
      * @param ChannelManagerConfigInterface $config
      * @return array
+     * @throws \Throwable
      */
     public function pullTariffs(ChannelManagerConfigInterface $config)
     {
@@ -663,14 +673,22 @@ class HundredOneHotels extends Base
         $jsonResponse = $this->send(static::BASE_URL, $request);
         $response = json_decode($jsonResponse, true);
 
-        foreach ($response['data']['rooms'] as $roomType) {
-            foreach ($roomType['placements'] as $placement) {
-                $result[$placement['id']] = [
-                    'title' => $placement['name'] . "\n(" . $roomType['name'] . ')',
-                    'occupantCount' => $placement['occupancy'],
-                    'rooms' => [$roomType['id']],
-                ];
+        if ($this->checkResponse($jsonResponse)) {
+            foreach ($response['data']['rooms'] as $roomType) {
+                foreach ($roomType['placements'] as $placement) {
+                    $result[$placement['id']] = [
+                        'title' => $placement['name']."\n(".$roomType['name'].')',
+                        'occupantCount' => $placement['occupancy'],
+                        'rooms' => [$roomType['id']],
+                    ];
+                }
             }
+        } else {
+            $this->log($jsonResponse);
+            $this->notifyErrorRequest(
+                '101hotels.ru',
+                'channelManager.commonCM.notification.request_error.pull_tariffs'
+            );
         }
 
         return $result;
@@ -691,7 +709,7 @@ class HundredOneHotels extends Base
 
         $responseCode = $response['response'];
         $isSuccess = $responseCode == 1;
-        if (!$isSuccess) {
+        if (!$isSuccess && isset($response['errors'])) {
             $this->addError(json_encode($response['errors']));
         }
 

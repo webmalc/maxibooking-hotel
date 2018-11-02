@@ -76,13 +76,10 @@ class Cash
 
         $localCurrency = $clientConfig->getCurrency();
 
-        $currencyText = $this->container->getParameter('mbh.currency.data')[$localCurrency]['text'];
+        $currencyText = $this->container->get('translator')->trans(
+            $this->container->getParameter('mbh.currency.data')[$localCurrency]['text']
+        );
         $sumString = '<strong>' . $cashDocument->getTotal() . ' ' . $currencyText . '</strong>';
-
-        $prependText = '<span style="font-size: 18px">'
-           . $this->container->get('translator')->trans('mailer.order.prepend_text', ['%paymentSum%' => $sumString])
-            . '</span>';
-
 
         $getHotelName = function() use ($order) {
             return $order->getFirstHotel()->getName();
@@ -100,12 +97,13 @@ class Cash
             ->setSubject('mailer.order.subject_text')
             ->setHeaderText('mailer.order.header_text')
             ->setTranslateParams([
-                '%hotelName%' => $hotelName,
-                '%sum%' => $sumString
+                '%hotelName%'  => $hotelName,
+                '%sum%'        => $sumString,
+                '%paymentSum%' => $sumString,
             ])
             ->setAdditionalData([
-                'prependText' => $prependText,
-                'currencyText' => $currencyText
+                'prependText'  => 'mailer.order.prepend_text',
+                'currencyText' => $currencyText,
             ])
             ->setTemplate('MBHBaseBundle:Mailer:cashDocConfirmation.html.twig')
             ->setEnd(new \DateTime('+1 minute'))

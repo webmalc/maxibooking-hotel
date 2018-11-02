@@ -37,15 +37,15 @@ class HotelManager
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-        $this->dm = $this->container->get('doctrine_mongodb')->getManager();
     }
 
     public function create(Hotel $hotel)
     {
+        $dm = $this->container->get('doctrine_mongodb')->getManager();
         $hotel->uploadFile();
 
-        $this->dm->persist($hotel);
-        $this->dm->flush();
+        $dm->persist($hotel);
+        $dm->flush();
 
         $this->runInstallationOfRelatedToHotelsFixtures($this->container->getParameter('client'));
 
@@ -71,8 +71,8 @@ class HotelManager
 
         $this->container
             ->get('mbh.site_manager')
-            ->createOrUpdateForHotel($hotel, $client);
-        $this->dm->persist($hotel);
+            ->createOrUpdateForHotel($client, $hotel);
+        $this->container->get('doctrine.odm.mongodb.document_manager')->persist($hotel);
 
         $this->container
             ->get('mbh.client_config_manager')
@@ -80,6 +80,31 @@ class HotelManager
             ->setIsMBSiteEnabled(true);
 
         return $hotel;
+    }
+
+    public function runMapImageCreationCommand(Hotel $hotel)
+    {
+        $command = 'mbh:hotel_map_image_save_command --hotelId=' . $hotel->getId();
+        $kernel = $this->container->get('kernel');
+
+        $command = sprintf(
+            'php console %s --env=%s %s',
+            $command,
+            $kernel->getEnvironment(),
+            $kernel->isDebug()? '' : '--no-debug'
+        );
+        $env = [
+            \AppKernel::CLIENT_VARIABLE => $this->container->getParameter('client'),
+            'webdriver.chrome.driver' => $this->container->getParameter('chromedriver_path')
+        ];
+
+        $process = new Process($command, $kernel->getRootDir().'/../bin', $env, null, 60 * 10);
+
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            throw new \RuntimeException($process->getOutput());
+        }
     }
 
     /**

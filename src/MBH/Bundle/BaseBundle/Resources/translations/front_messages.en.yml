@@ -191,6 +191,7 @@ chessboard_manager.package_tooltip.package_end: 'Check-out date'
 chessboard_manager.package_tooltip.is_checkin: 'Checked in'
 chessboard_manager.package_tooltip.is_checkout: 'Checked out'
 020-forms.on_moderation: 'being moderated'
+020-forms.restrict_daterangepicker: 'The viewing period can not exceed 365 daysbi'
 guides.next_button.title: Next
 guides.skip_button.title: Skip
 guides.room_cache.menu_item: 'Click here'
@@ -228,3 +229,4 @@ guides.priceCaches: 'How to set up prices?'
 guides.search: 'How to book a room?'
 package.remove_package: 'Delete reservation "%title%"?'
 package.remove_order: 'Delete order "%title%"?'
+view.pay_order_modal.payment_sum: 'Payment of №%orderNumber% order with a value <span class="payment-order-price">%price%</span>'

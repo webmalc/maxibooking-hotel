@@ -3,33 +3,31 @@
 {% set title = 'menu.label.payment_systems'|trans({}, "MBHBaseBundle") %}
 {% set small_title = (paymentSystemName != null ? 'views.clientConfig.index.editing' : 'views.clientConfig.index.new') |trans({}, 'MBHClientBundle') %}
 
+{% block scripts %}
+    {{ parent() }}
+    {% embed "MBHClientBundle:ClientConfigPaymentSystem:blockScripts.htm.twig" %}{% endembed %}
+
+{% endblock %}
+
+{% block styles %}
+    {{ parent() }}
+
+    {% stylesheets filter='cssrewrite, uglifycss'
+        '@MBHClientBundle/Resources/public/css/client_config_payment_system/form/*'
+    %}
+        <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+
+{% endblock %}
+
 {% block content %}
 
     <div class="tab-content">
         <div class="tab-pane active" id="home">
-
-            {{ form_start(form, {'action': path('client_payment_system_save', {'paymentSystemName': paymentSystemName}), 'attr': {'class': 'form-horizontal' }}) }}
-            {{ form_widget(form) }}
-            {% if is_granted('ROLE_CLIENT_CONFIG_EDIT') %}
-                {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close' : false} %}
-            {% endif %}
-            {{ form_end(form) }}
-
-            {% if paymentSystemName and paymentSystemName != 'invoice' %}
-            <div class="bg-gray color-palette alert">
-                <strong>{{ 'client.viwes.clientConfig.paymentSystem.urlNotification'|trans({},'MBHClientBundle') }}</strong>
-                : {{ url('online_form_check_order', {'paymentSystemName': paymentSystemName}) }}<br>
-                <strong>{{ 'client.viwes.clientConfig.paymentSystem.urlSuccesPayment'|trans({},'MBHClientBundle') }}</strong>
-                : {{ url('api_success_url') }}<br>
-                <strong>{{ 'client.viwes.clientConfig.paymentSystem.urlFailedPayment'|trans({},'MBHClientBundle') }}</strong>
-                : {{ url('api_fail_url') }}
-            </div>
-            {% endif %}
-
+            {% include 'MBHClientBundle:ClientConfigPaymentSystem:blockPaymentSystemsForm.htm.twig' %}
             {% if entity %}
                 {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs} %}
             {% endif %}
-
         </div>
     </div>
 

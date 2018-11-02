@@ -67,10 +67,7 @@ services:
     mbh.client_payment_system_type:
         class: MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType
         arguments:
-            - '%mbh.payment_systems%'
-            - '%mbh.payment_systems.change%'
-            - '%mbh.payment_systems.default%'
-            - '%mbh.taxation%'
+            - '@mbh.payment_extra_data'
         tags:
             - { name: form.type }
 
@@ -90,7 +87,7 @@ services:
 
     mbh.client_config_manager:
         class: MBH\Bundle\ClientBundle\Service\ClientConfigManager
-        arguments: ['@doctrine.odm.mongodb.document_manager', '%locale%']
+        arguments: ['@doctrine.odm.mongodb.document_manager']
 
     MBH\Bundle\ClientBundle\Service\DocumentSerialize\:
         resource: '%kernel.root_dir%/../src/MBH/Bundle/ClientBundle/Service/DocumentSerialize/*'
@@ -102,6 +99,12 @@ services:
         resource: '%kernel.root_dir%/../src/MBH/Bundle/ClientBundle/Service/PaymentSystem/*'
         arguments:
             - '@service_container'
+
+    MBH\Bundle\ClientBundle\Service\PaymentSystem\Wrapper\:
+        resource: '%kernel.root_dir%/../src/MBH/Bundle/ClientBundle/Service/PaymentSystem/Wrapper/*'
+        arguments:
+            - '@service_container'
+
     mbh.document_template_update.logger:
           class:     Symfony\Bridge\Monolog\Logger
           arguments: [app]
@@ -113,3 +116,39 @@ services:
         arguments:
             - "%kernel.logs_dir%/%kernel.environment%.%log_file.documents_template_update%"
             - 200
+
+    mbh.payment_tinkoff.logger:
+        class:     Symfony\Bridge\Monolog\Logger
+        arguments: [app]
+        calls:
+        - [pushHandler, ['@mbh.payment_tinkoff.logger_handler']]
+
+    mbh.payment_tinkoff.logger_handler:
+        class:     Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.paymentSystem_tinkoff.log", 200]
+
+    mbh.payment_extra_data:
+        class: MBH\Bundle\ClientBundle\Lib\PaymentSystem\ExtraData
+        arguments:
+        - '%mbh.payment_systems%'
+        - '%mbh.payment_systems.change%'
+        - '%mbh.payment_systems.default%'
+        - '%mbh.taxation%'
+
+    MBH\Bundle\ClientBundle\Form\PaymentSystem\:
+        resource: '%kernel.root_dir%/../src/MBH/Bundle/ClientBundle/Form/PaymentSystem/*'
+        arguments:
+            - '@mbh.payment_extra_data'
+            - '@mbh.client_config_manager'
+        tags:
+        - { name: form.type }
+
+    mbh.payment_sberbank.logger:
+        class:     Symfony\Bridge\Monolog\Logger
+        arguments: [app]
+        calls:
+        - [pushHandler, ['@mbh.payment_sberbank.logger_handler']]
+
+    mbh.payment_sberbank.logger_handler:
+        class:     Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.paymentSystem_sberbank.log", 200]

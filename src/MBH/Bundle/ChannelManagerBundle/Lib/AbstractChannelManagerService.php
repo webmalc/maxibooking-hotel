@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Lib;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
@@ -56,7 +57,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     protected $container;
 
     /**
-     * @var \Doctrine\Bundle\MongoDBBundle\ManagerRegistry
+     * @var DocumentManager
      */
     protected $dm;
 
@@ -126,7 +127,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     {
         $method = 'get' . static::CONFIG;
         $config = $hotel->$method();
-        if (!$config && !$config->getIsEnabled()) {
+        if (!$config || !$config->getIsEnabled()) {
             return null;
         }
 
@@ -759,6 +760,41 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             ;
 
             return $notifier->setMessage($message)->notify();
+        } catch (\Exception $e) {
+            $this->logger->addAlert('Error notification Error ChannelManager'.$e->getMessage());
+        }
+    }
+
+    /**
+     * @param string $channelManager
+     * @param string $requestDescription
+     * @throws \Throwable
+     */
+    public function notifyErrorRequest(string $channelManager, string $requestDescription)
+    {
+        try {
+            $notifier = $this->container->get('mbh.notifier');
+            $tr = $this->container->get('translator');
+            $message = $notifier::createMessage();
+
+            $subject = 'channelManager.commonCM.notification.error.subject';
+            $transParams = ['%channelManagerName%' => $channelManager];
+            $text = $tr->trans($requestDescription, $transParams, 'MBHChannelManagerBundle')
+                . '<br>'
+                . $tr->trans('channelManager.booking.notification.bottom', $transParams, 'MBHChannelManagerBundle');
+
+            $message
+                ->setText($text)
+                ->setFrom('channelmanager')
+                ->setSubject($tr->trans($subject, $transParams, 'MBHChannelManagerBundle'))
+                ->setType('danger')
+                ->setCategory('notification')
+                ->setAutohide(false)
+                ->setEnd(new \DateTime('+10 minute'))
+                ->setMessageType(NotificationType::CHANNEL_MANAGER_TYPE)
+            ;
+
+            $notifier->setMessage($message)->notify();
         } catch (\Exception $e) {
             $this->logger->addAlert('Error notification Error ChannelManager'.$e->getMessage());
         }

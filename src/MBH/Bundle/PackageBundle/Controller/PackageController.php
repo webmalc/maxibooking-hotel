@@ -147,7 +147,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
             $data = [
                 'hotel' => $this->get('mbh.hotel.selector')->getSelected(),
-                'roomType' => $formData['roomType'],
+                'roomType' => $this->helper->getDataFromMultipleSelectField(explode(',', $formData['roomType'])),
                 'source' => $formData['source'],
                 'status' => $formData['status'],
                 'deleted' => (boolean)$formData['deleted'],
@@ -1024,7 +1024,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'roomType' => $package->getRoomType(),
             'arrivals' => $this->container->getParameter('mbh.package.arrivals'),
             'roomStatusIcons' => $this->container->getParameter('mbh.room_status_icons'),
-            'debt' => $order->getPaidStatus() != 'success' && !$order->getIsCheckOut(),
+            'debt' => $order->getPaidStatus() != 'success' && !$package->getIsCheckOut(),
             'hasEarlyCheckIn' => $hasEarlyCheckIn,
             'hasLateCheckOut' => $hasLateCheckOut
         ]);

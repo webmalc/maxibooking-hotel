@@ -10,7 +10,7 @@ namespace MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbk;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
-use MBH\Bundle\ClientBundle\Document\NewRbk;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\NewRbk;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 

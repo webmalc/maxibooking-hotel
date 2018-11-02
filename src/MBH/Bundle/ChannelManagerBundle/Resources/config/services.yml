@@ -120,10 +120,6 @@ services:
     mbh_bundle_channel_manager.lib_ostrovok.ostrovok_data_generator:
         class: MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok\OstrovokDataGenerator
 
-    mbh.channelmanager.ostrovok.api_service:
-        class: MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok\OstrovokApiService
-        arguments: ['%mbh.channelmanager.services%']
-
     mbh.channelmanager.ostrovok.data_generator:
         class: MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok\OstrovokDataGenerator
 

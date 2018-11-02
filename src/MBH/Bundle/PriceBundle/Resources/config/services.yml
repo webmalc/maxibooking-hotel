@@ -109,4 +109,4 @@ services:
           - '@mbh.helper'
   mbh.tariff_manager:
       class: MBH\Bundle\PriceBundle\Services\TariffManager
-      arguments: ['@doctrine.odm.mongodb.document_manager']
+      arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.helper']

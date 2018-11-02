@@ -18,7 +18,7 @@ use MBH\Bundle\PackageBundle\Lib\DataOfMortalInterface;
  *
  * @package MBH\Bundle\ClientBundle\Service\DocumentSerialize
  */
-class Mortal extends Common implements DataOfMortalInterface, AddressInterface
+class Mortal extends Common implements DataOfMortalInterface, AdvancedAddressInterface
 {
     use TraitAddress;
     use TraitDataOfMortal;

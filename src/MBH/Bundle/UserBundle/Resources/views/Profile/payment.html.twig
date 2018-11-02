@@ -29,7 +29,7 @@
                 </select>
             </div>
             <div class="input">
-                <button type="button" class="btn btn-primary navbar-btn"
+                <button type="button" class="btn btn-primary"
                         id="filter-button">{{ 'view.personal_account.orders.apply_button.title'|trans }}</button>
             </div>
             {% endblock %}
@@ -70,6 +70,7 @@
     </div>
 
     {% include 'MBHUserBundle:Profile:payment_systems_modal.html.twig' %}
+    {% include '@MBHUser/Profile/payment_details.html.twig' %}
     <div class="modal fade bs-example-modal-lg" id="card-data-modal" tabindex="-1" role="dialog">
         <div class="modal-dialog " role="document">
             <div class="modal-content">

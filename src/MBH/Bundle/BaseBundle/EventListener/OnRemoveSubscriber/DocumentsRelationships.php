@@ -3,6 +3,12 @@
 namespace MBH\Bundle\BaseBundle\EventListener\OnRemoveSubscriber;
 
 use MBH\Bundle\CashBundle\Document\CashDocument;
+use MBH\Bundle\ChannelManagerBundle\Document\BookingConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\OstrovokConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\VashotelConfig;
 use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
 use MBH\Bundle\HotelBundle\Document\City;
 use MBH\Bundle\HotelBundle\Document\Country;
@@ -16,6 +22,7 @@ use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\HotelBundle\Document\Task;
 use MBH\Bundle\HotelBundle\Document\TaskType;
 use MBH\Bundle\HotelBundle\Document\TaskTypeCategory;
+use MBH\Bundle\OnlineBundle\Document\FormConfig;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Organization;
 use MBH\Bundle\PackageBundle\Document\Package;
@@ -97,7 +104,14 @@ class DocumentsRelationships
                 //new Relationship(PriceCache::class, 'roomType', 'exception.roomType_relation_delete.message.priceCache'),
                 //new Relationship(RoomCache::class, 'roomType', 'exception.roomType_relation_delete.message.roomCache'),
                 new Relationship(Package::class, 'roomType', 'exception.roomType_relation_delete.message.package'),
-                new Relationship(Special::class, 'roomTypes', 'exception.roomType_relation_delete.message.special', true),
+                new Relationship(Special::class, 'roomTypes', 'exception.roomType_relation_delete.message.special'),
+                new Relationship(BookingConfig::class, 'rooms.roomType', 'exception.roomType_relation_delete.message.booking_config'),
+                new Relationship(ExpediaConfig::class, 'rooms.roomType', 'exception.roomType_relation_delete.message.expedia_config'),
+                new Relationship(HundredOneHotelsConfig::class, 'rooms.roomType', 'exception.roomType_relation_delete.message.hoh_config'),
+                new Relationship(OstrovokConfig::class, 'rooms.roomType', 'exception.roomType_relation_delete.message.ostrovok_config'),
+                new Relationship(VashotelConfig::class, 'rooms.roomType', 'exception.roomType_relation_delete.message.vashotel_config'),
+                new Relationship(MyallocatorConfig::class, 'rooms.roomType', 'exception.roomType_relation_delete.message.myallocator_config'),
+                new Relationship(FormConfig::class, 'roomTypeChoices', 'exception.roomType_relation_delete.message.online_form_config'),
             ],
             Room::class => [
                 new Relationship(Task::class, 'room', 'exception.room_relation_delete.message.task'),
@@ -109,7 +123,7 @@ class DocumentsRelationships
             ],
             Group::class => [
                 new Relationship(TaskType::class, 'defaultUserGroup', 'exception.group_relation_delete.message.taskType'),
-                new Relationship(User::class, 'groups', 'exception.group_relation_delete.message.user', true)
+                new Relationship(User::class, 'groups', 'exception.group_relation_delete.message.user')
             ],
             Order::class => [
                 //new Relationship(Package::class, 'order', 'exception.order_relation_delete.message.package'),
@@ -122,7 +136,13 @@ class DocumentsRelationships
                 new Relationship(Tariff::class, 'parent', 'exception.tariff_relation_delete.message.parentTariff'),
                 new Relationship(Tariff::class, 'mergingTariff', 'exception.tariff_relation_delete.message.mergingTariff'),
                 new Relationship(Package::class, 'tariff', 'exception.tariff_relation_delete.message.package'),
-                new Relationship(Special::class, 'tariffs', 'exception.tariff_relation_delete.message.special', true)
+                new Relationship(Special::class, 'tariffs', 'exception.tariff_relation_delete.message.special'),
+                new Relationship(BookingConfig::class, 'tariffs.tariff', 'exception.tariff_relation_delete.message.booking_config'),
+                new Relationship(ExpediaConfig::class, 'tariffs.tariff', 'exception.tariff_relation_delete.message.expedia_config'),
+                new Relationship(HundredOneHotelsConfig::class, 'tariffs.tariff', 'exception.tariff_relation_delete.message.hoh_config'),
+                new Relationship(OstrovokConfig::class, 'tariffs.tariff', 'exception.tariff_relation_delete.message.ostrovok_config'),
+                new Relationship(VashotelConfig::class, 'tariffs.tariff', 'exception.tariff_relation_delete.message.vashotel_config'),
+                new Relationship(MyallocatorConfig::class, 'tariffs.tariff', 'exception.tariff_relation_delete.message.myallocator_config'),
             ],
             ServiceCategory::class => [
                 new Relationship(Service::class, 'category', 'exception.serviceCategory_relation_message.service')
@@ -156,7 +176,7 @@ class DocumentsRelationships
             Tourist::class => [
                 new Relationship(Order::class, 'mainTourist', 'exception.tourist_relation_delete.message.order'),
                 new Relationship(CashDocument::class, 'touristPayer', 'exception.tourist_relation_delete.message.cashDocument'),
-                new Relationship(Package::class, 'tourists', 'exception.tourist_relation_delete.message.package', true)
+                new Relationship(Package::class, 'tourists', 'exception.tourist_relation_delete.message.package')
             ],
             Country::class => [
                 new Relationship(Organization::class, 'country', 'exception.country_relation_delete.message.organization')
@@ -166,7 +186,7 @@ class DocumentsRelationships
             ],
             Service::class => [
                 new Relationship(PackageService::class, 'service', 'exception.service_relation_delete.message.packageService'),
-                new Relationship(Tariff::class, 'services', 'exception.service_relation_delete.message.tariff', true)
+                new Relationship(Tariff::class, 'services', 'exception.service_relation_delete.message.tariff')
             ],
             VegaState::class => [
                 new Relationship(Tourist::class, 'citizenship', 'exception.vegaState_relation_delete.message.tourist'),
