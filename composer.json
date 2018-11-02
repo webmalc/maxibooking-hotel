@@ -74,7 +74,7 @@
     "symfony/polyfill-php71": "^1.7",
     "symfony/polyfill-php72": "^1.7",
     "snc/redis-bundle": "^2.1",
-    "symfony/serializer": "3.3.18"
+    "symfony/serializer": "3.3.18",
     "facebook/webdriver": "^1.6"
   },
   "require-dev": {
