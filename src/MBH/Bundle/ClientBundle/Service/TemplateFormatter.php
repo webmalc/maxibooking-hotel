@@ -77,7 +77,7 @@ class TemplateFormatter
             'hotel'                => $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Hotel')->newInstance($hotel),
             'payer'                => $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Helper')->payerInstance($order->getPayer()),
             'organization'         => $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\HotelOrganization')->newInstance($organization),
-            'user'                 => $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\User')->newInstance($user),
+            'user'                 => !is_null($user) ? $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\User')->newInstance($user) : null,
             'arrivalTimeDefault'   => $hotel->getPackageArrivalTime(),
             'departureTimeDefault' => $hotel->getPackageDepartureTime(),
             'documentTypes'        => $this->container->get('mbh.fms_dictionaries')->getDocumentTypes(),
