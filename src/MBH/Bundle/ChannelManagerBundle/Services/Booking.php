@@ -673,7 +673,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
         if (!empty((string)$reservation->reservation_extra_info)
             && !empty((string)$reservation->reservation_extra_info->payer)
             && !empty((string)$reservation->reservation_extra_info->payer->payments)) {
-            foreach ($reservation->payer->payments->payment as $paymentNode) {
+            foreach ($reservation->reservation_extra_info->payer->payments->payment as $paymentNode) {
                 $attributes = $paymentNode->attributes();
                 $note = (isset($attributes['payment_type']) ? ('payment_type:' . (string)$attributes['payment_type']) : '')
                     . (isset($attributes['payout_type']) ? (' payout_type:' . (string)$attributes['payout_type']) : '');

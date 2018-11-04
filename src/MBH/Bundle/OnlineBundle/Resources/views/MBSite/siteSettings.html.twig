@@ -1,5 +1,10 @@
 {% extends "MBHOnlineBundle:MBSite:layout.html.twig" %}
 
+
+{% set title_url = path('site_settings') %}
+{% set small_title = 'views.mb_site.index.main_settings'|trans %}
+{% set active = 1 %}
+
 {% block content %}
     {{ parent() }}
     <div class="tab-content">
@@ -9,11 +14,13 @@
         <div class="box-header with-border">
             <h3 class="box-title">{{ 'form.userType.general_info'|trans }}</h3>
         </div>
-
         <div class="box-body">
             {{ form_start(form, {'action': path('site_settings'), 'attr': {'class': 'form-horizontal'}}) }}
             {% set groups = {'form.main.group': form.children|keys} %}
             {{ form_row(form.siteDomain) }}
+            {{ form_row(form.colorTheme) }}
+            {{ form_row(form.hotels) }}
+            {{ form_row(form.paymentTypes) }}
             <div class="default-service form-group form-inline">
                 {{ form_label(form.keyWords) }}
                 <div class="col-sm-6">
@@ -33,10 +40,7 @@
                 </div>
             </div>
             {#{{ form_row(form.contract) }}#}
-            {{ form_row(form.personalDataPolicies) }}
-            {{ form_row(form.paymentTypes) }}
-            {{ form_row(form.hotels) }}
-            {{ form_row(form.colorTheme) }}
+            {#{{ form_row(form.personalDataPolicies) }}#}
             {% include 'MBHBaseBundle:Actions:new.html.twig' %}
             {{ form_widget(form._token) }}
             {{ form_end(form, {render_rest: false}) }}

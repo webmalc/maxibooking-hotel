@@ -25,6 +25,7 @@ use MBH\Bundle\ClientBundle\Document\PaymentSystem\Tinkoff;
 use MBH\Bundle\ClientBundle\Document\PaymentSystem\Uniteller;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\CheckResultHolder;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -322,6 +323,7 @@ class ClientConfig extends Base
 
     /**
      * @var array
+     * @Gedmo\Versioned
      * @ODM\Field(type="collection")
      * @Assert\NotBlank()
      */
@@ -860,6 +862,33 @@ class ClientConfig extends Base
         if (!in_array($paymentSystem, $this->paymentSystems)) {
             $this->paymentSystems[] = $paymentSystem;
         }
+
+        return $this;
+    }
+
+    /**
+     * @param FormInterface $form
+     * @param string $paymentSystemName
+     * @return ClientConfig
+     * @throws \Exception
+     */
+    public function addPaymentSystemFromForm(FormInterface $form, string $paymentSystemName): self
+    {
+        /** @var PaymentSystemDocument $paymentSystem */
+        $paymentSystem = $form->get($paymentSystemName)->getData();
+        $setterName = 'set' . $paymentSystem::fileClassName();
+        if (!method_exists($this, $setterName)) {
+            throw new \Exception(
+                sprintf(
+                    'Not found setter(%s) for payment system "%s" in the configClient',
+                    $setterName,
+                    $paymentSystemName
+                )
+            );
+        }
+
+        $this->$setterName($paymentSystem);
+        $this->addPaymentSystem($paymentSystemName);
 
         return $this;
     }

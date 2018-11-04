@@ -22,6 +22,7 @@ form.hotelExtendedType.location: Местоположение
 form.hotelExtendedType.address: Адрес
 form.hotelExtendedType.placeholder_location: 'Москва, Московская обл., Щелково'
 form.hotelExtendedType.latitude: Широта
+form.hotel_contact_information_type.map_url: 'Url карты'
 'form.hotelExtendedType.gps_coordinates_latitude<br><a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">form.hotelExtendedType.know_hotel_coordinates</a>': 'GPS координата широты отеля.<br><a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">Узнать координаты отеля.</a>'
 'form.hotelExtendedType.gps_coordinates_longitude<br><a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">form.hotelExtendedType.know_hotel_coordinates</a>': 'GPS координата долготы отеля.<br><a href="#" data-toggle="modal" data-target="#hotel_coordinates_help">Узнать координаты отеля.</a>'
 form.hotelExtendedType.gps_coordinates_latitude: 'GPS координата широты отеля.'
@@ -64,7 +65,7 @@ form.contact_info_type.email.help: 'Электронная почта конта
 form.hotel_contact_information.contact_info.group: 'Контакты службы поддержки клиентов'
 
 form.hotel_images.image_file.label: Изображение
-form.hotel_images.image_file.help: 'Изображение отеля для онлайн бронирования.<br>Максимальный размер файла 2 Мб, 80x90 px, типы файлов: png, jpg, gif.'
+form.hotel_images.image_file.help: 'Изображение отеля для онлайн бронирования.<br>Максимальный размер файла 5 Мб, типы файлов: png, jpg, gif.'
 form.hotel_images.image_is_default.label: 'Основное?'
 form.hotel_images.image_is_default.help: 'Является ли изображение основным для отеля?'
 form.hotel_logo.image_file.help: 'Логотип отеля'

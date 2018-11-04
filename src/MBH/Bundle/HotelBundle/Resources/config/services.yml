@@ -18,7 +18,7 @@ services:
 
     mbh.hotel_subscriber:
         class: MBH\Bundle\HotelBundle\EventListener\HotelSubscriber
-        arguments: ['@mbh.billing.api']
+        arguments: ['@mbh.billing.api', '@mbh.hotel.hotel_manager']
         tags:
             - {name: doctrine_mongodb.odm.event_subscriber, connection: default }
 
@@ -69,7 +69,7 @@ services:
 
     mbh.hotel_contact_information:
         class: MBH\Bundle\HotelBundle\Form\HotelContactInformationType
-        arguments: ['@doctrine.odm.mongodb.document_manager', '@translator']
+        arguments: ['@mbh.client_config_manager', '@doctrine.odm.mongodb.document_manager', '@translator']
         tags:
             - { name: form.type}
 

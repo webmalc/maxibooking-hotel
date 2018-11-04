@@ -12,6 +12,12 @@ interface ChannelManagerConfigInterface
     public function getIsEnabled();
     public function setIsEnabled($isEnabled);
 
+    /**
+     * @param $isEnabled
+     * @return self
+     */
+    public function setIsEnabled($isEnabled);
+
     public function isMainSettingsFilled();
     public function setIsMainSettingsFilled(bool $isFilled);
     public function isTariffsConfigured();

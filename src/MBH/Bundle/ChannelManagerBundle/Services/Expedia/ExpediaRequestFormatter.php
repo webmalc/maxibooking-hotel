@@ -67,7 +67,7 @@ class ExpediaRequestFormatter extends AbstractRequestFormatter
 
     public function formatPullRoomsRequest(ChannelManagerConfigInterface $config)
     {
-        $url = self::PRODUCT_API_URL . "/{$config->getHotelId()}/roomTypes/";
+        $url = self::PRODUCT_API_URL . "{$config->getHotelId()}/roomTypes/";
 
         return [$this->getJsonRequestInfo($url)
             ->addHeader('limit', 200)];
@@ -82,7 +82,7 @@ class ExpediaRequestFormatter extends AbstractRequestFormatter
     {
         $requestInfos = [];
         foreach ($roomTypesData as $roomTypeId => $roomTypeData) {
-            $url = self::PRODUCT_API_URL . "/{$config->getHotelId()}/roomTypes/{$roomTypeId}/ratePlans/";
+            $url = self::PRODUCT_API_URL . "{$config->getHotelId()}/roomTypes/{$roomTypeId}/ratePlans/";
             $requestInfos[] = $this->getJsonRequestInfo($url)
                 ->addHeader('limit', 200);
         }

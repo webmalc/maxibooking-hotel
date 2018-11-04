@@ -46,6 +46,7 @@ class MultiLangTranslatorTest extends UnitTestCase
 
     public function testSaveMultiLanguagesFields()
     {
+        $this->container->get('mbh.client_config_manager')->fetchConfig()->setLanguages(['ru', 'en']);
         $descriptionTranslation = $this->dm
             ->getRepository('GedmoTranslatable:Translation')
             ->findBy(['locale' => 'en', 'objectClass' => 'MBH\Bundle\HotelBundle\Document\Hotel', 'field' => 'description']);

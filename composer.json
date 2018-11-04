@@ -72,7 +72,8 @@
     "sentry/sentry": "^1.8",
     "nelmio/api-doc-bundle": "3.0.0",
     "eluceo/ical": "^0.14.0",
-    "johngrogg/ics-parser": "^2.1"
+    "johngrogg/ics-parser": "^2.1",
+    "facebook/webdriver": "^1.6"
   },
   "require-dev": {
     "sensio/generator-bundle": "^3.0",

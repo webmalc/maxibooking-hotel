@@ -5,6 +5,10 @@ class ConfigSberbank {
     private _fieldPass: HTMLInputElement = document.querySelector('.sberbank-field-password');
 
     init():void {
+        if (this._fieldToken === null) {
+            return;
+        }
+
         const self = this;
         this._fieldToken.addEventListener('change', function () {
             self._checkFields();

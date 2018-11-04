@@ -15,6 +15,7 @@ form.clientConfigType.currency.options.kzt: Тенге
 form.clientConfigType.currency.options.uzs: 'Узбекские сумы'
 form.clientConfigType.currency.options.gel: 'Грузинские лари'
 form.clientConfigType.currency.options.usd: Доллары
+form.clientConfigType.currency.options.inr: 'Инди́йская рупия'
 
 form.clientConfigType.sms_notification: 'Смс оповещение?'
 form.clientConfigType.notice_unpaid: Уведомление
@@ -107,7 +108,7 @@ form.clientConfigType.number_of_days_for_payment.label: 'Период оплат
 form.clientConfigType.number_of_days_for_payment.help: 'Период от создания брони до момента, когда отсутствие оплаты означает, что она просрочена'
 form.clientConfigType.currency_ratio_fix.label: 'Коэффициент корректировки курса валюты'
 form.clientConfigType.languages.label: 'Языки в онлайн-форме'
-form.clientConfigType.is_mb_site_enabled.label: 'Включен сайт?'
+form.clientConfigType.is_mb_site_enabled.label: 'Включить сайт?'
 form.clientConfigType.currency_ratio_fix.help: 'Коэффициент, на который умножается цена при преобразовании в другую валюту'
 form.clientConfigType.is_book_without_payer.label: 'Бронировать без плательщика?'
 form.clientConfigType.is_book_without_payer.help: 'Разрешено ли создавать заказы без указания плательщика?'

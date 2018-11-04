@@ -190,7 +190,6 @@ view.personal_account.order_status.corrupted: Испорчен
 view.personal_account.cancel_button.title: Отмена
 view.personal_account.pay_button.title: Оплатить
 view.payment_systems_modal.header_title: 'Выбор способа оплаты'
-view.pay_order_modal.payment_sum: 'Оплата заказа №%orderNumber% на сумму <span class="payment-order-price">%price%</span>'
 view.pay_order_modal.open_bill: 'Открыть счет'
 view.pay_order_modal.unfilled_data_message: 'Перед проведением оплаты заполните, пожалуйста, следующие данные:'
 interactive_login_listener.error_by_client_confirmation: 'Произошла непредвиденная ошибка. Пожалуйста, обратитесь в службу поддержки по адресу: "%supportEmail%"'

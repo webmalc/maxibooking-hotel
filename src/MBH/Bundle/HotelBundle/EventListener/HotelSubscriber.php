@@ -9,14 +9,18 @@ use Doctrine\ODM\MongoDB\Events;
 use Doctrine\Common\EventSubscriber;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Service\HotelManager;
 
 class HotelSubscriber implements EventSubscriber
 {
     /** @var  BillingApi */
     private $billing;
+    /** @var HotelManager */
+    private $hotelManager;
 
-    public function __construct(BillingApi $billingApi) {
+    public function __construct(BillingApi $billingApi, HotelManager $hotelManager) {
         $this->billing = $billingApi;
+        $this->hotelManager = $hotelManager;
     }
 
     /**
@@ -42,6 +46,13 @@ class HotelSubscriber implements EventSubscriber
             if ($args->hasChangedField('cityId')) {
                 $this->updateHotelAddressData($hotel, $args->getDocumentManager());
             }
+//            if ($args->hasChangedField('mapUrl')) {
+//                if (!empty($hotel->getMapUrl())) {
+//                    $this->hotelManager->runMapImageCreationCommand($hotel);
+//                } else {
+//                    $hotel->setMapImage(null);
+//                }
+//            }
         }
     }
 

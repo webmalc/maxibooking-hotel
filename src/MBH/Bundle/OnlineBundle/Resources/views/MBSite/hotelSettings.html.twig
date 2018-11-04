@@ -1,5 +1,8 @@
 {% extends 'MBHOnlineBundle:MBSite:layout.html.twig' %}
 
+{% set title_url = path('site_settings') %}
+{% set small_title = 'views.mb_site.index.hotel_settings.info'|trans ~ hotel.name %}
+
 {% block content %}
     {{ parent() }}
 

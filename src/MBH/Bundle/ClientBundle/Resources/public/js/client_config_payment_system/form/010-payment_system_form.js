@@ -1,17 +1,21 @@
+'use strict';
 window.addEventListener('load', function () {
-    'use strict';
     //payment system form
     (function () {
-        var select = $('#mbh_bundle_clientbundle_client_payment_system_type_paymentSystem'), showHideFields = function () {
-            $('.paymentSystem').hide().find('[data-required]').removeAttr('required');
-            $('.paymentSystem[data-name="' + select.val() + '"]').
-                show().
-                find('[data-required]').
-                attr('required', 'required');
-        };
-        if (!select.length) {
+        var select = $('#mbh_bundle_clientbundle_client_payment_system_type_paymentSystem');
+        if (select.length === 0) {
             return;
         }
+        var showHideFields = function () {
+            $('.paymentSystem')
+                .hide()
+                .find('[data-required]')
+                .removeAttr('required');
+            $('.paymentSystem[data-name="' + select.val() + '"]')
+                .show()
+                .find('[data-required]')
+                .attr('required', 'required');
+        };
         showHideFields();
         select.change(showHideFields);
         var changeRequired = function (element, state) {

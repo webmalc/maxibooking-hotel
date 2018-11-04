@@ -27,14 +27,22 @@ class SiteManager
     const SITE_PROTOCOL = 'https://';
     const MANDATORY_FIELDS_BY_ROUTE_NAMES = [
         Hotel::class => [
-            'hotel_edit' => ['description', 'logoImage'],
-            'hotel_contact_information' => ['contactInformation', 'latitude', 'longitude', 'street', 'settlement', 'cityId', 'house', 'zipCode'],
-            'hotel_images' => ['images']
+            'hotel_edit'                => ['description', 'logoImage'],
+            'hotel_images'              => ['images'],
+            'hotel_contact_information' => [
+                'zipCode',
+                'cityId',
+                'street',
+                'settlement',
+                'house',
+                'contactInformation',
+//                'mapUrl'
+            ],
         ],
         RoomType::class => [
-            'room_type_edit' => ['description', 'roomSpace', 'facilities'],
-            'room_type_image_edit' => ['onlineImages']
-        ]
+            'room_type_edit'       => ['description', 'roomSpace', 'facilities'],
+            'room_type_image_edit' => ['onlineImages'],
+        ],
     ];
 
     /** @var DocumentManager */
@@ -164,16 +172,14 @@ class SiteManager
     /**
      * @param Hotel $hotel
      * @param Client $client
-     * @param bool $isEnabled
      * @return SiteConfig
      */
-    public function createOrUpdateForHotel(Hotel $hotel, Client $client)
+    public function createOrUpdateForHotel(Client $client, Hotel $hotel = null)
     {
         $config = $this->getSiteConfig();
         if (is_null($config)) {
             $config = new SiteConfig();
             $this->dm->persist($config);
-            $config->addHotel($hotel);
 
             $siteDomain = $this->compileSiteDomain($client);
 
@@ -182,6 +188,10 @@ class SiteManager
                 ->setUrl($this->compileSiteAddress($siteDomain))
                 ->setClient($client->getLogin());
             $this->billingApi->addClientSite($clientSite);
+        }
+
+        if (!is_null($hotel)) {
+            $config->addHotel($hotel);
         }
 
         $this->updateSiteFormConfig($config, $this->fetchFormConfig());

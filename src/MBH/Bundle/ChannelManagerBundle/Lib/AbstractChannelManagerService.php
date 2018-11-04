@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Lib;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
@@ -58,7 +59,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     protected $container;
 
     /**
-     * @var \Doctrine\Bundle\MongoDBBundle\ManagerRegistry
+     * @var DocumentManager
      */
     protected $dm;
 
@@ -128,7 +129,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     {
         $method = 'get' . static::CONFIG;
         $config = $hotel->$method();
-        if (!$config && !$config->getIsEnabled()) {
+        if (!$config || !$config->getIsEnabled()) {
             return null;
         }
 
