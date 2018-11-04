@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -158,8 +159,17 @@ class PackageRepository extends DocumentRepository
         //hotel
         if (isset($criteria->hotel)) {
             $roomTypesIds = [];
-            foreach ($criteria->hotel->getRoomTypes() as $roomType) {
-                $roomTypesIds[] = $roomType->getId();
+            $hotels = $criteria->hotel;
+
+            if ($hotels instanceof Hotel) {
+                $hotels = new ArrayCollection([$hotels]);
+            }
+
+            /** @var Hotel $hotel */
+            foreach ($hotels as $hotel) {
+                foreach ($hotel->getRoomTypes() as $roomType) {
+                    $roomTypesIds[] = $roomType->getId();
+                }
             }
             if (count($roomTypesIds) > 0) {
                 $queryBuilder->field('roomType.id')->in($roomTypesIds);

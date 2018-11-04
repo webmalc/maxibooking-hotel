@@ -9,6 +9,7 @@ namespace MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbk;
 
 
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
+use MBH\Bundle\ClientBundle\Exception\BadSignaturePaymentSystemException;
 use Symfony\Component\HttpFoundation\Request;
 
 class CheckWebhook
@@ -67,12 +68,12 @@ class CheckWebhook
         };
 
         if (empty($data) || empty($publicKey)) {
-            return FALSE;
+            return false;
         }
 
         $publicKeyId = openssl_get_publickey($publicKey);
         if (empty($publicKeyId)) {
-            return FALSE;
+            return false;
         }
 
         $verify = openssl_verify($data, $signature, $publicKeyId, OPENSSL_ALGO_SHA256);
@@ -108,7 +109,7 @@ class CheckWebhook
 
         if (empty($signatureFromHeader)) {
             $this->errorResponse = function () {
-                throw new \Exception('Signature is missing');
+                throw new BadSignaturePaymentSystemException('Signature is missing');
             };
 
             return '';
@@ -128,7 +129,12 @@ class CheckWebhook
             $content = file_get_contents('php://input');
 
             if (empty($content)) {
-                $this->content =  null;
+                /** Это для тестов */
+                if (isset($_ENV['MB_CLIENT']) && $_ENV['MB_CLIENT'] === 'test') {
+                    $this->content = $this->request->getContent();
+                } else {
+                    $this->content =  null;
+                }
             } else {
                 $this->content = $content;
             }

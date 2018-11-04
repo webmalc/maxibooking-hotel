@@ -6,6 +6,7 @@ use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use MBH\Bundle\BaseBundle\Lib\AbstractFixture;
 use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
+use Psr\Container\ContainerInterface;
 
 /**
  * Created by PhpStorm.
@@ -35,16 +36,26 @@ class DocumentTemplateData extends AbstractFixture implements OrderedFixtureInte
     ];
 
     /**
+     * @param ContainerInterface $container
+     * @param string $nameTemplateFile
+     * @return string
+     */
+    public static function generateFilePath(ContainerInterface $container, string $nameTemplateFile): string
+    {
+        return $container->get('kernel')->getRootDir()
+            . '/../src/MBH/Bundle/PackageBundle/Resources/views/Documents/pdfTemplates/'
+            . $nameTemplateFile
+            . '.html.twig';
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function doLoad(ObjectManager $manager)
     {
         $locale = $this->container->getParameter('locale') === self::LOCALE_RU ? self::LOCALE_RU : self::LOCALE_COM;
         foreach (self::DOCUMENT_TEMPLATE_DATA[$locale] as $name => $templateFile) {
-            $filePath = $this->container->get('kernel')->getRootDir()
-                . '/../src/MBH/Bundle/PackageBundle/Resources/views/Documents/pdfTemplates/'
-                . $templateFile
-                . '.html.twig';
+            $filePath = self::generateFilePath($this->container, $templateFile);
 
             $content = file_get_contents($filePath);
             $template = (new DocumentTemplate())

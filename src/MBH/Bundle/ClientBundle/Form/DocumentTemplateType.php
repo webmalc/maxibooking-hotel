@@ -19,6 +19,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class DocumentTemplateType extends AbstractType
 {
+    public const FORM_NAME = 'mbh_client_document_template';
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -51,6 +53,6 @@ class DocumentTemplateType extends AbstractType
 
     public function getBlockPrefix()
     {
-        return 'mbh_client_document_template';
+        return self::FORM_NAME;
     }
 }
