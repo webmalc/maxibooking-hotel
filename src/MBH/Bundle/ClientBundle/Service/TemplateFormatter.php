@@ -68,7 +68,7 @@ class TemplateFormatter
     public function generateDocumentTemplate(DocumentTemplate $doc, Package $package, ?User $user)
     {
         $order = $package->getOrder();
-        $hotel = $package->getRoomType()->getHotel() ?? $doc->getHotel();
+        $hotel = $package->getRoomType()->getHotel();
         $organization = $doc->getOrganization() ?? $hotel->getOrganization() ?? new Organization();
 
         $params = [
