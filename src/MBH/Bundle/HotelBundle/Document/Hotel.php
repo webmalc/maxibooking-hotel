@@ -1850,6 +1850,32 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     }
 
     /**
+     * @return mixed|null
+     */
+    public function getMainImage()
+    {
+        $mainImages = array_filter($this->getImages()->toArray(), function(Image $image) {
+            return $image->getIsDefault();
+        });
+
+        return empty($mainImages) ? null : current($mainImages);
+    }
+
+    /**
+     * @param Image $newMainImage
+     * @return Hotel
+     */
+    public function setHotelMainImage(Image $newMainImage)
+    {
+        foreach ($this->getImages() as $image) {
+            /** @var Image $image */
+            $image->setIsDefault($image->getId() == $newMainImage->getId());
+        }
+
+        return $this;
+    }
+
+    /**
      * @param UploaderHelper $helper
      * @param CacheManager $cacheManager
      * @return array

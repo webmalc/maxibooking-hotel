@@ -380,7 +380,6 @@ class HotelController extends Controller
         }
         $form = $this->createForm(HotelImageType::class);
         $panoramaForm = $this->createForm(HotelImageType::class, null, [
-            'showIsDefaultField' => false,
             'group_title' => 'form.hotel_images.groups.panorama',
             'buttonId' => 'panorama-button'
         ]);
@@ -402,11 +401,18 @@ class HotelController extends Controller
             }
         }
 
+        $mainImage = $hotel->getMainImage();
+        $notMainImages = array_filter($hotel->getImages()->toArray(), function(Image $image) use ($mainImage) {
+            return $image != $mainImage;
+        });
+
+
         return [
             'entity' => $hotel,
             'images_form' => $form->createView(),
             'panorama_form' => $panoramaForm->createView(),
-            'images' => $hotel->getImages()
+            'images' => $notMainImages,
+            'mainImage' => $mainImage
         ];
     }
 
@@ -449,22 +455,12 @@ class HotelController extends Controller
         if (!$this->container->get('mbh.hotel.selector')->checkPermissions($hotel)) {
             throw $this->createNotFoundException();
         }
-        $this->setHotelMainImage($hotel, $newMainImage);
+        $hotel->setHotelMainImage($newMainImage);
 
         $this->dm->flush();
         $this->addFlash('success', 'controller.hotelController.success_main_image_set');
 
         return $this->redirectToRoute('hotel_images', ['id' => $hotel->getId()]);
-    }
-
-    private function setHotelMainImage(Hotel $hotel, Image $newMainImage)
-    {
-        foreach ($hotel->getImages() as $image) {
-            /** @var Image $image */
-            $image->setIsDefault($image->getId() == $newMainImage->getId());
-        }
-
-        return $hotel;
     }
 
     /**
@@ -539,7 +535,7 @@ class HotelController extends Controller
         $panoramaImage = (new Image())
             ->setImageFile($imageFile);
         $hotel->addImage($panoramaImage);
-        $this->setHotelMainImage($hotel, $panoramaImage);
+        $hotel->setHotelMainImage($panoramaImage);
         $this->dm->persist($panoramaImage);
         $this->dm->flush();
 
@@ -556,7 +552,7 @@ class HotelController extends Controller
         $image = $form->getData();
         $hotel->addImage($image);
         if ($image->getIsDefault()) {
-            $this->setHotelMainImage($hotel, $image);
+            $hotel->setHotelMainImage($image);
         }
         $this->dm->persist($image);
         $this->dm->flush();

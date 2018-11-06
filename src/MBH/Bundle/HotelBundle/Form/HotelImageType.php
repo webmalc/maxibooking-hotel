@@ -3,7 +3,6 @@
 namespace MBH\Bundle\HotelBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
@@ -16,17 +15,6 @@ class HotelImageType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        if ($options['showIsDefaultField']) {
-            $builder
-                ->add('isDefault', CheckboxType::class, [
-                    'required' => false,
-                    'value' => false,
-                    'label' => 'form.hotel_images.image_is_default.label',
-                    'help' => 'form.hotel_images.image_is_default.help',
-                    'group' => $options['group_title']
-                ]);
-        }
-
         $builder
             ->add('imageFile', FileType::class, [
                 'label' => 'form.hotel_images.image_file.label',
@@ -41,7 +29,6 @@ class HotelImageType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => \MBH\Bundle\BaseBundle\Document\Image::class,
-            'showIsDefaultField' => true,
             'group_title' => 'form.hotel_images.groups.images',
             'buttonId' => 'upload-image-button'
         ]);
