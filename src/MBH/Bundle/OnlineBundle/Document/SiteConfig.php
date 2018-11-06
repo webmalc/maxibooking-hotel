@@ -15,6 +15,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class SiteConfig extends Base
 {
+    public const SCHEME = 'https';
+    public const DOMAIN = '.maaaxi.com';
+    public const FAKE_DOMAIN_FOR_DEV = 'fakeDomain';
+
     const COLORS_BY_THEMES = [
         'autumn' => [
             'main' => '#832736',
@@ -88,6 +92,20 @@ class SiteConfig extends Base
      * @Assert\NotBlank()
      */
     private $siteDomain;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     * @Assert\NotBlank()
+     */
+    private $scheme = self::SCHEME;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     * @Assert\NotBlank()
+     */
+    private $domain = self::DOMAIN;
 
     /**
      * @var string
@@ -231,5 +249,37 @@ class SiteConfig extends Base
     public function getThemeColors()
     {
         return self::COLORS_BY_THEMES[$this->getColorTheme()];
+    }
+
+    /**
+     * @return string
+     */
+    public function getScheme(): string
+    {
+        return $this->scheme;
+    }
+
+    /**
+     * @param string $scheme
+     */
+    public function setScheme(string $scheme): void
+    {
+        $this->scheme = $scheme;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDomain(): string
+    {
+        return $this->domain;
+    }
+
+    /**
+     * @param string $domain
+     */
+    public function setDomain(string $domain): void
+    {
+        $this->domain = $domain;
     }
 }

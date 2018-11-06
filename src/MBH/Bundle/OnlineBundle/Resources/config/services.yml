@@ -37,7 +37,11 @@ services:
 
     mbh.site_form:
         class: MBH\Bundle\OnlineBundle\Form\SiteForm
-        arguments: ['@doctrine.odm.mongodb.document_manager', '@translator', '@mbh.site_manager']
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@translator'
+            - '@mbh.site_manager'
+            - '%kernel.environment%'
         tags:
             {name: form.type}
 

@@ -49,7 +49,7 @@ class MBSiteController extends BaseController
                 $this->dm->persist($siteConfig);
 
                 $client = $clientManager->getClient();
-                $newSiteAddress = $siteManager->compileSiteAddress($siteConfig->getSiteDomain());
+                $newSiteAddress = $siteManager->compileSiteAddress($siteConfig);
 
                 if (is_null($clientSite)) {
                     $clientSite = (new WebSite());

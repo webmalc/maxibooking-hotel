@@ -23,8 +23,6 @@ class SiteManager
     const DEFAULT_RESULTS_PAGE = '/results/index.html';
     const PERSONAL_DATA_POLICIES_PAGE = '/personal-data-policies/index.html?q';
     const DEFAULT_BOOTSTRAP_THEME = 'cerulean';
-    const SITE_DOMAIN = '.maaaxi.com';
-    const SITE_PROTOCOL = 'https://';
     const MANDATORY_FIELDS_BY_ROUTE_NAMES = [
         Hotel::class => [
             'hotel_edit'                => ['description', 'logoImage'],
@@ -185,7 +183,7 @@ class SiteManager
 
             $config->setSiteDomain($siteDomain);
             $clientSite = (new WebSite())
-                ->setUrl($this->compileSiteAddress($siteDomain))
+                ->setUrl($this->compileSiteAddress($config))
                 ->setClient($client->getLogin());
             $this->billingApi->addClientSite($clientSite);
         }
@@ -223,7 +221,10 @@ class SiteManager
      */
     public function checkSiteDomain(string $siteDomain)
     {
-        $sitesResult = $this->billingApi->getSitesByUrlResult($this->compileSiteAddress($siteDomain));
+        $tempSiteConfig = new SiteConfig();
+        $tempSiteConfig->setSiteDomain($siteDomain);
+
+        $sitesResult = $this->billingApi->getSitesByUrlResult($this->compileSiteAddress($tempSiteConfig));
 
         return $sitesResult->isSuccessful() && empty($sitesResult->getData());
     }
@@ -269,7 +270,7 @@ class SiteManager
      */
     public function updateSiteFormConfig(SiteConfig $config, FormConfig $formConfig, array $paymentTypes = null)
     {
-        $siteAddress = $this->compileSiteAddress($config->getSiteDomain());
+        $siteAddress = $this->compileSiteAddress($config);
 
         $roomTypes = [];
         foreach ($config->getHotels() as $hotel) {
@@ -296,7 +297,7 @@ class SiteManager
     public function getSiteAddress()
     {
         return $this->getSiteConfig() && $this->getSiteConfig()->getSiteDomain()
-            ? $this->compileSiteAddress($this->getSiteConfig()->getSiteDomain())
+            ? $this->compileSiteAddress($this->getSiteConfig())
             : null;
     }
 
@@ -304,9 +305,15 @@ class SiteManager
      * @param string $siteDomain
      * @return string
      */
-    public function compileSiteAddress(string $siteDomain)
+    public function compileSiteAddress(SiteConfig $config)
     {
-        return self::SITE_PROTOCOL . $siteDomain . self::SITE_DOMAIN;
+        $format = '%s://%s';
+
+        if ($config->getDomain() !== SiteConfig::FAKE_DOMAIN_FOR_DEV) {
+            $format .= '%s';
+        }
+
+        return sprintf($format, $config->getScheme(), $config->getSiteDomain(), $config->getDomain());
     }
 
     /**

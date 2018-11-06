@@ -17,6 +17,8 @@
         <div class="box-body">
             {{ form_start(form, {'action': path('site_settings'), 'attr': {'class': 'form-horizontal'}}) }}
             {% set groups = {'form.main.group': form.children|keys} %}
+            {{ form_row(form.scheme) }}
+            {{ form_row(form.domain) }}
             {{ form_row(form.siteDomain) }}
             {{ form_row(form.colorTheme) }}
             {{ form_row(form.hotels) }}
@@ -39,8 +41,6 @@
                     </a>
                 </div>
             </div>
-            {#{{ form_row(form.contract) }}#}
-            {#{{ form_row(form.personalDataPolicies) }}#}
             {% include 'MBHBaseBundle:Actions:new.html.twig' %}
             {{ form_widget(form._token) }}
             {{ form_end(form, {render_rest: false}) }}
