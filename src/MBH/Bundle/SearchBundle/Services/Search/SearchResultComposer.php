@@ -25,6 +25,8 @@ use MBH\Bundle\SearchBundle\Services\Calc\CalcQuery;
 use MBH\Bundle\SearchBundle\Services\Calc\Calculation;
 use MBH\Bundle\SearchBundle\Services\Data\RoomCacheFetcher;
 use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher;
+use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\ActualOccupancyDeterminer;
+use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminerEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 
@@ -47,6 +49,10 @@ class SearchResultComposer
      * @var AccommodationRoomSearcher
      */
     private $accommodationRoomSearcher;
+    /**
+     * @var ActualOccupancyDeterminer
+     */
+    private $determiner;
 
     /** @var EventDispatcherInterface  */
     private $dispatcher;
@@ -68,6 +74,7 @@ class SearchResultComposer
         RoomCacheFetcher $roomCacheFetcher,
         SharedDataFetcher $sharedDataFetcher,
         AccommodationRoomSearcher $roomSearcher,
+        ActualOccupancyDeterminer $determiner,
         EventDispatcherInterface $dispatcher)
     {
         $this->roomManager = $roomManager;
@@ -76,6 +83,7 @@ class SearchResultComposer
         $this->roomCacheFetcher = $roomCacheFetcher;
         $this->sharedDataFetcher = $sharedDataFetcher;
         $this->accommodationRoomSearcher = $roomSearcher;
+        $this->determiner = $determiner;
         $this->dispatcher = $dispatcher;
     }
 
@@ -102,9 +110,10 @@ class SearchResultComposer
         $resultRoomType = ResultRoomType::createInstance($roomType);
         $resultTariff = ResultTariff::createInstance($tariff);
 
-        $actualAdults = $searchQuery->getActualAdults();
-        $actualChildren = $searchQuery->getActualChildren();
-        $infants = $searchQuery->getInfants();
+
+        $occupancy = $this->determiner->determine($searchQuery, OccupancyDeterminerEvent::AGES_DETERMINER_EVENT_CALCULATION);
+        $actualAdults = $occupancy->getAdults();
+        $actualChildren = $occupancy->getChildren();
 
         //** TODO: Цены вынести выше в поиске
         // В дальнейшем цены могут содержать разное кол-во детей и взрослых (инфантов)
@@ -128,7 +137,7 @@ class SearchResultComposer
                     $packagePrice->getDate(),
                     $adults,
                     $children,
-                    $infants,
+                    $occupancy->getInfants(),
                     $packagePrice->getPrice(),
                     $dayTariff);
                 $resultPrice->addDayPrice($dayPrice);

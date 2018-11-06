@@ -24,6 +24,9 @@ use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Data\RoomCacheFetcher;
 use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher;
 use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcherInterface;
+use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\ActualOccupancyDeterminer;
+use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminerEvent;
+use MBH\Bundle\SearchBundle\Services\Search\Determiners\OccupancyInterface;
 
 class SearchLimitChecker
 {
@@ -39,6 +42,10 @@ class SearchLimitChecker
 
     /** @var RoomCacheFetcher */
     private $roomCacheFetcher;
+    /**
+     * @var ActualOccupancyDeterminer
+     */
+    private $determiner;
 
 
     /**
@@ -47,18 +54,21 @@ class SearchLimitChecker
      * @param DocumentManager $documentManager
      * @param SharedDataFetcher $sharedDataFetcher
      * @param RoomCacheFetcher $roomCacheFetcher
+     * @param ActualOccupancyDeterminer $determiner
      */
     public function __construct(
         ClientConfigRepository $configRepository,
         DocumentManager $documentManager,
         SharedDataFetcher $sharedDataFetcher,
-        RoomCacheFetcher $roomCacheFetcher
+        RoomCacheFetcher $roomCacheFetcher,
+        ActualOccupancyDeterminer $determiner
 )
     {
         $this->clientConfig = $configRepository->fetchConfig();
         $this->dm = $documentManager;
         $this->sharedDataFetcher = $sharedDataFetcher;
         $this->roomCacheFetcher = $roomCacheFetcher;
+        $this->determiner = $determiner;
     }
 
 
@@ -96,10 +106,11 @@ class SearchLimitChecker
         $tariff = $this->sharedDataFetcher->getFetchedTariff($searchQuery->getTariffId());
         //** TODO: Уточнить у сергея, тут должны быть приведенные значения взрослых-детей или из запроса ибо в поиске из запрсоа. */
         $duration = $searchQuery->getDuration();
+        $actualOccupancy = $this->getActualOccupancies($searchQuery);
         $checkResult = PromotionConditionFactory::checkConditions(
             $tariff,
             $duration,
-            $searchQuery->getActualAdults(),
+            $actualOccupancy->getAdults(),
             $searchQuery->getActualChildren()
         );
 
@@ -112,13 +123,12 @@ class SearchLimitChecker
     public function checkRoomTypePopulationLimit(SearchQuery $searchQuery): void
     {
         $roomType = $this->sharedDataFetcher->getFetchedRoomType($searchQuery->getRoomTypeId());
-        $searchTotalPlaces = $searchQuery->getSearchTotalPlaces();
+        $actualOccupancy = $this->getActualOccupancies($searchQuery);
+
+        $searchTotalPlaces = $actualOccupancy->getAdults() + $actualOccupancy->getChildren();
         $roomTypeTotalPlaces = $roomType->getTotalPlaces();
 
-        $searchInfants = $searchQuery->getInfants();
-        $roomTypeMaxInfants = $roomType->getMaxInfants();
-
-        if ($searchTotalPlaces > $roomTypeTotalPlaces || $searchInfants > $roomTypeMaxInfants) {
+        if ($searchTotalPlaces > $roomTypeTotalPlaces) {
             throw new SearchLimitCheckerException('RoomType total place less than need in query.');
         }
     }
@@ -294,5 +304,10 @@ class SearchLimitChecker
             ;
             $result->setVirtualRoom($resultRoom);
         }
+    }
+
+    private function getActualOccupancies(SearchQuery $searchQuery): OccupancyInterface
+    {
+        return $this->determiner->determine($searchQuery, OccupancyDeterminerEvent::AGES_DETERMINER_EVENT_CHECK_LIMIT);
     }
 }
