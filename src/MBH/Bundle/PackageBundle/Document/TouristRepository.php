@@ -76,11 +76,21 @@ class TouristRepository extends DocumentRepository
             }
         }
 
+        $packageCriteria = new PackageQueryCriteria();
+
         if ($criteria->begin || $criteria->end) {
-            $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
-            $packageCriteria = new PackageQueryCriteria();
+            $criteriaDates = true;
             $packageCriteria->begin = $criteria->begin;
             $packageCriteria->end = $criteria->end;
+        }
+
+        if ($criteria->getHotels()->count() > 0) {
+            $criteriaHotel = true;
+            $packageCriteria->hotel = $criteria->getHotels();
+        }
+
+        if (isset($criteriaDates) || isset($criteriaHotel)) {
+            $packageRepository = $this->dm->getRepository('MBHPackageBundle:Package');
             $touristIDs = $packageRepository->findTouristIDsByCriteria($packageCriteria);
             $queryBuilder->field('id')->in($touristIDs);
         }

@@ -38,9 +38,9 @@
         {% endif %}
         {% if formConfig.js %}
         <script>
-            window.onload = function () {
+            window.addEventListener('load', function () {
                 {{ formConfig.js|raw }}
-            };
+            });
         </script>
         {% endif %}
     {% endif %}

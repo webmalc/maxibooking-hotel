@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -158,8 +159,17 @@ class PackageRepository extends DocumentRepository
         //hotel
         if (isset($criteria->hotel)) {
             $roomTypesIds = [];
-            foreach ($criteria->hotel->getRoomTypes() as $roomType) {
-                $roomTypesIds[] = $roomType->getId();
+            $hotels = $criteria->hotel;
+
+            if ($hotels instanceof Hotel) {
+                $hotels = new ArrayCollection([$hotels]);
+            }
+
+            /** @var Hotel $hotel */
+            foreach ($hotels as $hotel) {
+                foreach ($hotel->getRoomTypes() as $roomType) {
+                    $roomTypesIds[] = $roomType->getId();
+                }
             }
             if (count($roomTypesIds) > 0) {
                 $queryBuilder->field('roomType.id')->in($roomTypesIds);
@@ -583,7 +593,9 @@ class PackageRepository extends DocumentRepository
         $qb = $this->createQueryBuilder();
         $now = new \DateTime('midnight');
         $orderData = [];
-        $showDeleted = (isset($data['deleted']) && $data['deleted']) || (isset($data['dates']) && $data['dates'] === 'deletedAt');
+
+        $deletedAtFilter = isset($data['dates']) && $data['dates'] === 'deletedAt';
+        $showDeleted = (isset($data['deleted']) && $data['deleted']) || $deletedAtFilter;
 
         //confirmed
         if (isset($data['confirmed']) && $data['confirmed'] != null) {
@@ -680,6 +692,10 @@ class PackageRepository extends DocumentRepository
             if (isset($data['end']) && !empty($data['end'])) {
                 $qb->field($dateType)->lte($data['end']);
             }
+        }
+
+        if ($deletedAtFilter) {
+            $qb->field('deletedAt')->exists(true);
         }
 
         // filter
@@ -1141,7 +1157,6 @@ class PackageRepository extends DocumentRepository
             ->execute()
             ->toArray();
     }
-
 
     /**
      * @param $dateFilterType

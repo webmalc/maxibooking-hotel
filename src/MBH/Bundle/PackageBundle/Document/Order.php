@@ -623,13 +623,13 @@ class Order extends Base
     }
 
     /**
-     * Get channelMangerHumanId
+     * Get channelManagerHumanId
      *
-     * @return string $channelMangerHumanId
+     * @return string channelManagerHumanId
      */
     public function getChannelManagerHumanId()
     {
-        return $this->channelMangerHumanId;
+        return $this->channelManagerHumanId;
     }
 
     /**

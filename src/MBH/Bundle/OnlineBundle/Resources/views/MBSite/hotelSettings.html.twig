@@ -21,9 +21,9 @@
             {% for displayedData in displayedDataList %}
                 {% set document = displayedData['document'] %}
                 {% set documentId = document.id %}
-                <li>
-                    <a style="background-color: #e7f3e2; font-size: 16px">
-                        <i class='fa fa-{{ displayedData['categoryIcon'] }}'></i>{{ displayedData['categoryName'] }}</a>
+                    <li>
+                        <a style="background-color: #e7f3e2; font-size: 16px">
+                            <i class='fa fa-{{ displayedData['categoryIcon'] }}'></i>{{ displayedData['categoryName'] }}</a>
                     <ol style="list-style-type: none; padding-left: 0">
                         {% for routeName, warningInfo in displayedData['fieldsData'] %}
                             {% for correctnessType, fieldNames in warningInfo %}

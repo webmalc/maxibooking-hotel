@@ -82,16 +82,18 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
         if ($form->isSubmitted() && $form->isValid()) {
 
             $this->dm->persist($entity);
+
+
+            if (!$entity->isReadyToSync()) {
+                $entity->setIsMainSettingsFilled(true);
+                $this->get('mbh.messages_store')->sendMessageToTechSupportAboutNewConnection('Ostrovok', $this->get('mbh.instant_notifier'));
+            }
             $this->dm->flush();
 
             $this->get('mbh.channelmanager.ostrovok')->syncServices($entity);
             $this->get('mbh.channelmanager')->updateInBackground();
 
             $this->addFlash('success', 'controller.ostrovokController.settings_saved_success');
-
-            if (!$entity->isReadyToSync()) {
-                $this->get('mbh.messages_store')->sendMessageToTechSupportAboutNewConnection('Ostrovok', $this->get('mbh.instant_notifier'));
-            }
 
             return $this->redirect($this->generateUrl('ostrovok'));
         }
@@ -141,6 +143,10 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
 
             $userName = $this->getUser()->getUsername();
             $this->get('mbh.channelmanager')->logCollectionChanges($entity, 'rooms', $userName, $prevRooms);
+            if (!$entity->isReadyToSync()) {
+                $entity->setIsRoomsConfigured(true);
+            }
+
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();
@@ -197,6 +203,9 @@ class OstrovokController extends Controller implements CheckHotelControllerInter
 
             $userName = $this->getUser()->getUsername();
             $this->get('mbh.channelmanager')->logCollectionChanges($entity, 'tariffs', $userName, $prevTariffs);
+            if (!$entity->isReadyToSync()) {
+                $entity->setIsTariffsConfigured(true);
+            }
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();

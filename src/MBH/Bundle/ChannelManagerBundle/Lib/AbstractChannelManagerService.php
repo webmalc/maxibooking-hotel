@@ -6,6 +6,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
+use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
 use MBH\Bundle\ChannelManagerBundle\Services\Expedia\Expedia;
 use Symfony\Bridge\Twig\TwigEngine;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -44,6 +45,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         "ostrovok",
         "oktogo",
         "101Hotels",
+        Airbnb::NAME
     ];
 
     /**

@@ -199,18 +199,18 @@ parameters:
 
     #платежные системы
     mbh.payment_systems:
-      moneymail: 'MoneyMail'
+      !php/const:MBH\Bundle\ClientBundle\Document\PaymentSystem\Moneymail::KEY: 'MoneyMail'
       robokassa: 'Robokassa'
       payanyway: 'PayAnyWay'
       uniteller: 'Uniteller'
       rbk: 'Rbk'
-      newRbk: 'NewRbk'
+      !php/const:MBH\Bundle\ClientBundle\Document\PaymentSystem\NewRbk::KEY: 'NewRbk'
       paypal: 'PayPal'
       rnkb: 'Rnkb'
-      invoice: 'mbh.payment_systems.by_invoice'
+      !php/const:MBH\Bundle\ClientBundle\Document\PaymentSystem\Invoice::KEY: 'mbh.payment_systems.by_invoice'
       stripe: 'Stripe'
       tinkoff: Tinkoff
-      sberbank: Sberbank
+      !php/const:MBH\Bundle\ClientBundle\Document\PaymentSystem\Sberbank::KEY: Sberbank
     mbh.payment_systems.default: uniteller
     mbh.payment_systems.change: "%mbh_payment_systems_change%"
 
@@ -261,6 +261,9 @@ parameters:
         hundred_one_hotels:
           title: '101 Отель'
           service: 'mbh.channelmanager.hundred_one_hotels'
+        airbnb:
+          title: 'Airbnb'
+          service: 'mbh.airbnb'
 #        oktogo:
 #          title: 'Oktogo'
 #          service: 'mbh.channelmanager.oktogo'
