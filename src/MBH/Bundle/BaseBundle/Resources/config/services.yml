@@ -427,7 +427,7 @@ services:
 
     mbh.form_data_handler:
         class: MBH\Bundle\BaseBundle\Service\FormDataHandler
-        arguments: ['@translator', '@mbh.helper', '@mbh.multi_lang_translator']
+        arguments: ['@translator', '@mbh.multi_lang_translator']
 
     mbh.protected.file.downloader:
         class: MBH\Bundle\BaseBundle\Service\ProtectedFileViewer
@@ -497,6 +497,8 @@ services:
             - '@mbh.helper'
             - '@property_accessor'
             - '@stof_doctrine_extensions.listener.translatable'
+            - '@mbh.client_config_manager'
+            - '@translator'
             - '%locale%'
 
     mbh.menu_builder:

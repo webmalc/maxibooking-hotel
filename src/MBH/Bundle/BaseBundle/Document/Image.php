@@ -25,7 +25,7 @@ class Image
      * @var File
      * @Vich\UploadableField(mapping="upload_image", fileNameProperty="imageName")
      * @Assert\File(
-     *     maxSize = "2M", maxSizeMessage="validator.image.max_size_exceeded",
+     *     maxSize = "5M", maxSizeMessage="validator.image.max_size_exceeded",
      *     mimeTypes={
      *          "image/png",
      *          "image/jpeg",

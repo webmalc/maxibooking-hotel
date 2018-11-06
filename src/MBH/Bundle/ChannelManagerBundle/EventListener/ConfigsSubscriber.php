@@ -3,11 +3,11 @@ namespace MBH\Bundle\ChannelManagerBundle\EventListener;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
+use MBH\Bundle\ChannelManagerBundle\Document\AirbnbConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-
 
 class ConfigsSubscriber implements EventSubscriber
 {
@@ -38,15 +38,25 @@ class ConfigsSubscriber implements EventSubscriber
 
         if ($doc instanceof ChannelManagerConfigInterface && !$doc->getIsEnabled()) {
             $doc->setIsConfirmedWithDataWarnings(false);
+            $doc->setIsTariffsConfigured(false);
+            $doc->setIsRoomsConfigured(false);
+            $doc->setIsMainSettingsFilled(false);
+            if ($doc instanceof AirbnbConfig) {
+                $doc->setIsRoomLinksPageViewed(false);
+            }
+
             if (method_exists($doc, 'setIsConnectionSettingsRead')) {
-                $doc->setIsConnectionSettingsRead(true);
+                $doc->setIsConnectionSettingsRead(false);
             }
             if (method_exists($doc, 'setIsAllPackagesPulled')) {
-                $doc->setIsAllPackagesPulled(true);
+                $doc->setIsAllPackagesPulled(false);
             }
             $this->container->get('mbh.channelmanager')->closeInBackground();
-        }
 
+            $dm = $this->container->get('doctrine.odm.mongodb.document_manager');
+            $meta = $dm->getClassMetadata(get_class($doc));
+            $dm->getUnitOfWork()->computeChangeSet($meta, $doc);
+        }
     }
 
     /**

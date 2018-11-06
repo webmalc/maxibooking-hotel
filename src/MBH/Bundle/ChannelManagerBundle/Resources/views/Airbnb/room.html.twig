@@ -1,0 +1,33 @@
+{% extends 'MBHChannelManagerBundle:Airbnb:layout.html.twig' %}
+
+{% block content %}
+
+    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 2, 'entity': config, base: 'airbnb', services: false } %}
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="home">
+            <div class="well">
+                <p>{{ 'airbnb.rooms.connection_instructions.text1'|trans }}</p>
+                <p>{{ 'airbnb.rooms.connection_instructions.text2'|trans }}</p>
+
+                <p>{{ 'airbnb.rooms.connection_instructions.text3'|trans }}</p>
+                <ol class="btm-pd">
+                    {% for itemNumber in 1..7 %}
+                        <li>
+                            {{ ('airbnb.rooms.connection_instructions.list.text' ~ itemNumber)|trans|raw }}
+                        </li>
+                    {% endfor %}
+                </ol>
+
+            </div>
+            {{ form_start(form, {'action': path('airbnb_room'), 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(form) }}
+            {% include '@MBHChannelManager/Airbnb/actions.html.twig' with {route: 'airbnb_room'}%}
+            {{ form_end(form) }}
+
+            {% if config %}
+                {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': config, 'logs': logs} %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

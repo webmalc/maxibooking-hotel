@@ -12,6 +12,13 @@ textarea.big
     display: inline-block;
   }
 
+  @media (min-width: 768px) {
+    select + span.select2 {
+      width: unset !important;
+      min-width: 140px;
+    }
+  }
+
   input.datepicker {
     width: 80px;
   }
@@ -114,9 +121,14 @@ form.form-horizontal {
 }
 .navbar-link-button {
   color: white !important;
-  padding-bottom: 5px !important;
-  padding-top: 5px !important;
+  padding-bottom: 6px !important;
+  padding-top: 6px !important;
 }
 .navbar-link-button:hover, .navbar-link-button:focus {
   background-color: #3c8dbc !important;
+}
+input.readonly {
+  width: 100%;
+  border: 1px solid #aaa;
+  padding: 5px;
 }

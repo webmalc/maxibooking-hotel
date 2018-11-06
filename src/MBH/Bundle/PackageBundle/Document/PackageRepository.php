@@ -1158,7 +1158,6 @@ class PackageRepository extends DocumentRepository
             ->toArray();
     }
 
-
     /**
      * @param $dateFilterType
      * @param \DateTime $begin

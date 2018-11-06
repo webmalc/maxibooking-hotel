@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services\Expedia;
 
+use MBH\Bundle\BaseBundle\Service\Utils;
 use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractOrderInfo;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractRequestDataFormatter;
@@ -334,7 +335,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
      */
     private function calcNumberOfUpdates($numberOfUpdates, \DateTime $begin, \DateTime $end)
     {
-        $differenceInDays = $this->container->get('mbh.helper')->getDifferenceInDaysWithSign($begin, $end) + 1;
+        $differenceInDays = Utils::getDifferenceInDaysWithSign($begin, $end) + 1;
 
         return $numberOfUpdates * $differenceInDays;
     }

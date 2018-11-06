@@ -19,16 +19,16 @@ use MBH\Bundle\PriceBundle\Document\Tariff;
 class OstrovokDataGenerator
 {
     /**
-     * @param $roomCategory
+     * @param $CMRoomCategory
      * @param $count
      * @param \DateTime|null $startDate
      * @param \DateTime|null $endDate
      * @param $hotelId
      * @return array
      */
-    public function getRequestDataRnaRoomAmount($roomCategory, $count, \DateTime $startDate = null, \DateTime $endDate = null, $hotelId)
+    public function getRequestDataRnaRoomAmount($CMRoomCategory, $count, \DateTime $startDate = null, \DateTime $endDate = null, $hotelId)
     {
-        return ['room_categories' => [$this->getRnaRoomCategoriesData($roomCategory, $count, $startDate, $endDate, $hotelId)]];
+        return ['room_categories' => [$this->getRnaRoomCategoriesData($CMRoomCategory, $count, $startDate, $endDate, $hotelId)]];
     }
 
     /**
@@ -159,7 +159,7 @@ class OstrovokDataGenerator
      * @param $hotelId
      * @return array
      */
-    private function getRnaOccupanciesData($occupancyId, $roomCategory, $ratePlan, $price = null, \DateTime $start, \DateTime $end, $hotelId)
+    public function getRnaOccupanciesData($occupancyId, $roomCategory, $ratePlan, $price = null, \DateTime $start, \DateTime $end, $hotelId)
     {
         return [
             'hotel' => $hotelId,
@@ -187,7 +187,7 @@ class OstrovokDataGenerator
      * @param bool|null $closeOnDeparture
      * @return array
      */
-    private function getRnaRestrictionData(int $roomCategory, int $ratePlan, int $hotelId, \DateTime $start, \DateTime $end, int $minStayArrival = null, int $maxStayArrival = null, int $minStayThrough = null, int $maxStayThroug = null, bool $closeOnArrival = false, bool $closeOnDeparture = false, bool $disableFlexible = false)
+    public function getRnaRestrictionData(int $roomCategory, int $ratePlan, int $hotelId, \DateTime $start, \DateTime $end, int $minStayArrival = null, int $maxStayArrival = null, int $minStayThrough = null, int $maxStayThroug = null, bool $closeOnArrival = false, bool $closeOnDeparture = false, bool $disableFlexible = false)
     {
         return [
             'disable_flexible' => $disableFlexible,
@@ -209,14 +209,14 @@ class OstrovokDataGenerator
 
 
     /**
-     * @param $roomCategory
+     * @param $CMRoomCategory
      * @param $count
      * @param \DateTime|null $startDate
      * @param \DateTime|null $endDate
      * @param $hotelId
      * @return array
      */
-    private function getRnaRoomCategoriesData($roomCategory, $count, \DateTime $startDate = null, \DateTime $endDate = null, $hotelId)
+    public function getRnaRoomCategoriesData($CMRoomCategory, $count, \DateTime $startDate = null, \DateTime $endDate = null, $hotelId)
     {
         if ($count <= 0) {
             $count = 0;
@@ -225,7 +225,7 @@ class OstrovokDataGenerator
         return [
             'hotel' => $hotelId,
             'count' => $count,
-            'room_category' => $roomCategory,
+            'room_category' => $CMRoomCategory,
             'plan_date_start_at' => $startDate->format('Y-m-d'),
             'plan_date_end_at' => $endDate->format('Y-m-d'),
             'format' => 'json'

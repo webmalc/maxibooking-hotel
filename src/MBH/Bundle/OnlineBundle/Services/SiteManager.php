@@ -35,9 +35,8 @@ class SiteManager
                 'street',
                 'settlement',
                 'house',
-                'latitude',
-                'longitude',
                 'contactInformation',
+//                'mapUrl'
             ],
         ],
         RoomType::class => [
@@ -173,16 +172,14 @@ class SiteManager
     /**
      * @param Hotel $hotel
      * @param Client $client
-     * @param bool $isEnabled
      * @return SiteConfig
      */
-    public function createOrUpdateForHotel(Hotel $hotel, Client $client)
+    public function createOrUpdateForHotel(Client $client, Hotel $hotel = null)
     {
         $config = $this->getSiteConfig();
         if (is_null($config)) {
             $config = new SiteConfig();
             $this->dm->persist($config);
-            $config->addHotel($hotel);
 
             $siteDomain = $this->compileSiteDomain($client);
 
@@ -191,6 +188,10 @@ class SiteManager
                 ->setUrl($this->compileSiteAddress($siteDomain))
                 ->setClient($client->getLogin());
             $this->billingApi->addClientSite($clientSite);
+        }
+
+        if (!is_null($hotel)) {
+            $config->addHotel($hotel);
         }
 
         $this->updateSiteFormConfig($config, $this->fetchFormConfig());

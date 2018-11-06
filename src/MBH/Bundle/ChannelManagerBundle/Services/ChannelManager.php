@@ -5,12 +5,15 @@ namespace MBH\Bundle\ChannelManagerBundle\Services;
 use Gedmo\Loggable\Document\LogEntry;
 use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Lib\Task\Command;
+use MBH\Bundle\ChannelManagerBundle\Document\AirbnbConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\AirbnbRoom;
 use MBH\Bundle\ChannelManagerBundle\Document\BookingRoom;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerServiceInterface as ServiceInterface;
+use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use OldSound\RabbitMqBundle\RabbitMq\Producer;
@@ -33,13 +36,15 @@ class ChannelManager
         'vashotel' => 'VashotelConfig',
         'myallocator' => 'MyallocatorConfig',
         'expedia' => 'ExpediaConfig',
-        'hundred_one_hotels' => 'HundredOneHotelsConfig'
+        'hundred_one_hotels' => 'HundredOneHotelsConfig',
+        Airbnb::NAME => 'AirbnbConfig'
     ];
 
     const PULL_OLD_ORDERS_ROUTES = [
         'booking' => 'booking_all_packages_sync',
         'hundred_one_hotels' => 'hoh_packages_sync',
-        'expedia' => 'expedia_packages_sync'
+        'expedia' => 'expedia_packages_sync',
+        Airbnb::NAME => 'airbnb_all_packages_sync'
     ];
 
     /**
@@ -397,10 +402,11 @@ class ChannelManager
         $isExists = in_array($channelManagerName, $channelManagerNames);
 
         if (!$isExists && $throwException) {
-            throw new \InvalidArgumentException('Channel manager ' . $channelManagerName . ' does not exists');
+            throw new \InvalidArgumentException('Channel manager ' . $channelManagerName
+                . ' does not exists. Available services: ' . join($channelManagerNames));
         }
 
-        return $channelManagerName;
+        return $isExists;
     }
 
     /**
@@ -426,30 +432,31 @@ class ChannelManager
         return $this->container->getParameter('mbh.channelmanager.services')[$channelManagerName]['title'];
     }
 
-
     /**
      * @param Hotel $hotel
      * @param string $channelManagerName
      */
     public function setIsConnectionInstructionRead(Hotel $hotel, string $channelManagerName)
     {
-        if (!is_null($this->getConfigForHotel($hotel, $channelManagerName))) {
-            throw new \RuntimeException('There is existing config');
+        $config = $this->getConfigForHotel($hotel, $channelManagerName);
+        if (is_null($config)) {
+            /** @var ChannelManagerConfigInterface $config */
+            $configType = $this->getConfigFullName($channelManagerName);
+            $config = new $configType;
+            $config->setHotel($hotel);
+            $this->dm->persist($config);
         }
 
-        /** @var ChannelManagerConfigInterface $config */
-        $configType = $this->getConfigFullName($channelManagerName);
-        $config = new $configType;
         $config
-            ->setHotel($hotel)
+            ->setIsEnabled(true)
             ->setIsConnectionSettingsRead(true);
-
-        $this->dm->persist($config);
+        if ($channelManagerName === Airbnb::NAME) {
+            $config->setIsMainSettingsFilled(true);
+        }
 
         $this->dm->flush();
         $this->dm->refresh($hotel);
     }
-
 
     /**
      * @param string $channelManagerName
@@ -547,6 +554,8 @@ class ChannelManager
             $normalizedItem = [];
             if ($item instanceof BookingRoom) {
                 $normalizedItem['uploadSinglePrices'] = $item->isUploadSinglePrices();
+            } elseif ($item instanceof AirbnbRoom) {
+                $normalizedItem['syncUrl'] = $item->getSyncUrl();
             }
 
             if ($item instanceof Room) {
