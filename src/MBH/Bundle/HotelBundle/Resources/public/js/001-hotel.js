@@ -34,39 +34,57 @@ $(document).ready(function () {
     handlePanoramaCreation();
 });
 
+
 function handlePanoramaCreation() {
     var uploadCrop;
-    $('#upload-image-button').click(function () {
+
+    var $uploadImageButton = $('#upload-image-button');
+    $uploadImageButton.click(function () {
         $(this).closest('form').submit();
     });
 
-    $("#panorama-button").click(function () {
-        $('#upload-image-details-modal').modal('show');
-        $('.croppie-container').remove();
-        var input = $(this).closest('form').find('#mbhhotel_bundle_hotel_image_type_imageFile')[0];
+    $uploadImageButton.attr('disabled', !this.value);
+    $('#mbhhotel_bundle_hotel_image_type_imageFile').change(function () {
+        $uploadImageButton.attr('disabled', !this.value);
+    });
 
-        var $modalBody = $('#upload-image-details-modal-body');
+    var $panoramaButton = $("#panorama-button");
+    $panoramaButton.attr('disabled', true);
+    var $panoramaInput = $panoramaButton.closest('form').find('#mbhhotel_bundle_hotel_image_type_imageFile');
+    $panoramaInput.change(function () {
+        if (!this.value) {
+            $panoramaButton.attr('disabled', true);
+            $panoramaButton.unbind('click');
+        } else {
+            $panoramaButton.attr('disabled', false);
+            $panoramaButton.click(function () {
+                $('#upload-image-details-modal').modal('show');
+                $('.croppie-container').remove();
 
-        var imgEl = document.createElement('img');
-        imgEl.id = PANORAMA_IMG_ID;
-        $modalBody.append(imgEl);
+                var $modalBody = $('#upload-image-details-modal-body');
 
-        readURL(input);
-        setTimeout(function () {
-            var modalWidth = $modalBody.css('width');
-            var modalWidthWithoutPadding = Math.round(parseFloat(modalWidth)) - 2 * MODAL_BODY_PADDING;
-            uploadCrop = new Croppie(document.getElementById(PANORAMA_IMG_ID), {
-                viewport: {
-                    width: modalWidthWithoutPadding,
-                    height: modalWidthWithoutPadding / PANORAMA_WIDTH_TO_HEIGHT_RELATION,
-                    type: 'square'
-                },
-                boundary: {
-                    width: modalWidthWithoutPadding,
-                    height: 300
-                }
+                var imgEl = document.createElement('img');
+                imgEl.id = PANORAMA_IMG_ID;
+                $modalBody.append(imgEl);
+
+                readURL($panoramaInput[0]);
+                setTimeout(function () {
+                    var modalWidth = $modalBody.css('width');
+                    var modalWidthWithoutPadding = Math.round(parseFloat(modalWidth)) - 2 * MODAL_BODY_PADDING;
+                    uploadCrop = new Croppie(document.getElementById(PANORAMA_IMG_ID), {
+                        viewport: {
+                            width: modalWidthWithoutPadding,
+                            height: modalWidthWithoutPadding / PANORAMA_WIDTH_TO_HEIGHT_RELATION,
+                            type: 'square'
+                        },
+                        boundary: {
+                            width: modalWidthWithoutPadding,
+                            height: 300
+                        }
+                    });
+                }, 500);
             });
-        }, 500)
+        }
     });
 
     $('#upload-image-details-modal-save-button').on('click', function (ev) {

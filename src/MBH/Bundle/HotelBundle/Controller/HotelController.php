@@ -4,23 +4,18 @@ namespace MBH\Bundle\HotelBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Document\Image;
-use MBH\Bundle\BaseBundle\EventListener\OnRemoveSubscriber\Relationship;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Form\HotelContactInformationType;
 use MBH\Bundle\HotelBundle\Form\HotelExtendedType;
 use MBH\Bundle\HotelBundle\Form\HotelImageType;
 use MBH\Bundle\HotelBundle\Form\HotelType;
-use MBH\Bundle\PriceBundle\Document\Service;
-use MBH\Bundle\PriceBundle\Document\ServiceCategory;
-use MBH\Bundle\PriceBundle\Document\Tariff;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -372,6 +367,7 @@ class HotelController extends Controller
      * @param Request $request
      * @param Hotel $hotel
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \Exception
      */
     public function imagesAction(Request $request, Hotel $hotel)
     {
@@ -475,42 +471,14 @@ class HotelController extends Controller
      */
     public function deleteAction(Hotel $hotel)
     {
-        $relatedDocumentsData = $this->helper->getRelatedDocuments($hotel);
-
-        foreach ($relatedDocumentsData as $relatedDocumentData) {
-            /** @var Relationship $relationship */
-            $relationship = $relatedDocumentData['relation'];
-            $quantity = $relatedDocumentData['quantity'];
-            if (!in_array($relationship->getDocumentClass(), [ServiceCategory::class, Service::class])
-                && $quantity > 0
-                //If there are tariffs in addition to the main
-                && ($relationship->getDocumentClass() !== Tariff::class || $relatedDocumentData['quantity'] > 1)
-            ) {
-                $messageId = $relationship->getErrorMessage() ? $relationship->getErrorMessage() : 'exception.relation_delete.message';
-                $flashMessage = $this->get('translator')->trans($messageId, ['%total%' => $quantity]);
-                $this->addFlash('danger', $flashMessage);
-
-                return $this->redirectToRoute('hotel');
+        $warnings = $this->get('mbh.hotel.hotel_manager')->remove($hotel);
+        if (!empty($warnings)) {
+            foreach ($warnings as $warning) {
+                $this->addFlash('danger', $warning);
             }
-        }
 
-        $hotelMainTariff = $this->dm
-            ->getRepository('MBHPriceBundle:Tariff')
-            ->findOneBy(['isDefault' => true, 'hotel.id' => $hotel->getId()]);
-
-        if (!empty($hotelMainTariff)) {
-            $this->get('mbh.tariff_manager')->forceDelete($hotelMainTariff);
+            return $this->redirectToRoute('hotel');
         }
-
-        foreach ($hotel->getServices() as $service) {
-            $this->dm->remove($service);
-        }
-        $this->dm->flush();
-
-        foreach ($hotel->getServicesCategories() as $serviceCategory) {
-            $this->dm->remove($serviceCategory);
-        }
-        $this->dm->flush();
 
         $response = $this->deleteEntity($hotel->getId(), 'MBHHotelBundle:Hotel', 'hotel');
 
@@ -520,22 +488,16 @@ class HotelController extends Controller
     /**
      * @param Request $request
      * @param Hotel $hotel
+     * @throws \Exception
      */
     private function savePanoramaImage(Request $request, Hotel $hotel): void
     {
-        $path = $this->getParameter('kernel.project_dir') . '/web/upload/images/temp_image.png';
-
-        $imageData = $request->request->get('imagebase64');
-        list(, $imageData) = explode(';', $imageData);
-        list(, $imageData) = explode(',', $imageData);
-        $imageData = base64_decode($imageData);
-        file_put_contents($path, $imageData);
-
-        $imageFile = new UploadedFile($path, 'panorama.png', null, null, null, true);
-        $panoramaImage = (new Image())
-            ->setImageFile($imageFile);
+        $panoramaImage = $this
+            ->get('mbh.image_manager')
+            ->saveFromBase64StringToFile($request->request->get('imagebase64'), 'panorama');
         $hotel->addImage($panoramaImage);
         $hotel->setHotelMainImage($panoramaImage);
+
         $this->dm->persist($panoramaImage);
         $this->dm->flush();
 
