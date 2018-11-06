@@ -43,13 +43,13 @@ class OstrovokApiService
     private function createSignatureString($data)
     {
         $isList = false;
-        if (is_array($data) && count($data)) {
+        if (\is_array($data) && \count($data)) {
             if ($data[0]??false) {
                 $isList = true;
             }
         }
 
-        if (is_array($data) && !$isList) {
+        if (\is_array($data) && !$isList) {
             ksort($data);
             $tmp = array();
             foreach ($data as $key => $value) {
@@ -57,24 +57,24 @@ class OstrovokApiService
             }
             $result = array();
             foreach ($tmp as $key => $value) {
-                $result[] = implode("=", $value);
+                $result[] = implode('=', $value);
             }
 
-            return implode(";", $result);
-        } elseif (is_array($data) && $isList) {
+            return implode(';', $result);
+        } elseif (\is_array($data) && $isList) {
             $result = array();
             foreach ($data as $value) {
                 $result[] = $this->createSignatureString($value);
             }
-            $result = implode(";", $result);
-            if (count($data) > 1) {
-                $result = ("[" . $result . "]");
+            $result = implode(';', $result);
+            if (\count($data) > 1) {
+                $result = ('[' . $result . ']');
             }
 
             return $result;
-        } elseif (is_bool($data)) {
-            return $data ? "true" : "false";
-        } elseif (is_null($data)) {
+        } elseif (\is_bool($data)) {
+            return $data ? 'true' : 'false';
+        } elseif ($data === null) {
             return 'None';
         }
 
@@ -86,7 +86,7 @@ class OstrovokApiService
      * @param $private
      * @return string
      */
-    private function getSignature(array $data, $private)
+    private function getSignature(array $data, $private): string
     {
         $data['private'] = $private;
         $signatureString = $this->createSignatureString($data);
@@ -101,10 +101,10 @@ class OstrovokApiService
      */
     private function callGet($api_method, array $data)
     {
-        $data["token"] = $this->auth_token;
-        $data["limits"] = self::LIMIT;
-        $data["sign"] = $this->getSignature($data, $this->private_token);
-        $request = self::API_URL . $api_method . "?" . http_build_query($data) . "&";
+        $data['token'] = $this->auth_token;
+        $data['limits'] = self::LIMIT;
+        $data['sign'] = $this->getSignature($data, $this->private_token);
+        $request = self::API_URL . $api_method . '?' . http_build_query($data) . '&';
 
         $response = file_get_contents($request);
         if (!$response) {
@@ -120,10 +120,11 @@ class OstrovokApiService
      * @param array $data
      * @param array $get_data
      * @return mixed
+     * @throws OstrovokApiServiceException
      */
     private function callPUT($api_method, array $data, array $get_data = array())
     {
-        return $this->makeCall("PUT", $api_method, $data, $get_data);
+        return $this->makeCall('PUT', $api_method, $data, $get_data);
     }
 
     /**
@@ -134,7 +135,7 @@ class OstrovokApiService
      */
     private function callPOST($api_method, array $data, array $get_data = array())
     {
-        return $this->makeCall("POST", $api_method, $data, $get_data);
+        return $this->makeCall('POST', $api_method, $data, $get_data);
     }
 
     /**
@@ -143,15 +144,16 @@ class OstrovokApiService
      * @param array $data
      * @param array $get_data
      * @return mixed
+     * @throws OstrovokApiServiceException
      */
     private function makeCall(string $type, string $api_method, array $data, array $get_data = array())
     {
         $signature_data = $data;
-        $signature_data["token"] = $this->auth_token;
-        $get_data["token"] = $this->auth_token;
-        $get_data["sign"] = $this->getSignature($signature_data, $this->private_token);
+        $signature_data['token'] = $this->auth_token;
+        $get_data['token'] = $this->auth_token;
+        $get_data['sign'] = $this->getSignature($signature_data, $this->private_token);
 
-        $final_url = self::API_URL . $api_method . "?" . http_build_query($get_data);
+        $final_url = self::API_URL . $api_method . '?' . http_build_query($get_data);
         $curl = curl_init($final_url);
 
         $data_json = json_encode($data);
@@ -161,11 +163,16 @@ class OstrovokApiService
         curl_setopt($curl, CURLOPT_POSTFIELDS, $data_json);
         curl_setopt($curl, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json',
-            'Content-Length: ' . strlen($data_json),
+            'Content-Length: ' . \strlen($data_json),
         ));
 
         $response = json_decode(curl_exec($curl), true);
+        $curlInfo = curl_getinfo($curl);
         curl_close($curl);
+
+        if (!$response) {
+            throw new OstrovokApiServiceException('Some error in ostrovok api service. ' . json_encode($curlInfo));
+        }
         $this->checkErrors($response);
 
         return $response;
@@ -175,13 +182,13 @@ class OstrovokApiService
      * @param $response
      * @throws OstrovokApiServiceException
      */
-    private function checkErrors($response)
+    private function checkErrors($response): void
     {
         if (!empty($response['error'])) {
             throw new OstrovokApiServiceException(
-                is_array($response['error']) ? http_build_query($response['error']) : $response['error']
+                \is_array($response['error']) ? http_build_query($response['error']) : $response['error']
             );
-        };
+        }
     }
 
     /**
@@ -290,10 +297,11 @@ class OstrovokApiService
     /**
      * @param array $data
      * @return mixed
+     * @throws OstrovokApiServiceException
      */
     public function updateRNA(array $data = array())
     {
-        return $this->callPUT("rna/", $data);
+        return $this->callPUT('rna/', $data);
     }
 
     /**

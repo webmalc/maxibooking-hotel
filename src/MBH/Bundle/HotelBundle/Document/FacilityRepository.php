@@ -63,14 +63,15 @@ class FacilityRepository implements ContainerAwareInterface
      * @param array $facilitiesIds
      * @return array
      */
-    public function getActualFacilitiesData(Hotel $hotel, string $locale, array $facilitiesIds = null)
+    public function getActualFacilitiesData(string $locale, Hotel $hotel = null, array $facilitiesIds = null)
     {
         $dm = $this->container->get('doctrine.odm.mongodb.document_manager');
         $translator = $this->container->get('translator');
 
         $descriptionsByIds = $this->getAllGrouped(true, false, 'description');
         $titlesByIds = $this->getAllGrouped(false, false, 'title');
-        $facilityDocsByIds = $this->getFacilityDocsByIds($hotel);
+
+        $facilityDocsByIds = is_null($hotel) ? [] : $this->getFacilityDocsByIds($hotel);
 
         $facilityDescriptionTranslationDocs = $dm
             ->getRepository('GedmoTranslatable:Translation')
