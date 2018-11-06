@@ -67,6 +67,8 @@ form.hotel_contact_information.contact_info.group: 'Контакты служб�
 form.hotel_images.image_file.label: Изображение
 form.hotel_images.image_file.help: 'Изображение отеля для онлайн бронирования.<br>Максимальный размер файла 2 Мб, 80x90 px, типы файлов: png, jpg, gif.'
 form.hotel_images.image_is_default.label: 'Основное?'
+form.hotel_images.groups.images: Изображения
+form.hotel_images.groups.panorama: 'Изображение для панорамы'
 form.hotel_images.image_is_default.help: 'Является ли изображение основным для отеля?'
 form.hotel_logo.image_file.help: 'Логотип отеля'
 form.hotel_logo.group: 'Настройки логотипа'
@@ -158,9 +160,11 @@ controller.hotelController.record_created_success: 'Запись успешно 
 controller.hotelController.record_edited_success: 'Запись успешно отредактирована.'
 controller.hotelController.success_delete_photo: 'Изображение успешно удалено'
 controller.hotelController.success_main_image_set: 'Изображение установлено как основное для данного отеля'
+controller.hotelController.success_add_photo: 'Изображение успешно добавлено'
 hotel_images.set_image_main: 'Cделать изображение основным для данного отеля'
 hotel_images.main_image: 'Главная фотография'
 hotel_images.remove_image: 'Удалить картинку'
+hotel_images.download: 'Загрузка изображения'
 controller.roomTypeController.rooms_generation_success: 'Номера успешно сгенерированы'
 controller.roomController.success_room_creation: 'Комната успешно добавлена'
 controller.roomTypeController.record_edited_success: 'Запись успешно отредактирована.'
@@ -282,3 +286,4 @@ facility_controller.facility_description.save_table.success: 'Изменения
 views.facility.list.facility_title: Удобство
 views.facility.list.description_title: Описание
 views.facility.list.save_changes_button.title: 'Сохранить изменения'
+views.fields_group_with_button.button.title: Загрузить

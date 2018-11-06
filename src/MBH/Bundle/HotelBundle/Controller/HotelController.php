@@ -19,6 +19,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -234,6 +236,7 @@ class HotelController extends Controller
             $this->dm->persist($entity);
             $this->dm->flush();
         }
+
         return $this->redirect($this->generateUrl('hotel_edit', ['id' => $entity->getId()]));
     }
 
@@ -376,28 +379,33 @@ class HotelController extends Controller
             throw $this->createNotFoundException();
         }
         $form = $this->createForm(HotelImageType::class);
+        $panoramaForm = $this->createForm(HotelImageType::class, null, [
+            'showIsDefaultField' => false,
+            'group_title' => 'form.hotel_images.groups.panorama',
+            'buttonId' => 'panorama-button'
+        ]);
 
         $this->get('mbh.site_manager')->addFormErrorsForFieldsMandatoryForSite($hotel, $form, 'hotel_images');
 
-        $form->handleRequest($request);
-        if ($form->isValid()) {
-            /** @var Image $image */
-            $image = $form->getData();
-            $hotel->addImage($image);
-            if ($image->getIsDefault()) {
-                $this->setHotelMainImage($hotel, $image);
+        if ($request->isMethod('POST')) {
+            if ($request->request->get('panorama_image') === 'true') {
+                $this->savePanoramaImage($request, $hotel);
+
+                return $this->redirectToRoute('hotel_images', ['id' => $hotel->getId()]);
+            } else {
+                $form->handleRequest($request);
+                if ($form->isValid()) {
+                    $this->saveHotelImage($hotel, $form);
+
+                    return $this->redirectToRoute('hotel_images', ['id' => $hotel->getId()]);
+                }
             }
-            $this->dm->persist($image);
-            $this->dm->flush();
-
-            $this->addFlash('success', 'controller.hotelController.record_edited_success');
-
-            return $this->afterSaveRedirect('hotel', $hotel->getId(), [], '_images');
         }
 
         return [
             'entity' => $hotel,
-            'form' => $form->createView(),
+            'images_form' => $form->createView(),
+            'panorama_form' => $panoramaForm->createView(),
             'images' => $hotel->getImages()
         ];
     }
@@ -483,7 +491,7 @@ class HotelController extends Controller
                 && ($relationship->getDocumentClass() !== Tariff::class || $relatedDocumentData['quantity'] > 1)
             ) {
                 $messageId = $relationship->getErrorMessage() ? $relationship->getErrorMessage() : 'exception.relation_delete.message';
-                $flashMessage = $this->get('translator')->trans($messageId, ['%total%' =>  $quantity]);
+                $flashMessage = $this->get('translator')->trans($messageId, ['%total%' => $quantity]);
                 $this->addFlash('danger', $flashMessage);
 
                 return $this->redirectToRoute('hotel');
@@ -511,5 +519,48 @@ class HotelController extends Controller
         $response = $this->deleteEntity($hotel->getId(), 'MBHHotelBundle:Hotel', 'hotel');
 
         return $response;
+    }
+
+    /**
+     * @param Request $request
+     * @param Hotel $hotel
+     */
+    private function savePanoramaImage(Request $request, Hotel $hotel): void
+    {
+        $path = $this->getParameter('kernel.project_dir') . '/web/upload/images/temp_image.png';
+
+        $imageData = $request->request->get('imagebase64');
+        list(, $imageData) = explode(';', $imageData);
+        list(, $imageData) = explode(',', $imageData);
+        $imageData = base64_decode($imageData);
+        file_put_contents($path, $imageData);
+
+        $imageFile = new UploadedFile($path, 'panorama.png', null, null, null, true);
+        $panoramaImage = (new Image())
+            ->setImageFile($imageFile);
+        $hotel->addImage($panoramaImage);
+        $this->setHotelMainImage($hotel, $panoramaImage);
+        $this->dm->persist($panoramaImage);
+        $this->dm->flush();
+
+        $this->addFlash('success', 'controller.hotelController.success_add_photo');
+    }
+
+    /**
+     * @param Hotel $hotel
+     * @param $form
+     */
+    private function saveHotelImage(Hotel $hotel, FormInterface $form): void
+    {
+        /** @var Image $image */
+        $image = $form->getData();
+        $hotel->addImage($image);
+        if ($image->getIsDefault()) {
+            $this->setHotelMainImage($hotel, $image);
+        }
+        $this->dm->persist($image);
+        $this->dm->flush();
+
+        $this->addFlash('success', 'controller.hotelController.success_add_photo');
     }
 }
