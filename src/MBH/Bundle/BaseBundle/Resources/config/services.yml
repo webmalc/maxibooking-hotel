@@ -415,15 +415,15 @@ services:
 #            - [ "http://localhost:9090"]
 #        tags:
 #            - { name: "liip_imagine.cache.resolver", resolver: "proxy"}
-#    memcache:
-#        class: Memcache
-#        calls:
-#            - [connect, ["%memcache_host%", 11211 ]]
-#
-#    cache.memcache:
-#        class: Doctrine\Common\Cache\MemcacheCache
-#        calls:
-#            - [ setMemcache, ["@memcache"]]
+    memcache:
+        class: Memcache
+        calls:
+            - [connect, ["%memcache_host%", 11211 ]]
+
+    cache.memcache:
+        class: Doctrine\Common\Cache\MemcacheCache
+        calls:
+            - [ setMemcache, ["@memcache"]]
 
     mbh.form_data_handler:
         class: MBH\Bundle\BaseBundle\Service\FormDataHandler
