@@ -60,7 +60,7 @@ class AdditionalPriceCacheData extends AbstractFixture implements OrderedFixture
             'childPrice' => 1300,
             'additionalChildrenPrice' => 700,
             'additionalPrices' => [1500, 1450],
-            'additionalChildrenPrices' => [1300, 1250],
+            'additionalChildrenPrices' => [700, 1250],
         ],
         AdditionalRoomTypeData::THREE_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle']=> [
             'price' => 2000,

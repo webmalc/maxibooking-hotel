@@ -136,11 +136,19 @@ services:
         arguments:
             - '@service_container'
 
+    mbh_search.cache_key_abstract:
+        abstract: true
+        class: MBH\Bundle\SearchBundle\Lib\Combinations\CacheKey\AbstractKey
+        arguments:
+            - '@mbh_search.occupancy_determiner'
+
     mbh_search.cache_key_no_children_ages:
         class: MBH\Bundle\SearchBundle\Lib\Combinations\CacheKey\NoChildrenAgeKey
+        parent: mbh_search.cache_key_abstract
 
     mbh_search.cache_key_with_children_ages:
         class: MBH\Bundle\SearchBundle\Lib\Combinations\CacheKey\ChildrenAgeKey
+        parent: mbh_search.cache_key_abstract
 
     mbh_search.warm_up_searcher:
         class: MBH\Bundle\SearchBundle\Services\Search\WarmUpSearcher
@@ -222,6 +230,19 @@ services:
             - '@doctrine.odm.mongodb.document_manager'
             - '@mbh_search.shared_data_fetcher'
             - '@mbh_search.room_cache_fetcher'
+            - '@mbh_search.occupancy_determiner'
+
+
+#Occupancies
+    mbh_search.occupancy_determiner:
+        class: MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\ActualOccupancyDeterminer
+        arguments:
+            - '@event_dispatcher'
+            - '@mbh_search.occupancy_determiner_common'
+            - '@mbh_search.shared_data_fetcher'
+
+    mbh_search.occupancy_determiner_common:
+        class: MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\CommonDeterminer
 
 #invalidate Cache
     mbh_search.invalidate_adapter_factory:

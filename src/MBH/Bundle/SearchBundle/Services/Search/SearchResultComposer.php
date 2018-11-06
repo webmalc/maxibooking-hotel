@@ -23,6 +23,8 @@ use MBH\Bundle\SearchBundle\Services\Calc\CalcQuery;
 use MBH\Bundle\SearchBundle\Services\Calc\Calculation;
 use MBH\Bundle\SearchBundle\Services\Data\RoomCacheFetcher;
 use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher;
+use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\ActualOccupancyDeterminer;
+use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminerEvent;
 
 
 class SearchResultComposer
@@ -44,6 +46,10 @@ class SearchResultComposer
      * @var AccommodationRoomSearcher
      */
     private $accommodationRoomSearcher;
+    /**
+     * @var ActualOccupancyDeterminer
+     */
+    private $determiner;
 
     /**
      * SearchResultComposer constructor.
@@ -54,7 +60,7 @@ class SearchResultComposer
      * @param SharedDataFetcher $sharedDataFetcher
      * @param AccommodationRoomSearcher $roomSearcher
      */
-    public function __construct(RoomTypeManager $roomManager, Calculation $calculation, SearchLimitChecker $limitChecker, RoomCacheFetcher $roomCacheFetcher, SharedDataFetcher $sharedDataFetcher, AccommodationRoomSearcher $roomSearcher)
+    public function __construct(RoomTypeManager $roomManager, Calculation $calculation, SearchLimitChecker $limitChecker, RoomCacheFetcher $roomCacheFetcher, SharedDataFetcher $sharedDataFetcher, AccommodationRoomSearcher $roomSearcher, ActualOccupancyDeterminer $determiner)
     {
         $this->roomManager = $roomManager;
         $this->calculation = $calculation;
@@ -62,6 +68,7 @@ class SearchResultComposer
         $this->roomCacheFetcher = $roomCacheFetcher;
         $this->sharedDataFetcher = $sharedDataFetcher;
         $this->accommodationRoomSearcher = $roomSearcher;
+        $this->determiner = $determiner;
     }
 
 
@@ -76,9 +83,10 @@ class SearchResultComposer
         $resultRoomType = ResultRoomType::createInstance($roomType);
         $resultTariff = ResultTariff::createInstance($tariff);
 
-        $actualAdults = $searchQuery->getActualAdults();
-        $actualChildren = $searchQuery->getActualChildren();
-        $infants = $searchQuery->getInfants();
+
+        $occupancy = $this->determiner->determine($searchQuery, OccupancyDeterminerEvent::AGES_DETERMINER_EVENT_CALCULATION);
+        $actualAdults = $occupancy->getAdults();
+        $actualChildren = $occupancy->getChildren();
 
         //** TODO: Цены вынести выше в поиске
         // В дальнейшем цены могут содержать разное кол-во детей и взрослых (инфантов)
@@ -102,7 +110,7 @@ class SearchResultComposer
                     $packagePrice->getDate(),
                     $adults,
                     $children,
-                    $infants,
+                    $occupancy->getInfants(),
                     $packagePrice->getPrice(),
                     $dayTariff);
                 $resultPrice->addDayPrice($dayPrice);

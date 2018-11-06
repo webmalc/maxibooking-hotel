@@ -464,6 +464,7 @@ class Tariff extends Base implements ConditionsInterface
     public function setInfantAge($infantAge)
     {
         $this->infantAge = $infantAge;
+
         return $this;
     }
 
