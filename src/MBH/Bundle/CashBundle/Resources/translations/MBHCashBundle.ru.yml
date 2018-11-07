@@ -35,6 +35,7 @@ views.cash.index.show_deleted: 'Показать удаленные'
 views.cash.index.byDay: 'По дням'
 views.cash.index.result: Итого
 views.cash.index.type: 'Движение д/с'
+views.cash.index.commision: 'Показать комиссию'
 cashDocument.method.cash: Наличные
 cashDocument.method.cashless: Безнал
 cashDocument.method.electronic: Электронный

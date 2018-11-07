@@ -22,13 +22,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * Class CashController
-
- */
 class CashController extends Controller
 {
-
     /**
      * Lists all entities.
      *
@@ -36,6 +31,7 @@ class CashController extends Controller
      * @Method("GET")
      * @Security("is_granted('ROLE_CASH_VIEW')")
      * @Template()
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function indexAction()
     {
@@ -53,12 +49,6 @@ class CashController extends Controller
         $total = $in - $out;
 
         $cashArticleRepository = $this->dm->getRepository(CashDocumentArticle::class);
-
-        /*$cashArticleRepository->createQueryBuilder()->remove()->getQuery()->execute();
-        $d = new CashDocumentArticleData();
-        $d->setContainer($this->container);
-        $d->load($this->dm);*/
-
         $articles = $cashArticleRepository->findBy(['parent' => ['$exists' => false]], ['code' => 1]);
 
         return [

@@ -70,6 +70,7 @@ $(document).ready(function () {
         $showNoConfirmed = $('#show_no_confirmed'),
         $deletedCheckbox = $('#deleted-checkbox'),
         $byDayCheckbox = $('#by_day'),
+        $showCommission = $('#show_commission'),
         $user = $('#user'),
         $typeSelect = $('#cash-type'),
         getFormData = function () {
@@ -98,6 +99,7 @@ $(document).ready(function () {
                 show_no_paid: $showNoPaidCheckbox.prop("checked") ? 1 : 0,
                 show_no_confirmed: $showNoConfirmed.prop("checked") ? 1 : 0,
                 by_day: $byDayCheckbox.prop("checked") ? 1 : 0,
+                show_commission: $showCommission.bootstrapSwitch('state'),
                 deleted: $deletedCheckbox.prop("checked") ? 1 : 0,
                 user: $user.val(),
                 type: $typeSelect.val()

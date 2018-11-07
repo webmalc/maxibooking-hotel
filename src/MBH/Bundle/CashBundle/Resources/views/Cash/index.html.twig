@@ -101,6 +101,11 @@
                        data-toggle="tooltip"></i>
                     <input type="checkbox" name="by_day" id="by_day" value="1">
                 </div>
+                <div class="filter-form_input">
+                    <span class="has-icon" title="{{ 'views.cash.index.commision'|trans({}, 'MBHCashBundle') }}"
+                       data-toggle="tooltip"> % </span>
+                    <input type="checkbox" name="show_commision" id="show_commission">
+                </div>
             </div>
         </form>
         {% endblock content %}
