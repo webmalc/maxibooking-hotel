@@ -3,6 +3,7 @@
 namespace MBH\Bundle\BillingBundle\Command;
 
 use MBH\Bundle\BaseBundle\Lib\Task\Command;
+use MBH\Bundle\BaseBundle\Service\Utils;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -43,12 +44,11 @@ class ChannelManagerQueueGeneratorCommand extends ContainerAwareCommand
             ->getInstalledClients();
 
         if ($installedClientsResult->isSuccessful()) {
-            $helper = $this->getContainer()->get('mbh.helper');
-            $installedClients = array_filter($installedClientsResult->getData(), function (Client $client) use ($helper) {
+            $installedClients = array_filter($installedClientsResult->getData(), function (Client $client) {
                 return $client->getStatus() === Client::CLIENT_ACTIVE_STATUS
                     || ($client->getStatus() === Client::CLIENT_DISABLED_STATUS
                         && !is_null($client->getDisabledAtAsDateTime())
-                        && $helper->getDifferenceInDaysWithSign($client->getDisabledAtAsDateTime(), new \DateTime()) < 15);
+                        && Utils::getDifferenceInDaysWithSign($client->getDisabledAtAsDateTime(), new \DateTime()) < 15);
             });
 
             $installedClientNames = array_map(function (Client $client) {

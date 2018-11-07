@@ -408,12 +408,12 @@ var docReadyForms = function () {
     };
 
     var helperDate = {
-            returnPlusOneDay: function(date) {
-                if (date === undefined || date === null) {
-                    return date;
-                }
-                var newDate = moment(date);
-                newDate.add(1, 'day');
+        returnPlusOneDay: function(date) {
+            if (date === undefined || date === null) {
+                return date;
+            }
+            var newDate = moment(date);
+            newDate.add(1, 'day');
 
                 return newDate.format('DD.MM.YYYY');
             }

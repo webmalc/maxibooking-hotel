@@ -6,9 +6,11 @@ use MBH\Bundle\BaseBundle\Service\DocumentFieldsManager;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\BaseBundle\Service\WarningsCompiler;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
+use MBH\Bundle\ChannelManagerBundle\Document\AirbnbConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Form\IntroType;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
+use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\PriceCache;
@@ -38,7 +40,8 @@ class CMWizardManager
         WarningsCompiler $warningsCompiler,
         Helper $helper,
         Router $router
-    ) {
+    )
+    {
         $this->fieldsManager = $fieldsManager;
         $this->tokenStorage = $tokenStorage;
         $this->billingApi = $billingApi;
@@ -122,11 +125,15 @@ class CMWizardManager
             return $channelManagerName;
         }
 
-        if ($config->getRooms()->isEmpty()) {
+        if (!$config->isRoomsConfigured()) {
             return $channelManagerName . '_room';
         }
 
-        if ($config->getTariffs()->isEmpty()) {
+        if ($config instanceof AirbnbConfig && !$config->isRoomLinksPageViewed()) {
+            return 'airbnb_room_links';
+        }
+
+        if (!$config->isTariffsConfigured()) {
             return $channelManagerName . '_tariff';
         }
 
@@ -151,7 +158,7 @@ class CMWizardManager
             if (!empty($emptyFields)) {
                 $emptyFieldNames = array_map(
                     function ($emptyFieldName) {
-                        return '"'.$this->fieldsManager->getFieldName(Hotel::class, $emptyFieldName).'"';
+                        return '"' . $this->fieldsManager->getFieldName(Hotel::class, $emptyFieldName) . '"';
                     },
                     $emptyFields
                 );
@@ -187,15 +194,16 @@ class CMWizardManager
     public function getLastCachesData(ChannelManagerConfigInterface $config, string $cacheClass)
     {
         /** @var RoomType[] $syncRoomTypes */
-        $syncRoomTypes = array_unique(array_map(function(Room $room) {
+        $syncRoomTypes = array_unique(array_map(function (Room $room) {
             return $room->getRoomType();
         }, $config->getRooms()->toArray()), SORT_REGULAR);
         $syncRoomTypeIds = $this->helper->toIds($syncRoomTypes);
 
         /** @var Tariff[] $syncTariffs */
-        $syncTariffs = array_unique(array_map(function(\MBH\Bundle\ChannelManagerBundle\Document\Tariff $tariff) {
+        $syncTariffs = array_unique(array_map(function (\MBH\Bundle\ChannelManagerBundle\Document\Tariff $tariff) {
             return $tariff->getTariff();
         }, $config->getTariffs()->toArray()), SORT_REGULAR);
+
         $syncTariffIds = $this->helper->toIds($syncTariffs);
 
         $lastDefinedCaches = [];
@@ -203,7 +211,7 @@ class CMWizardManager
             $this->warningsCompiler->getLastCacheByRoomTypesAndTariffs($cacheClass, $syncRoomTypeIds, $syncTariffIds);
 
         foreach ($syncRoomTypes as $roomType) {
-            foreach ($syncTariffs as $tariff) {
+            foreach ($syncTariffs as $tariffNumber => $tariff) {
                 $tariffId = $cacheClass === PriceCache::class ? $tariff->getId() : 0;
                 if (isset($lastCacheByRoomTypesAndTariffs[$roomType->getId()][$tariffId])) {
                     /** @var \DateTime $date */
@@ -228,9 +236,11 @@ class CMWizardManager
                     'status' => $status
                 ];
 
-                $cacheClass === RoomCache::class
-                    ? $lastDefinedCaches[] = $cacheData
-                    : $lastDefinedCaches[$roomType->getId()][] = $cacheData;
+                if ($cacheClass === RoomCache::class && $tariffNumber === 0) {
+                    $lastDefinedCaches[] = $cacheData;
+                } else {
+                    $lastDefinedCaches[$roomType->getId()][] = $cacheData;
+                }
             }
         }
 

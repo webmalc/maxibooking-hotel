@@ -276,12 +276,4 @@ class VashotelConfig extends Base implements BaseInterface
         $this->password = $password;
         return $this;
     }
-
-    /**
-     * @return bool
-     */
-    public function isMainSettingsFilled()
-    {
-        return !empty($this->getHotelId()) && !empty($this->getPassword());
-    }
 }

@@ -280,12 +280,4 @@ class MyallocatorConfig extends Base implements BaseInterface, CurrencyConfigInt
 
         return $this;
     }
-
-    /**
-     * @return bool
-     */
-    public function isMainSettingsFilled()
-    {
-        return $this->getIsEnabled() && !empty($this->getToken()) && !empty($this->getHotelId());
-    }
 }

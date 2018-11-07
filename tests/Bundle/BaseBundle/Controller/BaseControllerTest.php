@@ -3,7 +3,7 @@
 namespace Tests\Bundle\BaseBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
-use Symfony\Bundle\FrameworkBundle\Client;
+use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
 use Symfony\Component\Routing\Route;
 
 class BaseControllerTest extends WebTestCase
@@ -162,6 +162,10 @@ class BaseControllerTest extends WebTestCase
         'ostrovok_room',
         'ostrovok_tariff',
         'ostrovok_service',
+        Airbnb::NAME,
+        'airbnb_room',
+        'airbnb_tariff',
+        'airbnb_all_packages_sync'
     ];
 
     /**
