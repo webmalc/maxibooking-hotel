@@ -506,6 +506,10 @@ class HotelController extends Controller
         foreach ($hotel->getServicesCategories() as $serviceCategory) {
             $this->dm->remove($serviceCategory);
         }
+        $siteConfig = $this->get('mbh.site_manager')->getSiteConfig();
+        if (!is_null($siteConfig)) {
+            $siteConfig->getHotels()->remove($hotel);
+        }
         $this->dm->flush();
 
         $response = $this->deleteEntity($hotel->getId(), 'MBHHotelBundle:Hotel', 'hotel');
