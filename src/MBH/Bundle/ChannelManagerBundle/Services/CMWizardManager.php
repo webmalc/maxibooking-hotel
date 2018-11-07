@@ -6,11 +6,10 @@ use MBH\Bundle\BaseBundle\Service\DocumentFieldsManager;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\BaseBundle\Service\WarningsCompiler;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
-use MBH\Bundle\ChannelManagerBundle\Document\AirbnbConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\ICalServiceConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Form\IntroType;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
-use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\PriceCache;
@@ -129,8 +128,8 @@ class CMWizardManager
             return $channelManagerName . '_room';
         }
 
-        if ($config instanceof AirbnbConfig && !$config->isRoomLinksPageViewed()) {
-            return 'airbnb_room_links';
+        if ($config instanceof ICalServiceConfig && !$config->isRoomLinksPageViewed()) {
+            return $channelManagerName . '_room_links';
         }
 
         if (!$config->isTariffsConfigured()) {

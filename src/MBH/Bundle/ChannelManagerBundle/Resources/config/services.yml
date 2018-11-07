@@ -170,23 +170,32 @@ services:
         tags: [{name: form.type}]
 
     mbh.airbnb:
-        class: MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb
+        class: MBH\Bundle\ChannelManagerBundle\Services\ICalService\Airbnb
         arguments: ['@service_container']
 
-    mbh.airbnb_room_form:
-        class: MBH\Bundle\ChannelManagerBundle\Form\AirbnbRoomsType
+    mbh.ical_service_room_form:
+        class: MBH\Bundle\ChannelManagerBundle\Form\ICalServiceRoomsType
         arguments: ['@doctrine.odm.mongodb.document_manager', '@router', '@translator']
+        tags: [{name: form.type}]
+
+    mbh.ical_service_tariff_form:
+        class: MBH\Bundle\ChannelManagerBundle\Form\ICalServiceTariffType
+        arguments: ['@translator']
         tags: [{name: form.type}]
 
     mbh.cm_http_service:
         class: MBH\Bundle\ChannelManagerBundle\Services\CMHttpService
 
-    mbh.airbnb_order_info:
-        class: MBH\Bundle\ChannelManagerBundle\Services\Airbnb\AirbnbOrderInfo
+    mbh.ical_service_order_info:
+        class: MBH\Bundle\ChannelManagerBundle\Services\ICalService\ICalServiceOrderInfo
         arguments: ['@service_container']
         shared: false
 
-    mbh.airbnb_package_info:
-        class: MBH\Bundle\ChannelManagerBundle\Services\Airbnb\AirbnbPackageInfo
+    mbh.ical_service_package_info:
+        class: MBH\Bundle\ChannelManagerBundle\Services\ICalService\ICalServicePackageInfo
         arguments: ['@service_container']
         shared: false
+
+    mbh.homeaway:
+        class: MBH\Bundle\ChannelManagerBundle\Services\ICalService\Homeaway
+        arguments: ['@service_container']

@@ -5,8 +5,9 @@ namespace MBH\Bundle\PackageBundle\DataFixtures\MongoDB;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
-use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
+use MBH\Bundle\ChannelManagerBundle\Services\ICalService\Airbnb;
 use MBH\Bundle\ChannelManagerBundle\Services\Expedia\Expedia;
+use MBH\Bundle\ChannelManagerBundle\Services\ICalService\Homeaway;
 use MBH\Bundle\ChannelManagerBundle\Services\HundredOneHotels;
 use MBH\Bundle\PackageBundle\Document\PackageSource;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -28,7 +29,8 @@ class PackageSourceData extends AbstractFixture implements OrderedFixtureInterfa
         'Myallocator.com' => 'myallocator',
         'TripAdvisor.com' => 'tripadvisor',
         'fixtures.package_source_data.channel_manager.vas_hotel_dot_ru' => 'vashotel',
-        'Airbnb' => Airbnb::NAME
+        Airbnb::HUMAN_NAME => Airbnb::NAME,
+        Homeaway::HUMAN_NAME => Homeaway::NAME
     ];
 
     const REGULAR_SOURCES = [

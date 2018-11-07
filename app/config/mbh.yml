@@ -264,6 +264,9 @@ parameters:
         airbnb:
           title: 'Airbnb'
           service: 'mbh.airbnb'
+        homeaway:
+          title: 'Homeaway'
+          service: 'mbh.homeaway'
 #        oktogo:
 #          title: 'Oktogo'
 #          service: 'mbh.channelmanager.oktogo'

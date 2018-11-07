@@ -1,0 +1,16 @@
+{% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 2, 'entity': config, base: service, services: false } %}
+
+<div class="tab-content">
+    <div class="tab-pane active" id="home">
+        {% block instructions %}
+        {% endblock %}
+        {{ form_start(form, {'action': path(service ~ '_room'), 'attr': {'class': 'form-horizontal'}}) }}
+        {{ form_widget(form) }}
+        {% include '@MBHChannelManager/IcalService/actions.html.twig' with {route: service ~ '_room'} %}
+        {{ form_end(form) }}
+
+        {% if config %}
+            {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': config, 'logs': logs} %}
+        {% endif %}
+    </div>
+</div>

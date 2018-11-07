@@ -4,8 +4,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Form;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Service\Utils;
-use MBH\Bundle\ChannelManagerBundle\Document\AirbnbConfig;
-use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
+use MBH\Bundle\ChannelManagerBundle\Document\ICalServiceConfig;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -15,7 +14,7 @@ use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
-class AirbnbRoomsType extends AbstractType
+class ICalServiceRoomsType extends AbstractType
 {
     private $dm;
     private $router;
@@ -30,7 +29,7 @@ class AirbnbRoomsType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        /** @var AirbnbConfig $config */
+        /** @var ICalServiceConfig $config */
         $config = $options['config'];
 
         $roomTypes = $config->getHotel()->getRoomTypes();
@@ -41,16 +40,24 @@ class AirbnbRoomsType extends AbstractType
             }
             $syncRoom = $config->getSyncRoomByRoomType($roomType);
 
-            $exampleUrl = 'https://www.airbnb.com/calendar/ical/12356789.ics?s=23987d97234e089734598f45';
-            $help = $this->translator->trans('forms.airbnb_rooms_type.sync_url.help', ['%exampleUrl%' => $exampleUrl]);
+            $help = $this->translator->trans('forms.ical_service_rooms_type.sync_url.help', [
+                '%exampleUrl%' => $options['exampleRoomUrl'],
+                '%channelManager%' => $options['channelManager']
+            ]);
 
             $builder
                 ->add($roomType->getId(), TextType::class, [
                     'label' => $roomType->getName(),
-                    'group' => 'forms.airbnb_rooms_type.sync_urls_group',
+                    'group' => $this->translator->trans('forms.ical_service_rooms_type.sync_urls_group', [
+                        '%channelManager%' => $options['channelManager']
+                    ]),
                     'required' => false,
                     'data' => !is_null($syncRoom) ? $syncRoom->getSyncUrl() : '',
-                    'constraints' => [new Callback([$this, 'validateSyncUrl'])],
+                    'constraints' => [new Callback(function (?string $syncUrl, ExecutionContextInterface $context) use ($options) {
+                        if (!is_null($syncUrl) && !Utils::startsWith($syncUrl, $options['syncUrlBegin'])) {
+                            $context->addViolation('validator.airbnb_rooms_type.sync_url');
+                        }
+                    })],
                     'help' => $help
                 ]);
         }
@@ -61,14 +68,10 @@ class AirbnbRoomsType extends AbstractType
         $resolver->setDefaults([
             'config' => null,
             'constraints' => [new Callback([$this, 'checkIsNotEmpty'])],
+            'exampleRoomUrl' => null,
+            'syncUrlBegin' => null,
+            'channelManager' => null
         ]);
-    }
-
-    public function validateSyncUrl(?string $syncUrl, ExecutionContextInterface $context)
-    {
-        if (!is_null($syncUrl) && !Utils::startsWith($syncUrl, Airbnb::SYNC_URL_BEGIN)) {
-            $context->addViolation('validator.airbnb_rooms_type.sync_url');
-        }
     }
 
     public function checkIsNotEmpty(array $data, ExecutionContextInterface $context)

@@ -11,25 +11,25 @@ trait ConfigTrait
      * @ODM\Field(type="bool")
      * @var bool
      */
-    private $isMainSettingsFilled = false;
+    protected $isMainSettingsFilled = false;
 
     /**
      * @ODM\Field(type="bool")
      * @var bool
      */
-    private $isConfirmedWithDataWarnings = false;
+    protected $isConfirmedWithDataWarnings = false;
 
     /**
      * @ODM\Field(type="bool")
      * @var bool
      */
-    private $isTariffsConfigured = false;
+    protected $isTariffsConfigured = false;
 
     /**
      * @ODM\Field(type="bool")
      * @var bool
      */
-    private $isRoomsConfigured = false;
+    protected $isRoomsConfigured = false;
 
     /**
      * @return bool

@@ -327,7 +327,8 @@ class Extension extends \Twig_Extension
                 'demo_user_token' => UserData::SANDBOX_USER_TOKEN,
                 'clients_support_email' => $supportEmail,
                 'support_phone' => $supportData['russian_support_phone'],
-                'support_main_email' => $supportMainEmail
+                'support_main_email' => $supportMainEmail,
+                'locale' => $this->container->get('session')->get('_locale') ?? $this->container->getParameter('locale')
             ];
 
             $this->isTwigDataInit = true;

@@ -18,7 +18,7 @@
     <br>
     <p>{{ 'cm_connection_instructions.part2.text1'|trans|raw }}</p>
 
-    {% set numberOfStepsByCMs = {booking: 8, expedia: 5, ostrovok: 6, hundred_one_hotels: 3, vashotel: 2, myallocator: 11, airbnb: 1} %}
+    {% set numberOfStepsByCMs = {booking: 8, expedia: 5, ostrovok: 6, hundred_one_hotels: 3, vashotel: 2, myallocator: 11, airbnb: 1, homeaway: 1} %}
 
     <ol class="btm-pd">
         {% for stepNumber in 1..numberOfStepsByCMs[channelManager] %}
@@ -34,7 +34,7 @@
     </p>
 {% endif %}
 <p>
-    {% if channelManager != 'myallocator' and channelManager != 'airbnb' %}
+    {% if channelManager != 'myallocator' and channelManager != 'airbnb' and channelManager != 'homeaway' %}
         {{ 'cm_connection_instructions.part3.text1'|trans({'%connectionLink%': get_guide_article_url('channel_manager_connections', channelManager)})|raw }}
     {% endif %}
     {{ 'cm_connection_instructions.part3.text2'|trans({'%supportEmail%': get_twig_data()['support_main_email']})|raw }}

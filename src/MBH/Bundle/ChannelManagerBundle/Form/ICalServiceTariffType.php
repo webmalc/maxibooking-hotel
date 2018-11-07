@@ -9,9 +9,16 @@ use MBH\Bundle\PriceBundle\Document\TariffRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatorInterface;
 
-class AirbnbTariffType extends AbstractType
+class ICalServiceTariffType extends AbstractType
 {
+    private $translator;
+
+    public function __construct(TranslatorInterface $translator) {
+        $this->translator = $translator;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         /** @var Hotel $hotel */
@@ -28,7 +35,9 @@ class AirbnbTariffType extends AbstractType
                 'query_builder' => function(TariffRepository $repository) use ($options) {
                     return $repository->fetchQueryBuilder($options['hotel'], null, true);
                 },
-                'help' => 'form.airbnb_tariff_type.tariff.help',
+                'help' => $this->translator->trans('form.ical_service_tariff_type.tariff.help', [
+                    '%channelManagerName%' => $options['channelManager']
+                ]),
                 'data' => $selectedTariff ? $selectedTariff : $hotel->getBaseTariff()
             ]);
     }
@@ -37,6 +46,7 @@ class AirbnbTariffType extends AbstractType
     {
         $resolver->setDefaults([
             'hotel' => null,
+            'channelManager' => null
         ]);
     }
 

@@ -15,14 +15,17 @@ use MBH\Bundle\BaseBundle\Controller\BaseController;
 class ChannelManagerApiController extends BaseController
 {
     /**
-     * @Route("/airbnb_room_calendar/{id}", name="airbnb_room_calendar")
+     * @Route("/ical_room_calendar/{service}/{id}", name="ical_room_calendar")
+     * @param string $channelManager
      * @param RoomType $roomType
      * @return Response
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function roomCalendarAction(RoomType $roomType)
+    public function roomCalendarAction(string $channelManager, RoomType $roomType)
     {
-        $calendar = $this->get('mbh.airbnb')->generateRoomCalendar($roomType);
+        $calendar = $this
+            ->get('mbh.channelmanager')
+            ->getServiceIdByName($channelManager)
+            ->generateRoomCalendar($roomType);
 
         return new Response($calendar, 200, [
             'Content-Type' => 'text/calendar; charset=utf-8',

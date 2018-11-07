@@ -1,9 +1,9 @@
 <?php
 
-namespace MBH\Bundle\ChannelManagerBundle\Services\Airbnb;
+namespace MBH\Bundle\ChannelManagerBundle\Services\ICalService;
 
 use MBH\Bundle\CashBundle\Document\CashDocument;
-use MBH\Bundle\ChannelManagerBundle\Document\AirbnbRoom;
+use MBH\Bundle\ChannelManagerBundle\Document\ICalServiceRoom;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractOrderInfo;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
 use MBH\Bundle\PackageBundle\Document\CreditCard;
@@ -13,26 +13,29 @@ use MBH\Bundle\PackageBundle\Document\PackageSource;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 
-class AirbnbOrderInfo extends AbstractOrderInfo
+class ICalServiceOrderInfo extends AbstractOrderInfo
 {
     private $orderData;
-    private $airbnbRoom;
+    private $icalServiceRoom;
     private $tariff;
+    private $channelManager;
 
     private $packagesData;
     private $isPackagesDataInit = false;
 
     /**
      * @param array $orderData
-     * @param AirbnbRoom $airbnbRoom
+     * @param ICalServiceRoom $icalServiceRoom
      * @param Tariff $tariff
-     * @return AirbnbOrderInfo
+     * @param string $channelManager
+     * @return ICalServiceOrderInfo
      */
-    public function setInitData(array $orderData, AirbnbRoom $airbnbRoom, Tariff $tariff)
+    public function setInitData(array $orderData, ICalServiceRoom $icalServiceRoom, Tariff $tariff, string $channelManager)
     {
         $this->orderData = $orderData;
-        $this->airbnbRoom = $airbnbRoom;
+        $this->icalServiceRoom = $icalServiceRoom;
         $this->tariff = $tariff;
+        $this->channelManager = $channelManager;
 
         return $this;
     }
@@ -88,8 +91,8 @@ class AirbnbOrderInfo extends AbstractOrderInfo
     {
         if (!$this->isPackagesDataInit) {
             $this->packagesData = [$this->container
-                ->get('mbh.airbnb_package_info')
-                ->setInitData($this->orderData, $this->airbnbRoom, $this->tariff)];
+                ->get('mbh.ical_service_package_info')
+                ->setInitData($this->orderData, $this->icalServiceRoom, $this->tariff)];
             $this->isPackagesDataInit = true;
         }
 
@@ -115,7 +118,7 @@ class AirbnbOrderInfo extends AbstractOrderInfo
 
     public function getChannelManagerName(): string
     {
-        return Airbnb::NAME;
+        return $this->channelManager;
     }
 
     public function isOrderModified(): bool

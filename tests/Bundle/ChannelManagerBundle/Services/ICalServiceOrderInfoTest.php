@@ -5,15 +5,15 @@ namespace Tests\Bundle\ChannelManagerBundle\Services;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Lib\Test\UnitTestCase;
 use MBH\Bundle\CashBundle\Document\CashDocument;
-use MBH\Bundle\ChannelManagerBundle\Document\AirbnbRoom;
-use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
-use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\AirbnbOrderInfo;
+use MBH\Bundle\ChannelManagerBundle\Document\ICalServiceRoom;
+use MBH\Bundle\ChannelManagerBundle\Services\ICalService\Airbnb;
+use MBH\Bundle\ChannelManagerBundle\Services\ICalService\ICalServiceOrderInfo;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class AirbnbOrderInfoTest extends UnitTestCase
+class ICalServiceOrderInfoTest extends UnitTestCase
 {
     const TEST_PROPERTY_NAME = 'some listing name';
     const TEST_UID = 'some_uid';
@@ -29,8 +29,8 @@ class AirbnbOrderInfoTest extends UnitTestCase
      */
     private $container;
 
-    /** @var AirbnbOrderInfo */
-    private $airbnbOrderInfo;
+    /** @var ICalServiceOrderInfo */
+    private $icalServiceOrderInfo;
     /** @var DocumentManager */
     private $dm;
 
@@ -55,7 +55,7 @@ class AirbnbOrderInfoTest extends UnitTestCase
      */
     public function testGetPayer()
     {
-        $payer = $this->airbnbOrderInfo->getPayer();
+        $payer = $this->icalServiceOrderInfo->getPayer();
         $this->assertInstanceOf(Tourist::class, $payer);
         $this->assertEquals(self::TEST_PHONE_CLEAR, $payer->getPhone(true));
         $this->assertEquals(self::TEST_FIRSTNAME, $payer->getFirstName());
@@ -65,12 +65,12 @@ class AirbnbOrderInfoTest extends UnitTestCase
 
     public function testGetChannelManagerOrderId()
     {
-        $this->assertEquals(self::TEST_UID, $this->airbnbOrderInfo->getChannelManagerOrderId());
+        $this->assertEquals(self::TEST_UID, $this->icalServiceOrderInfo->getChannelManagerOrderId());
     }
 
     public function testGetSource()
     {
-        $this->assertEquals(Airbnb::NAME, $this->airbnbOrderInfo->getSource()->getCode());
+        $this->assertEquals(Airbnb::NAME, $this->icalServiceOrderInfo->getSource()->getCode());
     }
 
     /**
@@ -78,7 +78,7 @@ class AirbnbOrderInfoTest extends UnitTestCase
      */
     public function testGetCashDocuments()
     {
-        $cashDocuments = $this->airbnbOrderInfo->getCashDocuments(new Order());
+        $cashDocuments = $this->icalServiceOrderInfo->getCashDocuments(new Order());
         $this->assertEquals(1, count($cashDocuments));
         $cashDoc = current($cashDocuments);
         $this->assertEquals(2400, $cashDoc->getTotal());
@@ -134,14 +134,14 @@ class AirbnbOrderInfoTest extends UnitTestCase
 
     public function testOrderCreation()
     {
-        $order = $this->container->get('mbh.channelmanager.order_handler')->createOrder($this->airbnbOrderInfo);
+        $order = $this->container->get('mbh.channelmanager.order_handler')->createOrder($this->icalServiceOrderInfo);
         $this->assertInstanceOf(Order::class, $order);
         $this->assertEquals(1, count($order->getPackages()));
     }
 
     private function getPackageInfo()
     {
-        return $this->airbnbOrderInfo->getPackagesData()[0];
+        return $this->icalServiceOrderInfo->getPackagesData()[0];
     }
 
     private function initOrderInfo()
@@ -152,10 +152,10 @@ class AirbnbOrderInfoTest extends UnitTestCase
             . 'PHONE: ' . self::TEST_PHONE . '\n'
             . 'EMAIL: ' . self::TEST_EMAIL . '\n'
             . 'PROPERTY: ' . self::TEST_PROPERTY_NAME . '\n';
-        $cmRoom = (new AirbnbRoom())->setRoomType($this->getRoomType());
+        $cmRoom = (new ICalServiceRoom())->setRoomType($this->getRoomType());
 
-        $this->airbnbOrderInfo = $this->container
-            ->get('mbh.airbnb_order_info')
+        $this->icalServiceOrderInfo = $this->container
+            ->get('mbh.ical_service_order_info')
             ->setInitData([
                 'DTSTART' => $this->getTestBegin()->format('Ymd'),
                 'DTEND' => $this->getTestEnd()->format('Ymd'),
@@ -163,7 +163,7 @@ class AirbnbOrderInfoTest extends UnitTestCase
                 'DESCRIPTION' => $description,
                 'SUMMARY' => self::TEST_FIRSTNAME . ' ' . self::TEST_LASTNAME . ' (HM3QFFPZ5N)',
                 'LOCATION' => self::TEST_PROPERTY_NAME,
-            ], $cmRoom, $this->getTariff());
+            ], $cmRoom, $this->getTariff(), Airbnb::NAME);
     }
 
 

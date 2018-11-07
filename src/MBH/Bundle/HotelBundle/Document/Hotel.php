@@ -17,6 +17,7 @@ use MBH\Bundle\BaseBundle\Document\Traits\LocalizableTrait;
 use MBH\Bundle\CashBundle\Document\CardType;
 use MBH\Bundle\ChannelManagerBundle\Document\AirbnbConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\HomeawayConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
 use MBH\Bundle\PackageBundle\Document\Organization;
@@ -240,6 +241,12 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\AirbnbConfig", mappedBy="hotel")
      */
     protected $airbnbConfig;
+
+    /**
+     * @var HomeawayConfig
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\HomeawayConfig", mappedBy="hotel")
+     */
+    protected $homeawayConfig;
 
     /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\IngredientCategory", mappedBy="hotel") */
     protected $ingredientCategories;
@@ -484,6 +491,25 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     public function setAirbnbConfig(AirbnbConfig $airbnbConfig): Hotel
     {
         $this->airbnbConfig = $airbnbConfig;
+
+        return $this;
+    }
+
+    /**
+     * @return HomeawayConfig
+     */
+    public function getHomeawayConfig(): ?HomeawayConfig
+    {
+        return $this->homeawayConfig;
+    }
+
+    /**
+     * @param HomeawayConfig $homeawayConfig
+     * @return Hotel
+     */
+    public function setHomeawayConfig(HomeawayConfig $homeawayConfig): Hotel
+    {
+        $this->homeawayConfig = $homeawayConfig;
 
         return $this;
     }

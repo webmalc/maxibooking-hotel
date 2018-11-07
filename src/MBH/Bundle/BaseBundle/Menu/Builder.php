@@ -6,7 +6,8 @@ use Documents\User;
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\ItemInterface;
 use MBH\Bundle\BaseBundle\Lib\Menu\BadgesHolder;
-use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
+use MBH\Bundle\ChannelManagerBundle\Services\ICalService\Airbnb;
+use MBH\Bundle\ChannelManagerBundle\Services\ICalService\Homeaway;
 use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -699,7 +700,7 @@ class Builder
                     'route' => 'booking',
                     'label' => 'Booking.com',
                 ],
-                'attributes' => ['icon' => 'fa fa-cloud-download'],
+                'attributes' => ['icon' => 'fa icon mbf-booking'],
             ],
         ];
 
@@ -709,7 +710,7 @@ class Builder
                     'route' => 'myallocator',
                     'label' => 'menu.communication.label.advanced',
                 ],
-                'attributes' => ['icon' => 'fa fa-cloud-download'],
+                'attributes' => ['icon' => 'fa icon mbf-myallocator'],
             ],
         ];
 
@@ -719,7 +720,7 @@ class Builder
                     'route' => 'ostrovok',
                     'label' => 'Ostrovok',
                 ],
-                'attributes' => ['icon' => 'fa fa-cloud-download'],
+                'attributes' => ['icon' => 'fa icon mbf-ostrovok'],
             ],
         ];
 
@@ -729,7 +730,7 @@ class Builder
                     'route' => 'vashotel',
                     'label' => 'menu.communication.label.your_hotel',
                 ],
-                'attributes' => ['icon' => 'fa fa-cloud-download'],
+                'attributes' => ['icon' => 'fa icon mbf-vashotel'],
             ],
         ];
 
@@ -757,9 +758,19 @@ class Builder
             Airbnb::NAME => [
                 'options' => [
                     'route' => Airbnb::NAME,
-                    'label' => 'Airbnb'
+                    'label' => Airbnb::HUMAN_NAME
                 ],
-                'attributes' => ['icon' => 'fa fa-cloud-download'],
+                'attributes' => ['icon' => 'fa icon mbf-airbnb'],
+            ]
+        ];
+
+        $homeaway = [
+            Homeaway::NAME => [
+                'options' => [
+                    'route' => Homeaway::NAME,
+                    'label' => Homeaway::HUMAN_NAME
+                ],
+                'attributes' => ['icon' => 'fa fa-home'],
             ]
         ];
 
@@ -772,7 +783,8 @@ class Builder
             $ostrovok,
             $hundredOneHotel,
             $vashotel,
-            $airbnb
+            $airbnb,
+            $homeaway
         ]));
 
     }

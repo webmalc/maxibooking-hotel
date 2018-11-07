@@ -3,13 +3,13 @@
 namespace MBH\Bundle\ChannelManagerBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
-use MBH\Bundle\ChannelManagerBundle\Document\AirbnbConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\ICalServiceRoom;
+use MBH\Bundle\ChannelManagerBundle\Document\HomeawayConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use MBH\Bundle\ChannelManagerBundle\Form\ICalServiceRoomsType;
 use MBH\Bundle\ChannelManagerBundle\Form\ICalServiceTariffType;
 use MBH\Bundle\ChannelManagerBundle\Form\AirbnbType;
-use MBH\Bundle\ChannelManagerBundle\Services\ICalService\Airbnb;
+use MBH\Bundle\ChannelManagerBundle\Services\ICalService\Homeaway;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -18,16 +18,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/airbnb")
- * Class AirbnbController
+ * @Route("/homeaway")
+ * Class HomeawayController
  * @package MBH\Bundle\ChannelManagerBundle\Controller
  */
-class AirbnbController extends BaseController
+class HomeawayController extends BaseController
 {
     /**
-     * @Route("/", name="airbnb")
+     * @Route("/", name="homeaway")
      * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_AIRBNB')")
+     * @Security("is_granted('ROLE_HOMEAWAY')")
      * @Template()
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
@@ -35,15 +35,15 @@ class AirbnbController extends BaseController
      */
     public function indexAction(Request $request)
     {
-        $config = $this->hotel->getAirbnbConfig();
+        $config = $this->hotel->getHomeawayConfig();
 
-        $isReadyResult = $this->get('mbh.cm_wizard_manager')->checkForReadinessOrGetStepUrl($config, Airbnb::NAME);
+        $isReadyResult = $this->get('mbh.cm_wizard_manager')->checkForReadinessOrGetStepUrl($config, Homeaway::NAME);
         if ($isReadyResult !== true) {
             return $this->redirect($isReadyResult);
         }
 
         if (!$config) {
-            $config = new AirbnbConfig();
+            $config = new HomeawayConfig();
             $config->setHotel($this->hotel);
         }
 
@@ -55,7 +55,7 @@ class AirbnbController extends BaseController
 
             if (!$config->isReadyToSync()) {
                 $this->get('mbh.messages_store')
-                    ->sendMessageToTechSupportAboutNewConnection(Airbnb::HUMAN_NAME, $this->get('mbh.instant_notifier'));
+                    ->sendMessageToTechSupportAboutNewConnection(Homeaway::HUMAN_NAME, $this->get('mbh.instant_notifier'));
             }
             $config->setIsMainSettingsFilled(true);
             $this->dm->flush();
@@ -63,7 +63,7 @@ class AirbnbController extends BaseController
             $this->get('mbh.channelmanager')->updateInBackground();
             $this->addFlash('success', 'controller.bookingController.settings_saved_success');
 
-            return $this->redirectToRoute(Airbnb::NAME);
+            return $this->redirectToRoute(Homeaway::NAME);
         }
 
         return [
@@ -75,22 +75,23 @@ class AirbnbController extends BaseController
 
     /**
      * Room configuration page
-     * @Route("/room", name="airbnb_room")
+     * @Route("/room", name="homeaway_room")
      * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_AIRBNB')")
+     * @Security("is_granted('ROLE_HOMEAWAY')")
      * @Template()
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function roomAction(Request $request)
     {
-        $config = $this->hotel->getAirbnbConfig();
+        $config = $this->hotel->getHomeawayConfig();
         $prevRooms = $config->getRooms()->toArray();
         $form = $this->createForm(ICalServiceRoomsType::class, null, [
             'config' => $config,
+            //TODO: Заменить
             'exampleRoomUrl' => 'https://www.airbnb.com/calendar/ical/12356789.ics?s=23987d97234e089734598f45',
-            'syncUrlBegin' => Airbnb::SYNC_URL_BEGIN,
-            'channelManager' => Airbnb::HUMAN_NAME
+            'syncUrlBegin' => Homeaway::SYNC_URL_BEGIN,
+            'channelManager' => Homeaway::HUMAN_NAME
         ]);
 
         $form->handleRequest($request);
@@ -118,7 +119,7 @@ class AirbnbController extends BaseController
             $this->addFlash('success', 'controller.bookingController.settings_saved_success');
             $this->get('mbh.channelmanager')->updateInBackground();
 
-            $redirectRouteName = $config->isReadyToSync() ? 'airbnb_room' : 'airbnb_room_links';
+            $redirectRouteName = $config->isReadyToSync() ? 'homeaway_room' : 'homeaway_room_links';
 
             return $this->redirect($this->generateUrl($redirectRouteName));
         }
@@ -132,19 +133,19 @@ class AirbnbController extends BaseController
 
     /**
      * @Template()
-     * @Route("/room_links", name="airbnb_room_links")
+     * @Route("/room_links", name="homeaway_room_links")
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function roomLinksAction(Request $request)
     {
-        $config = $this->hotel->getAirbnbConfig();
+        $config = $this->hotel->getHomeawayConfig();
         if ($request->isMethod('POST')) {
             $config->setIsRoomLinksPageViewed(true);
             $this->dm->flush();
 
             if (!$config->isReadyToSync()) {
-                return $this->redirectToRoute('airbnb_tariff');
+                return $this->redirectToRoute('homeaway_tariff');
             }
         }
 
@@ -153,25 +154,24 @@ class AirbnbController extends BaseController
             'logs' => $this->logs($config)
         ];
     }
-    
+
     /**
-     * Tariff configuration page
-     * @Route("/tariff", name="airbnb_tariff")
+     * @Route("/tariff", name="homeaway_tariff")
      * @Method({"GET", "POST"})
-     * @Security("is_granted('ROLE_AIRBNB')")
+     * @Security("is_granted('ROLE_HOMEAWAY')")
      * @Template()
      * @param Request $request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function tariffAction(Request $request)
     {
-        $config = $this->hotel->getAirbnbConfig();
+        $config = $this->hotel->getHomeawayConfig();
         $prevTariffs = $config->getTariffs()->toArray();
         $inGuide = !$config->isReadyToSync();
 
         $form = $this->createForm(ICalServiceTariffType::class, null, [
             'hotel' => $this->hotel,
-            'channelManager' => Airbnb::HUMAN_NAME
+            'channelManager' => Homeaway::HUMAN_NAME
         ]);
 
         $form->handleRequest($request);
@@ -195,8 +195,8 @@ class AirbnbController extends BaseController
             $this->get('mbh.channelmanager')->updateInBackground();
 
             $redirectRoute = $inGuide
-                ? $this->generateUrl('cm_data_warnings', ['channelManagerName' => Airbnb::NAME])
-                : $this->generateUrl('airbnb_tariff');
+                ? $this->generateUrl('cm_data_warnings', ['channelManagerName' => Homeaway::NAME])
+                : $this->generateUrl('homeaway_tariff');
 
             return $this->redirect($redirectRoute);
         }
@@ -210,9 +210,9 @@ class AirbnbController extends BaseController
 
     /**
      * Sync all old packages
-     * @Route("/packages/sync_all", name="airbnb_all_packages_sync")
+     * @Route("/packages/sync_all", name="homeaway_all_packages_sync")
      * @Method("GET")
-     * @Security("is_granted('ROLE_AIRBNB')")
+     * @Security("is_granted('ROLE_HOMEAWAY')")
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
@@ -221,10 +221,10 @@ class AirbnbController extends BaseController
         $returnUrl = $request->query->get('returnUrl');
         $config = $this->hotel->getHomeawayConfig();
         if ($config) {
-            $this->get('mbh.channelmanager')->pullOrdersInBackground(Airbnb::NAME, true);
+            $this->get('mbh.channelmanager')->pullOrdersInBackground(Homeaway::NAME, true);
             $this->addFlash('warning', 'controller.bookingController.packages_sync_start');
         }
 
-        return $this->redirect($returnUrl ?? $this->generateUrl(Airbnb::NAME));
+        return $this->redirect($returnUrl ?? $this->generateUrl(Homeaway::NAME));
     }
 }

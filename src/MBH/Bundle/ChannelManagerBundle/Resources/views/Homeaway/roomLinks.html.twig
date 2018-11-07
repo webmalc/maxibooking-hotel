@@ -1,0 +1,9 @@
+{% extends 'MBHChannelManagerBundle:ICalService:layout.html.twig' %}
+
+{% block content %}
+    {% embed '@MBHChannelManager/ICalService/roomLinks.html.twig' with {service: 'homeaway', syncAllPackagesRoute: 'homeaway_all_packages_sync'} %}
+        {% block instructions %}
+        {% endblock %}
+    {% endembed %}
+{% endblock %}
+

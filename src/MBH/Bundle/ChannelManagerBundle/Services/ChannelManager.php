@@ -5,15 +5,15 @@ namespace MBH\Bundle\ChannelManagerBundle\Services;
 use Gedmo\Loggable\Document\LogEntry;
 use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Lib\Task\Command;
-use MBH\Bundle\ChannelManagerBundle\Document\AirbnbConfig;
-use MBH\Bundle\ChannelManagerBundle\Document\AirbnbRoom;
+use MBH\Bundle\ChannelManagerBundle\Document\ICalServiceRoom;
 use MBH\Bundle\ChannelManagerBundle\Document\BookingRoom;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerServiceInterface as ServiceInterface;
-use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
+use MBH\Bundle\ChannelManagerBundle\Services\ICalService\Airbnb;
+use MBH\Bundle\ChannelManagerBundle\Services\ICalService\Homeaway;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use OldSound\RabbitMqBundle\RabbitMq\Producer;
@@ -37,14 +37,16 @@ class ChannelManager
         'myallocator' => 'MyallocatorConfig',
         'expedia' => 'ExpediaConfig',
         'hundred_one_hotels' => 'HundredOneHotelsConfig',
-        Airbnb::NAME => 'AirbnbConfig'
+        Airbnb::NAME => 'AirbnbConfig',
+        Homeaway::NAME => 'HomeawayConfig'
     ];
 
     const PULL_OLD_ORDERS_ROUTES = [
         'booking' => 'booking_all_packages_sync',
         'hundred_one_hotels' => 'hoh_packages_sync',
         'expedia' => 'expedia_packages_sync',
-        Airbnb::NAME => 'airbnb_all_packages_sync'
+        Airbnb::NAME => 'airbnb_all_packages_sync',
+        Homeaway::NAME => 'homeaway_all_packages_sync',
     ];
 
     /**
@@ -554,7 +556,7 @@ class ChannelManager
             $normalizedItem = [];
             if ($item instanceof BookingRoom) {
                 $normalizedItem['uploadSinglePrices'] = $item->isUploadSinglePrices();
-            } elseif ($item instanceof AirbnbRoom) {
+            } elseif ($item instanceof ICalServiceRoom) {
                 $normalizedItem['syncUrl'] = $item->getSyncUrl();
             }
 

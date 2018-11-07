@@ -7,9 +7,9 @@ use ICal\ICal;
 use MBH\Bundle\BaseBundle\Lib\Test\UnitTestCase;
 use MBH\Bundle\BillingBundle\Lib\Model\Result;
 use MBH\Bundle\ChannelManagerBundle\Document\AirbnbConfig;
-use MBH\Bundle\ChannelManagerBundle\Document\AirbnbRoom;
+use MBH\Bundle\ChannelManagerBundle\Document\ICalServiceRoom;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
-use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
+use MBH\Bundle\ChannelManagerBundle\Services\ICalService\Airbnb;
 use MBH\Bundle\ChannelManagerBundle\Services\CMHttpService;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PriceBundle\DataFixtures\MongoDB\RoomCacheData;
@@ -114,7 +114,7 @@ class AirbnbTest extends UnitTestCase
         $httpServiceMock = $this->getMockBuilder(CMHttpService::class)->getMock();
         $httpServiceMock
             ->expects($this->once())
-            ->method('getByAirbnbUrl')
+            ->method('getByUrl')
             ->willReturn((new Result())->setData($calendar));
         $this->container->set('mbh.cm_http_service', $httpServiceMock);
     }
@@ -179,8 +179,11 @@ END:VEVENT\n";
                 ->setHotel($hotel)
                 ->setIsConfirmedWithDataWarnings(true)
                 ->setIsConnectionSettingsRead(true)
+                ->setIsMainSettingsFilled(true)
+                ->setIsTariffsConfigured(true)
+                ->setIsRoomsConfigured(true)
                 ->addTariff((new Tariff())->setTariff($tariff))
-                ->addRoom((new AirbnbRoom())->setSyncUrl(Airbnb::SYNC_URL_BEGIN . '/some_fiction_number')->setRoomType($roomType));
+                ->addRoom((new ICalServiceRoom())->setSyncUrl(Airbnb::SYNC_URL_BEGIN . '/some_fiction_number')->setRoomType($roomType));
             $hotel->setAirbnbConfig($airbnbConfig);
 
             $this->dm->persist($airbnbConfig);

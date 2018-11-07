@@ -7,7 +7,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /**
  * @ODM\EmbeddedDocument
  */
-class AirbnbRoom extends Room
+class ICalServiceRoom extends Room
 {
     /**
      * @var string
@@ -25,9 +25,9 @@ class AirbnbRoom extends Room
 
     /**
      * @param string $syncUrl
-     * @return AirbnbRoom
+     * @return ICalServiceRoom
      */
-    public function setSyncUrl(string $syncUrl): AirbnbRoom
+    public function setSyncUrl(string $syncUrl): ICalServiceRoom
     {
         $this->syncUrl = $syncUrl;
 

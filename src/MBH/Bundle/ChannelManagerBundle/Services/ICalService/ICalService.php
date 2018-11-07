@@ -1,13 +1,13 @@
 <?php
 
-namespace MBH\Bundle\ChannelManagerBundle\Services\Airbnb;
+namespace MBH\Bundle\ChannelManagerBundle\Services\ICalService;
 
 use Eluceo\iCal\Component\Calendar;
 use Eluceo\iCal\Component\Event;
 use ICal\ICal;
 use MBH\Bundle\BaseBundle\Lib\EmptyCachePeriod;
-use MBH\Bundle\ChannelManagerBundle\Document\AirbnbConfig;
-use MBH\Bundle\ChannelManagerBundle\Document\AirbnbRoom;
+use MBH\Bundle\ChannelManagerBundle\Document\ICalServiceConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\ICalServiceRoom;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\HotelBundle\Document\RoomType;
@@ -19,12 +19,12 @@ use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\BrowserKit\Response;
 use Symfony\Component\HttpFoundation\Request;
 
-class Airbnb extends AbstractChannelManagerService
+abstract class ICalService extends AbstractChannelManagerService
 {
-    const NAME = 'airbnb';
-    const SYNC_URL_BEGIN = 'https://www.airbnb.';
-    const CONFIG = 'AirbnbConfig';
     const PERIOD_LENGTH = '1 year';
+
+    abstract protected function getName();
+    abstract protected function getHumanName();
 
     /**
      * @param \DateTime $begin
@@ -64,12 +64,12 @@ class Airbnb extends AbstractChannelManagerService
 
     /**
      * Create packages from service request
-     * @return \Symfony\Component\HttpFoundation\Response
      * @throw \Exception
+     * @throws \Throwable
      */
     public function createPackages()
     {
-        // TODO: Implement createPackages() method.
+        return $this->pullOrders();
     }
 
     /**
@@ -82,14 +82,14 @@ class Airbnb extends AbstractChannelManagerService
         $isSuccess = true;
 
         $httpService = $this->container->get('mbh.cm_http_service');
-        /** @var AirbnbConfig $config */
+        /** @var ICalServiceConfig $config */
         foreach ($this->getConfig() as $config) {
             $packagesByRoomIds = $this->getPackagesByRoomIds($config);
 
             foreach ($config->getRooms() as $room) {
-                $result = $httpService->getByAirbnbUrl($room->getSyncUrl());
+                $result = $httpService->getByUrl($room->getSyncUrl());
                 if ($result->isSuccessful()) {
-                    $airbnbPackageIds = [];
+                    $servicePackageIds = [];
                     $packagesInRoom = $packagesByRoomIds[$room->getRoomType()->getId()] ?? [];
 
                     $iCalResponse = new ICal($result->getData());
@@ -97,19 +97,19 @@ class Airbnb extends AbstractChannelManagerService
 
                     foreach ($events as $event) {
                         $orderInfo = $this->container
-                            ->get('mbh.airbnb_order_info')
-                            ->setInitData($event, $room, $config->getTariffs()->first()->getTariff());
-                        $airbnbPackageIds[] = $orderInfo->getChannelManagerOrderId();
+                            ->get('mbh.ical_service_order_info')
+                            ->setInitData($event, $room, $config->getTariffs()->first()->getTariff(), $this->getName());
+                        $servicePackageIds[] = $orderInfo->getChannelManagerOrderId();
                         $packagesInRoom = $this->modifyOrCreatePackage($packagesInRoom, $orderInfo);
                     }
 
-                    $this->removeMissingOrders($packagesInRoom, $airbnbPackageIds);
+                    $this->removeMissingOrders($packagesInRoom, $servicePackageIds);
                 } else {
-                    $this->notifyErrorRequest(self::NAME, 'channelManager.commonCM.notification.request_error.pull_orders');
+                    $this->notifyErrorRequest($this->getName(), 'channelManager.commonCM.notification.request_error.pull_orders');
                     $logErrorMessage = $this->container
                             ->get('translator')
                             ->trans('channelManager.commonCM.notification.request_error.pull_orders', [
-                                '%channelManagerName%' => 'Airbnb'
+                                '%channelManagerName%' => $this->getHumanName()
                             ], 'MBHChannelManagerBundle')
                         . '. URL:' . $room->getSyncUrl()
                         . '. Response: '
@@ -132,18 +132,18 @@ class Airbnb extends AbstractChannelManagerService
     public function generateRoomCalendar(RoomType $roomType)
     {
         $hotel = $roomType->getHotel();
-        $airbnbConfig = $hotel->getAirbnbConfig();
+        $config = $this->container->get('mbh.channelmanager')->getConfigForHotel($hotel, $this->getName());
 
         $begin = new \DateTime('midnight');
         $end = new \DateTime('midnight +' . self::PERIOD_LENGTH);
-        $this->logger->info('Request availability data from Airbnb for room type with id:' . $roomType->getId());
+        $this->logger->info('Request availability data from ' . $this->getHumanName() . ' for room type with id:' . $roomType->getId());
 
         //TODO: Уточнить
         $calendar = new Calendar('maxibooking');
 
-        if ($airbnbConfig->isReadyToSync()) {
+        if ($config->isReadyToSync()) {
             /** @var Tariff $tariff */
-            $tariff = $airbnbConfig->getTariffs()->first()->getTariff();
+            $tariff = $config->getTariffs()->first()->getTariff();
 
             $warningsCompiler = $this->container->get('mbh.warnings_compiler');
             $emptyPriceCachePeriods = $warningsCompiler
@@ -253,10 +253,11 @@ class Airbnb extends AbstractChannelManagerService
 
     /**
      * @param array $packagesInRoom
-     * @param AirbnbOrderInfo $orderInfo
+     * @param ICalServiceOrderInfo $orderInfo
      * @return mixed
      */
-    private function modifyOrCreatePackage(array $packagesInRoom, AirbnbOrderInfo $orderInfo)
+    //TODO: Заменить
+    private function modifyOrCreatePackage(array $packagesInRoom, ICalServiceOrderInfo $orderInfo)
     {
         if (isset($packagesInRoom[$orderInfo->getChannelManagerOrderId()])) {
             /** @var Package $existingPackage */
@@ -286,7 +287,7 @@ class Airbnb extends AbstractChannelManagerService
      */
     private function getPackagesByRoomIds($config): array
     {
-        $roomTypes = array_map(function (AirbnbRoom $room) {
+        $roomTypes = array_map(function (ICalServiceRoom $room) {
             return $room->getRoomType();
         }, $config->getRooms()->toArray());
         $roomTypeIds = $this->helper->toIds($roomTypes);
@@ -295,7 +296,7 @@ class Airbnb extends AbstractChannelManagerService
             ->getRepository('MBHPackageBundle:Package')
             ->findBy([
                 'roomType.id' => ['$in' => $roomTypeIds],
-                'channelManagerType' => self::NAME
+                'channelManagerType' => $this->getName()
             ]);
 
         $packagesByRoomIds = [];

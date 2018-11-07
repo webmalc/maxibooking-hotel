@@ -1,18 +1,18 @@
 <?php
 
-namespace MBH\Bundle\ChannelManagerBundle\Services\Airbnb;
+namespace MBH\Bundle\ChannelManagerBundle\Services\ICalService;
 
-use MBH\Bundle\ChannelManagerBundle\Document\AirbnbRoom;
+use MBH\Bundle\ChannelManagerBundle\Document\ICalServiceRoom;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 
-class AirbnbPackageInfo extends AbstractPackageInfo
+class ICalServicePackageInfo extends AbstractPackageInfo
 {
     /** @var array */
     private $packageData;
-    /** @var AirbnbRoom */
-    private $airbnbRoom;
+    /** @var ICalServiceRoom */
+    private $icalServiceRoom;
     /** @var Tariff */
     private $tariff;
 
@@ -22,14 +22,14 @@ class AirbnbPackageInfo extends AbstractPackageInfo
 
     /**
      * @param array $packageData
-     * @param AirbnbRoom $airbnbRoom
+     * @param ICalServiceRoom $icalServiceRoom
      * @param Tariff $tariff
-     * @return AirbnbPackageInfo
+     * @return ICalServicePackageInfo
      */
-    public function setInitData(array $packageData, AirbnbRoom $airbnbRoom, Tariff $tariff)
+    public function setInitData(array $packageData, ICalServiceRoom $icalServiceRoom, Tariff $tariff)
     {
         $this->packageData = $packageData;
-        $this->airbnbRoom = $airbnbRoom;
+        $this->icalServiceRoom = $icalServiceRoom;
         $this->tariff = $tariff;
 
         return $this;
@@ -47,7 +47,7 @@ class AirbnbPackageInfo extends AbstractPackageInfo
 
     public function getRoomType()
     {
-        return $this->airbnbRoom->getRoomType();
+        return $this->icalServiceRoom->getRoomType();
     }
 
     public function getTariff()
@@ -173,7 +173,7 @@ class AirbnbPackageInfo extends AbstractPackageInfo
                     'packagePrices' => $packagePrices
                 ];
 
-                $this->addPackageNote('airbnb_package_info.errors.can_not_calc_price');
+                $this->addPackageNote('ical_service_package_info.errors.can_not_calc_price');
                 $this->isCorrupted = true;
             } else {
                 $this->packagePrice = $pricesByCombinations[$combination];

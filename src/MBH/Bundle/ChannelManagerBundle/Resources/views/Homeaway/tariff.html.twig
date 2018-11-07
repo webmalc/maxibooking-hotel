@@ -1,0 +1,6 @@
+{% extends 'MBHChannelManagerBundle:Airbnb:layout.html.twig' %}
+
+{% block content %}
+    {% include '@MBHChannelManager/ICalService/tariff.html.twig' with {service: 'homeaway', syncAllPackagesRoute: 'homeaway_all_packages_sync'} %}
+{% endblock %}
+

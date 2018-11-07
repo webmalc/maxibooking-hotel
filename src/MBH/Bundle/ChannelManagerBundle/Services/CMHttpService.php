@@ -12,7 +12,7 @@ class CMHttpService
      * @param string $url
      * @return Result
      */
-    public function getByAirbnbUrl(string $url)
+    public function getByUrl(string $url)
     {
         $result = new Result();
         $client = new Client();

@@ -6,8 +6,9 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
-use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
+use MBH\Bundle\ChannelManagerBundle\Services\ICalService\Airbnb;
 use MBH\Bundle\ChannelManagerBundle\Services\Expedia\Expedia;
+use MBH\Bundle\ChannelManagerBundle\Services\ICalService\Homeaway;
 use Symfony\Bridge\Twig\TwigEngine;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
@@ -45,7 +46,8 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         "ostrovok",
         "oktogo",
         "101Hotels",
-        Airbnb::NAME
+        Airbnb::NAME,
+        Homeaway::NAME
     ];
 
     /**
@@ -748,12 +750,12 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
 
             $message
                 ->setText(
-                    $tr->trans($text, ['%info%' => $info], 'MBHChannelManagerBundle') . '<br>' .
+                    $tr->trans($text, array_merge($transParams, ['%info%' => $info]), 'MBHChannelManagerBundle') . '<br>' .
                     $tr->trans('channelManager.booking.notification.bottom', [], 'MBHChannelManagerBundle')
                 )
                 ->setTranslateParams($transParams)
                 ->setFrom('channelmanager')
-                ->setSubject($tr->trans($subject, [], 'MBHChannelManagerBundle'))
+                ->setSubject($tr->trans($subject, $transParams, 'MBHChannelManagerBundle'))
                 ->setType('danger')
                 ->setCategory('notification')
                 ->setAutohide(false)
@@ -830,9 +832,9 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             }
 
             $message
-                ->setText($tr->trans($text, ['%order%' => $order->getId(), '%packages%' => implode(', ', $packageNumbers)], 'MBHChannelManagerBundle'))
+                ->setText($tr->trans($text, array_merge($transParams, ['%order%' => $order->getId(), '%packages%' => implode(', ', $packageNumbers)]), 'MBHChannelManagerBundle'))
                 ->setFrom('channelmanager')
-                ->setSubject($tr->trans($subject, [], 'MBHChannelManagerBundle'))
+                ->setSubject($tr->trans($subject, $transParams, 'MBHChannelManagerBundle'))
                 ->setType($type == 'delete' ? 'danger' : 'info')
                 ->setCategory('notification')
                 ->setAutohide(false)
