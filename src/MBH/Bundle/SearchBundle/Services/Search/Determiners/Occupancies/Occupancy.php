@@ -66,9 +66,9 @@ class Occupancy implements OccupancyInterface
     {
         $instance = new static(
             $searchQuery->getAdults(),
-            $searchQuery->getChildren(),
+            $searchQuery->getChildren() ?? 0,
             0,
-            $searchQuery->getChildrenAges()
+            $searchQuery->getChildrenAges() ?? []
         );
 
         return $instance;

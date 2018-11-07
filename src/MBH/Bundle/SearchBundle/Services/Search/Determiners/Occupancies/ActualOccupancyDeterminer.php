@@ -35,21 +35,25 @@ class ActualOccupancyDeterminer
     }
 
 
-    public function determine(SearchQuery $searchQuery, string $eventName): OccupancyInterface
+    public function determine(SearchQuery $searchQuery, string $eventName = null): OccupancyInterface
     {
-        $event = new OccupancyDeterminerEvent();
+        $searchOccupancy = Occupancy::createInstanceBySearchQuery($searchQuery);
         $tariff = $this->sharedDataFetcher->getFetchedTariff($searchQuery->getTariffId());
         $roomType = $this->sharedDataFetcher->getFetchedRoomType($searchQuery->getRoomTypeId());
-        $searchOccupancy = Occupancy::createInstanceBySearchQuery($searchQuery);
-        $event->setTariff($tariff)
-            ->setRoomType($roomType)
-            ->setOccupancies($searchOccupancy)
-        ;
 
-        $this->dispatcher->dispatch($eventName, $event);
-        $occupancies = $event->getResolvedOccupancies();
-        if (null !== $occupancies) {
-            return $occupancies;
+        if ($eventName) {
+            $event = new OccupancyDeterminerEvent();
+
+            $event->setTariff($tariff)
+                ->setRoomType($roomType)
+                ->setOccupancies($searchOccupancy)
+            ;
+
+            $this->dispatcher->dispatch($eventName, $event);
+            $occupancies = $event->getResolvedOccupancies();
+            if (null !== $occupancies) {
+                return $occupancies;
+            }
         }
 
         return $this->commonDeterminer->determine($searchOccupancy, $tariff,  $roomType);

@@ -5,21 +5,26 @@ namespace Tests\Bundle\SearchBundle\Lib\Combinations\CacheKey;
 
 
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
-use MBH\Bundle\SearchBundle\Lib\Combinations\CacheKey\ChildrenAgeKey;
-use MBH\Bundle\SearchBundle\Lib\Combinations\CacheKey\NoChildrenAgeKey;
+use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
+use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher;
 
 class AgeKeyTest extends WebTestCase
 {
+
+
     /** @dataProvider dataProvider
      * @param $data
      * @param $expected
      */
+
+
     public function testChildrenAgeGetKey($data, $expected, $type): void
     {
-
+        $this->createFetcherMock($data);
         $searchQuery = $this->createSearchQuery($data);
-        $keyCreator = new ChildrenAgeKey();
+        $keyCreator = $this->getContainer()->get('mbh_search.cache_key_with_children_ages');
         if ($type === 'no_warmup') {
             $actual = $keyCreator->getKey($searchQuery);
         }
@@ -36,7 +41,9 @@ class AgeKeyTest extends WebTestCase
     public function testGetNoChildrenAgeKey($data, $expected, $type): void
     {
         $searchQuery = $this->createSearchQuery($data);
-        $keyCreator = new NoChildrenAgeKey();
+        $this->createFetcherMock($data);
+
+        $keyCreator = $this->getContainer()->get('mbh_search.cache_key_no_children_ages');
         if ($type === 'no_warmup') {
             $actual = $keyCreator->getKey($searchQuery);
         }
@@ -44,6 +51,24 @@ class AgeKeyTest extends WebTestCase
             $actual = $keyCreator->getWarmUpKey($searchQuery);
         }
         $this->assertEquals($expected['no_age'], $actual);
+    }
+
+    private function createFetcherMock($data)
+    {
+        $sharedDataFetcher = $this->createMock(SharedDataFetcher::class);
+        $sharedDataFetcher->expects($this->once())->method('getFetchedTariff')->willReturn(
+            (new Tariff())
+                ->setId($data['tariffId'])
+                ->setChildAge($data['tariffChildAge'])
+                ->setInfantAge($data['tariffInfantAge'])
+        );
+        $sharedDataFetcher->expects($this->once())->method('getFetchedRoomType')->willReturn(
+            (new RoomType())
+                ->setId($data['roomTypeId'])
+                ->setMaxInfants(2)
+        );
+
+        $this->getContainer()->set('mbh_search.shared_data_fetcher', $sharedDataFetcher);
     }
 
     private function createSearchQuery($data): SearchQuery
@@ -57,8 +82,7 @@ class AgeKeyTest extends WebTestCase
             ->setAdults($data['adults'])
             ->setChildren($data['children'])
             ->setChildrenAges($data['childrenAges'])
-            ->setInfantAge($data['tariffInfantAge'])
-            ->setChildAge($data['tariffChildAge']);
+        ;
 
         return $searchQuery;
     }

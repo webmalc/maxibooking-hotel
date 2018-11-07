@@ -37,7 +37,7 @@ class ActualOccupancyDeterminerTest extends WebTestCase
             ->setChildren(1)
             ->setChildrenAges([1]);
 
-        $service->determine($searchQuery);
+        $service->determine($searchQuery, 'fakeEvent');
 
     }
 }

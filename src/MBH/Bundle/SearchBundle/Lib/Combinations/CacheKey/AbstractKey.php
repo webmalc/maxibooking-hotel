@@ -5,18 +5,20 @@ namespace MBH\Bundle\SearchBundle\Lib\Combinations\CacheKey;
 
 
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
-use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\ActualOccupancyDeterminer;
+use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\CacheKeyOccupancyDetermineInterface;
 
 abstract class AbstractKey implements CacheKeyInterface
 {
-    /** @var ActualOccupancyDeterminer */
+    /**
+     * @var CacheKeyOccupancyDetermineInterface
+     */
     protected $determiner;
 
     /**
      * AbstractKey constructor.
-     * @param ActualOccupancyDeterminer $determiner
+     * @param CacheKeyOccupancyDetermineInterface $determiner
      */
-    public function __construct(ActualOccupancyDeterminer $determiner)
+    public function __construct(CacheKeyOccupancyDetermineInterface $determiner)
     {
         $this->determiner = $determiner;
     }
