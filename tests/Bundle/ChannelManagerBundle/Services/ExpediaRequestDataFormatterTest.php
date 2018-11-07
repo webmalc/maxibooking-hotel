@@ -44,7 +44,7 @@ class ExpediaRequestDataFormatterTest extends UnitTestCase
         $this->initConfig();
 
         $this->begin = new \DateTime('midnight');
-        $this->end = new \DateTime('midnight + 30 days');
+        $this->end = new \DateTime('midnight +30 days');
     }
 
     /**
@@ -52,10 +52,7 @@ class ExpediaRequestDataFormatterTest extends UnitTestCase
      */
     public function testFormatPriceRequestData()
     {
-        $begin = new \DateTime('midnight');
-        $end = new \DateTime('midnight + 30 days');
-
-        $requestData = $this->dataFormatter->formatPriceRequestData($begin, $end, null, $this->getServiceTariffData(), $this->config);
+        $requestData = $this->dataFormatter->formatPriceRequestData($this->begin, $this->end, null, $this->getServiceTariffData(), $this->config);
         $this->assertEquals([$this->compileExpectedRequestData()], $requestData);
     }
 
