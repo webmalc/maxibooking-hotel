@@ -142,7 +142,7 @@ services:
         abstract: true
         class: MBH\Bundle\SearchBundle\Lib\Combinations\CacheKey\AbstractKey
         arguments:
-            - '@mbh_search.occupancy_determiner'
+            - '@mbh_search.cache_key_determiner'
 
     mbh_search.cache_key_no_children_ages:
         class: MBH\Bundle\SearchBundle\Lib\Combinations\CacheKey\NoChildrenAgeKey
@@ -203,6 +203,7 @@ services:
             - '@mbh_search.room_cache_fetcher'
             - '@mbh_search.shared_data_fetcher'
             - '@mbh_search.accommodation_room_searcher'
+            - '@mbh_search.occupancy_determiner'
             - '@event_dispatcher'
 
 # async receive results
@@ -245,6 +246,21 @@ services:
 
     mbh_search.occupancy_determiner_common:
         class: MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\CommonDeterminer
+
+    mbh_search.occupancy_determiner_no_transform:
+        class: MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\NoTransformDeterminer
+
+    mbh_search.determiner_factory:
+        class: MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\DeterminerFactory
+        arguments:
+            - '@service_container'
+
+    mbh_search.cache_key_determiner:
+        class: MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\CacheKeyDeterminer
+        arguments:
+            - '@mbh_search.determiner_factory'
+            - '@mbh_search.shared_data_fetcher'
+
 
 #invalidate Cache
     mbh_search.invalidate_adapter_factory:

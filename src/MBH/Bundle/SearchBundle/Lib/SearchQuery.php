@@ -209,10 +209,11 @@ class SearchQuery
         return $this;
     }
 
+
     /**
-     * @return mixed
+     * @return int|null
      */
-    public function getChildren()
+    public function getChildren(): ?int
     {
         return $this->children;
     }
@@ -293,47 +294,6 @@ class SearchQuery
         return $this;
     }
 
-    /**
-     * @return int
-     */
-    public function getChildAge(): int
-    {
-        return $this->childAge;
-    }
-
-    /**
-     * TODO: Возраст будет браться из калькуляции взависимости от  тарифа priceCache (из за комбинирования тарифов)
-     * TODO: Так же используется для определения ключа кэша.
-     * @param int $childAge
-     * @return SearchQuery
-     */
-    public function setChildAge(int $childAge): SearchQuery
-    {
-        $this->childAge = $childAge;
-
-        return $this;
-    }
-
-    /**
-     * @deprecated
-     * TODO: Возраст будет браться из калькуляции взависимости от  тарифа priceCache (из за комбинирования тарифов)
-     * @return int
-     */
-    public function getInfantAge(): int
-    {
-        return $this->infantAge;
-    }
-
-    /**
-     * @param int $infantAge
-     * @return SearchQuery
-     */
-    public function setInfantAge(int $infantAge): SearchQuery
-    {
-        $this->infantAge = $infantAge;
-
-        return $this;
-    }
 
     /**
      * @return bool
@@ -438,8 +398,6 @@ class SearchQuery
             ->setTariffId($tariffRoomType['tariffId'])
             ->setRestrictionTariffId($tariffRoomType['restrictionTariffId'])
             ->setRoomTypeId($tariffRoomType['roomTypeId'])
-            ->setChildAge($tariffRoomType['tariff']['childAge'])
-            ->setInfantAge($tariffRoomType['tariff']['infantAge'])
             ->setSearchConditions($conditions)
             ->setIgnoreRestrictions($conditions->isIgnoreRestrictions())
             ->setChildren($conditions->getChildren())
