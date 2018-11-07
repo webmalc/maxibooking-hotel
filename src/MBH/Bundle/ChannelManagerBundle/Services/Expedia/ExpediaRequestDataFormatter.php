@@ -51,22 +51,22 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
      * Форматирование данных в формате xml, отправляемых в запросе обновления цен сервиса
      * @param $begin
      * @param $end
-     * @param $roomTypes
+     * @param $roomType
      * @param $serviceTariffs
      * @param ChannelManagerConfigInterface $config
-     * @return mixed
+     * @return array
      * @throws \Exception
      */
     public function formatPriceRequestData(
         $begin,
         $end,
-        $roomTypes,
+        $roomType,
         $serviceTariffs,
         ChannelManagerConfigInterface $config
     )
     {
         $pricesRequestData = [];
-        $requestDataArray = $this->getPriceData($begin, $end, $roomTypes, $serviceTariffs, $config);
+        $requestDataArray = $this->getPriceData($begin, $end, $roomType, $serviceTariffs, $config);
         $xmlElements = [];
         $priceCalculator = $this->container->get('mbh.calculation');
         $localCurrency = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->getCurrency();
@@ -463,7 +463,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
      * @param ChannelManagerConfigInterface $config
      * @param $rootNodeName
      * @param $xmlns
-     * @return \SimpleXMLElement Массив объектов, добавляемых в тело xml-запроса $elementsArray
+     * @return string
      */
     private function formatTemplateRequest($elementsArray, ChannelManagerConfigInterface $config, $rootNodeName, $xmlns)
     {
@@ -494,7 +494,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
     /**
      * @param ExpediaConfig $config
      * @param $status
-     * @return \SimpleXMLElement
+     * @return string
      */
     public function formatGetAllBookingsData(ExpediaConfig $config, $status)
     {
