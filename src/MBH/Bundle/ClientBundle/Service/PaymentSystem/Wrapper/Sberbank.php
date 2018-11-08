@@ -58,7 +58,7 @@ class Sberbank extends Wrapper
         }
 
         if ($notification->getOperation() !== CallbackNotification::OPERATION_DEPOSITED
-            && $notification->getStatus() !== 1
+            && $notification->getStatus() !== CallbackNotification::STATUS_SUCCESS
             && $notification->getChecksum() !== $notification->generateHmacSha256($this->entity)
         ) {
             return $holder;
