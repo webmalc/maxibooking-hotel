@@ -80,6 +80,8 @@ form.clientPaymentSystemType.sberbank.failUrl.label: 'Fail Url'
 form.clientPaymentSystemType.sberbank.failUrl.help: 'Адрес, на который требуется перенаправить пользователя в случае неуспешной оплаты. (https)'
 form.clientPaymentSystemType.sberbank.securityKey.label: 'Закрытый ключ'
 form.clientPaymentSystemType.sberbank.securityKey.help: "Для получения закрытого ключа, обратитесь в службу технической поддержки Sberbank'а."
+form.clientPaymentSystemType.sberbank.envTest.label: 'Тестовая среда'
+form.clientPaymentSystemType.sberbank.envTest.help: 'Используется для настройки.'
 
 controller.clientConfig.change_time_zone_contact_support: 'Для изменения временной зоны, пожалуйста, обратитесь в службу тех.поддержки по адресу: "%supportEmail%"'
 controller.clientConfig.params_success_save: 'Параметры успешно сохранены.'
