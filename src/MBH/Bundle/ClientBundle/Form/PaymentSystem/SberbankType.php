@@ -9,6 +9,7 @@ namespace MBH\Bundle\ClientBundle\Form\PaymentSystem;
 
 use MBH\Bundle\ClientBundle\Document\PaymentSystem\Sberbank;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -25,6 +26,7 @@ class SberbankType extends PaymentSystemType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        /** @var Sberbank $sberbank */
         $sberbank = $builder->getData();
 
         $formModifier = function (FormEvent $event, string $eventName) {
@@ -167,6 +169,19 @@ class SberbankType extends PaymentSystemType
             }
         );
 
+        $builder
+            ->add(
+                'envTest',
+                CheckboxType::class,
+                $this->addCommonAttributes(
+                    [
+                        'label'    => 'form.clientPaymentSystemType.sberbank.envTest.label',
+                        'help'     => 'form.clientPaymentSystemType.sberbank.envTest.help',
+                        'constraints' => ['NotBlank' => false],
+                    ],
+                    false
+                )
+            );
 
         $builder
             ->add(
