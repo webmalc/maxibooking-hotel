@@ -5,15 +5,15 @@ namespace MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies;
 
 
 use MBH\Bundle\SearchBundle\Lib\Exceptions\OccupancyDeterminerException;
-use MBH\Bundle\SearchBundle\Services\Search\Determiners\DeterminerInterface;
+use MBH\Bundle\SearchBundle\Services\Search\Determiners\OccupancyDeterminerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class DeterminerFactory
+class OccupancyDeterminerFactory
 {
 
     public const COMMON_DETERMINER = 'mbh_search.occupancy_determiner_common';
 
-    public const NO_TRANSFORM_DETERMINER = 'mbh_search.occupancy_determiner_no_transform';
+    public const NO_TRANSFORM_DETERMINER = 'mbh_search.occupancy_determiner_child_free_tariff';
     /** @var ContainerInterface */
     private $container;
 
@@ -29,16 +29,16 @@ class DeterminerFactory
 
     /**
      * @param string $type
-     * @return DeterminerInterface
+     * @return OccupancyDeterminerInterface
      * @throws OccupancyDeterminerException
      */
-    public function create(string $type): DeterminerInterface
+    public function create(string $type): OccupancyDeterminerInterface
     {
         if ($type === self::COMMON_DETERMINER) {
             return $this->container->get('mbh_search.occupancy_determiner_common');
         }
         if ($type === self::NO_TRANSFORM_DETERMINER) {
-            return $this->container->get('mbh_search.occupancy_determiner_no_transform');
+            return $this->container->get('mbh_search.occupancy_determiner_child_free_tariff');
         }
 
         throw new OccupancyDeterminerException('Cannot create determiner');

@@ -138,7 +138,15 @@ class RoomTypeType extends FormWithMultiLangFields
                 'required' => true,
                 'attr' => ['class' => 'spinner room-type-places'],
                 'help' => 'form.roomTypeType.room_additional_places_amount'
-            ]);
+            ])
+            ->add('maxInfants', TextType::class, [
+                'label' => 'form.roomTypeType.max_infants',
+                'group' => 'form.roomTypeType.places',
+                'required' => true,
+                'attr' => ['placeholder' => 'hotel', 'class' => 'spinner room-type-places'],
+                'help' => 'form.roomTypeType.room_additional_places_amount'
+            ])
+        ;
 
         if (!$options['useRoomTypeCategory']) {
             $builder

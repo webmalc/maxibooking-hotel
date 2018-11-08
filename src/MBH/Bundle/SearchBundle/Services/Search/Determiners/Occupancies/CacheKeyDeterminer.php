@@ -10,7 +10,7 @@ use MBH\Bundle\SearchBundle\Services\Search\Determiners\OccupancyInterface;
 
 class CacheKeyDeterminer implements CacheKeyOccupancyDetermineInterface
 {
-    /** @var DeterminerFactory */
+    /** @var OccupancyDeterminerFactory */
     private $factory;
 
     /** @var SharedDataFetcher */
@@ -18,10 +18,10 @@ class CacheKeyDeterminer implements CacheKeyOccupancyDetermineInterface
 
     /**
      * CacheKeyDeterminer constructor.
-     * @param DeterminerFactory $factory
+     * @param OccupancyDeterminerFactory $factory
      * @param SharedDataFetcher $dataFetcher
      */
-    public function __construct(DeterminerFactory $factory, SharedDataFetcher $dataFetcher)
+    public function __construct(OccupancyDeterminerFactory $factory, SharedDataFetcher $dataFetcher)
     {
         $this->factory = $factory;
         $this->sharedFetcher = $dataFetcher;

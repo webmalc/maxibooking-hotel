@@ -169,7 +169,7 @@ class RoomType extends Base implements RoomTypeInterface
      *      max=6
      * )
      */
-    protected $maxInfants = 2;
+    protected $maxInfants = 3;
 
     /**
      * @var string

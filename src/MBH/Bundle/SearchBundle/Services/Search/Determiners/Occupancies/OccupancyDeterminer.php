@@ -5,17 +5,17 @@ namespace MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies;
 
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher;
-use MBH\Bundle\SearchBundle\Services\Search\Determiners\DeterminerInterface;
+use MBH\Bundle\SearchBundle\Services\Search\Determiners\OccupancyDeterminerInterface;
 use MBH\Bundle\SearchBundle\Services\Search\Determiners\OccupancyInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class ActualOccupancyDeterminer
+class OccupancyDeterminer
 {
 
     /** @var EventDispatcherInterface */
     private $dispatcher;
 
-    /** @var DeterminerInterface */
+    /** @var OccupancyDeterminerInterface */
     private $commonDeterminer;
 
     /** @var SharedDataFetcher */
@@ -24,10 +24,10 @@ class ActualOccupancyDeterminer
     /**
      * ActualAgesDeterminer constructor.
      * @param EventDispatcherInterface $dispatcher
-     * @param DeterminerInterface $commonDeterminer
+     * @param OccupancyDeterminerInterface $commonDeterminer
      * @param SharedDataFetcher $dataFetcher
      */
-    public function __construct(EventDispatcherInterface $dispatcher, DeterminerInterface $commonDeterminer, SharedDataFetcher $dataFetcher)
+    public function __construct(EventDispatcherInterface $dispatcher, OccupancyDeterminerInterface $commonDeterminer, SharedDataFetcher $dataFetcher)
     {
         $this->dispatcher = $dispatcher;
         $this->commonDeterminer = $commonDeterminer;

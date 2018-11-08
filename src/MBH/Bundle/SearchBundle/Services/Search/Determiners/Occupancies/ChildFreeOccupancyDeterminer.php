@@ -4,7 +4,7 @@
 namespace MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies;
 
 
-class NoTransformDeterminer extends CommonDeterminer
+class ChildFreeOccupancyDeterminer extends CommonOccupancyDeterminer
 {
     protected function getActualChildrenAges(?int $infantAge, int $maxInfants, array $childrenAges): array
     {

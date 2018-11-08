@@ -9,9 +9,9 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher;
-use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\CommonDeterminer;
+use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\CommonOccupancyDeterminer;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\ActualOccupancyDeterminer as ActualDeterminer;
+use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminer as ActualDeterminer;
 
 class ActualOccupancyDeterminerTest extends WebTestCase
 {
@@ -24,7 +24,7 @@ class ActualOccupancyDeterminerTest extends WebTestCase
         $dispatcher = $this->createMock(EventDispatcherInterface::class);
         $dispatcher->expects($this->once())->method('dispatch');
 
-        $determiner = $this->createMock(CommonDeterminer::class);
+        $determiner = $this->createMock(CommonOccupancyDeterminer::class);
         $determiner->expects($this->once())->method('determine');
 
         $service = new ActualDeterminer($dispatcher, $determiner, $dataFetcher);

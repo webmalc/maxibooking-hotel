@@ -5,9 +5,9 @@ namespace MBH\Bundle\SearchBundle\Lib\Combinations\CacheKey;
 
 
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
-use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\DeterminerFactory;
+use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminerFactory;
 
-class NoChildrenAgeKey extends AbstractKey
+class NoChildrenAgeCacheKey extends AbstractKey
 {
 
     /**
@@ -16,7 +16,7 @@ class NoChildrenAgeKey extends AbstractKey
      */
     public function getKey(SearchQuery $searchQuery): string
     {
-        $occupancies = $this->determiner->determine($searchQuery, DeterminerFactory::COMMON_DETERMINER);
+        $occupancies = $this->determiner->determine($searchQuery, OccupancyDeterminerFactory::COMMON_DETERMINER);
         $key = $this->getSharedPartKey($searchQuery);
         $key .= '_' . $occupancies->getAdults();
         $key .= '_' . $occupancies->getChildren();
