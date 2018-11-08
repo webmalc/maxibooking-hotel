@@ -61,7 +61,8 @@ class CallbackNotification
     public static function parseRequest(Request $request): ?self
     {
         $body = $request->query->getIterator();
-        if (json_last_error() !== JSON_ERROR_NONE || empty($body)) {
+
+        if ($body->count()=== 0) {
             return null;
         }
         $self = new self();
