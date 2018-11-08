@@ -59,6 +59,8 @@ services:
     mbh_search.restrictions.on_max_guest:
         public: false
         class: MBH\Bundle\SearchBundle\Lib\Restrictions\MaxGuest
+        arguments:
+            - '@mbh_search.occupancy_determiner'
 
     mbh_search.restrictions.on_max_stay:
         public: false
@@ -75,6 +77,8 @@ services:
     mbh_search.restrictions.on_min_guest:
         public: false
         class: MBH\Bundle\SearchBundle\Lib\Restrictions\MinGuest
+        arguments:
+            - '@mbh_search.occupancy_determiner'
 
     mbh_search.restrictions.on_min_stay:
         public: false
@@ -145,11 +149,11 @@ services:
             - '@mbh_search.cache_key_determiner'
 
     mbh_search.cache_key_no_children_ages:
-        class: MBH\Bundle\SearchBundle\Lib\Combinations\CacheKey\NoChildrenAgeKey
+        class: MBH\Bundle\SearchBundle\Lib\Combinations\CacheKey\NoChildrenAgeCacheKey
         parent: mbh_search.cache_key_abstract
 
     mbh_search.cache_key_with_children_ages:
-        class: MBH\Bundle\SearchBundle\Lib\Combinations\CacheKey\ChildrenAgeKey
+        class: MBH\Bundle\SearchBundle\Lib\Combinations\CacheKey\ChildFreeCacheKey
         parent: mbh_search.cache_key_abstract
 
     mbh_search.warm_up_searcher:
@@ -238,27 +242,27 @@ services:
 
 #Occupancies
     mbh_search.occupancy_determiner:
-        class: MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\ActualOccupancyDeterminer
+        class: MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminer
         arguments:
             - '@event_dispatcher'
             - '@mbh_search.occupancy_determiner_common'
             - '@mbh_search.shared_data_fetcher'
 
     mbh_search.occupancy_determiner_common:
-        class: MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\CommonDeterminer
+        class: MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\CommonOccupancyDeterminer
 
-    mbh_search.occupancy_determiner_no_transform:
+    mbh_search.occupancy_determiner_child_free_tariff:
         class: MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\NoTransformDeterminer
 
-    mbh_search.determiner_factory:
-        class: MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\DeterminerFactory
+    mbh_search.occupancy_determiner_factory:
+        class: MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminerFactory
         arguments:
             - '@service_container'
 
     mbh_search.cache_key_determiner:
         class: MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\CacheKeyDeterminer
         arguments:
-            - '@mbh_search.determiner_factory'
+            - '@mbh_search.occupancy_determiner_factory'
             - '@mbh_search.shared_data_fetcher'
 
 

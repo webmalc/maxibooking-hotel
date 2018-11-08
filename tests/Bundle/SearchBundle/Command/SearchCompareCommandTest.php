@@ -21,7 +21,7 @@ class SearchCompareCommandTest extends KernelTestCase
 
         $container = $kernel->getContainer();
 
-        $oldSearch = $container->get('mbh.package.search');
+        $oldSearch = $container->get('mbh.package.search')->searchTariffs($query);
         $newSearch = $container->get('mbh_search.search');
         $logger = $container->get('mbh_search.compare_logger');
         $dm = $container->get('doctrine_mongodb.odm.default_document_manager');

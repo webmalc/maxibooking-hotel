@@ -24,7 +24,7 @@ use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Data\RoomCacheFetcher;
 use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher;
 use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcherInterface;
-use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\ActualOccupancyDeterminer;
+use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminer;
 use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminerEvent;
 use MBH\Bundle\SearchBundle\Services\Search\Determiners\OccupancyInterface;
 
@@ -43,7 +43,7 @@ class SearchLimitChecker
     /** @var RoomCacheFetcher */
     private $roomCacheFetcher;
     /**
-     * @var ActualOccupancyDeterminer
+     * @var OccupancyDeterminer
      */
     private $determiner;
 
@@ -54,14 +54,14 @@ class SearchLimitChecker
      * @param DocumentManager $documentManager
      * @param SharedDataFetcher $sharedDataFetcher
      * @param RoomCacheFetcher $roomCacheFetcher
-     * @param ActualOccupancyDeterminer $determiner
+     * @param OccupancyDeterminer $determiner
      */
     public function __construct(
         ClientConfigRepository $configRepository,
         DocumentManager $documentManager,
         SharedDataFetcher $sharedDataFetcher,
         RoomCacheFetcher $roomCacheFetcher,
-        ActualOccupancyDeterminer $determiner
+        OccupancyDeterminer $determiner
 )
     {
         $this->clientConfig = $configRepository->fetchConfig();
@@ -111,7 +111,7 @@ class SearchLimitChecker
             $tariff,
             $duration,
             $actualOccupancy->getAdults(),
-            $searchQuery->getActualChildren()
+            $actualOccupancy->getChildren()
         );
 
         if (!$checkResult) {

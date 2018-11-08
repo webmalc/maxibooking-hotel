@@ -11,6 +11,7 @@ use MBH\Bundle\PackageBundle\Services\MagicCalculation;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminerEvent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -38,8 +39,32 @@ class SearchSubscriber implements EventSubscriberInterface
                 ['calculateFreeChild', 0],
                 ['calculateMergeWithChild', 10],
             ],
+            OccupancyDeterminerEvent::AGES_DETERMINER_EVENT_CALCULATION => [
+                ['determineOccupancy', 0]
+            ]
         ];
     }
+
+    /**
+     * @param OccupancyDeterminerEvent $event
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\OccupancyDeterminerException
+     */
+    public function determineOccupancy(OccupancyDeterminerEvent $event): void
+    {
+        $tariff = $event->getTariff();
+        $roomType = $event->getRoomType();
+        if (\in_array($tariff->getId(), self::FREE_CHILD_HARD_IDS, true)) {
+            $occupancies = $event->getOccupancies();
+            $resolvedOccupancies = $this->container->get('mbh_search.occupancy_determiner_child_free_tariff')->determine(
+                $occupancies,
+                $tariff,
+                $roomType
+            );
+            $event->setResolvedOccupancies($resolvedOccupancies);
+        }
+
+    }
+
 
     public function calculateFreeChild(SearchCalculateEvent $event): void
     {
@@ -57,6 +82,8 @@ class SearchSubscriber implements EventSubscriberInterface
             'special' => $special
 
         ] = $eventData;
+
+        //** TODO:  */
 
         /** @var Tariff $tariff */
 

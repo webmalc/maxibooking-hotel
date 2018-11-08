@@ -25,7 +25,7 @@ use MBH\Bundle\SearchBundle\Services\Calc\CalcQuery;
 use MBH\Bundle\SearchBundle\Services\Calc\Calculation;
 use MBH\Bundle\SearchBundle\Services\Data\RoomCacheFetcher;
 use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher;
-use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\ActualOccupancyDeterminer;
+use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminer;
 use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminerEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -50,7 +50,7 @@ class SearchResultComposer
      */
     private $accommodationRoomSearcher;
     /**
-     * @var ActualOccupancyDeterminer
+     * @var OccupancyDeterminer
      */
     private $determiner;
 
@@ -74,7 +74,7 @@ class SearchResultComposer
         RoomCacheFetcher $roomCacheFetcher,
         SharedDataFetcher $sharedDataFetcher,
         AccommodationRoomSearcher $roomSearcher,
-        ActualOccupancyDeterminer $determiner,
+        OccupancyDeterminer $determiner,
         EventDispatcherInterface $dispatcher)
     {
         $this->roomManager = $roomManager;
@@ -200,8 +200,8 @@ class SearchResultComposer
             'tariff' => $tariff,
             'begin' => $searchQuery->getBegin(),
             'end' => (clone $searchQuery->getEnd())->modify('-1 day'),
-            'adults' => (int)$searchQuery->getAdults(),
-            'children' => (int)$searchQuery->getChildren(),
+            'adults' => $actualAdults,
+            'children' => $actualChildren,
             'promotion' => null,
             'special' => null,
             'isUseCategory' => $this->roomManager->useCategories,

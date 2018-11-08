@@ -4,9 +4,9 @@
 namespace MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies;
 
 
-use MBH\Bundle\SearchBundle\Services\Search\Determiners\DeterminerInterface;
+use MBH\Bundle\SearchBundle\Services\Search\Determiners\OccupancyDeterminerInterface;
 
-class CommonDeterminer extends AbstractDeterminer implements DeterminerInterface
+class CommonOccupancyDeterminer extends AbstractDeterminer implements OccupancyDeterminerInterface
 {
 
     protected function getActualAdults(int $adults, int $childAge, array $actualChildrenAges): int

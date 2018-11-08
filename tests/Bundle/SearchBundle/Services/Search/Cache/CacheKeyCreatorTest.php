@@ -6,8 +6,8 @@ namespace Tests\Bundle\SearchBundle\Services\Search\Cache;
 
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\PriceBundle\Document\Tariff;
-use MBH\Bundle\SearchBundle\Lib\Combinations\CacheKey\ChildrenAgeKey;
-use MBH\Bundle\SearchBundle\Lib\Combinations\CacheKey\NoChildrenAgeKey;
+use MBH\Bundle\SearchBundle\Lib\Combinations\CacheKey\ChildFreeCacheKey;
+use MBH\Bundle\SearchBundle\Lib\Combinations\CacheKey\NoChildrenAgeCacheKey;
 use MBH\Bundle\SearchBundle\Lib\Combinations\CombinationCreator;
 use MBH\Bundle\SearchBundle\Lib\Events\GuestCombinationEvent;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
@@ -53,7 +53,7 @@ class CacheKeyCreatorTest extends WebTestCase
         $searchQuery->setTariffId($data['tariffId']);
 
         $container = $this->getContainer();
-        $ages_key = $this->createMock(ChildrenAgeKey::class);
+        $ages_key = $this->createMock(ChildFreeCacheKey::class);
         $ages_key->expects($this->any())->method('getKey')->with($this->isInstanceOf(SearchQuery::class))->willReturnCallback(
             function ($searchQuery) {
                 /** @var SearchQuery $searchQuery */
@@ -64,7 +64,7 @@ class CacheKeyCreatorTest extends WebTestCase
 
         $container->set('mbh_search.cache_key_with_children_ages', $ages_key);
 
-        $no_ages_key = $this->createMock(NoChildrenAgeKey::class);
+        $no_ages_key = $this->createMock(NoChildrenAgeCacheKey::class);
         $no_ages_key->expects($this->any())->method('getKey')->with($this->isInstanceOf(SearchQuery::class))->willReturnCallback(
             function ($searchQuery) {
                 /** @var SearchQuery $searchQuery */

@@ -13,6 +13,7 @@ use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
 class MagicCalculation extends Calculation
 {
 
+
     public function calcPrices(
         RoomType $roomType,
         Tariff $tariff,
@@ -27,7 +28,7 @@ class MagicCalculation extends Calculation
         array $ages = null
     ) {
         $prices = [];
-        $memcached = $this->container->get('mbh.cache');
+        $memcached = null;
         $hotel = $roomType->getHotel();
         $endPlus = clone $end;
         $endPlus->modify('+1 day');
@@ -64,7 +65,7 @@ class MagicCalculation extends Calculation
         } else {
             $combinations = [0 => ['adults' => $adults, 'children' => $children, 'childrenAges' => $ages]];
         }
-
+        $originalChildrenAges = $ages;
         foreach ($combinations as $combination) {
 
             $dayPrices = $packagePrices = [];
@@ -87,7 +88,7 @@ class MagicCalculation extends Calculation
             }
 
             $table = $this->getMagicTable($adults);
-            $ageGroups = $this->getAgeGroups($ages);
+            $ageGroups = $this::getAgeGroups($ages);
 
             /**
              *
@@ -135,7 +136,7 @@ class MagicCalculation extends Calculation
             $prices[$combination['adults'].'_'.$combination['children']] = [
                 'adults' => $combination['adults'],
                 'children' => $combination['children'],
-                'childrenAges' => $ages,
+                'childrenAges' => $originalChildrenAges,
                 'total' => $this->getTotalPrice($total),
                 'prices' => $dayPrices,
                 'packagePrices' => $packagePrices,
@@ -146,7 +147,7 @@ class MagicCalculation extends Calculation
     }
 
 
-    private function getAgeGroups($ages): array
+    public static function getAgeGroups($ages): array
     {
         $groups = [];
         array_map(

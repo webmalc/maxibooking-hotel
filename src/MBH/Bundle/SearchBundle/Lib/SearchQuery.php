@@ -339,38 +339,6 @@ class SearchQuery
     }
 
 
-    public function getSearchTotalPlaces(): int
-    {
-        $actualAdults = $this->getActualAdults();
-        $actualChildren = $this->getActualChildren();
-
-        return $actualAdults + $actualChildren;
-    }
-
-    public function getActualAdults(): int
-    {
-        $actualAdultAges = array_filter(
-            $this->childrenAges,
-            function ($age) {
-                return $age > $this->childAge;
-            }
-        );
-
-        return $this->adults + \count($actualAdultAges);
-    }
-
-    public function getActualChildren(): int
-    {
-        $actualChildrenAges = array_filter(
-            $this->childrenAges,
-            function ($age) {
-                return $age > $this->infantAge && $age <= $this->childAge;
-            }
-        );
-
-        return \count($actualChildrenAges);
-    }
-
     public function getInfants(): int
     {
         $infants = array_filter(

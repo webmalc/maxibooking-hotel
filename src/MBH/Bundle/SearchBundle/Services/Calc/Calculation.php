@@ -221,7 +221,7 @@ class Calculation
             return $addsAdultsPrice;
         }
 
-        $additionalPrice = $rawPriceCache['additionalPrice'] ?? null;
+        $additionalPrice = $rawPriceCache['additionalPrice'] ?? $rawPriceCache['price'] ?? null;
 
         if ($addsAdults && $additionalPrice === null) {
             throw new CalculationAdditionalPriceException('There is additional adult, but no additional price');
@@ -274,10 +274,10 @@ class Calculation
         return $addsChildrenPrice;
     }
 
-    private function multiAdditionalPricesCalc($num, $additionalPrices, $additionalPrice, $offset = 0): int
+    private function multiAdditionalPricesCalc($addsAdults, $additionalPrices, $additionalPrice, $offset = 0): int
     {
         $result = 0;
-        for ($i = 0; $i < $num; $i++) {
+        for ($i = 0; $i < $addsAdults; $i++) {
             if (isset($additionalPrices[$i + $offset]) && $additionalPrices[$i + $offset] !== null) {
                 $result += $additionalPrices[$i + $offset];
             } else {
