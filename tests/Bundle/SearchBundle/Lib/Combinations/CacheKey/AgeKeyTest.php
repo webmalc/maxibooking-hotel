@@ -19,25 +19,6 @@ class AgeKeyTest extends WebTestCase
      * @param $expected
      */
 
-
-    public function testChildrenAgeGetKey($data, $expected, $type): void
-    {
-        $this->createFetcherMock($data);
-        $searchQuery = $this->createSearchQuery($data);
-        $keyCreator = $this->getContainer()->get('mbh_search.cache_key_with_children_ages');
-        if ($type === 'no_warmup') {
-            $actual = $keyCreator->getKey($searchQuery);
-        }
-        if ($type === 'warmup') {
-            $actual = $keyCreator->getWarmUpKey($searchQuery);
-        }
-        $this->assertEquals($expected['with_age'], $actual);
-    }
-
-    /** @dataProvider dataProvider
-     * @param $data
-     * @param $expected
-     */
     public function testGetNoChildrenAgeKey($data, $expected, $type): void
     {
         $searchQuery = $this->createSearchQuery($data);
@@ -56,13 +37,13 @@ class AgeKeyTest extends WebTestCase
     private function createFetcherMock($data)
     {
         $sharedDataFetcher = $this->createMock(SharedDataFetcher::class);
-        $sharedDataFetcher->expects($this->once())->method('getFetchedTariff')->willReturn(
+        $sharedDataFetcher->method('getFetchedTariff')->willReturn(
             (new Tariff())
                 ->setId($data['tariffId'])
                 ->setChildAge($data['tariffChildAge'])
                 ->setInfantAge($data['tariffInfantAge'])
         );
-        $sharedDataFetcher->expects($this->once())->method('getFetchedRoomType')->willReturn(
+        $sharedDataFetcher->method('getFetchedRoomType')->willReturn(
             (new RoomType())
                 ->setId($data['roomTypeId'])
                 ->setMaxInfants(2)

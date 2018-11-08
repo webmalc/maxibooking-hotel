@@ -29,6 +29,7 @@ class PriceCacheFetcherTest extends SearchWebTestCase
 
 
         $searchQuery = $this->createSearchQuery($data);
+        $searchQuery->setAdults(1);
 
         if ($data['isCategory']) {
             $clientConfigRepo = $this->createMock(ClientConfigRepository::class);
@@ -45,11 +46,13 @@ class PriceCacheFetcherTest extends SearchWebTestCase
         $isCategory = $data['isCategory'];
         $conditionRoomType = new ArrayCollection();
         $isCategory ? $conditionRoomType->add($roomType->getCategory()) : $conditionRoomType->add($roomType);
+        $occupancies = $this->getContainer()->get('mbh_search.occupancy_determiner')->determine($searchQuery);
+
         $calcQuery
             ->setSearchBegin($searchQuery->getBegin())
             ->setSearchEnd($searchQuery->getEnd())
-            ->setActualAdults($searchQuery->getActualAdults())
-            ->setActualChildren($searchQuery->getActualChildren())
+            ->setActualAdults($occupancies->getAdults())
+            ->setActualChildren($occupancies->getChildren())
             ->setIsUseCategory($isCategory)
             ->setTariff($tariff)
             ->setRoomType($roomType)

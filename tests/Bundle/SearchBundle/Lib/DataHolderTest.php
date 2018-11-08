@@ -101,6 +101,7 @@ class DataHolderTest extends SearchWebTestCase
     public function testGetNecessaryPriceCaches($data): void
     {
         $searchQuery = $this->createSearchQuery($data);
+        $searchQuery->setAdults(1);
         $conditions = $searchQuery->getSearchConditions();
         $calcQuery = new CalcQuery();
         $tariff = $this->dm->find(Tariff::class, $searchQuery->getTariffId());
@@ -110,11 +111,12 @@ class DataHolderTest extends SearchWebTestCase
         $isCategory ? $conditionRoomType->add($roomType->getCategory()) : $conditionRoomType->add($roomType);
         $conditionTariff = new ArrayCollection();
         $conditionTariff->add($tariff);
+        $occupancies = $this->getContainer()->get('mbh_search.occupancy_determiner')->determine($searchQuery);
         $calcQuery
             ->setSearchBegin($searchQuery->getBegin())
             ->setSearchEnd($searchQuery->getEnd())
-            ->setActualAdults($searchQuery->getActualAdults())
-            ->setActualChildren($searchQuery->getActualChildren())
+            ->setActualAdults($occupancies->getAdults())
+            ->setActualChildren($occupancies->getChildren())
             ->setIsUseCategory($isCategory)
             ->setTariff($tariff)
             ->setRoomType($roomType)
