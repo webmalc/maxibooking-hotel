@@ -12,12 +12,11 @@
 {% set headerHeight = tableCellHeight * 2 + 1 %}
 {% set dayTableWidth = days|length * tableCellWidth %}
 {% set subtrahend = (tableCellHeight / 5)|round %}
-{% set numberOfRoomsOptions = [0, 20,30, 50] %}
-
 {% set minuend = tableCellHeight - subtrahend %}
 {% set halfMinuend = (minuend / 2)|round %}
-
 {% set quarterMinuend = (minuend / 4)|round %}
+
+{% set numberOfRoomsOptions = [0, 20,30, 50] %}
 
 <style>
     .package, .dividing-line {
@@ -183,28 +182,6 @@
     }
 </style>
 
-{% if stylesFileNumber == 0 %}
-    {% stylesheets filter='cssrewrite, uglifycss'
-        '@MBHPackageBundle/Resources/public/css/chessboard/chessboard_0.less' %}
-        <link rel="stylesheet" href="{{ asset_url }}"/>
-    {% endstylesheets %}
-{% elseif stylesFileNumber == 1 %}
-    {% stylesheets filter='cssrewrite, uglifycss'
-        '@MBHPackageBundle/Resources/public/css/chessboard/chessboard_1.less' %}
-        <link rel="stylesheet" href="{{ asset_url }}"/>
-    {% endstylesheets %}
-{% elseif stylesFileNumber == 2 %}
-    {% stylesheets filter='cssrewrite, uglifycss'
-        '@MBHPackageBundle/Resources/public/css/chessboard/chessboard_2.less' %}
-        <link rel="stylesheet" href="{{ asset_url }}"/>
-    {% endstylesheets %}
-{% elseif stylesFileNumber == 3 %}
-    {% stylesheets filter='cssrewrite, uglifycss'
-        '@MBHPackageBundle/Resources/public/css/chessboard/chessboard_3.less' %}
-        <link rel="stylesheet" href="{{ asset_url }}"/>
-    {% endstylesheets %}
-{% endif %}
-
 <script>
     var packages = JSON.parse('{{ packages|raw }}');
     var leftRoomsData = JSON.parse('{{ leftRoomsJsonData|raw }}');
@@ -231,7 +208,7 @@
 
 {% include 'MBHBaseBundle:Partials:pager.html.twig' with {'page': pageNumber, 'pages': pageCount, class : 'accommodation-report-pagination'} %}
 
-<div id="accommodation-chessBoard-content" class="scrolling">
+<div id="accommodation-chessBoard-content">
     <!---------------------------- MONTHS AND DATES ------------------------->
     <div id="header-title" class="tile tile-not-selected tile-free both not-standard-tile"
          style="width:{{ headerWidth }}px;">

@@ -22,6 +22,7 @@
         '@MBHPackageBundle/Resources/public/js/chessBoard/chessBoard.js'
         '@MBHPackageBundle/Resources/public/js/chessBoard/ActionManager.js'
         '@MBHPackageBundle/Resources/public/js/chessBoard/DataManager.js'
+
         '@MBHPackageBundle/Resources/public/js/chessBoard/ChessBoardManager.js' %}
 
         <script type="text/javascript" src="{{ asset_url }}"></script>
@@ -35,6 +36,29 @@
         '@MBHPackageBundle/Resources/public/css/chessboard/zzz_mob-chessBoard.less'
         'assets/vendor/admin-lte/plugins/bootstrap-slider/slider.css' %}
         <link rel="stylesheet" href="{{ asset_url }}"/>
+
+        {% if stylesFileNumber == 0 %}
+            {% stylesheets filter='cssrewrite, uglifycss'
+                '@MBHPackageBundle/Resources/public/css/chessboard/chessboard_0.less' %}
+                <link rel="stylesheet" href="{{ asset_url }}"/>
+            {% endstylesheets %}
+        {% elseif stylesFileNumber == 1 %}
+            {% stylesheets filter='cssrewrite, uglifycss'
+                '@MBHPackageBundle/Resources/public/css/chessboard/chessboard_1.less' %}
+                <link rel="stylesheet" href="{{ asset_url }}"/>
+            {% endstylesheets %}
+        {% elseif stylesFileNumber == 2 %}
+            {% stylesheets filter='cssrewrite, uglifycss'
+                '@MBHPackageBundle/Resources/public/css/chessboard/chessboard_2.less' %}
+                <link rel="stylesheet" href="{{ asset_url }}"/>
+            {% endstylesheets %}
+        {% elseif stylesFileNumber == 3 %}
+            {% stylesheets filter='cssrewrite, uglifycss'
+                '@MBHPackageBundle/Resources/public/css/chessboard/chessboard_3.less' %}
+                <link rel="stylesheet" href="{{ asset_url }}"/>
+            {% endstylesheets %}
+        {% endif %}
+
     {% endstylesheets %}
 {% endblock %}
 
@@ -47,7 +71,7 @@
         <span class="sr-only">Loading...</span>
     </div>
 
-    <form method="get" id="accommodation-report-filter" class="form-inline filter-form" role="form">
+    <form method="get" id="accommodation-report-filter" class="form-inline filter-form remember" role="form">
         <div class="form-block">
             <div class="input">
                 <i class="fa fa-caret-left fa-2x change-days-button" data-number-of-days="{{ changedNumberOfDays }}"
@@ -63,7 +87,7 @@
                    title='{{ 'chessboard_manager.change_dates_button.add'|trans({'%numberOfDays%': changedNumberOfDays}) }}'
                    data-toggle='tooltip'></i>&nbsp;
             </div>
-            <div class="input hidden">
+            <div class="hidden">
                 - &nbsp;
                 <input type="text" name="filter_end" id="accommodation-report-filter-end"
                        class="datepicker accommodation-report-filter end-datepicker mbh-daterangepicker not-set-date form-control input-sm"
@@ -147,6 +171,8 @@
             </div>
         </div>
     </form>
+
+    <div id="chessboardTable" class="scrolling"></div>
 
     <!---------------------------- Concise update Modal ------------------------->
     <div class="modal fade" id="packageModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">

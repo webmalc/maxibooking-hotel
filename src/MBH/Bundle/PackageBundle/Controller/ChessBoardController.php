@@ -458,6 +458,7 @@ class ChessBoardController extends BaseController
      * @param Request $request
      * @Security("is_granted('ROLE_ACCOMMODATION_REPORT')")
      * @return JsonResponse
+     * @throws \Exception
      */
     public function getPackagesData(Request $request)
     {
@@ -470,6 +471,7 @@ class ChessBoardController extends BaseController
      * @Route("/change_number_of_rooms/{numberOfRooms}", name="change_number_of_rooms", options={"expose"=true})
      * @Method("GET")
      * @param int $numberOfRooms
+     * @Security("is_granted('ROLE_ACCOMMODATION_REPORT')")
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function changeNumberOfRoomsOnPage(int $numberOfRooms)
@@ -483,6 +485,7 @@ class ChessBoardController extends BaseController
     /**
      * @param Request $request
      * @return string
+     * @throws \Exception
      */
     private function getChessBoardDataByFilters(Request $request)
     {

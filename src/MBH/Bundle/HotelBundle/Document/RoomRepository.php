@@ -3,6 +3,7 @@
 namespace MBH\Bundle\HotelBundle\Document;
 
 use Doctrine\MongoDB\ArrayIterator;
+use Doctrine\ODM\MongoDB\Cursor;
 use MBH\Bundle\BaseBundle\Document\AbstractBaseRepository;
 use MBH\Bundle\BaseBundle\Lib\QueryCriteriaInterface;
 use MBH\Bundle\BaseBundle\Service\Cache;
@@ -244,7 +245,8 @@ class RoomRepository extends AbstractBaseRepository
      * @param bool $isEnabled
      * @param array|null $sort
      * @param Cache|null $cache
-     * @return array
+     * @return array|Cursor
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function fetch(
         Hotel $hotel = null,
@@ -270,6 +272,7 @@ class RoomRepository extends AbstractBaseRepository
 
         if ($group) {
             $grouped = [];
+            /** @var Room $doc */
             foreach ($result as $doc) {
                 $grouped[$doc->getRoomType()->getId()][] = $doc;
             }

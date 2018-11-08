@@ -517,14 +517,7 @@ var docReadyForms = function () {
 
     //Daterangepickers
     (function () {
-        var begin = $('.begin-datepicker.mbh-daterangepicker'),
-            wrapper = begin.parent('div'),
-            end = $('.end-datepicker.mbh-daterangepicker'),
-            range = $('<input type="text" required="required" class="daterangepicker-input form-control input-sm" autocomplete="off">');
-
-        if (!begin.length || !end.length || !wrapper.length) {
-            return;
-        }
+        var $begin = $('.begin-datepicker.mbh-daterangepicker');
 
         var alertMsg = Translator.trans('020-forms.restrict_daterangepicker'),
             needRestrict = (function() {
@@ -535,27 +528,42 @@ var docReadyForms = function () {
                 }
             })();
 
-        begin.after(range);
-        range.daterangepicker(mbh.datarangepicker.options).on('apply.daterangepicker', function (ev, picker) {
-            if (needRestrict()) {
-                // 31536000 this seconds in 365 days
-                if ((picker.endDate.unix() - picker.startDate.unix()) >  31536000) {
-                    $('#messages').html(
-                        '<div class="alert alert-warning alert-dismissable">\n' +
-                        ' <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>\n' +
-                            alertMsg +
-                        '</div>'
-                    );
+        $begin.each(function () {
+            var $iteratedBegin = $(this),
+                $wrapper = $iteratedBegin.parent('div'),
+                $range = $('<input type="text" required="required" class="daterangepicker-input form-control input-sm" autocomplete="off">'),
+                $end = $wrapper.parent().find('.end-datepicker.mbh-daterangepicker');
 
-                    return;
-                }
+            if (!$end.length || !$wrapper.length) {
+                console.log($wrapper[0]);
+                console.log($end[0]);
+
+                return;
             }
-            mbh.datarangepicker.on(begin, end, picker);
+
+            $iteratedBegin.after($range);
+
+            $range.daterangepicker(mbh.datarangepicker.options).on('apply.daterangepicker', function (ev, picker) {
+                if (needRestrict()) {
+                    // 31536000 this seconds in 365 days
+                    if ((picker.endDate.unix() - picker.startDate.unix()) >  31536000) {
+                        $('#messages').html(
+                            '<div class="alert alert-warning alert-dismissable">\n' +
+                            ' <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>\n' +
+                            alertMsg +
+                            '</div>'
+                        );
+
+                        return;
+                    }
+                }
+                mbh.datarangepicker.on($iteratedBegin, $end, picker);
+            });
+            if ($iteratedBegin.datepicker("getDate") && $end.datepicker("getDate")) {
+                $range.data('daterangepicker').setStartDate($iteratedBegin.datepicker("getDate"));
+                $range.data('daterangepicker').setEndDate($end.datepicker("getDate"));
+            }
         });
-        if (begin.datepicker("getDate") && end.datepicker("getDate")) {
-            range.data('daterangepicker').setStartDate(begin.datepicker("getDate"));
-            range.data('daterangepicker').setEndDate(end.datepicker("getDate"));
-        }
     }());
 
 

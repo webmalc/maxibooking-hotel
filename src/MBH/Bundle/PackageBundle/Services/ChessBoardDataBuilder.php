@@ -120,6 +120,7 @@ class ChessBoardDataBuilder
 
     /**
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getAccommodationData()
     {
@@ -134,6 +135,7 @@ class ChessBoardDataBuilder
 
     /**
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getNoAccommodationPackageIntervals()
     {
@@ -151,7 +153,7 @@ class ChessBoardDataBuilder
      * Получение массива данныых о количестве свободных комнат, разделенных по дням
      *
      * @return array
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws \Exception
      */
     public function getDayNoAccommodationPackageCounts()
     {
@@ -185,6 +187,7 @@ class ChessBoardDataBuilder
 
     /**
      * @return Package[]
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getPackagesWithoutAccommodation()
     {
@@ -215,6 +218,7 @@ class ChessBoardDataBuilder
      * ...то есть имеющих данные о размещении, но дата окончания последнего размещения меньше даты выезда брони
      *
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     private function getDateIntervalsWithoutAccommodation()
     {
@@ -240,6 +244,7 @@ class ChessBoardDataBuilder
 
     /**
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getAccommodationIntervals()
     {
@@ -266,6 +271,7 @@ class ChessBoardDataBuilder
 
     /**
      * @return array ['accommodation', 'package']
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     private function getPackageAccommodationsData()
     {
@@ -351,6 +357,11 @@ class ChessBoardDataBuilder
         return $this->packageAccommodationsData;
     }
 
+    /**
+     * @param $packagesIds
+     * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
     private function getPackageServicesByPackageIdAndCode($packagesIds)
     {
         $lateCheckInAndLateCheckoutServices = $this->dm
@@ -626,7 +637,6 @@ class ChessBoardDataBuilder
      * Lazy loading of available room types
      *
      * @return RoomType[]
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getAvailableRoomTypes()
     {
@@ -652,7 +662,6 @@ class ChessBoardDataBuilder
 
     /**
      * @return array
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     private function getAvailableRoomTypeIds()
     {
