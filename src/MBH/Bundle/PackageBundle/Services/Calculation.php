@@ -430,10 +430,13 @@ class Calculation
     public function getPriceWithTariffPromotionDiscount(float $price, Tariff $tariff)
     {
         $tariffPromotion = $tariff->getDefaultPromotion();
+        if (empty($tariffPromotion)) {
+            return $price;
+        }
 
-        return $tariffPromotion && $tariffPromotion->getIsPercentDiscount()
+        return $tariffPromotion->getIsPercentDiscount()
             ? $price * (100 - $tariffPromotion->getDiscount()) / 100
-            : $price;
+            : $price - $tariffPromotion->getDiscount();
     }
 
     /**
