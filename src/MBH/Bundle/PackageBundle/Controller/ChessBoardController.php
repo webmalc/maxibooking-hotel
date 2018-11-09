@@ -117,6 +117,8 @@ class ChessBoardController extends BaseController
         $tourist->getDocumentRelation()->setType(FMSDictionaries::RUSSIAN_PASSPORT_ID);
 
         return [
+            'defaultBegin' => (new \DateTime('midnight'))->modify('-5 days'),
+            'defaultEnd' => (new \DateTime('midnight'))->modify('+30 days'),
             'searchForm' => $searchForm->createView(),
             'touristForm' => $touristForm->createView(),
             'documentForm' => $this->createForm(DocumentRelationType::class, $tourist)->createView(),
@@ -522,12 +524,12 @@ class ChessBoardController extends BaseController
             $data = $request->request->all();
         }
 
-        if (isset($data['filter_begin'])) {
+        if (isset($data['filter_begin']) && !empty($data['filter_begin'])) {
             $beginDate = $this->helper->getDateFromString($data['filter_begin']);
         } else {
             $beginDate = (new \DateTime('midnight'))->modify('-5 days');
         }
-        if (isset($data['filter_end'])) {
+        if (isset($data['filter_end']) && !empty($data['filter_end'])) {
             $endDate = $this->helper->getDateFromString($data['filter_end']);
         } else {
             $endDate = (new \DateTime('midnight'))->modify('+30 days');

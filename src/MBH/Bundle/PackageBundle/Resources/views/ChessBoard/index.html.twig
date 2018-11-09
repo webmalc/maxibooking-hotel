@@ -80,7 +80,7 @@
                    data-toggle='tooltip'></i>&nbsp;
                 <input type="text" name="filter_begin" id="accommodation-report-filter-begin"
                        class="datepicker accommodation-report-filter begin-datepicker mbh-daterangepicker not-set-date form-control input-sm"
-                       data-date-format="dd.mm.yyyy">
+                       data-date-format="dd.mm.yyyy" value="{{ defaultBegin|date('d.m.Y') }}">
                 &nbsp;
                 <i class="fa fa-caret-right fa-2x change-days-button"
                    data-number-of-days="{{ changedNumberOfDays }}" data-change-type="add"
@@ -91,7 +91,7 @@
                 - &nbsp;
                 <input type="text" name="filter_end" id="accommodation-report-filter-end"
                        class="datepicker accommodation-report-filter end-datepicker mbh-daterangepicker not-set-date form-control input-sm"
-                       data-date-format="dd.mm.yyyy">
+                       data-date-format="dd.mm.yyyy" value="{{ defaultEnd|date('d.m.Y') }}">
             </div>
             {% if hotels|length > 1 %}
             <div class="input">
