@@ -16,15 +16,16 @@ form.clientConfigType.currency.options.uzs: 'Узбекские сумы'
 form.clientConfigType.currency.options.gel: 'Грузинские лари'
 form.clientConfigType.currency.options.usd: Доллары
 form.clientConfigType.currency.options.inr: 'Инди́йская рупия'
-
 form.clientConfigType.sms_notification: 'Смс оповещение?'
-form.clientConfigType.notice_unpaid: Уведомление
+form.clientConfigType.notice_unpaid: 'Отправлять письмо о неоплаченных бронях через?'
 form.clientConfigType.is_notice_unpaid: 'Отправлять уведомление о неоплаченной брони через указанное количество дней'
 form.clientConfigType.search_dates: 'Дополнительные дни поиска'
 form.clientConfigType.search_dates_desc: 'Количество дополнительных дней для подбора броней.'
 form.clientConfigType.is_disabled_room_type_category: 'Группы для типов номеров'
-form.clientConfigType.is_send_mail_at_payment_confirmation.label: 'Оповещать о подтверждении платежа?'
+form.clientConfigType.is_send_mail_at_payment_confirmation.label: 'Отправлять письмо о подтверждении платежа?'
 form.clientConfigType.is_send_mail_at_payment_confirmation.help: 'Отправлять ли письмо по умолчанию при подтверждении кассового документа?'
+form.clientConfigType.confirm_orders_created_by_manager.label: 'Подтверждать брони, созданные менеджером?'
+form.clientConfigType.confirm_orders_created_by_manager.help: 'По умолчанию все брони нужно будет подтверждать, а при подтверждении клиенту будет отправлено письмо'
 form.clientConfigType.is_enabled_work_shift: 'Рабочие смены'
 form.clientConfigType.instant_search: 'Быстрый поиск'
 form.clientConfigType.show_label_tips.label: 'Показывать описания'
@@ -79,7 +80,6 @@ form.clientPaymentSystemType.sberbank.failUrl.label: 'Fail Url'
 form.clientPaymentSystemType.sberbank.failUrl.help: 'Адрес, на который требуется перенаправить пользователя в случае неуспешной оплаты. (https)'
 form.clientPaymentSystemType.sberbank.securityKey.label: 'Закрытый ключ'
 form.clientPaymentSystemType.sberbank.securityKey.help: "Для получения закрытого ключа, обратитесь в службу технической поддержки Sberbank'а."
-
 controller.clientConfig.change_time_zone_contact_support: 'Для изменения временной зоны, пожалуйста, обратитесь в службу тех.поддержки по адресу: "%supportEmail%"'
 controller.clientConfig.params_success_save: 'Параметры успешно сохранены.'
 form.clientPaymentSystemType.successUrl: 'URL успешной оплаты'

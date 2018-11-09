@@ -565,8 +565,9 @@ notifier.config.title.unpaid: 'Уведомление о заказе без о�
 notifier.config.title.online_order: 'Уведомление о брони сделанной онлайн (форма)'
 notifier.config.title.task: 'Уведомления о задачах'
 form.clientConfigType.notification_group: 'Настройка уведомлений'
-form.clientConfigType.notification.label: 'Список уведомлений для клиентов'
-form.clientConfigType.notification.help: 'Выберите тип уведомлений доступный для рассылки клиентам'
+form.client_messages_type.client_mails.group: 'Письма для клиентов'
+form.clientConfigType.notification.label: 'Типы писем для отправки клиентам'
+form.clientConfigType.notification.help: 'Выберите типы писем, которые будут отправляться клиентам'
 facilities.parking: Парковка
 facilities.fitness: Фитнес-центр
 facilities.swimming: Бассейн
