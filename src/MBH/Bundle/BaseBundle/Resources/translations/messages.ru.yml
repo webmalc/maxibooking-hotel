@@ -157,6 +157,9 @@ mailer.order.amount: Итого
 mailer.order.quantity: Количество
 mailer.order.client_info: 'Сведения о клиенте'
 mailer.order.payment_info: 'Сведения об оплате'
+mailer.order.contact_info: Контакты
+mailer.order.contact_info.phone: Телефон
+mailer.order.contact_info.email: email
 mailer.order.total_paid: 'Всего оплачено'
 mailer.order.surcharges: 'Доплата составляет'
 mailer.order.phone: Телефон
