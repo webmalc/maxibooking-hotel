@@ -239,7 +239,6 @@ services:
             - '@mbh_search.room_cache_fetcher'
             - '@mbh_search.occupancy_determiner'
 
-
 #Occupancies
     mbh_search.occupancy_determiner:
         class: MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminer
@@ -252,7 +251,7 @@ services:
         class: MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\CommonOccupancyDeterminer
 
     mbh_search.occupancy_determiner_child_free_tariff:
-        class: MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\NoTransformDeterminer
+        class: MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\ChildFreeOccupancyDeterminer
 
     mbh_search.occupancy_determiner_factory:
         class: MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminerFactory
@@ -296,7 +295,6 @@ services:
       factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
       arguments:
       - MBH\Bundle\HotelBundle\Document\Hotel
-
 
     mbh_search.room_type_repository:
         class: MBH\Bundle\HotelBundle\Document\RoomTypeRepository
@@ -376,7 +374,6 @@ services:
       arguments:
             - MBH\Bundle\SearchBundle\Document\SearchResultCacheItem
 #
-
 # Блок работы с данными
     mbh_search.data_holder:
         class: MBH\Bundle\SearchBundle\Lib\DataHolder
@@ -638,5 +635,3 @@ services:
             - '@mbh.package.search_simple'
         tags:
             - { name: console.command }
-
-
