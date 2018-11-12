@@ -51,25 +51,6 @@ class DataHolderTest extends SearchWebTestCase
         }
     }
 
-    /** @dataProvider restrictionDataProvider
-     * @param $data
-     */
-    public function testGetCheckNecessaryRestrictions($data): void
-    {
-        $searchQuery = $this->createSearchQuery($data);
-        $actual = $this->dataHolder->getCheckNecessaryRestrictions($searchQuery);
-        $expectedData = $data['expected'];
-        $accessor = PropertyAccess::createPropertyAccessor();
-        foreach ($expectedData as $restrictionName => $offsets) {
-            foreach ($offsets as $offsetIndex => $expectedValue) {
-                $currentRestriction = $actual[$offsetIndex];
-                $actualValue = $accessor->getValue($currentRestriction, "[{$restrictionName}]");
-                $this->assertEquals($expectedValue, $actualValue);
-            }
-        }
-
-
-    }
 
     /**
      * @param $data

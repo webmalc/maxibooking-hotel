@@ -67,6 +67,8 @@ class SearchCacheInvalidator
             $end = clone $begin;
         }
 
+        $this->addWindowsPeriod($begin, $end);
+
         $keys = $this->cacheItemRepository->fetchCachedKeys($begin, $end, $roomTypeIds, $tariffIds);
         if (\count($keys)) {
             $this->redis->del($keys);
@@ -96,6 +98,18 @@ class SearchCacheInvalidator
     {
         $this->redis->flushall();
         $this->cacheItemRepository->flushCache();
+    }
+
+    private function addWindowsPeriod($begin, $end): void
+    {
+        //** TODO: Temporary add window days (7 days) */
+        if ($begin instanceof \DateTime) {
+            $begin->modify('- 7 days');
+        }
+        if ($end instanceof \DateTime) {
+            $end->modify('+ 7 days');
+        }
+
     }
 
 }
