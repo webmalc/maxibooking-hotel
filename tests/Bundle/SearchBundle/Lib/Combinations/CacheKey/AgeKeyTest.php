@@ -34,26 +34,27 @@ class AgeKeyTest extends WebTestCase
         $this->assertEquals($expected['no_age'], $actual);
     }
 
-    /**
-     * @param $data
-     * @param $expected
-     * @param $type
-     * @dataProvider dataProvider
-     */
-    public function testChildrenAgeKey($data, $expected, $type): void
-    {
-        $searchQuery = $this->createSearchQuery($data);
-        $this->createFetcherMock($data);
-
-        $keyCreator = $this->getContainer()->get('mbh_search.cache_key_with_children_ages');
-        if ($type === 'no_warmup') {
-            $actual = $keyCreator->getKey($searchQuery);
-        }
-        if ($type === 'warmup') {
-            $actual = $keyCreator->getWarmUpKey($searchQuery);
-        }
-        $this->assertEquals($expected['with_age'], $actual);
-    }
+//    /**
+//     * @param $data
+//     * @param $expected
+//     * @param $type
+//     * @dataProvider dataProvider
+//     * TODO: Enable az only
+//     */
+//    public function testChildrenAgeKey($data, $expected, $type): void
+//    {
+//        $searchQuery = $this->createSearchQuery($data);
+//        $this->createFetcherMock($data);
+//
+//        $keyCreator = $this->getContainer()->get('mbh_search.cache_key_with_children_ages');
+//        if ($type === 'no_warmup') {
+//            $actual = $keyCreator->getKey($searchQuery);
+//        }
+//        if ($type === 'warmup') {
+//            $actual = $keyCreator->getWarmUpKey($searchQuery);
+//        }
+//        $this->assertEquals($expected['with_age'], $actual);
+//    }
 
     private function createFetcherMock($data)
     {
