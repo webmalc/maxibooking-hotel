@@ -8,6 +8,7 @@ use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 
 class MaxGuestTest extends RestrictionWebTestCase
 {
+
     /**
      * @dataProvider dataProvider
      * @param SearchQuery $searchQuery
@@ -16,7 +17,8 @@ class MaxGuestTest extends RestrictionWebTestCase
      */
     public function testNoMaxGuest(SearchQuery $searchQuery, array $restriction): void
     {
-        $maxGuest = new MaxGuest();
+        $this->createOccupancy($searchQuery);
+        $maxGuest = new MaxGuest($this->determiner);
         $maxGuest->check($searchQuery, $restriction);
         $this->assertTrue(true);
 
@@ -30,7 +32,8 @@ class MaxGuestTest extends RestrictionWebTestCase
      */
     public function testMaxGuestViolation(SearchQuery $searchQuery, array $restriction): void
     {
-        $maxGuest = new MaxGuest();
+        $this->createOccupancy($searchQuery);
+        $maxGuest = new MaxGuest($this->determiner);
         $restriction[1]['maxGuest'] = 2;
         $this->expectExceptionMessage('Room maxGuest at '. $restriction[1]['date']->toDateTime()->setTimezone(new \DateTimeZone(date_default_timezone_get()))->format('d-m-Y'));
         $maxGuest->check($searchQuery, $restriction);
@@ -44,8 +47,9 @@ class MaxGuestTest extends RestrictionWebTestCase
      */
     public function testMaxGuestNoViolation(SearchQuery $searchQuery, array $restriction): void
     {
-        $maxGuest = new MaxGuest();
-        $restriction[1]['maxGuest'] = 4;
+        $this->createOccupancy($searchQuery);
+        $maxGuest = new MaxGuest($this->determiner);
+        $restriction[1]['maxGuest'] = 3;
         $maxGuest->check($searchQuery, $restriction);
         $this->assertTrue(true);
     }
