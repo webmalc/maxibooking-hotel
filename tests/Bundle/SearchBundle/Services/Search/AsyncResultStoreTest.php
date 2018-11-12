@@ -13,7 +13,7 @@ use MBH\Bundle\SearchBundle\Lib\Result\ResultRoomType;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultTariff;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
-class ResultRedisStoreTest extends SearchWebTestCase
+class AsyncResultStoreTest extends SearchWebTestCase
 {
     public function testStore(): void
     {

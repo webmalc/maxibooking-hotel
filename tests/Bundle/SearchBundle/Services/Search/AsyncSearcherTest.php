@@ -16,7 +16,7 @@ use MBH\Bundle\SearchBundle\Services\Search\AsyncSearcher;
 use MBH\Bundle\SearchBundle\Services\Search\SearcherFactory;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
-class ConsumerSearcherTest extends SearchWebTestCase
+class AsyncSearcherTest extends SearchWebTestCase
 {
 
     public function testSearch(): void
