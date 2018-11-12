@@ -7,6 +7,7 @@ use MBH\Bundle\BaseBundle\Service\Cache;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 
 class RestrictionRepository extends DocumentRepository
@@ -280,9 +281,10 @@ class RestrictionRepository extends DocumentRepository
 
     /**
      * @param SearchConditions $conditions
+     * @param bool $isCaterory
      * @return array
      */
-    public function getAllSearchPeriod(SearchConditions $conditions): array
+    public function getAllSearchPeriod(SearchConditions $conditions, bool $isCaterory): array
     {
         $qb = $this->createQueryBuilder();
         $restrictionTariffs = $conditions->getRestrictionTariffs();
@@ -292,15 +294,30 @@ class RestrictionRepository extends DocumentRepository
             $qb->field('tariff.id')->in(array_unique($tariffIds));
         }
 
-        $isRoomTypeIds = $conditions->getRoomTypes()->count();
-        if ($isRoomTypeIds) {
-            $roomTypeIds = Helper::toIds($conditions->getRoomTypes());
+        $isRoomTypeSpecified = $conditions->getRoomTypes()->count();
+
+        if ($isRoomTypeSpecified) {
+            //** TODO: rebuild here the function signature (pass roomType and tariff, but  not conditions) */
+            $roomTypes = [];
+            if ($isCaterory) {
+                foreach ($conditions->getRoomTypes() as $category) {
+                    /** @var RoomTypeCategory $category */
+                    $types = $category->getTypes();
+                    foreach ($types as $roomType) {
+                        $roomTypes[] = $roomType;
+                    }
+                }
+            } else {
+                $roomTypes = $conditions->getRoomTypes();
+            }
+
+            $roomTypeIds = Helper::toIds($roomTypes);
             $qb->field('roomType.id')->in($roomTypeIds);
         }
 
         /** Priority to tariff or roomTpe */
         $isHotelIds = $conditions->getHotels()->count();
-        if (!$isTariffIds && !$isRoomTypeIds && $isHotelIds) {
+        if (!$isTariffIds && !$isRoomTypeSpecified && $isHotelIds) {
             $hotelIds = Helper::toIds($conditions->getHotels());
             $qb->field('hotel.id')->in($hotelIds);
         }

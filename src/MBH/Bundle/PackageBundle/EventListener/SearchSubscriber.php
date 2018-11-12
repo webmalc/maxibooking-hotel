@@ -39,7 +39,7 @@ class SearchSubscriber implements EventSubscriberInterface
                 ['calculateFreeChild', 0],
                 ['calculateMergeWithChild', 10],
             ],
-            OccupancyDeterminerEvent::AGES_DETERMINER_EVENT_CALCULATION => [
+            OccupancyDeterminerEvent::OCCUPANCY_DETERMINER_EVENT_CALCULATION => [
                 ['determineOccupancy', 0]
             ]
         ];

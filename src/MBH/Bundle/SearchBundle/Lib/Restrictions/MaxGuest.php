@@ -27,8 +27,9 @@ class MaxGuest extends AbstractFieldChecker
     {
         $occupancy = $this->occupancyDeterminer->determine($searchQuery);
         $totalPlaces = $occupancy->getChildren() + $occupancy->getAdults();
-
-        if ($value < $totalPlaces) {
+        /** @noinspection TypeUnsafeComparisonInspection */
+        $isItDepartureDay = $date == $searchQuery->getEnd();
+        if ($value < $totalPlaces && !$isItDepartureDay) {
             throw new RestrictionsCheckerException("Room {$this->getCheckingFieldName()} at {$date->format('d-m-Y')}");
         }
 

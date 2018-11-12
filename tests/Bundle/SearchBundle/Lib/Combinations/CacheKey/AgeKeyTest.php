@@ -19,25 +19,6 @@ class AgeKeyTest extends WebTestCase
      * @param $expected
      */
 
-
-    public function testChildrenAgeGetKey($data, $expected, $type): void
-    {
-        $this->createFetcherMock($data);
-        $searchQuery = $this->createSearchQuery($data);
-        $keyCreator = $this->getContainer()->get('mbh_search.cache_key_with_children_ages');
-        if ($type === 'no_warmup') {
-            $actual = $keyCreator->getKey($searchQuery);
-        }
-        if ($type === 'warmup') {
-            $actual = $keyCreator->getWarmUpKey($searchQuery);
-        }
-        $this->assertEquals($expected['with_age'], $actual);
-    }
-
-    /** @dataProvider dataProvider
-     * @param $data
-     * @param $expected
-     */
     public function testGetNoChildrenAgeKey($data, $expected, $type): void
     {
         $searchQuery = $this->createSearchQuery($data);

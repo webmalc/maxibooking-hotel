@@ -17,6 +17,7 @@ class MinGuestTest extends RestrictionWebTestCase
      */
     public function testNoMinGuest(SearchQuery $searchQuery, array $restriction): void
     {
+        $occupancy = $this->getContainer()->get('mbh_search.cache_key_determiner')->determine($searchQuery, $type);
         $minGuest = new MinGuest();
         $minGuest->check($searchQuery, $restriction);
         $this->assertTrue(true);

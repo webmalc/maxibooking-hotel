@@ -111,7 +111,7 @@ class SearchResultComposer
         $resultTariff = ResultTariff::createInstance($tariff);
 
 
-        $occupancy = $this->determiner->determine($searchQuery, OccupancyDeterminerEvent::AGES_DETERMINER_EVENT_CALCULATION);
+        $occupancy = $this->determiner->determine($searchQuery, OccupancyDeterminerEvent::OCCUPANCY_DETERMINER_EVENT_CALCULATION);
         $actualAdults = $occupancy->getAdults();
         $actualChildren = $occupancy->getChildren();
 

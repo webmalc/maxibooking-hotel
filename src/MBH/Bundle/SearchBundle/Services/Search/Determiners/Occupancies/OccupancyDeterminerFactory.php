@@ -13,7 +13,7 @@ class OccupancyDeterminerFactory
 
     public const COMMON_DETERMINER = 'mbh_search.occupancy_determiner_common';
 
-    public const NO_TRANSFORM_DETERMINER = 'mbh_search.occupancy_determiner_child_free_tariff';
+    public const CHILD_FREE_TARIFF_DETERMINER = 'mbh_search.occupancy_determiner_child_free_tariff';
     /** @var ContainerInterface */
     private $container;
 
@@ -37,7 +37,7 @@ class OccupancyDeterminerFactory
         if ($type === self::COMMON_DETERMINER) {
             return $this->container->get('mbh_search.occupancy_determiner_common');
         }
-        if ($type === self::NO_TRANSFORM_DETERMINER) {
+        if ($type === self::CHILD_FREE_TARIFF_DETERMINER) {
             return $this->container->get('mbh_search.occupancy_determiner_child_free_tariff');
         }
 
