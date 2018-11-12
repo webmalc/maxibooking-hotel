@@ -508,6 +508,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
 
     /**
      * {@inheritDoc}
+     * @throws \Exception
      */
     public function pullOrders($pullOldStatus = ChannelManager::OLD_PACKAGES_PULLING_NOT_STATUS)
     {
@@ -515,14 +516,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
         $isPulledAllPackages = $pullOldStatus === ChannelManager::OLD_PACKAGES_PULLING_ALL_STATUS;
         /** @var BookingConfig $config */
         foreach ($this->getConfig($isPulledAllPackages) as $config) {
-            $request = $this->templating->render(
-                'MBHChannelManagerBundle:Booking:reservations.xml.twig',
-                ['config' => $config, 'params' => $this->params, 'pullOldStatus' => $pullOldStatus]
-            );
-
-            $endpointUrl = static::BASE_SECURE_URL . ($isPulledAllPackages ? 'reservationssummary' : 'reservations');
-
-            $sendResult = $this->sendXml($endpointUrl, $request, null, true);
+            $sendResult = $this->sendPullOrdersRequest($pullOldStatus, $config, $isPulledAllPackages);
             $this->log('Reservations: ' . $sendResult->asXml());
 
             if (!$this->checkResponse($sendResult->asXml(), ['element' => 'reservations'])) {
@@ -866,5 +860,45 @@ class Booking extends Base implements ChannelManagerServiceInterface
         $this->log($request->getContent());
 
         return new Response('OK');
+    }
+
+    /**
+     * @param BookingConfig $config
+     * @return bool
+     * @throws \Exception
+     */
+    public function isBookingAccountConfirmed(BookingConfig $config)
+    {
+        $response = $this->sendPullOrdersRequest(ChannelManager::OLD_PACKAGES_PULLING_ALL_STATUS, $config, true);
+        if ($this->hasErrorNode($response)) {
+            if ($response->fault && $response->fault->attributes()['code'] == '403') {
+                return false;
+            } else {
+                throw new \Exception('Unexpected error while sending request for check booking confirmation');
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @param $pullOldStatus
+     * @param $config
+     * @param $isPulledAllPackages
+     * @return \SimpleXMLElement
+     * @throws \Exception
+     */
+    private function sendPullOrdersRequest($pullOldStatus, $config, $isPulledAllPackages): \SimpleXMLElement
+    {
+        $request = $this->templating->render(
+            'MBHChannelManagerBundle:Booking:reservations.xml.twig',
+            ['config' => $config, 'params' => $this->params, 'pullOldStatus' => $pullOldStatus]
+        );
+
+        $endpointUrl = static::BASE_SECURE_URL . ($isPulledAllPackages ? 'reservationssummary' : 'reservations');
+
+        $sendResult = $this->sendXml($endpointUrl, $request, null, true);
+
+        return $sendResult;
     }
 }
