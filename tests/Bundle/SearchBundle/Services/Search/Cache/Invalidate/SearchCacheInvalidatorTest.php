@@ -35,7 +35,6 @@ class SearchCacheInvalidatorTest extends WebTestCase
         $invalidateQuery = new InvalidateQuery();
         $invalidateQuery->setObject($priceCache)
             ->setType(InvalidateQuery::PRICE_CACHE)
-
         ;
 
         $this->invalidate($invalidateQuery, $data['expected']['keysNumToInvalidate']);
