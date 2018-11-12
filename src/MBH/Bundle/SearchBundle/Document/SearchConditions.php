@@ -292,6 +292,10 @@ class SearchConditions extends Base
         return $this;
     }
 
+    /** TODO: Тут может жить категория, нужно фиксить
+     * @param $roomTypes
+     * @return SearchConditions
+     */
     public function setRoomTypes($roomTypes): SearchConditions
     {
         $this->roomTypes = $roomTypes;
@@ -322,6 +326,8 @@ class SearchConditions extends Base
         foreach ($this->tariffs as $tariff) {
             if ($tariff->getParent() && $tariff->getChildOptions()->isInheritRooms()) {
                 $restrictionTariffs[] = $tariff->getParent();
+            } else {
+                $restrictionTariffs[] = $tariff;
             }
         }
 

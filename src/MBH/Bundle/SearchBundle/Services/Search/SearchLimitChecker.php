@@ -307,6 +307,6 @@ class SearchLimitChecker
 
     private function getActualOccupancies(SearchQuery $searchQuery): OccupancyInterface
     {
-        return $this->determiner->determine($searchQuery, OccupancyDeterminerEvent::AGES_DETERMINER_EVENT_CHECK_LIMIT);
+        return $this->determiner->determine($searchQuery, OccupancyDeterminerEvent::OCCUPANCY_DETERMINER_EVENT_CHECK_LIMIT);
     }
 }

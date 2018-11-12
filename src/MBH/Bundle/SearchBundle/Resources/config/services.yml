@@ -521,6 +521,7 @@ services:
             - '@mbh_search.shared_data_fetcher'
             - '@mbh_search.restriction_repository'
             - '@mbh_search.restrictions_redis_cache'
+            - '@mbh.hotel.room_type_manager'
 
     mbh_search.room_fetcher:
         class: MBH\Bundle\SearchBundle\Services\Data\RoomFetcher

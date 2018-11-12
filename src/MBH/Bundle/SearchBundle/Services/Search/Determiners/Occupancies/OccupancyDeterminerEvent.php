@@ -11,13 +11,11 @@ use Symfony\Component\EventDispatcher\Event;
 
 class OccupancyDeterminerEvent extends Event
 {
-    public const AGES_DETERMINER_EVENT_GENERATE_KEY = 'ages.determine.generate.key';
+    public const OCCUPANCY_DETERMINER_EVENT_GENERATE_KEY = 'ages.determine.generate.key';
 
-    public const AGES_DETERMINER_EVENT_GENERATE_WARM_UP_KEY = 'ages.determine.warm.up.generate.key';
+    public const OCCUPANCY_DETERMINER_EVENT_CHECK_LIMIT = 'ages.determine.check.limit';
 
-    public const AGES_DETERMINER_EVENT_CHECK_LIMIT = 'ages.determine.check.limit';
-
-    public const AGES_DETERMINER_EVENT_CALCULATION = 'ages.determine.calculation';
+    public const OCCUPANCY_DETERMINER_EVENT_CALCULATION = 'ages.determine.calculation';
 
     /** @var OccupancyInterface */
     private $occupancies;

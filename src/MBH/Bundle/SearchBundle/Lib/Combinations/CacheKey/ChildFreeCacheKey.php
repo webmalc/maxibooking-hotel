@@ -16,7 +16,7 @@ class ChildFreeCacheKey extends AbstractKey
      */
     public function getKey(SearchQuery $searchQuery): string
     {
-        $occupancies = $this->determiner->determine($searchQuery, OccupancyDeterminerFactory::NO_TRANSFORM_DETERMINER);
+        $occupancies = $this->determiner->determine($searchQuery, OccupancyDeterminerFactory::CHILD_FREE_TARIFF_DETERMINER);
         $ageGroups = $this->getAgeGroups($occupancies->getChildrenAges());
         $key = $this->getSharedPartKey($searchQuery);
         $key .= '_'.$occupancies->getAdults();
