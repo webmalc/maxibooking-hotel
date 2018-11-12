@@ -41,6 +41,8 @@ class GuestCombinatorTest extends WebTestCase
         $tariff4 = new Tariff();
         $tariff5 = new Tariff();
 
+
+
         $propertyId = $reflectionTariff->getProperty('id');
         $propertyId->setAccessible(true);
         $propertyId->setValue($childTariff, 'child_free');
