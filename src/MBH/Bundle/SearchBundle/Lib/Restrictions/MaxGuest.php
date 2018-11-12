@@ -32,8 +32,6 @@ class MaxGuest extends AbstractFieldChecker
         if ($value < $totalPlaces && !$isItDepartureDay) {
             throw new RestrictionsCheckerException("Room {$this->getCheckingFieldName()} at {$date->format('d-m-Y')}");
         }
-
-
     }
 
     protected function getCheckingFieldName(): string

@@ -44,6 +44,7 @@ class AsyncResultStoreTest extends SearchWebTestCase
 
     public function testPureReceive(): void {
         $asyncCache = $this->getContainer()->get('snc_redis.results');
+
         $service = $this->getContainer()->get('mbh_search.async_result_store');
 
         $hash = uniqid('', false);

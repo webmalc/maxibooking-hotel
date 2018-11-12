@@ -17,8 +17,8 @@ class MinGuestTest extends RestrictionWebTestCase
      */
     public function testNoMinGuest(SearchQuery $searchQuery, array $restriction): void
     {
-        $occupancy = $this->getContainer()->get('mbh_search.cache_key_determiner')->determine($searchQuery, $type);
-        $minGuest = new MinGuest();
+        $this->createOccupancy($searchQuery);
+        $minGuest = new MinGuest($this->determiner);
         $minGuest->check($searchQuery, $restriction);
         $this->assertTrue(true);
     }
@@ -31,7 +31,8 @@ class MinGuestTest extends RestrictionWebTestCase
      */
     public function testMinGuestViolation(SearchQuery $searchQuery, array $restriction): void
     {
-        $minGuest = new MinGuest();
+        $this->createOccupancy($searchQuery);
+        $minGuest = new MinGuest($this->determiner);
         $restriction[1]['minGuest'] = 5;
         $this->expectExceptionMessage('Room minGuest at '. Helper::convertMongoDateToDate($restriction[1]['date'])->format('d-m-Y'));
         $minGuest->check($searchQuery, $restriction);
@@ -45,7 +46,8 @@ class MinGuestTest extends RestrictionWebTestCase
      */
     public function testMinGuestNoViolation(SearchQuery $searchQuery, array $restriction): void
     {
-        $minGuest = new MinGuest();
+        $this->createOccupancy($searchQuery);
+        $minGuest = new MinGuest($this->determiner);
         $restriction[1]['minGuest'] = 2;
         $minGuest->check($searchQuery, $restriction);
         $this->assertTrue(true);
