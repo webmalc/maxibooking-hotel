@@ -5,17 +5,18 @@ namespace MBH\Bundle\SearchBundle\RabbitMQ;
 
 
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
-use MBH\Bundle\SearchBundle\Services\Search\ConsumerSearcher;
+use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStore;
+use MBH\Bundle\SearchBundle\Services\Search\AsyncSearcher;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 
 class AsyncSearchConsumer implements ConsumerInterface
 {
 
-    /** @var ConsumerSearcher */
+    /** @var AsyncSearcher */
     private $consumerSearch;
 
-    public function __construct(ConsumerSearcher $consumerSearch)
+    public function __construct(AsyncSearcher $consumerSearch)
     {
         $this->consumerSearch = $consumerSearch;
     }

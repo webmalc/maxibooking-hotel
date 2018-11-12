@@ -10,16 +10,16 @@ use MBH\Bundle\SearchBundle\Lib\Exceptions\ConsumerSearchException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStoreInterface;
-use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\ResultRedisStore;
+use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStore;
 
-class ConsumerSearcher
+class AsyncSearcher
 {
 
     /** @var SearchConditionsRepository */
     private $conditionsRepository;
 
-    /** @var ResultRedisStore */
-    private $resultStore;
+    /** @var AsyncResultStore */
+    private $asyncResultStore;
     /**
      * @var SearcherFactory
      */
@@ -34,7 +34,7 @@ class ConsumerSearcher
     public function __construct(SearchConditionsRepository $conditionsRepository, AsyncResultStoreInterface $resultStore, SearcherFactory $searcherFactory)
     {
         $this->conditionsRepository = $conditionsRepository;
-        $this->resultStore = $resultStore;
+        $this->asyncResultStore = $resultStore;
         $this->searcherFactory = $searcherFactory;
     }
 
@@ -47,9 +47,9 @@ class ConsumerSearcher
             throw new ConsumerSearchException('Error! Can not find SearchConditions for search in consumerSearch');
         }
         $hash = $conditions->getSearchHash();
-        $searchedDaysCount = $this->resultStore->getAlreadySearchedDay($hash);
+        $searchedDaysCount = $this->asyncResultStore->getAlreadySearchedDay($hash);
         if ($searchedDaysCount > $conditions->getAdditionalResultsLimit()) {
-            $this->resultStore->addFakeReceivedCount($hash, \count($searchQueries));
+            $this->asyncResultStore->addFakeReceivedCount($hash, \count($searchQueries));
         } else {
             $searcher = $this->searcherFactory->getSearcher($conditions->isUseCache());
             $successResults = 0;
@@ -57,7 +57,7 @@ class ConsumerSearcher
                 /** @var SearchQuery $searchQuery */
                 $searchQuery->setSearchConditions($conditions);
                 $result = $searcher->search($searchQuery);
-                $this->resultStore->store($result, $conditions);
+                $this->asyncResultStore->store($result, $conditions);
                 if ($result instanceof Result && $result->getStatus() === 'ok') {
                     $successResults++;
                 } elseif (\is_array($result) && $result['status'] === 'ok') {
@@ -65,7 +65,7 @@ class ConsumerSearcher
                 }
             }
             if ($successResults > 0) {
-                $this->resultStore->increaseAlreadySearchedDay($hash);
+                $this->asyncResultStore->increaseAlreadySearchedDay($hash);
             }
         }
 

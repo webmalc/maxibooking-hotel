@@ -4,6 +4,7 @@
 namespace MBH\Bundle\SearchBundle\Services\Cache;
 
 
+use MBH\Bundle\SearchBundle\Lib\Exceptions\CacheWarmerException;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 
 class WarmUpCacheSearchResult extends AbstractCacheSearchResult
@@ -11,15 +12,11 @@ class WarmUpCacheSearchResult extends AbstractCacheSearchResult
     /**
      * @param SearchQuery $searchQuery
      * @param bool $hydrated
-     * @return bool
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\CacheKeyFactoryException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
+     * @throws CacheWarmerException
      */
-    public function searchInCache(SearchQuery $searchQuery, $hydrated = true): bool
+    public function searchInCache(SearchQuery $searchQuery, $hydrated = true): void
     {
-        $key = $this->createKey($searchQuery);
-
-        return $this->redis->exists($key);
+        throw new CacheWarmerException('WarmUp has not to search in cache!');
     }
 
     /**

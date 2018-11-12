@@ -48,6 +48,15 @@ abstract class AbstractCacheSearchResult implements SearchCacheInterface
     }
 
 
+    public function searchInCache(SearchQuery $searchQuery, $hydrated = true)
+    {
+        $result = null;
+        $key = $this->createKey($searchQuery);
+        $cacheResult = $this->redis->get($key);
+
+        return $cacheResult;
+    }
+
     /**
      * @param Result $result
      * @param SearchQuery $searchQuery

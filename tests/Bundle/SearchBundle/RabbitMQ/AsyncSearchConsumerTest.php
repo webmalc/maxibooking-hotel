@@ -4,10 +4,9 @@
 namespace Tests\Bundle\SearchBundle\RabbitMQ;
 
 
-use MBH\Bundle\SearchBundle\Lib\Exceptions\ConsumerSearchException;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\RabbitMQ\AsyncSearchConsumer;
-use MBH\Bundle\SearchBundle\Services\Search\ConsumerSearcher;
+use MBH\Bundle\SearchBundle\Services\Search\AsyncSearcher;
 use PhpAmqpLib\Message\AMQPMessage;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
@@ -23,7 +22,7 @@ class AsyncSearchConsumerTest extends SearchWebTestCase
         $message = $this->createMock(AMQPMessage::class);
         $message->expects($this->once())->method('getBody')->willReturn(json_encode($body));
 
-        $consumerSearch = $this->createMock(ConsumerSearcher::class);
+        $consumerSearch = $this->createMock(AsyncSearcher::class);
         $consumerSearch->expects($this->once())->method('search')->willReturnCallback(function (string  $actualConditionId, array $searchQueries) use ($conditionId){
             $this->assertEquals($conditionId, $actualConditionId);
             foreach ($searchQueries as $searchQuery) {
