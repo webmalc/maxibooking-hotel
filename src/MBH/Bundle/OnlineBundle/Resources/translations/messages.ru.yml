@@ -193,3 +193,7 @@ payment.receipt.item_description.package: 'Проживание в номере 
 payment.receipt.item_description.service: 'Услуга: '
 payment.receipt.item.quantity.night: ночь
 payment.receipt.item.quantity.units: шт
+views.form_codeinstruction.header: 'Онлайн модуль состоит из 2-х форм'
+views.form_codeinstruction.text1: '<strong>формы поиска</strong> - где можно задать даты заезда и выезда, количество гостей и запустить поиск свободных номеров'
+views.form_codeinstruction.text2: '- <strong>формы вывода результатов поиска</strong>- в которой выводятся варианты бронирования и гость может забронировать номер или номера'
+views.form_codeinstruction.text3: 'Для вывода результатов поиска на сайте нужно создать страницу на сайте и разместить на ней форму вывода результатов. Адрес этой страницы указывается в настройках онлайн-модуля.'
