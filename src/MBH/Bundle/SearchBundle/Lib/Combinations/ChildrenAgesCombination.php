@@ -4,8 +4,6 @@
 namespace MBH\Bundle\SearchBundle\Lib\Combinations;
 
 
-use MBH\Bundle\SearchBundle\Form\SearchConditionsType;
-
 class ChildrenAgesCombination extends AbstractCombinations
 {
     public function getCombinations(): array
@@ -33,8 +31,12 @@ class ChildrenAgesCombination extends AbstractCombinations
 
         /** @noinspection PhpUnusedLocalVariableInspection */
         foreach (range(1, $children) as $foo) {
-            $inputArrays[] = range(SearchConditionsType::MIN_CHILDREN_AGE, SearchConditionsType::MAX_CHILDREN_AGE);
+//            $inputArrays[] = range(SearchConditionsType::MIN_CHILDREN_AGE, SearchConditionsType::MAX_CHILDREN_AGE);
+            $inputArrays[] = [3, 14];
+
         }
+
+
 
         $agesCombinations = $this->getAllCombinations($inputArrays);
         $result = [];

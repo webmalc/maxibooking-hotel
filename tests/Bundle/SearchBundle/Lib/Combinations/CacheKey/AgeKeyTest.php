@@ -34,6 +34,27 @@ class AgeKeyTest extends WebTestCase
         $this->assertEquals($expected['no_age'], $actual);
     }
 
+    /**
+     * @param $data
+     * @param $expected
+     * @param $type
+     * @dataProvider dataProvider
+     */
+    public function testChildrenAgeKey($data, $expected, $type): void
+    {
+        $searchQuery = $this->createSearchQuery($data);
+        $this->createFetcherMock($data);
+
+        $keyCreator = $this->getContainer()->get('mbh_search.cache_key_with_children_ages');
+        if ($type === 'no_warmup') {
+            $actual = $keyCreator->getKey($searchQuery);
+        }
+        if ($type === 'warmup') {
+            $actual = $keyCreator->getWarmUpKey($searchQuery);
+        }
+        $this->assertEquals($expected['with_age'], $actual);
+    }
+
     private function createFetcherMock($data)
     {
         $sharedDataFetcher = $this->createMock(SharedDataFetcher::class);
@@ -93,7 +114,7 @@ class AgeKeyTest extends WebTestCase
                         .'_'.'fakeTariffId'
                         .'_'.'2'
                         .'_'.'1'
-                        .'_'.'children_ages'.'_'.implode('_', [4])
+                        .'_'.'groups'.'__'.'j1'
                     ,
                     'no_age' =>
                         (new \DateTime('midnight'))->format('d.m.Y')
@@ -129,7 +150,8 @@ class AgeKeyTest extends WebTestCase
                         .'_'.'fakeTariffId'
                         .'_'.'2'
                         .'_'.'3'
-                        .'_'.'children_ages'.'_'.implode('_', [1, 8, 15])
+                        .'_'.'groups'.'__'.'j1_t2'
+
                     ,
                     'no_age' =>
                         (new \DateTime('midnight'))->format('d.m.Y')
@@ -164,7 +186,7 @@ class AgeKeyTest extends WebTestCase
                         .'_'.'fakeTariffId'
                         .'_'.'2'
                         .'_'.'1'
-                        .'_'.'children_ages'.'_'.implode('_', [4])
+                        .'_'.'groups'.'__'.'j1'
                     ,
                     'no_age' =>
                         (new \DateTime('midnight'))->format('d.m.Y')
@@ -200,7 +222,7 @@ class AgeKeyTest extends WebTestCase
                         .'_'.'fakeTariffId'
                         .'_'.'2'
                         .'_'.'3'
-                        .'_'.'children_ages'.'_'.implode('_', [1, 8, 15])
+                        .'_'.'groups'.'__'.'j1_t2'
                     ,
                     'no_age' =>
                         (new \DateTime('midnight'))->format('d.m.Y')
