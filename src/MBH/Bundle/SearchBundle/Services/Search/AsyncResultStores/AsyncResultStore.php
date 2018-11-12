@@ -13,7 +13,7 @@ use MBH\Bundle\SearchBundle\Services\FinalSearchResultsBuilder;
 use Predis\Client;
 use Symfony\Component\Cache\Simple\RedisCache;
 
-class ResultRedisStore implements AsyncResultStoreInterface
+class AsyncResultStore implements AsyncResultStoreInterface
 {
 
     /** @var Client */

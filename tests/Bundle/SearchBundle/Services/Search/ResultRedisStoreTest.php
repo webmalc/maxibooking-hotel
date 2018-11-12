@@ -25,7 +25,7 @@ class ResultRedisStoreTest extends SearchWebTestCase
         $searchResult1 = $this->getData($hash, 'ok');
         $searchResult2 = $this->getData($hash, 'error');
 
-        $service = $this->getContainer()->get('mbh_search.redis_store');
+        $service = $this->getContainer()->get('mbh_search.async_result_store');
         $service->store($searchResult1,  $conditions);
         $service->store($searchResult2,  $conditions);
 
@@ -44,7 +44,7 @@ class ResultRedisStoreTest extends SearchWebTestCase
 
     public function testPureReceive(): void {
         $asyncCache = $this->getContainer()->get('snc_redis.results');
-        $service = $this->getContainer()->get('mbh_search.redis_store');
+        $service = $this->getContainer()->get('mbh_search.async_result_store');
 
         $hash = uniqid('', false);
         $searchResult1 = $this->getData($hash, 'ok');

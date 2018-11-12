@@ -14,8 +14,10 @@ class CacheSearcher extends AbstractCacheSearcher
     /**
      * @param SearchQuery $searchQuery
      * @return Result|array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function search(SearchQuery $searchQuery)
     {

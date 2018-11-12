@@ -19,14 +19,10 @@ class CacheSearchResults extends AbstractCacheSearchResult
      * @param SearchQuery $searchQuery
      * @param bool $hydrated
      * @return mixed
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\CacheKeyFactoryException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
      */
     public function searchInCache(SearchQuery $searchQuery, $hydrated = false)
     {
-        $result = null;
-        $key = $this->createKey($searchQuery);
-        $cacheResult = $this->redis->get($key);
+        $cacheResult = parent::searchInCache($searchQuery);
         if ($cacheResult) {
             /** @var Result $result */
             $result = $hydrated ? $this->serializer->deserialize($cacheResult) : $this->serializer->decodeJsonToArray($cacheResult);

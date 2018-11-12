@@ -96,11 +96,11 @@ services:
 
 
 #search
-    mbh_search.consumer_searcher:
-        class: MBH\Bundle\SearchBundle\Services\Search\ConsumerSearcher
+    mbh_search.async_searcher:
+        class: MBH\Bundle\SearchBundle\Services\Search\AsyncSearcher
         arguments:
             - '@mbh_search.search_conditions_repository'
-            - '@mbh_search.redis_store'
+            - '@mbh_search.async_result_store'
             - '@mbh_search.searcher_factory'
 
     mbh_search.searcher_factory:
@@ -212,9 +212,8 @@ services:
     mbh_search.asycn_search:
         class: MBH\Bundle\SearchBundle\RabbitMQ\AsyncSearchConsumer
         arguments:
-            - '@mbh_search.consumer_searcher'
-            - '@mbh_search.search_conditions_repository'
-            - '@mbh_search.redis_store'
+            - '@mbh_search.async_searcher'
+
 
     mbh_search.warm_up_search:
         class: MBH\Bundle\SearchBundle\RabbitMQ\WarmUpConsumer
@@ -250,7 +249,7 @@ services:
         class: MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\CommonOccupancyDeterminer
 
     mbh_search.occupancy_determiner_child_free_tariff:
-        class: MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\NoTransformDeterminer
+        class: MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\ChildFreeOccupancyDeterminer
 
     mbh_search.occupancy_determiner_factory:
         class: MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminerFactory
@@ -555,8 +554,8 @@ services:
         arguments: ['@mbh_search.result_serializer']
 
 #AsyncStores
-    mbh_search.redis_store:
-        class: MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\ResultRedisStore
+    mbh_search.async_result_store:
+        class: MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStore
         arguments:
             - '@snc_redis.results_client'
             - '@mbh_search.result_serializer'

@@ -10,9 +10,9 @@ use MBH\Bundle\SearchBundle\Document\SearchConditionsRepository;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\ConsumerSearchException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
-use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\ResultRedisStore;
+use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStore;
 use MBH\Bundle\SearchBundle\Services\Search\CacheSearcher;
-use MBH\Bundle\SearchBundle\Services\Search\ConsumerSearcher;
+use MBH\Bundle\SearchBundle\Services\Search\AsyncSearcher;
 use MBH\Bundle\SearchBundle\Services\Search\SearcherFactory;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
@@ -38,7 +38,7 @@ class ConsumerSearcherTest extends SearchWebTestCase
         $searcherFactory = $this->createMock(SearcherFactory::class);
         $searcherFactory->expects($this->once())->method('getSearcher')->willReturn($searcher);
 
-        $resultStore = $this->createMock(ResultRedisStore::class);
+        $resultStore = $this->createMock(AsyncResultStore::class);
         $resultStore->expects($this->exactly(3))->method('store')->willReturnCallback(function ($searchResult) use (&$numberOfCall) {
             $numberOfCall++;
             if ($numberOfCall === 2) {
@@ -58,7 +58,7 @@ class ConsumerSearcherTest extends SearchWebTestCase
 
         $searchQuery = $this->createMock(SearchQuery::class);
 
-        $search = new ConsumerSearcher($conditionsRepository, $resultStore, $searcherFactory);
+        $search = new AsyncSearcher($conditionsRepository, $resultStore, $searcherFactory);
         $search->search('fakeConditionsId', [clone $searchQuery, clone $searchQuery, clone $searchQuery]);
         $search->search('fakeConditionsId', [clone $searchQuery, clone $searchQuery, clone $searchQuery]);
         $this->expectException(ConsumerSearchException::class);
