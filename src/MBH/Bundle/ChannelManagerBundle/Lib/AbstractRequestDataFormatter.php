@@ -35,7 +35,7 @@ abstract class AbstractRequestDataFormatter
      * Форматирование данных, отправляемых в запросе обновления цен сервиса
      * @param $begin
      * @param $end
-     * @param $roomTypes
+     * @param $roomType
      * @param $serviceTariffs
      * @param ChannelManagerConfigInterface $config
      * @return mixed
@@ -43,7 +43,7 @@ abstract class AbstractRequestDataFormatter
     abstract public function formatPriceRequestData(
         $begin,
         $end,
-        $roomTypes,
+        $roomType,
         $serviceTariffs,
         ChannelManagerConfigInterface $config
     );
@@ -93,12 +93,13 @@ abstract class AbstractRequestDataFormatter
      * Возвращает массив данных, отправляемых в запросе обновления цен
      * @param $begin
      * @param $end
-     * @param $roomTypes
+     * @param $roomType
      * @param $serviceTariffs Массив актуальных данных о тарифах, полученный с сервиса
      * @param ChannelManagerConfigInterface $config
      * @return array
+     * @throws \Exception
      */
-    protected function getPriceData($begin, $end, $roomTypes, $serviceTariffs, ChannelManagerConfigInterface $config)
+    protected function getPriceData($begin, $end, $roomType, $serviceTariffs, ChannelManagerConfigInterface $config)
     {
         $resultData = [];
 
@@ -110,7 +111,7 @@ abstract class AbstractRequestDataFormatter
             $begin,
             $end,
             $config->getHotel(),
-            $this->getRoomTypeArray($roomTypes),
+            $this->getRoomTypeArray($roomType),
             [],
             true,
             $this->roomManager->useCategories
@@ -253,7 +254,6 @@ abstract class AbstractRequestDataFormatter
         \DateTime $day,
         $serviceTariffs
     ) {
-        //TODO: Стоит ли так делать?
         if ($restriction) {
             $restriction->setClosed($restriction->getClosed() || (!$isPriceSet ? true : false));
         }

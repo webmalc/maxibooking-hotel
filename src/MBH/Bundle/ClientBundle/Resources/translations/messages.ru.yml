@@ -16,6 +16,7 @@ form.clientConfigType.currency.options.uzs: 'Узбекские сумы'
 form.clientConfigType.currency.options.gel: 'Грузинские лари'
 form.clientConfigType.currency.options.usd: Доллары
 form.clientConfigType.currency.options.inr: 'Инди́йская рупия'
+form.clientConfigType.currency.options.pln: 'Польский злотый'
 
 form.clientConfigType.sms_notification: 'Смс оповещение?'
 form.clientConfigType.notice_unpaid: Уведомление

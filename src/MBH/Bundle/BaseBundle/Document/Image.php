@@ -77,6 +77,11 @@ class Image
 
     protected $priority = 0;
 
+    /**
+     * @param File|null $image
+     * @return Image
+     * @throws \Exception
+     */
     public function setImageFile(File $image = null)
     {
         $this->imageFile = $image;
