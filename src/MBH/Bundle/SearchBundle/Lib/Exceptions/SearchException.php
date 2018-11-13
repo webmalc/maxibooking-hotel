@@ -8,14 +8,17 @@ use Throwable;
 
 class SearchException extends \Exception
 {
-    /** @var string */
-    protected $type;
+    public const TYPE = 0;
 
-    public function __construct(string $message = "", int $code = 0, Throwable $previous = null, string $type = '')
+    public function __construct(string $message = "", int $code = 0, Throwable $previous = null)
     {
-        $this->type = $type;
         parent::__construct($message, $code, $previous);
     }
 
+
+    public function getType(): int
+    {
+        return static::TYPE;
+    }
 
 }

@@ -14,6 +14,7 @@ use MBH\Bundle\BaseBundle\Validator\Constraints\Range;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use MBH\Bundle\SearchBundle\Services\Cache\ErrorFilters\ErrorResultFilter;
 use MBH\Bundle\SearchBundle\Validator\Constraints\ChildrenAgesSameAsChildren;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -179,6 +180,9 @@ class SearchConditions extends Base
 
     /** @var bool */
     private $isThisWarmUp = false;
+
+    private $errorLevel = ErrorResultFilter::TARIFF_LIMIT;
+
 
     /**
      * SearchConditions constructor.
@@ -595,6 +599,27 @@ class SearchConditions extends Base
 
         return $this;
     }
+
+    /**
+     * @return int
+     */
+    public function getErrorLevel(): int
+    {
+        return $this->errorLevel;
+    }
+
+    /**
+     * @param int $errorLevel
+     * @return SearchConditions
+     */
+    public function setErrorLevel(int $errorLevel): SearchConditions
+    {
+        $this->errorLevel = $errorLevel;
+
+        return $this;
+    }
+
+
 
 
 }

@@ -59,7 +59,7 @@ class AsyncResultStore implements AsyncResultStoreInterface
 
     /**
      * @param SearchConditions $conditions
-     * @param bool $isHideError
+     * @param int $errorLevel
      * @param null $grouping
      * @param bool $isCreateJson
      * @param bool $isCreateAnswer
@@ -67,7 +67,7 @@ class AsyncResultStore implements AsyncResultStoreInterface
      * @throws AsyncResultReceiverException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\GroupingFactoryException
      */
-    public function receive(SearchConditions $conditions, bool $isHideError = true, $grouping = null, bool $isCreateJson = false, bool $isCreateAnswer = false)
+    public function receive(SearchConditions $conditions, int $errorLevel = 0, $grouping = null, bool $isCreateJson = false, bool $isCreateAnswer = false)
     {
         $results = [];
         $keysForDelete = [];
@@ -104,7 +104,7 @@ class AsyncResultStore implements AsyncResultStoreInterface
 
         $results = $this->finalResultsBuilder
             ->set($results)
-            ->hideError($isHideError)
+            ->errorFilter($errorLevel)
             ->setGrouping($grouping)
             ->createJson($isCreateJson)
             ->createAnswer($isCreateAnswer)

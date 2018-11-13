@@ -3,6 +3,7 @@
 
 namespace MBH\Bundle\SearchBundle\Services\Search;
 
+use MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionLimitException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearcherException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
@@ -67,7 +68,9 @@ class Searcher implements SearcherInterface
             $this->searchLimitChecker->checkRoomCacheLimit($searchQuery);
 
             if (!$this->restrictionChecker->check($searchQuery)) {
-                throw new SearcherException('Violation in restriction.');
+                $errors = $this->getRestrictionError();
+                $message = implode('_',$errors[0]);
+                throw new RestrictionLimitException('Violation in restriction.'.$message);
             }
 
             $this->searchLimitChecker->checkDateLimit($searchQuery);

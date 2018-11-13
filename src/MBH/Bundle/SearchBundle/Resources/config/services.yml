@@ -236,7 +236,6 @@ services:
             - '@mbh_search.room_cache_fetcher'
             - '@mbh_search.occupancy_determiner'
 
-
 #Occupancies
     mbh_search.occupancy_determiner:
         class: MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminer
@@ -293,7 +292,6 @@ services:
       factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
       arguments:
       - MBH\Bundle\HotelBundle\Document\Hotel
-
 
     mbh_search.room_type_repository:
         class: MBH\Bundle\HotelBundle\Document\RoomTypeRepository
@@ -412,6 +410,7 @@ services:
             - '@mbh_search.result_serializer'
             - '@snc_redis.cache_results_client'
             - '@mbh_search.cache_key_creator'
+            - '@mbh_search.error_result_filter'
         abstract: true
 
     mbh_search.cache_search:
@@ -431,6 +430,8 @@ services:
             - '@mbh_search.combinator'
             - '@mbh_search.tariff_repository'
             - '@mbh_search.cache_logger'
+
+
     ### Combinations
     mbh_search.combinator:
         class: MBH\Bundle\SearchBundle\Services\GuestCombinator
@@ -551,7 +552,9 @@ services:
 
     mbh_search.results_final_builder:
         class: MBH\Bundle\SearchBundle\Services\FinalSearchResultsBuilder
-        arguments: ['@mbh_search.result_serializer']
+        arguments:
+            - '@mbh_search.result_serializer'
+            - '@mbh_search.error_result_filter'
 
 #AsyncStores
     mbh_search.async_result_store:
@@ -576,7 +579,7 @@ services:
             - '@mbh_search.serializer'
             - '@mbh_search.normalizer'
 
-#logger
+#loggers
     mbh_search.cache_logger_handler:
         class: Monolog\Handler\StreamHandler
         arguments: ["%kernel.logs_dir%/%kernel.environment%.cache.log", 200]
@@ -602,3 +605,7 @@ services:
         class: MBH\Bundle\SearchBundle\EventSubscriber\GuestCombinatorSubscriber
         tags:
             - {name: kernel.event_subscriber, event: combination.childrenAges }
+
+#error result filter
+    mbh_search.error_result_filter:
+        class: MBH\Bundle\SearchBundle\Services\Cache\ErrorFilters\ErrorResultFilter

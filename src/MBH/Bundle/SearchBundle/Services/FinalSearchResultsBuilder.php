@@ -4,10 +4,11 @@
 namespace MBH\Bundle\SearchBundle\Services;
 
 
+use MBH\Bundle\SearchBundle\Lib\Exceptions\FilterResultException;
 use MBH\Bundle\SearchBundle\Lib\Result\Grouping\GroupingFactory;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
+use MBH\Bundle\SearchBundle\Services\Cache\ErrorFilters\ErrorResultFilter;
 use MBH\Bundle\SearchBundle\Services\Data\Serializers\ResultSerializer;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
 
 class FinalSearchResultsBuilder
 {
@@ -15,7 +16,7 @@ class FinalSearchResultsBuilder
     private $results;
 
     /** @var bool */
-    private $isFilterError = true;
+    private $filterLevel = true;
 
     /** @var string */
     private $grouping;
@@ -29,13 +30,18 @@ class FinalSearchResultsBuilder
     /** @var bool */
     private $isCreateAnswer = false;
 
+    /** @var ErrorResultFilter */
+    private $errorFilter;
+
     /**
      * SearchResultsFinalHandler constructor.
      * @param ResultSerializer $serializer
+     * @param ErrorResultFilter $errorFilter
      */
-    public function __construct(ResultSerializer $serializer)
+    public function __construct(ResultSerializer $serializer, ErrorResultFilter $errorFilter)
     {
         $this->serializer = $serializer;
+        $this->errorFilter = $errorFilter;
     }
 
     public function set($results): self
@@ -61,9 +67,9 @@ class FinalSearchResultsBuilder
         return $this;
     }
 
-    public function hideError(bool $hide = true): self
+    public function errorFilter(int $level = 0): self
     {
-        $this->isFilterError = $hide;
+        $this->filterLevel = $level;
 
         return $this;
     }
@@ -97,7 +103,7 @@ class FinalSearchResultsBuilder
     {
         $results = $this->results;
 
-        if ($this->isFilterError && \count($results)) {
+        if (\count($results)) {
             $results = array_filter($results, [$this, 'filterError']);
         }
 
@@ -125,7 +131,13 @@ class FinalSearchResultsBuilder
 
     private function filterError(array $result): bool
     {
-        return $result['status'] === 'ok';
+        try {
+            $this->errorFilter->arrayFilter($result, $this->filterLevel);
+
+            return true;
+        } catch (FilterResultException $e) {
+            return false;
+        }
     }
 
     public function unsetResults(): void

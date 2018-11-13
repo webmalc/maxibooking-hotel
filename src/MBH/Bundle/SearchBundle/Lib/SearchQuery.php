@@ -5,6 +5,7 @@ namespace MBH\Bundle\SearchBundle\Lib;
 
 
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
+use MBH\Bundle\SearchBundle\Services\Cache\ErrorFilters\ErrorFilterLevelInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -67,12 +68,6 @@ class SearchQuery
      */
     private $childrenAges = [];
 
-    /** @var int */
-    private $childAge;
-
-    /** @var int */
-    private $infantAge;
-
     /**
      * @var SearchConditions
      */
@@ -100,6 +95,9 @@ class SearchQuery
      * @Assert\Type("string")
      */
     private $searchHash;
+
+    /** @var int */
+    private $errorLevel = 0;
 
     /**
      * @return mixed
@@ -339,23 +337,23 @@ class SearchQuery
     }
 
 
-    public function getInfants(): int
-    {
-        $infants = array_filter(
-            $this->childrenAges,
-            function ($age) {
-                return $age <= $this->infantAge;
-            }
-        );
-
-        return \count($infants);
-    }
-
      public function getDuration(): int
     {
         return (int)$this->end->diff($this->begin)->format('%a');
     }
 
+
+    public function setErrorLevel(int $level): SearchQuery
+    {
+        $this->errorLevel = $level;
+
+        return $this;
+    }
+
+    public function getErrorLevel(): int
+    {
+        return $this->errorLevel;
+    }
 
     public static function createInstance(SearchConditions $conditions, \DateTime $begin, \DateTime $end, array $tariffRoomType): SearchQuery
     {
@@ -373,9 +371,11 @@ class SearchQuery
             ->setChildrenAges($conditions->getChildrenAges())
             ->setIsForceBooking($conditions->isForceBooking())
             ->setSearchHash($conditions->getSearchHash())
+            ->setErrorLevel($conditions->getErrorLevel())
         ;
 
         return $searchQuery;
     }
+
 
 }
