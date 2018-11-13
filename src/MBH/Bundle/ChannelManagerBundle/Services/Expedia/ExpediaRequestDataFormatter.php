@@ -51,25 +51,43 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
      * Форматирование данных в формате xml, отправляемых в запросе обновления цен сервиса
      * @param $begin
      * @param $end
-     * @param $roomTypes
+     * @param $roomType
      * @param $serviceTariffs
      * @param ChannelManagerConfigInterface $config
-     * @return mixed
+     * @return array
      * @throws \Exception
      */
     public function formatPriceRequestData(
         $begin,
         $end,
-        $roomTypes,
+        $roomType,
         $serviceTariffs,
         ChannelManagerConfigInterface $config
     )
     {
         $pricesRequestData = [];
-        $requestDataArray = $this->getPriceData($begin, $end, $roomTypes, $serviceTariffs, $config);
+        $requestDataArray = $this->getPriceData($begin, $end, $roomType, $serviceTariffs, $config);
         $xmlElements = [];
         $priceCalculator = $this->container->get('mbh.calculation');
+        $periodsCompiler = $this->container->get('mbh.periods_compiler');
         $localCurrency = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->getCurrency();
+        $compareArraysCallback = function ($first, $second) {
+            if (is_null($first) && is_null($second)) {
+                return true;
+            }
+
+            if (!is_array($first) || !is_array($second) || count($first) !== count($second)) {
+                return false;
+            }
+
+            foreach ($first as $combination => $data) {
+                if (!isset($second[$combination]) || $data['total'] !== $second[$combination]['total']) {
+                    return false;
+                }
+            }
+
+            return true;
+        };
 
         $numberOfUpdates = 0;
         foreach ($requestDataArray as $roomTypeId => $pricesByTariffs) {
@@ -80,13 +98,17 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                     continue;
                 }
 
-                $periodsCompiler = $this->container->get('mbh.periods_compiler');
-                $comparePropertyMethods = ['getPrice', 'getIsPersonPrice', 'getAdditionalPrice', 'getAdditionalChildrenPrice', 'getSinglePrice', 'getChildPrice'];
-                $periodsData = $periodsCompiler->getPeriodsByFieldNames($begin, $end, $pricesByDates, $comparePropertyMethods, 'Y-m-d');
+                $calculatedPricesByDates = [];
+                /** @var PriceCache $price */
+                foreach ($pricesByDates as $date => $price) {
+                    $calculatedPricesByDates[$date] = is_null($price)
+                        ? null
+                        : $priceCalculator->calcPrices($price->getRoomType(), $price->getTariff(), $price->getDate(), $price->getDate());
+                }
+
+                $periodsData = $periodsCompiler->getPeriodsByCallback($begin, $end, $calculatedPricesByDates, $compareArraysCallback, 'Y-m-d');
                 foreach ($periodsData as $periodData) {
                     $xmlRoomTypeData = new \SimpleXMLElement('<AvailRateUpdate/>');
-                    /** @var PriceCache $priceCache */
-                    $priceCache = $periodData['data'];
                     $dateRangeElement = $xmlRoomTypeData->addChild('DateRange');
                     /** @var \DateTime $periodBegin */
                     $periodBegin = $periodData['begin'];
@@ -101,9 +123,10 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
 
                     $hasPriceList = false;
                     $priceList = [];
-                    if (!is_null($priceCache)) {
-                        $priceList = $priceCalculator->calcPrices($priceCache->getRoomType(), $priceCache->getTariff(), $periodBegin, $periodBegin);
-                        $hasPriceList = is_array($priceList) && count($priceList) > 0;
+                    $priceData = $periodData['data'];
+                    if (!is_null($priceData)) {
+                        $hasPriceList = is_array($priceData) && count($priceData) > 0;
+                        $priceList = $priceData;
                     }
 
                     $ratePlanElement = $roomTypeElement->addChild('RatePlan');
@@ -463,7 +486,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
      * @param ChannelManagerConfigInterface $config
      * @param $rootNodeName
      * @param $xmlns
-     * @return \SimpleXMLElement Массив объектов, добавляемых в тело xml-запроса $elementsArray
+     * @return string
      */
     private function formatTemplateRequest($elementsArray, ChannelManagerConfigInterface $config, $rootNodeName, $xmlns)
     {
@@ -494,7 +517,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
     /**
      * @param ExpediaConfig $config
      * @param $status
-     * @return \SimpleXMLElement
+     * @return string
      */
     public function formatGetAllBookingsData(ExpediaConfig $config, $status)
     {
