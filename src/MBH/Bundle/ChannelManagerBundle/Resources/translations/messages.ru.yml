@@ -31,6 +31,7 @@ form.vashotelType.password_help: 'Пароль от сервиса ВашОте�
 form.vashotelType.vashotel_ru_settings_hotel_id: 'ID отеля в настройках ВашОтель.RU'
 form.vashotelType.breakfast: 'Завтрак?'
 form.vashotelType.r0_or_BB: 'Какой тип питания использовать RO или BB?'
+controller.bookingController.booking_is_not_confirmed: 'Синхронизация Booking.com с MaxiBooking не подтверждена. Пожалуйста, завершите процесс получения разрешения от Booking.com, описанный на вкладке "Разрешение от Booking.com"'
 controller.bookingController.settings_saved_success: 'Настройки успешно сохранены'
 controller.bookingController.packages_sync_start: 'Синхронизация броней успешно запущена. Уведомление о новых бронях придет на email.'
 controller.ostrovokController.settings_saved_success: 'Настройки успешно сохранены'

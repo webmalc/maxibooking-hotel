@@ -116,15 +116,21 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             $this->dm->persist($config);
 
             if (!$config->isReadyToSync()) {
-                $config->setIsMainSettingsFilled(true);
-                $this->get('mbh.messages_store')->sendMessageToTechSupportAboutNewConnection('Booking', $this->get('mbh.instant_notifier'));
+                if ($this->get('mbh.channelmanager.booking')->isBookingAccountConfirmed($config)) {
+                    $this->addFlash('danger', 'controller.bookingController.booking_is_not_confirmed');
+                } else {
+                    $config->setIsMainSettingsFilled(true);
+                    $this
+                        ->get('mbh.messages_store')
+                        ->sendMessageToTechSupportAboutNewConnection('Booking', $this->get('mbh.instant_notifier'));
+
+                    $this->get('mbh.channelmanager.booking')->syncServices($config);
+                    $this->get('mbh.channelmanager')->updateInBackground();
+
+                    $this->addFlash('success','controller.bookingController.settings_saved_success');
+                    $this->dm->flush();
+                }
             }
-            $this->dm->flush();
-
-            $this->get('mbh.channelmanager.booking')->syncServices($config);
-            $this->get('mbh.channelmanager')->updateInBackground();
-
-            $this->addFlash('success','controller.bookingController.settings_saved_success');
 
             return $this->redirect($this->generateUrl('booking'));
         }
