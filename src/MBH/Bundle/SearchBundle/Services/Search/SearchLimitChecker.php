@@ -17,7 +17,11 @@ use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Data\RoomCacheFetchQuery;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\RoomCacheLimitException;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\RoomTypePopulationException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchLimitCheckerException;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\TariffLimitException;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\WindowsCheckLimitException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultRoom;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
@@ -72,7 +76,11 @@ class SearchLimitChecker
     }
 
 
-
+    /**
+     * @param SearchQuery $searchQuery
+     * @throws TariffLimitException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
+     */
     public function checkDateLimit(SearchQuery $searchQuery): void
     {
         $tariffId = $searchQuery->getTariffId();
@@ -91,7 +99,7 @@ class SearchLimitChecker
         }
 
         if ($isTariffNotYetStarted || $isTariffAlreadyEnded) {
-            throw new SearchLimitCheckerException('Tariff time limit violated.');
+            throw new TariffLimitException('Tariff time limit violated.');
         }
     }
 
@@ -129,10 +137,16 @@ class SearchLimitChecker
         $roomTypeTotalPlaces = $roomType->getTotalPlaces();
 
         if ($searchTotalPlaces > $roomTypeTotalPlaces) {
-            throw new SearchLimitCheckerException('RoomType total place less than need in query.');
+            throw new RoomTypePopulationException('RoomType total place less than need in query.');
         }
     }
 
+    /**
+     * @param SearchQuery $searchQuery
+     * @return array
+     * @throws RoomCacheLimitException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
+     */
     public function checkRoomCacheLimit(SearchQuery $searchQuery): array
     {
         $roomCacheQuery = RoomCacheFetchQuery::createInstanceFromSearchQuery($searchQuery);
@@ -152,7 +166,7 @@ class SearchLimitChecker
         );
 
         if (\count($roomCachesWithNoQuotas) !== $duration) {
-            throw new SearchLimitCheckerException('There are no free rooms left');
+            throw new RoomCacheLimitException('There are no free rooms left');
         }
 
         //** TODO: need to check roomcache quotas inheritance. Some service ? */
@@ -164,7 +178,7 @@ class SearchLimitChecker
             });
 
         if (\count($roomCacheWithQuotasNoLeftRooms)) {
-            throw new SearchLimitCheckerException('There are no free rooms left because a quotes');
+            throw new RoomCacheLimitException('There are no free rooms left because a quotes');
         }
 
         return $roomCachesWithNoQuotas;
@@ -173,7 +187,10 @@ class SearchLimitChecker
 
     /**
      * @param Result $result
-     * @throws SearchLimitCheckerException
+     * @param SearchQuery $searchQuery
+     * @throws WindowsCheckLimitException
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
      */
     public function checkWindows(Result $result, SearchQuery $searchQuery): void
     {
@@ -280,7 +297,7 @@ class SearchLimitChecker
             $result->setMinRoomsCount($emptyRooms->count() + $preferredRooms->count());
 
             if (!$collection->count()) {
-                throw new SearchLimitCheckerException('Window checker throws an error. '.$roomType->getName());
+                throw new WindowsCheckLimitException('Window checker throws an error. '.$roomType->getName());
             }
             //** TODO: Для спецпредложений вот такая загогулина была */
             /*if ($forcedVirtualRoom && $emptyRooms->count()) {

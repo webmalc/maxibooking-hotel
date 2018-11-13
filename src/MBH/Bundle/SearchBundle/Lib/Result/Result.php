@@ -46,8 +46,8 @@ class Result implements ResultCacheablesInterface
     /** @var string */
     private $error = '';
 
-    /** @var string */
-    private $errorType = 'Error type is not specified';
+    /** @var int */
+    private $errorType;
 
     /** @var bool */
     private $cached;
@@ -276,18 +276,18 @@ class Result implements ResultCacheablesInterface
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getErrorType(): string
+    public function getErrorType(): ?int
     {
         return $this->errorType;
     }
 
     /**
-     * @param string $errorType
+     * @param int $errorType
      * @return Result
      */
-    public function setErrorType(string $errorType): Result
+    public function setErrorType(int $errorType): Result
     {
         $this->errorType = $errorType;
 
@@ -346,10 +346,6 @@ class Result implements ResultCacheablesInterface
         return $this;
     }
 
-
-
-
-
     public static function createErrorResult(SearchQuery $searchQuery, SearchException $exception): Result
     {
         $begin = $searchQuery->getBegin();
@@ -363,7 +359,10 @@ class Result implements ResultCacheablesInterface
 
         $result
             ->setStatus('error')
-            ->setError($exception->getMessage());
+            ->setError($exception->getMessage())
+            ->setErrorType($exception->getType())
+        ;
+
 
         return $result;
     }

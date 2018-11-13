@@ -417,6 +417,7 @@ services:
             - '@mbh_search.result_serializer'
             - '@snc_redis.cache_results_client'
             - '@mbh_search.cache_key_creator'
+            - '@mbh_search.error_result_filter'
         abstract: true
 
     mbh_search.cache_search:
@@ -558,7 +559,9 @@ services:
 
     mbh_search.results_final_builder:
         class: MBH\Bundle\SearchBundle\Services\FinalSearchResultsBuilder
-        arguments: ['@mbh_search.result_serializer']
+        arguments:
+            - '@mbh_search.result_serializer'
+            - '@mbh_search.error_result_filter'
 
 #AsyncStores
     mbh_search.async_result_store:
@@ -635,3 +638,6 @@ services:
             - '@mbh.package.search_simple'
         tags:
             - { name: console.command }
+#error result filter
+    mbh_search.error_result_filter:
+      class: MBH\Bundle\SearchBundle\Services\Cache\ErrorFilters\ErrorResultFilter

@@ -75,7 +75,6 @@ class Search
 
     /**
      * @param array $data
-     * @param bool $isHideError
      * @param null $grouping
      * @param bool $isCreateJson
      * @param bool $isCreateAnswer
@@ -86,7 +85,6 @@ class Search
      */
     public function searchSync(
         array $data,
-        bool $isHideError = true,
         $grouping = null,
         bool $isCreateJson = false,
         bool $isCreateAnswer = false
@@ -105,7 +103,7 @@ class Search
 
         $results = $this->resultsBuilder
             ->set($results)
-            ->hideError($isHideError)
+            ->errorFilter($conditions->getErrorLevel())
             ->setGrouping($grouping)
             ->createJson($isCreateJson)
             ->createAnswer($isCreateAnswer)

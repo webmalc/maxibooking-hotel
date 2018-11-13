@@ -7,10 +7,12 @@ namespace MBH\Bundle\SearchBundle\Services\Cache;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\SearchBundle\Document\SearchResultCacheItem;
 use MBH\Bundle\SearchBundle\Document\SearchResultCacheItemRepository;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\FilterResultException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultCacheException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
+use MBH\Bundle\SearchBundle\Services\Cache\ErrorFilters\ErrorResultFilterInterface;
 use MBH\Bundle\SearchBundle\Services\Data\Serializers\ResultSerializer;
 use Predis\Client;
 
@@ -32,6 +34,9 @@ abstract class AbstractCacheSearchResult implements SearchCacheInterface
     /** @var DocumentManager */
     protected $dm;
 
+    /** @var ErrorResultFilterInterface */
+    protected $filter;
+
     /**
      * SearchCache constructor.
      * @param SearchResultCacheItemRepository $cacheItemRepository
@@ -39,13 +44,14 @@ abstract class AbstractCacheSearchResult implements SearchCacheInterface
      * @param Client $client
      * @param CacheKeyCreator $keyCreator
      */
-    public function __construct(SearchResultCacheItemRepository $cacheItemRepository, ResultSerializer $serializer, Client $client, CacheKeyCreator $keyCreator)
+    public function __construct(SearchResultCacheItemRepository $cacheItemRepository, ResultSerializer $serializer, Client $client, CacheKeyCreator $keyCreator, ErrorResultFilterInterface $filter)
     {
         $this->cacheItemRepository = $cacheItemRepository;
         $this->serializer = $serializer;
         $this->redis = $client;
         $this->keyCreator = $keyCreator;
         $this->dm = $cacheItemRepository->getDocumentManager();
+        $this->filter = $filter;
     }
 
 
@@ -55,7 +61,7 @@ abstract class AbstractCacheSearchResult implements SearchCacheInterface
         $cacheResult = $this->redis->get($key);
         if (null !== $cacheResult) {
             $serializer = $this->serializer;
-            if (false === $cacheResult) {
+            if ('' === $cacheResult) {
                 $exception = new SearchException();
                 $errorResult = Result::createErrorResult($searchQuery, $exception);
                 $cacheResult = $hydrated ? $errorResult : $serializer->normalize($errorResult);
@@ -81,8 +87,15 @@ abstract class AbstractCacheSearchResult implements SearchCacheInterface
         $this->dm->persist($cacheItem);
         $this->dm->flush($cacheItem);
 
-        $result->setCacheItemId($cacheItem->getId());
-        $this->redis->set($key, $this->serializer->serialize($result));
+        try {
+            $this->filter->filter($result, $searchQuery->getErrorLevel());
+            $result->setCacheItemId($cacheItem->getId());
+            $cacheResult = $this->serializer->serialize($result);
+        } catch (FilterResultException $e) {
+            $cacheResult = false;
+        }
+
+        $this->redis->set($key, $cacheResult);
     }
 
     abstract protected function createKey(SearchQuery $searchQuery): string;
