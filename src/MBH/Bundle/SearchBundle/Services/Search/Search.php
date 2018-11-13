@@ -8,7 +8,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
-use MBH\Bundle\SearchBundle\Lib\Result\GroupSearchQuery;
+use MBH\Bundle\SearchBundle\Lib\Result\DayGroupSearchQuery;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\RestrictionsCheckerService;
 use MBH\Bundle\SearchBundle\Services\SearchConditionsCreator;
@@ -125,14 +125,14 @@ class Search
     {
 
         $conditions = $this->createSearchConditions($data);
-        $groupedSearchQueries = $this->queryGenerator->generate($conditions, true);
+        $dayGroupedSearchQueries = $this->queryGenerator->generate($conditions, true);
         //** TODO: Create SearchQueryGroup */
 
         $conditionsId = $conditions->getId();
         $countQueries = 0;
-        foreach ($groupedSearchQueries as $groupSearchQuery) {
+        foreach ($dayGroupedSearchQueries as $groupSearchQuery) {
             $queries = [];
-            /** @var GroupSearchQuery $groupSearchQuery */
+            /** @var DayGroupSearchQuery $groupSearchQuery */
             foreach ($groupSearchQuery->getSearchQueries() as $searchQuery) {
                 /** @var SearchQuery $searchQuery */
                 $searchQuery->unsetConditions();
@@ -144,7 +144,7 @@ class Search
                 'searchQueries' => serialize($queries)
             ];
             $msgBody = json_encode($message);
-            $this->producer->publish($msgBody, '', ['priority' => $groupSearchQuery->getType() === GroupSearchQuery::MAIN_DATES ? 10: 1]);
+            $this->producer->publish($msgBody, '', ['priority' => $groupSearchQuery->getType() === DayGroupSearchQuery::MAIN_DATES ? 10: 1]);
         }
 
         $conditions->setExpectedResultsCount($countQueries);

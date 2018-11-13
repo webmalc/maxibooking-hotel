@@ -10,7 +10,7 @@ use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
-use MBH\Bundle\SearchBundle\Lib\Result\GroupSearchQuery;
+use MBH\Bundle\SearchBundle\Lib\Result\DayGroupSearchQuery;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Lib\SearchQueryHelper;
 use MBH\Bundle\SearchBundle\Lib\DataHolder;
@@ -31,11 +31,11 @@ class SearchQueryGenerator
 
     /**
      * @param SearchConditions $conditions
-     * @param bool $grouped
-     * @return SearchQuery[]|GroupSearchQuery[]
+     * @param bool $dayGrouped
+     * @return SearchQuery[]|DayGroupSearchQuery[]
      * @throws SearchQueryGeneratorException
      */
-    public function generate(SearchConditions $conditions, bool $grouped = false): array
+    public function generate(SearchConditions $conditions, bool $dayGrouped = false): array
     {
         $dates = $this->addDatesGenerator->generate(
             $conditions->getBegin(),
@@ -50,11 +50,11 @@ class SearchQueryGenerator
         foreach ($dates as $period) {
             $begin = $period['begin'];
             $end = $period['end'];
-            if ($grouped) {
-                $queryGroup = new GroupSearchQuery();
+            if ($dayGrouped) {
+                $queryGroup = new DayGroupSearchQuery();
                 /** @noinspection TypeUnsafeComparisonInspection */
                 $isMainGroup = ($begin == $conditions->getBegin()) && ($end == $conditions->getEnd());
-                $queryGroup->setBegin($begin)->setEnd($end)->setType($isMainGroup ? GroupSearchQuery::MAIN_DATES : GroupSearchQuery::ADDITIONAL_DATES);
+                $queryGroup->setBegin($begin)->setEnd($end)->setType($isMainGroup ? DayGroupSearchQuery::MAIN_DATES : DayGroupSearchQuery::ADDITIONAL_DATES);
                 foreach ($tariffRoomTypeCombinations as $combination) {
                     $queryGroup->addSearchQuery(SearchQuery::createInstance($conditions, $begin, $end, $combination));
                 }

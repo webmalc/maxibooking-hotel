@@ -7,6 +7,7 @@ namespace MBH\Bundle\SearchBundle\Services\Cache;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\SearchBundle\Document\SearchResultCacheItem;
 use MBH\Bundle\SearchBundle\Document\SearchResultCacheItemRepository;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultCacheException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
@@ -48,11 +49,21 @@ abstract class AbstractCacheSearchResult implements SearchCacheInterface
     }
 
 
-    public function searchInCache(SearchQuery $searchQuery, $hydrated = true)
+    public function searchInCache(SearchQuery $searchQuery, $hydrated = false)
     {
-        $result = null;
         $key = $this->createKey($searchQuery);
         $cacheResult = $this->redis->get($key);
+        if (null !== $cacheResult) {
+            $serializer = $this->serializer;
+            if (false === $cacheResult) {
+                $exception = new SearchException();
+                $errorResult = Result::createErrorResult($searchQuery, $exception);
+                $cacheResult = $hydrated ? $errorResult : $serializer->normalize($errorResult);
+            } else {
+                /** @var Result $errorResult */
+                $cacheResult = $hydrated ? $serializer->deserialize($cacheResult) : $serializer->decodeJsonToArray($cacheResult);
+            }
+        }
 
         return $cacheResult;
     }

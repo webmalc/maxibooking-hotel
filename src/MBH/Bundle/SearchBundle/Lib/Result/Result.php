@@ -46,6 +46,9 @@ class Result implements ResultCacheablesInterface
     /** @var string */
     private $error = '';
 
+    /** @var string */
+    private $errorType = 'Error type is not specified';
+
     /** @var bool */
     private $cached;
 
@@ -271,6 +274,27 @@ class Result implements ResultCacheablesInterface
 
         return $this;
     }
+
+    /**
+     * @return string
+     */
+    public function getErrorType(): string
+    {
+        return $this->errorType;
+    }
+
+    /**
+     * @param string $errorType
+     * @return Result
+     */
+    public function setErrorType(string $errorType): Result
+    {
+        $this->errorType = $errorType;
+
+        return $this;
+    }
+
+
 
     public function getId(): string
     {

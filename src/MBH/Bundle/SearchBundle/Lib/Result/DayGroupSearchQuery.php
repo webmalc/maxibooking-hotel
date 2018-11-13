@@ -6,7 +6,7 @@ namespace MBH\Bundle\SearchBundle\Lib\Result;
 
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 
-class GroupSearchQuery
+class DayGroupSearchQuery
 {
     public const MAIN_DATES = 'mainGroup';
 
@@ -34,9 +34,9 @@ class GroupSearchQuery
 
     /**
      * @param \DateTime $begin
-     * @return GroupSearchQuery
+     * @return DayGroupSearchQuery
      */
-    public function setBegin(\DateTime $begin): GroupSearchQuery
+    public function setBegin(\DateTime $begin): DayGroupSearchQuery
     {
         $this->begin = $begin;
 
@@ -53,9 +53,9 @@ class GroupSearchQuery
 
     /**
      * @param \DateTime $end
-     * @return GroupSearchQuery
+     * @return DayGroupSearchQuery
      */
-    public function setEnd(\DateTime $end): GroupSearchQuery
+    public function setEnd(\DateTime $end): DayGroupSearchQuery
     {
         $this->end = $end;
 
@@ -72,9 +72,9 @@ class GroupSearchQuery
 
     /**
      * @param string $type
-     * @return GroupSearchQuery
+     * @return DayGroupSearchQuery
      */
-    public function setType(string $type): GroupSearchQuery
+    public function setType(string $type): DayGroupSearchQuery
     {
         $this->type = $type;
 
@@ -91,9 +91,9 @@ class GroupSearchQuery
 
     /**
      * @param SearchQuery[] $searchQueries
-     * @return GroupSearchQuery
+     * @return DayGroupSearchQuery
      */
-    public function setSearchQueries(array $searchQueries): GroupSearchQuery
+    public function setSearchQueries(array $searchQueries): DayGroupSearchQuery
     {
         $this->searchQueries = $searchQueries;
 
@@ -102,9 +102,9 @@ class GroupSearchQuery
 
     /**
      * @param SearchQuery $searchQuery
-     * @return GroupSearchQuery
+     * @return DayGroupSearchQuery
      */
-    public function addSearchQuery(SearchQuery $searchQuery): GroupSearchQuery
+    public function addSearchQuery(SearchQuery $searchQuery): DayGroupSearchQuery
     {
         $this->searchQueries[] = $searchQuery;
 

@@ -11,7 +11,7 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
-use MBH\Bundle\SearchBundle\Lib\Result\GroupSearchQuery;
+use MBH\Bundle\SearchBundle\Lib\Result\DayGroupSearchQuery;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\SearchQueryGenerator;
 
@@ -51,7 +51,7 @@ class SearchQueryGeneratorTest extends WebTestCase
         $actual = $generator->generate($conditions, true);
         $this->assertCount(231, $actual);
         foreach ($actual as $result) {
-            $this->assertInstanceOf(GroupSearchQuery::class, $result);
+            $this->assertInstanceOf(DayGroupSearchQuery::class, $result);
         }
 
     }
