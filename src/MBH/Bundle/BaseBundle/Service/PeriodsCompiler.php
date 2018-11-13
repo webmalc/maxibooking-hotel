@@ -33,6 +33,20 @@ class PeriodsCompiler
         $isArray = false
     )
     {
+        $callback = function ($periodData, $currentData) use ($isArray, $comparedFieldNames) {
+            return $this->documentsComparer->isEqualByFields($periodData, $currentData, $comparedFieldNames, $isArray);
+        };
+
+        return $this->getPeriodsByCallback($begin, $end, $dataByDates, $callback, $dateFormat);
+    }
+
+    public function getPeriodsByCallback(
+        \DateTime $begin,
+        \DateTime $end,
+        array $dataByDates,
+        $callback,
+        $dateFormat = 'd.m.Y'
+    ) {
         $periods = [];
         $currentPeriod = null;
 
@@ -48,7 +62,7 @@ class PeriodsCompiler
                     'end' => $day,
                     'data' => $dateEntity
                 ];
-            } elseif ($this->documentsComparer->isEqualByFields($currentPeriod['data'], $dateEntity, $comparedFieldNames, $isArray)) {
+            } elseif ($callback($currentPeriod['data'], $dateEntity)) {
                 $currentPeriod['end'] = $day;
             } else {
                 is_null($currentPeriod) ? : $periods[] = $currentPeriod;
@@ -70,7 +84,7 @@ class PeriodsCompiler
             return [];
         }
 
-        usort($periods, function(array $first, array $second) {
+        usort($periods, function (array $first, array $second) {
             return $first['begin'] > $second['begin'] ? 1 : -1;
         });
 

@@ -1,0 +1,27 @@
+{% extends 'MBHClientBundle:ClientConfig:layout.html.twig' %}
+
+{% set small_title = 'client.tabs.client_messages'|trans({}, 'MBHClientBundle') %}
+{% set layout='tabs' %}
+
+{% block content %}
+
+    {% include 'MBHClientBundle:ClientConfig:tabs.html.twig' with {'active': 2 , 'entity': entity} %}
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="home">
+
+            {{ form_start(form, {'action': path('client_messages'), 'attr': {'class': 'form-horizontal' }}) }}
+            {{ form_widget(form) }}
+            {% if is_granted('ROLE_CLIENT_CONFIG_EDIT') %}
+                {% include 'MBHBaseBundle:Actions:update.html.twig' %}
+            {% endif %}
+            {{ form_end(form) }}
+
+            {% if entity %}
+                {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs} %}
+            {% endif %}
+
+        </div>
+    </div>
+
+{% endblock %}
