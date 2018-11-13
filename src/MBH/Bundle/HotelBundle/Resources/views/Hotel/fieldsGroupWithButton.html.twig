@@ -1,0 +1,41 @@
+{% extends '@MBHBase/Form/fields.html.twig' %}
+
+{% block form_widget_compound %}
+    <div {{ block('widget_container_attributes') }}>
+        {% if form.parent is empty %}
+            {% if errors|length > 0 %}
+                <div class="alert alert-danger global-errors">{{ form_errors(form) }}</div>{% endif %}
+        {% endif %}
+
+        {% set groups = {'form.main.group': form.children|keys} %}
+        {% if form.vars.groups is defined %}
+            {% set groups = form.vars.groups %}
+        {% endif %}
+        {% for group, items in groups %}
+            {% if group != 'no-group' %}
+                <div class="box box-default box-solid box-header_when-mobile"{% if form.vars.nonDisplayGroups is defined and group in form.vars.nonDisplayGroups %} style="display: none;" {% endif %}>
+
+                    <div class="box-header with-border">
+                        <h3 class="box-title">{{ group|trans }}</h3>
+
+                        <div class="box-tools pull-right">
+                            <button class="btn btn-box-tool form-group-collapse" data-widget="collapse"
+                                    id="{{ id }}-group-{{ loop.index }}"><i class="fa fa-minus"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="box-body">
+                        {{ block('drawForm') }}
+                        <button type="button" class="btn btn-primary btn-lg" id="{{ form.vars['buttonId'] }}">
+                            {{ form.vars['buttonTitle']|trans }}
+                        </button>
+                    </div>
+                </div>
+            {% else %}
+                {{ block('drawForm') }}
+            {% endif %}
+        {% endfor %}
+
+        {{ form_rest(form) }}
+    </div>
+{% endblock form_widget_compound %}

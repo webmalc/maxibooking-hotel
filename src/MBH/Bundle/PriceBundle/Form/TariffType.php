@@ -28,6 +28,7 @@ class TariffType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        /** @var Tariff $formTariff */
         $formTariff = $builder->getData();
         $builder
             ->add('fullTitle', TextType::class, [
@@ -85,7 +86,7 @@ class TariffType extends AbstractType
             );
         $conditions = PromotionConditionFactory::getAvailableConditions();
         $builder
-            ->add('condition',  InvertChoiceType::class, [
+            ->add('condition', InvertChoiceType::class, [
                 'label' => 'form.promotionType.label.condition',
                 'required' => false,
                 'group' => 'form.tariffType.conditions_and_restrictions',
@@ -103,7 +104,7 @@ class TariffType extends AbstractType
                     'class' => 'spinner',
                 ],
             ])
-            ->add('additional_condition',  InvertChoiceType::class, [
+            ->add('additional_condition', InvertChoiceType::class, [
                 'label' => 'form.promotionType.label.add_condition',
                 'required' => false,
                 'group' => 'form.tariffType.conditions_and_restrictions',
@@ -129,6 +130,15 @@ class TariffType extends AbstractType
                 'help' => 'form.tariffType.help'
             ]);
         $builder
+            ->add('isDefault', CheckboxType::class, [
+                'attr' => [
+                    'disabled' => $formTariff && $formTariff->getIsDefault(),
+                ],
+                'label' => 'tariff_type.is_default.label',
+                'group' => 'configuration',
+                'required' => false,
+                'help' => 'tariff_type.is_default.help'
+            ])
             ->add('isOnline', CheckboxType::class, [
                 'label' => 'price.form.online',
                 'group' => 'configuration',
@@ -137,7 +147,7 @@ class TariffType extends AbstractType
                 'help' => 'price.form.using_tariff_in_online_booking'
             ])
             ->add(
-                'childAge',  InvertChoiceType::class,
+                'childAge', InvertChoiceType::class,
                 [
                     'label' => 'mbhpricebundle.form.tarifftype.rebenok.do',
                     'group' => 'configuration',
@@ -149,7 +159,7 @@ class TariffType extends AbstractType
                 ]
             )
             ->add(
-                'infantAge',  InvertChoiceType::class,
+                'infantAge', InvertChoiceType::class,
                 [
                     'label' => 'mbhpricebundle.form.tarifftype.infant.do',
                     'group' => 'configuration',
@@ -164,7 +174,7 @@ class TariffType extends AbstractType
                 'label' => 'price.form.use_combination',
                 'group' => 'configuration',
                 'class' => Tariff::class,
-                'query_builder' => function(TariffRepository $repository) use ($options, $formTariff) {
+                'query_builder' => function (TariffRepository $repository) use ($options, $formTariff) {
                     $qb = $repository->createQueryBuilder();
                     $qb
                         ->field('hotel')->equals($options['hotel'])

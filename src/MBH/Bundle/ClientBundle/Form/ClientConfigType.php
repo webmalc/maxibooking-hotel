@@ -53,27 +53,17 @@ class ClientConfigType extends AbstractType
                 },
                 'label' => 'form.clientConfigType.currency.label'
             ])
-            ->add(
-                'isSendSms',
-                CheckboxType::class,
-                [
-                    'label' => 'form.clientConfigType.sms_notification',
-                    'group' => 'form.clientConfigType.main_group',
-                    'value' => true,
-                    'required' => false,
-                    'help' => 'form.clientConfigType.is_sms_notification_turned_on',
-                ]
-            )
-            ->add(
-                'NoticeUnpaid',
-                TextType::class,
-                [
-                    'label' => 'form.clientConfigType.notice_unpaid',
-                    'group' => 'form.clientConfigType.main_group',
-                    'help' => 'form.clientConfigType.is_notice_unpaid',
-                    'required' => true,
-                ]
-            )
+//            ->add(
+//                'isSendSms',
+//                CheckboxType::class,
+//                [
+//                    'label' => 'form.clientConfigType.sms_notification',
+//                    'group' => 'form.clientConfigType.main_group',
+//                    'value' => true,
+//                    'required' => false,
+//                    'help' => 'form.clientConfigType.is_sms_notification_turned_on',
+//                ]
+//            )
             ->add(
                 'is_instant_search',
                 CheckboxType::class,
@@ -109,16 +99,6 @@ class ClientConfigType extends AbstractType
                     'min' => 0
                 ]
             ])
-            ->add(
-                'isSendMailAtPaymentConfirmation',
-                CheckboxType::class,
-                [
-                    'label' => 'form.clientConfigType.is_send_mail_at_payment_confirmation.label',
-                    'help' => 'form.clientConfigType.is_send_mail_at_payment_confirmation.help',
-                    'group' => 'form.clientConfigType.main_group',
-                    'required' => false,
-                ]
-            )
             ->add(
                 'searchDates',
                 TextType::class,

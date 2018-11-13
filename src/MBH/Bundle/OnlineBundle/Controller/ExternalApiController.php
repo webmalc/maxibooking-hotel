@@ -82,6 +82,7 @@ class ExternalApiController extends BaseController
 
         $roomTypesQB = $this->dm->getRepository('MBHHotelBundle:RoomType')
             ->createQueryBuilder()
+            ->sort('fullTitle')
             ->field('isEnabled')->equals($isEnabled);
         if (!is_null($hotelIds)) {
             $roomTypesQB->field('hotel.id')->in($hotelIds);
@@ -476,7 +477,7 @@ class ExternalApiController extends BaseController
         $this->getFormConfigAndAddOriginHeader($queryData, $requestHandler, $responseCompiler);
         $hotel = $this->dm->find('MBHHotelBundle:Hotel', $queryData->get('hotelId'));
 
-        $facilitiesData = $this->get('mbh.facility_repository')->getActualFacilitiesData($hotel, $queryData->get('locale'));
+        $facilitiesData = $this->get('mbh.facility_repository')->getActualFacilitiesData($queryData->get('locale'), $hotel);
         $responseCompiler->setData($facilitiesData);
 
         return $responseCompiler->getResponse();
