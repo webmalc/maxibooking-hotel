@@ -12,6 +12,7 @@ namespace Tests\Bundle\PriceBundle\Controller;
 use MBH\Bundle\BaseBundle\Lib\Test\Traits\HotelIdTestTrait;
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PriceBundle\DataFixtures\MongoDB\RoomCacheData;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -347,7 +348,10 @@ class RoomCacheControllerTest extends WebTestCase
     public function testGraphActionEmptyData()
     {
         $this->assertEquals(['0', '0', '0', '0', '0', '0',], $this->getResultGraphAction(new \DateTime('noon -1 days')));
-        $this->assertEquals(['0', '0', '0', '0', '0', '0',], $this->getResultGraphAction(new \DateTime('noon +4 month')));
+        $this->assertEquals(
+            ['0', '0', '0', '0', '0', '0',],
+            $this->getResultGraphAction(new \DateTime(sprintf('noon +%s month', RoomCacheData::AMOUNT_MONTH + 1)))
+        );
     }
 
     /**

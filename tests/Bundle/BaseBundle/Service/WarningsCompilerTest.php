@@ -5,6 +5,7 @@ namespace Tests\Bundle\BaseBundle\Service;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Lib\Test\UnitTestCase;
 use MBH\Bundle\BaseBundle\Service\WarningsCompiler;
+use MBH\Bundle\PriceBundle\DataFixtures\MongoDB\RoomCacheData;
 use MBH\Bundle\PriceBundle\Document\PriceCache;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -39,6 +40,6 @@ class WarningsCompilerTest extends UnitTestCase
     public function testGetDatesOfLastDefinedCache()
     {
         $priceCaches = $this->warningsCompiler->getLastCacheByRoomTypesAndTariffs(PriceCache::class);
-        $this->assertEquals(new \DateTime('midnight + 6 month -1 day'), current(current($priceCaches))['date']);
+        $this->assertEquals(new \DateTime('midnight + '. RoomCacheData::AMOUNT_MONTH . ' month -1 day'), current(current($priceCaches))['date']);
     }
 }
