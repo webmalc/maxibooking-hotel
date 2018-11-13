@@ -1,17 +1,31 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: mb3
- * Date: 06.04.18
- * Time: 13:25
- */
 
 namespace MBH\Bundle\BaseBundle\Lib\Test;
 
-
 use MBH\Bundle\BaseBundle\Lib\Test\Traits\FixturesTestTrait;
+use MBH\Bundle\HotelBundle\Document\Hotel;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
-abstract class UnitTestCase extends \Symfony\Bundle\FrameworkBundle\Test\KernelTestCase
+abstract class UnitTestCase extends KernelTestCase
 {
     use FixturesTestTrait;
+
+    private $hotel;
+    private $isHotelInit = false;
+
+    /**
+     * @return Hotel
+     */
+    public function getHotel()
+    {
+        if (!$this->isHotelInit) {
+            $this->hotel = self::getContainerStat()
+                ->get('doctrine.odm.mongodb.document_manager')
+                ->getRepository('MBHHotelBundle:Hotel')
+                ->findOneBy(['isDefault' => true]);
+            $this->isHotelInit = true;
+        }
+
+        return $this->hotel;
+    }
 }

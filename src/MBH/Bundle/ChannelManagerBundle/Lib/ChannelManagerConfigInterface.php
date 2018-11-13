@@ -10,6 +10,7 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 interface ChannelManagerConfigInterface
 {
     public function getIsEnabled();
+
     /**
      * @param $isEnabled
      * @return self

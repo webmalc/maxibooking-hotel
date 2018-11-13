@@ -46,7 +46,7 @@ class FacilityController extends BaseController
 
         $facilityRepo = $this->get('mbh.facility_repository');
         $facilityDocsByIds = $facilityRepo->getFacilityDocsByIds($this->hotel);
-        $facilitiesData = $facilityRepo->getActualFacilitiesData($this->hotel, $facilitiesLocale);
+        $facilitiesData = $facilityRepo->getActualFacilitiesData($facilitiesLocale, $this->hotel);
 
         foreach ($requestFacilitiesData as $facilityId => $description) {
             if ($facilitiesData[$facilityId]['description'] !== $description) {

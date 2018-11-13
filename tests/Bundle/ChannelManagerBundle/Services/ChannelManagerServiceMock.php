@@ -8,19 +8,23 @@ use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 class ChannelManagerServiceMock
 {
     const FIRST_ROOM_ID = 'ID1';
+    const FIRST_ROOM_NAME = 'Room name';
     const SECOND_ROOM_ID = 'ID2';
+    const SECOND_ROOM_NAME = 'Room name 2';
     const FIRST_TARIFF_ID = 'ID1';
+    const FIRST_TARIFF_NAME = 'Tariff 1';
 
     /**
      * Pull rooms from service server
      * @param ChannelManagerConfigInterface $config
      * @return array
      */
-    public function pullRooms(ChannelManagerConfigInterface $config) {
+    public function pullRooms(ChannelManagerConfigInterface $config)
+    {
 
         return [
-            self::FIRST_ROOM_ID => 'Room name',
-            self::SECOND_ROOM_ID => 'Room name 2'
+            self::FIRST_ROOM_ID => self::FIRST_ROOM_NAME,
+            self::SECOND_ROOM_ID => self::SECOND_ROOM_NAME
         ];
     }
 
@@ -29,15 +33,16 @@ class ChannelManagerServiceMock
      * @param ChannelManagerConfigInterface $config
      * @return array
      */
-    public function pullTariffs(ChannelManagerConfigInterface $config) {
+    public function pullTariffs(ChannelManagerConfigInterface $config)
+    {
         return [
             'ID1' => [
-                'title' => 'Тариф 1',
+                'title' => self::FIRST_TARIFF_NAME,
                 'readonly' => false,
                 'is_child_rate' => false,
                 'rooms' => [
-                    self::FIRST_ROOM_ID => 'Room name',
-                    self::SECOND_ROOM_ID => 'Room name 2'
+                    self::FIRST_ROOM_ID => self::FIRST_ROOM_NAME,
+                    self::SECOND_ROOM_ID => self::SECOND_ROOM_NAME
                 ]
             ]
         ];
@@ -53,7 +58,8 @@ class ChannelManagerServiceMock
         return '';
     }
 
-    public function associateUser($username, $password) {
+    public function associateUser($username, $password)
+    {
         return 'some-token';
     }
 

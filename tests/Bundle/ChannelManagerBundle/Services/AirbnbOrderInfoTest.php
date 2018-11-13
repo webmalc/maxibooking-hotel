@@ -182,20 +182,6 @@ class AirbnbOrderInfoTest extends UnitTestCase
         return $this->getTestEnd()->diff($this->getTestBegin())->days;
     }
 
-    private $hotel;
-    private $isHotelInit = false;
-
-    public function getHotel()
-    {
-        if (!$this->isHotelInit) {
-            $this->hotel = $this->dm
-                ->getRepository('MBHHotelBundle:Hotel')
-                ->findOneBy(['isDefault' => true]);
-            $this->isHotelInit = true;
-        }
-
-        return $this->hotel;
-    }
 
     private function getRoomType()
     {

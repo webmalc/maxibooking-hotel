@@ -72,7 +72,7 @@ class HundredOneHotelsController extends Controller
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $errorMessage = $this->get('mbh.channelmanager.hundred_one_hotels')->sendTestRequestAndGetErrorMessage($config);
-            if (isset($errorMessage)) {
+            if ($config->getIsEnabled() && isset($errorMessage)) {
                 $this->addFlash('danger', $errorMessage);
             } else {
                 /* @var $dm DocumentManager; */
