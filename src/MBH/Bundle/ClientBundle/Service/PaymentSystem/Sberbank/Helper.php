@@ -66,12 +66,10 @@ class Helper
         $register->setOrderNumber($cashDocument->getId());
         $register->setAmount($cashDocument->getTotal() * 100);
 
-        if ($this->getClientConfig()->getSuccessUrl() !== null) {
-            $register->setReturnUrl($this->getClientConfig()->getSuccessUrl());
-        }
+        $register->setReturnUrl($configSbrf->getReturnUrl());
 
-        if ($this->getClientConfig()->getFailUrl() !== null) {
-            $register->setFailUrl($this->getClientConfig()->getFailUrl());
+        if ($configSbrf->getFailUrl() !== null) {
+            $register->setFailUrl($configSbrf->getFailUrl());
         }
 
         if ($request !== null && $this->IsMobileDevice($request)) {
