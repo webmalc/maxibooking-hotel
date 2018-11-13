@@ -177,6 +177,9 @@ END:VEVENT\n";
             $tariff = $hotel->getBaseTariff();
             $airbnbConfig = (new AirbnbConfig())
                 ->setHotel($hotel)
+                ->setIsMainSettingsFilled(true)
+                ->setIsTariffsConfigured(true)
+                ->setIsRoomsConfigured(true)
                 ->setIsConfirmedWithDataWarnings(true)
                 ->setIsConnectionSettingsRead(true)
                 ->addTariff((new Tariff())->setTariff($tariff))
