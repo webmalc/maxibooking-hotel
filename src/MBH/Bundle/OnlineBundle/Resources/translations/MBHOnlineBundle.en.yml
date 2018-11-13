@@ -73,10 +73,10 @@ views.form.index.settings_in_quotes: Settings
 views.form.index.settings: Settings
 views.form.index.site_embed_code: 'Embed code'
 views.form.index.settings_required: 'Please fill all the required settings'
-views.form.index.site_embed_form_code: 'Embed code for a website'
+views.form.index.site_embed_form_code: 'Search form code for embedding'
 views.form.index.to_form_place: 'Place where the form must be:'
 views.form.index.before_closing_tag: 'Place before closing tag'
-views.form.index.search_page_embed_code: 'Search page embed code:'
+views.form.index.search_page_embed_code: 'Search results for code for embedding:'
 views.form.index.to_results_place: 'Place where results must be:'
 views.form.layout.online_form: 'Online module'
 views.form.period_is_not_filled: 'Check-in and check-out dates are not selected!'
