@@ -4,21 +4,18 @@ namespace MBH\Bundle\HotelBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Document\Image;
-use MBH\Bundle\BaseBundle\EventListener\OnRemoveSubscriber\Relationship;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Form\HotelContactInformationType;
 use MBH\Bundle\HotelBundle\Form\HotelExtendedType;
 use MBH\Bundle\HotelBundle\Form\HotelImageType;
 use MBH\Bundle\HotelBundle\Form\HotelType;
-use MBH\Bundle\PriceBundle\Document\Service;
-use MBH\Bundle\PriceBundle\Document\ServiceCategory;
-use MBH\Bundle\PriceBundle\Document\Tariff;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -234,6 +231,7 @@ class HotelController extends Controller
             $this->dm->persist($entity);
             $this->dm->flush();
         }
+
         return $this->redirect($this->generateUrl('hotel_edit', ['id' => $entity->getId()]));
     }
 
@@ -369,6 +367,7 @@ class HotelController extends Controller
      * @param Request $request
      * @param Hotel $hotel
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \Exception
      */
     public function imagesAction(Request $request, Hotel $hotel)
     {
@@ -376,29 +375,40 @@ class HotelController extends Controller
             throw $this->createNotFoundException();
         }
         $form = $this->createForm(HotelImageType::class);
+        $panoramaForm = $this->createForm(HotelImageType::class, null, [
+            'group_title' => 'form.hotel_images.groups.panorama',
+            'buttonId' => 'panorama-button'
+        ]);
 
         $this->get('mbh.site_manager')->addFormErrorsForFieldsMandatoryForSite($hotel, $form, 'hotel_images');
 
-        $form->handleRequest($request);
-        if ($form->isValid()) {
-            /** @var Image $image */
-            $image = $form->getData();
-            $hotel->addImage($image);
-            if ($image->getIsDefault()) {
-                $this->setHotelMainImage($hotel, $image);
+        if ($request->isMethod('POST')) {
+            if ($request->request->get('panorama_image') === 'true') {
+                $this->savePanoramaImage($request, $hotel);
+
+                return $this->redirectToRoute('hotel_images', ['id' => $hotel->getId()]);
+            } else {
+                $form->handleRequest($request);
+                if ($form->isValid()) {
+                    $this->saveHotelImage($hotel, $form);
+
+                    return $this->redirectToRoute('hotel_images', ['id' => $hotel->getId()]);
+                }
             }
-            $this->dm->persist($image);
-            $this->dm->flush();
-
-            $this->addFlash('success', 'controller.hotelController.record_edited_success');
-
-            return $this->afterSaveRedirect('hotel', $hotel->getId(), [], '_images');
         }
+
+        $mainImage = $hotel->getMainImage();
+        $notMainImages = array_filter($hotel->getImages()->toArray(), function(Image $image) use ($mainImage) {
+            return $image != $mainImage;
+        });
+
 
         return [
             'entity' => $hotel,
-            'form' => $form->createView(),
-            'images' => $hotel->getImages()
+            'images_form' => $form->createView(),
+            'panorama_form' => $panoramaForm->createView(),
+            'images' => $notMainImages,
+            'mainImage' => $mainImage
         ];
     }
 
@@ -441,22 +451,12 @@ class HotelController extends Controller
         if (!$this->container->get('mbh.hotel.selector')->checkPermissions($hotel)) {
             throw $this->createNotFoundException();
         }
-        $this->setHotelMainImage($hotel, $newMainImage);
+        $hotel->setHotelMainImage($newMainImage);
 
         $this->dm->flush();
         $this->addFlash('success', 'controller.hotelController.success_main_image_set');
 
         return $this->redirectToRoute('hotel_images', ['id' => $hotel->getId()]);
-    }
-
-    private function setHotelMainImage(Hotel $hotel, Image $newMainImage)
-    {
-        foreach ($hotel->getImages() as $image) {
-            /** @var Image $image */
-            $image->setIsDefault($image->getId() == $newMainImage->getId());
-        }
-
-        return $hotel;
     }
 
     /**
@@ -471,45 +471,54 @@ class HotelController extends Controller
      */
     public function deleteAction(Hotel $hotel)
     {
-        $relatedDocumentsData = $this->helper->getRelatedDocuments($hotel);
-
-        foreach ($relatedDocumentsData as $relatedDocumentData) {
-            /** @var Relationship $relationship */
-            $relationship = $relatedDocumentData['relation'];
-            $quantity = $relatedDocumentData['quantity'];
-            if (!in_array($relationship->getDocumentClass(), [ServiceCategory::class, Service::class])
-                && $quantity > 0
-                //If there are tariffs in addition to the main
-                && ($relationship->getDocumentClass() !== Tariff::class || $relatedDocumentData['quantity'] > 1)
-            ) {
-                $messageId = $relationship->getErrorMessage() ? $relationship->getErrorMessage() : 'exception.relation_delete.message';
-                $flashMessage = $this->get('translator')->trans($messageId, ['%total%' =>  $quantity]);
-                $this->addFlash('danger', $flashMessage);
-
-                return $this->redirectToRoute('hotel');
+        $warnings = $this->get('mbh.hotel.hotel_manager')->remove($hotel);
+        if (!empty($warnings)) {
+            foreach ($warnings as $warning) {
+                $this->addFlash('danger', $warning);
             }
-        }
 
-        $hotelMainTariff = $this->dm
-            ->getRepository('MBHPriceBundle:Tariff')
-            ->findOneBy(['isDefault' => true, 'hotel.id' => $hotel->getId()]);
-
-        if (!empty($hotelMainTariff)) {
-            $this->get('mbh.tariff_manager')->forceDelete($hotelMainTariff);
+            return $this->redirectToRoute('hotel');
         }
-
-        foreach ($hotel->getServices() as $service) {
-            $this->dm->remove($service);
-        }
-        $this->dm->flush();
-
-        foreach ($hotel->getServicesCategories() as $serviceCategory) {
-            $this->dm->remove($serviceCategory);
-        }
-        $this->dm->flush();
 
         $response = $this->deleteEntity($hotel->getId(), 'MBHHotelBundle:Hotel', 'hotel');
 
         return $response;
+    }
+
+    /**
+     * @param Request $request
+     * @param Hotel $hotel
+     * @throws \Exception
+     */
+    private function savePanoramaImage(Request $request, Hotel $hotel): void
+    {
+        $panoramaImage = $this
+            ->get('mbh.image_manager')
+            ->saveFromBase64StringToFile($request->request->get('imagebase64'), 'panorama');
+        $hotel->addImage($panoramaImage);
+        $hotel->setHotelMainImage($panoramaImage);
+
+        $this->dm->persist($panoramaImage);
+        $this->dm->flush();
+
+        $this->addFlash('success', 'controller.hotelController.success_add_photo');
+    }
+
+    /**
+     * @param Hotel $hotel
+     * @param $form
+     */
+    private function saveHotelImage(Hotel $hotel, FormInterface $form): void
+    {
+        /** @var Image $image */
+        $image = $form->getData();
+        $hotel->addImage($image);
+        if ($image->getIsDefault()) {
+            $hotel->setHotelMainImage($image);
+        }
+        $this->dm->persist($image);
+        $this->dm->flush();
+
+        $this->addFlash('success', 'controller.hotelController.success_add_photo');
     }
 }

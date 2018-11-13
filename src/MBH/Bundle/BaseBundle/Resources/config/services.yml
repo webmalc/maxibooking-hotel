@@ -541,3 +541,7 @@ services:
     mbh.exception_manager:
         class: MBH\Bundle\BaseBundle\Service\ExceptionManager
         arguments: ['@exception_notifier', '@kernel', '@security.token_storage']
+
+    mbh.image_manager:
+        class: MBH\Bundle\BaseBundle\Service\ImageManager
+        arguments: ['%kernel.project_dir%']
