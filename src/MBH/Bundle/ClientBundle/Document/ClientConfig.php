@@ -346,7 +346,7 @@ class ClientConfig extends Base
      * @var bool
      * @ODM\Field(type="bool")
      */
-    protected $confirmOrdersCreatedByManager = true;
+    protected $confirmOrdersCreatedByManager = false;
 
     /**
      * @return bool
