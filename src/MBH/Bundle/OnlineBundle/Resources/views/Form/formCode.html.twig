@@ -4,6 +4,21 @@
 {% block content %}
     {% include '@MBHOnline/Form/tabs.html.twig' %}
     <div class="tab-content">
+        <div class="well">
+            <h4 style="font-weight: bold;">
+                {{ 'views.form_codeinstruction.header'|trans }}:
+            </h4>
+            <p>
+            - {{ 'views.form_codeinstruction.text1'|trans|raw }}
+            </p>
+            <p>
+                {{ 'views.form_codeinstruction.text2'|trans|raw }}
+            </p>
+            <p>
+                {{ 'views.form_codeinstruction.text3'|trans }}
+            </p>
+        </div>
+
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">{{ 'views.form.index.site_embed_form_code'|trans({}, 'MBHOnlineBundle') }}</h3>
