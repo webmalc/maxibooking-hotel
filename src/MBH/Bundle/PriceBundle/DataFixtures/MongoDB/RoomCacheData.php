@@ -15,7 +15,7 @@ use MBH\Bundle\PriceBundle\Document\RoomCache;
  */
 class RoomCacheData extends AbstractFixture implements OrderedFixtureInterface
 {
-    const PERIOD_LENGTH_STR = 'midnight +3 month';
+    const PERIOD_LENGTH_STR = 'midnight +6 month';
     const DATA = [
         'single' => 10,
         'roomtype-double' => 10,
