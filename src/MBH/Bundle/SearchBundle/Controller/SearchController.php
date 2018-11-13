@@ -89,7 +89,7 @@ class SearchController extends Controller
      */
     public function getAsyncResultsAction(SearchConditions $conditions, ?string $grouping = null): JsonResponse
     {
-        $receiver = $this->get('mbh_search.redis_store');
+        $receiver = $this->get('mbh_search.async_result_store');
         try {
             $json = $receiver->receive($conditions, true, $grouping, true, true);
             $answer = new JsonResponse($json, 200, [], true);

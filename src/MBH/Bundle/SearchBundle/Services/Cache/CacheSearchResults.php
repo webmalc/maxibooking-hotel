@@ -15,21 +15,6 @@ use Predis\Client;
 
 class CacheSearchResults extends AbstractCacheSearchResult
 {
-    /**
-     * @param SearchQuery $searchQuery
-     * @param bool $hydrated
-     * @return mixed
-     */
-    public function searchInCache(SearchQuery $searchQuery, $hydrated = false)
-    {
-        $cacheResult = parent::searchInCache($searchQuery);
-        if ($cacheResult) {
-            /** @var Result $result */
-            $result = $hydrated ? $this->serializer->deserialize($cacheResult) : $this->serializer->decodeJsonToArray($cacheResult);
-        }
-
-        return $result;
-    }
 
     /**
      * @param SearchQuery $searchQuery

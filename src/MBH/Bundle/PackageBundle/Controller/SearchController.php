@@ -45,7 +45,7 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
      * @Route("/", name="package_search", options={"expose"=true})
      * @Method("GET")
      * @Security("is_granted('ROLE_SEARCH')")
-     * @Template()
+     * @Template("@MBHPackage/Search/index.html.twig")
      */
     public function indexAction(Request $request)
     {
