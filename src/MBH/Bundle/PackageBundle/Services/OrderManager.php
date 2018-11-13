@@ -342,7 +342,7 @@ class OrderManager implements Searchable
                 throw new Exception('Create order error: validation errors.');
             }
 
-            if (($data['status'] == 'offline'
+            if (($data['status'] == 'offline' && !$this->container->get('mbh.client_config_manager')->fetchConfig()->isConfirmOrdersCreatedByManager()
                     && $this->container->get('security.token_storage')->getToken()
                     && $this->container->get('security.authorization_checker')->isGranted('ROLE_ORDER_AUTO_CONFIRMATION')) ||
                 ($user instanceof User && in_array('ROLE_ORDER_AUTO_CONFIRMATION', $user->getRoles()))
