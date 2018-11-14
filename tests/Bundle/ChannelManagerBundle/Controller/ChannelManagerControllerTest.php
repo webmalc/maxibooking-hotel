@@ -25,16 +25,6 @@ class ChannelManagerControllerTest extends WebTestCase
         self::clearDB();
     }
 
-    public function setUp()
-    {
-        $this->client = self::makeClient(
-            [
-                'username' => UserData::MB_USER_USERNAME,
-                'password' => $this->getContainer()->getParameter('mb_user_pwd'),
-            ]
-        );
-    }
-
     /**
      * @dataProvider channelManagersProvider
      * @param string $serviceName
@@ -58,7 +48,7 @@ class ChannelManagerControllerTest extends WebTestCase
         $this->assertEquals('1. Разрешение от "' . $serviceHumanName . '"', $this->getActiveTabCrawler($crawler)->text());
 
         $introFormCrawler = $crawler->filter('form[name="mbhchannel_manager_bundle_intro_type"]');
-        $this->assertEquals(intval($hasForm), $introFormCrawler->count());
+        $this->assertEquals((int) $hasForm, $introFormCrawler->count());
 
         if ($hasForm) {
             $introForm = $introFormCrawler->form(['mbhchannel_manager_bundle_intro_type[hotelId]' => 123]);
@@ -275,21 +265,16 @@ class ChannelManagerControllerTest extends WebTestCase
     }
 
     /**
-     * @return array
+     * @return iterable
      */
-    public function channelManagersProvider()
+    public function channelManagersProvider(): iterable
     {
         $channelManagers = array_keys($this->getContainer()->getParameter('mbh.channelmanager.services'));
+        $wizard = $this->getContainer()->get('mbh.cm_wizard_manager');
 
-        return array_map(
-            function (string $cmName) {
-                return [
-                    $cmName,
-                    $this->getContainer()->get('mbh.cm_wizard_manager')->isConfiguredByTechSupport($cmName),
-                ];
-            },
-            $channelManagers
-        );
+        foreach ($channelManagers as $cmName) {
+            yield $cmName => [$cmName, $wizard->isConfiguredByTechSupport($cmName)];
+        }
     }
 
     private function getRoomFormName(string $roomsFormName, string $id, string $serviceName)

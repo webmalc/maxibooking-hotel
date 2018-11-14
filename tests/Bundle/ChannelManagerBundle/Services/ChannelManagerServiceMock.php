@@ -2,6 +2,7 @@
 
 namespace Tests\Bundle\ChannelManagerBundle\Services;
 
+use MBH\Bundle\ChannelManagerBundle\Document\BookingConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 
@@ -94,5 +95,10 @@ class ChannelManagerServiceMock
     public function getNotifications(ChannelManagerConfigInterface $config): array
     {
         return [];
+    }
+
+    public function isBookingAccountConfirmed(BookingConfig $config)
+    {
+        return true;
     }
 }
