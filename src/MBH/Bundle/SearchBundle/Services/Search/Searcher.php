@@ -48,6 +48,7 @@ class Searcher implements SearcherInterface
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
      * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws SearcherException
      */
     public function search(SearchQuery $searchQuery): Result
     {

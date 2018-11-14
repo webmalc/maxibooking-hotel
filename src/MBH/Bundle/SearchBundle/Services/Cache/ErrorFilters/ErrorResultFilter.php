@@ -10,6 +10,8 @@ use MBH\Bundle\SearchBundle\Lib\Result\Result;
 class ErrorResultFilter implements ErrorResultFilterInterface
 {
 
+    public const DISABLE = 0;
+
     public const WINDOWS = 1;
 
     public const ROOM_CACHE = 2;

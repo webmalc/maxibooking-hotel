@@ -14,6 +14,7 @@ use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\RoomTypesTypeException;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\ChoiceList\View\ChoiceView;
+use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -31,14 +32,18 @@ class RoomTypesType extends AbstractType
      */
     private $hotelRepository;
 
-    /** @var string */
-    private $env;
+    /** @var DataTransformerInterface */
+    private $dataTransformer;
 
-    public function __construct(ClientConfigRepository $configRepository, HotelRepository $hotelRepository, string $env)
-    {
+
+    public function __construct(
+        ClientConfigRepository $configRepository,
+        HotelRepository $hotelRepository,
+        DataTransformerInterface $dataTransformer
+    ) {
         $this->isUseCategory = $configRepository->fetchConfig()->getUseRoomTypeCategory();
         $this->hotelRepository = $hotelRepository;
-        $this->env = $env;
+        $this->dataTransformer = $dataTransformer;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -58,8 +63,7 @@ class RoomTypesType extends AbstractType
                                 ->field('hotel.id')->equals($hotelId)
                                 ->distinct('id')
                                 ->getQuery()
-                                ->toArray()
-                            ;
+                                ->toArray();
                             $data[$index] = array_map('\strval', $roomTypeIds);
 
                         } else {
@@ -73,9 +77,10 @@ class RoomTypesType extends AbstractType
                     $event->setData(array_unique($data));
                 }
 
-
             }
-        );
+        )
+            ->addModelTransformer($this->dataTransformer)
+        ;
 
     }
 
@@ -92,14 +97,21 @@ class RoomTypesType extends AbstractType
         if (\is_iterable($choices)) {
             foreach (array_keys($choices) as $hotelName) {
                 $currentChoices = $choices[$hotelName]->choices;
-                $isAllRoomsExists = (bool)\count(array_filter($currentChoices, function ($choiceView) {
-                    /** @var ChoiceView $choiceView */
-                    return $choiceView->data === 'fakeData';
-                }));
+                $isAllRoomsExists = (bool)\count(
+                    array_filter(
+                        $currentChoices,
+                        function ($choiceView) {
+                            /** @var ChoiceView $choiceView */
+                            return $choiceView->data === 'fakeData';
+                        }
+                    )
+                );
                 if (!$isAllRoomsExists) {
                     $hotel = $this->hotelRepository->findOneBy(['title' => $hotelName]);
-                    if (!$hotel ) {
-                        throw new RoomTypesTypeException('You MUST set title field (internal name) in hotel '.$hotelName);
+                    if (!$hotel) {
+                        throw new RoomTypesTypeException(
+                            'You MUST set title field (internal name) in hotel '.$hotelName
+                        );
                     }
                     $hotelId = $hotel->getId();
 
@@ -108,39 +120,45 @@ class RoomTypesType extends AbstractType
                 }
 
             }
-            uasort($choices, function($hotelNameA, $hotelNameB) {
-                /** @var Hotel $hotelA */
-                $hotelA = $this->hotelRepository->findOneBy(['title' => $hotelNameA->label]);
-                /** @var Hotel $hotelB */
-                $hotelB = $this->hotelRepository->findOneBy(['title' => $hotelNameB->label]);
+            uasort(
+                $choices,
+                function ($hotelNameA, $hotelNameB) {
+                    /** @var Hotel $hotelA */
+                    $hotelA = $this->hotelRepository->findOneBy(['title' => $hotelNameA->label]);
+                    /** @var Hotel $hotelB */
+                    $hotelB = $this->hotelRepository->findOneBy(['title' => $hotelNameB->label]);
 
-                return $hotelB->getIsDefault() <=> $hotelA->getIsDefault();
-            });
+                    return $hotelB->getIsDefault() <=> $hotelA->getIsDefault();
+                }
+            );
             $view->vars['choices'] = $choices;
         }
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults([
-            'class' => $this->isUseCategory ? RoomTypeCategory::class : RoomType::class,
-            'required' => false,
-            'multiple' => true,
-            'error_bubbling' => true,
-            'group_by' => function ($roomTypeOrCategory) {
-                /** @var RoomTypeCategory|RoomType $roomTypeOrCategory */
-                return $roomTypeOrCategory->getHotel()->getName();
-            },
-            'query_builder' => function (DocumentRepository $dr) {
-                $hotelIds = $dr
-                    ->getDocumentManager()
-                    ->getRepository(Hotel::class)
-                    ->getSearchActiveIds();
+        $resolver->setDefaults(
+            [
+                'class' => $this->isUseCategory ? RoomTypeCategory::class : RoomType::class,
+                'required' => false,
+                'multiple' => true,
+                'error_bubbling' => true,
+                'group_by' => function ($roomTypeOrCategory) {
+                    /** @var RoomTypeCategory|RoomType $roomTypeOrCategory */
+                    return $roomTypeOrCategory->getHotel()->getName();
+                },
+                'query_builder' => function (DocumentRepository $dr) {
+                    $hotelIds = $dr
+                        ->getDocumentManager()
+                        ->getRepository(Hotel::class)
+                        ->getSearchActiveIds();
 
-                return $dr->createQueryBuilder()->field('hotel.id')->in($hotelIds)->sort('title', 'asc');
-            },
-            'choice_label' => 'name'
-        ]);
+                    return $dr->createQueryBuilder()->field('hotel.id')->in($hotelIds)->sort('title', 'asc');
+                },
+                'choice_label' => 'name',
+                'isForceDisableCategory' => false,
+            ]
+        );
     }
 
 

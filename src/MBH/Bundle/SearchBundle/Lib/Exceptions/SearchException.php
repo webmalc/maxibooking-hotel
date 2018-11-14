@@ -4,11 +4,12 @@
 namespace MBH\Bundle\SearchBundle\Lib\Exceptions;
 
 
+use MBH\Bundle\SearchBundle\Services\Cache\ErrorFilters\ErrorResultFilter;
 use Throwable;
 
 class SearchException extends \Exception
 {
-    public const TYPE = 0;
+    public const TYPE = ErrorResultFilter::DISABLE;
 
     public function __construct(string $message = "", int $code = 0, Throwable $previous = null)
     {

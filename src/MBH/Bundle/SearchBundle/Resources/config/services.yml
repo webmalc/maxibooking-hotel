@@ -10,9 +10,12 @@ services:
         arguments:
             - '@mbh_search.client_config_repository'
             - '@mbh_search.hotel_repository'
-            - '%kernel.environment%'
+            - '@mbh_search.room_category_to_room_type_transformer'
         tags:
             - { name: form.type, alias: MBH\Bundle\SearchBundle\Form\RoomTypesType }
+
+    mbh_search.room_category_to_room_type_transformer:
+        class: MBH\Bundle\SearchBundle\Form\DataTransformer\RoomCategoryToRoomTypeTransformer
 
     mbh_search.search_conditions_type:
       class: MBH\Bundle\SearchBundle\Form\SearchConditionsType
@@ -521,7 +524,6 @@ services:
             - '@mbh_search.shared_data_fetcher'
             - '@mbh_search.restriction_repository'
             - '@mbh_search.restrictions_redis_cache'
-            - '@mbh.hotel.room_type_manager'
 
     mbh_search.room_fetcher:
         class: MBH\Bundle\SearchBundle\Services\Data\RoomFetcher

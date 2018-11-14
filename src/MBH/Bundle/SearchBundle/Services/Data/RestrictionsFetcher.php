@@ -19,15 +19,10 @@ class RestrictionsFetcher extends AbstractDataFetcher
 
     /** @var RestrictionRepository */
     protected $restrictionRepository;
-    /**
-     * @var RoomTypeManager
-     */
-    private $manager;
 
-    public function __construct(DataHolderInterface $holder, SharedDataFetcherInterface $sharedDataFetcher, RestrictionRepository $restrictionRepository, AbstractCache $cache, RoomTypeManager $manager)
+    public function __construct(DataHolderInterface $holder, SharedDataFetcherInterface $sharedDataFetcher, RestrictionRepository $restrictionRepository, AbstractCache $cache)
     {
         $this->restrictionRepository = $restrictionRepository;
-        $this->manager = $manager;
         parent::__construct($holder, $sharedDataFetcher, $cache);
     }
 
@@ -38,7 +33,7 @@ class RestrictionsFetcher extends AbstractDataFetcher
      */
     protected function fetchData(DataFetchQueryInterface $fetchQuery): array
     {
-        return $this->restrictionRepository->getAllSearchPeriod($fetchQuery->getConditions(), $this->manager->useCategories);
+        return $this->restrictionRepository->getAllSearchPeriod($fetchQuery->getConditions());
     }
 
 }

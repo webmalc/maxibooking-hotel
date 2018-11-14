@@ -22,9 +22,11 @@ Encore
             /node_modules\/moment\/locale/, /ru|en-gb/
         )
     )
-    .addPlugin(new VueLoaderPlugin());
+    .addPlugin(new VueLoaderPlugin())
+;
 
 let config = Encore.getWebpackConfig();
+
 if(!Encore.isProduction()) {
     fs.writeFile("fakewebpack.config.js", "module.exports = "+JSON.stringify(config), function(err) {
         if(err) {
