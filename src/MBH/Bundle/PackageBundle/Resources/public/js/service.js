@@ -166,7 +166,7 @@ var docReadyServices = function() {
 
                 if (isMobileDevice()) {
                   if (serviceSelect.children('option').length === 0) {
-                    serviceSelect[0].innerHTML = '<option disabled selected>Не найдено</option>';
+                    serviceSelect[0].innerHTML = '<option disabled selected>' + Translator.trace('service.not_found') + '</option>';
                   }
                 } else {
                   serviceSelect.select2('destroy');
@@ -186,16 +186,6 @@ var docReadyServices = function() {
     var $serviceFilterForm = $('#service-filter'),
         $serviceTable = $('#service-table'),
         processing = false;
-
-    var valueDataTable = {service: null, category: null};
-
-    if (isMobileDevice()) {
-      valueDataTable.service = $('#select-service').val();
-      valueDataTable.category = $('#select-category').val();
-    } else {
-      valueDataTable.service = $('#select-service').select2('val');
-      valueDataTable.category = $('#select-category').select2('val');
-    }
 
     $serviceTable.dataTable({
         dom: "12<'row'<'col-sm-6'Bl><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
@@ -225,8 +215,13 @@ var docReadyServices = function() {
             "method": 'post',
             "data": function(d) {
                 d = $.extend(d, $serviceFilterForm.serializeObject());
-                d.service = valueDataTable.service;
-                d.category = valueDataTable.category;
+                if (isMobileDevice()) {
+                    d.service = $('#select-service').val();
+                    d.category = $('#select-category').val();
+                } else {
+                    d.service = $('#select-service').select2('val');
+                    d.category = $('#select-category').select2('val');
+                }
             },
             beforeSend: function() {
                 processing = true;

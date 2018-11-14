@@ -487,8 +487,12 @@ var docReadyForms = function () {
                         return;
                     }
                     var dates = select.val().split('-');
-                    begin.val(dates[0]);
-                    end.val(dates[1]).trigger('change');
+                    if (!begin.val()) {
+                        begin.val(dates[0]);
+                    }
+                    if (!end.val()) {
+                        end.val(dates[1]).trigger('change');
+                    }
                 };
 
             if (!select.length || !begin.length || !end.length) {
