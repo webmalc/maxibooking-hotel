@@ -165,7 +165,8 @@ class BaseControllerTest extends WebTestCase
         Airbnb::NAME,
         'airbnb_room',
         'airbnb_tariff',
-        'airbnb_all_packages_sync'
+        'airbnb_all_packages_sync',
+        'ical_room_calendar'
     ];
 
     /**
