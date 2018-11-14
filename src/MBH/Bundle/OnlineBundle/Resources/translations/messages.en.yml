@@ -192,3 +192,17 @@ payment.receipt.item_description.package: 'Accommodation in the hotel room "%1$s
 payment.receipt.item_description.service: 'Service: '
 payment.receipt.item.quantity.night: night
 payment.receipt.item.quantity.units: units
+onlinebundle.resources.views.form.index.for_site: 'For website'
+site_config.color_theme.colors.sea: Torquoise
+site_config.color_theme.colors.label: 'Color theme'
+site_config.color_theme.colors.green: Green
+site_config.color_theme.colors.fuksia: Fuchsia
+site_config.color_theme.colors.brown: Brown
+site_config.color_theme.colors.blue01: 'Blue 2'
+site_config.color_theme.colors.blue02: 'Blue 3'
+site_config.color_theme.colors.blue: Blue
+site_config.color_theme.colors.black02: 'Black 2'
+site_config.color_theme.colors.black01: 'Black 1'
+site_config.color_theme.colors.autumn: Autumn
+site_form.hotels.required_fields.price_caches: Prices
+site_form.hotels.required_fields.room_caches: 'Room in sale'
