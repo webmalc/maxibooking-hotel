@@ -408,6 +408,8 @@ class ApiController extends Controller
             $requestedRoomType = $this->dm->find(RoomType::class, $requestedRoomTypeId);
             if (!is_null($requestedRoomType)) {
                 $query->addRoomTypeId($requestedRoomTypeId);
+            } else {
+                $query->availableRoomTypes = [];
             }
         }
 
