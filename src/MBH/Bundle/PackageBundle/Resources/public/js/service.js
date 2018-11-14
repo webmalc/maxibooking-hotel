@@ -187,6 +187,19 @@ var docReadyServices = function() {
         $serviceTable = $('#service-table'),
         processing = false;
 
+    (function() {
+        var $begin = $serviceFilterForm.find('input[name="begin"]');
+        var $end = $serviceFilterForm.find('input[name="end"]');
+
+        if (!$end.val()) {
+            $end.datepicker('update', moment().toDate());
+        }
+
+        if (!$begin.val()) {
+            $begin.datepicker('update', moment().subtract(7, 'days').toDate());
+        }
+    }());
+
     $serviceTable.dataTable({
         dom: "12<'row'<'col-sm-6'Bl><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-5'i><'col-sm-7'p>>",
         language   : mbh.datatablesOptions.language,
