@@ -269,6 +269,7 @@ class DocumentTemplateControllerTest extends WebTestCase
 
     /**
      * @depends testAddValidDataTemplate
+     * @depends testInstallWkhtmltopdf
      */
     public function testViewNewDocumentTemplate()
     {
