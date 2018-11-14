@@ -9,6 +9,10 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
  */
 class FormConfigRepository extends DocumentRepository
 {
+    /**
+     * @param null $id
+     * @return array|FormConfig|null|object
+     */
     public function findOneById($id = null)
     {
         $qb = $this->createQueryBuilder();

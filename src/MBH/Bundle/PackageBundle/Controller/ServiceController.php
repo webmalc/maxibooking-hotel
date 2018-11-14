@@ -89,7 +89,7 @@ class ServiceController extends BaseController
         $repository = $this->dm->getRepository('MBHPackageBundle:PackageService');
         $queryBuilder = $repository->createQueryBuilder();
 
-        $packageFilterType = $request->get('package-filter-dates-type');
+        $packageFilterType = $request->get('package-filter-dates-type') ?? 'begin';
         $packageIds = $this->dm
             ->getRepository('MBHPackageBundle:Package')
             ->getPackageIdsByFilter($packageFilterType, $begin, $end, $roomTypesIds, $housingsIds);
