@@ -99,6 +99,6 @@ class ChannelManagerServiceMock
 
     public function isBookingAccountConfirmed(BookingConfig $config)
     {
-        return false;
+        return true;
     }
 }
