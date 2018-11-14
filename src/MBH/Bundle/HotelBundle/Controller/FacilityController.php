@@ -28,7 +28,7 @@ class FacilityController extends BaseController
         $locale = $request->query->get('locale') ?? $this->getUser()->getLocale() ?? $this->getParameter('locale');
 
         return [
-            'facilitiesData' => $this->get('mbh.facility_repository')->getActualFacilitiesData($this->hotel, $locale),
+            'facilitiesData' => $this->get('mbh.facility_repository')->getActualFacilitiesData($locale, $this->hotel),
             'facilitiesLocale' => $locale
         ];
     }
