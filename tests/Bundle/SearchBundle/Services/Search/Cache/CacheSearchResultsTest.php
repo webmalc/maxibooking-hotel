@@ -84,7 +84,8 @@ class CacheSearchResultsTest extends SearchWebTestCase
 
         $serializer = $this->getContainer()->get('mbh_search.result_serializer');
         $keyCreator = $this->getContainer()->get('mbh_search.cache_key_creator');
-        $service = new CacheSearchResults($repositoryMock, $serializer, $redisMock, $keyCreator);
+        $filter = $this->getContainer()->get('mbh_search.error_result_filter');
+        $service = new CacheSearchResults($repositoryMock, $serializer, $redisMock, $keyCreator, $filter);
 
         $result = $data['result'];
         /** @noinspection PhpUnusedLocalVariableInspection */
@@ -101,6 +102,7 @@ class CacheSearchResultsTest extends SearchWebTestCase
     public function dataProvider(): iterable
     {
         $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
+        /** @var Hotel $hotel */
         $hotel = $dm->getRepository(Hotel::class)->findAll()[0];
 
         /** @var Tariff $tariff */

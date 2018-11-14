@@ -46,7 +46,7 @@ class Result implements ResultCacheablesInterface
     /** @var string */
     private $error = '';
 
-    /** @var int */
+    /** @var int|null */
     private $errorType;
 
     /** @var bool */
@@ -287,7 +287,7 @@ class Result implements ResultCacheablesInterface
      * @param int $errorType
      * @return Result
      */
-    public function setErrorType(int $errorType): Result
+    public function setErrorType(?int $errorType): Result
     {
         $this->errorType = $errorType;
 

@@ -22,7 +22,13 @@ class ErrorResultFilter implements ErrorResultFilterInterface
 
     public const ROOM_POPULATION = 32;
 
-    public const ALL = self::WINDOWS | self:: ROOM_CACHE | self::PRICE_CACHE | self::RESTRICTION | self::TARIFF_LIMIT | self::ROOM_POPULATION;
+    public const ALL =
+        self::WINDOWS
+        | self:: ROOM_CACHE
+        | self::PRICE_CACHE
+        | self::RESTRICTION
+        | self::TARIFF_LIMIT
+        | self::ROOM_POPULATION;
 
     /**
      * @param Result $result

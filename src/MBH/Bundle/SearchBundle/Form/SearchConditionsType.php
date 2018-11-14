@@ -173,7 +173,6 @@ class SearchConditionsType extends AbstractType
                 'required' => false,
                 'label' => false
             ])
-
             ->add(
                 'isOnline',
                 CheckboxType::class,
@@ -183,6 +182,11 @@ class SearchConditionsType extends AbstractType
             )
             ->add('isThisWarmUp',
                 CheckboxType::class,
+                [
+                    'required' => false
+                ])
+            ->add('errorLevel',
+                IntegerType::class,
                 [
                     'required' => false
                 ])

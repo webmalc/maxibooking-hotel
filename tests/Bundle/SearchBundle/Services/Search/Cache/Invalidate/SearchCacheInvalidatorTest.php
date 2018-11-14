@@ -13,6 +13,7 @@ use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Document\SearchResultCacheItem;
 use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateQuery;
+use MBH\Bundle\SearchBundle\Services\Cache\ErrorFilters\ErrorResultFilter;
 
 class SearchCacheInvalidatorTest extends WebTestCase
 {
@@ -129,9 +130,6 @@ class SearchCacheInvalidatorTest extends WebTestCase
      */
     private function invalidate(InvalidateQuery $invalidateQuery, int $expectedNumToInvalidate): void
     {
-        $factory = $this->getContainer()->get('mbh_search.invalidate_adapter_factory');
-        $adapter = $factory->createMessage($invalidateQuery);
-
         $invalidator = $this->getContainer()->get('mbh_search.search_cache_invalidator');
         $invalidator->flushCache();
 
@@ -140,6 +138,9 @@ class SearchCacheInvalidatorTest extends WebTestCase
         $cachedKeys = $redis->keys('*');
         /** @var PriceCache $priceCache */
         $this->assertCount(\count($results), $cachedKeys);
+
+        $factory = $this->getContainer()->get('mbh_search.invalidate_adapter_factory');
+        $adapter = $factory->createMessage($invalidateQuery);
         $invalidator->invalidate($adapter);
         $afterInvalidateKeys = $redis->keys('*');
 
@@ -346,6 +347,7 @@ class SearchCacheInvalidatorTest extends WebTestCase
                 'adults' => 2,
                 'children' => 0,
                 'isUseCache' => true,
+                'errorLevel' => ErrorResultFilter::ALL
             ];
             $results[] = $search->searchSync($conditionsBlank, false);
         }

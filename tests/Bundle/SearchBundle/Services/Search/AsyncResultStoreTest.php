@@ -11,6 +11,7 @@ use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultConditions;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultRoomType;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultTariff;
+use MBH\Bundle\SearchBundle\Services\Cache\ErrorFilters\ErrorResultFilter;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
 class AsyncResultStoreTest extends SearchWebTestCase
@@ -23,7 +24,7 @@ class AsyncResultStoreTest extends SearchWebTestCase
         $conditions = new SearchConditions();
         $conditions->setSearchHash($hash);
         $searchResult1 = $this->getData($hash, 'ok');
-        $searchResult2 = $this->getData($hash, 'error');
+        $searchResult2 = $this->getData($hash, 'error', ErrorResultFilter::WINDOWS);
 
         $service = $this->getContainer()->get('mbh_search.async_result_store');
         $service->store($searchResult1,  $conditions);
@@ -49,7 +50,7 @@ class AsyncResultStoreTest extends SearchWebTestCase
 
         $hash = uniqid('', false);
         $searchResult1 = $this->getData($hash, 'ok');
-        $searchResult2 = $this->getData($hash, 'error');
+        $searchResult2 = $this->getData($hash, 'error', ErrorResultFilter::WINDOWS);
         $searchResult3 = $this->getData($hash, 'ok');
         $conditions = new SearchConditions();
         $resultsCount = 3;
@@ -57,6 +58,7 @@ class AsyncResultStoreTest extends SearchWebTestCase
         $conditions
             ->setSearchHash($resultConditions->getSearchHash())
             ->setExpectedResultsCount($resultsCount)
+            ->setErrorLevel(ErrorResultFilter::WINDOWS)
         ;
 
         $asyncCache->flushall();
@@ -94,17 +96,19 @@ class AsyncResultStoreTest extends SearchWebTestCase
         $this->assertEquals($resultsCount, (int)$asyncCache->get('received'. $hash));
     }
 
-    private function getData(string $hash, string $status): Result
+    private function getData(string $hash, string $status, ?int $errorType = null): Result
     {
         $roomType =  $this->dm->getRepository(RoomType::class)->findOneBy([]);
         $tariff = $this->dm->getRepository(Tariff::class)->findOneBy([]);
         $conditions = new SearchConditions();
         $conditions->setId('fakeId');
+        $errorLevel = ErrorResultFilter::ALL;
         $conditions
             ->setSearchHash($hash)
             ->setBegin(new \DateTime())
             ->setEnd(new \DateTime())
             ->setAdults(2)
+            ->setErrorLevel($errorLevel)
         ;
         $resultRoomType = ResultRoomType::createInstance($roomType);
         $resultTariff = ResultTariff::createInstance($tariff);
@@ -122,6 +126,9 @@ class AsyncResultStoreTest extends SearchWebTestCase
             []
         );
         $result->setStatus($status);
+        if (null !== $errorType) {
+            $result->setErrorType($errorType);
+        }
 
         return $result;
     }

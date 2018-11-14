@@ -181,7 +181,8 @@ class SearchConditions extends Base
     /** @var bool */
     private $isThisWarmUp = false;
 
-    private $errorLevel = ErrorResultFilter::TARIFF_LIMIT;
+    /** @var int */
+    private $errorLevel = ErrorResultFilter::WINDOWS;
 
 
     /**
@@ -605,6 +606,7 @@ class SearchConditions extends Base
      */
     public function getErrorLevel(): int
     {
+
         return $this->errorLevel;
     }
 
@@ -612,9 +614,13 @@ class SearchConditions extends Base
      * @param int $errorLevel
      * @return SearchConditions
      */
-    public function setErrorLevel(int $errorLevel): SearchConditions
+    public function setErrorLevel(?int $errorLevel): SearchConditions
     {
-        $this->errorLevel = $errorLevel;
+        if (null === $errorLevel) {
+            $this->errorLevel = 0;
+        } else {
+            $this->errorLevel = $errorLevel;
+        }
 
         return $this;
     }

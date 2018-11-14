@@ -9,6 +9,7 @@ use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
+use MBH\Bundle\SearchBundle\Services\Cache\ErrorFilters\ErrorResultFilter;
 use OldSound\RabbitMqBundle\RabbitMq\Producer;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
@@ -34,11 +35,28 @@ class SearchTest extends SearchWebTestCase
         $search = $this->getContainer()->get('mbh_search.search');
         $conditionData = $this->createConditionData($data);
         $actual = $search->searchSync($conditionData);
-        $this->assertCount(2, $search->getRestrictionsErrors());
+        $this->assertCount($data['expected']['successResults'], $actual);
         foreach ($actual as $result) {
             $this->assertInternalType('array', $result);
         }
+    }
 
+    /** @dataProvider syncDataProvider
+     * @param iterable $data
+     * @throws SearchConditionException
+     * @throws SearchQueryGeneratorException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\GroupingFactoryException
+     */
+    public function testSearchSyncFilter(iterable $data): void
+    {
+        $search = $this->getContainer()->get('mbh_search.search');
+        $conditionData = $this->createConditionData($data);
+        $conditionData['errorLevel'] = ErrorResultFilter::ALL;
+        $actual = $search->searchSync($conditionData);
+        $this->assertCount($data['expected']['searchCount'], $actual);
+        foreach ($actual as $result) {
+            $this->assertInternalType('array', $result);
+        }
     }
 
     /** @dataProvider syncDataProvider
@@ -51,7 +69,7 @@ class SearchTest extends SearchWebTestCase
     {
         $search = $this->getContainer()->get('mbh_search.search');
         $conditionData = $this->createConditionData($data);
-        $actual = $search->searchSync($conditionData, true, 'roomType', true);
+        $actual = $search->searchSync($conditionData, 'roomType', true);
         $this->assertJson($actual);
     }
 
