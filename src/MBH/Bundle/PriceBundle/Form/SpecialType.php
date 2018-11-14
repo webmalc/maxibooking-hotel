@@ -104,7 +104,7 @@ class SpecialType extends AbstractType
                     'format' => 'dd.MM.yyyy',
                     'help' => 'special.displayTo.help',
                     'attr' => [
-                        'class' => 'datepicker begin-datepicker input-small',
+                        'class' => 'datepicker end-datepicker input-small',
                         'data-date-format' => 'dd.mm.yyyy',
                     ],
                 ]
