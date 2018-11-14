@@ -66,6 +66,16 @@ class SearchResultCacheItem
     private $adults;
 
     /**
+     * @var int|null
+     * @ODM\Field(type="integer")
+     * @Assert\Range(
+     *     min = 0,
+     *     max = 512
+     * )
+     */
+    private $errorType;
+
+    /**
      * @var int
      * @ODM\Field(type="integer")
      * @Assert\NotNull(message="orm.searchType.children_amount_not_filled")
@@ -258,6 +268,25 @@ class SearchResultCacheItem
     }
 
     /**
+     * @return int|null
+     */
+    public function getErrorType(): ?int
+    {
+        return $this->errorType;
+    }
+
+    /**
+     * @param int|null $errorType
+     * @return SearchResultCacheItem
+     */
+    public function setErrorType(?int $errorType): SearchResultCacheItem
+    {
+        $this->errorType = $errorType;
+
+        return $this;
+    }
+
+    /**
      * @param Result $result
      * @param SearchQuery $searchQuery
      * @return SearchResultCacheItem
@@ -279,7 +308,9 @@ class SearchResultCacheItem
             ->setTariffId($tariffId)
             ->setAdults($adults)
             ->setChildren($children)
-            ->setChildrenAges($childrenAges);
+            ->setChildrenAges($childrenAges)
+            ->setErrorType($result->getErrorType())
+        ;
 
         return $cacheItem;
     }

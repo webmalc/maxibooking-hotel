@@ -5,7 +5,9 @@ namespace Tests\Bundle\SearchBundle\Services;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\HotelRepository;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
@@ -75,6 +77,41 @@ class SearchConditionsCreatorTest extends WebTestCase
         $this->assertEquals(new \DateTime($data['raw']['end']), $actual->getEnd());
         $this->assertEquals($data['raw']['adults'], $actual->getAdults());
         $this->assertNull($actual->getChildren());
+
+
+    }
+
+    /**
+     * @dataProvider successDataProvider
+     */
+    public function testHandleSuccessCategoryData($data): void
+    {
+        $dm = $this->getContainer()->get('doctrine_mongodb.odm.default_document_manager');
+        $config = $this->getContainer()->get('mbh_search.client_config_repository')->fetchConfig();
+        $config->setUseRoomTypeCategory(true);
+        $dm->flush($config);
+
+        $dm = $this->getContainer()->get('doctrine_mongodb.odm.default_document_manager');
+        $repo = $dm->getRepository(Hotel::class);
+        /** @var HotelRepository $repo */
+        $hotelIds = $repo->getSearchActiveIds();
+        $data['raw']['roomTypes'] = ['allrooms_'.$hotelIds[0]];
+        /** @var SearchConditions $actual */
+        $actual = $this->creator->createSearchConditions($data['raw']);
+
+        $this->assertNotEmpty($actual->getSearchHash());
+        $this->assertEquals(new \DateTime($data['raw']['begin']), $actual->getBegin());
+        $this->assertEquals(new \DateTime($data['raw']['end']), $actual->getEnd());
+        $this->assertEquals($data['raw']['adults'], $actual->getAdults());
+        $this->assertNull($actual->getChildren());
+
+        $config->setUseRoomTypeCategory(false);
+        $dm->flush($config);
+
+        $roomTypes = $actual->getRoomTypes();
+        foreach ($roomTypes as $roomType) {
+            $this->assertInstanceOf(RoomType::class, $roomType);
+        }
 
 
     }

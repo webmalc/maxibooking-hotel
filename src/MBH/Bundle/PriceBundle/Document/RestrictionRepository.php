@@ -284,7 +284,7 @@ class RestrictionRepository extends DocumentRepository
      * @param bool $isCaterory
      * @return array
      */
-    public function getAllSearchPeriod(SearchConditions $conditions, bool $isCaterory): array
+    public function getAllSearchPeriod(SearchConditions $conditions): array
     {
         $qb = $this->createQueryBuilder();
         $restrictionTariffs = $conditions->getRestrictionTariffs();
@@ -297,20 +297,7 @@ class RestrictionRepository extends DocumentRepository
         $isRoomTypeSpecified = $conditions->getRoomTypes()->count();
 
         if ($isRoomTypeSpecified) {
-            //** TODO: rebuild here the function signature (pass roomType and tariff, but  not conditions) */
-            $roomTypes = [];
-            if ($isCaterory) {
-                foreach ($conditions->getRoomTypes() as $category) {
-                    /** @var RoomTypeCategory $category */
-                    $types = $category->getTypes();
-                    foreach ($types as $roomType) {
-                        $roomTypes[] = $roomType;
-                    }
-                }
-            } else {
-                $roomTypes = $conditions->getRoomTypes();
-            }
-
+            $roomTypes = $conditions->getRoomTypes();
             $roomTypeIds = Helper::toIds($roomTypes);
             $qb->field('roomType.id')->in($roomTypeIds);
         }

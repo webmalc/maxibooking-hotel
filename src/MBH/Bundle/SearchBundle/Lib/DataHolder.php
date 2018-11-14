@@ -182,13 +182,7 @@ class DataHolder
      */
     public function getRoomTypesRaw(iterable $rawRoomTypeIds, array $hotelIds): array
     {
-        if ($this->isUseCategory) {
-            $roomTypeIds = $this->roomTypeRepository->fetchRawWithCategory($rawRoomTypeIds, $hotelIds);
-        } else {
-            $roomTypeIds = $this->roomTypeRepository->fetchRaw($rawRoomTypeIds, $hotelIds);
-        }
-
-        return $roomTypeIds;
+        return $this->roomTypeRepository->fetchRaw($rawRoomTypeIds, $hotelIds);
     }
 
 

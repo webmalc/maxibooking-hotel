@@ -25,7 +25,7 @@ class SearchCompareCommand extends Command
 {
 
     /** @var int */
-    private const MISMATCH_THRESHOLD = 10;
+    private const PRICE_MISMATCH_THRESHOLD = 10;
 
     /** @var NewSearch */
     private $newSearch;
@@ -106,7 +106,9 @@ class SearchCompareCommand extends Command
                     'children' => $combination['children'],
                     'childrenAges' => $combination['childrenAges'] ?? [],
                     'roomTypes' => $categoryId ?? [],
-                    'tariffs' => $tariffIds
+                    'tariffs' => $tariffIds,
+                    'errorLevel' => 0,
+                    'isUseCache' => false
                 ];
                 $newResult = $this->newSearchResults($data);
                 $oldResult = $this->oldSearchResults($data);
@@ -151,7 +153,7 @@ class SearchCompareCommand extends Command
 
                 return $oldTotal !== null && $newTotal !== null && (abs(
                             $oldTotal - $newTotal
-                        ) < self::MISMATCH_THRESHOLD);
+                        ) < self::PRICE_MISMATCH_THRESHOLD);
             }
         );
 
@@ -161,7 +163,19 @@ class SearchCompareCommand extends Command
                 $oldTotal = $result['old']['total'] ?? null;
                 $newTotal = $result['new']['total'] ?? null;
 
-                return ($oldTotal === null || $newTotal === null) && $newTotal !== $oldTotal;
+                $newRoomsCount = $result['new']['roomsCount'] ?? null;
+                $oldRoomsCount = $result['old']['roomsCount'] ?? null;
+
+                $oneTotalIsNull = $oldTotal === null || $newTotal === null;
+                $justOneOfResults = \is_array($result['old']) !== \is_array($result['new']);
+
+                $differentRoomsCount = $newRoomsCount !== $oldRoomsCount;
+
+
+                return ($oneTotalIsNull && ($newTotal !== $oldTotal))
+                    || $justOneOfResults
+                    || $differentRoomsCount
+                    ;
             }
         );
 
@@ -173,7 +187,7 @@ class SearchCompareCommand extends Command
 
                 return $oldTotal !== null && $newTotal !== null && abs(
                         $oldTotal - $newTotal
-                    ) >= self::MISMATCH_THRESHOLD;
+                    ) >= self::PRICE_MISMATCH_THRESHOLD;
             }
         );
 
@@ -203,6 +217,8 @@ class SearchCompareCommand extends Command
                     implode('-', $result['childrenAges'] ?? []),
                     'old: '.$result['old']['total'] ?? 'fail',
                     'new: '.$result['new']['total'] ?? 'fail',
+                    'oldRoomsCount: ' . $result['old']['roomsCount'],
+                    'newRoomsCount: ' . $result['new']['roomsCount']
                 ]
 
             );
@@ -320,7 +336,7 @@ class SearchCompareCommand extends Command
      */
     private function newSearchResults(array $data)
     {
-        return $this->newSearch->searchSync($data, true, null, false, false);
+        return $this->newSearch->searchSync($data);
     }
 
     private function oldSearchResults(array $data)
@@ -368,6 +384,7 @@ class SearchCompareCommand extends Command
                 'roomTypeName' => $searchResult['resultRoomType']['name'],
                 'tariffName' => $searchResult['resultTariff']['name'],
                 'total' => reset($searchResult['prices'])['total'],
+                'roomsCount' => $searchResult['minRoomsCount']
             ];
         }
 
@@ -387,6 +404,7 @@ class SearchCompareCommand extends Command
                 'roomTypeName' => $roomType->getName(),
                 'tariffName' => $tariff->getName(),
                 'total' => $searchResult->getPrice($searchResult->getAdults(), $searchResult->getChildren()),
+                'roomsCount' => $searchResult->getRoomsCount()
             ];
         }
 

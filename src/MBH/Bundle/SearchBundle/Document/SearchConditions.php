@@ -28,7 +28,6 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * @Range()
  * @ChildrenAgesSameAsChildren()
  * @ODM\Document(collection="SearchConditions", repositoryClass="SearchConditionsRepository")
- * @Gedmo\Loggable()
  */
 class SearchConditions extends Base
 {
@@ -192,7 +191,7 @@ class SearchConditions extends Base
     private $isThisWarmUp = false;
 
     /** @var int */
-    private $errorLevel = ErrorResultFilter::WINDOWS;
+    private $errorLevel = ErrorResultFilter::DISABLE;
 
 
     /**

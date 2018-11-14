@@ -33,8 +33,7 @@ class SearchConditionsCreator
     public function createSearchConditions(array $data): SearchConditions
     {
         try {
-            $options = ['isForceDisableCategory' => $data['forceDisableCategory'] ?? false];
-            $conditionForm = $this->formFactory->create(SearchConditionsType::class, null, $options);
+            $conditionForm = $this->formFactory->create(SearchConditionsType::class);
             $conditionForm->submit($data);
         } catch (AlreadySubmittedException|InvalidOptionsException $e) {
             throw new SearchConditionException('Error when try to submit form to create SearchConditions');
