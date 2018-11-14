@@ -126,8 +126,8 @@ form.payment.formType.fieldUserNameIsVisible: 'Use for search extra fields?'
 form.online.order_search.numberOrder: 'Number order'
 form.online.order_search.phoneOrEmail: 'Phone or Email'
 form.online.order_search.userName: 'Last Name'
-form.payment.formType.enabledReCaptcha.help: ''
-form.payment.formType.fieldUserNameIsVisible.help: ''
+form.payment.formType.enabledReCaptcha.help: 'Проверка reCaptcha'
+form.payment.formType.fieldUserNameIsVisible.help: 'Additional "Name" field in In the search form'
 form.payment.formType.enabledShowAmount: 'Show Amount'
 form.payment.formType.enabledShowAmount_help: 'Show recommended amount for payment'
 form.online.order_search.button_search: 'Find order'
@@ -152,3 +152,17 @@ mb_site_controller.site_config_saved: 'Settings successfully saved!'
 site_manager.mandatory_field_empty.error: 'The field "%fieldTitle%" must be completed'
 analytics_form.google_id.label: 'Tracking ID'
 analytics_form.yandex_id.label: 'Counter number'
+onlinebundle.resources.views.form.index.for_site: 'For website'
+site_config.color_theme.colors.sea: Torquoise
+site_config.color_theme.colors.label: 'Color theme'
+site_config.color_theme.colors.green: Green
+site_config.color_theme.colors.fuksia: Fuchsia
+site_config.color_theme.colors.brown: Brown
+site_config.color_theme.colors.blue01: 'Blue 2'
+site_config.color_theme.colors.blue02: 'Blue 3'
+site_config.color_theme.colors.blue: Blue
+site_config.color_theme.colors.black02: 'Black 2'
+site_config.color_theme.colors.black01: 'Black 1'
+site_config.color_theme.colors.autumn: Autumn
+site_form.hotels.required_fields.price_caches: Prices
+site_form.hotels.required_fields.room_caches: 'Room in sale'
