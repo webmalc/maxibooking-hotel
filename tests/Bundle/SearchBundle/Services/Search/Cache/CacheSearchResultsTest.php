@@ -36,7 +36,7 @@ class CacheSearchResultsTest extends SearchWebTestCase
 
         $json = $serializer->serialize($result);
         $searchQuery = $data['searchQuery'];
-        $key = SearchResultCacheItem::createRedisKey($searchQuery);
+        $key = $this->getContainer()->get('mbh_search.cache_key_creator')->createKey($searchQuery);
         $cache->set($key, $json);
 
         $service = $this->getContainer()->get('mbh_search.cache_search');
@@ -83,14 +83,16 @@ class CacheSearchResultsTest extends SearchWebTestCase
         $repositoryMock->expects($this->once())->method('getDocumentManager')->willReturn($dmMock);
 
         $serializer = $this->getContainer()->get('mbh_search.result_serializer');
-        $service = new CacheSearchResults($repositoryMock, $serializer, $redisMock);
+        $keyCreator = $this->getContainer()->get('mbh_search.cache_key_creator');
+        $filter = $this->getContainer()->get('mbh_search.error_result_filter');
+        $service = new CacheSearchResults($repositoryMock, $serializer, $redisMock, $keyCreator, $filter);
 
         $result = $data['result'];
         /** @noinspection PhpUnusedLocalVariableInspection */
         $resultJson = $serializer->serialize($result);
         $searchQuery = $data['searchQuery'];
         /** @noinspection PhpUnusedLocalVariableInspection */
-        $createdKey = SearchResultCacheItem::createRedisKey($searchQuery);
+        $createdKey = $keyCreator->createKey($searchQuery);
 
         $service->saveToCache($result, $searchQuery);
 
@@ -100,6 +102,7 @@ class CacheSearchResultsTest extends SearchWebTestCase
     public function dataProvider(): iterable
     {
         $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
+        /** @var Hotel $hotel */
         $hotel = $dm->getRepository(Hotel::class)->findAll()[0];
 
         /** @var Tariff $tariff */

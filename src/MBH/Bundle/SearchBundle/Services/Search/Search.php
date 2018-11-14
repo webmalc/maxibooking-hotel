@@ -176,8 +176,4 @@ class Search
         $this->dm->flush($conditions);
     }
 
-    public function getRestrictionsErrors(): ?array
-    {
-        return $this->restrictionChecker->getErrors();
-    }
 }

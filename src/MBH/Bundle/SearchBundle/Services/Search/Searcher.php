@@ -68,7 +68,7 @@ class Searcher implements SearcherInterface
             $this->searchLimitChecker->checkRoomCacheLimit($searchQuery);
 
             if (!$this->restrictionChecker->check($searchQuery)) {
-                $errors = $this->getRestrictionError();
+                $errors = $this->restrictionChecker->getErrors();
                 $message = implode('_',$errors[0]);
                 throw new RestrictionLimitException('Violation in restriction.'.$message);
             }
@@ -85,14 +85,6 @@ class Searcher implements SearcherInterface
         }
 
         return $result;
-    }
-
-    /**
-     * @return array|null
-     */
-    public function getRestrictionError(): ?array
-    {
-        return $this->restrictionChecker->getErrors();
     }
 
 }
