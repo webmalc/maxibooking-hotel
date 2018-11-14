@@ -78,8 +78,8 @@ class InvoiceRequest extends InvoiceCommon implements \JsonSerializable
 
         $cart = $this->getCart();
 
-        if ($cart != []) {
-            $data = array_merge($data, $cart);
+        if ($cart !== []) {
+            $data['cart'] = $cart;
         }
 
         return $data;
