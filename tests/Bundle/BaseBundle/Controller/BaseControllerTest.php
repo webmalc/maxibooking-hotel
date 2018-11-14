@@ -167,6 +167,7 @@ class BaseControllerTest extends WebTestCase
         'airbnb_tariff',
         'airbnb_all_packages_sync',
         'airbnb_room_links',
+        'ical_room_calendar',
     ];
 
     /**

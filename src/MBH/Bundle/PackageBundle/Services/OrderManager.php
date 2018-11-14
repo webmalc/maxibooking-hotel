@@ -108,7 +108,7 @@ class OrderManager implements Searchable
         $query->adults = $new->getAdults();
         $query->children = $new->getChildren();
         $query->tariff = $tariff;
-        $query->addRoomType($new->getRoomType()->getId());
+        $query->addRoomTypeId($new->getRoomType()->getId());
         $query->addExcludeRoomType($old->getRoomType()->getId());
         $query->excludeBegin = $old->getBegin();
         $query->excludeEnd = $oldEnd->modify('-1 day');
@@ -504,7 +504,7 @@ class OrderManager implements Searchable
         $query->children = (int)$data['children'];
         $query->tariff = !empty($data['tariff']) ? $data['tariff'] : null;
         $query->isOnline = !empty($data['isOnline']);
-        $query->addRoomType($data['roomType']);
+        $query->addRoomTypeId($data['roomType']);
         $query->accommodations = (boolean)$data['accommodation'];
         $query->forceRoomTypes = true;
         $query->forceBooking = !empty($data['forceBooking']);
