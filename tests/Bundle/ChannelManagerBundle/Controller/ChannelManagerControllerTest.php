@@ -20,16 +20,6 @@ class ChannelManagerControllerTest extends WebTestCase
         self::clearDB();
     }
 
-    public function setUp()
-    {
-        $this->client = self::makeClient(
-            [
-                'username' => UserData::MB_USER_USERNAME,
-                'password' => $this->getContainer()->getParameter('mb_user_pwd'),
-            ]
-        );
-    }
-
     /**
      * @dataProvider channelManagersProvider
      * @param string $serviceName
