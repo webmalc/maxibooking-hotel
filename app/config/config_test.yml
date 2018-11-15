@@ -12,6 +12,7 @@ swiftmailer:
     disable_delivery: true
 
 parameters:
+    mbh.environment: "prod" #это для обхода проверки \MBH\Bundle\BaseBundle\EventListener\OnController::onKernelController
     mbh_cache:
         is_enabled: true
         prefix: mbh
