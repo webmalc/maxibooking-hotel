@@ -1,0 +1,28 @@
+{% if constant('MBH\\Bundle\\ClientBundle\\Document\\PaymentSystem\\NewRbk::KEY') in paymentSystems %}
+    {% include '@MBHClient/PaymentSystem/newRbk/script_for_online_form.js.twig' %}
+{% endif %}
+
+var mbhPaymentFunc = {
+    frameId    : '{{ wrapperId }}-iframe',
+    getForm    : function() {
+        var formWrapper = document.querySelector('#{{ wrapperId }}');
+        formWrapper.innerHTML = '';
+        formWrapper.appendChild(this.getIframe());
+    },
+    getIframe: function() {
+        var iframe = document.createElement('iframe');
+        iframe.id = this.frameId;
+        iframe.name = this.frameId;
+        iframe.src = '{{ url('online_payment_search_form', {formId: config.id}) }}';
+        iframe.scrolling = 'no';
+        iframe.frameBorder = 0;
+        iframe.width = "{{ config.fullWidth ? '100%' : config.frameWidth }}";
+        iframe.height = "{{ config.frameHeight }}";
+
+        return iframe;
+    }
+};
+
+window.addEventListener('load', function(ev) {
+    mbhPaymentFunc.getForm();
+});

@@ -122,6 +122,8 @@ external_api_controller.field_must_be_type_of_array: '"%field%" must be an array
 external_api_controller.online_form_config.not_found: 'Online form with ID = "%formId%" does not exist'
 external_api_controller.missing_fields.error: 'Mondatory field "%field%" missing'
 form.payment.formType.enabledReCaptcha: 'Use reCaptcha?'
+form.payment.formType.useAccordion: 'Use "Accordion"?'
+form.payment.formType.useAccordion_help: ''
 form.payment.formType.fieldUserNameIsVisible: 'Use for search extra fields?'
 form.online.order_search.numberOrder: 'Number order'
 form.online.order_search.phoneOrEmail: 'Phone or Email'
@@ -135,6 +137,8 @@ api.payment_form.result_search.not_found_order: 'Not found order'
 api.payment_form.result_search.order_has_been_paid: 'Order has been paid'
 api.payment_form.pay_order.total: Total
 api.payment_form.pay_order.submit: Pay
+api.payment_form.generate_invoce.submit: 'Generate payment document'
+api.payment_form.payment_action.error: 'Incorrect form data.'
 api.payment_form.search.not_valid_fields: 'Field phone/email not valid'
 site_manager.description.hotel: 'Description of the object'
 site_manager.photos_tab.hotel: 'Photos of the object'

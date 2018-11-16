@@ -54,6 +54,7 @@ class OrderSearchType extends AbstractType
                 'configId',
                 HiddenType::class
             );
+
         if ($userNameVisible) {
             $builder->add(
                 'userName',
@@ -69,7 +70,7 @@ class OrderSearchType extends AbstractType
 
         $builder
             ->add(
-                'findOrder',
+                'findPackage',
                 SubmitType::class,
                 [
                     'label' => 'form.online.order_search.button_search',

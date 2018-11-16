@@ -84,6 +84,15 @@ class PaymentFormConfig extends Base implements DecorationInterface, DecorationD
     private $enabledShowAmount = false;
 
     /**
+     * @var bool
+     * @Gedmo\Versioned
+     * @ODM\Field(type="bool")
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    private $useAccordion = true;
+
+    /**
      * @var string
      * @Gedmo\Versioned()
      * @ODM\Field(type="string")
@@ -170,5 +179,21 @@ class PaymentFormConfig extends Base implements DecorationInterface, DecorationD
     public function setJs(string $js = null): void
     {
         $this->js = $js;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUseAccordion(): bool
+    {
+        return $this->useAccordion;
+    }
+
+    /**
+     * @param bool $useAccordion
+     */
+    public function setUseAccordion(bool $useAccordion): void
+    {
+        $this->useAccordion = $useAccordion;
     }
 }

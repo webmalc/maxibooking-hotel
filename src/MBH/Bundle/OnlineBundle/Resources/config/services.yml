@@ -61,3 +61,13 @@ services:
             - '@mbh.client_config_manager'
             - '@translator'
             - '@MBH\Bundle\ClientBundle\Service\PaymentSystem\Wrapper\PaymentSystemWrapperFactory'
+
+    mbh.online_payment_form.logger:
+        class:     Symfony\Bridge\Monolog\Logger
+        arguments: [app]
+        calls:
+        - [pushHandler, ['@mbh.online_payment_form.logger_handler']]
+
+    mbh.online_payment_form.logger_handler:
+        class:     Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.online.log", 200]

@@ -176,7 +176,7 @@ class SearchForm
         }
 
         $result->setTotal($package->getPrice() - $order->getPaid());
-        $result->setPackageId($package->getId());
+        $result->setOrderId($order->getId());
 
         return $result;
 

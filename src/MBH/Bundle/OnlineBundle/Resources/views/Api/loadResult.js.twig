@@ -1,5 +1,5 @@
 {#/*global window, document */#}
-{% if 'newRbk' in paymentSystems %}
+{% if constant('MBH\\Bundle\\ClientBundle\\Document\\PaymentSystem\\NewRbk::KEY') in paymentSystems %}
 {% include '@MBHClient/PaymentSystem/newRbk/script_for_online_form.js.twig' %}
 {% endif %}
 
