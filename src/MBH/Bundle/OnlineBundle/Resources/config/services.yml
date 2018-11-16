@@ -54,3 +54,10 @@ services:
             - '@mbh.warnings_compiler'
             - '@mbh.billing.api'
             - '@mbh.client_manager'
+
+    MBH\Bundle\OnlineBundle\Services\RenderPaymentButton:
+        arguments:
+            - '@twig'
+            - '@mbh.client_config_manager'
+            - '@translator'
+            - '@MBH\Bundle\ClientBundle\Service\PaymentSystem\Wrapper\PaymentSystemWrapperFactory'
