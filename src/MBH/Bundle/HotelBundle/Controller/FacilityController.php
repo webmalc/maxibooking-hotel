@@ -28,7 +28,7 @@ class FacilityController extends BaseController
         $locale = $request->query->get('locale') ?? $this->getUser()->getLocale() ?? $this->getParameter('locale');
 
         return [
-            'facilitiesData' => $this->get('mbh.facility_repository')->getActualFacilitiesData($this->hotel, $locale),
+            'facilitiesData' => $this->get('mbh.facility_repository')->getActualFacilitiesData($locale, $this->hotel),
             'facilitiesLocale' => $locale
         ];
     }
@@ -46,7 +46,7 @@ class FacilityController extends BaseController
 
         $facilityRepo = $this->get('mbh.facility_repository');
         $facilityDocsByIds = $facilityRepo->getFacilityDocsByIds($this->hotel);
-        $facilitiesData = $facilityRepo->getActualFacilitiesData($this->hotel, $facilitiesLocale);
+        $facilitiesData = $facilityRepo->getActualFacilitiesData($facilitiesLocale, $this->hotel);
 
         foreach ($requestFacilitiesData as $facilityId => $description) {
             if ($facilitiesData[$facilityId]['description'] !== $description) {

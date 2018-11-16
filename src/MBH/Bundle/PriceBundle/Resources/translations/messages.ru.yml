@@ -442,6 +442,8 @@ price.form.nazvanie_dla_ispolzovania_vnutri: 'Название для испол
 price.form.s_kakogo_chisla_ispolzuetsa_tarif: 'С какого числа используется тариф?'
 price.form.po_kakoe_chislo_ispolzuetsa_tarif: 'По какое число используется тариф?'
 price.form.online: 'Онлайн форма?'
+tariff_type.is_default.label: 'Основной?'
+tariff_type.is_default.help: 'Является ли тариф основным?'
 price.form.using_tariff_in_online_booking: 'Использовать ли тариф в онлайн бронировании?'
 price.form.what_age_is_client_considered_child: 'До какого возраста клиент считается ребенком?'
 price.form.what_age_is_client_considered_infant: 'До какого возраста клиент считается инфантом?'

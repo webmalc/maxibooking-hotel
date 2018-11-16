@@ -424,6 +424,23 @@ class Calculation
 
     /**
      * @param $price
+     * @param Tariff $tariff
+     * @return float|int
+     */
+    public function getPriceWithTariffPromotionDiscount(float $price, Tariff $tariff)
+    {
+        $tariffPromotion = $tariff->getDefaultPromotion();
+        if (empty($tariffPromotion)) {
+            return $price;
+        }
+
+        return $tariffPromotion->getIsPercentDiscount()
+            ? $price * (100 - $tariffPromotion->getDiscount()) / 100
+            : $price - $tariffPromotion->getDiscount();
+    }
+
+    /**
+     * @param $price
      * @param \DateTime $date
      * @param Tariff $tariff
      * @param RoomType $roomType

@@ -14,7 +14,8 @@ namespace MBH\Bundle\ClientBundle\Lib\PaymentSystem\Sberbank;
  */
 class RegisterRequest implements \JsonSerializable
 {
-    const URL_REGISTER = 'https://3dsec.sberbank.ru/payment/rest/register.do';
+    const URL_REGISTER_TEST = 'https://3dsec.sberbank.ru/payment/rest/register.do';
+    const URL_REGISTER_PROD = 'https://securepayments.sberbank.ru/payment/rest/register.do';
 
     const PAGE_VIEW_DESKTOP = 'DESKTOP';
     const PAGE_VIEW_MOBILE = 'MOBILE';
