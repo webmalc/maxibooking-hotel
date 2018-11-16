@@ -3,15 +3,7 @@
     <input type="hidden" name="packageId" value="{{ data.packageId }}">
     {% include 'MBHClientBundle:PaymentSystem:button.html.twig' with {'data': data} %}
 </form>
-<script src="{{ constant('MBH\\Bundle\\ClientBundle\\Document\\PaymentSystem\\NewRbk::URL_FOR_CHECKOUT_JS') }}"></script>
 
-<script>
-    {% include 'MBHClientBundle:PaymentSystem/newRbk:for_iframe.js.twig' %}
-    mbhNewRbkIframe.addListener();
-    var form = document.getElementById('online-payment-newRbk');
-    form.addEventListener('submit',function(ev) {
-      ev.preventDefault();
-
-      mbhNewRbkIframe.sendMsg(this);
-    });
-</script>
+{% if not data.disabledScript %}
+    {% include '@MBHClient/PaymentSystem/newRbk/scripts_for_iframe.html.twig' %}
+{% endif %}
