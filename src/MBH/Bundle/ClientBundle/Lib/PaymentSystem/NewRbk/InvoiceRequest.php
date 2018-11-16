@@ -178,9 +178,13 @@ class InvoiceRequest extends InvoiceCommon implements \JsonSerializable
         $cart = [];
 
         if ($needCart) {
-            $dataForTaxMode = ['rate' => $newRbk->getTaxationRateCode()];
+            if ($newRbk->getTaxationRateCode() !== NewRbk::WITHOUT_TAX_RATE) {
+                $dataForTaxMode = ['rate' => $newRbk->getTaxationRateCode()];
 
-            $taxMode = TaxMode::create($dataForTaxMode);
+                $taxMode = TaxMode::create($dataForTaxMode);
+            } else {
+                $taxMode = null;
+            }
 
             foreach ($order->getPackages() as $package) {
                 $c = new Cart();
