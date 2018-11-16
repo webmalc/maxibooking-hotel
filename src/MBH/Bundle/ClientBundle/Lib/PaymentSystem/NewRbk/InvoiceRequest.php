@@ -78,8 +78,8 @@ class InvoiceRequest extends InvoiceCommon implements \JsonSerializable
 
         $cart = $this->getCart();
 
-        if ($cart != []) {
-            $data = array_merge($data, $cart);
+        if ($cart !== []) {
+            $data['cart'] = $cart;
         }
 
         return $data;
@@ -178,9 +178,13 @@ class InvoiceRequest extends InvoiceCommon implements \JsonSerializable
         $cart = [];
 
         if ($newRbk->isWithFiscalization() && $needCart) {
-            $dataForTaxMode = ['rate' => $newRbk->getTaxationRateCode()];
+            if ($newRbk->getTaxationRateCode() !== NewRbk::WITHOUT_TAX_RATE) {
+                $dataForTaxMode = ['rate' => $newRbk->getTaxationRateCode()];
 
-            $taxMode = TaxMode::create($dataForTaxMode);
+                $taxMode = TaxMode::create($dataForTaxMode);
+            } else {
+                $taxMode = null;
+            }
 
             $c = new Cart();
             $c->setProduct($this->getDescription('room'));
