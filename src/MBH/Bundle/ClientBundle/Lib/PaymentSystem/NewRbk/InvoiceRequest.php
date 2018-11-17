@@ -51,7 +51,7 @@ class InvoiceRequest extends InvoiceCommon implements \JsonSerializable
         $self->setDescription($package);
         $self->setAmount($cashDocument->getTotal());
 
-        $self->setCart($newRbk->isWithFiscalization(), $cashDocument->getOrder(), $newRbk);
+        $self->setCart($newRbk->isWithFiscalization(), $cashDocument, $newRbk);
 
         return $self;
     }
@@ -173,8 +173,11 @@ class InvoiceRequest extends InvoiceCommon implements \JsonSerializable
      *
      * @param Cart[] $cart
      */
-    public function setCart(bool $needCart, Order $order, NewRbk $newRbk): void
+//    public function setCart(bool $needCart, Order $order, NewRbk $newRbk): void
+    public function setCart(bool $needCart, CashDocument $cashDocument, NewRbk $newRbk): void
     {
+        $order = $cashDocument->getOrder();
+
         $cart = [];
 
         if ($needCart) {
@@ -189,7 +192,8 @@ class InvoiceRequest extends InvoiceCommon implements \JsonSerializable
             foreach ($order->getPackages() as $package) {
                 $c = new Cart();
                 $c->setProduct($this->getDescription('room'));
-                $c->setPrice($package->getOrder()->getPrice()*100);
+//                $c->setPrice($package->getOrder()->getPrice()*100);
+                $c->setPrice($cashDocument->getTotal()*100);
                 $c->setTaxMode($taxMode);
                 $c->setCost($c->getPrice()*$c->getQuantity());
 
