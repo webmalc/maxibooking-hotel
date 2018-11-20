@@ -39,6 +39,8 @@ class ApiPaymentFormController extends Controller
      */
     public function loadAction($configId)
     {
+        $this->setLocaleByRequest();
+
         $config = $this->dm->getRepository('MBHOnlineBundle:PaymentFormConfig')
             ->findOneById($configId);
 
@@ -48,6 +50,7 @@ class ApiPaymentFormController extends Controller
                 'config'         => $config,
                 'wrapperId'      => PaymentFormConfig::WRAPPER_ID,
                 'paymentSystems' => $this->clientConfig->getPaymentSystems(),
+                'locale'         => $this->getRequest()->getLocale(),
             ]
         );
     }
@@ -60,6 +63,8 @@ class ApiPaymentFormController extends Controller
      */
     public function searchFormAction(Request $request, string $formId)
     {
+        $this->setLocaleByRequest();
+
         /** @var PaymentFormConfig $paymentFormConfig */
         $paymentFormConfig = $this->dm->getRepository('MBHOnlineBundle:PaymentFormConfig')
             ->findOneById($formId);
@@ -106,6 +111,8 @@ class ApiPaymentFormController extends Controller
             'referer'           => $match[1] ?? '*',
             'paymentSystems'    => $options($paymentSystems, $onlyOneSystem),
             'onlyOneSystem'     => $onlyOneSystem,
+            'siteConfig'        => $this->get('mbh.site_manager')->getSiteConfig(),
+            'locale'            => $this->getRequest()->getLocale(),
         ];
     }
 
@@ -115,6 +122,8 @@ class ApiPaymentFormController extends Controller
      */
     public function paymentAction(Request $request)
     {
+        $this->setLocaleByRequest();
+
         $holder = HolderDataForRenderBtn::create($request);
         if (!$holder->isValid()) {
             $this->get('mbh.online_payment_form.logger')

@@ -29,7 +29,20 @@ function addLoadEvent(func) {
     }
 }
 
-function onLoadFormLoad() {
+function createIframeWithCalendar() {
+    var calendarFrame = document.createElement('iframe');
+    calendarFrame.id = 'mbh-form-calendar';
+    calendarFrame.style = 'display: none; z-index: 1000; position: absolute; top: 0px;';
+    calendarFrame.setAttribute('scrolling', "no");
+    calendarFrame.setAttribute('frameborder', 0);
+    calendarFrame.setAttribute('width', 310);
+    calendarFrame.setAttribute('height', 270);
+    calendarFrame.setAttribute('src', config.calendar_url);
+
+    document.body.appendChild(calendarFrame);
+}
+
+function onLoadFormLoad(locale) {
     var getCoords = function (elem) {
         var box = elem.getBoundingClientRect();
 
@@ -114,20 +127,17 @@ function onLoadFormLoad() {
     var iframeWidth = typeof(frameWidth) !== 'undefined' ? frameWidth : 300;
     var iframeHeight = typeof(frameHeight) !== 'undefined' ? frameHeight : 400;
 
+    var fullUrl = config.form_url + url;
+
+    if (locale !== undefined) {
+        fullUrl = fullUrl.replace(/(\?|&)locale=\w*/, '$1locale=' + locale);
+    }
+
     formWrapper.innerHTML = '<iframe id="mbh-form-iframe" scrolling="no" frameborder="0" width="'
-        + "auto" + '" height="' + "auto" + '" src="' + config.form_url + url + '"></iframe>';
+        + "auto" + '" height="' + "auto" + '" src="' + fullUrl + '"></iframe>';
 
     if (config.calendar_url !== null) {
-        var calendarFrame = document.createElement('iframe');
-        calendarFrame.id = 'mbh-form-calendar';
-        calendarFrame.style = 'display: none; z-index: 1000; position: absolute; top: 0px;';
-        calendarFrame.setAttribute('scrolling', "no");
-        calendarFrame.setAttribute('frameborder', 0);
-        calendarFrame.setAttribute('width', 310);
-        calendarFrame.setAttribute('height', 270);
-        calendarFrame.setAttribute('src', config.calendar_url);
-
-        document.body.appendChild(calendarFrame);
+        createIframeWithCalendar();
     }
 
     var formIframe = document.getElementById('mbh-form-iframe');
@@ -148,11 +158,9 @@ function onLoadFormLoad() {
             target = formCalendar;
         }
         if (target) {
-            console.log(target.contentWindow);
             target.contentWindow.postMessage(e.data, '*');
         }
         if (e.data.action === 'showCalendar') {
-            console.log(formCalendar.contentWindow);
             var c = getCoords(formIframe);
             formCalendar.style.display = 'block';
             formCalendar.style.top = (e.data.top + c.top - 10) + 'px';

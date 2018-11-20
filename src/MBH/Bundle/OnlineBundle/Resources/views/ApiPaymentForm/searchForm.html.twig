@@ -28,7 +28,7 @@
         <script>
             function MbhIframe() {
                 this.idFormPayment = 'go-form';
-                this.actionPayment = '{{ url('online_api_payment_form_payment') }}';
+                this.actionPayment = '{{ url('online_api_payment_form_payment', {locale: locale}) }}';
                 this.form = {
                     submitBtn: '{{ 'api.payment_form.generate_invoce.submit' | trans }}',
                     label    : '{{ 'api.payment_form.pay_order.total' | trans }}',
@@ -45,6 +45,7 @@
         %}
             <script type="text/javascript" src="{{ absolute_url(asset_url) }}"></script>
         {% endjavascripts %}
+        {% include '@MBHOnline/ApiPaymentForm/siteStyles.html.twig' %}
     </head>
     {% if paymentFormConfig.css %}
         <style>
@@ -60,9 +61,9 @@
     {% endif %}
     <body>
     <div id="mbh-form-payment-accordion">
-        <div id="#mbh-form-payment-accordion-search" class="panel panel-default">
+        <div id="#mbh-form-payment-accordion-search" class="panel panel-primary">
             <div class="panel-heading">
-                <h5>Поиск</h5>
+                <h4>{{ 'api.payment_form.step_1' | trans }}</h4>
             </div>
             <div id="mbh-form-payment-accordion-search" class="panel-body">
                 {% form_theme form '@MBHOnline/ApiPaymentForm/Form/block.html.twig' %}
@@ -75,18 +76,20 @@
                 {{ form_end(form) }}
             </div>
         </div>
-        <div id="#mbh-form-payment-generate" class="panel panel-default">
+        <div id="#mbh-form-payment-generate" class="panel panel-primary">
             <div class="panel-heading">
-                <h5>Указание суммы</h5>
+                <h4>{{ 'api.payment_form.step_2' | trans }}</h4>
             </div>
-            <div class="panel-body">
-                <div id="{{ idDivResultSearch | raw }}">
-                </div>
+            {#<div class="panel-body">#}
+                {#<div id="{{ idDivResultSearch | raw }}">#}
+                {#</div>#}
+            {#</div>#}
+            <div id="{{ idDivResultSearch | raw }}">
             </div>
         </div>
-        <div id="#mbh-form-payment-pay" class="panel panel-default">
+        <div id="#mbh-form-payment-pay" class="panel panel-primary">
             <div class="panel-heading">
-                <h5>Оплата</h5>
+                <h4>{{ 'api.payment_form.step_3' | trans }}</h4>
             </div>
             <div class="panel-body">
                 <div id="payment-btn">

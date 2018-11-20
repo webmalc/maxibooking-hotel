@@ -4,16 +4,23 @@
 
 var mbhPaymentFunc = {
     frameId    : '{{ wrapperId }}-iframe',
-    getForm    : function() {
+    locale     : '{{ locale }}',
+    getForm    : function(locale) {
+        if (locale !== undefined) {
+            this.locale = locale;
+        }
         var formWrapper = document.querySelector('#{{ wrapperId }}');
         formWrapper.innerHTML = '';
         formWrapper.appendChild(this.getIframe());
+    },
+    generateUrl: function() {
+        return '{{ url('online_payment_search_form', {formId: config.id}) | raw }}?locale=' + this.locale
     },
     getIframe: function() {
         var iframe = document.createElement('iframe');
         iframe.id = this.frameId;
         iframe.name = this.frameId;
-        iframe.src = '{{ url('online_payment_search_form', {formId: config.id}) }}';
+        iframe.src = this.generateUrl();
         iframe.scrolling = 'no';
         iframe.frameBorder = 0;
         iframe.width = "{{ config.fullWidth ? '100%' : config.frameWidth }}";

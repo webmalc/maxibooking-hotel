@@ -1,5 +1,5 @@
 MbhIframe.prototype.addFormPayment = function(data) {
-    var html = '<form id="' + this.idFormPayment + '" method="post" action="' + this.actionPayment + '">' +
+    var html = '<form id="' + this.idFormPayment + '" method="post" action="' + this.actionPayment + '" class="panel-body">' +
     '<div class="form-group form-group-sm"> ' +
         '<label for="total" class="col-form-label col-form-label-sm">' + this.form.label + '</label>' +
         '<div class="form-field">' +
@@ -24,7 +24,7 @@ MbhIframe.prototype.updateResultDiv = function(type, data) {
     divResult.classList.add('panel-' + type);
 
     if (type !== 'info') {
-        divResult.classList.add('bg-' + type);
+        data = '<div class="panel-body bg-' + type + '">' + data + '</div>';
     }
 
     divResult.innerHTML = data;
