@@ -1,0 +1,5 @@
+DATABASE_NAME = 'dbname'
+CONNECTION_STRING = 'mongodb://login:password@127.0.0.1:27018/%s' \
+                    % DATABASE_NAME
+ENDPOINT = 'https://billing.maxi-booking.com/ru/clients/'
+TOKEN = 'Token YouTokenHere'
