@@ -4,12 +4,12 @@ import pytest
 
 def test_no_alias():
     result = checkalias.check(None, 'get_alias')
-    assert result is None
+    assert result == 'error'
 
 
 def test_wrong_alias():
     result = checkalias.check('wrong_alias', 'get_alias')
-    assert result is None
+    assert result == 'error'
 
 
 def test_alias():
@@ -19,7 +19,7 @@ def test_alias():
 
 def test_invalidate_no_alias():
     result = checkalias.check(None, 'invalidate')
-    assert result is None
+    assert result == 'error'
 
 
 def test_invalidate_alias():
@@ -29,7 +29,7 @@ def test_invalidate_alias():
 
 def test_invalidate_wrong_alias():
     result = checkalias.check('wrong_alias', 'invalidate')
-    assert result is None
+    assert result == 'error'
 
 
 def test_update_client_in_db():

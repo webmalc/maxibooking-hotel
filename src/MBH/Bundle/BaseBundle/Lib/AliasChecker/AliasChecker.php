@@ -26,7 +26,7 @@ class AliasChecker
 
         if ($clientName !== \AppKernel::DEFAULT_CLIENT && $fileSystem->exists(realpath(static::CHECK_ALIAS_SCRIPT))) {
 
-            $commandline = 'python ' . static::CHECK_ALIAS_SCRIPT . ' --client ' . $clientName;
+            $commandline = 'python3 ' . static::CHECK_ALIAS_SCRIPT . ' --client ' . $clientName;
             $process = new Process($commandline);
             $process->mustRun();
 

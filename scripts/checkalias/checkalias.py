@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import argparse
 import logging
 from os import path
@@ -83,6 +85,7 @@ def check(alias, action):
             invalidate(alias)
     except (Exception, ValueError) as e:
         logger.log(logging.CRITICAL, e)
+        result = 'error'
     finally:
         get_mongo_client().close()
 
