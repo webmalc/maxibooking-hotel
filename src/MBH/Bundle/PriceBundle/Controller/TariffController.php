@@ -84,7 +84,6 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             ->setFullTitle($parent->getFullTitle() . '-' . $this->container->get('translator')->trans('price.tariffcontroller.children_tariff'))
             ->setHotel($parent->getHotel())
             ->setParent($parent)
-            ->setIsEnabled(false)
         ;
         $this->dm->persist($tariff);
         $this->dm->flush();
