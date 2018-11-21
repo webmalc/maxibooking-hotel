@@ -23,4 +23,28 @@
         </tr>
         </tbody>
     </table>
+
+    {% if hotel and hotel.contactInformation and (hotel.contactInformation.phoneNumber or hotel.contactInformation.email) %}
+    <br>
+    <div style="background:#fafafa none repeat scroll 0 0;font-family:Tahoma,Arial;text-align:left;border:1px solid #dddddd;border-bottom:0;border-top-left-radius:3px;border-top-right-radius:3px;color: #666;font-size:14px;font-weight: 400;height: 32px;letter-spacing: 0.2px;line-height:29px;padding:6px 10px;">
+        {{ 'mailer.order.contact_info'|trans(transParams) }}
+    </div>
+    <table style="width:100%;border-collapse: collapse;border-spacing: 0;border: 1px solid #dddddd;font-family:Tahoma,Arial;color:#333;font-size:14px;">
+        <table style="width:100%;border-collapse: collapse;border-spacing: 0;border: 1px solid #dddddd;font-family:Tahoma,Arial;color:#333;font-size:14px;">
+        {% if hotel.contactInformation.phoneNumber %}
+            <tr>
+                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;width:42%;">{{ 'mailer.order.contact_info.phone'|trans }}</td>
+                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;width:42%;">{{ hotel.contactInformation.phoneNumber }}</td>
+            </tr>
+        {% endif %}
+        {% if hotel.contactInformation.email %}
+            <tr>
+                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;width:42%;">{{ 'mailer.order.contact_info.email'|trans }}</td>
+                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;width:42%;">{{ hotel.contactInformation.email }}</td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+    {% endif %}
+
 {% endblock %}
