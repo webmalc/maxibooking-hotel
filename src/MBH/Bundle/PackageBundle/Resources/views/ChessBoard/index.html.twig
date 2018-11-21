@@ -425,7 +425,7 @@
         </div>
         <!---------------------------- ROOM TYPES ------------------------->
         <div id="roomTypeColumn">
-            {% set titleLength = ((headerWidth / titleSubFontSize) * 1.3)|round(1, 'floor') %}
+            {% set titleLength = currentSizes['titleLength'] %}
             {% set withoutAccommodationText = 'chessboard_manager.without_accommodation.tile.text'|trans %}
             {% for roomTypeId, roomTypeData in roomTypesData %}
                 {% if roomTypeData['rooms']|length > 0 %}
