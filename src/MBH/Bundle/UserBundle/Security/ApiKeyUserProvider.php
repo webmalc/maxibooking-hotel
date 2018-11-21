@@ -23,7 +23,7 @@ class ApiKeyUserProvider implements UserProviderInterface
     public function getUsernameForApiKey($apiKey)
     {
         $user = $this->dm->getRepository('MBHUserBundle:User')->findOneBy(['apiToken.token' => $apiKey]);
-        if (is_null($user)) {
+        if ($user === null) {
             throw new UsernameNotFoundException('User by token ' . $apiKey . 'not found!');
         }
 
