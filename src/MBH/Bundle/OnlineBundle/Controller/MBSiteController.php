@@ -40,7 +40,16 @@ class MBSiteController extends BaseController
         $clientManager = $this->get('mbh.client_manager');
         $clientSite = $clientManager->getClientSite();
 
-        $form = $this->createForm(SiteForm::class, $siteConfig);
+
+
+        $form = $this->createForm(
+            SiteForm::class,
+            $siteConfig,
+            [
+                'clientConfig'             => $this->clientConfig,
+                'urlToCreatePaymentSystem' => $this->generateUrl('site_hotel_payment_systems'),
+            ]
+        );
         $form->handleRequest($request);
         if ($form->isSubmitted()) {
             if ($form->isValid()) {

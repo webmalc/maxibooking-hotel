@@ -12,8 +12,6 @@ use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use MBH\Bundle\OnlineBundle\Document\PaymentFormConfig;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
-use MBH\Bundle\OnlineBundle\Form\SiteForm;
-use MBH\Bundle\OnlineBundle\Services\SiteManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 

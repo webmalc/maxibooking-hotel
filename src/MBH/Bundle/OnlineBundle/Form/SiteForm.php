@@ -4,6 +4,7 @@ namespace MBH\Bundle\OnlineBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\HotelRepository;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
@@ -55,6 +56,10 @@ class SiteForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        /** @var ClientConfig $clientConfig */
+        $clientConfig = $options['clientConfig'];
+        $url = $options['urlToCreatePaymentSystem'];
+
         $hotels = $this->dm
             ->getRepository('MBHHotelBundle:Hotel')
             ->getQBWithAvailable()
@@ -154,13 +159,20 @@ class SiteForm extends AbstractType
                 })]
             ]);
 
+        $disabledSettingPaymentForm = $clientConfig->getPaymentSystems() === [];
+
         $builder->add(
             'usePaymentForm',
             CheckboxType::class,
             [
+                'label'    => 'site_form.payment_form.label',
                 'mapped'   => false,
                 'required' => false,
                 'data'     => $siteConfig->getPaymentFormId() !== null,
+                'help'     => $disabledSettingPaymentForm
+                    ? $this->translator->trans('site_form.payment_form.help_with_disabled', ['%href%' => $url])
+                    : 'site_form.payment_form.help',
+                'disabled' => $disabledSettingPaymentForm,
             ]
         );
     }
@@ -169,7 +181,9 @@ class SiteForm extends AbstractType
     {
         $resolver
             ->setDefaults([
-                'data_class' => SiteConfig::class
+                'data_class'               => SiteConfig::class,
+                'clientConfig'             => null,
+                'urlToCreatePaymentSystem' => null,
             ]);
     }
 
