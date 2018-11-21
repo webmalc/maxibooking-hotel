@@ -23,9 +23,14 @@ textarea.big
 }
 
 @media (min-width: 768px) {
-  select + span.select2 {
-    width: unset!important;
-    min-width: 145px;
+  form select + span.select2 {
+    width: 100% !important;
+    //min-width: 145px;
+    min-width: auto;
+
+    input {
+      width: unset!important;
+    }
   }
 }
 
