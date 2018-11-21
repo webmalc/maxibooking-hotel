@@ -113,6 +113,12 @@ class SiteConfig extends Base
      */
     private $colorTheme = 'black01';
 
+    /**
+     * @var null|string
+     * @ODM\Field(type="string")
+     */
+    private $paymentFormId;
+
     public function __construct()
     {
         $this->hotels = new ArrayCollection();
@@ -281,5 +287,21 @@ class SiteConfig extends Base
     public function setDomain(string $domain): void
     {
         $this->domain = $domain;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getPaymentFormId(): ?string
+    {
+        return $this->paymentFormId;
+    }
+
+    /**
+     * @param null|string $paymentFormId
+     */
+    public function setPaymentFormId(?string $paymentFormId): void
+    {
+        $this->paymentFormId = $paymentFormId;
     }
 }

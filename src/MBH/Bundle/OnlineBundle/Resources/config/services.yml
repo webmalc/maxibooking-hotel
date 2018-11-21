@@ -71,3 +71,9 @@ services:
     mbh.online_payment_form.logger_handler:
         class:     Monolog\Handler\StreamHandler
         arguments: ["%kernel.logs_dir%/%kernel.environment%.online.log", 200]
+
+    MBH\Bundle\OnlineBundle\EventListener\PaymentFormSubscriber:
+        arguments:
+            - '@service_container'
+        tags:
+            - {name: doctrine_mongodb.odm.event_subscriber, connection: default}

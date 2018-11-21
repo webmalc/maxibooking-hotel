@@ -9,6 +9,7 @@ use MBH\Bundle\HotelBundle\Document\HotelRepository;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
 use MBH\Bundle\OnlineBundle\Services\SiteManager;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -152,6 +153,16 @@ class SiteForm extends AbstractType
                     }
                 })]
             ]);
+
+        $builder->add(
+            'usePaymentForm',
+            CheckboxType::class,
+            [
+                'mapped'   => false,
+                'required' => false,
+                'data'     => $siteConfig->getPaymentFormId() !== null,
+            ]
+        );
     }
 
     public function configureOptions(OptionsResolver $resolver)

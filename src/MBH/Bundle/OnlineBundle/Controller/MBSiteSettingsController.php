@@ -3,6 +3,7 @@
 namespace MBH\Bundle\OnlineBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
+use MBH\Bundle\OnlineBundle\Lib\Exception\NotFoundMBSiteConfigException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -22,22 +23,30 @@ class MBSiteSettingsController extends BaseController
         $siteManager = $this->get('mbh.site_manager');
         $siteConfig = $siteManager->getSiteConfig();
 
-        header('Access-Control-Allow-Origin: ' . $siteManager->getSiteAddress());
+        if ($siteConfig === null) {
+            throw new NotFoundMBSiteConfigException();
+        }
+
+        header(sprintf('Access-Control-Allow-Origin: %s', $siteManager->getSiteAddress()));
 
         $formConfig = $this->dm
             ->getRepository('MBHOnlineBundle:FormConfig')
             ->getForMBSite();
 
         return new JsonResponse([
-            'hotelsIds' => $this->helper->toIds($siteConfig->getHotels()),
-            'formConfigId' => $formConfig->getId(),
-            'keyWords' => $siteConfig->getKeyWords(),
+            'hotelsIds'            => $this->helper->toIds($siteConfig->getHotels()),
+            'formConfigId'         => $formConfig->getId(),
+            'keyWords'             => $siteConfig->getKeyWords(),
             'personalDataPolicies' => $siteConfig->getPersonalDataPolicies(),
-            'contract' => $siteConfig->getContract(),
-            'currency' => $this->clientConfig->getCurrency(),
-            'languages' => $this->clientConfig->getLanguages(),
-            'defaultLang' => $this->getParameter('locale'),
-            'colorTheme' => $siteConfig->getColorTheme()
+            'contract'             => $siteConfig->getContract(),
+            'currency'             => $this->clientConfig->getCurrency(),
+            'languages'            => $this->clientConfig->getLanguages(),
+            'defaultLang'          => $this->getParameter('locale'),
+            'colorTheme'           => $siteConfig->getColorTheme(),
+            'paymentFormUrl'       => $this->generateUrl(
+                'online_payment_form_load_js',
+                ['configId' => $siteConfig->getPaymentFormId()]
+            ),
         ]);
     }
 }

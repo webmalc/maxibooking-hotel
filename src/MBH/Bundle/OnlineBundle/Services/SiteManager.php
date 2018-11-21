@@ -13,6 +13,7 @@ use MBH\Bundle\ClientBundle\Service\ClientManager;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
+use MBH\Bundle\OnlineBundle\Document\PaymentFormConfig;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
@@ -127,6 +128,23 @@ class SiteManager
                 ->setIsHorizontal(true)
                 ->setTheme(FormConfig::THEMES[self::DEFAULT_BOOTSTRAP_THEME])
                 ->setResultsUrl(self::DEFAULT_RESULTS_PAGE);
+
+            $this->dm->persist($formConfig);
+        }
+
+        return $formConfig;
+    }
+
+    public function fetchPaymentFormConfig(): PaymentFormConfig
+    {
+        $formConfig = $this->dm->getRepository(PaymentFormConfig::class)->findOneBy(['forMbSite' => true]);
+        if ($formConfig === null) {
+            $formConfig = new PaymentFormConfig();
+            $formConfig->setForMbSite(true);
+            $formConfig->setUseAccordion(true);
+            $formConfig->setIsFullWidth(true);
+            $formConfig->setTheme(FormConfig::THEMES[self::DEFAULT_BOOTSTRAP_THEME]);
+            $formConfig->setFrameHeight(600);
 
             $this->dm->persist($formConfig);
         }

@@ -73,7 +73,21 @@ class MBSiteController extends BaseController
                         }
                     }
                 }
+
                 if ($isSuccess) {
+                    $usePaymentForm = $form->get('usePaymentForm')->getData();
+
+                    $paymentForm = $siteManager->fetchPaymentFormConfig();
+
+                    if ($usePaymentForm) {
+                        $paymentForm->setHotels($siteConfig->getHotels()->toArray());
+                        $this->dm->flush();
+                        $siteConfig->setPaymentFormId($paymentForm->getId());
+                    } else {
+                        $siteConfig->setPaymentFormId(null);
+                        $this->dm->remove($paymentForm);
+                    }
+
                     $siteManager->updateSiteFormConfig($siteConfig, $formConfig,
                         $request->get($form->getName())['paymentTypes']);
                     $this->dm->flush();

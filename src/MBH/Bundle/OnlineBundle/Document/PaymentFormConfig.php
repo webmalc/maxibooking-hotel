@@ -100,6 +100,14 @@ class PaymentFormConfig extends Base implements DecorationInterface, DecorationD
     private $js;
 
     /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    private $forMbSite = false;
+
+    /**
      * @return array|ArrayCollection|Hotel[]
      */
     public function getHotels()
@@ -195,5 +203,21 @@ class PaymentFormConfig extends Base implements DecorationInterface, DecorationD
     public function setUseAccordion(bool $useAccordion): void
     {
         $this->useAccordion = $useAccordion;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isForMbSite(): bool
+    {
+        return $this->forMbSite;
+    }
+
+    /**
+     * @param bool $forMbSite
+     */
+    public function setForMbSite(bool $forMbSite): void
+    {
+        $this->forMbSite = $forMbSite;
     }
 }
