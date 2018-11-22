@@ -10,6 +10,10 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
 use MBH\Bundle\OnlineBundle\Form\SiteForm;
 use MBH\Bundle\OnlineBundle\Form\SitePersonalDataPoliciesType;
+use MBH\Bundle\OnlineBundle\Form\SocialNetworking\SiteSocialNetworkingServicesType;
+use MBH\Bundle\OnlineBundle\Lib\Exception\NotFoundMBSiteConfigException;
+use MBH\Bundle\OnlineBundle\Lib\SocialNetworking\HolderSNSs;
+use MBH\Bundle\OnlineBundle\Services\AvailableSocialNetworkingServices;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\FormError;
@@ -245,5 +249,44 @@ class MBSiteController extends BaseController
         $this->dm->flush();
 
         return $this->redirectToRoute('site_hotel_payment_systems');
+    }
+
+    /**
+     * @Route("/social_networking_services", name="site_config_social_networking_services")
+     * @Security("is_granted('ROLE_MB_SITE')")
+     * @Template()
+     */
+    public function socialNetworkingServicesAction(Request $request)
+    {
+        $siteManager = $this->get('mbh.site_manager');
+        $siteConfig = $siteManager->getSiteConfig();
+
+        if ($siteConfig === null) {
+            throw new NotFoundMBSiteConfigException();
+        }
+
+        $holder = $this->get(AvailableSocialNetworkingServices::class)->createHolder($siteConfig);
+
+        $form = $this->createForm(SiteSocialNetworkingServicesType::class, $holder);
+
+        $form->handleRequest($request);
+
+        if ($form->isValid() && $form->isSubmitted()) {
+            /** @var HolderSNSs $data */
+            $data = $form->getData();
+            $data->deleteEmptyUrl();
+            $siteConfig->setSocialNetworkingServices($data->getSnss());
+
+            $this->dm->flush($siteConfig);
+
+            $this->addFlash('success', 'mb_site_controller.site_config_saved');
+        }
+
+        return [
+            'form'                  => $form->createView(),
+            'siteConfig'            => $siteConfig,
+            'hotelsSettings'        => $siteManager->getHotelsSettingsInfo($siteConfig),
+            'isSetUpPaymentSystems' => $this->clientConfig->getPaymentSystems() !== [],
+        ];
     }
 }

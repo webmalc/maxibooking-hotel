@@ -77,3 +77,7 @@ services:
             - '@service_container'
         tags:
             - {name: doctrine_mongodb.odm.event_subscriber, connection: default}
+
+    MBH\Bundle\OnlineBundle\Services\AvailableSocialNetworkingServices:
+        arguments:
+            - '%locale%'

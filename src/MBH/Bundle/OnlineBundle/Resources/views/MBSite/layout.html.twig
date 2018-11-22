@@ -21,6 +21,11 @@
     {% endif %}
 {% endset %}
 
+{% set titleSocialNetworking %}
+    <i class="fa fa-thumbs-o-up"></i>
+    {{ 'site_form.social_networking.labe'|trans }}
+{% endset %}
+
 {% set layout = "tabs" %}
 {% set menu = [
     {'route': 'site_settings', 'title': '<i class="fa fa-cogs"></i> '~ 'views.mb_site.index.main_settings'|trans},
@@ -44,6 +49,7 @@
 {% set menu = menu|merge([
     {'route': 'site_hotel_personal_data_policies', 'title': titlePersonalDataPolicies},
     {'route': 'site_hotel_payment_systems', 'title': titlePaymentSystems},
+    {'route': 'site_config_social_networking_services', 'title': titleSocialNetworking}
 ]) %}
 
 {% block content %}

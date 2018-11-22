@@ -119,9 +119,17 @@ class SiteConfig extends Base
      */
     private $paymentFormId;
 
+    /**
+     * @ODM\EmbedMany(targetDocument="MBH\Bundle\OnlineBundle\Document\SocialNetworkingService", strategy="set")
+     * strategy="set" для хранения как ассоциативный массив
+     * @var ArrayCollection|SocialNetworkingService[]
+     */
+    private $socialNetworkingServices;
+
     public function __construct()
     {
         $this->hotels = new ArrayCollection();
+        $this->socialNetworkingServices = new ArrayCollection();
     }
 
     /**
@@ -303,5 +311,21 @@ class SiteConfig extends Base
     public function setPaymentFormId(?string $paymentFormId): void
     {
         $this->paymentFormId = $paymentFormId;
+    }
+
+    /**
+     * @return \Doctrine\ODM\MongoDB\PersistentCollection|SocialNetworkingService[]
+     */
+    public function getSocialNetworkingServices(): \Doctrine\ODM\MongoDB\PersistentCollection
+    {
+        return $this->socialNetworkingServices;
+    }
+
+    /**
+     * @param ArrayCollection|SocialNetworkingService[] $socialNetworkingServices
+     */
+    public function setSocialNetworkingServices(ArrayCollection $socialNetworkingServices): void
+    {
+        $this->socialNetworkingServices = $socialNetworkingServices;
     }
 }
