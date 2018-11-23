@@ -15,6 +15,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Url;
 
 class SocialNetworkingServiceType extends AbstractType
 {
@@ -39,9 +40,10 @@ class SocialNetworkingServiceType extends AbstractType
                     'url',
                     TextType::class,
                     [
-                        'label'    => sprintf('<i class="fa fa-%s"></i> %s', $sns->getKey(), $sns->getName()),
-                        'required' => false,
-                        'group'    => 'no-group',
+                        'label'       => sprintf('<i class="fa fa-%s"></i> %s', $sns->getKey(), $sns->getName()),
+                        'required'    => false,
+                        'group'       => 'no-group',
+                        'constraints' => [new Url()],
                     ]
                 );
         };

@@ -47,7 +47,7 @@ class MBSiteSettingsController extends BaseController
                 'online_payment_form_load_js',
                 ['configId' => $siteConfig->getPaymentFormId()]
             ),
-            'socialNetworks'       => $siteConfig->getSocialNetworkingServices()->toArray(),
+            'socialNetworks'       => $siteConfig->getSocialNetworkingServices()->getValues(),
         ]);
     }
 }

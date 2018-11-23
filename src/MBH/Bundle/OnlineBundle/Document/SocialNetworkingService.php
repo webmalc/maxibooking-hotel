@@ -14,7 +14,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  *
  * @ODM\EmbeddedDocument()
  */
-class SocialNetworkingService
+class SocialNetworkingService implements \JsonSerializable
 {
     /**
      * @var null|string
@@ -95,4 +95,15 @@ class SocialNetworkingService
     {
         $this->url = $url;
     }
+
+    public function jsonSerialize()
+    {
+        return [
+            'key'  => $this->getKey(),
+            'name' => $this->getName(),
+            'url'  => $this->getUrl(),
+        ];
+    }
+
+
 }

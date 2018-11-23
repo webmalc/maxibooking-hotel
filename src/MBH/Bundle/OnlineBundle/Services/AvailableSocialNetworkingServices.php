@@ -41,7 +41,7 @@ class AvailableSocialNetworkingServices
     {
         $temp = self::NAMES;
 
-        if ($this->locale === 'us') {
+        if ($this->locale === 'en') {
             unset($temp['vk']);
         }
 
