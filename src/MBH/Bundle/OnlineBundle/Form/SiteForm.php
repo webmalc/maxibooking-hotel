@@ -56,8 +56,7 @@ class SiteForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        /** @var ClientConfig $clientConfig */
-        $clientConfig = $options['clientConfig'];
+        $disabledSettingPaymentForm = $options['disabledSettingPaymentForm'];
         $url = $options['urlToCreatePaymentSystem'];
 
         $hotels = $this->dm
@@ -159,8 +158,6 @@ class SiteForm extends AbstractType
                 })]
             ]);
 
-        $disabledSettingPaymentForm = $clientConfig->getPaymentSystems() === [];
-
         $builder->add(
             'usePaymentForm',
             CheckboxType::class,
@@ -181,9 +178,9 @@ class SiteForm extends AbstractType
     {
         $resolver
             ->setDefaults([
-                'data_class'               => SiteConfig::class,
-                'clientConfig'             => null,
-                'urlToCreatePaymentSystem' => null,
+                'data_class'                 => SiteConfig::class,
+                'disabledSettingPaymentForm' => null,
+                'urlToCreatePaymentSystem'   => null,
             ]);
     }
 
