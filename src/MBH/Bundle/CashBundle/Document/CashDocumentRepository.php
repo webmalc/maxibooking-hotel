@@ -191,6 +191,8 @@ class CashDocumentRepository extends DocumentRepository
         if ($criteria->type == CashDocumentQueryCriteria::TYPE_BY_ORDER) {
             if ($criteria->orderIds) {
                 $qb->field('order.id')->in($criteria->orderIds);
+            } else {
+                $qb->field('order.id')->exists(true);
             }
         } elseif ($criteria->type == CashDocumentQueryCriteria::TYPE_BY_OTHER) {
             $qb->field('order')->exists(false);
