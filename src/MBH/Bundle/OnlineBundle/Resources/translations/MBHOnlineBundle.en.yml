@@ -8,7 +8,7 @@ views.api.form.room_type.choices.any: Any
 views.api.form.adults: Adults
 views.api.form.children: Children
 views.api.form.find_room: 'Find room'
-views.api.form.find_room.shot: 'Find'
+views.api.form.find_room.shot: Find
 views.api.form.online_reservation_system: 'online booking system'
 views.api.getPaymentType.dates: 'Date:'
 views.api.getPaymentType.days_and_nights: 'Days/nights:'
@@ -73,10 +73,10 @@ views.form.index.settings_in_quotes: Settings
 views.form.index.settings: Settings
 views.form.index.site_embed_code: 'Embed code'
 views.form.index.settings_required: 'Please fill all the required settings'
-views.form.index.site_embed_form_code: 'Search form code for embedding'
+views.form.index.site_embed_form_code: 'Embed code for a website'
 views.form.index.to_form_place: 'Place where the form must be:'
 views.form.index.before_closing_tag: 'Place before closing tag'
-views.form.index.search_page_embed_code: 'Search results for code for embedding:'
+views.form.index.search_page_embed_code: 'Search page embed code:'
 views.form.index.to_results_place: 'Place where results must be:'
 views.form.layout.online_form: 'Online module'
 views.form.period_is_not_filled: 'Check-in and check-out dates are not selected!'
@@ -85,7 +85,7 @@ views.api.getResultsTable.facilities: Amenities
 views.form.index.list: List
 views.form.index.edit: Edit
 views.form.index.new: New
-views.form.layout.online_polls: 'Reviews Settings'
+views.form.layout.online_polls: Ratings
 views.form.layout.invite: 'Visa invitation'
 online_form.notification: 'New reservations from the web form'
 views.api.form.children_ages.label: 'Children age'

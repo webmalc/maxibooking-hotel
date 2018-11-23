@@ -79,7 +79,7 @@ views.add_guest_modal.add_guest: 'Add guest'
 form.clientConfigType.notification.staff.label: 'Notification list for a user'
 form.clientConfigType.notification.staff.help: 'What type of notifications will be available to a user'
 form.payer_type.organization.inn.label: INN
-form.payer_type.organization.ogrn.label: OGRN/OGRNIP
+form.payer_type.organization.ogrn.label: OGRN
 form.payer_type.organization.kpp.label: KPP
 form.payer_type.bank.bik.label: BIK
 form.payer_type.inn.label: INN
@@ -202,3 +202,4 @@ view.payment_result_page.button.text.success: OK
 view.payment_result_page.button.text.fail: 'Try again'
 view.payment_result_page.title.fail: 'Payment error'
 view.payment_result_page.title.succcess: 'Payment was successful!'
+form.payer_type.legal_address.group: 'Legal address'

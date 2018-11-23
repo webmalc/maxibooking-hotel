@@ -1,4 +1,4 @@
-warehouse.common.subtitle: 'Stock Items'
+warehouse.common.subtitle: List
 warehouse.common.savechanges: 'Save changes'
 warehouse.common.info: 'General information'
 warehouse.common.settings: Settings
@@ -76,3 +76,4 @@ warehouse.items.new: 'Create item in the category'
 warehouse.items.new1: 'Add item to the category'
 warehouse.items.notused: 'Item is not used'
 warehouse.items.editSuccess: 'Item successfully edited'
+warehouse.record.inventory: Balance
