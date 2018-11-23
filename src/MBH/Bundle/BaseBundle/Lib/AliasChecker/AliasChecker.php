@@ -36,7 +36,7 @@ class AliasChecker
 
             $realName = trim($process->getOutput());
 
-            if ('None' === $realName) {
+            if ('None' === $realName || 'error' === $realName) {
                 throw new AliasCheckerException('No alias - name comparison for client ' . $clientName);
             }
 

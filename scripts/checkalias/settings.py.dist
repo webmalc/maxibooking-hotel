@@ -1,5 +1,6 @@
-DATABASE_NAME = 'dbname'
-CONNECTION_STRING = 'mongodb://login:password@127.0.0.1:27018/%s' \
-                    % DATABASE_NAME
+DBADDRESS = 'mbh-mongo:27017'
+DATABASE_NAME = 'aliases'
+CONNECTION_STRING = 'mongodb://aliases:aliases@{}/{}'.format(DBADDRESS,
+                                                             DATABASE_NAME)
 ENDPOINT = 'https://billing.maxi-booking.com/ru/clients/'
 TOKEN = 'Token YouTokenHere'

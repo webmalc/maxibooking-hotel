@@ -6,8 +6,11 @@ namespace MBH\Bundle\BaseBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Lib\AliasChecker\AliasChecker;
 use MBH\Bundle\BaseBundle\Lib\AliasChecker\AliasCheckerException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Routing\Annotation\Route;
@@ -20,16 +23,18 @@ use Symfony\Component\Routing\Annotation\Route;
 class AliasController extends Controller
 {
     /**
-     * @param null|string $alias
+     * @param Request $request
      * @return JsonResponse
-     * @Route("/invalidate/{alias}", defaults={"alias":null})
-     *
+     * @Route("/invalidate")
+     * @Method({"POST"})
+     * @Security("is_granted('ROLE_API_ADMIN')")
      */
-    public function invalidateAction(?string $alias): JsonResponse
+    public function invalidateAction(Request $request): JsonResponse
     {
-
+        $body = $request->getContent();
+        $data = json_decode($body, true);
         try {
-            if (null === $alias) {
+            if (null === $alias = $data['client_login'] ?? null) {
                 throw new AliasCheckerException('Alias MUST be specified');
             }
 
@@ -57,6 +62,9 @@ class AliasController extends Controller
             'status' => $status,
             'message' => $message
         ];
+
+        $logger = $this->get('logger');
+        $logger->info('Invalidate Action was done.', $data);
 
         return new JsonResponse($data);
     }

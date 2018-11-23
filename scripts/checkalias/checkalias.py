@@ -26,7 +26,7 @@ def get_client_from_billing(alias_name: str) -> dict:
                             headers=headers)
     results = response.json()['results']
     if not len(results):
-        raise ValueError('No such client %s in billing' % alias_name)
+        raise ValueError('No such client {} in billing'.format(alias_name))
     return results[0]
 
 
@@ -60,7 +60,7 @@ def create_logger() -> logging.Logger:
     formatter = logging.Formatter(
         '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     log_file = path.abspath(
-        "%s/%s" % (
+        "{}/{}".format(
             path.abspath(__file__),
             '../../../var/clients/maxibooking/logs/check_alias_error.log'))
     fh = logging.FileHandler(log_file)
@@ -83,9 +83,12 @@ def check(alias, action):
             result = client['login']
         if action == 'invalidate':
             invalidate(alias)
-    except (Exception, ValueError) as e:
-        logger.log(logging.CRITICAL, e)
+    except ValueError as e:
+        logger.log(logging.WARNING, e)
         result = 'error'
+    except Exception as e:
+        logger.log(logging.CRITICAL, e)
+        raise e
     finally:
         get_mongo_client().close()
 
