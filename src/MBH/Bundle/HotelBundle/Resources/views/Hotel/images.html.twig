@@ -18,7 +18,9 @@
         {{ form_widget(panorama_form) }}
         {{ form_end(panorama_form) }}
 
-        {% include '@MBHHotel/Hotel/image-list.html.twig' with {images: [mainImage]} %}
+        {% if mainImage is not null %}
+            {% include '@MBHHotel/Hotel/image-list.html.twig' with {images: [mainImage]} %}
+        {% endif %}
 
         {% embed '@MBHBase/Actions/base_list.html.twig' %}
             {% block left %}
