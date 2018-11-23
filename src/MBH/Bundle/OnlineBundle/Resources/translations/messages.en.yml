@@ -141,7 +141,7 @@ site_manager.photos_tab.hotel: 'Photos of the object'
 site_manager.photos_tab.room: Photo
 site_manager.contactInformation.label: 'Phone and email'
 analytics_form.is_enabled.label: 'Active?'
-site_form.hotels.hotel_data: 'Hotel Description'
+site_form.hotels.hotel_data: 'The data of the accommodation facility (hotel, hostel, apartment)'
 site_form.hotels.label: Properties
 site_form.contract.label: Contract
 site_form.web_address.label: 'WEB address'

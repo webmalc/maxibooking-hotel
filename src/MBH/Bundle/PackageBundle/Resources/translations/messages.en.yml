@@ -138,7 +138,7 @@ form.searchType.children_ages: 'Children age'
 form.searchType.children_amount_less_zero: 'Number of children cannot be less than zero'
 form.searchType.children_amount_not_filled: 'Number of children is not specified'
 form.searchType.range: 'Additional search days'
-form.touristType.general_info: 'General infoormation'
+form.touristType.general_info: 'General information'
 form.touristType.communication_language: 'Preferred Language'
 form.touristType.sex_male: Male
 form.touristType.sex_female: Female
