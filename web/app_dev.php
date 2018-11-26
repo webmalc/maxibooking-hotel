@@ -20,6 +20,10 @@ Debug::enable();
 AliasChecker::checkAlias(AppKernel::CLIENT_VARIABLE);
 $request = Request::createFromGlobals();
 Request::setTrustedProxies(['127.0.0.1', '127.0.1.1', $request->server->get('REMOTE_ADDR')], Request::HEADER_X_FORWARDED_AWS_ELB);
+if (!\in_array($request->getClientIp(), ['94.159.1.194', '127.0.0.1', '127.0.1.1', '172.17.0.1'], true)) {
+    header('HTTP/1.0 403 Forbidden');
+    exit('You are not allowed to access this file. Check '.basename(__FILE__).' for more information.');
+}
 
 //Note! Default client comes  here from NGINX config
 $client = $request->server->get(AppKernel::CLIENT_VARIABLE);

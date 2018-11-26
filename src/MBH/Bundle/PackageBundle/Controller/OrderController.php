@@ -529,7 +529,11 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
      */
     public function deleteOrderModalAction(Order $entity, Request $request)
     {
+        $previousComment = $entity->getNote();
+        $entity->setNote('');
+
         $form = $this->createForm(OrderDeleteReasonType::class, $entity);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -539,6 +543,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
                 throw $this->createNotFoundException();
             }
 
+            $entity->setNote($entity->getNote() . "\n" . $previousComment);
             $this->deleteEntity($entity->getId(), 'MBHPackageBundle:Order', 'package');
 
             return new Response('', 302);
