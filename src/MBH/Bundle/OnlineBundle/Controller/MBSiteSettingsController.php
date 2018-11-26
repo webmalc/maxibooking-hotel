@@ -3,7 +3,8 @@
 namespace MBH\Bundle\OnlineBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
-use MBH\Bundle\OnlineBundle\Lib\Exception\NotFoundMBSiteConfigException;
+use MBH\Bundle\OnlineBundle\Lib\Exception\MBSiteIsDisabledInClientConfigException;
+use MBH\Bundle\OnlineBundle\Lib\Exception\NotFoundConfigMBSiteException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -20,11 +21,15 @@ class MBSiteSettingsController extends BaseController
      */
     public function getMainSettingsAction()
     {
+        if (!$this->clientConfig->isMBSiteEnabled()) {
+            throw new MBSiteIsDisabledInClientConfigException();
+        }
+
         $siteManager = $this->get('mbh.site_manager');
         $siteConfig = $siteManager->getSiteConfig();
 
         if ($siteConfig === null) {
-            throw new NotFoundMBSiteConfigException();
+            throw new NotFoundConfigMBSiteException();
         }
 
         header(sprintf('Access-Control-Allow-Origin: %s', $siteManager->getSiteAddress()));

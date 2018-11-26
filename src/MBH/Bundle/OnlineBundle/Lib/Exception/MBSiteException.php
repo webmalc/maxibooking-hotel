@@ -10,7 +10,7 @@ namespace MBH\Bundle\OnlineBundle\Lib\Exception;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Throwable;
 
-class MBSiteConfigException extends \RuntimeException implements HttpExceptionInterface
+class MBSiteException extends \RuntimeException implements HttpExceptionInterface
 {
     /**
      * @var integer

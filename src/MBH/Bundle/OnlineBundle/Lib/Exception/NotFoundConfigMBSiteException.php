@@ -7,7 +7,7 @@
 namespace MBH\Bundle\OnlineBundle\Lib\Exception;
 
 
-class NotFoundMBSiteConfigException extends MBSiteConfigException
+class NotFoundConfigMBSiteException extends MBSiteException
 {
 
     /**
