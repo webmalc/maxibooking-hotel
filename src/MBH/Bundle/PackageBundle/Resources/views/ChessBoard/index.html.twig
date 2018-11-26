@@ -3,26 +3,17 @@
 {% set small_title = 'report.accommodation.chessBoard'|trans %}
 {% set layout = 'box' %}
 
-{% set currentSizes = sizes[stylesFileNumber] %}
-{% set headerWidth = currentSizes['headerWidth'] %}
-{% set tableCellHeight = currentSizes['tableCellHeight'] %}
-{% set tableCellWidth = currentSizes['tableCellWidth'] %}
-{% set headerHeight = tableCellHeight * 2 + 1 %}
-{% set dayTableWidth = days|length * tableCellWidth %}
-{% set tileFontSize = currentSizes['tileFontSize'] %}
-{% set dayTopPadding = currentSizes['dayTopPadding'] %}
-{% set titleSubPadding = currentSizes['titleSubPadding'] %}
-{% set titleSubFontSize = currentSizes['titleSubFontSize'] %}
-{% set leftRoomsAndNoAccFontSize = currentSizes['leftRoomsAndNoAccFontSize'] %}
-{#{% set stylesFile = 'bundles/mbhpackage/css/chessboard/chessboard_' ~ stylesFileNumber ~ '.css' %}#}
-{% set subtrahend = (tableCellHeight / 5)|round %}
-{% set minuend = tableCellHeight - subtrahend %}
-{% set numberOfRoomsOptions = [0, 20,30, 50] %}
 {% set changedNumberOfDays = 7 %}
 {% set maxSliderSize = 3 %}
 
 {% block scripts %}
     {{ parent() }}
+    <script>
+        var canCreatePackage = {{ canCreatePackage }};
+        var canBookWithoutPayer = {{ client_config().canBookWithoutPayer ? 'true' : 'false' }};
+        var maxSliderSize = {{ maxSliderSize }};
+    </script>
+
     {% javascripts filter='uglifyjs2'
         '@MBHBaseBundle/Resources/public/vendor/jquery-ui.min.js'
         '@MBHBaseBundle/Resources/public/vendor/touch-punch.js'
@@ -31,6 +22,7 @@
         '@MBHPackageBundle/Resources/public/js/chessBoard/chessBoard.js'
         '@MBHPackageBundle/Resources/public/js/chessBoard/ActionManager.js'
         '@MBHPackageBundle/Resources/public/js/chessBoard/DataManager.js'
+
         '@MBHPackageBundle/Resources/public/js/chessBoard/ChessBoardManager.js' %}
 
         <script type="text/javascript" src="{{ asset_url }}"></script>
@@ -44,233 +36,42 @@
         '@MBHPackageBundle/Resources/public/css/chessboard/zzz_mob-chessBoard.less'
         'assets/vendor/admin-lte/plugins/bootstrap-slider/slider.css' %}
         <link rel="stylesheet" href="{{ asset_url }}"/>
+
+        {% if stylesFileNumber == 0 %}
+            {% stylesheets filter='cssrewrite, uglifycss'
+                '@MBHPackageBundle/Resources/public/css/chessboard/chessboard_0.less' %}
+                <link rel="stylesheet" href="{{ asset_url }}"/>
+            {% endstylesheets %}
+        {% elseif stylesFileNumber == 1 %}
+            {% stylesheets filter='cssrewrite, uglifycss'
+                '@MBHPackageBundle/Resources/public/css/chessboard/chessboard_1.less' %}
+                <link rel="stylesheet" href="{{ asset_url }}"/>
+            {% endstylesheets %}
+        {% elseif stylesFileNumber == 2 %}
+            {% stylesheets filter='cssrewrite, uglifycss'
+                '@MBHPackageBundle/Resources/public/css/chessboard/chessboard_2.less' %}
+                <link rel="stylesheet" href="{{ asset_url }}"/>
+            {% endstylesheets %}
+        {% elseif stylesFileNumber == 3 %}
+            {% stylesheets filter='cssrewrite, uglifycss'
+                '@MBHPackageBundle/Resources/public/css/chessboard/chessboard_3.less' %}
+                <link rel="stylesheet" href="{{ asset_url }}"/>
+            {% endstylesheets %}
+        {% endif %}
+
     {% endstylesheets %}
-    {% set halfMinuend = (minuend / 2)|round %}
-    {% set quarterMinuend = (minuend / 4)|round %}
-    <style>
-        .package, .dividing-line {
-            height: {{ minuend }}px !important;
-        }
-
-        .success, .with-right-divider.success:before {
-            background-color: {{ colors['success'] }} !important;
-        }
-
-        .warning, .with-right-divider.warning:before {
-            background-color: {{ colors['warning'] }} !important;
-        }
-
-        .danger, .with-right-divider.danger:before {
-            background-color: {{ colors['danger'] }} !important;
-        }
-
-        .package-with-right-arrow:before {
-            right: {{ quarterMinuend }}px !important;
-        }
-
-        .danger.package-with-right-arrow:before, .package.package-with-right-arrow:before {
-            border-left: {{ quarterMinuend }}px solid {{ colors['danger'] }} !important;
-        }
-
-        .success.package-with-right-arrow:before {
-            border-left: {{ quarterMinuend }}px solid {{ colors['success'] }} !important;
-        }
-
-        .warning.package-with-right-arrow:before {
-            border-left: {{ quarterMinuend }}px solid {{ colors['warning'] }} !important;
-        }
-
-        #accommodation-chessBoard-content .achtung {
-            background-color: {{ colors['unplaced'] }} !important;
-        }
-
-        .danger:not(.near-right-element) > .ui-resizable-e {
-            border-left: {{ quarterMinuend }}px solid {{ colors['danger_add'] }} !important;
-        }
-
-        .danger:not(.near-left-element) > .ui-resizable-w {
-            border-right: {{ quarterMinuend }}px solid {{ colors['danger_add'] }} !important;
-        }
-
-        .warning:not(.near-right-element) > .ui-resizable-e {
-            border-left: {{ quarterMinuend }}px solid {{ colors['warning_add'] }} !important;
-        }
-
-        .warning:not(.near-left-element) > .ui-resizable-w {
-            border-right: {{ quarterMinuend }}px solid {{ colors['warning_add'] }} !important;
-        }
-
-        .success:not(.near-right-element) > .ui-resizable-e {
-            border-left: {{ quarterMinuend }}px solid {{ colors['success_add'] }} !important;
-        }
-
-        .success:not(.near-left-element) > .ui-resizable-w {
-            border-right: {{ quarterMinuend }}px solid {{ colors['success_add'] }} !important;
-        }
-
-        .ui-resizable-e.early-checkin-block, .ui-resizable-w.early-checkin-block {
-            border-right: {{ quarterMinuend }}px solid #65619b !important;
-        }
-
-        .danger.near-left-element > .ui-resizable-w,
-        .package.near-left-element > .ui-resizable-w,
-        .danger.near-right-element > .ui-resizable-e,
-        .package.near-right-element > .ui-resizable-e,
-        .danger > .resizable-appendix {
-            background-color: {{ colors['danger_add'] }} !important;
-        }
-
-        .success.near-left-element > .ui-resizable-w,
-        .success > .resizable-appendix,
-        .success.near-right-element > .ui-resizable-e {
-            background-color: {{ colors['success_add'] }} !important;
-        }
-
-        .warning.near-left-element > .ui-resizable-w,
-        .warning.near-right-element > .ui-resizable-e,
-        .warning > .resizable-appendix {
-            background-color: {{ colors['warning_add'] }} !important;
-        }
-
-        .package-with-left-arrow:after,
-        .package-with-right-arrow:before,
-        .package:not(.near-right-element) > .ui-resizable-e,
-        .package:not(.near-left-element) > .ui-resizable-w {
-            border-bottom: {{ halfMinuend }}px solid transparent !important;
-            border-top: {{ halfMinuend }}px solid transparent !important;
-        }
-
-        .package-with-left-arrow:after, .package:not(.near-left-element) > .ui-resizable-w {
-            left: {{ quarterMinuend *(-1) }}px !important;
-        }
-
-        .success.package-with-left-arrow:after {
-            border-right: {{ quarterMinuend }}px solid {{ colors['success'] }} !important;
-        }
-
-        .warning.package-with-left-arrow:after {
-            border-right: {{ quarterMinuend }}px solid {{ colors['warning'] }} !important;
-        }
-
-        .danger.package-with-left-arrow:after {
-            border-right: {{ quarterMinuend }}px solid {{ colors['danger'] }} !important;
-        }
-
-        .with-left-divider:after, .with-right-divider:before {
-            top: {{ (minuend - tileFontSize)/2 }}px !important;
-        }
-
-        .package-with-right-arrow:before, .package:not(.near-right-element) > .ui-resizable-e {
-            right: {{ quarterMinuend * (-1) }}px !important;
-        }
-
-        .near-right-element > .ui-resizable-e, .near-left-element > .ui-resizable-w {
-            height: {{ minuend }}px !important;
-        }
-
-        .near-left-element > .ui-resizable-e, .near-right-element > .ui-resizable-w {
-            height: {{ minuend }}px !important;
-        }
-
-        .package-description {
-            margin: {{ ((minuend - titleSubFontSize - (2 * 3)) / 2)|round(0, 'floor') }}px auto !important;
-        }
-
-        .danger.tile-coming-out {
-            background: repeating-linear-gradient(-45deg, transparent, transparent 4px, {{ colors['danger_add'] }} 5px, {{ colors['danger_add'] }} 5px);
-            background-size: 1em 1em;
-        }
-
-        .danger.tile-coming {
-            background: repeating-linear-gradient(-45deg, transparent, transparent 1px, {{ colors['danger_add'] }} 3px, {{ colors['danger_add'] }} 5px);
-            background-size: 1em 1em;
-        }
-
-        .success.tile-coming-out {
-            background: repeating-linear-gradient(-45deg, transparent, transparent 4px, {{ colors['success_add'] }} 5px, {{ colors['success_add'] }} 5px);
-            background-size: 1em 1em;
-        }
-
-        .success.tile-coming {
-            background: repeating-linear-gradient(-45deg, transparent, transparent 1px, {{ colors['success_add'] }} 3px, {{ colors['success_add'] }} 5px);
-            background-size: 1em 1em;
-        }
-
-        .warning.tile-coming-out {
-            background: repeating-linear-gradient(-45deg, transparent, transparent 4px, {{ colors['warning_add'] }} 5px, {{ colors['warning_add'] }} 5px);
-            background-size: 1em 1em;
-        }
-
-        .warning.tile-coming {
-            background: repeating-linear-gradient(-45deg, transparent, transparent 1px, {{ colors['warning_add'] }} 3px, {{ colors['warning_add'] }} 5px);
-            background-size: 1em 1em;
-        }
-
-        .ui-resizable-w.early-checkin-block {
-            border-right-color: #000 !important;
-        }
-    </style>
-    {% if stylesFileNumber == 0 %}
-        {% stylesheets filter='cssrewrite, uglifycss'
-            '@MBHPackageBundle/Resources/public/css/chessboard/chessboard_0.less' %}
-            <link rel="stylesheet" href="{{ asset_url }}"/>
-        {% endstylesheets %}
-    {% elseif stylesFileNumber == 1 %}
-        {% stylesheets filter='cssrewrite, uglifycss'
-            '@MBHPackageBundle/Resources/public/css/chessboard/chessboard_1.less' %}
-            <link rel="stylesheet" href="{{ asset_url }}"/>
-        {% endstylesheets %}
-    {% elseif stylesFileNumber == 2 %}
-        {% stylesheets filter='cssrewrite, uglifycss'
-            '@MBHPackageBundle/Resources/public/css/chessboard/chessboard_2.less' %}
-            <link rel="stylesheet" href="{{ asset_url }}"/>
-        {% endstylesheets %}
-    {% elseif stylesFileNumber == 3 %}
-        {% stylesheets filter='cssrewrite, uglifycss'
-            '@MBHPackageBundle/Resources/public/css/chessboard/chessboard_3.less' %}
-            <link rel="stylesheet" href="{{ asset_url }}"/>
-        {% endstylesheets %}
-    {% endif %}
 {% endblock %}
 
 {% block content %}
 {% spaceless %}
-    {# pass package data for processing on client-side #}
-    <script>
-        var packages = JSON.parse('{{ packages|raw }}');
-        var leftRoomsData = JSON.parse('{{ leftRoomsJsonData|raw }}');
-        var noAccommodationIntervals = JSON.parse('{{ noAccommodationIntervals|raw }}');
-        var noAccommodationCounts = JSON.parse('{{ noAccommodationCounts|raw }}');
-        var roomTypes = [];
-        var rooms = [];
-        {% for roomTypeID, roomTypeData in roomTypesData %}
-        {% for roomId, roomData in roomTypeData['rooms'] %}
-        rooms['{{ roomId }}'] = '{{ roomData.name }}';
-        {% endfor %}
-        roomTypes['{{ roomTypeID }}'] = '{{ roomTypeData.name }}';
-        {% endfor %}
-        var styleConfigs = JSON.parse('{{ sizes|json_encode|raw }}');
-        var currentStyleConfigNumber = {{ stylesFileNumber }};
-        var canCreatePackage = {{ canCreatePackage }};
-        var canBookWithoutPayer = {{ client_config().canBookWithoutPayer ? 'true' : 'false' }};
-        var colors = JSON.parse('{{ colors|json_encode|raw }}');
-        var subtrahend = {{ subtrahend }};
-        var maxSliderSize = {{ maxSliderSize }};
-    </script>
-
-    {#<link rel="stylesheet" href="{{ asset(stylesFile) }}"/>#}
     <div id="chessboard-messages"></div>
     <div id="dimmer"></div>
     <div id="loading-indicator" style="position:fixed; display: none; z-index:500;">
         <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
         <span class="sr-only">Loading...</span>
     </div>
-    <input type="hidden" name="begin" id="accommodation-report-begin" class="hidden"
-           value="{{ beginDate|date('d.m.Y') }}">
-    <input type="hidden" name="end" id="accommodation-report-end" class="hidden"
-           value="{{ endDate|date('d.m.Y') }}">
 
-    <form method="get" id="accommodation-report-filter" class="form-inline filter-form" role="form">
+    <form method="get" id="accommodation-report-filter" class="form-inline filter-form remember" role="form">
         <div class="form-block">
             <div class="input">
                 <i class="fa fa-caret-left fa-2x change-days-button" data-number-of-days="{{ changedNumberOfDays }}"
@@ -279,18 +80,18 @@
                    data-toggle='tooltip'></i>&nbsp;
                 <input type="text" name="filter_begin" id="accommodation-report-filter-begin"
                        class="datepicker accommodation-report-filter begin-datepicker mbh-daterangepicker not-set-date form-control input-sm"
-                       data-date-format="dd.mm.yyyy" value="{{ beginDate|date('d.m.Y') }}">
+                       data-date-format="dd.mm.yyyy" value="{{ defaultBegin|date('d.m.Y') }}">
                 &nbsp;
                 <i class="fa fa-caret-right fa-2x change-days-button"
                    data-number-of-days="{{ changedNumberOfDays }}" data-change-type="add"
                    title='{{ 'chessboard_manager.change_dates_button.add'|trans({'%numberOfDays%': changedNumberOfDays}) }}'
                    data-toggle='tooltip'></i>&nbsp;
             </div>
-            <div class="input hidden">
+            <div class="hidden">
                 - &nbsp;
                 <input type="text" name="filter_end" id="accommodation-report-filter-end"
                        class="datepicker accommodation-report-filter end-datepicker mbh-daterangepicker not-set-date form-control input-sm"
-                       data-date-format="dd.mm.yyyy" value="{{ endDate|date('d.m.Y') }}">
+                       data-date-format="dd.mm.yyyy" value="{{ defaultEnd|date('d.m.Y') }}">
             </div>
             {% if hotels|length > 1 %}
             <div class="input">
@@ -302,7 +103,7 @@
                         class="accommodation-report-filter form-control input-sm">
                     <option></option>
                     {% for hotel in hotels %}
-                        <option {{ hotel.id in selectedHotelIds ? 'selected' }} value="{{ hotel.id }}">{{ hotel.name }}</option>
+                        <option value="{{ hotel.id }}">{{ hotel.name }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -371,376 +172,162 @@
         </div>
     </form>
 
-    <input type="hidden" id="pageNumber" value="{{ pageNumber }}">
-    {% include 'MBHBaseBundle:Partials:pager.html.twig' with {'page': pageNumber, 'pages': pageCount, class : 'accommodation-report-pagination'} %}
-    <div id="ololo"></div>
-    <div id="accommodation-chessBoard-content" class="scrolling">
-        <!---------------------------- MONTHS AND DATES ------------------------->
-        <div id="header-title" class="tile tile-not-selected tile-free both not-standard-tile"
-             style="width:{{ headerWidth }}px;">
-            <div class="title" style="height: {{ headerHeight - 1 }}px; background-color: white;">
-                <div class="tableTitleCell">
-                    {% set selectedNumberOfRooms = client_config().getFrontSettings().getRoomsInChessboard(app.user.username) %}
-                    <select id="nuber-of-rooms-select" style="width: 100%;">
-                        {% for numberOfRooms in numberOfRoomsOptions %}
-                            <option value="{{ numberOfRooms }}" {{ numberOfRooms == selectedNumberOfRooms ? 'selected' }}>
-                                {{ numberOfRooms == 0 ? 'chessboard.index.number_of_rooms_select.all_rooms'|trans : ' ' ~ 'chessboard.index.number_of_rooms_select.rooms'|trans({'%numberOfRooms%': numberOfRooms}) }}
-                            </option>
-                        {% endfor %}
-                    </select>
+    <div id="chessboardTable" class="scrolling"></div>
+
+    <!---------------------------- Concise update Modal ------------------------->
+    <div class="modal fade" id="packageModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <input type="hidden" class="modalPackageId">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title"
+                        id="packageModalTitle">{{ 'modal.chessBoard.package_update_info'|trans }}</h4>
                 </div>
-                <div class="tableTitleCell">
+                <div class="modal-body">
+                    <input type="hidden" class="modalBlockId" name="modalBlockId">
+                    <input type="hidden" class="modalAccommodationId" name="accommodationId">
+                    <input type="hidden" class="isDivide">
+                    <input type="hidden" id="modal-room-type-id">
+                    <div class="row text-center" id="package-modal-change-alert"></div>
+                    <div id="concise_package_update">
+                        <table class="table not-auto-datatable table-striped">
+                            <tbody>
+                            <tr style="background-color: #d2d6de;">
+                                <td>{{ 'modal.chessBoard.package_info'|trans }}</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>#</td>
+                                <td id="modal-package-number"></td>
+                            </tr>
+                            <tr>
+                                <td>{{ 'modal.chessBoard.payer_name'|trans }}</td>
+                                <td id="modal-package-payer"></td>
+                            </tr>
+                            <tr>
+                                <td>{{ 'modal.chessBoard.package_begin_date'|trans }}</td>
+                                <td id="modal-package-begin"></td>
+                            </tr>
+                            <tr>
+                                <td>{{ 'modal.chessBoard.package_end_date'|trans }}</td>
+                                <td id="modal-package-end"></td>
+                            </tr>
+                            <tr style="background-color: #d2d6de;">
+                                <td>{{ 'modal.chessBoard.accommodation_info'|trans }}</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>{{ 'modal.chessBoard.room_name' | trans }}</td>
+                                <td id="modal-room-name"></td>
+                                <td style="display: none;" id="modal-room-id"></td>
+                            </tr>
+                            <tr>
+                                <td>{{ 'modal.chessBoard.room_type_name' | trans }}</td>
+                                <td id="modal-room-type-name"></td>
+                            </tr>
+                            <tr>
+                                <td>{{ 'modal.chessBoard.begin' | trans }}</td>
+                                <td id="modal-begin-date"></td>
+                            </tr>
+                            <tr>
+                                <td>{{ 'modal.chessBoard.end' | trans }}</td>
+                                <td id="modal-end-date"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div id="months-and-dates"
-             style="background-color: white; position: absolute;  z-index: 200; left: {{ headerWidth }}px; width:{{ dayTableWidth }}px; height: {{ headerHeight }}px;">
-            <div class="calendarRow clearfix">
-                <ul class="list-unstyled calendarDays">
-                    {% for monthDays in calendarData %}
-                        <li class="tile tile-not-selected tile-free both not-standard-tile"
-                            style="width:{{ monthDays.daysCount * tableCellWidth }}px;">
-                            <div class="month" style="width:{{ monthDays.daysCount * tableCellWidth }}px;">
-                                {{ monthDays.daysCount > 2 ? (months[monthDays.month])|trans({}, 'front_messages') ~ ', ' ~ monthDays.year }}
-                            </div>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-            <div class="calendarRow clearfix">
-                <ul class="list-unstyled calendarDays">
-                    {% for day in days %}
-                        {% set isWeekend = day|date('N') in [6,7] %}
-                        {% set isNow = day|date('d.m.Y') == 'now'|date('d.m.Y') %}
-                        <li class="tile tile-bookable tile-free both {{ isNow ? 'today' }} {% if isWeekend %}weekend{% endif %}">
-                            <div class="day">
-                                <div class="{{ isWeekend ? 'text-danger' }}{{ isNow ? 'text-info' }}">{{ day|date('d.m') }}
-                                    <span>{{ day|date('Y') == 'now'|date('Y') ? weekdays[day|date('N')]|trans({}, 'front_messages')|lower : day|date('Y') }}</span>
-                                </div>
-                            </div>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-        <!---------------------------- ROOM TYPES ------------------------->
-        <div id="roomTypeColumn">
-            {% set titleLength = ((headerWidth / titleSubFontSize) * 1.3)|round(1, 'floor') %}
-            {% set withoutAccommodationText = 'chessboard_manager.without_accommodation.tile.text'|trans %}
-            {% for roomTypeId, roomTypeData in roomTypesData %}
-                {% if roomTypeData['rooms']|length > 0 %}
-                    <div class="clearfix">
-                        <ul class="calendarDays list-unstyled">
-                            <li class="tile tile-not-selected tile-free both not-standard-tile"
-                                style="width:{{ headerWidth - 1 }}px; background-color: white;">
-                                <div class="title">
-                                    <strong {% if not roomTypeData.isEnabled %} class="disabled-room-type"{% endif %}
-                                            {% if roomTypeData.name|length > titleLength %} data-html="true" data-toggle="tooltip" data-container="body" data-placement="top" title="{{ roomTypeData.name }}" {% endif %}
-                                            class="roomType-text">
-
-                                        <i class="fa fa-bed"></i> {{ roomTypeData.name[0:titleLength] }}</strong>
-                                </div>
-                            </li>
-                            <li class="tile tile-not-selected tile-free both not-standard-tile"
-                                style="width:{{ headerWidth }}px;">
-                                <div class="title-sub">
-                                    {% set withoutAccommodationText = 'chessboard_manager.without_accommodation.tile.text'|trans %}
-                                    <div {% if withoutAccommodationText|length > titleLength %} data-html="true" data-toggle="tooltip" data-container="body" data-placement="top" title="{{ withoutAccommodationText }}" {% endif %}>
-                                        {{ withoutAccommodationText[0:titleLength] }}
-                                    </div>
-                                </div>
-                            </li>
-                            {% for key, roomData in roomTypeData['rooms'] %}
-                                <li class="tile tile-not-selected tile-free both not-standard-tile"
-                                    style="width:{{ headerWidth }}px;">
-                                    <div class="title-sub">
-                                        {% set toolTip = '' %}
-                                        {% if roomData.room.housing %}
-                                            {% set toolTip = 'chessboard.index.housing'|trans ~ ' "' ~ roomData.room.housing.name ~'"' %}
-                                        {% endif %}
-                                        {% if roomData.room.floor %}
-                                            {% set floorText = "chessboard.index.floor"|trans ~ " " ~ roomData.room.floor %}
-                                            {% if toolTip is empty %}
-                                                {% set toolTip = floorText %}
-                                            {% else %}
-                                                {% set toolTip = toolTip ~ '<br>' ~ floorText %}
-                                            {% endif %}
-                                        {% endif %}
-
-                                        <a {% if toolTip != '' %} data-html="true" data-toggle="tooltip" data-container="body" data-placement="top" title="{{ toolTip }}" {% endif %}>{{ roomData.name[0:20] }}</a>
-
-                                        <div class="text-right" style="height: {{ tileFontSize }}px;">
-                                            {% if roomData.statuses is iterable and roomData.statuses is not empty %}
-                                                {% for status in roomData.statuses %}
-                                                    {% if status.code in roomStatusIcons|keys %}
-                                                        <i style="position: relative; bottom: 10px; font-size: {{ tileFontSize }}px;"
-                                                           data-container="body"
-                                                           class=" fa mbf-{{ roomStatusIcons[status.code] }}"
-                                                           title="{{ status }}" data-toggle="tooltip"></i>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                {% endif %}
-            {% endfor %}
-        </div>
-        <div id="calendarWrapper" style="width:{{ dayTableWidth }}px;">
-            <div class="days">
-                <div class="clearfix" style="display: inline-block;">
-                    <div class="calendarRows clearfix ">
-
-                        <!---------------------------- ROOMS ------------------------->
-                        <div class="rooms" style="margin-top: {{ headerHeight }}px;">
-                            {% for roomTypeId, roomTypeData in roomTypesData %}
-                                {% if roomTypeData['rooms']|length > 0 %}
-                                    <div class="calendarRow clearfix leftRoomsLine"
-                                         data-roomTypeId="{{ roomTypeId }}">
-                                        <ul class="list-unstyled calendarDays">
-                                            {% if leftRoomsData[roomTypeId] is defined %}
-                                                {% for leftRoomsCount in leftRoomsData[roomTypeId] %}
-                                                    {% set day = days[loop.index - 1] %}
-                                                    {% if day|date('N') in [6,7] %}{% set weekend = 'weekend' %}{% else %}{% set weekend = null %}{% endif %}
-                                                    {% if day|date('d.m.Y') == 'now'|date('d.m.Y') %}{% set today = 'today' %}{% else %}{% set today = null %}{% endif %}
-                                                    {% set leftRoomsBackgroundColor = colors['leftRoomsPositive'] %}
-                                                    {% set isNegativeCount = false %}
-                                                    {% if leftRoomsCount == 0 %}
-                                                        {% set isNegativeCount = true %}
-                                                        {% set leftRoomsBackgroundColor = colors['leftRoomsZero'] %}
-                                                    {% elseif leftRoomsCount < 0 %}
-                                                        {% set leftRoomsBackgroundColor = colors['leftRoomsNegative'] %}
-                                                        {% set isNegativeCount = true %}
-                                                    {% endif %}
-                                                    <li class="tile {{ weekend }} {{ today }}"
-                                                        style="background-color: {{ leftRoomsBackgroundColor }};
-                                                        {% if isNegativeCount %} color: #DC2814;{% endif %}"
-                                                        title="{{ 'chessboard_manager.left_rooms_count.tooltip_title'|trans({'%count%' : leftRoomsCount}, 'front_messages') }}"
-                                                        data-toggle="tooltip" data-placement="bottom"
-                                                        data-container="body">
-                                                        <div class="leftRooms">
-                                                            {{ leftRoomsCount }}
-                                                        </div>
-                                                    </li>
-                                                {% endfor %}
-                                            {% else %}
-                                                {% for day in days %}
-                                                    <li class=" tile tile-bookable tile-free both">
-                                                        <div class="no-accommodation-date" data-container="body"
-                                                             data-placement="bottom" data-html="true"
-                                                             title="{{ 'chessboard_manager.without_accommodation.tile.text'|trans }}"
-                                                             tabindex="0"
-                                                             data-date="{{ day|date('d.m.Y') }}"
-                                                             data-toggle="popover">
-                                                        </div>
-                                                    </li>
-                                                {% endfor %}
-                                            {% endif %}
-                                        </ul>
-                                    </div>
-                                    <div class="roomTypeRooms" id="{{ roomTypeId }}">
-                                        <div class="calendarRow clearfix roomDates">
-                                            <ul class="calendarDates list-unstyled"
-                                                id="{{ 'no_accommodation' ~ roomTypeId }}">
-                                                {% for day in days %}
-                                                    {% if day.date|date('N') in [6,7] %}{% set weekend = 'weekend' %}{% else %}{% set weekend = null %}{% endif %}
-                                                    {% if day.date|date('d.m.Y') == 'now'|date('d.m.Y') %}{% set today = 'today' %}{% else %}{% set today = null %}{% endif %}
-                                                    <li class="{{ weekend }} {{ today }} tile tile-bookable tile-free both">
-                                                        <div class="no-accommodation-date" data-container="body"
-                                                             data-placement="bottom" data-html="true"
-                                                             title="{{ 'chessboard_manager.without_accommodation.tile.text'|trans }}"
-                                                             tabindex="0"
-                                                             data-date="{{ day|date('d.m.Y') }}"
-                                                             data-toggle="popover">
-                                                        </div>
-                                                    </li>
-                                                {% endfor %}
-                                            </ul>
-                                        </div>
-                                        {% for key, roomData in roomTypeData['rooms'] %}
-                                            <div class="calendarRow clearfix roomDates">
-                                                <ul class="calendarDates list-unstyled" id="{{ key }}">
-                                                    {% for day in days %}
-                                                        {% if day.date|date('N') in [6,7] %}{% set weekend = 'weekend' %}{% else %}{% set weekend = null %}{% endif %}
-                                                        {% if day.date|date('d.m.Y') == 'now'|date('d.m.Y') %}{% set today = 'today' %}{% else %}{% set today = null %}{% endif %}
-                                                        <li class="{{ weekend }} {{ today }} tile tile-bookable tile-free both">
-                                                            <div class="date">
-                                                                <div class="{{ day|date('N') in [6,7] ? 'text-danger' }}{{ day|date('d.m.Y') == 'now'|date('d.m.Y') ? 'text-info' }}">{{ day|date('d.m') }}
-                                                                    <span>{{ day|date('Y') == 'now'|date('Y') ? (weekdays[day|date('N')])|trans({}, 'front_messages')|lower : day|date('Y') }}</span>
-                                                                </div>
-                                                            </div>
-                                                        </li>
-                                                    {% endfor %}
-                                                </ul>
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            {% endfor %}
-                        </div>
-                    </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" id="packageModalCancelButton"
+                            data-dismiss="modal">{{ 'modal.chessBoard.cancel'|trans }}
+                    </button>
+                    <button type="button" class="btn btn-primary" style="display: none;"
+                            id="package-modal-continue-button">
+                        {{ 'package.accommodaton_modal.continue_button.text'|trans }}
+                    </button>
+                    <button type="button" id="packageModalConfirmButton" class="btn btn-primary">
+                        {{ 'modal.chessBoard.save'|trans }}
+                    </button>
                 </div>
             </div>
         </div>
-        <!---------------------------- Concise update Modal ------------------------->
-        <div class="modal fade" id="packageModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
-            <div class="modal-dialog" role="document">
-                <input type="hidden" class="modalPackageId">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                        <h4 class="modal-title"
-                            id="packageModalTitle">{{ 'modal.chessBoard.package_update_info'|trans }}</h4>
-                    </div>
-                    <div class="modal-body">
-                        <input type="hidden" class="modalBlockId" name="modalBlockId">
-                        <input type="hidden" class="modalAccommodationId" name="accommodationId">
-                        <input type="hidden" class="isDivide">
-                        <input type="hidden" id="modal-room-type-id">
-                        <div class="row text-center" id="package-modal-change-alert"></div>
-                        <div id="concise_package_update">
-                            <table class="table not-auto-datatable table-striped">
-                                <tbody>
-                                <tr style="background-color: #d2d6de;">
-                                    <td>{{ 'modal.chessBoard.package_info'|trans }}</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>#</td>
-                                    <td id="modal-package-number"></td>
-                                </tr>
-                                <tr>
-                                    <td>{{ 'modal.chessBoard.payer_name'|trans }}</td>
-                                    <td id="modal-package-payer"></td>
-                                </tr>
-                                <tr>
-                                    <td>{{ 'modal.chessBoard.package_begin_date'|trans }}</td>
-                                    <td id="modal-package-begin"></td>
-                                </tr>
-                                <tr>
-                                    <td>{{ 'modal.chessBoard.package_end_date'|trans }}</td>
-                                    <td id="modal-package-end"></td>
-                                </tr>
-                                <tr style="background-color: #d2d6de;">
-                                    <td>{{ 'modal.chessBoard.accommodation_info'|trans }}</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>{{ 'modal.chessBoard.room_name' | trans }}</td>
-                                    <td id="modal-room-name"></td>
-                                    <td style="display: none;" id="modal-room-id"></td>
-                                </tr>
-                                <tr>
-                                    <td>{{ 'modal.chessBoard.room_type_name' | trans }}</td>
-                                    <td id="modal-room-type-name"></td>
-                                </tr>
-                                <tr>
-                                    <td>{{ 'modal.chessBoard.begin' | trans }}</td>
-                                    <td id="modal-begin-date"></td>
-                                </tr>
-                                <tr>
-                                    <td>{{ 'modal.chessBoard.end' | trans }}</td>
-                                    <td id="modal-end-date"></td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" id="packageModalCancelButton"
-                                data-dismiss="modal">{{ 'modal.chessBoard.cancel'|trans }}
-                        </button>
-                        <button type="button" class="btn btn-primary" style="display: none;"
-                                id="package-modal-continue-button">
-                            {{ 'package.accommodaton_modal.continue_button.text'|trans }}
-                        </button>
-                        <button type="button" id="packageModalConfirmButton" class="btn btn-primary">
-                            {{ 'modal.chessBoard.save'|trans }}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!---------------------------- Package Create Modal ------------------------->
-        <div class="modal fade bs-example-modal-lg" id="package-edit-modal" role="dialog"
-             aria-labelledby="exampleModalLabel">
-            <div class="modal-dialog modal-lg" role="document">
-                <input type="hidden" class="modalPackageId">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                    aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title"
-                            id="packageModalTitle">{{ 'modal.chessBoard.search_results' | trans }}</h4>
-                    </div>
-                    <div id="package-edit-body" class="modal-body">
-                        <div class="input">
-                            <strong>{{ 'modal.chessBoard.payer'|trans }}</strong>&nbsp;
-                            {{ form_widget(searchForm.tourist) }}&nbsp;
-                            {% if is_granted('ROLE_TOURIST_NEW') %}
-                                <small>
-                                    <a href="{{ path('tourist_new') }}" id="add-guest" target="_blank"
-                                       title='{{ 'form.searchType.payer_add'|trans() }}'
-                                       data-toggle='tooltip'>
-                                        <i class="fa fa-plus"></i>
-                                    </a>
-                                </small>
-                            {% endif %}
-                        </div>
-                        <div id="package-new-results"></div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" id="packageModalCancelButton"
-                                data-dismiss="modal">{{ 'modal.chessBoard.close'|trans }}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!---------------------------- Package Info Modal ------------------------->
-        <div class="modal fade" id="package-info-modal" tabindex="-1" role="dialog"
-             aria-labelledby="exampleModalLabel">
-            <div class="modal-dialog" role="document">
-                <input type="hidden" class="modalPackageId">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                    aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title text-center"
-                            id="packageModalTitle">{{ 'modal.chessBoard.package_info'|trans }}</h4>
-                    </div>
-                    <div class="modal-body" id="package-info-modal-body">
-
-                    </div>
-                    <div class="modal-footer">
-                        <a class="btn btn-success" target="_blank" id="package-info-modal-edit">
-                            <i class="fa fa-pencil-square-o"
-                               aria-hidden="true"></i>&nbsp;{{ 'modal.chessBoard.edit'|trans }}</a>
-                        <button class="btn btn-danger" id="package-info-modal-delete"><i
-                                    class="fa fa-trash-o"></i>&nbsp;{{ 'modal.chessBoard.delete'|trans }}
-                        </button>
-                        <button type="button" class="btn btn-default" id="packageModalCancelButton"
-                                data-dismiss="modal"><i class="fa fa-times"
-                                                        aria-hidden="true"></i>&nbsp;{{ 'modal.chessBoard.close'|trans }}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!---------------------------- New Guest Modal ------------------------->
-        {% include '@MBHUser/Partials/addGuestModal.html.twig' %}
-
-        {% include '@MBHBase/Partials/entityDeleteForm.html.twig' %}
-        {% include '@MBHPackage/Package/deleteModal.html.twig' %}
-
     </div>
+    <!---------------------------- Package Create Modal ------------------------->
+    <div class="modal fade bs-example-modal-lg" id="package-edit-modal" role="dialog"
+         aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <input type="hidden" class="modalPackageId">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"
+                        id="packageModalTitle">{{ 'modal.chessBoard.search_results' | trans }}</h4>
+                </div>
+                <div id="package-edit-body" class="modal-body">
+                    <div class="input">
+                        <strong>{{ 'modal.chessBoard.payer'|trans }}</strong>&nbsp;
+                        {{ form_widget(searchForm.tourist) }}&nbsp;
+                        {% if is_granted('ROLE_TOURIST_NEW') %}
+                            <small>
+                                <a href="{{ path('tourist_new') }}" id="add-guest" target="_blank"
+                                   title='{{ 'form.searchType.payer_add'|trans() }}'
+                                   data-toggle='tooltip'>
+                                    <i class="fa fa-plus"></i>
+                                </a>
+                            </small>
+                        {% endif %}
+                    </div>
+                    <div id="package-new-results"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" id="packageModalCancelButton"
+                            data-dismiss="modal">{{ 'modal.chessBoard.close'|trans }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!---------------------------- Package Info Modal ------------------------->
+    <div class="modal fade" id="package-info-modal" tabindex="-1" role="dialog"
+         aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <input type="hidden" class="modalPackageId">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title text-center"
+                        id="packageModalTitle">{{ 'modal.chessBoard.package_info'|trans }}</h4>
+                </div>
+                <div class="modal-body" id="package-info-modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <a class="btn btn-success" target="_blank" id="package-info-modal-edit">
+                        <i class="fa fa-pencil-square-o"
+                           aria-hidden="true"></i>&nbsp;{{ 'modal.chessBoard.edit'|trans }}</a>
+                    <button class="btn btn-danger" id="package-info-modal-delete"><i
+                                class="fa fa-trash-o"></i>&nbsp;{{ 'modal.chessBoard.delete'|trans }}
+                    </button>
+                    <button type="button" class="btn btn-default" id="packageModalCancelButton"
+                            data-dismiss="modal"><i class="fa fa-times"
+                                                    aria-hidden="true"></i>&nbsp;{{ 'modal.chessBoard.close'|trans }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!---------------------------- New Guest Modal ------------------------->
+    {% include '@MBHUser/Partials/addGuestModal.html.twig' %}
+
+    {% include '@MBHBase/Partials/entityDeleteForm.html.twig' %}
+    {% include '@MBHPackage/Package/deleteModal.html.twig' %}
     <div style="display: none">
         {{ form(searchForm , {'attr' : { 'id' : 'package-search-form' }}) }}
     </div>
