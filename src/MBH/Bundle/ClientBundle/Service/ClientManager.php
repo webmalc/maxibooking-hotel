@@ -232,6 +232,7 @@ class ClientManager
     /**
      * @param Client $client
      * @return \MBH\Bundle\BillingBundle\Lib\Model\Result
+     * @throws \Exception
      */
     public function updateClient(Client $client)
     {

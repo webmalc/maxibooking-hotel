@@ -55,6 +55,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
     public function saveAction(Request $request)
     {
         $entity = $this->get('mbh.client_config_manager')->fetchConfig();
+        $clientManager = $this->get('mbh.client_manager');
         $isSiteEnabled = $entity->isMBSiteEnabled();
 
         if (!$entity) {
@@ -78,6 +79,18 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
 
             if ($isSiteEnabled !== $entity->isMBSiteEnabled()) {
                 $this->get('mbh.site_manager')->changeSiteAvailability($entity->isMBSiteEnabled());
+            }
+
+            $loginAlias = $request->request->get($form->getName())['login_alias'];
+            $client = $clientManager->getClient();
+            $previousLoginAlias = $client->getLoginAlias();
+            if ($previousLoginAlias !== $loginAlias) {
+                $client->setLoginAlias($loginAlias);
+                $result = $clientManager->updateClient($client);
+                if (!$result->isSuccessful()) {
+                    $client->setLoginAlias($previousLoginAlias);
+                    throw new \Exception(json_encode($result->getErrors()));
+                }
             }
 
             $this->dm->persist($entity);
@@ -182,6 +195,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
      * @param $request Request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      * @throws Exception
+     * @throws \Exception
      */
     public function paymentSystemSaveAction(Request $request)
     {
