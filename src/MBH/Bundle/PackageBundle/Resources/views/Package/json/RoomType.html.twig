@@ -2,6 +2,7 @@
     <div>
         {{ entity.roomType }}
         <br>
+        {% if not entity.roomType.hasSingleRoom %}
         <small>
             <a data-toggle='tooltip' title='{{ "package.json.go_to_placement"|trans({}, "MBHPackageBundle") }}' href='{{ path('package_accommodation', {'id': entity.id}) }}' class='{{ entity.accommodation ? '' : 'text text-danger' }}'>
                 {% if entity.accommodation and entity.accommodation.room and entity.accommodation.room.roomType %}
@@ -12,5 +13,6 @@
                 {% endif %}
             </a>
         </small>
+        {% endif %}
     </div>
 {% endwrapinline %}

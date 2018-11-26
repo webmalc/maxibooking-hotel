@@ -62,7 +62,7 @@
                                 </div>
                             </div>
                             <div class="hidden-xs">
-                            {{ package.roomType.hotel }} - {{ package.roomType }}<br><small><a data-toggle='tooltip' title='{{ 'order.packages.go_to_placement'|trans({}, 'MBHPackageBundle') }}' href='{{ path('package_accommodation', {'id': package.id}) }}' class='{{ package.accommodation ? '' : 'danger' }}'>{% if package.accommodation %}{{ package.accommodation.name(package.roomType.id == package.accommodation.roomType.id ? false : true) }}{% else %}&lt;{{ 'package.order_packages.not_accommodate'|trans}}&gt;{% endif %}</a></small>
+                            {{ package.roomType.hotel }} - {{ package.roomType }}<br>{% if not package.roomType.hasSingleRoom %}<small><a data-toggle='tooltip' title='{{ 'order.packages.go_to_placement'|trans({}, 'MBHPackageBundle') }}' href='{{ path('package_accommodation', {'id': package.id}) }}' class='{{ package.accommodation ? '' : 'danger' }}'>{% if package.accommodation %}{{ package.accommodation.name(package.roomType.id == package.accommodation.roomType.id ? false : true) }}{% else %}&lt;{{ 'package.order_packages.not_accommodate'|trans}}&gt;{% endif %}</a></small>{% endif %}
                             </div>
                         </td>
                         <td class="text-center hidden-xs">

@@ -6,11 +6,9 @@ use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Form\FacilitiesType;
 use MBH\Bundle\BaseBundle\Form\FormWithMultiLangFields;
-use MBH\Bundle\BaseBundle\Form\MultiLanguagesType;
 use MBH\Bundle\ClientBundle\Service\ClientConfigManager;
 use MBH\Bundle\HotelBundle\Document\RoomViewType;
 use Symfony\Bundle\FrameworkBundle\Translation\Translator;
-use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -117,6 +115,12 @@ class RoomTypeType extends FormWithMultiLangFields
                 'value' => true,
                 'required' => false,
                 'help' => 'form.hotelType.isSmoking.help'
+            ])
+            ->add('hasSingleRoom', CheckboxType::class, [
+                'label' => 'form.room_type_type.without_accommodation.label',
+                'group' => 'form.roomTypeType.general_info',
+                'required' => false,
+                'help' => 'form.room_type_type.without_accommodation.help'
             ])
             ->add('isHostel', CheckboxType::class, [
                 'label' => 'form.hotelType.hostel',

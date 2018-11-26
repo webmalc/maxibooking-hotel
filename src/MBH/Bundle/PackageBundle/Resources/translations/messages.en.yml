@@ -1241,7 +1241,6 @@ mbhpackagebundle.view.package.late.early.check.modal.net: 'No'
 templateDocument.type.receipt: Receipt
 mbhpackagebundle.view.package.guest.kliyent.v.chernom.spiske: 'Guest is blacklisted'
 mbhpackagebundle.view.package.guest.kliyent.ne.v.chernom.spiske: 'Guest is not blacklisted'
-mbhpackagebundle.view.package.orderpackages.ne.razmeshcheno: 'Without allocation'
 mbhpackagebundle.view.documents.pdftemplates.fms_form_5.anketa: Questionnaire
 mbhpackagebundle.view.documents.pdftemplates.fms_form_5.blok.mashinochitayemykh.dannykh: 'Machine read information block'
 mbhpackagebundle.view.documents.pdftemplates.confirmation.vydan: issued

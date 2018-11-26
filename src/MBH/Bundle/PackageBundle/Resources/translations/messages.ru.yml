@@ -116,7 +116,6 @@ mbhpackagebundle.view.package.accommodation.vybor.razmeshcheniya: 'Выбор р
 mbhpackagebundle.view.package.accommodation.udobstva: Удобства
 mbhpackagebundle.view.package.guest.kliyent.v.chernom.spiske: 'Клиент в черном списке'
 mbhpackagebundle.view.package.guest.kliyent.ne.v.chernom.spiske: 'Клиент не в черном списке'
-mbhpackagebundle.view.package.orderpackages.ne.razmeshcheno: 'не размещено'
 csv.form.type: 'Тип брони'
 mbhpackagebundle.view.documents.documentformmodal.generatsiya.dokumenta: 'Генерация документа '
 mbhpackagebundle.view.documents.pdftemplates.fms_form_5.anketa: АНКЕТА

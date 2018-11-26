@@ -40,7 +40,7 @@ class RoomTypeManager
     {
         $this->container = $container;
         $this->dm = $this->container->get('doctrine_mongodb')->getManager();
-        $this->config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $this->config = $this->container->get('mbh.client_config_manager')->fetchConfig();
         $this->useCategories = $this->config && $this->config->getUseRoomTypeCategory();
     }
 

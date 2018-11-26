@@ -220,6 +220,12 @@ class RoomType extends Base implements RoomTypeInterface
      */
     protected $roomViewsTypes;
 
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    protected $hasSingleRoom = false;
+
     public function __construct()
     {
         $this->rooms = new ArrayCollection();
@@ -734,6 +740,25 @@ class RoomType extends Base implements RoomTypeInterface
     public function removeOnlineImage(Image $onlineImage)
     {
         $this->onlineImages->removeElement($onlineImage);
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasSingleRoom(): ?bool
+    {
+        return $this->hasSingleRoom;
+    }
+
+    /**
+     * @param bool $hasSingleRoom
+     * @return RoomType
+     */
+    public function setHasSingleRoom(bool $hasSingleRoom): RoomType
+    {
+        $this->hasSingleRoom = $hasSingleRoom;
 
         return $this;
     }

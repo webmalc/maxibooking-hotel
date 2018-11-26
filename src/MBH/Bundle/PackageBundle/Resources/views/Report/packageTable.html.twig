@@ -32,7 +32,9 @@
             </td>
             <td>
                 {{ package.roomType }}<br>
-                <small><a data-toggle='tooltip' title='{{ "package.json.go_to_placement"|trans({}, "MBHPackageBundle") }}' href='{{ path('package_accommodation', {'id': package.id}) }}' class='{{ package.accommodation ? '' : 'no-accommodation' }}'>{% if package.accommodation and package.accommodation.roomType %}{{ package.accommodation.name(package.roomType.id == package.accommodation.roomType.id ? false : true) }}{% else %}&lt;{{ "package.json.not_placed"|trans({}, "MBHPackageBundle") }}&gt;{% endif %}</a></small>
+                {% if not package.roomType.hasSingleRoom %}
+                    <small><a data-toggle='tooltip' title='{{ "package.json.go_to_placement"|trans({}, "MBHPackageBundle") }}' href='{{ path('package_accommodation', {'id': package.id}) }}' class='{{ package.accommodation ? '' : 'no-accommodation' }}'>{% if package.accommodation and package.accommodation.roomType %}{{ package.accommodation.name(package.roomType.id == package.accommodation.roomType.id ? false : true) }}{% else %}&lt;{{ "package.json.not_placed"|trans({}, "MBHPackageBundle") }}&gt;{% endif %}</a></small>
+                {% endif %}
             </td>
             <td>
                 <a data-toggle='tooltip' href='{{ path('package_order_tourist_edit', {'id': package.order.id, 'packageId': package.id}) }}' title='{{ "package.json.go_to_payer"|trans({}, "MBHPackageBundle") }}' class='{{ package.order.payer ? '' : 'danger' }}'>{% if package.order.payer %}{{ package.order.payer.shortName }}{% else %}&lt;{{ "package.json.no_payer"|trans({}, "MBHPackageBundle") }}&gt;{% endif %}</a><small><br>{% if package.adults > 0 %}{{ package.adults }} {{ 'report.package_table.number_of_adults'|trans}}{% endif %}{% if package.adults > 0 and package.children > 0 %}+{% endif %}{% if package.children > 0 %}{{ package.children }} {{ 'report.package_table.number_of_children'|trans}}{% endif %}</small>
