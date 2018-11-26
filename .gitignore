@@ -19,7 +19,7 @@ app/config/database.env
 /var/logs/*
 /var/clients/*
 !.gitkeep
-
+/scripts/checkalias
 .ansible/*.retry
 
 phpunit.xml
