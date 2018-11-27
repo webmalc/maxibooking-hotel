@@ -8,6 +8,7 @@ use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Form\LanguageType;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
+use MBH\Bundle\ClientBundle\Service\ClientManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -24,16 +25,29 @@ class ClientConfigType extends AbstractType
 {
     private $helper;
     private $currencyData;
+    private $clientManager;
 
-    public function __construct(Helper $helper, array $currencyData)
+    public function __construct(Helper $helper, array $currencyData, ClientManager $clientManager)
     {
         $this->helper = $helper;
         $this->currencyData = $currencyData;
+        $this->clientManager = $clientManager;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $client = $this->clientManager->getClient();
+        $login = $client->getLogin();
+        $loginAlias = !empty($client->getLoginAlias()) ? $client->getLoginAlias() : $login;
+
         $builder
+            ->add('login_alias', TextType::class, [
+                'label' => 'form.clientConfigType.time_zone.login_alias.label',
+                'help' => 'form.clientConfigType.time_zone.login_alias.help',
+                'mapped' => false,
+                'data' => $loginAlias,
+                'group' => 'form.clientConfigType.main_group',
+            ])
             ->add('timeZone', ChoiceType::class, [
                 'choices' => ClientConfig::getTimeZonesList(),
                 'group' => 'form.clientConfigType.main_group',
@@ -54,27 +68,6 @@ class ClientConfigType extends AbstractType
                 'label' => 'form.clientConfigType.currency.label'
             ])
             ->add(
-                'isSendSms',
-                CheckboxType::class,
-                [
-                    'label' => 'form.clientConfigType.sms_notification',
-                    'group' => 'form.clientConfigType.main_group',
-                    'value' => true,
-                    'required' => false,
-                    'help' => 'form.clientConfigType.is_sms_notification_turned_on',
-                ]
-            )
-            ->add(
-                'NoticeUnpaid',
-                TextType::class,
-                [
-                    'label' => 'form.clientConfigType.notice_unpaid',
-                    'group' => 'form.clientConfigType.main_group',
-                    'help' => 'form.clientConfigType.is_notice_unpaid',
-                    'required' => true,
-                ]
-            )
-            ->add(
                 'is_instant_search',
                 CheckboxType::class,
                 [
@@ -90,15 +83,6 @@ class ClientConfigType extends AbstractType
                 'label' => 'form.clientConfigType.show_label_tips.label',
                 'help' => 'form.clientConfigType.show_label_tips.help'
             ])
-//            ->add(
-//                'useRoomTypeCategory',
-//                CheckboxType::class,
-//                [
-//                    'label' => 'form.clientConfigType.is_disabled_room_type_category',
-//                    'group' => 'form.clientConfigType.main_group',
-//                    'required' => false,
-//                ]
-//            )
             ->add('priceRoundSign', IntegerType::class, [
                 'required' => false,
                 'label' => 'form.clientConfigType.round.label',
