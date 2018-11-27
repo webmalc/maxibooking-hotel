@@ -122,6 +122,7 @@ class ChessBoardDataBuilder
 
     /**
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getAccommodationData()
     {
@@ -154,7 +155,7 @@ class ChessBoardDataBuilder
      * Получение массива данныых о количестве свободных комнат, разделенных по дням
      *
      * @return array
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws \Exception
      */
     public function getDayNoAccommodationPackageCounts()
     {
@@ -365,6 +366,11 @@ class ChessBoardDataBuilder
         return $this->packageAccommodationsData;
     }
 
+    /**
+     * @param $packagesIds
+     * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
     private function getPackageServicesByPackageIdAndCode($packagesIds)
     {
         $lateCheckInAndLateCheckoutServices = $this->dm
@@ -644,7 +650,6 @@ class ChessBoardDataBuilder
      * Lazy loading of available room types
      *
      * @return RoomType[]
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getAvailableRoomTypes()
     {
@@ -670,7 +675,6 @@ class ChessBoardDataBuilder
 
     /**
      * @return array
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     private function getAvailableRoomTypeIds()
     {

@@ -180,7 +180,7 @@ form.contact_info_type.email.label: 'Email address'
 form.contact_info_type.email.help: 'Contact Email'
 form.hotel_contact_information.contact_info.group: 'Contact details'
 form.hotel_images.image_file.label: Image
-form.hotel_images.image_file.help: 'Pictures for the website<br>Maximum size 5MB, file types: png, jpg, gif.'
+form.hotel_images.image_file.help: 'Pictures for the website<br>Maximum size 2 Mb, 80x90 px, file types: png, jpg, gif.'
 form.hotel_images.image_is_default.label: 'Main Image?'
 form.hotel_images.image_is_default.help: 'Would you like to select this Picture as the Main Image?'
 form.hotelType.isSmoking.label: 'Allow smoking?'
@@ -280,3 +280,9 @@ views.facility.list.description_title: Description
 views.facility.list.facility_title: Amenity
 facility_controller.facility_description.save_table.success: 'Changes successfully saved'
 views.facility.list.save_changes_button.title: 'Save changes'
+form.hotel_contact_information_type.map_url: 'Map URL'
+form.hotel_images.groups.images: Images
+form.hotel_images.groups.panorama: 'Panoramic Image'
+views.fields_group_with_button.button.title: Upload
+controller.hotelController.success_add_photo: 'Image successfully added'
+hotel_images.download: 'Uploading image'

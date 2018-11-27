@@ -38,3 +38,4 @@ views.cash.index.doc: Document
 views.cash.index.cash_balance: 'Transactions Balance'
 views.cash.index.create: Create
 views.cash.index.upload_all: 'Export all'
+views.cash.layout.cash: Transactions
