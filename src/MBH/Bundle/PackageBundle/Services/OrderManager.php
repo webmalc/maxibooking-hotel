@@ -175,6 +175,10 @@ class OrderManager implements Searchable
             }
             $package->removeAccommodations();
             $dangerNotifications[] = 'mbhpackagebundle.services.ordermanager.all_accommodations_removed';
+
+            $this->container
+                ->get('mbh_bundle_package.services.package_accommodation_manipulator')
+                ->setAccommodationForPackageWithSingleRoomRoomType($package);
         } elseif ($package->getBegin() != $oldPackage->getBegin() || $package->getEnd() != $oldPackage->getEnd()) {
             $sortedAccommodations = $package->getSortedAccommodations();
             if ($sortedAccommodations->count() > 0) {

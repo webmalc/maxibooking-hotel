@@ -37,6 +37,12 @@ class PackageAccommodationManipulator
         $this->translator = $translator;
     }
 
+    /**
+     * @param PackageAccommodation $accommodation
+     * @param Package $package
+     * @return PackageAccommodation|string
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
     public function addAccommodation(PackageAccommodation $accommodation, Package $package)
     {
         $errorMessage = $this->checkErrors($accommodation, $package);
@@ -82,6 +88,7 @@ class PackageAccommodationManipulator
      * @param \DateTime $endDate
      * @param Room $room
      * @return string
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function editAccommodation(
         PackageAccommodation $accommodation,
@@ -93,6 +100,7 @@ class PackageAccommodationManipulator
         is_null($endDate) ?: $accommodation->setEnd($endDate);
         is_null($room) ?: $accommodation->setAccommodation($room);
 
+        /** @var Package $package */
         $package = $this->dm->getRepository('MBHPackageBundle:Package')
             ->getPackageByPackageAccommodationId($accommodation->getId());
         $errorMessage = $this->checkErrors($accommodation, $package);
@@ -190,6 +198,13 @@ class PackageAccommodationManipulator
         return new ArrayCollection($packageAccommodations);
     }
 
+    /**
+     * @param PackageAccommodation $accommodation
+     * @param Package $package
+     * @return string
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws \Exception
+     */
     public function checkErrors(PackageAccommodation $accommodation, Package $package)
     {
         if ($accommodation->getBegin() < $package->getBegin() || $accommodation->getEnd() > $package->getEnd()) {
@@ -226,5 +241,25 @@ class PackageAccommodationManipulator
         }
 
         return '';
+    }
+
+    /**
+     * @param Package $package
+     * @return Package
+     */
+    public function setAccommodationForPackageWithSingleRoomRoomType(Package $package)
+    {
+        if ($package->getRoomType()->hasSingleRoom()) {
+            $singleRoom = $package->getRoomType()->getRooms()->first();
+            $accommodation = (new PackageAccommodation())
+                ->setAccommodation($singleRoom)
+                ->setBegin($package->getBegin())
+                ->setEnd($package->getEnd())
+                ->setIsAutomaticallyChangeable(true);
+            $this->dm->persist($accommodation);
+            $package->addAccommodation($accommodation);
+        }
+
+        return $package;
     }
 }

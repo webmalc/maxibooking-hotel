@@ -214,7 +214,7 @@ class PackageSubscriber implements EventSubscriber
                 $dm->getFilterCollection()->disable('softdeleteable');
             }
             $lastEntity = $dm->getRepository('MBHPackageBundle:Package')
-                ->createQueryBuilder('q')
+                ->createQueryBuilder()
                 ->field('order.id')->equals($package->getOrder()->getId())
                 ->sort('number', 'desc')
                 ->getQuery()
@@ -236,6 +236,11 @@ class PackageSubscriber implements EventSubscriber
         if ($package->getTariff() && $package->getTariff()->getDefaultPromotion()) {
             $package->setPromotion($package->getTariff()->getDefaultPromotion());
         }
+
+        $this->container
+            ->get('mbh_bundle_package.services.package_accommodation_manipulator')
+            ->setAccommodationForPackageWithSingleRoomRoomType($package);
+
         $this->_removeCache(clone $package->getBegin(), clone $package->getEnd());
     }
 
