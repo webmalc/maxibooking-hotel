@@ -441,6 +441,7 @@
                                         <i class="fa fa-bed"></i> {{ roomTypeData.name[0:titleLength] }}</strong>
                                 </div>
                             </li>
+                            {% if not roomTypeData.hasSingleRoom %}
                             <li class="tile tile-not-selected tile-free both not-standard-tile"
                                 style="width:{{ headerWidth }}px;">
                                 <div class="title-sub">
@@ -484,6 +485,7 @@
                                     </div>
                                 </li>
                             {% endfor %}
+                            {% endif %}
                         </ul>
                     </div>
                 {% endif %}
@@ -541,6 +543,7 @@
                                             {% endif %}
                                         </ul>
                                     </div>
+                                    {% if not roomTypeData.hasSingleRoom %}
                                     <div class="roomTypeRooms" id="{{ roomTypeId }}">
                                         <div class="calendarRow clearfix roomDates">
                                             <ul class="calendarDates list-unstyled"
@@ -578,6 +581,7 @@
                                             </div>
                                         {% endfor %}
                                     </div>
+                                    {% endif %}
                                 {% endif %}
                             {% endfor %}
                         </div>

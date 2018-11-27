@@ -8,6 +8,7 @@ use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomRepository;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
@@ -980,7 +981,14 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 ->trans('controller.packageController.accommodation_add.begin_equal_or_later_end_error'));
         }
 
-        $groupedRooms = $roomRepository->fetchAccommodationRooms($begin, $end, $this->hotel, null, null, null, true);
+        $notSingleRoomTypeIds = [];
+        foreach ($this->hotel->getRoomTypes() as $roomType) {
+            if (!$roomType->hasSingleRoom()) {
+                $notSingleRoomTypeIds[] = $roomType->getId();
+            }
+        }
+
+        $groupedRooms = $roomRepository->fetchAccommodationRooms($begin, $end, $this->hotel, $notSingleRoomTypeIds, null, null, true);
         $optGroupRooms = $roomRepository->optGroupRooms($groupedRooms);
 
         $roomTypeName = $package->getRoomType()->getName();
