@@ -2,33 +2,75 @@
     {% include '@MBHClient/PaymentSystem/newRbk/script_for_online_form.js.twig' %}
 {% endif %}
 
-var mbhPaymentFunc = {
-    frameId    : '{{ wrapperId }}-iframe',
-    locale     : '{{ locale }}',
-    getForm    : function(locale) {
-        if (locale !== undefined) {
-            this.locale = locale;
-        }
-        var formWrapper = document.querySelector('#{{ wrapperId }}');
-        formWrapper.innerHTML = '';
-        formWrapper.appendChild(this.getIframe());
-    },
-    generateUrl: function() {
-        return '{{ url('online_payment_search_form', {formId: config.id}) | raw }}?locale=' + this.locale
-    },
-    getIframe: function() {
-        var iframe = document.createElement('iframe');
-        iframe.id = this.frameId;
-        iframe.name = this.frameId;
-        iframe.src = this.generateUrl();
-        iframe.scrolling = 'no';
-        iframe.frameBorder = 0;
-        iframe.width = "{{ config.fullWidth ? '100%' : config.frameWidth }}";
-        iframe.height = "{{ config.frameHeight }}";
+function MbhPaymentFunc() {
+    this.frameId = '{{ wrapperId }}-iframe';
+    this.locale = '{{ locale }}';
+    this.formWrapper = null;
+    this.spinner = null;
+    this.formIframe = null;
+}
 
-        return iframe;
+MbhPaymentFunc.prototype.getForm = function(locale) {
+    this.formWrapper = document.querySelector('#{{ wrapperId }}');
+    if (this.formWrapper === null) {
+        console.error('Not found wrapper for mbh-payment-form')
+        return;
     }
+
+    if (locale !== undefined) {
+        this.locale = locale;
+    }
+
+    var self = this;
+
+    this.formWrapper.innerHTML = '';
+
+    this.spinner = this.addWaitingSpinner();
+
+    this.formWrapper.appendChild(this.spinner);
+
+    this.formIframe = this.getIframe();
+    this.formWrapper.appendChild(this.formIframe);
+
+    this.formIframe.addEventListener('load', function() {
+        self.hideWaitingSpinner(this);
+    }, {once: true});
 };
+
+MbhPaymentFunc.prototype.hideWaitingSpinner = function (_this) {
+    this.spinner.className = '';
+    this.spinner.innerHTML = '';
+    _this.hidden = false;
+};
+
+MbhPaymentFunc.prototype.generateUrl = function() {
+    return '{{ url('online_payment_search_form', {formId: config.id}) | raw }}?locale=' + this.locale
+};
+
+MbhPaymentFunc.prototype.getIframe = function() {
+    var iframe = document.createElement('iframe');
+    iframe.id = this.frameId;
+    iframe.name = this.frameId;
+    iframe.src = this.generateUrl();
+    iframe.scrolling = 'no';
+    iframe.frameBorder = 0;
+    iframe.width = "{{ config.fullWidth ? '100%' : config.frameWidth }}";
+    iframe.height = "{{ config.frameHeight }}";
+
+    return iframe;
+};
+
+MbhPaymentFunc.prototype.addWaitingSpinner = function() {
+    var text = this.locale ? 'Подождите...' : 'Please wait...',
+        spinner = document.createElement('div');
+    spinner.id = 'mbh-form-load-spinner';
+    spinner.className = 'alert alert-info';
+    spinner.innerHTML = '<i class="fa fa-spinner fa-spin"></i> ' + text;
+
+    return spinner;
+}
+
+var mbhPaymentFunc = new MbhPaymentFunc();
 
 window.addEventListener('load', function(ev) {
     mbhPaymentFunc.getForm();
