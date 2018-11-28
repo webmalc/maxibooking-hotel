@@ -7,7 +7,10 @@
 namespace MBH\Bundle\OnlineBundle\Form;
 
 
+use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\OnlineBundle\Lib\SearchForm;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -19,11 +22,10 @@ class OrderSearchType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $userNameVisible = false;
+        /** @var SearchForm $search */
+        $search = $builder->getData();
 
-        if (!empty($options['data']) && $options['data']->isUserNameVisible()) {
-            $userNameVisible = true;
-        }
+        $userNameVisible = $search->isUserNameVisible();
 
         $commonInputAttr = ['class' => 'form-control input-sm'];
         $commonLabelAttr = ['class' => 'col-form-label col-form-label-sm'];
@@ -54,6 +56,36 @@ class OrderSearchType extends AbstractType
                 'configId',
                 HiddenType::class
             );
+
+        if (!$search->getPaymentFormConfig()->isForMbSite() && count($search->getHotels()) > 1) {
+            $hotels = [];
+
+            /** @var Hotel $hotel */
+            foreach ($search->getHotels() as $hotel) {
+                $hotels[$hotel->getName()] = $hotel->getId();
+            }
+
+            $builder->add(
+                'hotelId',
+                ChoiceType::class,
+                [
+                    'label'      => 'form.online.order_search.hotel',
+                    'choices'    => $hotels,
+                    'data'       => $search->getHotelId(),
+                    'label_attr' => $commonLabelAttr,
+                    'group'      => $commonGroup,
+                    'attr'       => $commonInputAttr,
+                ]
+            );
+        } else {
+            $builder->add(
+                'hotelId',
+                HiddenType::class,
+                [
+                    'data' => $search->getHotelId() ?? $search->getHotels()[0]->getId(),
+                ]
+            );
+        }
 
         if ($userNameVisible) {
             $builder->add(

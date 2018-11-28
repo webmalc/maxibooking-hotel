@@ -75,6 +75,7 @@ class ApiPaymentFormController extends Controller
 
         $search = $this->container->get('mbh.online.search_order');
         $search->setConfigId($formId);
+        $search->setHotelId($request->get('hotel'));
 
         $form = $this->createForm(OrderSearchType::class, $search);
 

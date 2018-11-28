@@ -173,6 +173,7 @@ form.payment.formType.enabledShowAmount_help: 'Показывать рекоме
 form.online.order_search.numberOrder: 'Номер заказа'
 form.online.order_search.phoneOrEmail: 'Номер телефона или email'
 form.online.order_search.userName: 'Фамилия/Организация'
+form.online.order_search.hotel: 'Отель'
 form.payment.formType.enabledReCaptcha.help: 'Проверка reCaptcha'
 form.payment.formType.fieldUserNameIsVisible.help: 'B форме поиска, дополнительное поле "Фамилия"'
 form.online.order_search.button_search: 'Найти заказ'
