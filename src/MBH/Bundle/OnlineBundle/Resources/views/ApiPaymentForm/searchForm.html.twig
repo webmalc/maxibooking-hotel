@@ -61,7 +61,7 @@
     {% endif %}
     <body>
     <div id="mbh-form-payment-accordion">
-        <div id="#mbh-form-payment-accordion-search" class="panel panel-primary">
+        <div id="mbh-form-payment-accordion-search" class="panel panel-primary">
             <div class="panel-heading">
                 <h4>{{ 'api.payment_form.step_1' | trans }}</h4>
             </div>
@@ -76,18 +76,14 @@
                 {{ form_end(form) }}
             </div>
         </div>
-        <div id="#mbh-form-payment-generate" class="panel panel-primary">
+        <div id="mbh-form-payment-generate" class="panel panel-primary">
             <div class="panel-heading">
                 <h4>{{ 'api.payment_form.step_2' | trans }}</h4>
             </div>
-            {#<div class="panel-body">#}
-                {#<div id="{{ idDivResultSearch | raw }}">#}
-                {#</div>#}
-            {#</div>#}
             <div id="{{ idDivResultSearch | raw }}">
             </div>
         </div>
-        <div id="#mbh-form-payment-pay" class="panel panel-primary">
+        <div id="mbh-form-payment-pay" class="panel panel-primary">
             <div class="panel-heading">
                 <h4>{{ 'api.payment_form.step_3' | trans }}</h4>
             </div>
