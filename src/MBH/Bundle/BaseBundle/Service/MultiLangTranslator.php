@@ -51,14 +51,14 @@ class MultiLangTranslator
                         continue;
                     }
 
-                    $this->forceSaveTranslation($document, $fieldName, $language, $translation);
+                    $this->forceSaveTranslation($document, $fieldName, $language, trim($translation));
                 }
             }
 
             $this->dm->flush();
         } else {
             foreach ($translationsByFields as $fieldName => $value) {
-                $this->forceSaveTranslation($document, $fieldName, $this->defaultLocale, $value);
+                $this->forceSaveTranslation($document, $fieldName, $this->defaultLocale, trim($value));
             }
 
             if ($this->defaultLocale !== $this->translator->getLocale()) {
