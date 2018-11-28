@@ -64,7 +64,10 @@ class FormType extends AbstractType implements DecorationTypeInterface
                 'label' => 'form.formType.resultsUrl_label',
                 'group' => 'form.formType.parameters',
                 'required' => true,
-                'help' => 'form.formType.resultsUrl_help'
+                'help' => 'form.formType.resultsUrl_help',
+                'attr' => [
+                    'readonly' => $builder->getData() && $builder->getData()->isForMbSite()
+                ]
             ])
             ->add(
                 'nights',
