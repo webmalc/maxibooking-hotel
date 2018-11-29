@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class Sberbank extends Wrapper
 {
-    public const SUCCESSFUL_RESPONSE = 'OK';
+    private const SUCCESSFUL_RESPONSE = 'OK';
 
     public function getFormData(CashDocument $cashDocument, $url = null, $checkUrl = null)
     {
@@ -58,7 +58,7 @@ class Sberbank extends Wrapper
         }
 
         if ($notification->getOperation() !== CallbackNotification::OPERATION_DEPOSITED
-            && $notification->getStatus() !== 1
+            && $notification->getStatus() !== CallbackNotification::STATUS_SUCCESS
             && $notification->getChecksum() !== $notification->generateHmacSha256($this->entity)
         ) {
             return $holder;

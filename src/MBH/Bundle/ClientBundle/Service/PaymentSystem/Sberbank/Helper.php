@@ -66,12 +66,10 @@ class Helper
         $register->setOrderNumber($cashDocument->getId());
         $register->setAmount($cashDocument->getTotal() * 100);
 
-        if ($this->getClientConfig()->getSuccessUrl() !== null) {
-            $register->setReturnUrl($this->getClientConfig()->getSuccessUrl());
-        }
+        $register->setReturnUrl($configSbrf->getReturnUrl());
 
-        if ($this->getClientConfig()->getFailUrl() !== null) {
-            $register->setFailUrl($this->getClientConfig()->getFailUrl());
+        if ($configSbrf->getFailUrl() !== null) {
+            $register->setFailUrl($configSbrf->getFailUrl());
         }
 
         if ($request !== null && $this->IsMobileDevice($request)) {
@@ -88,12 +86,19 @@ class Helper
         return $register;
     }
 
-    public function request(RegisterRequest $register): ?RegisterResponse
+    /**
+     * @param RegisterRequest $register
+     * @param bool $isTest
+     * @return RegisterResponse|null
+     */
+    public function request(RegisterRequest $register, bool $isTest = true): ?RegisterResponse
     {
         $client = new Client();
 
+        $url = $isTest ? RegisterRequest::URL_REGISTER_TEST : RegisterRequest::URL_REGISTER_PROD;
+
         $response = RegisterResponse::parseResponse(
-            $client->post(RegisterRequest::URL_REGISTER, [
+            $client->post($url, [
                 'form_params' => $register->getQuery(),
             ])
         );
