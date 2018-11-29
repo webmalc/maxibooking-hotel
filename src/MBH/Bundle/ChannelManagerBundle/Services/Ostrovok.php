@@ -280,7 +280,7 @@ class Ostrovok extends Base
                         return $ratePlan['room_category'] === (int)$CMRoomId;
                     });
                     foreach ($filteredRatePlans as $ratePlanId => $ratePlan) {
-                        $tariff = $tariffs[$ratePlanId]['doc'];
+                        $tariff = $tariffs[$ratePlanId]['doc'] ?? null;
                         $occupancies = array_intersect_key($allOccupancies, array_flip($ratePlan['possible_occupancies']));
                         foreach ($occupancies as $occupancy) {
                             foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
@@ -312,18 +312,15 @@ class Ostrovok extends Base
             $data = array_merge(...$data);
             $chunkSize = 40;
             if (\count($data) < $chunkSize) {
-                $result = $this->sendApiRequest(['occupancies' => $data], __METHOD__);
+//                $result = $this->sendApiRequest(['occupancies' => $data], __METHOD__);
             } else {
                 foreach (array_chunk($data, $chunkSize) as $chunk) {
-                    $result = $result && $this->sendApiRequest(['occupancies' => $chunk], __METHOD__);
+//                    $result = $result && $this->sendApiRequest(['occupancies' => $chunk], __METHOD__);
                 }
             }
         } catch (OstrovokApiServiceException $e) {
             $result = false;
             $this->log($e->getMessage(), 'CRITICAL');
-            if (PHP_SAPI === 'cli') {
-                var_dump($tariffs);
-            }
         }
 
         return $result;
