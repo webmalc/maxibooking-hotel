@@ -10,6 +10,8 @@ security:
             id: fos_user.user_provider.username_email
         api_key_user_provider:
             id: mbh.api_key_user_provider
+        token_user_provider:
+            id: mbh.token_user_provider
 
     firewalls:
         dev:
@@ -19,9 +21,19 @@ security:
         js_router:
             pattern: ^/(js\/routing|profile\/js\/routing)
             security: false
+        api:
+            pattern: ^/base/alias/invalidate
+            guard:
+                authenticators:
+                    - mbh.token_authenticator
+            provider: token_user_provider
+            stateless: true
+            access_denied_handler: mbh.api_access_denied_handler
+
         main:
 #           Dev test only
 #            http_basic: ~
+
             pattern: ^/
             form_login:
                 always_use_default_target_path: false
@@ -45,9 +57,11 @@ security:
                 lifetime: 3600
                 path:     /
                 domain:   ~
+            stateless: false
 
     access_control:
         - { path: ^/deploy, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+        - { path: ^/base/alias/invalidate, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/management/channelmanager/package/notifications, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/management/channelmanager/expedia/push_notification, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/management/online/api, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
