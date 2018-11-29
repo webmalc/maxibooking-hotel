@@ -38,7 +38,7 @@ class ClientConfigType extends AbstractType
     {
         $client = $this->clientManager->getClient();
         $login = $client->getLogin();
-        $loginAlias = !empty($client->getLoginAlias()) ? $client->getLoginAlias() : $login;
+        $loginAlias = !empty($client->getLogin_alias()) ? $client->getLogin_alias() : $login;
 
         $builder
             ->add('login_alias', TextType::class, [
