@@ -24,7 +24,7 @@ if ($debug) {
     Debug::enable();
 }
 
-AliasChecker::checkAlias(AppKernel::CLIENT_VARIABLE);
+AliasChecker::checkAlias(AppKernel::CLIENT_VARIABLE, $env);
 $client = getenv(AppKernel::CLIENT_VARIABLE);
 if (empty($client)) {
     $client = AppKernel::DEFAULT_CLIENT;

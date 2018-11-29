@@ -13,8 +13,8 @@ $loader = require __DIR__.'/../app/autoload.php';
 if (PHP_VERSION_ID < 70000) {
     include_once __DIR__.'/../var/bootstrap.php.cache';
 }
-
-AliasChecker::checkAlias(AppKernel::CLIENT_VARIABLE);
+$env = 'prod';
+AliasChecker::checkAlias(AppKernel::CLIENT_VARIABLE, $env);
 $request = Request::createFromGlobals();
 Request::setTrustedProxies(['127.0.0.1', $request->server->get('REMOTE_ADDR') ], Request::HEADER_X_FORWARDED_AWS_ELB);
 
@@ -23,7 +23,7 @@ $client = $request->server->get(AppKernel::CLIENT_VARIABLE);
 $dotenv = new Dotenv();
 $dotenv->load(__DIR__.'/../app/config/database.env', __DIR__.'/../app/config/clients/'.$client.'.env');
 
-$kernel = new AppKernel('prod', false, $client);
+$kernel = new AppKernel($env, false, $client);
 if (PHP_VERSION_ID < 70000) {
     $kernel->loadClassCache();
 }

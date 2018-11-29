@@ -13,8 +13,7 @@ class AliasChecker
 
     public const CHECK_ALIAS_SCRIPT = __DIR__.'/../../../../../../scripts/checkalias/checkalias.py';
 
-
-    public static function checkAlias(string $variableName): void
+    public static function checkAlias(string $variableName, string $env): void
     {
 
         $fileSystem = new  Filesystem();
@@ -24,7 +23,7 @@ class AliasChecker
             $clientName = \AppKernel::DEFAULT_CLIENT;
         }
 
-        if ($clientName !== \AppKernel::DEFAULT_CLIENT && $fileSystem->exists(realpath(static::CHECK_ALIAS_SCRIPT))) {
+        if ($env === 'prod' && $clientName !== \AppKernel::DEFAULT_CLIENT && $fileSystem->exists(realpath(static::CHECK_ALIAS_SCRIPT))) {
 
             $commandline = 'python3 ' . static::CHECK_ALIAS_SCRIPT . ' --client ' . $clientName;
             $process = new Process($commandline);

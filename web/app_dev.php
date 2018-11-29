@@ -17,7 +17,8 @@ error_reporting(E_ALL);
 $loader = require __DIR__.'/../app/autoload.php';
 /** @noinspection ForgottenDebugOutputInspection */
 Debug::enable();
-AliasChecker::checkAlias(AppKernel::CLIENT_VARIABLE);
+$env = 'dev';
+AliasChecker::checkAlias(AppKernel::CLIENT_VARIABLE, $env);
 $request = Request::createFromGlobals();
 Request::setTrustedProxies(['127.0.0.1', '127.0.1.1', $request->server->get('REMOTE_ADDR')], Request::HEADER_X_FORWARDED_AWS_ELB);
 if (!\in_array($request->getClientIp(), ['94.159.1.194', '127.0.0.1', '127.0.1.1', '172.17.0.1'], true)) {
@@ -30,7 +31,7 @@ $client = $request->server->get(AppKernel::CLIENT_VARIABLE);
 $dotenv = new Dotenv();
 $dotenv->load(__DIR__.'/../app/config/database.env', __DIR__.'/../app/config/clients/'.$client.'.env');
 
-$kernel = new AppKernel('dev', true, $client);
+$kernel = new AppKernel($env, true, $client);
 if (PHP_VERSION_ID < 70000) {
     $kernel->loadClassCache();
 }
