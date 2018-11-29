@@ -86,10 +86,11 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
             $previousLoginAlias = $client->getLoginAlias();
             if ($previousLoginAlias !== $loginAlias) {
                 $client->setLoginAlias($loginAlias);
+
                 $result = $clientManager->updateClient($client);
                 if (!$result->isSuccessful()) {
                     $client->setLoginAlias($previousLoginAlias);
-                    throw new \Exception(json_encode($result->getErrors()));
+                    throw new \Exception(json_encode($result->getErrors(), JSON_UNESCAPED_UNICODE));
                 }
             }
 
