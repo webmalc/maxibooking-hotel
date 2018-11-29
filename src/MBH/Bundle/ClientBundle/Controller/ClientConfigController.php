@@ -96,6 +96,8 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
                     foreach ($errors['login_alias'] as $error) {
                         $form->get('login_alias')->addError(new FormError($error));
                     }
+                } else {
+                    throw new \Exception(json_encode($errors, JSON_UNESCAPED_UNICODE));
                 }
             }
         }
