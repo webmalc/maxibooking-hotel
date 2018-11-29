@@ -9,6 +9,7 @@ use MBH\Bundle\BaseBundle\Form\LanguageType;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Service\ClientManager;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -17,6 +18,7 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Class ClientConfigType
@@ -26,27 +28,54 @@ class ClientConfigType extends AbstractType
     private $helper;
     private $currencyData;
     private $clientManager;
+    private $scheme;
+    private $domain;
+    private $translator;
+    private $router;
 
-    public function __construct(Helper $helper, array $currencyData, ClientManager $clientManager)
+    public function __construct(
+        Helper $helper,
+        array $currencyData,
+        ClientManager $clientManager,
+        string $scheme,
+        string $domain,
+        TranslatorInterface $translator,
+        Router $router
+    )
     {
         $this->helper = $helper;
         $this->currencyData = $currencyData;
         $this->clientManager = $clientManager;
+        $this->scheme = $scheme;
+        $this->domain = $domain;
+        $this->translator = $translator;
+        $this->router = $router;
     }
 
+    /**
+     * @param FormBuilderInterface $builder
+     * @param array $options
+     * @throws \Exception
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $client = $this->clientManager->getClient();
         $login = $client->getLogin();
         $loginAlias = !empty($client->getLogin_alias()) ? $client->getLogin_alias() : $login;
+        $loginAliasHelp = $this->translator->trans('form.clientConfigType.time_zone.login_alias.help')
+            . '<br>'
+            . '<a style="margin-top: 5px" class="btn btn-success" href="' . $this->router->generate('reset_login_alias') . '">'
+            . $this->translator->trans('form.clientConfigType.time_zone.login_alias.help.button_text'). '</a>';
 
         $builder
             ->add('login_alias', TextType::class, [
                 'label' => 'form.clientConfigType.time_zone.login_alias.label',
-                'help' => 'form.clientConfigType.time_zone.login_alias.help',
+                'help' => $loginAliasHelp,
                 'mapped' => false,
                 'data' => $loginAlias,
                 'group' => 'form.clientConfigType.main_group',
+                'addonText' => $this->domain,
+                'preAddonText' => $this->scheme . '://',
             ])
             ->add('timeZone', ChoiceType::class, [
                 'choices' => ClientConfig::getTimeZonesList(),
@@ -233,10 +262,10 @@ class ClientConfigType extends AbstractType
                             );
                     },
                     'choice_label' => function (NotificationType $type) {
-                        return 'notifier.config.label.'.$type->getType();
+                        return 'notifier.config.label.' . $type->getType();
                     },
                     'choice_attr' => function (NotificationType $type) {
-                        return ['title' => 'notifier.config.title.'.$type->getType()];
+                        return ['title' => 'notifier.config.title.' . $type->getType()];
                     },
                     #http://symfony.com/blog/new-in-symfony-2-7-form-and-validator-updates#added-choice-translation-domain-domain-to-avoid-translating-options
                     'choice_translation_domain' => true
