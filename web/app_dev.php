@@ -1,5 +1,6 @@
 <?php
 
+use MBH\Bundle\BaseBundle\Lib\AliasChecker\AliasChecker;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Debug\Debug;
@@ -14,7 +15,9 @@ error_reporting(E_ALL);
 
 /** @var \Composer\Autoload\ClassLoader $loader */
 $loader = require __DIR__.'/../app/autoload.php';
+/** @noinspection ForgottenDebugOutputInspection */
 Debug::enable();
+AliasChecker::checkAlias(AppKernel::CLIENT_VARIABLE);
 $request = Request::createFromGlobals();
 Request::setTrustedProxies(['127.0.0.1', '127.0.1.1', $request->server->get('REMOTE_ADDR')], Request::HEADER_X_FORWARDED_AWS_ELB);
 if (!\in_array($request->getClientIp(), ['94.159.1.194', '127.0.0.1', '127.0.1.1', '172.17.0.1'], true)) {

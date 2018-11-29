@@ -1,5 +1,6 @@
 <?php
 
+use MBH\Bundle\BaseBundle\Lib\AliasChecker\AliasChecker;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -13,6 +14,7 @@ if (PHP_VERSION_ID < 70000) {
     include_once __DIR__.'/../var/bootstrap.php.cache';
 }
 
+AliasChecker::checkAlias(AppKernel::CLIENT_VARIABLE);
 $request = Request::createFromGlobals();
 Request::setTrustedProxies(['127.0.0.1', $request->server->get('REMOTE_ADDR') ], Request::HEADER_X_FORWARDED_AWS_ELB);
 

@@ -143,3 +143,9 @@ Vagrantfile
 *-console.log
 
 .ansible/default_vars.yml
+
+#aliases
+/scripts/checkalias/.mypy_cache/
+/scripts/checkalias/__pycache__/
+/scripts/checkalias/settings.py
+
