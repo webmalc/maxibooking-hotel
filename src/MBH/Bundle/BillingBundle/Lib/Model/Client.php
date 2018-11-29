@@ -118,7 +118,7 @@ class Client
     /**
      * @return string
      */
-    public function getLoginAlias(): ?string
+    public function getLogin_alias(): ?string
     {
         return $this->login_alias;
     }
@@ -127,7 +127,7 @@ class Client
      * @param string $login_alias
      * @return Client
      */
-    public function setLoginAlias(?string $login_alias): Client
+    public function setLogin_alias(?string $login_alias): Client
     {
         $this->login_alias = $login_alias;
 

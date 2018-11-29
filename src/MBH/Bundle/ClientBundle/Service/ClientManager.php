@@ -293,6 +293,7 @@ class ClientManager
 
     /**
      * @return int|null
+     * @throws \Exception
      */
     public function getNumberOfDaysBeforeDisable()
     {
@@ -314,6 +315,33 @@ class ClientManager
         }
 
         return null;
+    }
+
+    /**
+     * @param string|null $loginAlias
+     * @return array|mixed
+     * @throws \Exception
+     */
+    public function changeLoginAlias(?string $loginAlias)
+    {
+        $client = $this->getClient();
+        if ($loginAlias === $client->getLogin()) {
+            $loginAlias = null;
+        }
+
+        $previousLoginAlias = $client->getLogin_alias();
+        if ($previousLoginAlias !== $loginAlias) {
+            $client->setLogin_alias($loginAlias);
+
+            $result = $this->updateClient($client);
+            if (!$result->isSuccessful()) {
+                $client->setLogin_alias($previousLoginAlias);
+
+                return $result->getErrors();
+            }
+        }
+
+        return [];
     }
 
     private function getDefaultClientData()
