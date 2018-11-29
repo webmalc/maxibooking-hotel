@@ -11,7 +11,7 @@ use MBH\Bundle\OnlineBundle\Document\SiteConfig;
 use MBH\Bundle\OnlineBundle\Form\SiteForm;
 use MBH\Bundle\OnlineBundle\Form\SitePersonalDataPoliciesType;
 use MBH\Bundle\OnlineBundle\Form\SocialNetworking\SiteSocialNetworkingServicesType;
-use MBH\Bundle\OnlineBundle\Lib\Exception\NotFoundMBSiteConfigException;
+use MBH\Bundle\OnlineBundle\Lib\Exception\NotFoundConfigMBSiteException;
 use MBH\Bundle\OnlineBundle\Lib\SocialNetworking\HolderSNSs;
 use MBH\Bundle\OnlineBundle\Services\AvailableSocialNetworkingServices;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -260,7 +260,7 @@ class MBSiteController extends BaseController
         $siteConfig = $siteManager->getSiteConfig();
 
         if ($siteConfig === null) {
-            throw new NotFoundMBSiteConfigException();
+            throw new NotFoundConfigMBSiteException();
         }
 
         $holder = $this->get(AvailableSocialNetworkingServices::class)->createHolder($siteConfig);
