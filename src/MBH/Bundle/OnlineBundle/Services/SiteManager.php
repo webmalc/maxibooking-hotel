@@ -183,7 +183,8 @@ class SiteManager
                 throw new \RuntimeException('There is no created client site');
             }
 
-            $siteDomain = $clientSite->getUrl();
+            $host = parse_url($clientSite->getUrl())['host'];
+            $siteDomain = substr($host, 0, strpos($host, SiteManager::SITE_DOMAIN));
             $config->setSiteDomain($siteDomain);
         }
 
