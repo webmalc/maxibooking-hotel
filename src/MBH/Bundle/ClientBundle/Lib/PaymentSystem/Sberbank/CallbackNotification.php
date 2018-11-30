@@ -62,7 +62,7 @@ class CallbackNotification
     {
         $body = $request->query->getIterator();
 
-        if (json_last_error() !== JSON_ERROR_NONE || count($body)=== 0) {
+        if (json_last_error() !== JSON_ERROR_NONE || $body->count()=== 0) {
             return null;
         }
         $self = new self();

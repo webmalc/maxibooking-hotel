@@ -88,6 +88,12 @@ class Sberbank extends PaymentSystemDocument implements TaxMapInterface, Fiscali
     private $taxationSystemCode = self::DEFAULT_TAX_SYSTEM;
 
     /**
+     * @var bool
+     * @ODM\Field(type="boolean")
+     */
+    private $envTest = true;
+
+    /**
      * @var null|string
      * @ODM\Field(type="string")
      */
@@ -217,6 +223,22 @@ class Sberbank extends PaymentSystemDocument implements TaxMapInterface, Fiscali
     public function setFailUrl(?string $failUrl): void
     {
         $this->failUrl = $failUrl;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEnvTest(): bool
+    {
+        return $this->envTest;
+    }
+
+    /**
+     * @param bool $envTest
+     */
+    public function setEnvTest(bool $envTest): void
+    {
+        $this->envTest = $envTest;
     }
 
     /**

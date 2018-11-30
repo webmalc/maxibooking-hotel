@@ -2,7 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Form;
 
-use MBH\Bundle\BaseBundle\Form\Extension\DateType;
+use Doctrine\ODM\MongoDB\Types\DateType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;

@@ -4,6 +4,7 @@
 namespace MBH\Bundle\UserBundle\EventListener;
 
 
+use MBH\Bundle\PackageBundle\Lib\LocaleInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 
@@ -19,10 +20,10 @@ class UserLocalListener
     /**
      * @param InteractiveLoginEvent $event
      */
-    public function onInteractiveLogin(InteractiveLoginEvent $event)
+    public function onInteractiveLogin(InteractiveLoginEvent $event): void
     {
         $user = $event->getAuthenticationToken()->getUser();
-        if (null !== $user->getLocale()) {
+        if ($user instanceof LocaleInterface && null !== $user->getLocale()) {
             $this->session->set('_locale', $user->getLocale());
         }
 
