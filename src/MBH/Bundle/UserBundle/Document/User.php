@@ -14,6 +14,7 @@ use MBH\Bundle\BaseBundle\Service\Messenger\RecipientInterface;
 use MBH\Bundle\PackageBundle\Document\AddressObjectDecomposed;
 use MBH\Bundle\PackageBundle\Document\DocumentRelation;
 use MBH\Bundle\PackageBundle\Lib\DataOfMortalInterface;
+use MBH\Bundle\PackageBundle\Lib\LocaleInterface;
 use MBH\Bundle\UserBundle\Validator\Constraints as MBHValidator;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -27,7 +28,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @MongoDBUnique(fields="email", message="validator.user.email_is_busy")
  * @MongoDBUnique(fields="username", message="mbhuserbundle.document.user.takoy.login.uzhe.zaregistrirovan")
  */
-class User extends BaseUser implements RecipientInterface, DataOfMortalInterface
+class User extends BaseUser implements RecipientInterface, DataOfMortalInterface, LocaleInterface
 {
     const ROLE_DEFAULT = 'ROLE_BASE_USER';
     const TWO_FACTOR_TYPES = ['email', 'google'];

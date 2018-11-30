@@ -73,7 +73,7 @@ services:
 
     mbh.client_config_type:
         class: MBH\Bundle\ClientBundle\Form\ClientConfigType
-        arguments: ['@mbh.helper', '%mbh.currency.data%']
+        arguments: ['@mbh.helper', '%mbh.currency.data%', '@mbh.client_manager', '%router.request_context.scheme%', '%domain%', '@translator', '@router']
         tags:
             - {name: form.type}
 

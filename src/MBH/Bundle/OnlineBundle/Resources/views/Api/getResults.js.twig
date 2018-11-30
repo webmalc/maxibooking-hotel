@@ -512,6 +512,7 @@ jQuery(document).ready(function() {
                                     dataType: 'html',
                                     crossDomain: true,
                                     success: function(data) {
+                                        wrapper.trigger('payment-form-load-event');
 
                                         var total = requestParams.total.replace(/,/g, ''),
                                             totalPackages = requestParams.totalPackages.replace(/,/g, ''),
@@ -592,6 +593,7 @@ jQuery(document).ready(function() {
                                                 crossDomain: true,
                                                 success: function(data) {
                                                     if (data.success) {
+                                                        wrapper.trigger('booking-result-load-event');
                                                         jQuery.removeCookie('mbh.package');
 
                                                         wrapper.html('{{ styles|escape("js") }} <div class="mbh-results-info alert alert-info"><i class="fa fa-check-circle-o"></i> ' + data.message + '</div>');

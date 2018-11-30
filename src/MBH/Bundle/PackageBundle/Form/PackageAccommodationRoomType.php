@@ -36,7 +36,7 @@ class PackageAccommodationRoomType extends AbstractType
                 'format' => 'dd.MM.yyyy',
                 'required' => true,
                 'attr' => array(
-                    'class' => 'datepicker begin-datepicker input-small',
+                    'class' => 'datepicker end-datepicker input-small',
                     'data-date-format' => 'dd.mm.yyyy'
                 )
             ])

@@ -27,11 +27,13 @@ class NewRbk extends PaymentSystemDocument implements TaxMapInterface, Fiscaliza
 
     public const URL_FOR_CHECKOUT_JS = 'https://checkout.rbk.money/checkout.js';
     public const TYPE_POST_MSG = 'mbh-payment-newRbk';
+    public const WITHOUT_TAX_RATE = 'none';
 
     private const LIFETIME_INVOICE = 1;
     private const DEFAULT_TAX_RATE = '18%';
 
     private const TAX_RATE_MAP = [
+        -1  => self::WITHOUT_TAX_RATE,
         0   => '0%',
         10  => '10%',
         18  => self::DEFAULT_TAX_RATE,

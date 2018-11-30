@@ -6,8 +6,6 @@ use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Service\DocumentFieldsManager;
 use MBH\Bundle\BaseBundle\Service\WarningsCompiler;
-use MBH\Bundle\BillingBundle\Lib\Model\Client;
-use MBH\Bundle\BillingBundle\Lib\Model\WebSite;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\ClientBundle\Service\ClientManager;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -171,23 +169,23 @@ class SiteManager
 
     /**
      * @param Hotel $hotel
-     * @param Client $client
      * @return SiteConfig
      */
-    public function createOrUpdateForHotel(Client $client, Hotel $hotel = null)
+    public function createOrUpdateForHotel(Hotel $hotel = null)
     {
         $config = $this->getSiteConfig();
         if (is_null($config)) {
             $config = new SiteConfig();
             $this->dm->persist($config);
 
-            $siteDomain = $this->compileSiteDomain($client);
+            $clientSite = $this->clientManager->getClientSite();
+            if (is_null($clientSite)) {
+                throw new \RuntimeException('There is no created client site');
+            }
 
+            $host = parse_url($clientSite->getUrl())['host'];
+            $siteDomain = substr($host, 0, strpos($host, SiteManager::SITE_DOMAIN));
             $config->setSiteDomain($siteDomain);
-            $clientSite = (new WebSite())
-                ->setUrl($this->compileSiteAddress($siteDomain))
-                ->setClient($client->getLogin());
-            $this->billingApi->addClientSite($clientSite);
         }
 
         if (!is_null($hotel)) {
@@ -307,31 +305,5 @@ class SiteManager
     public function compileSiteAddress(string $siteDomain)
     {
         return self::SITE_PROTOCOL . $siteDomain . self::SITE_DOMAIN;
-    }
-
-    /**
-     * @param Client $client
-     * @return null|string
-     */
-    private function compileSiteDomain(Client $client)
-    {
-        $siteDomain = '';
-        if ($this->checkSiteDomain($client->getLogin())) {
-            $siteDomain = $client->getLogin();
-        } elseif ($client->getCity()) {
-            $domainWithCityName = $client->getLogin().'-'.$this->billingApi->getCityById(
-                    $client->getCity(),
-                    'en'
-                )->getName();
-            if ($this->checkSiteDomain($domainWithCityName)) {
-                $siteDomain = $domainWithCityName;
-            }
-        }
-
-        if (empty($siteDomain)) {
-            $siteDomain = $client->getLogin().rand(0, 1000000);
-        }
-
-        return $siteDomain;
     }
 }
