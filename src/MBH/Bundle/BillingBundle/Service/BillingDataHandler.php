@@ -41,7 +41,6 @@ class BillingDataHandler
                 $responseCompiler->setData($this->serializer->normalize($prospectiveEntity));
             }
             if ($entity instanceof BillingClientRelatedInterface) {
-                //TODO: Поменять если будет логин вместо ID
                 $entity->setRequest_client($this->kernel->getClient());
             }
             if ($entity instanceof BillingEnablableInterface && $entity instanceof BillingCheckableInterface) {
@@ -50,7 +49,13 @@ class BillingDataHandler
             }
 
             $response = $this->billingApi->createBillingEntity($endpointSettings, $entity);
-
+            $decodedResponse = json_decode($response->getBody(), true);
+            if (!isset($decodedResponse['id'])) {
+                $responseCompiler->setIsSuccessful(false);
+                $this->formDataHandler->fillFormByBillingErrors($form, $decodedResponse);
+            } else {
+                $responseCompiler->setData($decodedResponse);
+            }
         } else {
             $responseCompiler->setIsSuccessful(false);
         }

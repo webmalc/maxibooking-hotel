@@ -182,6 +182,7 @@ class ChessBoardController extends BaseController
             'roomTypesData' => $builder->getRoomTypeData(),
             'roomStatusIcons' => $this->getParameter('mbh.room_status_icons'),
             'colors' => $colorSettings->__toArray(),
+            'leftRoomsData' => $builder->getLeftRoomCounts(),
         ];
     }
 
