@@ -438,8 +438,8 @@ var docReadyForms = function () {
 
                 $(inputEnd).datepicker('setStartDate', inputBegin.value);
 
-                if (dateEnd === null || dateBegin.setHours(0) > dateEnd.setHours(23)) {
-                    $(inputEnd).datepicker('setDate', helperDate.returnPlusOneDay(dateBegin));
+                if (dateBegin.setHours(0) > dateEnd.setHours(23)) {
+                    $(inputEnd).datepicker('setDate', null);
                 }
             });
 
