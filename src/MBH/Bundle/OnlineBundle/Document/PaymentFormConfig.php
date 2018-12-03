@@ -119,9 +119,10 @@ class PaymentFormConfig extends Base implements DecorationInterface, DecorationD
      * @param array $hotels
      * @return PaymentFormConfig
      */
-    public function setHotels($hotels)
+    public function setHotels($hotels): self
     {
         $this->hotels = $hotels;
+
         return $this;
     }
 
@@ -136,9 +137,11 @@ class PaymentFormConfig extends Base implements DecorationInterface, DecorationD
     /**
      * @param bool $enabledShowAmount
      */
-    public function setEnabledShowAmount(bool $enabledShowAmount): void
+    public function setEnabledShowAmount(bool $enabledShowAmount): self
     {
         $this->enabledShowAmount = $enabledShowAmount;
+
+        return $this;
     }
 
     /**
@@ -152,9 +155,11 @@ class PaymentFormConfig extends Base implements DecorationInterface, DecorationD
     /**
      * @param bool $fieldUserNameIsVisible
      */
-    public function setFieldUserNameIsVisible(bool $fieldUserNameIsVisible): void
+    public function setFieldUserNameIsVisible(bool $fieldUserNameIsVisible): self
     {
         $this->fieldUserNameIsVisible = $fieldUserNameIsVisible;
+
+        return $this;
     }
 
     /**
@@ -168,9 +173,11 @@ class PaymentFormConfig extends Base implements DecorationInterface, DecorationD
     /**
      * @param bool $enabledReCaptcha
      */
-    public function setEnabledReCaptcha(bool $enabledReCaptcha): void
+    public function setEnabledReCaptcha(bool $enabledReCaptcha): self
     {
         $this->enabledReCaptcha = $enabledReCaptcha;
+
+        return $this;
     }
 
     /**
@@ -184,9 +191,11 @@ class PaymentFormConfig extends Base implements DecorationInterface, DecorationD
     /**
      * @param string $js
      */
-    public function setJs(string $js = null): void
+    public function setJs(string $js): self
     {
         $this->js = $js;
+
+        return $this;
     }
 
     /**
@@ -200,9 +209,11 @@ class PaymentFormConfig extends Base implements DecorationInterface, DecorationD
     /**
      * @param bool $useAccordion
      */
-    public function setUseAccordion(bool $useAccordion): void
+    public function setUseAccordion(bool $useAccordion): self
     {
         $this->useAccordion = $useAccordion;
+
+        return $this;
     }
 
     /**
@@ -216,8 +227,10 @@ class PaymentFormConfig extends Base implements DecorationInterface, DecorationD
     /**
      * @param bool $forMbSite
      */
-    public function setForMbSite(bool $forMbSite): void
+    public function setForMbSite(bool $forMbSite): self
     {
         $this->forMbSite = $forMbSite;
+
+        return $this;
     }
 }
