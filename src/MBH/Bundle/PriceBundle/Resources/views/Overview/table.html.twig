@@ -41,7 +41,7 @@
                         {% for date in period %}
 
                             {% set error = true %}
-                            {% set cell = false %}
+                            {% set cell = true %}
                             {% set roomCache = false %}
                             {% set tariffRoomCache = false %}
                             {% set priceCache = false %}
@@ -78,11 +78,6 @@
                             {% endif %}
                             {% if tariff.parent and tariff.childOptions.inheritRestrictions and restrictions[roomType.id][tariff.parent.id][date|date('d.m.Y')] is defined %}
                                 {% set restriction = restrictions[roomType.id][tariff.parent.id][date|date('d.m.Y')] %}
-                            {% endif %}
-
-
-                            {% if roomCache or tariffRoomCache %}
-                                {% set cell = true %}
                             {% endif %}
 
                             {% if categoryId == 'rooms' %}

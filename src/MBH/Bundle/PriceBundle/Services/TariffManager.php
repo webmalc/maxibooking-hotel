@@ -49,7 +49,7 @@ class TariffManager
      */
     public function updateTariff(Tariff $tariff)
     {
-        $defaultTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(['isDefault' => true]);
+        $defaultTariff = $this->dm->getRepository('MBHPriceBundle:Tariff')->findOneBy(['isDefault' => true, 'hotel.id' => $tariff->getHotel()->getId()]);
         if (!$defaultTariff->getIsDefault()) {
             throw new Exception('There must exist one default tariff!');
         }

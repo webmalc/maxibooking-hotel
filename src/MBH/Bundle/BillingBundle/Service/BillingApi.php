@@ -830,7 +830,8 @@ class BillingApi
      */
     private function logErrorAndThrowException($exception, $url): void
     {
-        $message = $exception->getResponse() ? (string)$exception->getResponse()->getBody : $exception->getMessage();
+        /** @var RequestException $exception */
+        $message = $exception->getMessage();
         $this->logErrorResponse($message, $url, []);
         throw new \RuntimeException('Can not get data by url ' . $url);
     }

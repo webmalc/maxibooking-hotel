@@ -1308,6 +1308,7 @@ class ChessBoardManager {
     }
 
     public updateTable() {
+        $('[data-toggle="tooltip"]').tooltip();
         this.updatePackagesData();
         this.updateLeftRoomCounts();
         this.updateNoAccommodationPackageCounts();
@@ -1331,6 +1332,7 @@ class ChessBoardManager {
                 dayElement.innerHTML = innerText;
             }
         });
+
         this.hangPopover();
     }
 
@@ -1338,6 +1340,7 @@ class ChessBoardManager {
         let self = this;
 
         let $popoverElements = $('.no-accommodation-date.achtung');
+        $popoverElements.popover();
 
         $popoverElements.unbind('shown.bs.popover');
         $popoverElements.on('shown.bs.popover', function () {
