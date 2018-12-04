@@ -206,37 +206,6 @@ class ClientConfigType extends AbstractType
                     'label' => 'form.clientConfigType.default_children_quantity.label',
                     'help' => 'form.clientConfigType.default_children_quantity.help',
                 ]
-            )
-            ->add(
-                'allowNotificationTypes',
-                DocumentType::class,
-                [
-                    'group' => 'form.clientConfigType.notification_group',
-                    'label' => 'form.clientConfigType.notification.label',
-                    'help' => 'form.clientConfigType.notification.help',
-                    'required' => false,
-                    'multiple' => true,
-                    'class' => NotificationType::class,
-                    'query_builder' => function (DocumentRepository $repository) {
-                        return $repository
-                            ->createQueryBuilder()
-                            ->field('owner')
-                            ->in(
-                                [
-                                    NotificationType::OWNER_CLIENT,
-                                    NotificationType::OWNER_ALL,
-                                ]
-                            );
-                    },
-                    'choice_label' => function (NotificationType $type) {
-                        return 'notifier.config.label.'.$type->getType();
-                    },
-                    'choice_attr' => function (NotificationType $type) {
-                        return ['title' => 'notifier.config.title.'.$type->getType()];
-                    },
-                    #http://symfony.com/blog/new-in-symfony-2-7-form-and-validator-updates#added-choice-translation-domain-domain-to-avoid-translating-options
-                    'choice_translation_domain' => true
-                ]
             );
     }
 
