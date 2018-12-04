@@ -4,7 +4,7 @@
  * Date: 23.11.18
  */
 
-namespace MBH\Bundle\OnlineBundle\Lib\Exception;
+namespace MBH\Bundle\OnlineBundle\Exception;
 
 
 class MBSiteIsDisabledInClientConfigException extends MBSiteException

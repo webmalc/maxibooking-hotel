@@ -4,7 +4,7 @@
  * Date: 21.11.18
  */
 
-namespace MBH\Bundle\OnlineBundle\Lib\Exception;
+namespace MBH\Bundle\OnlineBundle\Exception;
 
 
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
