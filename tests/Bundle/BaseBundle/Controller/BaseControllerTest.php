@@ -61,6 +61,7 @@ class BaseControllerTest extends WebTestCase
         'fos_user_profile_show',            //not used
         'api_success_url',                  //master test there is, but if not setting client config -> 404, so common exclude
         'api_fail_url',                     //master test there is, but if not setting client config -> 404, so common exclude
+        'reset_login_alias'                 //redirect
     ];
 
     private const ROUTES_WITH_OWN_TEST = [
