@@ -235,7 +235,7 @@
                     <li class="tile tile-not-selected tile-free both not-standard-tile"
                         style="width:{{ monthDays.daysCount * tableCellWidth }}px;">
                         <div class="month" style="width:{{ monthDays.daysCount * tableCellWidth }}px;">
-                            {{ monthDays.daysCount > 2 ? (months[monthDays.month])|trans({}, 'front_messages') ~ ', ' ~ monthDays.year }}
+                            {{ monthDays.daysCount > 3 ? (months[monthDays.month])|trans({}, 'front_messages') ~ ', ' ~ monthDays.year }}
                         </div>
                     </li>
                 {% endfor %}
