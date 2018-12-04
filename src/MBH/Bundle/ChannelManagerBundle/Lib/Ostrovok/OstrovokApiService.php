@@ -278,15 +278,23 @@ class OstrovokApiService
     /**
      * @param array $data
      * @param bool $isShowDeleted
+     * @param bool $onlyParent
      * @return array
+     * @throws OstrovokApiServiceException
      */
-    public function getRatePlans(array $data = array(), $isShowDeleted = false)
+    public function getRatePlans(array $data = array(), $isShowDeleted = false, $onlyParent = true)
     {
-        $response = $this->callGet("rate_plans/", $data);
+        $response = $this->callGet('rate_plans/', $data);
 
         $rate_plans = [];
         foreach ($response['rate_plans'] as $rate) {
-            if($rate['status'] === 'X' && !$isShowDeleted) continue;
+            if($rate['status'] === 'X' && !$isShowDeleted) {
+                continue;
+            }
+            if ($onlyParent && $rate['parent'] !== null) {
+                continue;
+            }
+
             $rate_plans[] = $rate;
         }
 

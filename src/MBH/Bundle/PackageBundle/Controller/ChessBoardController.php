@@ -39,6 +39,7 @@ class ChessBoardController extends BaseController
             'titleSubPadding' => 0,
             'titleSubFontSize' => 11,
             'leftRoomsAndNoAccFontSize' => 16,
+            'titleLength' => 18
         ],
         [
             'headerWidth' => 180,
@@ -50,6 +51,7 @@ class ChessBoardController extends BaseController
             'titleSubPadding' => 0,
             'titleSubFontSize' => 13,
             'leftRoomsAndNoAccFontSize' => 16,
+            'titleLength' => 18
         ],
         [
             'headerWidth' => 200,
@@ -61,6 +63,7 @@ class ChessBoardController extends BaseController
             'titleSubPadding' => 5,
             'titleSubFontSize' => 13,
             'leftRoomsAndNoAccFontSize' => 16,
+            'titleLength' => 21
         ],
         [
             'headerWidth' => 200,
@@ -72,6 +75,7 @@ class ChessBoardController extends BaseController
             'titleSubPadding' => 0,
             'titleSubFontSize' => 15,
             'leftRoomsAndNoAccFontSize' => 20,
+            'titleLength' => 21
         ],
     ];
 
@@ -178,6 +182,7 @@ class ChessBoardController extends BaseController
             'roomTypesData' => $builder->getRoomTypeData(),
             'roomStatusIcons' => $this->getParameter('mbh.room_status_icons'),
             'colors' => $colorSettings->__toArray(),
+            'leftRoomsData' => $builder->getLeftRoomCounts(),
         ];
     }
 

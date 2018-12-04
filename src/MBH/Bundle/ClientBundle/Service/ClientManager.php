@@ -21,7 +21,7 @@ class ClientManager
 {
     const CLIENT_DATA_STORAGE_TIME_IN_MINUTES = 120;
     const DEFAULT_ROUTE_FOR_INACTIVE_CLIENT = 'user_payment';
-    const ACCESSED_ROUTES_FOR_CLIENT = ['user_contacts', 'user_services', 'add_client_service', 'user_payer', 'user_payment', 'payments_list_json', 'show_payment_order', 'order_payment_systems', 'user_tariff', 'update_tariff_modal'];
+    const ACCESSED_ROUTES_FOR_CLIENT = ['user_contacts', 'user_services', 'add_client_service', 'user_payer', 'user_payment', 'payments_list_json', 'show_payment_order', 'order_payment_systems', 'user_tariff', 'update_tariff_modal', 'payment_system_details', 'client_successful_payment'];
     const SESSION_CLIENT_FIELD = 'client';
     const SESSION_CLIENT_SITE = 'client-site';
     const IS_AUTHORIZED_BY_TOKEN = 'is_authorized_by_token';
@@ -233,6 +233,7 @@ class ClientManager
     /**
      * @param Client $client
      * @return \MBH\Bundle\BillingBundle\Lib\Model\Result
+     * @throws \Exception
      */
     public function updateClient(Client $client)
     {
@@ -293,6 +294,7 @@ class ClientManager
 
     /**
      * @return int|null
+     * @throws \Exception
      */
     public function getNumberOfDaysBeforeDisable()
     {
@@ -313,6 +315,33 @@ class ClientManager
         }
 
         return null;
+    }
+
+    /**
+     * @param string|null $loginAlias
+     * @return array|mixed
+     * @throws \Exception
+     */
+    public function changeLoginAlias(?string $loginAlias)
+    {
+        $client = $this->getClient();
+        if ($loginAlias === $client->getLogin()) {
+            $loginAlias = null;
+        }
+
+        $previousLoginAlias = $client->getLogin_alias();
+        if ($previousLoginAlias !== $loginAlias) {
+            $client->setLogin_alias($loginAlias);
+
+            $result = $this->updateClient($client);
+            if (!$result->isSuccessful()) {
+                $client->setLogin_alias($previousLoginAlias);
+
+                return $result->getErrors();
+            }
+        }
+
+        return [];
     }
 
     private function getDefaultClientData()

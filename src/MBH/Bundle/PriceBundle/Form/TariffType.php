@@ -132,7 +132,7 @@ class TariffType extends AbstractType
         $builder
             ->add('isDefault', CheckboxType::class, [
                 'attr' => [
-                    'disabled' => $formTariff && $formTariff->getIsDefault(),
+                    'readonly' => $formTariff && $formTariff->getIsDefault(),
                 ],
                 'label' => 'tariff_type.is_default.label',
                 'group' => 'configuration',

@@ -1156,6 +1156,7 @@ var ChessBoardManager = /** @class */ (function () {
         return momentDate.format("DD.MM.YYYY");
     };
     ChessBoardManager.prototype.updateTable = function () {
+        $('[data-toggle="tooltip"]').tooltip();
         this.updatePackagesData();
         this.updateLeftRoomCounts();
         this.updateNoAccommodationPackageCounts();
@@ -1183,6 +1184,7 @@ var ChessBoardManager = /** @class */ (function () {
     ChessBoardManager.prototype.hangPopover = function () {
         var self = this;
         var $popoverElements = $('.no-accommodation-date.achtung');
+        $popoverElements.popover();
         $popoverElements.unbind('shown.bs.popover');
         $popoverElements.on('shown.bs.popover', function () {
             var lastPackage = $('.package').last();

@@ -25,12 +25,10 @@ class AddClientSiteCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $clientName = $input->getArgument('client');
         $logger = $this->getContainer()->get('mbh.billing.logger');
 
         $logger->info('Begin creation of client web site');
-        $client = $this->getContainer()->get('mbh.billing.api')->getClient($clientName);
-        $config = $this->getContainer()->get('mbh.site_manager')->createOrUpdateForHotel($client);
+        $config = $this->getContainer()->get('mbh.site_manager')->createOrUpdateForHotel();
         $this->getContainer()->get('doctrine.odm.mongodb.document_manager')->flush();
         $logger->info('Site created with domain:' . $config->getSiteDomain());
     }
