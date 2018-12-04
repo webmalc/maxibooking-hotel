@@ -58,6 +58,7 @@ class BaseControllerTest extends WebTestCase
         'site_hotel_settings',              //need params
         'save_list',                        //need params
         'site_settings',
+        'reset_login_alias',
         'fos_user_profile_edit',            //not used
         'fos_user_profile_show',            //not used
         'api_success_url',                  //master test there is, but if not setting client config -> 404, so common exclude
