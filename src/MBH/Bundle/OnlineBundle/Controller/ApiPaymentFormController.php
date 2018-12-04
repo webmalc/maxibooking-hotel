@@ -11,6 +11,7 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\ExtraData;
 use MBH\Bundle\OnlineBundle\Document\PaymentFormConfig;
+use MBH\Bundle\OnlineBundle\Exception\NotFoundConfigPaymentFormException;
 use MBH\Bundle\OnlineBundle\Form\OrderSearchType;
 use MBH\Bundle\OnlineBundle\Lib\HolderDataForRenderBtn;
 use MBH\Bundle\OnlineBundle\Lib\SearchForm;
@@ -35,7 +36,6 @@ class ApiPaymentFormController extends Controller
     /**
      * @Route("/file/{configId}/load", defaults={"_format" = "js"} ,name="online_payment_form_load_js")
      * @Cache(expires="tomorrow", public=true)
-     * Template()
      */
     public function loadAction($configId)
     {
@@ -43,6 +43,10 @@ class ApiPaymentFormController extends Controller
 
         $config = $this->dm->getRepository('MBHOnlineBundle:PaymentFormConfig')
             ->findOneById($configId);
+
+        if ($config === null) {
+            throw new NotFoundConfigPaymentFormException();
+        }
 
         return $this->render(
             'MBHOnlineBundle:ApiPaymentForm:loadIframe.js.twig',
@@ -70,7 +74,7 @@ class ApiPaymentFormController extends Controller
             ->findOneById($formId);
 
         if ($paymentFormConfig === null || !$paymentFormConfig->getIsEnabled()) {
-            throw $this->createNotFoundException();
+            throw new NotFoundConfigPaymentFormException();
         }
 
         $search = $this->container->get('mbh.online.search_order');
