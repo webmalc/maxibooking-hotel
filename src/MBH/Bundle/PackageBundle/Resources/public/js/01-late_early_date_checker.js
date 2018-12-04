@@ -65,6 +65,9 @@ LateEarlyDateChecker.prototype.updateView = function() {
 LateEarlyDateChecker.prototype.checkLateArrival = function(beginDate, arrivalDate, arrivalHour) {
     var beginDate = new Date(beginDate.getTime()); // clone object
     var arrivalDate = new Date(arrivalDate.getTime());
+    if (arrivalHour > 0) {
+        arrivalHour =- 1;//time of tourist's waiting
+    }
     beginDate.setHours(arrivalHour);
 
     return arrivalDate.getTime() >= beginDate.getTime();
@@ -72,6 +75,9 @@ LateEarlyDateChecker.prototype.checkLateArrival = function(beginDate, arrivalDat
 LateEarlyDateChecker.prototype.checkEarlyDeparture = function(endDate, departureDate, departureHour) {
     var endDate = new Date(endDate.getTime()); // clone object
     var departureDate = new Date(departureDate.getTime());
+    if (departureHour > 0) {
+        departureHour =+ 1;//time of tourist's waiting
+    }
     endDate.setHours(departureHour);
 
     return departureDate.getTime() <= endDate.getTime();
