@@ -170,7 +170,7 @@ form.payment.formType.useAccordion_help: 'Включает анимацию ме
 form.payment.formType.fieldUserNameIsVisible: 'включить дополнительное поле?'
 form.payment.formType.enabledShowAmount: 'Сумма к оплате'
 form.payment.formType.enabledShowAmount_help: 'Показывать рекомендованную сумму к оплате'
-form.online.order_search.numberOrder: 'Номер заказа'
+form.online.order_search.numberPackage: 'Номер брони'
 form.online.order_search.phoneOrEmail: 'Номер телефона или email'
 form.online.order_search.userName: 'Фамилия/Организация'
 form.online.order_search.hotel: 'Отель'

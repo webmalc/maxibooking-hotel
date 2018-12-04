@@ -28,7 +28,7 @@ class SearchForm
     /**
      * @var string
      */
-    private $numberOrder;
+    private $numberPackage;
 
     /**
      * @var string|null
@@ -97,17 +97,17 @@ class SearchForm
     /**
      * @return null|string
      */
-    public function getNumberOrder(): ?string
+    public function getNumberPackage(): ?string
     {
-        return trim($this->numberOrder);
+        return trim($this->numberPackage);
     }
 
     /**
-     * @param null|string $numberOrder
+     * @param null|string $numberPackage
      */
-    public function setNumberOrder(?string $numberOrder): void
+    public function setNumberPackage(?string $numberPackage): void
     {
-        $this->numberOrder = $numberOrder;
+        $this->numberPackage = $numberPackage;
     }
 
     /**
@@ -211,7 +211,7 @@ class SearchForm
         /** @var Package $package */
         $package = $this->dm->getRepository('MBHPackageBundle:Package')
             ->findOneBy([
-                'numberWithPrefix' => $this->getNumberOrder(),
+                'numberWithPrefix' => $this->getNumberPackage(),
             ]);
 
         $result = new SearchFormResult($this->container);

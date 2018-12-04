@@ -34,10 +34,10 @@ class OrderSearchType extends AbstractType
 
         $builder
             ->add(
-                'numberOrder',
+                'numberPackage',
                 TextType::class,
                 [
-                    'label'      => 'form.online.order_search.numberOrder',
+                    'label'      => 'form.online.order_search.numberPackage',
                     'label_attr' => $commonLabelAttr,
                     'group'      => $commonGroup,
                     'attr'       => $commonInputAttr,
