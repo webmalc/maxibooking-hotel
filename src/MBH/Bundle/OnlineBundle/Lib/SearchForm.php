@@ -91,7 +91,7 @@ class SearchForm
      */
     public function setPhoneOrEmail(?string $phoneOrEmail): void
     {
-        $this->phoneOrEmail = $phoneOrEmail;
+        $this->phoneOrEmail = trim($phoneOrEmail);
     }
 
     /**
@@ -99,7 +99,7 @@ class SearchForm
      */
     public function getNumberPackage(): ?string
     {
-        return trim($this->numberPackage);
+        return $this->numberPackage;
     }
 
     /**
@@ -107,7 +107,7 @@ class SearchForm
      */
     public function setNumberPackage(?string $numberPackage): void
     {
-        $this->numberPackage = $numberPackage;
+        $this->numberPackage = trim($numberPackage);
     }
 
     /**
@@ -123,7 +123,7 @@ class SearchForm
      */
     public function setUserName(?string $userName): void
     {
-        $this->userName = $userName;
+        $this->userName = trim($userName);
     }
 
     /**
