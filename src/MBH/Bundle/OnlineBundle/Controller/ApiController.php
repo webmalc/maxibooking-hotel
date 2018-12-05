@@ -397,7 +397,8 @@ class ApiController extends Controller
         }
         foreach ($hotels as $hotel) {
             foreach ($hotel->getRoomTypes() as $roomType) {
-                if ($formConfig->getRoomTypeChoices()->contains($roomType)) {
+                if ($formConfig->getRoomTypeChoices()->count() === 0
+                    || $formConfig->getRoomTypeChoices()->contains($roomType)) {
                     $query->addAvailableRoomType($roomType->getId());
                 }
             }
