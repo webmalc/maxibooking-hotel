@@ -108,7 +108,9 @@ class ExternalApiController extends BaseController
             foreach ($roomTypes as $roomType) {
                 if (is_null($formConfig)
                     || ($formConfig->getHotels()->contains($roomType->getHotel())
-                        && (!$formConfig->getRoomTypes() || $formConfig->getRoomTypeChoices()->contains($roomType)))
+                        && (!$formConfig->getRoomTypes()
+                            || $formConfig->getRoomTypeChoices()->count() === 0
+                            || $formConfig->getRoomTypeChoices()->contains($roomType)))
                 ) {
                     if ($request->get('locale')) {
                         $roomType->setLocale($request->getLocale());
