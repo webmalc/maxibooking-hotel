@@ -609,7 +609,7 @@ class OrderManager implements Searchable
                 ->setAmount($tariffService->getAmount())
                 ->setPersons($persons)
                 ->setNights($nights)
-                ->setPrice(0)
+                ->setPrice($this->getPackageServicePrice($defaultService, $package))
                 ->setIncludeArrival($defaultService->isIncludeArrival())
                 ->setIncludeDeparture($defaultService->isIncludeDeparture())
                 ->setRecalcWithPackage(
