@@ -543,7 +543,17 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
         return $this;
     }
 
-    
+    /**
+     * @param RoomType $roomType
+     * @return FormConfig
+     */
+    public function removeRoomType(RoomType $roomType)
+    {
+        $this->roomTypeChoices->removeElement($roomType);
+
+        return $this;
+    }
+
     /**
      * If form config is used for api, results url contains only domain address
      * @param bool $forResultsPage

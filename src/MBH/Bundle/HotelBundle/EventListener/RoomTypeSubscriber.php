@@ -4,9 +4,10 @@ namespace MBH\Bundle\HotelBundle\EventListener;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\EventSubscriber;
-use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
+use Doctrine\ODM\MongoDB\Event\PreUpdateEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\OnlineBundle\Document\FormConfig;
 
 /**
  * Class RoomTypeSubscriber
@@ -20,7 +21,7 @@ class RoomTypeSubscriber implements EventSubscriber
         ];
     }
 
-    public function preUpdate(LifecycleEventArgs $args)
+    public function preUpdate(PreUpdateEventArgs $args)
     {
         $roomType = $args->getDocument();
         if ($roomType instanceof RoomType) {
@@ -28,6 +29,20 @@ class RoomTypeSubscriber implements EventSubscriber
             $images = $roomType->getOnlineImages();
             if (1 === $images->count()) {
                 $roomType->makeFirstImageAsMain();
+            }
+
+            $changeSet = $args->getDocumentChangeSet();
+            if (isset($changeSet['isEnabled']) && $changeSet['isEnabled'] === false) {
+                $formConfigs = $args
+                    ->getDocumentManager()
+                    ->getRepository('MBHOnlineBundle:FormConfig')
+                    ->findBy(['roomTypeChoices.id' => $roomType->getId()]);
+                /** @var FormConfig $formConfig */
+                foreach ($formConfigs as $formConfig) {
+                    $formConfig->removeRoomType($roomType);
+                    $meta = $args->getDocumentManager()->getClassMetadata(get_class($formConfig));
+                    $args->getDocumentManager()->getUnitOfWork()->recomputeSingleDocumentChangeSet($meta, $formConfig);
+                }
             }
         }
     }
