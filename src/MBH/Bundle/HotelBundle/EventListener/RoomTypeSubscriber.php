@@ -32,7 +32,7 @@ class RoomTypeSubscriber implements EventSubscriber
             }
 
             $changeSet = $args->getDocumentChangeSet();
-            if (isset($changeSet['isEnabled']) && $changeSet['isEnabled'] === false) {
+            if (isset($changeSet['isEnabled']) && $args->getNewValue('isEnabled') === false) {
                 $formConfigs = $args
                     ->getDocumentManager()
                     ->getRepository('MBHOnlineBundle:FormConfig')
