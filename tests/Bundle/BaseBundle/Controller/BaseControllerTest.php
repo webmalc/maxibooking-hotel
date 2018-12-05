@@ -187,6 +187,11 @@ class BaseControllerTest extends WebTestCase
         self::clearDB();
     }
 
+    public function setUp()
+    {
+        /**пустым переопределением убираем двойное создание клиета */
+    }
+
     /**
      * @return array
      */
@@ -210,11 +215,12 @@ class BaseControllerTest extends WebTestCase
      */
     public function testRouteAlways302(string $url)
     {
-        $this->client->followRedirects(true);
+        $client = static::makeClient(true);
+        $client->followRedirects(true);
 
-        $this->client->request('GET', $url);
+        $client->request('GET', $url);
 
-        $this->assertStatusCodeWithMsg($url, 200);
+        $this->assertStatusCodeWithMsg($url, 200, $client);
     }
 
     /**

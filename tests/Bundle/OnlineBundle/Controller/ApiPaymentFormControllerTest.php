@@ -25,12 +25,6 @@ class ApiPaymentFormControllerTest extends WebTestCase
 
     private const URL_PREFIX = '/management/online/api_payment_form/';
 
-    public function setUp()
-    {
-        $this->client = $this->makeClient(false);
-    }
-
-
     public static function setUpBeforeClass()
     {
         self::baseFixtures();
@@ -38,6 +32,11 @@ class ApiPaymentFormControllerTest extends WebTestCase
         self::$paymentForm = self::getContainerStat()->get('doctrine.odm.mongodb.document_manager')
             ->getRepository(PaymentFormConfig::class)
             ->findOneBy([]);
+    }
+
+    public function setUp()
+    {
+        $this->client = $this->makeClient(false);
     }
 
     public function getDataForUrlLoad(): iterable
@@ -63,7 +62,9 @@ class ApiPaymentFormControllerTest extends WebTestCase
      */
     public function testUrl(string $routeName, int $status, ?string $configId, bool $auth)
     {
-        $this->client = $this->makeClient($auth);
+        if ($auth) {
+            $this->client = $this->makeClient($auth);
+        }
 
         $url = $this->getUrlWithConfigId($routeName, $configId);
 
@@ -75,10 +76,14 @@ class ApiPaymentFormControllerTest extends WebTestCase
     public function getDataForTestSearchOrder(): iterable
     {
         $data = [
-            'invalid email' => [false,'doofus_rick@dimension.j19z7', null],
-            'valid email'   => [true, TouristData::TOURIST_RICK_DATA['email'], null],
+            'invalid email'          => [false, 'doofus_rick@dimension.j19z7', null],
+            'valid email'            => [true, TouristData::TOURIST_RICK_DATA['email'], null],
             'use user name, invalid' => [false, TouristData::TOURIST_RICK_DATA['email'], 'Doofus Rick'],
-            'use user name, valid' => [true, TouristData::TOURIST_RICK_DATA['email'], TouristData::TOURIST_RICK_DATA['lastName']],
+            'use user name, valid'   => [
+                true,
+                TouristData::TOURIST_RICK_DATA['email'],
+                TouristData::TOURIST_RICK_DATA['lastName'],
+            ],
         ];
 
         yield from $data;
@@ -141,11 +146,19 @@ class ApiPaymentFormControllerTest extends WebTestCase
         }
     }
 
+    /**
+     * @return PaymentFormConfig
+     */
     private function getPaymentForm(): PaymentFormConfig
     {
         return self::$paymentForm;
     }
 
+    /**
+     * @param string $routeName
+     * @param string|null $putConfigId
+     * @return string
+     */
     private function getUrlWithConfigId(string $routeName, string $putConfigId = null): string
     {
         $configId = $putConfigId === null ? $this->getPaymentForm()->getId() : $putConfigId;
