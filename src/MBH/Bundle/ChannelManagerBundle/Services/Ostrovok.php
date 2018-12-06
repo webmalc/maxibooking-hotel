@@ -312,10 +312,10 @@ class Ostrovok extends Base
             $data = array_merge(...$data);
             $chunkSize = 40;
             if (\count($data) < $chunkSize) {
-//                $result = $this->sendApiRequest(['occupancies' => $data], __METHOD__);
+                $result = $this->sendApiRequest(['occupancies' => $data], __METHOD__);
             } else {
                 foreach (array_chunk($data, $chunkSize) as $chunk) {
-//                    $result = $result && $this->sendApiRequest(['occupancies' => $chunk], __METHOD__);
+                    $result = $result && $this->sendApiRequest(['occupancies' => $chunk], __METHOD__);
                 }
             }
         } catch (OstrovokApiServiceException $e) {
