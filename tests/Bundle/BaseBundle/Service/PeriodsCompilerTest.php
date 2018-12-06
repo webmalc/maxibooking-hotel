@@ -9,11 +9,13 @@ use MBH\Bundle\PriceBundle\Document\RoomCache;
 class PeriodsCompilerTest extends UnitTestCase
 {
     /** @var PeriodsCompiler */
-    static $periodsCompiler;
+    private static $periodsCompiler;
 
     public static function setUpBeforeClass()
     {
-        self::$periodsCompiler = self::getContainerStat()->get('mbh.periods_compiler');
+        parent::setUpBeforeClass();
+
+        static::$periodsCompiler = self::getContainerStat()->get('mbh.periods_compiler');
     }
 
     /**
@@ -35,7 +37,7 @@ class PeriodsCompilerTest extends UnitTestCase
         $begin = \DateTime::createFromFormat('d.m.Y', '18.02.1991');
         $end = \DateTime::createFromFormat('d.m.Y', '10.03.1991');
 
-        $periods = self::$periodsCompiler->getPeriodsByFieldNames($begin, $end, $dataByDates, ['leftRooms']);
+        $periods = $this->getPeriodsCompiler()->getPeriodsByFieldNames($begin, $end, $dataByDates, ['leftRooms']);
         $expectedPeriods = [
             [
                 'begin' => $begin = \DateTime::createFromFormat('d.m.Y', '18.02.1991'),
@@ -101,7 +103,7 @@ class PeriodsCompilerTest extends UnitTestCase
         $begin = \DateTime::createFromFormat('d.m.Y', '20.02.1995');
         $end = \DateTime::createFromFormat('d.m.Y', '10.03.1995');
 
-        $periods = self::$periodsCompiler->getPeriodsByFieldNames($begin, $end, $data, ['fieldName'], 'd.m.Y', true);
+        $periods = $this->getPeriodsCompiler()->getPeriodsByFieldNames($begin, $end, $data, ['fieldName'], 'd.m.Y', true);
         $expectedPeriods = [
             [
                 'begin' => $begin = \DateTime::createFromFormat('d.m.Y', '20.02.1995'),
@@ -145,5 +147,41 @@ class PeriodsCompilerTest extends UnitTestCase
             ]
         ];
         $this->assertEquals($expectedPeriods, $periods);
+    }
+
+    public function testCombineIntersectedPeriods()
+    {
+        $periods = [
+            ['begin' => '23.02.2018', 'end' => '25.02.2018'],
+            ['begin' => '24.02.2018', 'end' => '26.02.2018'],
+            ['begin' => '10.03.2018', 'end' => '15.03.2018'],
+            ['begin' => '10.03.2018', 'end' => '13.03.2018'],
+            ['begin' => '10.02.2018', 'end' => '15.02.2018'],
+        ];
+        $periods = $this->convertPeriodDatesFromStringToDateTime($periods);
+        $combinedPeriods = $this->getPeriodsCompiler()->combineIntersectedPeriods($periods);
+
+        $expected = $this->convertPeriodDatesFromStringToDateTime([
+            ['begin' => '10.02.2018', 'end' => '15.02.2018'],
+            ['begin' => '23.02.2018', 'end' => '26.02.2018'],
+            ['begin' => '10.03.2018', 'end' => '15.03.2018'],
+        ]);
+        $this->assertEquals($expected, $combinedPeriods);
+    }
+
+    private function convertPeriodDatesFromStringToDateTime(array $periods)
+    {
+        foreach ($periods as $key => $period) {
+            $period['begin'] = \DateTime::createFromFormat('d.m.Y H:i:s', $period['begin'] . ' 00:00:00');
+            $period['end'] = \DateTime::createFromFormat('d.m.Y H:i:s', $period['end'] . ' 00:00:00');
+            $periods[$key] = $period;
+        }
+
+        return $periods;
+    }
+    
+    private function getPeriodsCompiler(): PeriodsCompiler
+    {
+        return static::$periodsCompiler;
     }
 }

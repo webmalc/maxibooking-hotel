@@ -88,6 +88,7 @@ class DocumentsRelationships
                 new Relationship(Table::class, 'hotel', 'exception.hotel_relation_delete.message.table'),
                 new Relationship(Invoice::class, 'hotel', 'exception.hotel_relation_delete.message.invoice'),
                 new Relationship(Record::class, 'hotel', 'exception.hotel_relation_delete.message.record'),
+                new Relationship(FormConfig::class, 'hotels', 'exception.hotel_relation_delete.message.formconfig')
             ],
             Organization::class => [
                 new Relationship(DocumentTemplate::class, 'organization', 'exception.organization_relation_delete.message.documentTemplate'),

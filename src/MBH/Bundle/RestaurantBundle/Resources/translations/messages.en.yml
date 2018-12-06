@@ -196,3 +196,5 @@ restaurant.dishmenu.category.action.edit: 'Edit dishes category'
 restaurant.dishmenu.category.action.delete: 'Delete dishes category'
 restaurant.dishmenu.category.form.fullTitle.label: Name
 restaurant.dishmenu.category.form.fullTitle.help: 'Dish Category name'
+restaurant.dishorder.common.title: orders
+restaurant.dishorder.actions.list.small_title: 'Add order'

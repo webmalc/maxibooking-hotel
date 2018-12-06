@@ -8,6 +8,7 @@ use MBH\Bundle\BillingBundle\Service\BillingResponseHandler;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\ColorsConfig;
 use MBH\Bundle\ClientBundle\Form\ClientConfigType;
+use MBH\Bundle\ClientBundle\Form\ClientMessagesType;
 use MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType;
 use MBH\Bundle\ClientBundle\Form\PaymentSystemsUrlsType;
 use MBH\Bundle\ClientBundle\Form\ColorsType;
@@ -297,6 +298,32 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
         $this->addFlash('success', 'controller.color_settings_action.config_successful_reset');
 
         return $this->redirectToRoute('color_settings');
+    }
+
+    /**
+     * @Security("is_granted('ROLE_CLIENT_CONFIG_EDIT')")
+     * @Template()
+     * @Method({"GET", "POST"})
+     * @Route("/client_messages", name="client_messages")
+     * @param Request $request
+     * @return array
+     */
+    public function clientMessagesAction(Request $request)
+    {
+        $form = $this->createForm(ClientMessagesType::class, $this->clientConfig);
+
+        $form->handleRequest($request);
+        if ($form->isValid()) {
+            $this->dm->flush();
+
+            $this->addFlash('success', 'controller.clientConfig.params_success_save');
+        }
+
+        return [
+            'entity' => $this->clientConfig,
+            'form' => $form->createView(),
+            'logs' => $this->logs($this->clientConfig)
+        ];
     }
 
     /**

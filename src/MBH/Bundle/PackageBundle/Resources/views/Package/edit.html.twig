@@ -79,18 +79,21 @@
                                         {% for price in package.getPackagePricesWithDiscount() %}
                                             <small>
                                                 {{ price.date|date('d.m.Y') }} -
-                                                <strong>{{ price.price|number_format(2) }}</strong> -
-                                                <a data-toggle="tooltip" title="{{ 'package.edit.tariff'|trans }}"
-                                                   href="{{ path('tariff_edit', {id: price.tariff.id}) }}">
-                                                    <i class="fa fa-sliders"></i> {{ price.tariff }}
-                                                </a>
-                                                {% if price.promotion %}
+                                                <strong>{{ price.price|number_format(2) }}</strong>
+                                                {% if is_granted('ROLE_TARIFF_EDIT') %}
+                                                    -
+                                                    <a data-toggle="tooltip" title="{{ 'package.edit.tariff'|trans }}"
+                                                       href="{{ path('tariff_edit', {id: price.tariff.id}) }}">
+                                                        <i class="fa fa-sliders"></i> {{ price.tariff }}
+                                                    </a>
+                                                {% endif %}
+                                                {% if price.promotion and is_granted('ROLE_PROMOTION_EDIT') %}
                                                     - <a data-toggle="tooltip" title="{{ 'package.edit.promotions'|trans }}"
                                                          href="{{ path('promotion_edit', {id: price.promotion.id}) }}">
                                                     <i class="fa fa-bookmark"></i> {{ price.promotion }}
                                                 </a>
                                                 {% endif %}
-                                                {% if price.special %}
+                                                {% if price.special and is_granted('ROLE_SPECIAL_EDIT') %}
                                                     - <a data-toggle="tooltip" title="{{ 'package.edit.promotions'|trans }}"
                                                          href="{{ path('special_edit', {id: price.special.id}) }}">
                                                     <i class="fa fa-star"></i> {{ price.special }}

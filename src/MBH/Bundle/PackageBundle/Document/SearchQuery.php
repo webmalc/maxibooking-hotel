@@ -236,7 +236,7 @@ class SearchQuery extends Base
         }
         $roomTypes = $hotel->getRoomTypes();
         foreach ($roomTypes as $roomType) {
-            $this->addRoomType($roomType->getId());
+            $this->addRoomTypeId($roomType->getId());
         }
 
         return $this;
@@ -246,7 +246,7 @@ class SearchQuery extends Base
      * @param $id
      * @return bool
      */
-    public function addRoomType($id)
+    public function addRoomTypeId($id)
     {
         if (!empty($this->availableRoomTypes) && !in_array($id, $this->availableRoomTypes)) {
             return false;

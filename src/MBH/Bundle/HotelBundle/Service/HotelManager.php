@@ -3,9 +3,13 @@
 namespace MBH\Bundle\HotelBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\BaseBundle\EventListener\OnRemoveSubscriber\Relationship;
 use MBH\Bundle\BillingBundle\Lib\Model\BillingProperty;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\PriceBundle\Document\Service;
+use MBH\Bundle\PriceBundle\Document\ServiceCategory;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Process\Process;
 
@@ -50,6 +54,57 @@ class HotelManager
         $this->runInstallationOfRelatedToHotelsFixtures($this->container->getParameter('client'));
 
         return true;
+    }
+
+    /**
+     * @param Hotel $hotel
+     * @return array
+     * @throws \MBH\Bundle\PackageBundle\Lib\DeleteException
+     */
+    public function remove(Hotel $hotel)
+    {
+        $relatedDocumentsData = $this->container->get('mbh.helper')->getRelatedDocuments($hotel);
+
+        foreach ($relatedDocumentsData as $relatedDocumentData) {
+            /** @var Relationship $relationship */
+            $relationship = $relatedDocumentData['relation'];
+            $quantity = $relatedDocumentData['quantity'];
+            if (!in_array($relationship->getDocumentClass(), [ServiceCategory::class, Service::class])
+                && $quantity > 0
+                //If there are tariffs in addition to the main
+                && ($relationship->getDocumentClass() !== Tariff::class || $relatedDocumentData['quantity'] > 1)
+            ) {
+                $messageId = $relationship->getErrorMessage() ? $relationship->getErrorMessage() : 'exception.relation_delete.message';
+                $flashMessage = $this->container->get('translator')->trans($messageId, ['%total%' => $quantity]);
+
+                return [$flashMessage];
+            }
+        }
+
+        $hotelMainTariff = $this->dm
+            ->getRepository('MBHPriceBundle:Tariff')
+            ->findOneBy(['isDefault' => true, 'hotel.id' => $hotel->getId()]);
+
+        if (!empty($hotelMainTariff)) {
+            $this->container->get('mbh.tariff_manager')->forceDelete($hotelMainTariff);
+        }
+
+        foreach ($hotel->getServices() as $service) {
+            $this->dm->remove($service);
+        }
+        $this->dm->flush();
+
+        foreach ($hotel->getServicesCategories() as $serviceCategory) {
+            $this->dm->remove($serviceCategory);
+        }
+
+        $siteConfig = $this->container->get('mbh.site_manager')->getSiteConfig();
+        if (!is_null($siteConfig)) {
+            $siteConfig->getHotels()->remove($hotel);
+        }
+        $this->dm->flush();
+
+        return [];
     }
 
     /**

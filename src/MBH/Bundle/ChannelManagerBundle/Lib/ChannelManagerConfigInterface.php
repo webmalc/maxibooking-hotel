@@ -10,7 +10,6 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 interface ChannelManagerConfigInterface
 {
     public function getIsEnabled();
-
     /**
      * @param $isEnabled
      * @return self
@@ -18,6 +17,11 @@ interface ChannelManagerConfigInterface
     public function setIsEnabled($isEnabled);
 
     public function isMainSettingsFilled();
+    public function setIsMainSettingsFilled(bool $isFilled);
+    public function isTariffsConfigured();
+    public function setIsTariffsConfigured(bool $isConfigured);
+    public function isRoomsConfigured();
+    public function setIsRoomsConfigured(bool $isConfigured);
     public function isConfirmedWithDataWarnings(): ?bool;
     public function setIsConfirmedWithDataWarnings(bool $isConfirmedWithDataWarnings);
 

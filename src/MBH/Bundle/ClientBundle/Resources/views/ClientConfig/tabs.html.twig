@@ -1,5 +1,6 @@
 {% set menu = [
     {'route': 'client_config', 'title': '<i class="fa fa-cog"></i> '~ 'client.tabs.params'|trans({}, 'MBHClientBundle')},
+    {'route': 'client_messages', 'title': '<i class="fa fa-envelope"></i> '~ 'client.tabs.client_messages'|trans({}, 'MBHClientBundle')},
 ]
 %}
 {% if is_granted('ROLE_CLIENT_CONFIG_EDIT') %}

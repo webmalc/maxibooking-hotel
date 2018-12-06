@@ -655,7 +655,6 @@ class Helper
         return $result->__toString() !== '';
     }
 
-
     /**
      * @return array
      */
@@ -724,26 +723,6 @@ class Helper
     }
 
     /**
-     * @param $haystack
-     * @param $needle
-     * @return bool
-     */
-    public function startsWith($haystack, $needle)
-    {
-        return substr($haystack, 0, strlen($needle)) === $needle;
-    }
-
-    /**
-     * @param array $array
-     * @param array $keys
-     * @return array
-     */
-    public function getFromArrayByKeys(array $array, array $keys)
-    {
-        return array_intersect_key($array, array_flip($keys));
-    }
-
-    /**
      * @param \DateTime[] $dates
      * @return array[$minDate, $maxDate]
      * @throws \InvalidArgumentException
@@ -759,16 +738,5 @@ class Helper
         });
 
         return [$dates[0], end($dates)];
-    }
-
-    /**
-     * If date > date2 than return negative int
-     * @param \DateTime $date
-     * @param \DateTime $date2
-     * @return int
-     */
-    public function getDifferenceInDaysWithSign(\DateTime $date, \DateTime $date2)
-    {
-        return (int)($date->diff($date2)->format("%r%a"));
     }
 }

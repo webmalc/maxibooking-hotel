@@ -3,7 +3,7 @@
 namespace Tests\Bundle\BaseBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
-use Symfony\Bundle\FrameworkBundle\Client;
+use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
 use Symfony\Component\Routing\Route;
 
 class BaseControllerTest extends WebTestCase
@@ -58,11 +58,11 @@ class BaseControllerTest extends WebTestCase
         'site_hotel_settings',              //need params
         'save_list',                        //need params
         'site_settings',
-        'reset_login_alias',
         'fos_user_profile_edit',            //not used
         'fos_user_profile_show',            //not used
         'api_success_url',                  //master test there is, but if not setting client config -> 404, so common exclude
         'api_fail_url',                     //master test there is, but if not setting client config -> 404, so common exclude
+        'reset_login_alias',                 //redirect
         'site_config_social_networking_services', /** TODO create test */
     ];
 
@@ -165,6 +165,12 @@ class BaseControllerTest extends WebTestCase
         'ostrovok_room',
         'ostrovok_tariff',
         'ostrovok_service',
+        Airbnb::NAME,
+        'airbnb_room',
+        'airbnb_tariff',
+        'airbnb_all_packages_sync',
+        'airbnb_room_links',
+        'ical_room_calendar',
     ];
 
     /**
