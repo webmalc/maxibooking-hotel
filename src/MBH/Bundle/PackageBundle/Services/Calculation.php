@@ -110,7 +110,7 @@ class Calculation
         if ($services instanceof \Traversable) {
             $services = iterator_to_array($services);
         }
-        if ($newDoc) {
+        if ($newDoc && $removeDoc) {
             $services[] = $newDoc;
         }
         foreach ($services as $service) {
