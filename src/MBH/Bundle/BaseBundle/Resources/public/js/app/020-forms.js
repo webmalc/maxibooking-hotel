@@ -19,7 +19,10 @@ var BILLING_API_SETTINGS = {
         fieldClass: 'billing-region',
         initFormFunc: function (formResponse) {
             $('#modal-with-form-body').html(formResponse['data']['html']);
-            $('#mbhbilling_bundle_region_type_country').val($('.billing-country').val());
+            var currentCountryTld = $('.billing-country').val();
+            if (currentCountryTld) {
+                $('#mbhbilling_bundle_region_type_country').val(currentCountryTld);
+            }
             initSelect2TextForBilling('mbhbilling_bundle_region_type_country', BILLING_API_SETTINGS.countries);
         },
         checkable: true
@@ -32,6 +35,10 @@ var BILLING_API_SETTINGS = {
         fieldClass: 'billing-city',
         initFormFunc: function (response) {
             $('#modal-with-form-body').html(response['data']['html']);
+            var currentCountryTld = $('.billing-country').val();
+            if (currentCountryTld) {
+                $('#mbhbilling_bundle_city_type_country').val(currentCountryTld);
+            }
             initSelect2TextForBilling('mbhbilling_bundle_city_type_country', BILLING_API_SETTINGS.countries);
             initSelect2TextForBilling('mbhbilling_bundle_city_type_region', BILLING_API_SETTINGS.regions);
         },

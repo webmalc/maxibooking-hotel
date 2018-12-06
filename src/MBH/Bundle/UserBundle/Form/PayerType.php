@@ -68,7 +68,7 @@ class PayerType extends AbstractType
                 'group' => 'form.payer_type.country_group',
                 'label' => 'form.payer_type.country.label',
                 'attr' => [
-                    'class' => 'billing-text-select',
+                    'class' => 'billing-text-select billing-country',
                     'data-endpoint-name' => 'countries',
                     'readonly' => true
                 ],

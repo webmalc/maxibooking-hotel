@@ -122,7 +122,7 @@ services:
     mbh.billing_payer_form_handler:
         class: MBH\Bundle\BillingBundle\Service\BillingPayerFormHandler
         shared: false
-        arguments: ['@translator', '@mbh.helper', '@mbh.multi_lang_translator']
+        parent: mbh.form_data_handler
 
     mbh.billing_data_handler:
         class: MBH\Bundle\BillingBundle\Service\BillingDataHandler
