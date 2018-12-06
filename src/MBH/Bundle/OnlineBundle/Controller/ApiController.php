@@ -12,6 +12,7 @@ use MBH\Bundle\ClientBundle\Exception\BadSignaturePaymentSystemException;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
+use MBH\Bundle\OnlineBundle\Services\RenderPaymentButton;
 use MBH\Bundle\PackageBundle\Document\Order;
 
 use MBH\Bundle\PackageBundle\Document\Package;
@@ -23,8 +24,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Stripe\Charge;
-use Symfony\Bundle\FrameworkBundle\Controller\RedirectController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -630,35 +629,8 @@ class ApiController extends Controller
                 'packageId' => current($packages)->getId(),
             ]);
         } else {
-            $paymentSystemName = $requestJson->paymentSystem;
-
-            $doc = $this->clientConfig->getPaymentSystemDocByName($paymentSystemName);
-
-            $paymentSystem =
-                $this
-                    ->container
-                    ->get('MBH\Bundle\ClientBundle\Service\PaymentSystem\Wrapper\PaymentSystemWrapperFactory')
-                    ->create($doc);
-
-            $form = $this->container->get('twig')->render(
-                'MBHClientBundle:PaymentSystem:'.$paymentSystemName.'.html.twig',
-                [
-                    'referer' => '*',
-                    'data'    => array_merge(
-                        [
-                            'test'       => false,
-                            'currency'   => strtoupper($this->clientConfig->getCurrency()),
-                            'buttonText' => $this->get('translator')->trans(
-                                'views.api.make_payment_for_order_id',
-                                ['%total%' => number_format($requestJson->total, 2), '%order_id%' => $order->getId()],
-                                'MBHOnlineBundle'
-                            ),
-                        ],
-
-                        $paymentSystem->getPreFormData($this->clientConfig, $order->getCashDocuments()[0])
-                    ),
-                ]
-            );
+            $form = $this->get(RenderPaymentButton::class)
+                ->create($requestJson->paymentSystem, $requestJson->total, $order, $order->getCashDocuments()[0]);
         }
         $this->dm->refresh($order->getFirstPackage());
 

@@ -12,6 +12,8 @@ use MBH\Bundle\BaseBundle\Lib\AbstractFixture;
  */
 class HotelData extends AbstractFixture implements OrderedFixtureInterface
 {
+    public const HOTELS_DATA_KEY_ONE = 'hotel-one';
+    public const HOTELS_DATA_KEY_TWO = 'hotel-two';
 
     /**
      * Get hotel data
@@ -19,11 +21,11 @@ class HotelData extends AbstractFixture implements OrderedFixtureInterface
      * @return array
      */
     const HOTELS_DATA = [
-        'hotel-one' => [
+         self::HOTELS_DATA_KEY_ONE => [
             'title' => 'mbhhotelbundle.hotelData.hotelOne',
             'default' => true
         ],
-        'hotel-two' => [
+        self::HOTELS_DATA_KEY_TWO => [
             'title' => 'mbhhotelbundle.hotelData.hotelTwo',
             'default' => false
         ]

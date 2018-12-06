@@ -4,15 +4,16 @@ namespace MBH\Bundle\OnlineBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\HotelRepository;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
 use MBH\Bundle\OnlineBundle\Services\SiteManager;
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
@@ -31,10 +32,21 @@ class SiteForm extends AbstractType
     private $translator;
     private $siteManager;
 
-    public function __construct(DocumentManager $dm, TranslatorInterface $translator, SiteManager $siteManager) {
+    /**
+     * @var string
+     */
+    private $environment;
+
+    public function __construct(
+        DocumentManager $dm,
+        TranslatorInterface $translator,
+        SiteManager $siteManager,
+        string $environment
+    ) {
         $this->dm = $dm;
         $this->translator = $translator;
         $this->siteManager = $siteManager;
+        $this->environment = $environment;
     }
 
     /**
@@ -44,6 +56,9 @@ class SiteForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $disabledSettingPaymentForm = $options['disabledSettingPaymentForm'];
+        $url = $options['urlToCreatePaymentSystem'];
+
         $hotels = $this->dm
             ->getRepository('MBHHotelBundle:Hotel')
             ->getQBWithAvailable()
@@ -58,17 +73,51 @@ class SiteForm extends AbstractType
         }
 
         //ФОРМА ОТРИСОВЫВАЕТСЯ В ШАБЛОНЕ ВРУЧНУЮ!
+        if ($this->environment === \AppKernel::ENV_DEV) {
+            $builder
+                ->add(
+                    'scheme',
+                    ChoiceType::class,
+                    [
+                        'choices' => ['http' => 'http', SiteConfig::SCHEME => SiteConfig::SCHEME,],
+                    ]
+                )
+                ->add(
+                    'domain',
+                    ChoiceType::class,
+                    [
+                        'choices' => [
+                            SiteConfig::DOMAIN => SiteConfig::DOMAIN,
+                            'dev'              => SiteConfig::FAKE_DOMAIN_FOR_DEV,
+                        ],
+                        'help'    => 'В окружении дев при генерации адреса для сайта учитывыется только схема и хост.',
+                    ]
+                );
+        } else {
+            $builder
+                ->add(
+                    'scheme',
+                    HiddenType::class
+                )
+                ->add(
+                    'domain',
+                    HiddenType::class
+                );
+        }
+
         $builder
             ->add('siteDomain', TextType::class, [
                 'label' => 'site_form.web_address.label',
                 'required' => true,
-                'addonText' => SiteManager::SITE_DOMAIN,
-                'preAddonText' => SiteManager::SITE_PROTOCOL,
+                'addonText' => SiteConfig::DOMAIN,
+                'preAddonText' => SiteConfig::SCHEME,
                 'help' => $siteConfig !== null && $siteConfig->getSiteDomain()
                     ? '<a class="btn btn-success" target="_blank" href="' . $this->siteManager->getSiteAddress() . '">'
                     . $this->translator->trans('site_form.site_domain.go_to_site_button.text'). '</a>'
                     : ''
-            ])
+            ]);
+
+        $builder
             ->add('keyWords', CollectionType::class, [
                 'label' => 'site_form.key_words.label',
                 'required' => false,
@@ -76,18 +125,6 @@ class SiteForm extends AbstractType
                 'allow_add' => true,
                 'allow_delete' => true,
             ])
-//            ->add('contract', TextareaType::class, [
-//                'label' => 'site_form.contract.label',
-//                'attr' => ['class' => 'tinymce'],
-//                'required' => false,
-//                'help' => 'sdfasdfasdf'
-//            ])
-                // отдельный Type для политики
-//            ->add('personalDataPolicies', TextareaType::class, [
-//                'label' => 'site_form.pers_data_policy.label',
-//                'attr' => ['class' => 'tinymce'],
-//                'required' => false,
-//            ])
             ->add('paymentTypes', PaymentTypesType::class, [
                 'mapped' => false,
                 'help' => 'form.formType.reservation_payment_types_with_online_form',
@@ -120,13 +157,30 @@ class SiteForm extends AbstractType
                     }
                 })]
             ]);
+
+        $builder->add(
+            'usePaymentForm',
+            CheckboxType::class,
+            [
+                'label'    => 'site_form.payment_form.label',
+                'mapped'   => false,
+                'required' => false,
+                'data'     => $siteConfig !== null && $siteConfig->getPaymentFormId() !== null,
+                'help'     => $disabledSettingPaymentForm
+                    ? $this->translator->trans('site_form.payment_form.help_with_disabled', ['%href%' => $url])
+                    : 'site_form.payment_form.help',
+                'disabled' => $disabledSettingPaymentForm,
+            ]
+        );
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver
             ->setDefaults([
-                'data_class' => SiteConfig::class
+                'data_class'                 => SiteConfig::class,
+                'disabledSettingPaymentForm' => null,
+                'urlToCreatePaymentSystem'   => null,
             ]);
     }
 

@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class Sberbank extends Wrapper
 {
-    private const SUCCESSFUL_RESPONSE = 'OK';
+    public const SUCCESSFUL_RESPONSE = 'OK';
 
     public function getFormData(CashDocument $cashDocument, $url = null, $checkUrl = null)
     {

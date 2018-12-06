@@ -91,7 +91,7 @@ abstract class WebTestCase extends Base
      */
     protected function assertStatusCodeWithMsg(string $url, int $expectedStatus, Client $client = null): void
     {
-        $format = "The expected response status code from the URL %s \"%s\", received \"%s\".";
+        $format = 'The expected response status code "%2$s" from the URL %1$s, received "%3$s".';
 
         $response = $client !== null ? $client->getResponse() : $this->client->getResponse();
 

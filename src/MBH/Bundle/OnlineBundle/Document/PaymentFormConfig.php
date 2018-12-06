@@ -84,11 +84,28 @@ class PaymentFormConfig extends Base implements DecorationInterface, DecorationD
     private $enabledShowAmount = false;
 
     /**
+     * @var bool
+     * @Gedmo\Versioned
+     * @ODM\Field(type="bool")
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    private $useAccordion = true;
+
+    /**
      * @var string
      * @Gedmo\Versioned()
      * @ODM\Field(type="string")
      */
     private $js;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    private $forMbSite = false;
 
     /**
      * @return array|ArrayCollection|Hotel[]
@@ -102,9 +119,10 @@ class PaymentFormConfig extends Base implements DecorationInterface, DecorationD
      * @param array $hotels
      * @return PaymentFormConfig
      */
-    public function setHotels($hotels)
+    public function setHotels($hotels): self
     {
         $this->hotels = $hotels;
+
         return $this;
     }
 
@@ -119,9 +137,11 @@ class PaymentFormConfig extends Base implements DecorationInterface, DecorationD
     /**
      * @param bool $enabledShowAmount
      */
-    public function setEnabledShowAmount(bool $enabledShowAmount): void
+    public function setEnabledShowAmount(bool $enabledShowAmount): self
     {
         $this->enabledShowAmount = $enabledShowAmount;
+
+        return $this;
     }
 
     /**
@@ -135,9 +155,11 @@ class PaymentFormConfig extends Base implements DecorationInterface, DecorationD
     /**
      * @param bool $fieldUserNameIsVisible
      */
-    public function setFieldUserNameIsVisible(bool $fieldUserNameIsVisible): void
+    public function setFieldUserNameIsVisible(bool $fieldUserNameIsVisible): self
     {
         $this->fieldUserNameIsVisible = $fieldUserNameIsVisible;
+
+        return $this;
     }
 
     /**
@@ -151,9 +173,11 @@ class PaymentFormConfig extends Base implements DecorationInterface, DecorationD
     /**
      * @param bool $enabledReCaptcha
      */
-    public function setEnabledReCaptcha(bool $enabledReCaptcha): void
+    public function setEnabledReCaptcha(bool $enabledReCaptcha): self
     {
         $this->enabledReCaptcha = $enabledReCaptcha;
+
+        return $this;
     }
 
     /**
@@ -167,8 +191,46 @@ class PaymentFormConfig extends Base implements DecorationInterface, DecorationD
     /**
      * @param string $js
      */
-    public function setJs(string $js = null): void
+    public function setJs(string $js): self
     {
         $this->js = $js;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUseAccordion(): bool
+    {
+        return $this->useAccordion;
+    }
+
+    /**
+     * @param bool $useAccordion
+     */
+    public function setUseAccordion(bool $useAccordion): self
+    {
+        $this->useAccordion = $useAccordion;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isForMbSite(): bool
+    {
+        return $this->forMbSite;
+    }
+
+    /**
+     * @param bool $forMbSite
+     */
+    public function setForMbSite(bool $forMbSite): self
+    {
+        $this->forMbSite = $forMbSite;
+
+        return $this;
     }
 }

@@ -1,0 +1,18 @@
+<script src="{{ constant('MBH\\Bundle\\ClientBundle\\Document\\PaymentSystem\\NewRbk::URL_FOR_CHECKOUT_JS') }}"></script>
+
+<script>
+    function mbhFuncPaymentFormForNewRbk() {
+        {% include 'MBHClientBundle:PaymentSystem/newRbk:for_iframe.js.twig' %}
+        mbhNewRbkIframe.addListener();
+        var form = document.getElementById('online-payment-newRbk');
+        if (form !== null) {
+            form.addEventListener('submit',function(ev) {
+                ev.preventDefault();
+
+                mbhNewRbkIframe.sendMsg(this);
+            });
+        }
+    }
+
+    mbhFuncPaymentFormForNewRbk();
+</script>

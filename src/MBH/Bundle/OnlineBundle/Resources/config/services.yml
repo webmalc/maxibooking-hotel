@@ -37,7 +37,11 @@ services:
 
     mbh.site_form:
         class: MBH\Bundle\OnlineBundle\Form\SiteForm
-        arguments: ['@doctrine.odm.mongodb.document_manager', '@translator', '@mbh.site_manager']
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@translator'
+            - '@mbh.site_manager'
+            - '%kernel.environment%'
         tags:
             {name: form.type}
 
@@ -50,3 +54,30 @@ services:
             - '@mbh.warnings_compiler'
             - '@mbh.billing.api'
             - '@mbh.client_manager'
+
+    MBH\Bundle\OnlineBundle\Services\RenderPaymentButton:
+        arguments:
+            - '@twig'
+            - '@mbh.client_config_manager'
+            - '@translator'
+            - '@MBH\Bundle\ClientBundle\Service\PaymentSystem\Wrapper\PaymentSystemWrapperFactory'
+
+    mbh.online_payment_form.logger:
+        class:     Symfony\Bridge\Monolog\Logger
+        arguments: [app]
+        calls:
+        - [pushHandler, ['@mbh.online_payment_form.logger_handler']]
+
+    mbh.online_payment_form.logger_handler:
+        class:     Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.online.log", 200]
+
+    MBH\Bundle\OnlineBundle\EventListener\PaymentFormSubscriber:
+        arguments:
+            - '@service_container'
+        tags:
+            - {name: doctrine_mongodb.odm.event_subscriber, connection: default}
+
+    MBH\Bundle\OnlineBundle\Services\AvailableSocialNetworkingServices:
+        arguments:
+            - '%locale%'
