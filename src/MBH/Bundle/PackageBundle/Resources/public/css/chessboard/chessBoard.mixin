@@ -264,7 +264,7 @@ body {
     margin-left: @roomTypeColumnWidth;
   }
   #roomTypeColumn {
-    z-index: 150;
+    z-index: 200;
     border-left: 1px solid #ddd;
     background-color: white;
     display: inline-block;

@@ -58,7 +58,7 @@ class PriceCacheRepository extends DocumentRepository
         }
 
         if (!is_null($tariffIds)) {
-            $cachesQb->field('tariff.id')->in($roomTypeIds);
+            $cachesQb->field('tariff.id')->in($tariffIds);
         }
 
         $result = $this->convertRawMongoData($cachesQb->getQuery()->execute());

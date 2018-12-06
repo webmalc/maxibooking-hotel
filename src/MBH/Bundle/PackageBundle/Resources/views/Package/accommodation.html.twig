@@ -225,6 +225,8 @@
         ;
         var earlyCheckInServiceIsEnabled = {{ earlyCheckInServiceIsEnabled|json_encode }};
         var lateCheckOutServiceIsEnabled = {{ lateCheckOutServiceIsEnabled|json_encode }};
+        var packageHotelArrivalHour = {{ package.hotel.packageArrivalTime }};
+        var packageHotelDepartureHour  = {{ package.hotel.packageDepartureTime }}
     </script>
 
     {% include 'MBHPackageBundle:Package:late-early-check-modal.html.twig' %}

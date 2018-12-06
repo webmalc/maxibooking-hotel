@@ -7,6 +7,8 @@ var ActionManager = /** @class */ (function () {
     ActionManager.prototype.callRemoveConfirmationModal = function (packageId) {
         var self = this;
         var $packageDeleteModal = $('#modal_delete_package');
+        var packageTitle = this.dataManager.getPackageDataById(packageId).number;
+        $('#modal_delete_package .modal-title').html(Translator.trans('package.remove_package', { 'title': packageTitle }));
         $packageDeleteModal.modal('show');
         var $modalContainer = $('#delete-modal-form-container');
         $modalContainer.html(mbh.loader.html);
@@ -50,7 +52,6 @@ var ActionManager = /** @class */ (function () {
         var self = this;
         var editBody = $('#package-new-results');
         editBody.html(searchData);
-        // console.log(searchData);
         editBody.find('.search-room-select').val(packageData.accommodation);
         editBody.find('td:nth-child(4)').remove();
         editBody.find('thead th:nth-child(4)').remove();
@@ -390,7 +391,7 @@ var ActionManager = /** @class */ (function () {
         if (alertMessageData.modalContentClass) {
             var $modalContent_1 = $updateForm.closest('.modal-content');
             $modalContent_1.addClass(alertMessageData.modalContentClass);
-            $('#package-modal-change-alert').removeClass('text-center');
+            $modalAlertDiv.removeClass('text-center');
             var onWithModalClassWindowClosed_1 = function () {
                 $modalContent_1.removeClass(alertMessageData.modalContentClass);
                 $('#package-modal-change-alert').addClass('text-center');

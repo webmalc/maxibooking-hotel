@@ -343,6 +343,31 @@ class ClientConfig extends Base
     protected $isMBSiteEnabled = false;
 
     /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    protected $confirmOrdersCreatedByManager = false;
+
+    /**
+     * @return bool
+     */
+    public function isConfirmOrdersCreatedByManager(): ?bool
+    {
+        return $this->confirmOrdersCreatedByManager;
+    }
+
+    /**
+     * @param bool $confirmOrdersCreatedByManager
+     * @return ClientConfig
+     */
+    public function setConfirmOrdersCreatedByManager(bool $confirmOrdersCreatedByManager): ClientConfig
+    {
+        $this->confirmOrdersCreatedByManager = $confirmOrdersCreatedByManager;
+
+        return $this;
+    }
+
+    /**
      * @return bool
      */
     public function isMBSiteEnabled(): ?bool

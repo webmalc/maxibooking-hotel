@@ -204,3 +204,9 @@ payment.receipt.item_description.package: 'Accommodation in the hotel room "%1$s
 payment.receipt.item_description.service: 'Service: '
 payment.receipt.item.quantity.night: night
 payment.receipt.item.quantity.units: units
+site_manager.photos_tab: Pictures
+views.form_codeinstruction.text1: '<strong>Search form</strong> - Guests specify the date of arrival and departure, number of guests here and the system looks for an available room.'
+views.form_codeinstruction.text2: '<strong>Results form</strong> - in this form the reservation options are displayed and the guest can choose a room here'
+views.mb_site.index.paymentSystem: 'Payment system'
+views.form_codeinstruction.text3: 'To display the search results on your website, you need to create a page and embed a form for displaying the results. You need to specify the address of this page in online engine settings.'
+views.form_codeinstruction.header: 'Online engine consists of two forms'

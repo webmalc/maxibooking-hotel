@@ -427,7 +427,7 @@ services:
 
     mbh.form_data_handler:
         class: MBH\Bundle\BaseBundle\Service\FormDataHandler
-        arguments: ['@translator', '@mbh.helper', '@mbh.multi_lang_translator']
+        arguments: ['@translator', '@mbh.multi_lang_translator']
 
     mbh.protected.file.downloader:
         class: MBH\Bundle\BaseBundle\Service\ProtectedFileViewer
@@ -541,3 +541,7 @@ services:
     mbh.exception_manager:
         class: MBH\Bundle\BaseBundle\Service\ExceptionManager
         arguments: ['@exception_notifier', '@kernel', '@security.token_storage']
+
+    mbh.image_manager:
+        class: MBH\Bundle\BaseBundle\Service\ImageManager
+        arguments: ['%kernel.project_dir%']

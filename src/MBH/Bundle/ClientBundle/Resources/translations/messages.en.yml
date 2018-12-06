@@ -48,8 +48,8 @@ form.clientPaymentSystemType.sberbank.userName.label: Login
 form.clientPaymentSystemType.sberbank.password.label: Password
 form.clientPaymentSystemType.sberbank.token.label: Token
 form.clientPaymentSystemType.sberbank.sessionTimeoutMinutes.label: 'Life time invoice(minutes)'
-form.clientPaymentSystemType.sberbank.userName.help: "Login to the seller's service account. When you specify a token, Login and Password are optional."
-form.clientPaymentSystemType.sberbank.password.help: "The Password for the seller's service account. When specifying Token, Login and Password is optional."
+form.clientPaymentSystemType.sberbank.userName.help: 'Login to the seller''s service account. When you specify a token, Login and Password are optional.'
+form.clientPaymentSystemType.sberbank.password.help: 'The Password for the seller''s service account. When specifying Token, Login and Password is optional.'
 form.clientPaymentSystemType.sberbank.token.help: 'When specifying Login and Password, Token is optional.'
 form.clientPaymentSystemType.sberbank.sessionTimeoutMinutes.help: 'Order lifetime in the Sberbank system'
 form.clientPaymentSystemType.sberbank.returnUrl.label: 'Return Url'
@@ -154,3 +154,12 @@ form.clientConfigType.is_mb_site_enabled.label: 'Website enabled?'
 program_not_paid.error_messages: 'The paid time will end soon. Account will be blocked in %days% days. Please, make a payment in the <a target="_blank" href="%payment_url%"> your account</a>.'
 form.clientConfigType.currency.options.inr: 'Indian rupee'
 form.clientConfigType.currency.options.pln: 'Polish złoty'
+form.clientPaymentSystemType.uniteller_is_with_fiscalization.label: 'With payment fiscalization?'
+form.clientPaymentSystemType.uniteller.taxation_rate_code: 'Code of the tax rate'
+form.clientPaymentSystemType.uniteller.taxation_system_code: 'Code of the taxation system'
+form.clientPaymentSystemType.newRbk_ApiKey: 'Api Key'
+form.clientPaymentSystemType.newRbk_WebhookApi: 'Webhook key'
+form.clientPaymentSystemType.newRbk_ShopId: 'Shop ID'
+form.clientPaymentSystemType.newRbk_LifetimeInvoice: 'Lifetime Invoice'
+form.clientConfigType.confirm_orders_created_by_manager.help: 'By default all reservations have to be confirmed, and a guest will receive a confirmation letter after that.'
+form.clientConfigType.confirm_orders_created_by_manager.label: 'Confirm reservations created by manager?'

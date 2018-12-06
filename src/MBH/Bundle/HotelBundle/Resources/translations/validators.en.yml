@@ -53,3 +53,4 @@ validator.document.roomType.places_amount_less_zero: 'There can''t be less than 
 validator.document.roomType.internationalTitle.only_english: 'International name can be typed only in latin letters'
 validator.document.roomType.hotel_in_not_select: 'Hotel is not selected'
 validator.document.contact_info.phone_number.to_short: 'Phone number is too short'
+validator.hotel.map_url: 'Invalid URL'

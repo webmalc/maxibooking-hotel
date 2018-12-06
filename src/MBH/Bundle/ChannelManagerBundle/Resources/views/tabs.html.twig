@@ -12,10 +12,25 @@
     {% set active = active + 1 %}
 {% endif %}
 
+{% if base != 'airbnb' or isReadyToSync %}
+    {% set menu = menu|merge([
+        {'route': base, icon: 'fa-info-circle', titleTransId: 'views.tabs.main_settings'},
+    ]) %}
+{% elseif active > 1 %}
+    {% set active = active - 1 %}
+{% endif %}
 
 {% set menu = menu|merge([
-    {'route': base, icon: 'fa-info-circle', titleTransId: 'views.tabs.main_settings'},
-    {'route': base ~ '_room', icon: 'fa-bed', titleTransId: 'views.tabs.room_types'},
+    {'route': base ~ '_room', icon: 'fa-bed', titleTransId: base != 'airbnb' ? 'views.tabs.room_types' : 'views.tabs.airbnb.room_types'},
+]) %}
+
+{% if base == 'airbnb' %}
+    {% set menu = menu|merge([
+        {'route': base ~ '_room_links', icon: 'fa-link', titleTransId: 'views.tabs.room_links'}
+    ]) %}
+{% endif %}
+
+{% set menu = menu|merge([
     {'route': base ~ '_tariff', icon: 'fa-sliders', titleTransId: 'views.tabs.tariffs'}
 ]) %}
 
@@ -53,12 +68,12 @@
         {% set routeParams = item.routeParams is defined ? item.routeParams : {} %}
         {% set titleTransParams = item.titleTransParams is defined ? item.titleTransParams : {} %}
 
-        {% set title = (config and config.isReadyToSync() ? '<i class="fa ' ~ item.icon ~ '"></i>' : loop.index ~ '. ') ~ item.titleTransId|trans(titleTransParams, 'MBHChannelManagerBundle') %}
+        {% set title = (config and config.isReadyToSync() ? '<i class="fa ' ~ item.icon ~ '"></i> ' : loop.index ~ '. ') ~ item.titleTransId|trans(titleTransParams, 'MBHChannelManagerBundle') %}
         {% set isConfiguredByTechSupport = is_cm_configured_by_tech_support(base) %}
         {% set isActiveTab = loop.index == active %}
 
         {% if not (isActiveTab or (config and config.isReadyToSync())
-            or (loop.index in [1, 2] and active in [1, 2] and ((is_mb_user() and isConfiguredByTechSupport) or (not isConfiguredByTechSupport and (config and config.isConnectionSettingsRead())))
+            or (loop.index in [1, 2] and base != 'airbnb' and active in [1, 2] and ((is_mb_user() and isConfiguredByTechSupport) or (not isConfiguredByTechSupport and config and config.isConnectionSettingsRead()))
             and not (loop.index == 2 and active == 1 and isConfiguredByTechSupport and (config is empty or config.hotelId is empty)))) %}
             <li class="disabled">
                 <a href="#" role="tab">{{ title|raw }}</a>

@@ -28,11 +28,25 @@ class PeriodsCompiler
         \DateTime $begin,
         \DateTime $end,
         array $dataByDates,
-        array $comparedFieldNames,
+        array $comparedFieldNames = [],
         $dateFormat = 'd.m.Y',
         $isArray = false
     )
     {
+        $callback = function ($periodData, $currentData) use ($isArray, $comparedFieldNames) {
+            return $this->documentsComparer->isEqualByFields($periodData, $currentData, $comparedFieldNames, $isArray);
+        };
+
+        return $this->getPeriodsByCallback($begin, $end, $dataByDates, $callback, $dateFormat);
+    }
+
+    public function getPeriodsByCallback(
+        \DateTime $begin,
+        \DateTime $end,
+        array $dataByDates,
+        $callback,
+        $dateFormat = 'd.m.Y'
+    ) {
         $periods = [];
         $currentPeriod = null;
 
@@ -48,7 +62,7 @@ class PeriodsCompiler
                     'end' => $day,
                     'data' => $dateEntity
                 ];
-            } elseif ($this->documentsComparer->isEqualByFields($currentPeriod['data'], $dateEntity, $comparedFieldNames, $isArray)) {
+            } elseif ($callback($currentPeriod['data'], $dateEntity)) {
                 $currentPeriod['end'] = $day;
             } else {
                 is_null($currentPeriod) ? : $periods[] = $currentPeriod;
@@ -62,5 +76,32 @@ class PeriodsCompiler
         $periods[] = $currentPeriod;
 
         return $periods;
+    }
+
+    public function combineIntersectedPeriods(array $periods)
+    {
+        if (empty($periods)) {
+            return [];
+        }
+
+        usort($periods, function (array $first, array $second) {
+            return $first['begin'] > $second['begin'] ? 1 : -1;
+        });
+
+        $result = [];
+
+        $currentPeriod = $periods[0];
+        for ($periodIndex = 1; $periodIndex < count($periods); $periodIndex++) {
+            $iteratedPeriod = $periods[$periodIndex];
+            if ($currentPeriod['end'] < $iteratedPeriod['begin']) {
+                $result[] = $currentPeriod;
+                $currentPeriod = $iteratedPeriod;
+            } elseif ($currentPeriod['end'] < $iteratedPeriod['end']) {
+                $currentPeriod['end'] = $iteratedPeriod['end'];
+            }
+        }
+        $result[] = $currentPeriod;
+
+        return $result;
     }
 }

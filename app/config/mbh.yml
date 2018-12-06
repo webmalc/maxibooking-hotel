@@ -262,6 +262,9 @@ parameters:
         hundred_one_hotels:
           title: '101 Отель'
           service: 'mbh.channelmanager.hundred_one_hotels'
+        airbnb:
+          title: 'Airbnb'
+          service: 'mbh.airbnb'
 #        oktogo:
 #          title: 'Oktogo'
 #          service: 'mbh.channelmanager.oktogo'
