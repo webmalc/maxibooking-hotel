@@ -12,7 +12,6 @@ class BaseControllerTest extends WebTestCase
         "create_region",                //TODO: Какие права нужны? src/MBH/Bundle/BillingBundle/Controller/BillingDataController.php
         "create_city",                  //TODO: Какие права нужны? src/MBH/Bundle/BillingBundle/Controller/BillingDataController.php
         'online_form_calendar',
-        'online_api_payment_form_payment'
     ];
 
     /**
@@ -31,7 +30,8 @@ class BaseControllerTest extends WebTestCase
         'fail_payment',
         'online_poll_js',
         "fos_user_security_login",
-        "fos_user_resetting_request"
+        "fos_user_resetting_request",
+        'online_api_payment_form_payment',
     ];
 
     const EXCLUDED_ROUTES = [
@@ -63,7 +63,6 @@ class BaseControllerTest extends WebTestCase
         'api_success_url',                  //master test there is, but if not setting client config -> 404, so common exclude
         'api_fail_url',                     //master test there is, but if not setting client config -> 404, so common exclude
         'reset_login_alias',                 //redirect
-        'site_config_social_networking_services', /** TODO create test */
     ];
 
     private const ROUTES_WITH_OWN_TEST = [
@@ -133,6 +132,7 @@ class BaseControllerTest extends WebTestCase
         'document_templates_edit',
         'document_templates_show',
         'document_templates_delete',
+        'site_config_social_networking_services',
     ];
 
     private const ROUTERS_CHANNEL_MANAGER = [
