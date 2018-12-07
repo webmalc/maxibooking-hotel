@@ -69,7 +69,7 @@ def create_logger() -> logging.Logger:
     return new_logger
 
 
-def check(alias, action):
+def check(alias, action='get_alias'):
     logger = create_logger()
     result = None
     try:
