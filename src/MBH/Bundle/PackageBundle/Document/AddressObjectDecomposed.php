@@ -314,9 +314,9 @@ class AddressObjectDecomposed implements AddressInterface
     }
 
     /**
-     * @return String
+     * @return String|null
      */
-    public function getCityId(): string
+    public function getCityId(): ?string
     {
         return $this->getCity();
     }
