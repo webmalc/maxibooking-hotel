@@ -22,6 +22,16 @@
     ]) %}
 {% endif %}
 
+{% block styles %}
+    {{ parent() }}
+
+    {% stylesheets filter='cssrewrite, uglifycss'
+        '@MBHUserBundle/Resources/public/css/profile/*'
+    %}
+        <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+{% endblock %}
+
 {% block content %}
     <ul class="nav nav-tabs" role="tablist">
         {% for item in menu %}

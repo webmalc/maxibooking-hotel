@@ -15,6 +15,8 @@ use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\InternableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\LocalizableTrait;
 use MBH\Bundle\CashBundle\Document\CardType;
+use MBH\Bundle\ChannelManagerBundle\Document\AirbnbConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
 use MBH\Bundle\PackageBundle\Document\Organization;
@@ -22,6 +24,7 @@ use MBH\Bundle\PackageBundle\Lib\AddressInterface;
 use MBH\Bundle\PriceBundle\Document\Service;
 use MBH\Bundle\PriceBundle\Document\ServiceCategory;
 use MBH\Bundle\PriceBundle\Document\Special;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\RestaurantBundle\Document\DishMenuCategory;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -231,6 +234,12 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
 
     /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig", mappedBy="hotel") */
     protected $hundredOneHotelsConfig;
+
+    /**
+     * @var AirbnbConfig
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\AirbnbConfig", mappedBy="hotel")
+     */
+    protected $airbnbConfig;
 
     /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\IngredientCategory", mappedBy="hotel") */
     protected $ingredientCategories;
@@ -461,6 +470,25 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     }
 
     /**
+     * @return AirbnbConfig
+     */
+    public function getAirbnbConfig(): ?AirbnbConfig
+    {
+        return $this->airbnbConfig;
+    }
+
+    /**
+     * @param AirbnbConfig $airbnbConfig
+     * @return Hotel
+     */
+    public function setAirbnbConfig(AirbnbConfig $airbnbConfig): Hotel
+    {
+        $this->airbnbConfig = $airbnbConfig;
+
+        return $this;
+    }
+
+    /**
      * @return mixed
      */
     public function getTableTypes()
@@ -658,11 +686,25 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     /**
      * Get tariffs
      *
-     * @return \Doctrine\Common\Collections\Collection $tariffs
+     * @return \Doctrine\Common\Collections\Collection|ArrayCollection|Tariff[] $tariffs
      */
     public function getTariffs()
     {
         return $this->tariffs;
+    }
+
+    /**
+     * @return Tariff|null
+     */
+    public function getBaseTariff()
+    {
+        foreach ($this->getTariffs() as $tariff) {
+            if ($tariff->getIsDefault()) {
+                return $tariff;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -689,7 +731,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     }
 
     /**
-     * @return mixed
+     * @return HundredOneHotelsConfig|null
      */
     public function getHundredOneHotelsConfig()
     {
@@ -1209,7 +1251,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
 
 
     /**
-     * @return mixed
+     * @return ExpediaConfig|null
      */
     public function getExpediaConfig()
     {
@@ -1369,7 +1411,7 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     }
 
     /**
-     * @return mixed
+     * @return MyallocatorConfig|null
      */
     public function getMyallocatorConfig()
     {
@@ -1845,6 +1887,32 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     public function setPackageDepartureTime(?int $packageDepartureTime): Hotel
     {
         $this->packageDepartureTime = $packageDepartureTime;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public function getMainImage()
+    {
+        $mainImages = array_filter($this->getImages()->toArray(), function(Image $image) {
+            return $image->getIsDefault();
+        });
+
+        return empty($mainImages) ? null : current($mainImages);
+    }
+
+    /**
+     * @param Image $newMainImage
+     * @return Hotel
+     */
+    public function setHotelMainImage(Image $newMainImage)
+    {
+        foreach ($this->getImages() as $image) {
+            /** @var Image $image */
+            $image->setIsDefault($image->getId() == $newMainImage->getId());
+        }
 
         return $this;
     }

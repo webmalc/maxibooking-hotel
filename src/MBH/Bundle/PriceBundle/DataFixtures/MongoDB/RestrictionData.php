@@ -13,6 +13,7 @@ use MBH\Bundle\PriceBundle\Document\Restriction;
  */
 class RestrictionData extends AbstractFixture implements OrderedFixtureInterface
 {
+    const PERIOD_LENGTH_STR = 'midnight +6 month';
     const DATA = [
         'main-tariff' => [
             'roomtype-double' => 3,
@@ -32,7 +33,7 @@ class RestrictionData extends AbstractFixture implements OrderedFixtureInterface
     {
         $hotels = $manager->getRepository('MBHHotelBundle:Hotel')->findAll();
         $begin = new \DateTime('midnight');
-        $end = new \DateTime('midnight +6 month');
+        $end = new \DateTime(self::PERIOD_LENGTH_STR);
         $period = new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end);
 
         foreach ($hotels as $hotelNumber => $hotel) {

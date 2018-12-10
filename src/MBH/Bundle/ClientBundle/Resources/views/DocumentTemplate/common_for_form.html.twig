@@ -1,0 +1,118 @@
+{% extends 'MBHClientBundle:DocumentTemplate:layout.html.twig' %}
+
+{%  set plugins = [
+'advlist', 'autolink', 'link', 'lists', 'charmap', 'preview', 'hr', 'anchor', 'pagebreak',
+'searchreplace','visualblocks','visualchars','code','fullscreen','insertdatetime', 'nonbreaking',
+'save', 'table' ,'contextmenu', 'directionality', 'emoticons', 'paste', 'textcolor', 'fullpage',
+'colorpicker',
+] %}
+
+{#'image', 'media', 'template', 'print',#}
+
+{% set toolbar = [
+    'save fullscreen', 'insertfile undo redo', 'styleselect', 'bold italic', 'alignleft aligncenter alignright alignjustify',
+    'bullist numlist outdent indent', 'link image', 'print preview',
+    'forecolor backcolor emoticons',
+    'sizeselect fontselect fontsizeselect'
+] %}
+
+{% set injection %}
+    utf-8"/>
+    <style type="text/css">
+        html {
+            width: 1240px;
+            height: 1769px;
+            overflow: auto;
+            padding: 10mm;
+        }
+        body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            border: 1px dotted black;
+            overflow: hidden;
+        } </style>
+    <meta="
+{% endset %}
+
+{% block scripts %}
+    {{ parent() }}
+    {% for plugin in plugins %}
+        <script src="{{ asset('assets/vendor/tinymce/plugins/' ~ plugin ~ '/plugin.min.js') }}"></script>
+    {% endfor %}
+
+    <script>
+        var mbh_property = {{ get_properties() }};
+    </script>
+    {% javascripts filter='uglifyjs2'
+        '@MBHClientBundle/Resources/public/js/tinymce/plugin/mbh_data.tinymce.plugin.js'
+        '@MBHClientBundle/Resources/public/js/tinymce/plugin/code.tinymce.plugin.js'
+    %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    {% if app.request.locale == 'ru' %}
+        {% javascripts filter='uglifyjs2'
+            '@MBHClientBundle/Resources/public/js/tinymce/langs/ru.js' %}
+            {% set url_lang %}{{ asset_url }}{% endset %}
+            <script src="{{ url_lang }}"></script>
+        {% endjavascripts %}
+        {% javascripts filter='uglifyjs2'
+            '@MBHClientBundle/Resources/public/js/tinymce/plugin/langs/ru.js' %}
+            <script src="{{ asset_url }}"></script>
+        {% endjavascripts %}
+    {% else %}
+        {% set url_lang = '' %}
+    {% endif %}
+
+    <script>
+        if (document.getElementById('mbh_client_document_template_content')) {
+
+            tinymce.init({
+                selector       : '#mbh_client_document_template_content',
+                theme          : 'modern',
+                language_url   : '{{ url_lang }}',
+                skin_url       : '/assets/vendor/tinymce/skins/lightgray',
+                plugins_url    : '/assets/vendor/tinymce/skins/lightgray',
+                entity_encoding: 'raw',
+
+                resize                   : 'both', force_br_newlines: true,
+                force_p_newlines         : false,
+                forced_root_block        : '',
+                fix_list_elements        : false,
+                protect                  : [/\{\%.*?\%\}/g],
+                height                   : 300,
+                fullpage_default_title   : 'PDF',
+                fullpage_default_encoding: '{{ injection|replace({"\n": "", "  ": ""})|raw }}',
+                plugins                  : '{{ plugins|join(' ') }} mbh_data codemirror',
+                toolbar                  : '{{ toolbar|join(' | ') }} | mbh_toggle_border mbh_rotate',
+                menu                     : {
+                    file  : {title: 'File', items: 'newdocument'},
+                    edit  : {title: 'Edit', items: 'undo redo | cut copy paste pastetext | selectall'},
+                    insert: {title: 'Insert', items: 'link media | template hr'},
+                    view  : {title: 'View', items: 'visualaid'},
+                    format: {
+                        title: 'Format',
+                        items: 'bold italic underline strikethrough superscript subscript | formats | removeformat'
+                    },
+                    table : {title: 'Table', items: 'inserttable tableprops deletetable | cell row column'},
+                    tools : {title: 'Tools', items: 'code'}
+                },
+                contextmenu              : 'mbh_table_add statement_mbh mbh_table_property | mbh_all_data mbh_table_entity | link image | inserttable tableprops | cell row column deletetable',
+                codemirror               : {
+                    path              : '/assets/vendor/codemirror/',
+                    pathSource        : '{{ path('document_templates_tinymce_codemirror') }}',
+                    saveCursorPosition: false
+                }
+            });
+        }
+    </script>
+{% endblock %}
+
+{% block styles %}
+    {{ parent() }}
+    <style>
+        div.mce-fullscreen {
+            z-index: 10000;
+        }
+    </style>
+{% endblock %}

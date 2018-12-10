@@ -73,7 +73,7 @@ class ClientPayerManager
 
                 $endpointSettings = BillingApi::CLIENT_PAYER_ENDPOINT_SETTINGS;
                 $requestResult = !is_null($clientPayer->getId())
-                    ? $this->billingApi->updateBillingEntity($clientPayer, $endpointSettings, $client)
+                    ? $this->billingApi->updateBillingEntity($clientPayer, $endpointSettings, $client->getLogin())
                     : $this->billingApi->createBillingEntityBySettings($clientPayer, $endpointSettings);
 
                 $client->setAddress($payerDataByBillingKeys['address']);

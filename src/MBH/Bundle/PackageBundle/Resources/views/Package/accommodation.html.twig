@@ -33,7 +33,7 @@
                     </div>
                     <div class="box-body">
                         <table id="accommodations-table"
-                               class="table table-actions table-striped table-hover table-actions table-condensed not-auto-datatable">
+                               class="table table-actions table-striped table-hover table-condensed not-auto-datatable">
                             <thead>
                             <tr>
                                 <th class="td-xs"></th>
@@ -116,8 +116,8 @@
                 </div>
             {% endif %}
 
-            {% if package.deletedAt is empty %}
-                {% if optGroupRooms|length and emptyIntervalsAccommodation|length %}
+            {% if package.deletedAt is empty and emptyIntervalsAccommodation|length %}
+                {% if optGroupRooms|length %}
                     <div class="box box-default box-solid">
                         <div class="box-header with-border box-header_when-mobile">
                             <h3 class="box-title">
@@ -140,7 +140,7 @@
                         </div>
                         <div class="box-body">
                             <table id="accommodation-select-table"
-                                   class="table table-actions table-striped table-hover table-actions table-condensed">
+                                   class="table table-actions table-striped table-hover table-condensed">
                                 <thead>
                                 <tr>
                                     <th class="td-xs"></th>
@@ -225,6 +225,8 @@
         ;
         var earlyCheckInServiceIsEnabled = {{ earlyCheckInServiceIsEnabled|json_encode }};
         var lateCheckOutServiceIsEnabled = {{ lateCheckOutServiceIsEnabled|json_encode }};
+        var packageHotelArrivalHour = {{ package.hotel.packageArrivalTime }};
+        var packageHotelDepartureHour  = {{ package.hotel.packageDepartureTime }}
     </script>
 
     {% include 'MBHPackageBundle:Package:late-early-check-modal.html.twig' %}

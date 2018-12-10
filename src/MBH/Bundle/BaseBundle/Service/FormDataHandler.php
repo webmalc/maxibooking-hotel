@@ -3,7 +3,6 @@
 namespace MBH\Bundle\BaseBundle\Service;
 
 use MBH\Bundle\BillingBundle\Service\BillingResponseHandler;
-use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,10 +14,9 @@ class FormDataHandler
     protected $helper;
     protected $multiLangTranslator;
 
-    public function __construct(TranslatorInterface $translator, Helper $helper, MultiLangTranslator $multiLangTranslator)
+    public function __construct(TranslatorInterface $translator, MultiLangTranslator $multiLangTranslator)
     {
         $this->translator = $translator;
-        $this->helper = $helper;
         $this->multiLangTranslator = $multiLangTranslator;
     }
 
@@ -99,7 +97,7 @@ class FormDataHandler
     public function saveTranslationsFromMultipleFieldsForm(FormInterface $form, Request $request, array $multipleLanguagesFields)
     {
         $translationsByFields
-            = $this->helper->getFromArrayByKeys($request->request->get($form->getName()), $multipleLanguagesFields);
+            = Utils::getFromArrayByKeys($request->request->get($form->getName()), $multipleLanguagesFields);
         $this->multiLangTranslator->saveByMultiLanguagesFields($form->getData(), $translationsByFields);
     }
 }

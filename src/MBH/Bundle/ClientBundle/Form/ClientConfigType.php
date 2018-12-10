@@ -2,9 +2,6 @@
 
 namespace MBH\Bundle\ClientBundle\Form;
 
-use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
-use Doctrine\ODM\MongoDB\DocumentRepository;
-use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Form\LanguageType;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
@@ -96,6 +93,17 @@ class ClientConfigType extends AbstractType
                 },
                 'label' => 'form.clientConfigType.currency.label'
             ])
+//            ->add(
+//                'isSendSms',
+//                CheckboxType::class,
+//                [
+//                    'label' => 'form.clientConfigType.sms_notification',
+//                    'group' => 'form.clientConfigType.main_group',
+//                    'value' => true,
+//                    'required' => false,
+//                    'help' => 'form.clientConfigType.is_sms_notification_turned_on',
+//                ]
+//            )
             ->add(
                 'is_instant_search',
                 CheckboxType::class,
@@ -122,16 +130,6 @@ class ClientConfigType extends AbstractType
                     'min' => 0
                 ]
             ])
-            ->add(
-                'isSendMailAtPaymentConfirmation',
-                CheckboxType::class,
-                [
-                    'label' => 'form.clientConfigType.is_send_mail_at_payment_confirmation.label',
-                    'help' => 'form.clientConfigType.is_send_mail_at_payment_confirmation.help',
-                    'group' => 'form.clientConfigType.main_group',
-                    'required' => false,
-                ]
-            )
             ->add(
                 'searchDates',
                 TextType::class,
@@ -238,37 +236,6 @@ class ClientConfigType extends AbstractType
                     'group' => 'form.clientConfigType.search_group',
                     'label' => 'form.clientConfigType.default_children_quantity.label',
                     'help' => 'form.clientConfigType.default_children_quantity.help',
-                ]
-            )
-            ->add(
-                'allowNotificationTypes',
-                DocumentType::class,
-                [
-                    'group' => 'form.clientConfigType.notification_group',
-                    'label' => 'form.clientConfigType.notification.label',
-                    'help' => 'form.clientConfigType.notification.help',
-                    'required' => false,
-                    'multiple' => true,
-                    'class' => NotificationType::class,
-                    'query_builder' => function (DocumentRepository $repository) {
-                        return $repository
-                            ->createQueryBuilder()
-                            ->field('owner')
-                            ->in(
-                                [
-                                    NotificationType::OWNER_CLIENT,
-                                    NotificationType::OWNER_ALL,
-                                ]
-                            );
-                    },
-                    'choice_label' => function (NotificationType $type) {
-                        return 'notifier.config.label.' . $type->getType();
-                    },
-                    'choice_attr' => function (NotificationType $type) {
-                        return ['title' => 'notifier.config.title.' . $type->getType()];
-                    },
-                    #http://symfony.com/blog/new-in-symfony-2-7-form-and-validator-updates#added-choice-translation-domain-domain-to-avoid-translating-options
-                    'choice_translation_domain' => true
                 ]
             );
     }

@@ -1,7 +1,6 @@
 ///<reference path="DataManager.ts"/>
 ///<reference path="ChessBoardManager.ts"/>
 /*global $ */
-// declare let $;
 declare let canBookWithoutPayer;
 declare let roomTypes;
 declare let rooms;
@@ -17,6 +16,8 @@ class ActionManager {
     public callRemoveConfirmationModal(packageId) {
         let self = this;
         let $packageDeleteModal = $('#modal_delete_package');
+        const packageTitle = this.dataManager.getPackageDataById(packageId).number;
+        $('#modal_delete_package .modal-title').html(Translator.trans('package.remove_package', {'title' : packageTitle}));
         $packageDeleteModal.modal('show');
         const $modalContainer = $('#delete-modal-form-container');
         $modalContainer.html(mbh.loader.html);
@@ -67,14 +68,11 @@ class ActionManager {
 
         let editBody = $('#package-new-results');
         editBody.html(searchData);
-        // console.log(searchData);
         editBody.find('.search-room-select').val(packageData.accommodation);
         editBody.find('td:nth-child(4)').remove();
         editBody.find('thead th:nth-child(4)').remove();
         editBody.find('thead th').css('text-align', 'center');
         editBody.find('select').not("s[tourist]").select2();
-
-
 
         let editModal = $('#package-edit-modal');
 
@@ -438,7 +436,7 @@ class ActionManager {
         if (alertMessageData.modalContentClass) {
             let $modalContent = $updateForm.closest('.modal-content');
             $modalContent.addClass(alertMessageData.modalContentClass);
-            $('#package-modal-change-alert').removeClass('text-center');
+            $modalAlertDiv.removeClass('text-center');
             let onWithModalClassWindowClosed = function () {
                 $modalContent.removeClass(alertMessageData.modalContentClass);
                 $('#package-modal-change-alert').addClass('text-center');

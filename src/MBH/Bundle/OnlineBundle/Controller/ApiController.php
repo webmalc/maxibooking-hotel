@@ -8,7 +8,9 @@ use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Document\PaymentSystem\Stripe;
+use MBH\Bundle\ClientBundle\Exception\BadSignaturePaymentSystemException;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
 use MBH\Bundle\PackageBundle\Document\Order;
 
@@ -270,7 +272,7 @@ class ApiController extends Controller
         if (!$holder->isSuccess()) {
             $logger->info('FAIL. '.$logText.' .Bad signature');
             $holder->getIndividualErrorResponse();
-            throw $this->createNotFoundException();
+            throw new BadSignaturePaymentSystemException();
         }
 
         //save cashDocument
@@ -384,18 +386,33 @@ class ApiController extends Controller
             $query->setChildrenAges($request->get('children-ages'));
         }
 
-        $hotels = $formConfig->getHotels();
+        $hotels = $formConfig->getHotels()->toArray();
         if (!count($hotels)) {
             $hotels = $dm->getRepository('MBHHotelBundle:Hotel')->findAll();
         }
+
+        $requestedHotel = $dm->getRepository('MBHHotelBundle:Hotel')->find($request->get('hotel'));
+        if (!is_null($requestedHotel)) {
+            $hotels = in_array($requestedHotel, $hotels) ? [$requestedHotel] : [];
+        }
         foreach ($hotels as $hotel) {
             foreach ($hotel->getRoomTypes() as $roomType) {
-                $query->addAvailableRoomType($roomType->getId());
+                if ($formConfig->getRoomTypeChoices()->count() === 0
+                    || $formConfig->getRoomTypeChoices()->contains($roomType)) {
+                    $query->addAvailableRoomType($roomType->getId());
+                }
             }
         }
 
-        $query->addRoomType($request->get('roomType'));
-        $query->addHotel($dm->getRepository('MBHHotelBundle:Hotel')->find($request->get('hotel')));
+        $requestedRoomTypeId = $request->get('roomType');
+        if (!empty($requestedRoomTypeId)) {
+            $requestedRoomType = $this->dm->find(RoomType::class, $requestedRoomTypeId);
+            if (!is_null($requestedRoomType)) {
+                $query->addRoomTypeId($requestedRoomTypeId);
+            } else {
+                $query->availableRoomTypes = [];
+            }
+        }
 
         if (count($formConfig->getHotels()) && empty($query->availableRoomTypes)) {
             $results = [];

@@ -15,7 +15,8 @@ class ApiHandler
     /** @var DocumentManager $dm */
     private $dm;
 
-    public function __construct(DocumentManager $dm) {
+    public function __construct(DocumentManager $dm)
+    {
         $this->dm = $dm;
     }
 
@@ -97,7 +98,10 @@ class ApiHandler
                         'roomTypeIds',
                         ['%roomTypeId%' => $roomTypeId]
                     );
-                } elseif (!is_null($formConfig) && $formConfig->getRoomTypes() && !$formConfig->getRoomTypeChoices()->contains($roomType)) {
+                } elseif (!is_null($formConfig)
+                    && $formConfig->getRoomTypes()
+                    && $formConfig->getRoomTypeChoices()->count() > 0
+                    && !$formConfig->getRoomTypeChoices()->contains($roomType)) {
                     $responseCompiler->addErrorMessage($responseCompiler::FORM_CONFIG_NOT_CONTAINS_SPECIFIED_ROOM_TYPE,
                         'roomTypeIds',
                         ['%roomTypeId%' => $roomTypeId]

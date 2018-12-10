@@ -11,6 +11,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 abstract class Common
 {
+    /** @var null|ContainerInterface  */
+    protected $container;
+
     /**
      * В наследуемых классах перечасляются методы которые доступны у классов источников
      *

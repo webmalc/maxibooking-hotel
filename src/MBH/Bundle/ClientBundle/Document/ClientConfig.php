@@ -23,6 +23,7 @@ use MBH\Bundle\ClientBundle\Document\PaymentSystem\Sberbank;
 use MBH\Bundle\ClientBundle\Document\PaymentSystem\Stripe;
 use MBH\Bundle\ClientBundle\Document\PaymentSystem\Tinkoff;
 use MBH\Bundle\ClientBundle\Document\PaymentSystem\Uniteller;
+use MBH\Bundle\ClientBundle\Exception\IsNotValidPaymentSystemException;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\CheckResultHolder;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystemDocument;
 use Symfony\Component\Form\FormInterface;
@@ -340,6 +341,31 @@ class ClientConfig extends Base
      * @ODM\Field(type="bool")
      */
     protected $isMBSiteEnabled = false;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    protected $confirmOrdersCreatedByManager = false;
+
+    /**
+     * @return bool
+     */
+    public function isConfirmOrdersCreatedByManager(): ?bool
+    {
+        return $this->confirmOrdersCreatedByManager;
+    }
+
+    /**
+     * @param bool $confirmOrdersCreatedByManager
+     * @return ClientConfig
+     */
+    public function setConfirmOrdersCreatedByManager(bool $confirmOrdersCreatedByManager): ClientConfig
+    {
+        $this->confirmOrdersCreatedByManager = $confirmOrdersCreatedByManager;
+
+        return $this;
+    }
 
     /**
      * @return bool
@@ -979,7 +1005,7 @@ class ClientConfig extends Base
     public function getPaymentSystemDocByName($paymentSystemName)
     {
         if (empty($this->$paymentSystemName) || !($this->$paymentSystemName instanceof PaymentSystemDocument)) {
-            throw new Exception('Specified payment system "' . $paymentSystemName . '" is not valid!');
+            throw new IsNotValidPaymentSystemException($paymentSystemName);
         }
 
         return $this->$paymentSystemName;

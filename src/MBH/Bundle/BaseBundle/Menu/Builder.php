@@ -6,6 +6,7 @@ use Documents\User;
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\ItemInterface;
 use MBH\Bundle\BaseBundle\Lib\Menu\BadgesHolder;
+use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
 use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -692,69 +693,75 @@ class Builder
             ],
         ];
 
-
-//        if ($this->container->get('kernel')->getEnvironment() === 'prod') {
-            $booking = [
-                'booking' => [
-                    'options'    => [
-                        'route' => 'booking',
-                        'label' => 'Booking.com',
-                    ],
-                    'attributes' => ['icon' => 'fa fa-cloud-download'],
+        $booking = [
+            'booking' => [
+                'options'    => [
+                    'route' => 'booking',
+                    'label' => 'Booking.com',
                 ],
-            ];
+                'attributes' => ['icon' => 'fa fa-cloud-download'],
+            ],
+        ];
 
-            $myAllLocator = [
-                'myallocator' => [
-                    'options'    => [
-                        'route' => 'myallocator',
-                        'label' => 'menu.communication.label.advanced',
-                    ],
-                    'attributes' => ['icon' => 'fa fa-cloud-download'],
+        $myAllLocator = [
+            'myallocator' => [
+                'options'    => [
+                    'route' => 'myallocator',
+                    'label' => 'menu.communication.label.advanced',
                 ],
-            ];
+                'attributes' => ['icon' => 'fa fa-cloud-download'],
+            ],
+        ];
 
-            $ostrovok = [
-                'ostrovok' => [
-                    'options'    => [
-                        'route' => 'ostrovok',
-                        'label' => 'Ostrovok',
-                    ],
-                    'attributes' => ['icon' => 'fa fa-cloud-download'],
+        $ostrovok = [
+            'ostrovok' => [
+                'options'    => [
+                    'route' => 'ostrovok',
+                    'label' => 'Ostrovok',
                 ],
-            ];
+                'attributes' => ['icon' => 'fa fa-cloud-download'],
+            ],
+        ];
 
-            $vashotel = [
-                'vashotel' => [
-                    'options'    => [
-                        'route' => 'vashotel',
-                        'label' => 'menu.communication.label.your_hotel',
-                    ],
-                    'attributes' => ['icon' => 'fa fa-cloud-download'],
+        $vashotel = [
+            'vashotel' => [
+                'options'    => [
+                    'route' => 'vashotel',
+                    'label' => 'menu.communication.label.your_hotel',
                 ],
-            ];
+                'attributes' => ['icon' => 'fa fa-cloud-download'],
+            ],
+        ];
 
-            $hotelInn = [
-                'hotelinn' => [
-                    'options'    => [
-                        'route' => 'hotelinn',
-                        'label' => 'Hotel-inn',
-                    ],
-                    'attributes' => ['icon' => 'fa fa-cloud-download'],
+        $hotelInn = [
+            'hotelinn' => [
+                'options'    => [
+                    'route' => 'hotelinn',
+                    'label' => 'Hotel-inn',
                 ],
-            ];
+                'attributes' => ['icon' => 'fa fa-cloud-download'],
+            ],
+        ];
 
-            $expedia = [
-                'expedia' => [
-                    'options'    => [
-                        'route' => 'expedia',
-                        'label' => 'Expedia',
-                    ],
-                    'attributes' => ['icon' => 'fa fa-cloud-download'],
+        $expedia = [
+            'expedia' => [
+                'options'    => [
+                    'route' => 'expedia',
+                    'label' => 'Expedia',
                 ],
-            ];
+                'attributes' => ['icon' => 'fa fa-cloud-download'],
+            ],
+        ];
 
-//        }
+        $airbnb = [
+            Airbnb::NAME => [
+                'options' => [
+                    'route' => Airbnb::NAME,
+                    'label' => 'Airbnb'
+                ],
+                'attributes' => ['icon' => 'fa fa-cloud-download'],
+            ]
+        ];
 
         $parent = $this->createItem($channelManager);
 
@@ -765,6 +772,7 @@ class Builder
             $ostrovok,
             $hundredOneHotel,
             $vashotel,
+            $airbnb
         ]));
 
     }

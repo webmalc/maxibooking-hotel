@@ -29,3 +29,6 @@ parameters:
           service: 'mbh.channelmanager.expedia'
           username: EQCMaxibooking
           password: '%expedia_pass%'
+        airbnb:
+          title: 'Airbnb'
+          service: 'mbh.airbnb'

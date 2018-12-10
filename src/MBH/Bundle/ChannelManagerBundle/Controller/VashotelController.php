@@ -77,19 +77,19 @@ class VashotelController extends Controller implements CheckHotelControllerInter
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->dm->persist($entity);
-            $this->dm->flush();
-
-            $this->addFlash('success', 'controller.vashotelController.settings_saved_success');
-
-            $this->get('mbh.channelmanager.vashotel')->syncServices($entity);
             $channelManagerService = $this->get('mbh.channelmanager');
-            $channelManagerService->updateInBackground();
 
             if (!$entity->isReadyToSync()) {
+                $entity->setIsMainSettingsFilled(true);
                 $channelManagerHumanName = $channelManagerService->getServiceHumanName('vashotel');
                 $this->get('mbh.messages_store')
                     ->sendCMConfirmationMessage($entity, $channelManagerHumanName, $this->get('mbh.notifier.mailer'));
             }
+            $this->dm->flush();
+
+            $this->addFlash('success', 'controller.vashotelController.settings_saved_success');
+            $channelManagerService->updateInBackground();
+            $this->get('mbh.channelmanager.vashotel')->syncServices($entity);
 
             return $this->redirect($this->generateUrl('vashotel'));
         }
@@ -138,6 +138,10 @@ class VashotelController extends Controller implements CheckHotelControllerInter
 
             $userName = $this->getUser()->getUsername();
             $this->get('mbh.channelmanager')->logCollectionChanges($config, 'rooms', $userName, $prevRooms);
+            if (!$config->isReadyToSync()) {
+                $config->setIsRoomsConfigured(true);
+            }
+
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();
@@ -196,6 +200,10 @@ class VashotelController extends Controller implements CheckHotelControllerInter
 
             $userName = $this->getUser()->getUsername();
             $this->get('mbh.channelmanager')->logCollectionChanges($config, 'tariffs', $userName, $prevTariffs);
+            if (!$config->isReadyToSync()) {
+                $config->setIsTariffsConfigured(true);
+            }
+
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();

@@ -138,7 +138,7 @@ form.searchType.children_ages: 'Children age'
 form.searchType.children_amount_less_zero: 'Number of children cannot be less than zero'
 form.searchType.children_amount_not_filled: 'Number of children is not specified'
 form.searchType.range: 'Additional search days'
-form.touristType.general_info: 'General infoormation'
+form.touristType.general_info: 'General information'
 form.touristType.communication_language: 'Preferred Language'
 form.touristType.sex_male: Male
 form.touristType.sex_female: Female
@@ -521,6 +521,7 @@ tourist.index.purpose_of_arrival: 'Purpose of the trip'
 tourist.index.address: Address
 tourist.index.date_of_birth: 'Date of Birth'
 tourist.index.contacts: Contacts
+tourist.index.hotel: Hotel
 tourist.edit_unwelcome.added_client_to_black_list: 'You have marked a guest as unwelcome'
 tourist.edit_unwelcome.attention: 'Inclusion of information in the list of undesirable guests should be made only by competent employees, as objectively and impartially as possible. Offensive, disrespectful expressions and any conclusions, recommendations and definitions that can be made only by the judicial authority are prohibited. The disclosure of any personal clients information, as well as the mentioning of facts not  officially confirmed in the form of an act, protocol, video recording or other proper form and / or by competent authorities are also prohbited.'
 tourist.edit_unwelcome.specify_main_document: 'Fill in the main document information'
@@ -985,7 +986,7 @@ mbh.package.builder.document_tempates: 'Document templates'
 report.filling.filling_table.number_of_places: 'Number of places'
 fixtures.package_source_data.channel_manager.101hotel: '101 Hotel'
 fixtures.package_source_data.channel_manager.ostrovok: Ostrovok
-fixtures.package_source_data.channel_manager.vas_hotel_dot_ru: 'VasHotel.ru'
+fixtures.package_source_data.channel_manager.vas_hotel_dot_ru: VasHotel.ru
 fixtures.package_source_data.on_line_reservation: 'Online booking'
 fixtures.package_source_data.regulat_customer: 'Regular customer'
 fixtures.package_source_data.recomendation_of_friends: 'Friend recomendation'
@@ -1314,3 +1315,8 @@ chessboard_manager.change_dates_button.subtract: '- %numberOfDays% days'
 chessboard.index.number_of_rooms_select.all_rooms: 'All rooms'
 chessboard.index.number_of_rooms_select.rooms: '%numberOfRooms% rooms'
 report.filling.filling.room_status.without_status: 'No status'
+tourist.index.small_title: 'List of guests'
+views.report.reservation_report.title: 'Reservations Dynamics'
+chessboard_manager.hotel.title: Hotel
+report.filling.filling.recalculate_price_of_accommodation: 'Reservation cost recount.'
+report.filling_report.export_to_csv_button.title: Uploading
