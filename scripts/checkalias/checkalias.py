@@ -55,6 +55,8 @@ get_mongo_client.mongo_client = None
 
 
 def create_logger() -> logging.Logger:
+    if create_logger.logger:
+        return create_logger.logger
     new_logger = logging.getLogger('check_alias_error')
     new_logger.setLevel(logging.DEBUG)
     formatter = logging.Formatter(
@@ -66,11 +68,16 @@ def create_logger() -> logging.Logger:
     fh = logging.FileHandler(log_file)
     fh.setFormatter(formatter)
     new_logger.addHandler(fh)
+    create_logger.logger = new_logger
     return new_logger
+
+
+create_logger.logger = None
 
 
 def check(alias, action='get_alias'):
     logger = create_logger()
+    logger.log(logging.INFO, 'start alias check with %(alias)'.format(alias))
     result = None
     try:
         if not alias:

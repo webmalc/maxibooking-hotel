@@ -4,49 +4,88 @@
 namespace MBH\Bundle\BaseBundle\Lib\AliasChecker;
 
 
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Process\Exception\ProcessFailedException;
-use Symfony\Component\Process\Process;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\RequestException;
+use Monolog\Handler\RotatingFileHandler;
+use Monolog\Logger;
+use Symfony\Component\Dotenv\Dotenv;
+use Symfony\Component\Dotenv\Exception\PathException;
 
-class AliasChecker
+final class AliasChecker
 {
 
-    public const CHECK_ALIAS_SCRIPT = __DIR__.'/../../../../../../scripts/checkalias/checkalias.py';
+    public const GET_ALIAS_ACTION = 'get_alias';
 
+    public const CHECKER_CLI_HOST = 'ALIAS_CHECKER_CLI_HOST';
+
+    public const CHECKER_WEB_HOST = 'ALIAS_CHECKER_WEB_HOST';
+
+    public const CHECKER_ENVS_ENABLED = 'ENABLED_IN_ENVS';
+
+
+    /**
+     * @param string $variableName
+     * @param string $env
+     * @throws AliasCheckerException
+     */
     public static function checkAlias(string $variableName, string $env): void
     {
 
-        $fileSystem = new  Filesystem();
         $isCli = PHP_SAPI === 'cli';
         $clientName = $isCli ? getenv($variableName) : $_SERVER[$variableName];
         if (empty($clientName) && $isCli) {
             $clientName = \AppKernel::DEFAULT_CLIENT;
         }
 
-        if ($env === 'prod' && $clientName !== \AppKernel::DEFAULT_CLIENT && $fileSystem->exists(realpath(static::CHECK_ALIAS_SCRIPT))) {
+        $handler = new RotatingFileHandler(__DIR__ . '/../../../../../../var/clients/maxibooking/logs/check_alias_error.log');
+        $logger = new Logger('check_alias', [$handler]);
 
-            $commandline = 'python3 ' . static::CHECK_ALIAS_SCRIPT . ' --client ' . $clientName;
-            $process = new Process($commandline);
-            $process->mustRun();
 
-            if (!$process->isSuccessful()) {
-                throw new ProcessFailedException($process);
-            }
+        try {
+            self::loadConfig();
+        } catch (\InvalidArgumentException|PathException $e) {
+            $logger->critical($e->getMessage());
+        }
+        $enabledEnvs = explode(',', getenv(self::CHECKER_ENVS_ENABLED));
 
-            $realName = trim($process->getOutput());
+        if ($clientName !== \AppKernel::DEFAULT_CLIENT && \in_array($env, $enabledEnvs, true)) {
+            try {
+                $connectionString = 'http://%s?client=%s&action=%s';
+                $clientName = strtolower($clientName);
+                $request = $isCli
+                    ? sprintf($connectionString, getenv(self::CHECKER_CLI_HOST), $clientName, self::GET_ALIAS_ACTION)
+                    : sprintf($connectionString, getenv(self::CHECKER_WEB_HOST), $clientName, self::GET_ALIAS_ACTION);
 
-            if ('None' === $realName || 'error' === $realName) {
-                throw new AliasCheckerException('No alias - name comparison for client ' . $clientName);
-            }
+                $client = new Client();
+                $response = $client->get($request, ['timeout' => 2]);
 
-            if ($realName && ($clientName !== $realName)) {
-                if ($isCli) {
-                    putenv(\AppKernel::CLIENT_VARIABLE. '=' .$realName);
-                } else {
-                    $_SERVER[$variableName] = $realName;
+                $realName = trim($response->getBody()->getContents());
+
+                if ('None' === $realName || 'error' === $realName) {
+                    throw new AliasCheckerException('No alias - name comparison found for client ' . $clientName);
                 }
 
+                if ($realName && ($clientName !== $realName)) {
+                    if ($isCli) {
+                        putenv(\AppKernel::CLIENT_VARIABLE . '=' . $realName);
+                    } else {
+                        $_SERVER[$variableName] = $realName;
+                    }
+
+                }
+            } catch (ConnectException|RequestException $e) {
+
+                $logger->critical($e->getMessage());
             }
+
         }
     }
+
+    private static function loadConfig(): void
+    {
+        $dotEnv = new Dotenv();
+        $dotEnv->load(__DIR__ . '/../../../../../../app/config/alias_checker.env');
+    }
+
 }
