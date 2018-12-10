@@ -116,8 +116,15 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             $this->dm->persist($config);
 
             if (!$config->isReadyToSync()) {
-                if (!$this->get('mbh.channelmanager.booking')->isBookingAccountConfirmed($config)) {
-                    $this->addFlash('danger', 'controller.bookingController.booking_is_not_confirmed');
+                $code = $this->get('mbh.channelmanager.booking')->getBookingAccountConfirmationCode($config);
+                if ($code !== 200) {
+                    if ($code === 401) {
+                        $dangerMessage = 'controller.bookingController.booking_id_is_incorrect';
+                    } else {
+                        $dangerMessage = 'controller.bookingController.booking_is_not_confirmed';
+                    }
+
+                    $this->addFlash('danger', $dangerMessage);
                 } else {
                     $config->setIsMainSettingsFilled(true);
                     $this
