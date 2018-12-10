@@ -445,14 +445,14 @@ var docReadyForms = function () {
 
                 $(inputEnd).datepicker('setStartDate', inputBegin.value);
 
-                if (dateBegin.setHours(0) > dateEnd.setHours(23)) {
+                if (dateEnd && dateBegin && dateBegin.setHours(0) > dateEnd.setHours(23)) {
                     $(inputEnd).datepicker('setDate', null);
                 }
             });
 
             $(inputEnd).datepicker(
                 optionForDatepicker.addStartDate(
-                    helperDate.returnPlusOneDay($(inputBegin).datepicker('getUTCDate'))
+                    $(inputBegin).datepicker('getUTCDate')
                 )
             );
         };
