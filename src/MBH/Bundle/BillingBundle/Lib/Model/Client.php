@@ -382,7 +382,7 @@ class Client
     /**
      * @return string
      */
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -391,7 +391,7 @@ class Client
      * @param string $name
      * @return Client
      */
-    public function setName(string $name)
+    public function setName(?string $name)
     {
         $this->name = $name;
 
