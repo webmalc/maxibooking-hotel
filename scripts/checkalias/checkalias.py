@@ -95,7 +95,7 @@ def check(alias, action='get_alias'):
         result = 'error'
     except Exception as e:
         logger.log(logging.CRITICAL, e)
-        raise e
+        result = 'error'
     finally:
         get_mongo_client().close()
 
