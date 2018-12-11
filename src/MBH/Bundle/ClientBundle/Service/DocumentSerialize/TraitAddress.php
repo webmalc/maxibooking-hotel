@@ -49,8 +49,8 @@ trait TraitAddress
     {
         $city = '';
 
-        if ($this->address !== null && !empty($id = $this->address->getCityId() !== null)) {
-            $city = $this->billing->getCityById($id)->getName();
+        if ($this->address !== null && !empty($this->address->getCityId())) {
+            $city = $this->billing->getCityById($this->address->getCityId())->getName();
         }
 
         return $city;
