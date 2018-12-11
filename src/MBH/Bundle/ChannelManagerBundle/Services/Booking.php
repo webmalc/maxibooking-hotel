@@ -868,18 +868,18 @@ class Booking extends Base implements ChannelManagerServiceInterface
      * @return bool
      * @throws \Exception
      */
-    public function isBookingAccountConfirmed(BookingConfig $config)
+    public function getBookingAccountConfirmationCode(BookingConfig $config)
     {
         $response = $this->sendPullOrdersRequest(ChannelManager::OLD_PACKAGES_PULLING_ALL_STATUS, $config, true);
         if ($this->hasErrorNode($response)) {
-            if ($response->fault && $response->fault->attributes()['code'] == '403') {
-                return false;
+            if (isset($response->fault->attributes()['code']) && in_array($response->fault->attributes()['code'], [401, 403])) {
+                return (int)$response->fault->attributes()['code'];
             } else {
                 throw new \Exception('Unexpected error while sending request for check booking confirmation');
             }
         }
 
-        return true;
+        return 200;
     }
 
     /**

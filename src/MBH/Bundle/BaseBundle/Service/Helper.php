@@ -639,7 +639,7 @@ class Helper
      */
     public function getFirstNumberFromString(string $string)
     {
-        preg_match('/\d+/', $string, $numberMatches);
+        preg_match('/\d+(?:\.\d+)?/', $string, $numberMatches);
 
         return count($numberMatches) > 0 ? $numberMatches[0] : intval($string);
     }
