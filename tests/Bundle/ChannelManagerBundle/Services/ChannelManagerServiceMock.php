@@ -97,8 +97,8 @@ class ChannelManagerServiceMock
         return [];
     }
 
-    public function isBookingAccountConfirmed(BookingConfig $config)
+    public function getBookingAccountConfirmationCode(BookingConfig $config)
     {
-        return true;
+        return 200;
     }
 }
