@@ -32,6 +32,7 @@ form.vashotelType.vashotel_ru_settings_hotel_id: 'ID отеля в настро�
 form.vashotelType.breakfast: 'Завтрак?'
 form.vashotelType.r0_or_BB: 'Какой тип питания использовать RO или BB?'
 controller.bookingController.booking_is_not_confirmed: 'Синхронизация Booking.com с MaxiBooking не подтверждена. Пожалуйста, завершите процесс получения разрешения от Booking.com, описанный на вкладке "Разрешение от Booking.com"'
+controller.bookingController.booking_id_is_incorrect: 'Указанный Вами номер отеля(ID) не найден в системе booking.com. Уточните, пожалуйста, ID отеля, введите исправленное значение в поле "ID отеля" и нажмите кнопку "Далее"'
 controller.bookingController.settings_saved_success: 'Настройки успешно сохранены'
 controller.bookingController.packages_sync_start: 'Синхронизация броней успешно запущена. Уведомление о новых бронях придет на email.'
 controller.ostrovokController.settings_saved_success: 'Настройки успешно сохранены'
