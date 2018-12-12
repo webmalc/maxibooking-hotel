@@ -161,7 +161,8 @@ class ChessBoardManager {
 
     private initChessboardTable() {
         this.initParams();
-        let chessBoardContentBlock = document.getElementById('accommodation-chessBoard-content');
+        const chessBoardContentBlock = document.getElementById('accommodation-chessBoard-content');
+        const chessboardTable = document.getElementById('chessboardTable');
         this.setContentWidth(chessBoardContentBlock);
 
         $('.sidebar-toggle').click(() => {
@@ -181,9 +182,11 @@ class ChessBoardManager {
         });
 
         if (!isMobileDevice()) {
+            const chessboardContentTopOffset = $(chessBoardContentBlock).offset().top;
+            const chessboardTableTopOffset = $(chessboardTable).offset().top;
             //Фиксирование верхнего и левого блоков таблицы
-            chessBoardContentBlock.onscroll = function () {
-                ChessBoardManager.onContentTableScroll(chessBoardContentBlock);
+            chessboardTable.onscroll = function () {
+                ChessBoardManager.onChessboardTableScroll(chessboardTable, chessboardContentTopOffset - chessboardTableTopOffset);
             };
         }
 
@@ -375,17 +378,21 @@ class ChessBoardManager {
         return griddedOffset;
     }
 
-    protected static onContentTableScroll(chessBoardContentBlock) {
+    protected static onChessboardTableScroll(chessboardTable, chessboardContentTopOffset) {
         'use strict';
         let types = document.getElementById('roomTypeColumn');
-        types.style.left = chessBoardContentBlock.scrollLeft + 'px';
+        types.style.left = chessboardTable.scrollLeft + 'px';
 
         let monthsAndDates = document.getElementById('months-and-dates');
-        monthsAndDates.style.top = chessBoardContentBlock.scrollTop + 'px';
+        const scrollTop = chessboardTable.scrollTop > chessboardContentTopOffset ? chessboardTable.scrollTop - chessboardContentTopOffset : 0;
+        console.log(chessboardTable.scrollTop );
+        console.log(chessboardContentTopOffset);
+        console.log(scrollTop);
+        monthsAndDates.style.top = scrollTop + 'px';
 
         let headerTitle = document.getElementById('header-title');
-        headerTitle.style.top = chessBoardContentBlock.scrollTop + 'px';
-        headerTitle.style.left = chessBoardContentBlock.scrollLeft + 'px';
+        headerTitle.style.top = scrollTop + 'px';
+        headerTitle.style.left = chessboardTable.scrollLeft + 'px';
     }
 
     protected getPackageLengthRestriction(startDate, isLeftMouseShift, tableStartDate, tableEndDate) {
