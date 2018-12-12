@@ -120,6 +120,7 @@ var ChessBoardManager = /** @class */ (function () {
         var _this = this;
         this.initParams();
         var chessBoardContentBlock = document.getElementById('accommodation-chessBoard-content');
+        var chessboardTable = document.getElementById('chessboardTable');
         this.setContentWidth(chessBoardContentBlock);
         $('.sidebar-toggle').click(function () {
             setTimeout(function () {
@@ -135,9 +136,11 @@ var ChessBoardManager = /** @class */ (function () {
             window.location.href = Routing.generate('change_number_of_rooms', { numberOfRooms: $numberOfRoomsSelect.val() });
         });
         if (!isMobileDevice()) {
+            var chessboardContentTopOffset_1 = $(chessBoardContentBlock).offset().top;
+            var chessboardTableTopOffset_1 = $(chessboardTable).offset().top;
             //Фиксирование верхнего и левого блоков таблицы
-            chessBoardContentBlock.onscroll = function () {
-                ChessBoardManager.onContentTableScroll(chessBoardContentBlock);
+            chessboardTable.onscroll = function () {
+                ChessBoardManager.onChessboardTableScroll(chessboardTable, chessboardContentTopOffset_1 - chessboardTableTopOffset_1);
             };
         }
         var templatePackageElement = ChessBoardManager.getTemplateElement();
@@ -307,15 +310,19 @@ var ChessBoardManager = /** @class */ (function () {
         griddedOffset = griddedOffset > packageLengthRestriction ? packageLengthRestriction : griddedOffset;
         return griddedOffset;
     };
-    ChessBoardManager.onContentTableScroll = function (chessBoardContentBlock) {
+    ChessBoardManager.onChessboardTableScroll = function (chessboardTable, chessboardContentTopOffset) {
         'use strict';
         var types = document.getElementById('roomTypeColumn');
-        types.style.left = chessBoardContentBlock.scrollLeft + 'px';
+        types.style.left = chessboardTable.scrollLeft + 'px';
         var monthsAndDates = document.getElementById('months-and-dates');
-        monthsAndDates.style.top = chessBoardContentBlock.scrollTop + 'px';
+        var scrollTop = chessboardTable.scrollTop > chessboardContentTopOffset ? chessboardTable.scrollTop - chessboardContentTopOffset : 0;
+        console.log(chessboardTable.scrollTop);
+        console.log(chessboardContentTopOffset);
+        console.log(scrollTop);
+        monthsAndDates.style.top = scrollTop + 'px';
         var headerTitle = document.getElementById('header-title');
-        headerTitle.style.top = chessBoardContentBlock.scrollTop + 'px';
-        headerTitle.style.left = chessBoardContentBlock.scrollLeft + 'px';
+        headerTitle.style.top = scrollTop + 'px';
+        headerTitle.style.left = chessboardTable.scrollLeft + 'px';
     };
     ChessBoardManager.prototype.getPackageLengthRestriction = function (startDate, isLeftMouseShift, tableStartDate, tableEndDate) {
         'use strict';
