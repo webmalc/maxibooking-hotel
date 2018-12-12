@@ -18,6 +18,7 @@ class ApiPaymentFormControllerTest extends WebTestCase
     private const URL_NAME_LOAD = 'online_payment_form_load_js';
     private const URL_NAME_SEARCH = 'online_payment_search_form';
     private const URL_NAME_PAYMENT = 'online_api_payment_form_payment';
+
     /**
      * @var PaymentFormConfig
      */
