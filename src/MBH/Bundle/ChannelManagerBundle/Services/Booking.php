@@ -865,7 +865,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
 
     /**
      * @param BookingConfig $config
-     * @return bool
+     * @return int
      * @throws \Exception
      */
     public function getBookingAccountConfirmationCode(BookingConfig $config)
@@ -876,12 +876,31 @@ class Booking extends Base implements ChannelManagerServiceInterface
                 return (int)$response->fault->attributes()['code'];
             } else {
                 $this->log($response->asXML());
-                //to prevent exceptions caused by unexpected code numbers
-                return 401;
+
+                $this->sendSentryMsg(
+                    sprintf(
+                        '418. Synchronization of MaxiBooking with Booking. See log. Client: %s.' ,
+                        $this->container->getParameter('client')
+                    )
+                );
+
+                return 418;
             }
         }
 
         return 200;
+    }
+
+    private function sendSentryMsg(string $msg): void
+    {
+        $notifier = $this->container->get('exception_notifier');
+        $message = $notifier::createMessage();
+        $message
+            ->setType('info')
+            ->setText($msg);
+        $notifier
+            ->setMessage($message)
+            ->notify();
     }
 
     /**
