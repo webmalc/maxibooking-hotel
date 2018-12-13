@@ -173,7 +173,7 @@ class AirbnbPackageInfo extends AbstractPackageInfo
                     'packagePrices' => $packagePrices
                 ];
 
-                $this->addPackageNote('airbnb_package_info.errors.can_not_calc_price');
+                $this->addPackageNote($this->translator->trans('airbnb_package_info.errors.can_not_calc_price'));
                 $this->isCorrupted = true;
             } else {
                 $this->packagePrice = $pricesByCombinations[$combination];
