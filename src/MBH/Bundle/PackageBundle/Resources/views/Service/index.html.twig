@@ -77,6 +77,7 @@
                     </select>
                 </div>
 
+                {% if housingsByHotels|length > 0 %}
                 <div class="filter-form_input">
                     <i class="fa fa-home" title='{{ "package.service.index.filter.housings"|trans({}, "MBHPackageBundle") }}'
                        data-toggle='tooltip'></i>
@@ -91,6 +92,7 @@
                         {% endfor %}
                     </select>
                 </div>
+                {% endif %}
 
                 <div class="filter-form_input">
                     <i class="fa fa-trash-o"

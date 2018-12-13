@@ -78,6 +78,7 @@ children: реб|реб|дет
 children.full: ребенок|ребенка|детей
 adults.full: взрослый|взрослых|взрослых
 pacakge.edit.number_of_adults: Взрослых
+pacakge.edit.date_of_creation: 'Время запроса'
 pacakge.edit.number_of_children: Детей
 pacakge.edit.children_ages: Возраста
 age.full: год|года|лет
