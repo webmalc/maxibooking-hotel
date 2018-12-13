@@ -32,7 +32,7 @@ class ApiTokenUserProvider implements UserProviderInterface
         if ($username === $this->billingToken) {
             return new ApiUser('billing', $username);
         }
-        throw new TokenNotFoundException('');
+        throw new ApiTokenException('');
     }
 
     public function refreshUser(UserInterface $user)

@@ -14,12 +14,13 @@ scripts/deploy_to_test.sh
 !app/config/clients/test.env.dist
 !app/config/clients/client_for_create_tm_db.env.dist
 app/config/database.env
+app/config/alias_checker.env
 /var/bootstrap.php.cache
 /var/cache/*
 /var/logs/*
 /var/clients/*
 !.gitkeep
-/scripts/checkalias
+
 .ansible/*.retry
 
 phpunit.xml

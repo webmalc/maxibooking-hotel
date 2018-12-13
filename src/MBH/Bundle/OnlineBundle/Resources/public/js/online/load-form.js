@@ -195,11 +195,11 @@ OnLoadFormLoad.prototype.exec = function (locale) {
         });
     }
 
-    setInterval(function () {
-        self.resizeIframeWidth();
-    }, 300);
-
     if (this.itIsFirstLoad) {
+        setInterval(function () {
+            self.resizeIframeWidth();
+        }, 300);
+
         window.addEventListener('message', function(ev) {
             self.processMessage(ev);
         }, false);
