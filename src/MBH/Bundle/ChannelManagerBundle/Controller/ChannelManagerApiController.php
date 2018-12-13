@@ -16,15 +16,15 @@ class ChannelManagerApiController extends BaseController
 {
     /**
      * @Route("/ical_room_calendar/{service}/{id}", name="ical_room_calendar")
-     * @param string $channelManager
+     * @param string $service
      * @param RoomType $roomType
      * @return Response
      */
-    public function roomCalendarAction(string $channelManager, RoomType $roomType)
+    public function roomCalendarAction(string $service, RoomType $roomType)
     {
         $calendar = $this
             ->get('mbh.channelmanager')
-            ->getServiceIdByName($channelManager)
+            ->getServiceIdByName($service)
             ->generateRoomCalendar($roomType);
 
         return new Response($calendar, 200, [
