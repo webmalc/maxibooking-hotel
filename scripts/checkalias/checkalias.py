@@ -8,6 +8,17 @@ import requests
 
 import settings
 
+alias_cache = {}
+
+
+def get_client_from_cache(alias_name: str):
+    return alias_cache.get(alias_name)
+
+
+def set_client_to_cache(client):
+    if client:
+        alias_cache.update({client['login']: client})
+
 
 def get_database(database_name=settings.DATABASE_NAME):
     mongo_client = get_mongo_client()
@@ -15,8 +26,11 @@ def get_database(database_name=settings.DATABASE_NAME):
 
 
 def get_client_from_db(alias_name: str) -> dict:
-    return get_database().aliases.find_one(
+    client = get_database().aliases.find_one(
         {"$or": [{"login": alias_name}, {"login_alias": alias_name}]})
+    if client:
+        del client['_id']
+    return client
 
 
 def get_client_from_billing(alias_name: str) -> dict:
@@ -42,6 +56,7 @@ def update_client_in_db(client_object: dict) -> None:
 def invalidate(alias_name: str) -> None:
     client_object = get_client_from_billing(alias_name)
     update_client_in_db(client_object)
+    set_client_to_cache(client_object)
 
 
 def get_mongo_client():
@@ -83,9 +98,13 @@ def check(alias, action='get_alias'):
         if not alias:
             raise ValueError('Empty alias is error!')
         if action == 'get_alias':
-            client = get_client_from_db(alias)
+            client = get_client_from_cache(alias)
+            if not client:
+                client = get_client_from_db(alias)
+                set_client_to_cache(client)
             if not client:
                 client = get_client_from_billing(alias)
+                set_client_to_cache(client)
                 update_client_in_db(client)
             result = client['login']
         if action == 'invalidate':
