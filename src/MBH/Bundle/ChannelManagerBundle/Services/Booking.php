@@ -872,10 +872,12 @@ class Booking extends Base implements ChannelManagerServiceInterface
     {
         $response = $this->sendPullOrdersRequest(ChannelManager::OLD_PACKAGES_PULLING_ALL_STATUS, $config, true);
         if ($this->hasErrorNode($response)) {
-            if (isset($response->fault->attributes()['code']) && in_array($response->fault->attributes()['code'], [401, 403])) {
+            if (isset($response->fault->attributes()['code']) && in_array((int)$response->fault->attributes()['code'], [401, 403])) {
                 return (int)$response->fault->attributes()['code'];
             } else {
-                throw new \Exception('Unexpected error while sending request for check booking confirmation');
+                $this->log($response->asXML());
+                //to prevent exceptions caused by unexpected code numbers
+                return 401;
             }
         }
 
