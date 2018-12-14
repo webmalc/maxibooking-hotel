@@ -33,20 +33,20 @@ class SiteForm extends AbstractType
     private $siteManager;
 
     /**
-     * @var string
+     * @var bool
      */
-    private $environment;
+    private $isEnvDev;
 
     public function __construct(
         DocumentManager $dm,
         TranslatorInterface $translator,
         SiteManager $siteManager,
-        string $environment
+        string $environment = null
     ) {
         $this->dm = $dm;
         $this->translator = $translator;
         $this->siteManager = $siteManager;
-        $this->environment = $environment;
+        $this->isEnvDev = $environment === \AppKernel::ENV_DEV;
     }
 
     /**
@@ -73,7 +73,7 @@ class SiteForm extends AbstractType
         }
 
         //ФОРМА ОТРИСОВЫВАЕТСЯ В ШАБЛОНЕ ВРУЧНУЮ!
-        if ($this->environment === \AppKernel::ENV_DEV) {
+        if ($this->isEnvDev) {
             $builder
                 ->add(
                     'scheme',
@@ -92,16 +92,6 @@ class SiteForm extends AbstractType
                         ],
                         'help'    => 'В окружении дев при генерации адреса для сайта учитывыется только схема и хост.',
                     ]
-                );
-        } else {
-            $builder
-                ->add(
-                    'scheme',
-                    HiddenType::class
-                )
-                ->add(
-                    'domain',
-                    HiddenType::class
                 );
         }
 
