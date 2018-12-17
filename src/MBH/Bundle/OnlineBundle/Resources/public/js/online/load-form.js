@@ -42,7 +42,10 @@ function OnLoadFormLoad() {
 OnLoadFormLoad.prototype.createIframeWithCalendar = function() {
     var calendarFrame = document.createElement('iframe');
     calendarFrame.id = 'mbh-form-calendar';
-    calendarFrame.style = 'display: none; z-index: 1000; position: absolute; top: 0px;';
+    calendarFrame.style.display = 'none';
+    calendarFrame.style.zIndex = '1000';
+    calendarFrame.style.position = 'absolute';
+    calendarFrame.style.top = '0px';
     calendarFrame.setAttribute('scrolling', "no");
     calendarFrame.setAttribute('frameborder', 0);
     calendarFrame.setAttribute('width', 310);
@@ -153,8 +156,6 @@ OnLoadFormLoad.prototype.createIframeWithForm = function (locale) {
     this.formIframe.id = 'mbh-form-iframe';
     this.formIframe.scrolling = 'no';
     this.formIframe.frameBorder = '0';
-    this.formIframe.width = 'auto';
-    this.formIframe.height = 'auto';
     this.formIframe.src = fullUrl;
     this.formIframe.hidden = true;
 };
