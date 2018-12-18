@@ -17,8 +17,10 @@
         <div class="box-body">
             {{ form_start(form, {'action': path('site_settings'), 'attr': {'class': 'form-horizontal'}}) }}
             {% set groups = {'form.main.group': form.children|keys} %}
-            {{ form_row(form.scheme) }}
-            {{ form_row(form.domain) }}
+            {% if app.environment == 'dev' %}
+                {{ form_row(form.scheme) }}
+                {{ form_row(form.domain) }}
+            {% endif %}
             {{ form_row(form.siteDomain) }}
             {{ form_row(form.colorTheme) }}
             {{ form_row(form.hotels) }}
