@@ -7,6 +7,7 @@
 namespace MBH\Bundle\OnlineBundle\Services;
 
 
+use Symfony\Component\Translation\TranslatorInterface;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Service\ClientConfigManager;
@@ -29,7 +30,7 @@ class RenderPaymentButton
     private $clientConfig;
 
     /**
-     * @var DataCollectorTranslator
+     * @var TranslatorInterface
      */
     private $translator;
 
@@ -42,13 +43,13 @@ class RenderPaymentButton
      * RenderForm constructor.
      * @param Twig_Environment $twig
      * @param ClientConfig $clientConfig
-     * @param DataCollectorTranslator $translator
+     * @param TranslatorInterface $translator
      * @param PaymentSystemWrapperFactory $paymentSystemWrapperFactory
      */
     public function __construct(
         Twig_Environment $twig,
         ClientConfigManager $clientConfigManager,
-        DataCollectorTranslator $translator,
+        TranslatorInterface $translator,
         PaymentSystemWrapperFactory $paymentSystemWrapperFactory
     ) {
         $this->twig = $twig;
@@ -74,9 +75,9 @@ class RenderPaymentButton
     }
 
     /**
-     * @return DataCollectorTranslator
+     * @return TranslatorInterface
      */
-    public function getTranslator(): DataCollectorTranslator
+    public function getTranslator(): TranslatorInterface
     {
         return $this->translator;
     }
