@@ -1235,7 +1235,7 @@ class Package extends Base implements \JsonSerializable
     public function getPriceByDate(\DateTime $date = null): float
     {
         if (!is_null($date)) {
-            if ($this->getPrices()->count() > 0 && $this->getPackagePriceByDate($date)) {
+            if (count($this->getPrices()) > 0 && $this->getPackagePriceByDate($date)) {
                 return $this->getPackagePriceByDate($date)->getPrice();
             }
 
