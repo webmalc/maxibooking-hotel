@@ -32,6 +32,11 @@ class SearchFormResult implements \JsonSerializable
     private $container;
 
     /**
+     * @var SearchForm
+     */
+    private $searchForm;
+
+    /**
      * @var \Symfony\Component\Translation\DataCollectorTranslator
      */
     private $translator;
@@ -68,6 +73,7 @@ class SearchFormResult implements \JsonSerializable
     {
         $result = [];
         if (!$this->orderFound) {
+            $this->loggerFail();
             $result['error'] = $this->translate('api.payment_form.result_search.not_found_order');
         } else {
             $result['needIsPaid'] = $this->isNeedIsPaid();
@@ -95,5 +101,29 @@ class SearchFormResult implements \JsonSerializable
     private function isNeedIsPaid(): bool
     {
         return $this->total !== null && $this->packageId !== null;
+    }
+
+    /**
+     * @param SearchForm $searchForm
+     */
+    public function setSearchForm(SearchForm $searchForm)
+    {
+        $this->searchForm = $searchForm;
+    }
+
+    private function loggerFail(): void
+    {
+        $logger = $this->container->get('mbh.online.search_order.logger');
+
+        if ($this->searchForm !== null) {
+            $rawMsg = [];
+            $rawMsg[] = 'numberOrder:' . $this->searchForm->getNumberOrder() ?? 'no';
+            $rawMsg[] = 'phoneOrEmail:' . $this->searchForm->getPhoneOrEmail() ?? 'no';
+            $msg = implode(';',$rawMsg);
+        } else {
+            $msg = 'unknown error';
+        }
+
+        $logger->info('FAIL_SEARCH;' . $msg);
     }
 }

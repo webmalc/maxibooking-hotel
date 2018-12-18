@@ -14,6 +14,7 @@ use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
+use MBH\Bundle\PackageBundle\Services\OrderManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class SearchForm
@@ -84,11 +85,11 @@ class SearchForm
     }
 
     /**
-     * @return null|string
+     * @return string
      */
-    public function getNumberOrder(): ?string
+    public function getNumberOrder(): string
     {
-        return $this->numberOrder;
+        return trim($this->numberOrder);
     }
 
     /**
@@ -148,13 +149,10 @@ class SearchForm
 
     public function search(): SearchFormResult
     {
-        /** @var Package $package */
-        $package = $this->dm->getRepository('MBHPackageBundle:Package')
-            ->findOneBy([
-                'numberWithPrefix' => $this->getNumberOrder(),
-            ]);
-
         $result = new SearchFormResult($this->container);
+        $result->setSearchForm($this);
+
+        $package = $this->searchPackage();
 
         if ($package === null) {
             return $result;
@@ -218,9 +216,9 @@ class SearchForm
         };
         if ($this->order->getOrganization() !== null) {
             return $check($this->order->getOrganization()->getName());
-        } else {
-            return $check($this->order->getMainTourist()->getFullName());
         }
+
+        return $check($this->order->getMainTourist()->getFullName());
     }
 
     /**
@@ -278,9 +276,9 @@ class SearchForm
             return $this->checkEmail($t);
         }
 
-        $phone = Tourist::cleanPhone($this->getPhoneOrEmail());
+        $phone = $this->dexNumber(Tourist::cleanPhone($this->getPhoneOrEmail()));
 
-        if ($t->getPhone(true) === $phone || $t->getMobilePhone(true) === $phone) {
+        if ($this->dexNumber($t->getPhone(true)) === $phone || $this->dexNumber($t->getMobilePhone(true)) === $phone) {
             return true;
         }
 
@@ -302,5 +300,35 @@ class SearchForm
     private function isEmail(): bool
     {
         return strpos($this->getPhoneOrEmail(), '@') !== false;
+    }
+
+    /**
+     * @param string $phone
+     * @return string
+     */
+    private function dexNumber(string $phone): string
+    {
+         return substr($phone, -10);
+    }
+
+    /**
+     * @return Package|null
+     */
+    private function searchPackage(): ?Package
+    {
+        /** @var Package $package */
+        $package = $this->dm->getRepository('MBHPackageBundle:Package')
+            ->findOneBy([
+                'numberWithPrefix' => $this->getNumberOrder(),
+            ]);
+
+        if ($package === null) {
+            $package = $this->dm->getRepository('MBHPackageBundle:Package')
+                ->findOneBy([
+                    'numberWithPrefix' => $this->getNumberOrder() . OrderManager::RELOCATE_SUFFIX,
+                ]);
+        }
+
+        return $package;
     }
 }

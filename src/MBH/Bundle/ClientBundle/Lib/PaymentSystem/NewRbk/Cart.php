@@ -46,7 +46,7 @@ class Cart implements \JsonSerializable
      * Схема налогообложения предлагаемого товара или услуги.
      * Указывается, только если предлагаемый товар или услуга облагается налогом.
      *
-     * @var TaxMode
+     * @var null|TaxMode
      */
     private $taxMode;
 
@@ -115,17 +115,17 @@ class Cart implements \JsonSerializable
     }
 
     /**
-     * @return TaxMode
+     * @return null|TaxMode
      */
-    public function getTaxMode(): TaxMode
+    public function getTaxMode(): ?TaxMode
     {
         return $this->taxMode;
     }
 
     /**
-     * @param TaxMode $taxMode
+     * @param null|TaxMode $taxMode
      */
-    public function setTaxMode(TaxMode $taxMode): void
+    public function setTaxMode(?TaxMode $taxMode): void
     {
         $this->taxMode = $taxMode;
     }
@@ -164,12 +164,17 @@ class Cart implements \JsonSerializable
 
     public function jsonSerialize()
     {
-        return [
-//            'cost'     => $this->getCost(),
-            'price'    => $this->getPrice(),
-            'product'  => $this->getProduct(),
-            'quantity' => $this->getQuantity(),
-            'taxMode'  => $this->getTaxMode(),
+        $data = [
+                //            'cost'     => $this->getCost(),
+                'price'    => $this->getPrice(),
+                'product'  => $this->getProduct(),
+                'quantity' => $this->getQuantity(),
         ];
+
+        if ($this->getTaxMode() !== null) {
+            $data['taxMode'] = $this->getTaxMode();
+        }
+
+        return $data;
     }
 }

@@ -11,6 +11,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\NewRbk;
+use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 
@@ -50,8 +51,7 @@ class InvoiceRequest extends InvoiceCommon implements \JsonSerializable
         $self->setDescription($package);
         $self->setAmount($cashDocument->getTotal());
 
-        $needCart = $package->getPrice() == $cashDocument->getTotal();
-        $self->setCart($needCart, $documentManager, $package, $newRbk);
+        $self->setCart($newRbk->isWithFiscalization(), $cashDocument, $newRbk);
 
         return $self;
     }
@@ -78,8 +78,8 @@ class InvoiceRequest extends InvoiceCommon implements \JsonSerializable
 
         $cart = $this->getCart();
 
-        if ($cart != []) {
-            $data = array_merge($data, $cart);
+        if ($cart !== []) {
+            $data['cart'] = $cart;
         }
 
         return $data;
@@ -169,52 +169,50 @@ class InvoiceRequest extends InvoiceCommon implements \JsonSerializable
     }
 
     /**
-     * cart формируется если сумма package равна сумму платежа ($total)
+     * cart формируется если включена "фискализацией платежа"
      *
      * @param Cart[] $cart
      */
-    public function setCart(bool $needCart, DocumentManager $dm, Package $package, NewRbk $newRbk): void
+//    public function setCart(bool $needCart, Order $order, NewRbk $newRbk): void
+    public function setCart(bool $needCart, CashDocument $cashDocument, NewRbk $newRbk): void
     {
+        $order = $cashDocument->getOrder();
+
         $cart = [];
 
         if ($needCart) {
+            if ($newRbk->getTaxationRateCode() !== NewRbk::WITHOUT_TAX_RATE) {
+                $dataForTaxMode = ['rate' => $newRbk->getTaxationRateCode()];
 
-            $taxCode = (integer) $newRbk->getTaxationRateCode();
-
-            $dataForTaxMode = [];
-
-            if (isset(TaxMode::TAXATION_RATE_CODE[(string) $taxCode])) {
-                $dataForTaxMode = ['rate' => TaxMode::TAXATION_RATE_CODE[(string) $taxCode]];
+                $taxMode = TaxMode::create($dataForTaxMode);
+            } else {
+                $taxMode = null;
             }
 
-            $taxMode = TaxMode::create($dataForTaxMode);
-
-            $c = new Cart();
-            $c->setProduct($this->getDescription('room'));
-            $c->setPrice($package->getOrder()->getPrice()*100);
-            $c->setTaxMode($taxMode);
-            $c->setCost($c->getPrice()*$c->getQuantity());
-
-            $cart[] = $c;
-
-            $packageServices = $dm->getRepository('MBHPackageBundle:PackageService')
-                ->findBy([
-                    'package.id' => $package->getId(),
-                ]);
-
-            /** @var PackageService $packageService */
-            foreach ($packageServices as $packageService) {
-
-                $quantity = $packageService->getAmount() * $packageService->getNights() * $packageService->getPersons();
-
+            foreach ($order->getPackages() as $package) {
                 $c = new Cart();
-                $c->setProduct($packageService->getService()->getName());
-                $c->setPrice($packageService->getPrice()*100);
-                $c->setQuantity($quantity);
+                $c->setProduct($this->getDescription('room'));
+//                $c->setPrice($package->getOrder()->getPrice()*100);
+                $c->setPrice($cashDocument->getTotal()*100);
                 $c->setTaxMode($taxMode);
                 $c->setCost($c->getPrice()*$c->getQuantity());
 
                 $cart[] = $c;
+
+                /** До выяснения подробностей */
+//                /** @var PackageService $packageService */
+//                foreach ($package->getServices() as $packageService) {
+//                    $quantity = $packageService->getAmount() * $packageService->getNights() * $packageService->getPersons();
+//
+//                    $c = new Cart();
+//                    $c->setProduct($packageService->getService()->getName());
+//                    $c->setPrice($packageService->getPrice()*100);
+//                    $c->setQuantity($quantity);
+//                    $c->setTaxMode($taxMode);
+//                    $c->setCost($c->getPrice()*$c->getQuantity());
+//
+//                    $cart[] = $c;
+//                }
             }
         }
 

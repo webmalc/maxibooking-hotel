@@ -8,6 +8,11 @@ var mbhPaymentFunc = {
   frameId    : "{{ wrapperId }}-iframe",
   getForm    : function() {
     var formWrapper = document.querySelector('#{{ wrapperId }}');
+
+    if (formWrapper === null) {
+        return;
+    }
+
     formWrapper.innerHTML = '';
     formWrapper.appendChild(mbhNewRbk.getScript());
     formWrapper.appendChild(this.getIframe());

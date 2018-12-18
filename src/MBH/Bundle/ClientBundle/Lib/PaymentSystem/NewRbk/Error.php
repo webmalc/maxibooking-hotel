@@ -47,7 +47,7 @@ class Error
         return $self;
     }
 
-    public function getInfo()
+    public function getInfo():string
     {
         $errMsg = 'hmm, unknown error at create the invoice';
         if ($this->code !== null) {

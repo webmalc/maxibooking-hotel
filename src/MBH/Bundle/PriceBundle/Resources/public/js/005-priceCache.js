@@ -157,10 +157,7 @@ $(document).ready(function () {
                 var $formGroup = $fakeInput.closest('.form-group');
                 $formGroup.find('.help-block.dynamic').remove();
                 $formGroup.find('.price').remove();
-                if ($fakeInput.val() == $input.val()) {
-                    //$formGroup.removeClass('has-error');
-                    //$formGroup.addClass('has-error');
-                } else if ($fakeInput.val()) {
+                if ($fakeInput.val()) {
                     var $helpBlock = $fakeInput.siblings('.help-block');
                     if($helpBlock.length == 0) {
                         $helpBlock = $('<div class="help-block dynamic"></div>');

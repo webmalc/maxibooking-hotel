@@ -23,6 +23,7 @@ use Symfony\Component\Security\Acl\Permission\MaskBuilder;
  */
 class OrderManager
 {
+    const RELOCATE_SUFFIX = '_переезд';
 
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
@@ -76,12 +77,13 @@ class OrderManager
 
         $newPackage = clone $package;
         $newPackage
+            ->setSpecial(null)
             ->setBegin($date)
             ->setEnd($package->getEnd())
             ->setPackagePrice(0)
             ->setTotalOverwrite(0)
             ->setPrice(0)
-            ->setNumberWithPrefix($package->getNumberWithPrefix() . '_переезд')
+            ->setNumberWithPrefix($package->getNumberWithPrefix() . self::RELOCATE_SUFFIX)
             ->setServicesPrice(0)
             ->clearServices()
             ->setAccommodation(null)

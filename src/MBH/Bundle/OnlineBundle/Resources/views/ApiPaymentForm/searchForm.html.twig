@@ -23,6 +23,18 @@
         <script src="//code.jquery.com/ui/1.11.1/jquery-ui.min.js"
                 integrity="sha256-4JY5MVcEmAVSuS6q4h9mrwCm6KNx91f3awsSQgwu0qc="
                 crossorigin="anonymous"></script>
+        <script src="{{ asset('assets/vendor/admin-lte/plugins/input-mask/jquery.inputmask.js') }}"></script>
+        <script>
+          window.addEventListener('load', function(ev) {
+            $('#mbh_bundle_onlinebundle_order_search_type_numberOrder').inputmask("9-99999");
+          });
+        </script>
+        <style>
+            #mbh_bundle_onlinebundle_order_search_type div.form-group:first-child label[for='mbh_bundle_onlinebundle_order_search_type_numberOrder']:after {
+                content: " (в формате 1-12345 или 2-12345)";
+                color: #9f9f9f;
+            }
+        </style>
     </head>
     {% if entity %}
         {% if entity.css %}
@@ -50,6 +62,7 @@
     <div id="{{ idDivResultSearch | raw }}">
         <div class="panel-body"></div>
     </div>
+
     <script>
       {% include '@MBHOnline/ApiPaymentForm/' ~ paymentSystem ~ '/func.js.twig' %}
     </script>
