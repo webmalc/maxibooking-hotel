@@ -200,7 +200,7 @@ class SiteManager
             }
 
             $host = parse_url($clientSite->getUrl())['host'];
-            $siteDomain = substr($host, 0, strpos($host, SiteManager::SITE_DOMAIN));
+            $siteDomain = substr($host, 0, strpos($host, SiteConfig::DOMAIN));
             $config->setSiteDomain($siteDomain);
         }
 
