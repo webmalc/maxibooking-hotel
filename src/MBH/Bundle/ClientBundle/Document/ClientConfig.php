@@ -396,7 +396,7 @@ class ClientConfig extends Base
     /**
      * @return NewRbk
      */
-    public function getNewRbk(): ?NewRbk
+    public function getNewRbk()
     {
         return $this->newRbk;
     }
@@ -404,7 +404,7 @@ class ClientConfig extends Base
     /**
      * @param NewRbk $newRbk
      */
-    public function setNewRbk(NewRbk $newRbk): void
+    public function setNewRbk(NewRbk $newRbk)
     {
         $this->newRbk = $newRbk;
     }
