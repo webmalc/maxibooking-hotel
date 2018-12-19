@@ -7,7 +7,10 @@
 
 {% block scripts %}
     {{ parent() }}
-    {% javascripts filter='uglifyjs2' '@MBHPackageBundle/Resources/public/js/organizations/create.js' %}
+    {% javascripts filter='uglifyjs2'
+        '@MBHPackageBundle/Resources/public/js/organizations/create.js'
+        '@MBHPackageBundle/Resources/public/js/tourist/tourist.js'
+    %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
 {% endblock %}
