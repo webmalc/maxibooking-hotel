@@ -418,16 +418,18 @@ class ApiController extends Controller
             $tariffResults = [];
         } else {
             $search = $this->get('mbh.package.search');
-            $tariffResults = $search->searchTariffs($query);
 
-            if (!empty($query->tariff)) {
-                $results = $search->search($query);
-                $defaultTariff = $query->tariff instanceof Tariff ? $query->tariff : $this->dm->find('MBHPriceBundle:Tariff', $query->tariff);
-            } else {
+            if (empty($query->tariff)) {
+                $tariffResults = array_filter($search->searchTariffs($query), function(Tariff $tariff) use ($formConfig) {
+                    return $formConfig->getHotels()->isEmpty() || $formConfig->getHotels()->contains($tariff->getHotel());
+                });
                 $results = $search->searchBeforeResult($query, $tariffResults);
                 if (!empty($results)) {
                     $defaultTariff = current($results)->getTariff();
                 }
+            } else {
+                $results = $search->search($query);
+                $defaultTariff = $query->tariff instanceof Tariff ? $query->tariff : $this->dm->find('MBHPriceBundle:Tariff', $query->tariff);
             }
         }
 
