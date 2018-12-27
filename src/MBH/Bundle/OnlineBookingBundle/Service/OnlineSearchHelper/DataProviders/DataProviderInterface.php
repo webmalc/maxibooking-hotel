@@ -11,5 +11,6 @@ use MBH\Bundle\PackageBundle\Document\SearchQuery;
 interface DataProviderInterface
 {
     public function search(OnlineSearchFormData $formData): array;
+
     public function getType(): string;
 }

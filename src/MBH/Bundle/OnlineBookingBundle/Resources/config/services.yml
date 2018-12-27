@@ -78,7 +78,18 @@ services:
     mbh.common_data_provider:
         public: false
         class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\DataProviders\CommonDataProvider
-        arguments: ['@mbh.package.search', '@mbh.online.common_result_creator','@mbh.online.query_generator' ,'%online_booking%']
+        arguments:
+            - '@mbh.online.search_adapter'
+            - '@mbh.online.common_result_creator'
+            - '@mbh.online.query_generator'
+            - '%online_booking%'
+
+    mbh.online.search_adapter:
+        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineSearchAdapter
+        arguments:
+            - '@mbh_search.search'
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@mbh.package.search'
 
     mbh.special_data_provider:
         public: false
@@ -88,7 +99,7 @@ services:
     mbh.additional_data_provider:
         public: false
         class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\DataProviders\AdditionalDataProvider
-        arguments: ['@mbh.package.search', '@mbh.online.additional_result_creator' ,'@mbh.online.query_generator','%online_booking%']
+        arguments: ['@mbh.online.search_adapter', '@mbh.online.additional_result_creator' ,'@mbh.online.query_generator','%online_booking%']
 
 ###
     mbh.online.common_result_creator:

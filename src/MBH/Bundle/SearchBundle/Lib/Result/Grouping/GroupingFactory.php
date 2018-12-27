@@ -9,7 +9,7 @@ use MBH\Bundle\SearchBundle\Lib\Exceptions\GroupingFactoryException;
 class GroupingFactory
 {
     /** @var array  */
-    public const GROUPERS = ['roomType'];
+    public const GROUPERS = ['roomType', 'roomTypeCategory'];
 
     /**
      * @param string $grouping
@@ -25,6 +25,8 @@ class GroupingFactory
         switch ($grouping) {
             case 'roomType':
                 return new RoomTypeGrouping();
+            case 'roomTypeCategory':
+                return new RoomTypeCategoryGrouping();
         }
 
         throw new GroupingFactoryException('Grouper ' . $grouping. 'not found!');

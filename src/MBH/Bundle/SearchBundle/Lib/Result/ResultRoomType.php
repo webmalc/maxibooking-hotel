@@ -17,6 +17,9 @@ class ResultRoomType
     /** @var string */
     private $categoryName = '';
 
+    /** @var string|null */
+    private $categoryId;
+
     /** @var string */
     private $hotelName = '';
 
@@ -96,16 +99,39 @@ class ResultRoomType
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
+    public function getCategoryId(): ?string
+    {
+        return $this->categoryId;
+    }
+
+    /**
+     * @param string|null $categoryId
+     * @return ResultRoomType
+     */
+    public function setCategoryId(?string $categoryId): ResultRoomType
+    {
+        $this->categoryId = $categoryId;
+
+        return $this;
+    }
+
+
+
 
     public static function createInstance(RoomType $roomType): ResultRoomType
     {
         $resultRoomType = new self();
         $category = $roomType->getCategory();
         $categoryName = $category ? $category->getName() : '';
+        $categoryId = $category ? $category->getId() : '';
         $resultRoomType
             ->setId($roomType->getId())
             ->setName($roomType->getName())
             ->setCategoryName($categoryName)
+            ->setCategoryId($categoryId)
             ->setHotelName($roomType->getHotel()->getName());
 
         return $resultRoomType;

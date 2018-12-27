@@ -70,17 +70,20 @@ class SpecialSearch
             $filter->setChildrenAges($childrenAges);
         }
 
-        if ($roomTypes = $conditions->getRoomTypes()) {
-            if ($this->roomManager->useCategories) {
-                foreach ($roomTypes as $roomTypeCategory) {
-                    /** @var RoomTypeCategory $roomTypeCategory */
+        if ($conditionRoomTypes = $conditions->getRoomTypes()) {
+
+
+            foreach ($conditionRoomTypes as $conditionRoomType) {
+                /** @var RoomTypeCategory $roomTypeCategory */
+                if ($conditionRoomType instanceof RoomTypeCategory) {
                     $roomTypes = $roomTypeCategory->getTypes()->toArray();
                     foreach ($roomTypes as $roomType) {
                         $filter->addRoomType($roomType);
                     }
+                } else {
+                    $filter->addRoomType($conditionRoomType);
                 }
-            } else {
-                $filter->setRoomTypes($roomTypes->toArray());
+
             }
 
         }

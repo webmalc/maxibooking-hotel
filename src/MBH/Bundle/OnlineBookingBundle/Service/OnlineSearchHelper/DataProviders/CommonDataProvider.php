@@ -5,9 +5,9 @@ namespace MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\DataProvider
 
 
 use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
+use MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineSearchAdapter;
 use MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\ResultCreaters\OnlineCreatorInterface;
 use MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\SearchQuery\OnlineSearchQueryGenerator;
-use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
 
 /**
@@ -17,7 +17,7 @@ use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
 class CommonDataProvider implements DataProviderInterface
 {
 
-    /** @var SearchFactory */
+    /** @var OnlineSearchAdapter */
     private $search;
 
     /** @var array */
@@ -29,14 +29,15 @@ class CommonDataProvider implements DataProviderInterface
     /** @var OnlineSearchQueryGenerator */
     private $queryGenerator;
 
+
     /**
      * OnlineCommonDataProvider constructor.
-     * @param SearchFactory $search
+     * @param OnlineSearchAdapter $search
      * @param OnlineCreatorInterface $creator
      * @param OnlineSearchQueryGenerator $queryGenerator
      * @param array $onlineOptions
      */
-    public function __construct(SearchFactory $search,  OnlineCreatorInterface $creator, OnlineSearchQueryGenerator $queryGenerator, array $onlineOptions)
+    public function __construct(OnlineSearchAdapter $search,  OnlineCreatorInterface $creator, OnlineSearchQueryGenerator $queryGenerator, array $onlineOptions)
     {
         $this->search = $search;
         $this->onlineOptions = $onlineOptions;
@@ -53,7 +54,7 @@ class CommonDataProvider implements DataProviderInterface
     {
         $results = [];
         $searchQuery = $this->queryGenerator->createSearchQuery($formData);
-        $this->configureSearchQuery($searchQuery, $formData);
+        $searchQuery->setSave(true);
         $searchResults = $this->search->search($searchQuery);
         if (count($searchResults)) {
             foreach ($searchResults as $searchResult) {
@@ -63,18 +64,6 @@ class CommonDataProvider implements DataProviderInterface
         }
 
         return $results;
-    }
-
-
-    /**
-     * @param SearchQuery $searchQuery
-     * @param OnlineSearchFormData $formData
-     */
-    private function configureSearchQuery(SearchQuery $searchQuery, OnlineSearchFormData $formData)
-    {
-        $searchQuery->setSave(true);
-        $this->search->setWithTariffs();
-
     }
 
     public function getType(): string

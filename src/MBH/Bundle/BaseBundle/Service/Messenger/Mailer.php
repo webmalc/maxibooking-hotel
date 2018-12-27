@@ -168,7 +168,7 @@ class Mailer implements \SplObserver
             );
         }
         (empty($data['subject'])) ? $data['subject'] = $this->params['subject'] : $data['subject'];
-        $message = \Swift_Message::newInstance();
+        $message = new \Swift_Message();
         empty($template) ? $template = $this->params['template'] : $template;
 
         $data['hotelName'] = 'MaxiBooking';
@@ -216,7 +216,7 @@ class Mailer implements \SplObserver
             $this->mailer->send($message);
         }
 
-        if (php_sapi_name() == 'cli' || !empty($data['spool'])) {
+        if (PHP_SAPI === 'cli' || !empty($data['spool'])) {
 
             $spool = $this->mailer->getTransport()->getSpool();
             $transport = $this->container->get('swiftmailer.transport.real');

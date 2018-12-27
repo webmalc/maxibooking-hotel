@@ -122,11 +122,14 @@ class OnlineSearchHelper
         return $result;
     }
 
-    private function injectQueryIdInSpecial(string $queryId, array &$specials)
+    private function injectQueryIdInSpecial(?string $queryId = null, array &$specials)
     {
-        foreach ($specials as $special) {
-            /** @var OnlineResultInstance $special */
-            $special->setQueryId($queryId);
+        if ($queryId) {
+            foreach ($specials as $special) {
+                /** @var OnlineResultInstance $special */
+                $special->setQueryId($queryId);
+            }
         }
+
     }
 }

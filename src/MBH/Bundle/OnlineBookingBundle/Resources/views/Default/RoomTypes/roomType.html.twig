@@ -1,4 +1,5 @@
 {% set roomType = onlineResult.roomType %}
+{% import '@MBHOnlineBooking/Default/search.html.twig' as macro %}
 <section class="s_results">
     <div class="oneblockinrdm room-type-row {% block add %}{% endblock %}"
          data-roomtype="{{ roomType.id }}"

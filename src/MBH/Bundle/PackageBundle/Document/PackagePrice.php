@@ -125,7 +125,7 @@ class PackagePrice
 
     /**
      * @param Promotion $promotion
-     * @return Promotion
+     * @return PackagePrice
      */
     public function setPromotion($promotion)
     {

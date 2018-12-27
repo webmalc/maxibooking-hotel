@@ -7,6 +7,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use MBH\Bundle\BaseBundle\Lib\QueryBuilder;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PackageBundle\Document\Package;
@@ -671,7 +672,7 @@ class Search implements SearchInterface
         $filter->setRemain(1)
             ->setDisplayFrom($query->begin)
             ->setDisplayTo($query->end);
-        if ($query->isSpecialStrict() && $query->begin && $query->end) {
+        if ($query->end && $query->begin && $query->isSpecialStrict()) {
             $filter->setBegin($query->begin);
             $filter->setEnd($query->end);
             $filter->setIsStrict(true);
@@ -686,22 +687,18 @@ class Search implements SearchInterface
             $filter->setChildrenAges($query->childrenAges);
         }
         if ($query->roomTypes) {
-            $roomTypes = $query->roomTypes;
+            $roomTypeIds = $query->roomTypes;
             $roomManager = $this->container->get('mbh.hotel.room_type_manager');
+            $repo = $this->dm->getRepository(RoomType::class);
             if ($roomManager->useCategories) {
-                $roomCategories = $roomTypes = [];
-                /** @var QueryBuilder $qb */
-                foreach ($query->roomTypes as $roomCategoryId) {
-                    $roomCategories[] = $this->dm->find('MBHHotelBundle:RoomTypeCategory', $roomCategoryId);
-                }
-                if (count($roomCategories)) {
-                    foreach ($roomCategories as $roomCategory) {
-                        /** @var RoomTypeCategory $roomCategory */
-                        $roomTypes = array_merge($roomTypes, $roomCategory->getTypes()->toArray());
-                    }
-                }
+                $roomTypes = $repo->findBy(
+                    ['category.id' => ['$in' => $roomTypeIds]]
+                );
 
+            } else {
+                $roomTypes = $repo->findBy(['id' => ['$in' => $roomTypeIds]]);
             }
+
             $filter->setRoomTypes($roomTypes);
         }
 

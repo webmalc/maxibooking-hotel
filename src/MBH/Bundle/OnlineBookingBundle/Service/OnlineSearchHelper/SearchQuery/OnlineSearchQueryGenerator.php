@@ -4,6 +4,7 @@
 namespace MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\SearchQuery;
 
 
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
 use MBH\Bundle\PackageBundle\Document\SearchQuery;
 

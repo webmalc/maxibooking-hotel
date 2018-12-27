@@ -82,6 +82,7 @@ old_sound_rabbit_mq:
           exchange_options: {name: 'warm_up_search', type: direct}
           queue_options:    {name: 'warm_up_search'}
           callback:         mbh_search.warm_up_search
+
       cache_invalidate:
           connection:       default
           exchange_options: {name: 'cache_invalidate', type: direct}

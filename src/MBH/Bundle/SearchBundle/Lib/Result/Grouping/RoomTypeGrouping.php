@@ -6,6 +6,10 @@ namespace MBH\Bundle\SearchBundle\Lib\Result\Grouping;
 
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
 
+/**
+ * Class RoomTypeGrouping
+ * @package MBH\Bundle\SearchBundle\Lib\Result\Grouping
+ */
 class RoomTypeGrouping implements GroupingInterface
 {
     /**
@@ -29,6 +33,10 @@ class RoomTypeGrouping implements GroupingInterface
         return $grouped;
     }
 
+    /**
+     * @param array $searchResults
+     * @return array
+     */
     private function groupByRoomTypeId(array $searchResults): array
     {
         $grouped = [];
@@ -41,6 +49,11 @@ class RoomTypeGrouping implements GroupingInterface
         return $grouped;
     }
 
+    /**
+     * @param $searchResults
+     * @return array
+     * @throws \Exception
+     */
     private function groupByDateTime($searchResults): array
     {
         $grouped = [];

@@ -5,6 +5,7 @@ namespace MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\DataProvider
 
 
 use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
+use MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineSearchAdapter;
 use MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\ResultCreaters\OnlineCreatorInterface;
 use MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\SearchQuery\OnlineSearchQueryGenerator;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
@@ -13,7 +14,7 @@ use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
 class AdditionalDataProvider implements DataProviderInterface
 {
 
-    /** @var SearchFactory */
+    /** @var OnlineSearchAdapter */
     private $search;
 
     /** @var array */
@@ -27,13 +28,17 @@ class AdditionalDataProvider implements DataProviderInterface
 
     /**
      * OnlineCommonDataProvider constructor.
-     * @param SearchFactory $search
+     * @param OnlineSearchAdapter $search
      * @param OnlineCreatorInterface $creator
      * @param OnlineSearchQueryGenerator $queryGenerator
      * @param array $onlineOptions
      */
-    public function __construct(SearchFactory $search, OnlineCreatorInterface $creator, OnlineSearchQueryGenerator $queryGenerator, array $onlineOptions)
-    {
+    public function __construct(
+        OnlineSearchAdapter $search,
+        OnlineCreatorInterface $creator,
+        OnlineSearchQueryGenerator $queryGenerator,
+        array $onlineOptions
+    ) {
         $this->search = $search;
         $this->onlineOptions = $onlineOptions;
         $this->onlineResultCreator = $creator;
@@ -46,8 +51,8 @@ class AdditionalDataProvider implements DataProviderInterface
         $searchQuery = $this->queryGenerator->createSearchQuery($formData);
         $range = $this->onlineOptions['add_search_dates'];
         $searchQuery->range = $range;
-        $this->search->setAdditionalDates($range);
-        $this->search->setWithTariffs();
+//        $this->search->setAdditionalDates($range);
+//        $this->search->setWithTariffs();
         $searchResults = $this->search->search($searchQuery);
         $searchResults = $this->separateAdditional($searchResults, $formData->getBegin(), $formData->getEnd());
 
@@ -72,15 +77,18 @@ class AdditionalDataProvider implements DataProviderInterface
             $roomType = $result['roomType'];
             $searchResults = $result['results'];
             /** Фильтруем точные даты */
-            $searchResults = array_filter($searchResults, function (SearchResult $searchResult) use ($begin, $end){
-                return (bool) !($searchResult->getBegin() == $begin && $searchResult->getEnd() == $end);
-            });
+            $searchResults = array_filter(
+                $searchResults,
+                function (SearchResult $searchResult) use ($begin, $end) {
+                    return !($searchResult->getBegin() == $begin && $searchResult->getEnd() == $end);
+                }
+            );
             $grouped = $this->groupByDay($searchResults);
             if (count($grouped)) {
                 foreach ($grouped as $value) {
                     $separatedResults[] = [
                         'roomType' => $roomType,
-                        'results' => $value
+                        'results' => $value,
                     ];
                 }
             }
@@ -98,17 +106,18 @@ class AdditionalDataProvider implements DataProviderInterface
             foreach ($results as $searchKey => $searchInstance) {
                 /** @var SearchResult $searchInstance */
                 $hayStack = $this->getDateHash($searchInstance);
-                if ($needle == $hayStack) {
+                if ($needle === $hayStack) {
                     $groups[$needle][$searchKey] = $searchInstance;
                 }
             }
         }
+
         return $groups;
     }
 
     private function getDateHash(SearchResult $searchResult): string
     {
-        return $searchResult->getBegin()->format('dmY') . $searchResult->getEnd()->format('dmY');
+        return $searchResult->getBegin()->format('dmY').$searchResult->getEnd()->format('dmY');
     }
 
     public function getType(): string
