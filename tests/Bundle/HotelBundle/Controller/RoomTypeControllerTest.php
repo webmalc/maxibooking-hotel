@@ -752,7 +752,7 @@ class RoomTypeControllerTest extends WebTestCase
      */
     private function getRoomType($fullTitle = self::ROOM_TYPE_TAB_NAME_NUM2, $returnId = true)
     {
-        $roomTypeId = $this->dm->getRepository('MBHHotelBundle:RoomType')
+        $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')
             ->findOneBy(
                 [
                     'fullTitle' => $fullTitle,
@@ -761,10 +761,10 @@ class RoomTypeControllerTest extends WebTestCase
             );
 
         if ($returnId) {
-            return $roomTypeId->getId();
+            return $roomType->getId();
         }
 
-        return $roomTypeId;
+        return $roomType;
     }
 
 

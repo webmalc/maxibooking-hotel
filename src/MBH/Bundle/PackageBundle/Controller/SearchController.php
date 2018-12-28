@@ -117,10 +117,10 @@ class SearchController extends Controller implements CheckHotelControllerInterfa
                             continue;
                         }
                         foreach ($this->manager->getRooms($hotel) as $roomType) {
-                            $query->addRoomType($roomType->getId());
+                            $query->addRoomTypeId($roomType->getId());
                         }
                     } else {
-                        $query->addRoomType($id);
+                        $query->addRoomTypeId($id);
                     }
                 }
 

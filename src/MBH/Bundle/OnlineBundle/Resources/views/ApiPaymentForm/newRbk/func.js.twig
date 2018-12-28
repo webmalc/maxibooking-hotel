@@ -1,7 +1,7 @@
 {#{% wrapinline %}#}
 {% autoescape %}
 {% include 'MBHClientBundle:PaymentSystem/newRbk:for_iframe.js.twig' %}
-var mbhIframe = {
+var MbhIframe = {
   idFormPayment    : 'go-form',
   initEvent        : false,
   addFormPayment   : function(data) {
@@ -62,20 +62,20 @@ window.onload = function(e) {
     return;
   }
 
-  var $form = $('#' + mbhIframe.idFormSearch);
+  var $form = $('#' + MbhIframe.idFormSearch);
 
   $form.submit(function(e) {
     e.preventDefault();
     $.post(this.action, $(this).serialize())
       .done(function(data) {
         if (typeof data.error !== 'undefined') {
-          mbhIframe.updateResultDiv('danger', data.error);
+          MbhIframe.updateResultDiv('danger', data.error);
         } else {
           if (data.needIsPaid) {
-            mbhIframe.updateResultDiv('info', mbhIframe.addFormPayment(data.data));
-            mbhIframe.addEventForForm();
+            MbhIframe.updateResultDiv('info', MbhIframe.addFormPayment(data.data));
+            MbhIframe.addEventForForm();
           } else {
-            mbhIframe.updateResultDiv('success', data.data);
+            MbhIframe.updateResultDiv('success', data.data);
           }
         }
       }).error(function(error) {
@@ -84,11 +84,11 @@ window.onload = function(e) {
   });
 
   $form.change(function(e) {
-    mbhIframe.updateResultDiv(false);
+    MbhIframe.updateResultDiv(false);
   });
   
   document.addEventListener('mbh_payment_finished', function() {
-    mbhIframe.updateResultDiv('success', 'Оплачено!');
+    MbhIframe.updateResultDiv('success', 'Оплачено!');
   });
 };
 {% endautoescape %}

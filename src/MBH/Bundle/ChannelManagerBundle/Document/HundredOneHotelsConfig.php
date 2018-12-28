@@ -211,14 +211,6 @@ class HundredOneHotelsConfig extends Base implements ChannelManagerConfigInterfa
     }
 
     /**
-     * @return bool
-     */
-    public function isMainSettingsFilled()
-    {
-        return $this->getIsEnabled() && !empty($this->getHotelId()) && $this->getApiKey();
-    }
-
-    /**
      * @param bool $checkOldPackages
      * @return bool
      */

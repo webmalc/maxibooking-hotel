@@ -339,10 +339,11 @@ class Booking extends Base implements ChannelManagerServiceInterface
                         if (isset($priceCaches[$roomTypeId][$syncPricesTariffId][$day->format('d.m.Y')])) {
                             /** @var PriceCache $info */
                             $info = $priceCaches[$roomTypeId][$syncPricesTariffId][$day->format('d.m.Y')];
+                            $calculator = $this->container->get('mbh.calculation');
                             $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
-                                'price' => $this->currencyConvertFromRub($config, $info->getPrice()),
+                                'price' => $this->currencyConvertFromRub($config, $calculator->getPriceWithTariffPromotionDiscount($info->getPrice(), $info->getTariff())),
                                 'price1' => $info->getSinglePrice() && (!($bookingRoom instanceOf BookingRoom) || $bookingRoom->isUploadSinglePrices())
-                                    ? $this->currencyConvertFromRub($config, $info->getSinglePrice())
+                                    ? $this->currencyConvertFromRub($config, $calculator->getPriceWithTariffPromotionDiscount($info->getSinglePrice(), $info->getTariff()))
                                     : null,
                                 'closed' => false
                             ];
@@ -508,6 +509,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
 
     /**
      * {@inheritDoc}
+     * @throws \Exception
      */
     public function pullOrders($pullOldStatus = ChannelManager::OLD_PACKAGES_PULLING_NOT_STATUS)
     {
@@ -515,14 +517,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
         $isPulledAllPackages = $pullOldStatus === ChannelManager::OLD_PACKAGES_PULLING_ALL_STATUS;
         /** @var BookingConfig $config */
         foreach ($this->getConfig($isPulledAllPackages) as $config) {
-            $request = $this->templating->render(
-                'MBHChannelManagerBundle:Booking:reservations.xml.twig',
-                ['config' => $config, 'params' => $this->params, 'pullOldStatus' => $pullOldStatus]
-            );
-
-            $endpointUrl = static::BASE_SECURE_URL . ($isPulledAllPackages ? 'reservationssummary' : 'reservations');
-
-            $sendResult = $this->sendXml($endpointUrl, $request, null, true);
+            $sendResult = $this->sendPullOrdersRequest($pullOldStatus, $config, $isPulledAllPackages);
             $this->log('Reservations: ' . $sendResult->asXml());
 
             if (!$this->checkResponse($sendResult->asXml(), ['element' => 'reservations'])) {
@@ -866,5 +861,66 @@ class Booking extends Base implements ChannelManagerServiceInterface
         $this->log($request->getContent());
 
         return new Response('OK');
+    }
+
+    /**
+     * @param BookingConfig $config
+     * @return int
+     * @throws \Exception
+     */
+    public function getBookingAccountConfirmationCode(BookingConfig $config)
+    {
+        $response = $this->sendPullOrdersRequest(ChannelManager::OLD_PACKAGES_PULLING_ALL_STATUS, $config, true);
+        if ($this->hasErrorNode($response)) {
+            if (isset($response->fault->attributes()['code']) && in_array((int)$response->fault->attributes()['code'], [401, 403])) {
+                return (int)$response->fault->attributes()['code'];
+            } else {
+                $this->log($response->asXML());
+
+                $this->sendSentryMsg(
+                    sprintf(
+                        '418. Synchronization of MaxiBooking with Booking. See log. Client: %s.' ,
+                        $this->container->getParameter('client')
+                    )
+                );
+
+                return 418;
+            }
+        }
+
+        return 200;
+    }
+
+    private function sendSentryMsg(string $msg): void
+    {
+        $notifier = $this->container->get('exception_notifier');
+        $message = $notifier::createMessage();
+        $message
+            ->setType('info')
+            ->setText($msg);
+        $notifier
+            ->setMessage($message)
+            ->notify();
+    }
+
+    /**
+     * @param $pullOldStatus
+     * @param $config
+     * @param $isPulledAllPackages
+     * @return \SimpleXMLElement
+     * @throws \Exception
+     */
+    private function sendPullOrdersRequest($pullOldStatus, $config, $isPulledAllPackages): \SimpleXMLElement
+    {
+        $request = $this->templating->render(
+            'MBHChannelManagerBundle:Booking:reservations.xml.twig',
+            ['config' => $config, 'params' => $this->params, 'pullOldStatus' => $pullOldStatus]
+        );
+
+        $endpointUrl = static::BASE_SECURE_URL . ($isPulledAllPackages ? 'reservationssummary' : 'reservations');
+
+        $sendResult = $this->sendXml($endpointUrl, $request, null, true);
+
+        return $sendResult;
     }
 }

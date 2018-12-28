@@ -5,6 +5,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Service\Helper;
+use MBH\Bundle\BaseBundle\Service\Utils;
 use MBH\Bundle\ChannelManagerBundle\Document\BookingRoom;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
@@ -78,12 +79,12 @@ class BookingRoomsType extends AbstractType
         $ids = [];
         $notMappedRoomsId = [];
         if (empty($data)) {
-            $context->addViolation('validator.rooms_type.empty_tariffs_list');
+            $context->addViolation('validator.rooms_type.empty_rooms_list');
         }
 
         /** @var RoomType $roomType */
         foreach ($data as $key => $roomType) {
-            if ($this->helper->startsWith($key, self::ROOM_TYPE_FIELD_PREFIX)) {
+            if (Utils::startsWith($key, self::ROOM_TYPE_FIELD_PREFIX)) {
                 if ($roomType && in_array($roomType->getId(), $ids)) {
                     $context->addViolation('roomtype.validation');
                 }

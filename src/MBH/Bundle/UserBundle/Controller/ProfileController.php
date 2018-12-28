@@ -219,6 +219,7 @@ class ProfileController extends Controller
      * @Security("is_granted('ROLE_PAYMENTS')")
      * @Route("/payment", name="user_payment")
      * @return array
+     * @throws \Exception
      */
     public function paymentAction()
     {

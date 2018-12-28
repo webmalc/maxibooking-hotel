@@ -10,7 +10,9 @@ use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Document\PaymentSystem\Stripe;
 use MBH\Bundle\ClientBundle\Exception\BadSignaturePaymentSystemException;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
+use MBH\Bundle\OnlineBundle\Services\RenderPaymentButton;
 use MBH\Bundle\PackageBundle\Document\Order;
 
 use MBH\Bundle\PackageBundle\Document\Package;
@@ -22,8 +24,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Stripe\Charge;
-use Symfony\Bundle\FrameworkBundle\Controller\RedirectController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -385,34 +385,51 @@ class ApiController extends Controller
             $query->setChildrenAges($request->get('children-ages'));
         }
 
-        $hotels = $formConfig->getHotels();
+        $hotels = $formConfig->getHotels()->toArray();
         if (!count($hotels)) {
             $hotels = $dm->getRepository('MBHHotelBundle:Hotel')->findAll();
         }
+
+        $requestedHotel = $dm->getRepository('MBHHotelBundle:Hotel')->find($request->get('hotel'));
+        if (!is_null($requestedHotel)) {
+            $hotels = in_array($requestedHotel, $hotels) ? [$requestedHotel] : [];
+        }
         foreach ($hotels as $hotel) {
             foreach ($hotel->getRoomTypes() as $roomType) {
-                $query->addAvailableRoomType($roomType->getId());
+                if ($formConfig->getRoomTypeChoices()->count() === 0
+                    || $formConfig->getRoomTypeChoices()->contains($roomType)) {
+                    $query->addAvailableRoomType($roomType->getId());
+                }
             }
         }
 
-        $query->addRoomType($request->get('roomType'));
-        $query->addHotel($dm->getRepository('MBHHotelBundle:Hotel')->find($request->get('hotel')));
+        $requestedRoomTypeId = $request->get('roomType');
+        if (!empty($requestedRoomTypeId)) {
+            $requestedRoomType = $this->dm->find(RoomType::class, $requestedRoomTypeId);
+            if (!is_null($requestedRoomType)) {
+                $query->addRoomTypeId($requestedRoomTypeId);
+            } else {
+                $query->availableRoomTypes = [];
+            }
+        }
 
         if (count($formConfig->getHotels()) && empty($query->availableRoomTypes)) {
             $results = [];
             $tariffResults = [];
         } else {
             $search = $this->get('mbh.package.search');
-            $tariffResults = $search->searchTariffs($query);
 
-            if (!empty($query->tariff)) {
-                $results = $search->search($query);
-                $defaultTariff = $query->tariff instanceof Tariff ? $query->tariff : $this->dm->find('MBHPriceBundle:Tariff', $query->tariff);
-            } else {
+            if (empty($query->tariff)) {
+                $tariffResults = array_filter($search->searchTariffs($query), function(Tariff $tariff) use ($formConfig) {
+                    return $formConfig->getHotels()->isEmpty() || $formConfig->getHotels()->contains($tariff->getHotel());
+                });
                 $results = $search->searchBeforeResult($query, $tariffResults);
                 if (!empty($results)) {
                     $defaultTariff = current($results)->getTariff();
                 }
+            } else {
+                $results = $search->search($query);
+                $defaultTariff = $query->tariff instanceof Tariff ? $query->tariff : $this->dm->find('MBHPriceBundle:Tariff', $query->tariff);
             }
         }
 
@@ -614,35 +631,8 @@ class ApiController extends Controller
                 'packageId' => current($packages)->getId(),
             ]);
         } else {
-            $paymentSystemName = $requestJson->paymentSystem;
-
-            $doc = $this->clientConfig->getPaymentSystemDocByName($paymentSystemName);
-
-            $paymentSystem =
-                $this
-                    ->container
-                    ->get('MBH\Bundle\ClientBundle\Service\PaymentSystem\Wrapper\PaymentSystemWrapperFactory')
-                    ->create($doc);
-
-            $form = $this->container->get('twig')->render(
-                'MBHClientBundle:PaymentSystem:'.$paymentSystemName.'.html.twig',
-                [
-                    'referer' => '*',
-                    'data'    => array_merge(
-                        [
-                            'test'       => false,
-                            'currency'   => strtoupper($this->clientConfig->getCurrency()),
-                            'buttonText' => $this->get('translator')->trans(
-                                'views.api.make_payment_for_order_id',
-                                ['%total%' => number_format($requestJson->total, 2), '%order_id%' => $order->getId()],
-                                'MBHOnlineBundle'
-                            ),
-                        ],
-
-                        $paymentSystem->getPreFormData($this->clientConfig, $order->getCashDocuments()[0])
-                    ),
-                ]
-            );
+            $form = $this->get(RenderPaymentButton::class)
+                ->create($requestJson->paymentSystem, $requestJson->total, $order, $order->getCashDocuments()[0]);
         }
         $this->dm->refresh($order->getFirstPackage());
 

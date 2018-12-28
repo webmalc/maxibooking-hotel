@@ -13,7 +13,7 @@ use MBH\Bundle\PriceBundle\Document\PriceCache;
  */
 class PriceCacheData extends AbstractFixture implements OrderedFixtureInterface
 {
-
+    const PERIOD_LENGTH_STR = 'midnight +6 month';
     const DATA = [
         'main-tariff' => [
             'single' => ['ru' => [1200, 900, 700], 'com' => [30, 20, 18]],
@@ -34,7 +34,7 @@ class PriceCacheData extends AbstractFixture implements OrderedFixtureInterface
     {
         $hotels = $manager->getRepository('MBHHotelBundle:Hotel')->findAll();
         $begin = new \DateTime('midnight');
-        $end = new \DateTime('midnight +6 month');
+        $end = new \DateTime(self::PERIOD_LENGTH_STR);
         $period = new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end);
         $localeType = $this->container->getParameter('locale') === 'ru' ? 'ru' : 'com';
         foreach ($hotels as $hotelNumber => $hotel) {

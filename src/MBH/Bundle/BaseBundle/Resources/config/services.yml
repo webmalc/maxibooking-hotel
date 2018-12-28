@@ -427,7 +427,7 @@ services:
 
     mbh.form_data_handler:
         class: MBH\Bundle\BaseBundle\Service\FormDataHandler
-        arguments: ['@translator', '@mbh.helper', '@mbh.multi_lang_translator']
+        arguments: ['@translator', '@mbh.multi_lang_translator']
 
     mbh.protected.file.downloader:
         class: MBH\Bundle\BaseBundle\Service\ProtectedFileViewer
@@ -543,3 +543,7 @@ services:
     mbh.serializer:
         class: MBH\Bundle\BaseBundle\Service\MBHSerializer
         arguments: ['@property_accessor', '@mbh.document_fields_manager', '@doctrine.odm.mongodb.document_manager']
+
+    mbh.image_manager:
+        class: MBH\Bundle\BaseBundle\Service\ImageManager
+        arguments: ['%kernel.project_dir%']

@@ -255,65 +255,72 @@ class Ostrovok extends Base
         $result = true;
         $begin = $this->getDefaultBegin($begin);
         $end = $this->getDefaultEnd($begin, $end);
+        try {
+            // iterate hotels
+            $data = [];
+            /** @var ChannelManagerConfigInterface $config */
+            foreach ($this->getConfig() as $config) {
+                $allOccupancies = $this->apiBrowser->getOccupancies(['hotel' => $config->getHotelId()], true);
+                $rooms = $config->getRooms()->toArray();
+                if (null !== $roomType) {
+                    $rooms = array_filter($rooms, function ($room) use ($roomType) {
+                        /** @var Room $room */
+                        return $room->getRoomType()->getId() === $roomType->getId();
+                    });
+                }
 
-        // iterate hotels
-        $data = [];
-        /** @var ChannelManagerConfigInterface $config */
-        foreach ($this->getConfig() as $config) {
-            $allOccupancies = $this->apiBrowser->getOccupancies(['hotel' => $config->getHotelId()], true);
-            $rooms = $config->getRooms()->toArray();
-            if (null !== $roomType) {
-                $rooms = array_filter($rooms, function ($room) use ($roomType) {
+                $tariffs = $this->getTariffs($config, true);
+                $ratePlans = $this->getRatePlansArray($config->getHotelId());
+
+                foreach ($rooms as $room) {
                     /** @var Room $room */
-                    return $room->getRoomType()->getId() === $roomType->getId();
-                });
-            }
+                    $roomType = $room->getRoomType();
+                    $CMRoomId = $room->getRoomId();
+                    $filteredRatePlans = array_filter($ratePlans, function ($ratePlan) use ($CMRoomId) {
+                        return $ratePlan['room_category'] === (int)$CMRoomId;
+                    });
+                    foreach ($filteredRatePlans as $ratePlanId => $ratePlan) {
+                        $tariff = $tariffs[$ratePlanId]['doc'] ?? null;
+                        $occupancies = array_intersect_key($allOccupancies, array_flip($ratePlan['possible_occupancies']));
+                        foreach ($occupancies as $occupancy) {
+                            foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
+                                if (null === $tariff) {
+                                    throw new OstrovokApiServiceException('Tariff is null!!!');
+                                }
+                                $prices = $this->calculation->calcPrices($roomType, $tariff, $day, $day);
+                                $capacity = $occupancy['capacity'] . '_0';
+                                $price = $prices[$capacity]['total'] ?? 0;
+                                $occupancyData[] = $this->dataGenerator->getRnaOccupanciesData(
+                                    $occupancy['id'],
+                                    $CMRoomId,
+                                    $ratePlanId,
+                                    $price,
+                                    $day,
+                                    $day,
+                                    $config->getHotelId()
+                                );
 
-            $tariffs = $this->getTariffs($config, true);
-            $ratePlans = $this->getRatePlansArray($config->getHotelId());
-
-            foreach ($rooms as $room) {
-                /** @var Room $room */
-                $roomType = $room->getRoomType();
-                $CMRoomId = $room->getRoomId();
-                $updateRatePlans = array_filter($ratePlans, function ($ratePlan) use ($CMRoomId) {
-                    return $ratePlan['room_category'] === (int)$CMRoomId;
-                });
-                foreach ($updateRatePlans as $ratePlanId => $ratePlan) {
-                    $tariff = $tariffs[$ratePlanId]['doc'];
-                    $occupancies = array_intersect_key($allOccupancies, array_flip($ratePlan['possible_occupancies']));
-                    foreach ($occupancies as $occupancy) {
-                        foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
-                            $prices = $this->calculation->calcPrices($roomType, $tariff, $day, $day);
-                            $capacity = $occupancy['capacity'] . '_0';
-                            $price = $prices[$capacity]['total'] ?? 0;
-                            $occupancyData[] = $this->dataGenerator->getRnaOccupanciesData(
-                                $occupancy['id'],
-                                $CMRoomId,
-                                $ratePlanId,
-                                $price,
-                                $day,
-                                $day,
-                                $config->getHotelId()
-                            );
-
+                            }
+                            $data[] = $this->splitByPeriod($occupancyData, 'price');
+                            unset($occupancyData);
                         }
-                        $data[] = $this->splitByPeriod($occupancyData, 'price');
-                        unset($occupancyData);
                     }
                 }
             }
-        }
 
 
-        $data = array_merge(...$data);
-        $chunkSize = 40;
-        if (\count($data) < $chunkSize) {
-            $result = $this->sendApiRequest(['occupancies' => $data], __METHOD__);
-        } else {
-            foreach (array_chunk($data, $chunkSize) as $chunk) {
-                $result = $result && $this->sendApiRequest(['occupancies' => $chunk], __METHOD__);
+            $data = array_merge(...$data);
+            $chunkSize = 40;
+            if (\count($data) < $chunkSize) {
+                $result = $this->sendApiRequest(['occupancies' => $data], __METHOD__);
+            } else {
+                foreach (array_chunk($data, $chunkSize) as $chunk) {
+                    $result = $result && $this->sendApiRequest(['occupancies' => $chunk], __METHOD__);
+                }
             }
+        } catch (OstrovokApiServiceException $e) {
+            $result = false;
+            $this->log($e->getMessage(), 'CRITICAL');
         }
 
         return $result;

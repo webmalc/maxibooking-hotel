@@ -15,10 +15,10 @@
 
                         <div class="filter-form_input-group">
                             <input type="text" name="begin" class="datepicker begin-datepicker  form-control"
-                                   data-date-format="dd.mm.yyyy" value="{{ "-1 week"|date("d.m.Y") }}">
+                                   data-date-format="dd.mm.yyyy">
                             <span class="filter-form_separator"></span>
                             <input type="text" name="end" class="datepicker end-datepicker form-control"
-                                   data-date-format="dd.mm.yyyy" value="{{ "now"|date("d.m.Y") }}">
+                                   data-date-format="dd.mm.yyyy">
                         </div>
                     </div>
                 </div>
@@ -27,7 +27,7 @@
 
                 <div class="filter-form_input">
                     <select id="package-filter-dates" name="package-filter-dates-type"
-                            class="package-filter form-control">
+                            class="package-filter form-control plain-html">
                         <option value="begin">{{ 'package.index.check_in'|trans({}, 'MBHPackageBundle') }}</option>
                         <option value="end">{{ 'package.index.check_out'|trans({}, 'MBHPackageBundle') }}</option>
                         <option value="accommodation">{{ 'package.index.accommodation'|trans({}, 'MBHPackageBundle') }}</option>
@@ -41,6 +41,9 @@
                                 data-placeholder="{{ 'service.index.category'|trans }}">
                             {% for group, catsList in categories %}
                                 <optgroup label="{{ group }}">
+                                    {% if loop.index == 1 %}
+                                        <option selected></option>
+                                    {% endif %}
                                     {% for key, cat in catsList %}
                                         <option value="{{ key }}">{{ cat }}</option>
                                     {% endfor %}
@@ -74,6 +77,7 @@
                     </select>
                 </div>
 
+                {% if housingsByHotels|length > 0 %}
                 <div class="filter-form_input">
                     <i class="fa fa-home" title='{{ "package.service.index.filter.housings"|trans({}, "MBHPackageBundle") }}'
                        data-toggle='tooltip'></i>
@@ -88,6 +92,7 @@
                         {% endfor %}
                     </select>
                 </div>
+                {% endif %}
 
                 <div class="filter-form_input">
                     <i class="fa fa-trash-o"

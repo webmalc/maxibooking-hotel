@@ -18,6 +18,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Swagger\Annotations as SWG;
 
@@ -28,6 +29,22 @@ use Swagger\Annotations as SWG;
  */
 class ExternalApiController extends BaseController
 {
+    /**
+     * @Route("/airbnb_room_calendar/{id}")
+     * @param RoomType $roomType
+     * @return Response
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function roomCalendarAction(RoomType $roomType)
+    {
+        $calendar = $this->get('mbh.airbnb')->generateRoomCalendar($roomType);
+
+        return new Response($calendar, 200, [
+            'Content-Type' => 'text/calendar; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename="cal.ics"'
+        ]);
+    }
+
     /**
      * @Method("GET")
      * @SWG\Get(
@@ -65,6 +82,7 @@ class ExternalApiController extends BaseController
 
         $roomTypesQB = $this->dm->getRepository('MBHHotelBundle:RoomType')
             ->createQueryBuilder()
+            ->sort('fullTitle')
             ->field('isEnabled')->equals($isEnabled);
         if (!is_null($hotelIds)) {
             $roomTypesQB->field('hotel.id')->in($hotelIds);
@@ -90,7 +108,9 @@ class ExternalApiController extends BaseController
             foreach ($roomTypes as $roomType) {
                 if (is_null($formConfig)
                     || ($formConfig->getHotels()->contains($roomType->getHotel())
-                        && (!$formConfig->getRoomTypes() || $formConfig->getRoomTypeChoices()->contains($roomType)))
+                        && (!$formConfig->getRoomTypes()
+                            || $formConfig->getRoomTypeChoices()->count() === 0
+                            || $formConfig->getRoomTypeChoices()->contains($roomType)))
                 ) {
                     if ($request->get('locale')) {
                         $roomType->setLocale($request->getLocale());
@@ -459,7 +479,7 @@ class ExternalApiController extends BaseController
         $this->getFormConfigAndAddOriginHeader($queryData, $requestHandler, $responseCompiler);
         $hotel = $this->dm->find('MBHHotelBundle:Hotel', $queryData->get('hotelId'));
 
-        $facilitiesData = $this->get('mbh.facility_repository')->getActualFacilitiesData($hotel, $queryData->get('locale'));
+        $facilitiesData = $this->get('mbh.facility_repository')->getActualFacilitiesData($queryData->get('locale'), $hotel);
         $responseCompiler->setData($facilitiesData);
 
         return $responseCompiler->getResponse();

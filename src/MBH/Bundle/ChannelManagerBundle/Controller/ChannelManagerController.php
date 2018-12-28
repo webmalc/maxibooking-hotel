@@ -205,7 +205,9 @@ class ChannelManagerController extends Controller
      */
     public function setIsConnectionInstructionRead(string $channelManagerName)
     {
-        $this->get('mbh.channelmanager')->setIsConnectionInstructionRead($this->hotel, $channelManagerName);
+        $this
+            ->get('mbh.channelmanager')
+            ->setIsConnectionInstructionRead($this->hotel, $channelManagerName);
 
         return $this->redirectToRoute($channelManagerName);
     }

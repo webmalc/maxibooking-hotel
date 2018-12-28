@@ -12,6 +12,9 @@ use Doctrine\Common\DataFixtures\AbstractFixture;
 
 class UserData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
+    public const USER_MANAGER = 'manager';
+    public const USER_ADMIN = 'admin';
+
     const SANDBOX_USERNAME = 'demo';
     const SANDBOX_USER_TOKEN = 'some_token_for_sandbox_user';
     //TODO: Вернуть на 'mb'
@@ -19,17 +22,17 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
 
     const USERS = [
         'user-admin' => [
-            'username' => 'admin',
+            'username' => self::USER_ADMIN,
             'email' => 'admin@example.com',
             'role' => 'ROLE_SUPER_ADMIN',
-            'password' => 'admin'
+            'password' => self::USER_ADMIN
         ],
         'user-manager' => [
-            'username' => 'manager',
+            'username' => self::USER_MANAGER,
             'email' => 'manager@example.com',
             'role' => 'ROLE_USER',
             'group' => 'group-medium_manager',
-            'password' => 'manager',
+            'password' => self::USER_MANAGER,
         ],
         'user-demo' => [
             'username' => self::SANDBOX_USERNAME,

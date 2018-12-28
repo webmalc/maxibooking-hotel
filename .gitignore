@@ -18,6 +18,7 @@ scripts/deploy_to_test.sh
 !app/config/clients/test.env.dist
 !app/config/clients/client_for_create_tm_db.env.dist
 app/config/database.env
+app/config/alias_checker.env
 /var/bootstrap.php.cache
 /var/cache/*
 /var/logs/*
@@ -147,3 +148,9 @@ Vagrantfile
 *-console.log
 
 .ansible/default_vars.yml
+
+#aliases
+/scripts/checkalias/.mypy_cache/
+/scripts/checkalias/__pycache__/
+/scripts/checkalias/settings.py
+

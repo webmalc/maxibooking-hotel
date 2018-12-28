@@ -62,21 +62,23 @@ LateEarlyDateChecker.prototype.updateView = function() {
         throw new Error('Status is not exits');
     }
 }
-LateEarlyDateChecker.prototype.checkLateArrival = function(beginDate, arrivalDate) {
+LateEarlyDateChecker.prototype.checkLateArrival = function(beginDate, arrivalDate, arrivalHour) {
     var beginDate = new Date(beginDate.getTime()); // clone object
     var arrivalDate = new Date(arrivalDate.getTime());
+    if (arrivalHour > 0) {
+        arrivalHour -= 1;//time of tourist's waiting
+    }
+    beginDate.setHours(arrivalHour);
 
-    beginDate.setHours(this.arrivalHours - 1);//time of tourist's waiting
-
-    //console.log('Begin: ' + beginDate.getMonth() + '.'+ beginDate.getDate() + ' ' + beginDate.getHours());
-    //console.log('Arrival: ' + arrivalDate.getMonth() + '.'+ arrivalDate.getDate() + ' ' + arrivalDate.getHours());
     return arrivalDate.getTime() >= beginDate.getTime();
-}
-LateEarlyDateChecker.prototype.checkEarlyDeparture = function(endDate, departureDate) {
+};
+LateEarlyDateChecker.prototype.checkEarlyDeparture = function(endDate, departureDate, departureHour) {
     var endDate = new Date(endDate.getTime()); // clone object
     var departureDate = new Date(departureDate.getTime());
-
-    endDate.setHours(this.arrivalHours + 1);//time of tourist's outing
+    if (departureHour > 0) {
+        departureHour += 1;//time of tourist's waiting
+    }
+    endDate.setHours(departureHour);
 
     return departureDate.getTime() <= endDate.getTime();
-}
+};

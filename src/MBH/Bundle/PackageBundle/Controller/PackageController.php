@@ -1093,7 +1093,11 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             throw new \InvalidArgumentException('Package with id "' . $entity->getId() . '" is already deleted!');
         }
 
+        $previousComment = $entity->getNote();
+        $entity->setNote('');
+
         $form = $this->createForm(PackageDeleteReasonType::class, $entity);
+
         $form->handleRequest($request);
 
         if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
@@ -1101,6 +1105,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $entity->setNote($entity->getNote() . "\n" . $previousComment);
             $this->dm->remove($entity);
             $this->dm->flush($entity);
 

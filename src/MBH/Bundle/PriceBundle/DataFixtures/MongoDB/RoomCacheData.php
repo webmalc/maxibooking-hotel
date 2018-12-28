@@ -15,7 +15,8 @@ use MBH\Bundle\PriceBundle\Document\RoomCache;
  */
 class RoomCacheData extends AbstractFixture implements OrderedFixtureInterface
 {
-
+    public const AMOUNT_MONTH = 6;
+    const PERIOD_LENGTH_STR = 'midnight +' . self::AMOUNT_MONTH . ' month';
     const DATA = [
         'single' => 10,
         'roomtype-double' => 10,
@@ -28,7 +29,7 @@ class RoomCacheData extends AbstractFixture implements OrderedFixtureInterface
     public function doLoad(ObjectManager $manager)
     {
         $begin = new \DateTime('midnight');
-        $end = new \DateTime('midnight +3 month');
+        $end = new \DateTime(self::PERIOD_LENGTH_STR);
         $period = new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end);
         $hotels = $manager->getRepository('MBHHotelBundle:Hotel')->findAll();
 

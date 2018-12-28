@@ -4,6 +4,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Controller\EnvironmentInterface;
+use MBH\Bundle\BaseBundle\Service\Utils;
 use MBH\Bundle\ChannelManagerBundle\Document\BookingConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\BookingRoom;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
@@ -113,15 +114,31 @@ class BookingController extends Controller implements CheckHotelControllerInterf
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $this->dm->persist($config);
-            $this->dm->flush();
-
-            $this->get('mbh.channelmanager.booking')->syncServices($config);
-            $this->get('mbh.channelmanager')->updateInBackground();
-
-            $this->addFlash('success','controller.bookingController.settings_saved_success');
 
             if (!$config->isReadyToSync()) {
-                $this->get('mbh.messages_store')->sendMessageToTechSupportAboutNewConnection('Booking', $this->get('mbh.instant_notifier'));
+                $code = $this->get('mbh.channelmanager.booking')->getBookingAccountConfirmationCode($config);
+                if ($config->getIsEnabled() && $code !== 200) {
+                    if ($code === 418) {
+                        $dangerMessage = 'controller.bookingController.booking_unknown_error_yet';
+                    } elseif ($code === 401) {
+                        $dangerMessage = 'controller.bookingController.booking_id_is_incorrect';
+                    } else {
+                        $dangerMessage = 'controller.bookingController.booking_is_not_confirmed';
+                    }
+
+                    $this->addFlash('danger', $dangerMessage);
+                } else {
+                    $config->setIsMainSettingsFilled(true);
+                    $this
+                        ->get('mbh.messages_store')
+                        ->sendMessageToTechSupportAboutNewConnection('Booking', $this->get('mbh.instant_notifier'));
+
+                    $this->get('mbh.channelmanager.booking')->syncServices($config);
+                    $this->get('mbh.channelmanager')->updateInBackground();
+
+                    $this->addFlash('success','controller.bookingController.settings_saved_success');
+                    $this->dm->flush();
+                }
             }
 
             return $this->redirect($this->generateUrl('booking'));
@@ -165,7 +182,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
             foreach ($form->getData() as $fieldName => $fieldData) {
                 $fieldsPrefixes = [BookingRoomsType::ROOM_TYPE_FIELD_PREFIX, BookingRoomsType::SINGLE_PRICES_FIELD_PREFIX];
                 foreach ($fieldsPrefixes as $prefix) {
-                    if ($this->helper->startsWith($fieldName, $prefix)) {
+                    if (Utils::startsWith($fieldName, $prefix)) {
                         $roomId = substr($fieldName, strlen($prefix));
                         isset($bookingRoomsDataByRoomIds[$roomId])
                             ? $bookingRoomsDataByRoomIds[$roomId][$prefix] = $fieldData
@@ -186,6 +203,9 @@ class BookingController extends Controller implements CheckHotelControllerInterf
 
             $userName = $this->getUser()->getUsername();
             $this->get('mbh.channelmanager')->logCollectionChanges($config, 'rooms', $userName, $prevRooms);
+            if (!$config->isReadyToSync()) {
+                $config->setIsRoomsConfigured(true);
+            }
 
             $this->dm->flush();
             $this->get('mbh.channelmanager')->updateInBackground();
@@ -242,6 +262,10 @@ class BookingController extends Controller implements CheckHotelControllerInterf
 
             $userName = $this->getUser()->getUsername();
             $this->get('mbh.channelmanager')->logCollectionChanges($config, 'tariffs', $userName, $prevTariffs);
+            if (!$config->isReadyToSync()) {
+                $config->setIsTariffsConfigured(true);
+            }
+
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();

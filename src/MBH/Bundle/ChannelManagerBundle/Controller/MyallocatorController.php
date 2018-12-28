@@ -91,18 +91,18 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
 
             if ($isSuccess) {
                 $this->dm->persist($config);
-                $this->dm->flush();
 
-                $this->get('mbh.channelmanager')->updateInBackground();
-
-                $this->addFlash('success', 'controller.myallocatorController.settings_saved_success');
-
-                if (!$config->isReadyToSync()) {
+                if (!$config->isReadyToSync() && !empty($config->getHotelId())) {
+                    $config->setIsMainSettingsFilled(true);
                     $this->get('mbh.messages_store')->sendMessageToTechSupportAboutNewConnection(
                         'MyAllocator',
                         $this->get('mbh.instant_notifier')
                     );
                 }
+                $this->dm->flush();
+
+                $this->get('mbh.channelmanager')->updateInBackground();
+                $this->addFlash('success', 'controller.myallocatorController.settings_saved_success');
             }
 
             return $this->redirect($this->generateUrl('myallocator'));
@@ -172,6 +172,10 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
 
             $userName = $this->getUser()->getUsername();
             $this->get('mbh.channelmanager')->logCollectionChanges($config, 'rooms', $userName, $prevRooms);
+            if (!$config->isReadyToSync()) {
+                $config->setIsRoomsConfigured(true);
+            }
+
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();
@@ -229,6 +233,10 @@ class MyallocatorController extends Controller implements CheckHotelControllerIn
 
             $userName = $this->getUser()->getUsername();
             $this->get('mbh.channelmanager')->logCollectionChanges($config, 'tariffs', $userName, $prevTariffs);
+            if (!$config->isReadyToSync()) {
+                $config->setIsTariffsConfigured(true);
+            }
+
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();

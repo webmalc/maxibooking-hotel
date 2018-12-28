@@ -87,6 +87,8 @@ var docReadyTourists = function () {
         $guestForm.find('.guestEmail').val(data.email);
         $guestForm.find('select.guestCommunicationLanguage').select2('val', [data.communicationLanguage]);
     };
+    $guestForm.find('.findGuest').mbhGuestSelectPlugin();
+
     var $guestSelect = $guestForm.find('.findGuest');
     $guestSelect.change(function () {
         if (!$(this).val()) {

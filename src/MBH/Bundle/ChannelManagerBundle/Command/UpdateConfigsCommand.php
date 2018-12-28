@@ -11,6 +11,7 @@ use MBH\Bundle\ChannelManagerBundle\Document\VashotelConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class UpdateConfigsCommand extends ContainerAwareCommand
@@ -22,6 +23,7 @@ class UpdateConfigsCommand extends ContainerAwareCommand
     {
         $this
             ->setName('mbh:update_configs_command')
+            ->addOption('full', null, InputOption::VALUE_OPTIONAL, 'update all options?')
             ->setDescription('Update channel manager configs with new fields');
     }
 
@@ -45,12 +47,21 @@ class UpdateConfigsCommand extends ContainerAwareCommand
             $configs = $dm->getRepository($configType)->findAll();
             /** @var ChannelManagerConfigInterface $config */
             foreach ($configs as $config) {
-                $config->setIsConfirmedWithDataWarnings(true);
-                if (method_exists($config, 'setIsConnectionSettingsRead')) {
-                    $config->setIsConnectionSettingsRead(true);
+                if (!$config->getRooms()->isEmpty()) {
+                    $config->setIsRoomsConfigured(true);
                 }
-                if (method_exists($config, 'setIsAllPackagesPulled')) {
-                    $config->setIsAllPackagesPulled(true);
+                if (!$config->getTariffs()->isEmpty()) {
+                    $config->setIsTariffsConfigured(true);
+                }
+
+                if ($input->hasOption('full')) {
+                    $config->setIsConfirmedWithDataWarnings(true);
+                    if (method_exists($config, 'setIsConnectionSettingsRead')) {
+                        $config->setIsConnectionSettingsRead(true);
+                    }
+                    if (method_exists($config, 'setIsAllPackagesPulled')) {
+                        $config->setIsAllPackagesPulled(true);
+                    }
                 }
             }
         }

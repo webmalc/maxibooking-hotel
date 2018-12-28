@@ -2,12 +2,11 @@
 
 namespace MBH\Bundle\ClientBundle\Form;
 
-use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
-use Doctrine\ODM\MongoDB\DocumentRepository;
-use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\BaseBundle\Form\LanguageType;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
+use MBH\Bundle\ClientBundle\Service\ClientManager;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -16,6 +15,7 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Class ClientConfigType
@@ -24,16 +24,56 @@ class ClientConfigType extends AbstractType
 {
     private $helper;
     private $currencyData;
+    private $clientManager;
+    private $scheme;
+    private $domain;
+    private $translator;
+    private $router;
 
-    public function __construct(Helper $helper, array $currencyData)
+    public function __construct(
+        Helper $helper,
+        array $currencyData,
+        ClientManager $clientManager,
+        string $scheme,
+        string $domain,
+        TranslatorInterface $translator,
+        Router $router
+    )
     {
         $this->helper = $helper;
         $this->currencyData = $currencyData;
+        $this->clientManager = $clientManager;
+        $this->scheme = $scheme;
+        $this->domain = $domain;
+        $this->translator = $translator;
+        $this->router = $router;
     }
 
+    /**
+     * @param FormBuilderInterface $builder
+     * @param array $options
+     * @throws \Exception
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $client = $this->clientManager->getClient();
+        $login = $client->getLogin();
+        $loginAlias = !empty($client->getLogin_alias()) ? $client->getLogin_alias() : $login;
+        $loginAliasHelp = $this->translator->trans('form.clientConfigType.time_zone.login_alias.help')
+            . '<br>'
+            . '<a style="margin-top: 5px" class="btn btn-success" href="' . $this->router->generate('reset_login_alias') . '">'
+            . $this->translator->trans('form.clientConfigType.time_zone.login_alias.help.button_text'). '</a>';
+
         $builder
+            ->add('login_alias', TextType::class, [
+                'label' => 'form.clientConfigType.time_zone.login_alias.label',
+                'help' => $loginAliasHelp,
+                'mapped' => false,
+                'data' => $loginAlias,
+                'group' => 'form.clientConfigType.main_group',
+                'addonText' => $this->domain,
+                'preAddonText' => $this->scheme . '://',
+            ])
             ->add('timeZone', ChoiceType::class, [
                 'choices' => ClientConfig::getTimeZonesList(),
                 'group' => 'form.clientConfigType.main_group',
@@ -53,27 +93,17 @@ class ClientConfigType extends AbstractType
                 },
                 'label' => 'form.clientConfigType.currency.label'
             ])
-            ->add(
-                'isSendSms',
-                CheckboxType::class,
-                [
-                    'label' => 'form.clientConfigType.sms_notification',
-                    'group' => 'form.clientConfigType.main_group',
-                    'value' => true,
-                    'required' => false,
-                    'help' => 'form.clientConfigType.is_sms_notification_turned_on',
-                ]
-            )
-            ->add(
-                'NoticeUnpaid',
-                TextType::class,
-                [
-                    'label' => 'form.clientConfigType.notice_unpaid',
-                    'group' => 'form.clientConfigType.main_group',
-                    'help' => 'form.clientConfigType.is_notice_unpaid',
-                    'required' => true,
-                ]
-            )
+//            ->add(
+//                'isSendSms',
+//                CheckboxType::class,
+//                [
+//                    'label' => 'form.clientConfigType.sms_notification',
+//                    'group' => 'form.clientConfigType.main_group',
+//                    'value' => true,
+//                    'required' => false,
+//                    'help' => 'form.clientConfigType.is_sms_notification_turned_on',
+//                ]
+//            )
             ->add(
                 'is_instant_search',
                 CheckboxType::class,
@@ -90,15 +120,6 @@ class ClientConfigType extends AbstractType
                 'label' => 'form.clientConfigType.show_label_tips.label',
                 'help' => 'form.clientConfigType.show_label_tips.help'
             ])
-//            ->add(
-//                'useRoomTypeCategory',
-//                CheckboxType::class,
-//                [
-//                    'label' => 'form.clientConfigType.is_disabled_room_type_category',
-//                    'group' => 'form.clientConfigType.main_group',
-//                    'required' => false,
-//                ]
-//            )
             ->add('priceRoundSign', IntegerType::class, [
                 'required' => false,
                 'label' => 'form.clientConfigType.round.label',
@@ -109,16 +130,6 @@ class ClientConfigType extends AbstractType
                     'min' => 0
                 ]
             ])
-            ->add(
-                'isSendMailAtPaymentConfirmation',
-                CheckboxType::class,
-                [
-                    'label' => 'form.clientConfigType.is_send_mail_at_payment_confirmation.label',
-                    'help' => 'form.clientConfigType.is_send_mail_at_payment_confirmation.help',
-                    'group' => 'form.clientConfigType.main_group',
-                    'required' => false,
-                ]
-            )
             ->add(
                 'searchDates',
                 TextType::class,
@@ -225,37 +236,6 @@ class ClientConfigType extends AbstractType
                     'group' => 'form.clientConfigType.search_group',
                     'label' => 'form.clientConfigType.default_children_quantity.label',
                     'help' => 'form.clientConfigType.default_children_quantity.help',
-                ]
-            )
-            ->add(
-                'allowNotificationTypes',
-                DocumentType::class,
-                [
-                    'group' => 'form.clientConfigType.notification_group',
-                    'label' => 'form.clientConfigType.notification.label',
-                    'help' => 'form.clientConfigType.notification.help',
-                    'required' => false,
-                    'multiple' => true,
-                    'class' => NotificationType::class,
-                    'query_builder' => function (DocumentRepository $repository) {
-                        return $repository
-                            ->createQueryBuilder()
-                            ->field('owner')
-                            ->in(
-                                [
-                                    NotificationType::OWNER_CLIENT,
-                                    NotificationType::OWNER_ALL,
-                                ]
-                            );
-                    },
-                    'choice_label' => function (NotificationType $type) {
-                        return 'notifier.config.label.'.$type->getType();
-                    },
-                    'choice_attr' => function (NotificationType $type) {
-                        return ['title' => 'notifier.config.title.'.$type->getType()];
-                    },
-                    #http://symfony.com/blog/new-in-symfony-2-7-form-and-validator-updates#added-choice-translation-domain-domain-to-avoid-translating-options
-                    'choice_translation_domain' => true
                 ]
             );
     }

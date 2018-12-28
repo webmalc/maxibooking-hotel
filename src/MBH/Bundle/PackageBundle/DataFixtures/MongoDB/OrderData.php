@@ -11,6 +11,7 @@ use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
+use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 
 /**
@@ -18,6 +19,10 @@ use MBH\Bundle\PriceBundle\Document\Tariff;
  */
 class OrderData extends AbstractFixture implements OrderedFixtureInterface
 {
+    public const ORDER_DATA_4_NUMBER = '4';
+    public const ORDER_DATA_4_PRICE = 4631;
+    public const ORDER_DATA_4_PAID = 276;
+
     const DATA = [
         [
             'number' => '1',
@@ -53,12 +58,12 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'accommodation' => 8
         ],
         [
-            'number' => '4',
-            'adults' => 2,
-            'children' => 0,
-            'price' => 4631,
-            'paid' => 276,
-            'regDayAgo' => 2,
+            'number'     => self::ORDER_DATA_4_NUMBER,
+            'adults'     => 2,
+            'children'   => 0,
+            'price'      => self::ORDER_DATA_4_PRICE,
+            'paid'       => self::ORDER_DATA_4_PAID,
+            'regDayAgo'  => 2,
             'beginAfter' => 10,
             'length' => 6,
             'accommodation' => 7
@@ -221,7 +226,14 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
     {
         $locale = $this->container->getParameter('locale') === 'ru' ? 'ru' : 'en';
         $touristKeys = array_keys(TouristData::TOURIST_DATA[$locale]);
-        $tourist = $this->getReference($touristKeys[array_rand($touristKeys, 1)]);
+
+        if ($data['number'] === self::ORDER_DATA_4_NUMBER) {
+            /** @var Tourist $tourist */
+            $tourist = $this->getReference(TouristData::TOURIST_RICK_KEY);
+        } else {
+            $tourist = $this->getReference($touristKeys[array_rand($touristKeys, 1)]);
+        }
+
         $order = (new Order())
             ->setPrice($data['price'])
             ->setPaid($data['paid'])

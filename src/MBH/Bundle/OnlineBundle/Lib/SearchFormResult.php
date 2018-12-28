@@ -24,7 +24,7 @@ class SearchFormResult implements \JsonSerializable
     /**
      * @var string
      */
-    private $packageId;
+    private $orderId;
 
     /**
      * @var ContainerInterface
@@ -52,11 +52,11 @@ class SearchFormResult implements \JsonSerializable
     }
 
     /**
-     * @param string $packageId
+     * @param string $orderId
      */
-    public function setPackageId(string $packageId): void
+    public function setOrderId(string $orderId): void
     {
-        $this->packageId = $packageId;
+        $this->orderId = $orderId;
     }
 
     public function orderIsFound(): void
@@ -74,7 +74,7 @@ class SearchFormResult implements \JsonSerializable
             if ($this->isNeedIsPaid()) {
                 $result['data'] = [
                     'total'     => $this->total,
-                    'packageId' => $this->packageId,
+                    'orderId'   => $this->orderId,
                 ];
             } else {
                 $result['data'] = $this->translate('api.payment_form.result_search.order_has_been_paid');
@@ -94,6 +94,6 @@ class SearchFormResult implements \JsonSerializable
      */
     private function isNeedIsPaid(): bool
     {
-        return $this->total !== null && $this->packageId !== null;
+        return $this->total !== null && $this->orderId !== null;
     }
 }

@@ -33,7 +33,7 @@ class RecordFilterType extends AbstractType
                 'format' => 'dd.MM.yyyy',
                 'required' => false,
                 'attr' => [
-                    'class' => 'datepicker begin-datepicker input-small',
+                    'class' => 'datepicker end-datepicker input-small',
                     'data-date-format' => 'dd.mm.yyyy',
 					'placeholder' => 'mbhwarehousebundle.form.recordfiltertype.po',
                 ],

@@ -1235,7 +1235,7 @@ class Package extends Base implements \JsonSerializable
     public function getPriceByDate(\DateTime $date = null): float
     {
         if (!is_null($date)) {
-            if ($this->getPrices()->count() > 0 && $this->getPackagePriceByDate($date)) {
+            if (count($this->getPrices()) > 0 && $this->getPackagePriceByDate($date)) {
                 return $this->getPackagePriceByDate($date)->getPrice();
             }
 
@@ -1900,8 +1900,14 @@ class Package extends Base implements \JsonSerializable
     private function discountCalculation(PackagePrice $price): float
     {
         $priceFraction = $this->getPackagePrice() != 0 ? $price->getPrice() / $this->getPackagePrice() : 0;
+        if ($price->getPromotion() && !$price->getPromotion()->getIsPercentDiscount()) {
+            $packagePricePrice = $price->getPrice() - round($price->getPromotion()->getDiscount() / $this->getNights());
+        } else {
+            $packagePricePrice = $price->getPrice();
+        }
+
         return $this->isPercentDiscount
-            ? $price->getPrice() * (1 - $this->getDiscount(false))
-            : $price->getPrice() - $this->discount * $priceFraction;
+            ? $packagePricePrice * (1 - $this->getDiscount(false))
+            : $packagePricePrice - $this->discount * $priceFraction;
     }
 }

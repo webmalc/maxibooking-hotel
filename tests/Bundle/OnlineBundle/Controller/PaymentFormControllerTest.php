@@ -64,7 +64,7 @@ class PaymentFormControllerTest extends \MBH\Bundle\BaseBundle\Lib\Test\CrudWebT
         $url = $this->getListUrl();
 
         $this->clickLinkInList($url, ' a[data-text^="Вы действительно хотите удалить запись"]', true);
-        $this->assertSame(0, $this->getListCrawler()->filter($this->getListContainer() . 'tbody tr')->count());
+        $this->assertSame(1, $this->getListCrawler()->filter($this->getListContainer() . 'tbody tr')->count());
     }
 
     protected function editFormBaseTest(
@@ -105,6 +105,6 @@ class PaymentFormControllerTest extends \MBH\Bundle\BaseBundle\Lib\Test\CrudWebT
 
     protected function checkSavedObject(string $title): void
     {
-        $this->assertSame(1, $this->getListCrawler()->filter($this->getListContainer() . 'tbody tr')->count());
+        $this->assertSame(2, $this->getListCrawler()->filter($this->getListContainer() . 'tbody tr')->count());
     }
 }

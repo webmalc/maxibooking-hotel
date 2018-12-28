@@ -1,19 +1,21 @@
 {% set idDivResultSearch = 'result-search' %}
-
 {% spaceless %}
     <!doctype html>
     <html lang="en">
     <head>
         <meta charset="utf-8">
         <title>Maxibooking</title>
-        {#<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/smoothness/jquery-ui.css" />#}
-        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css"/>
-        {% if entity and entity.theme %}
-            <link rel="stylesheet" href="{{ entity.theme }}">
+        <style>
+            .panel-heading.ui-accordion-header {
+                margin: unset;
+            }
+        </style>
+        {% if paymentFormConfig and paymentFormConfig.theme %}
+            <link rel="stylesheet" href="{{ paymentFormConfig.theme }}">
         {% endif %}
 
-        {% if entity and entity.cssLibraries is defined and entity.cssLibraries is iterable %}
-            {% for link in entity.cssLibraries %}
+        {% if paymentFormConfig and paymentFormConfig.cssLibraries is defined and paymentFormConfig.cssLibraries is iterable %}
+            {% for link in paymentFormConfig.cssLibraries %}
                 <link rel="stylesheet" href="{{ link }}">
             {% endfor %}
         {% endif %}
@@ -23,36 +25,86 @@
         <script src="//code.jquery.com/ui/1.11.1/jquery-ui.min.js"
                 integrity="sha256-4JY5MVcEmAVSuS6q4h9mrwCm6KNx91f3awsSQgwu0qc="
                 crossorigin="anonymous"></script>
+        <script>
+            function MbhIframe() {
+                this.idFormPayment = 'go-form';
+                this.actionPayment = '{{ url('online_api_payment_form_payment', {locale: locale}) }}';
+                this.form = {
+                    submitBtn: '{{ 'api.payment_form.generate_invoce.submit' | trans }}',
+                    label    : '{{ 'api.payment_form.pay_order.total' | trans }}',
+                    options  : '{{ paymentSystems | raw }}'
+                };
+                this.onlyOneSystem = {{ onlyOneSystem ? 'true' : 'false' }};
+                this.idFormSearch = '{{ formId }}';
+                this.idDivResultSearch = '{{ idDivResultSearch }}';
+                this.useAccordion = {{ paymentFormConfig.useAccordion ? 'true' : 'false' }};
+            }
+        </script>
+        {% javascripts filter='uglifyjs2'
+            '@MBHOnlineBundle/Resources/public/js/api-payment-form/*.js'
+        %}
+            <script type="text/javascript" src="{{ absolute_url(asset_url) }}"></script>
+        {% endjavascripts %}
+        {% include '@MBHOnline/ApiPaymentForm/siteStyles.html.twig' %}
     </head>
-    {% if entity %}
-        {% if entity.css %}
-            <style>
-                {{ entity.css|raw }}
-            </style>
-        {% endif %}
-        {% if entity.js %}
-            <script>
-                window.addEventListener('load', function(ev) {
-                    {{ entity.js|raw }}
-                });
-            </script>
-        {% endif %}
+    {% if paymentFormConfig.css %}
+        <style>
+            {{ paymentFormConfig.css|raw }}
+        </style>
     {% endif %}
-    <body style="background-color: transparent;">
-    {% form_theme form '@MBHOnline/ApiPaymentForm/Form/block.html.twig' %}
-    {{ form_start(form, {'action': url('online_api_payment_form_search') ,'attr': {'class': 'form-horizontal well', 'id': formId}}) }}
-    {{ form_widget(form) }}
-    {% if app.getEnvironment == 'prod' and entity.enabledReCaptcha %}
-        <div class="form-group g-recaptcha" data-sitekey="{{ recaptcha.site }}"></div>
-        <script src='https://www.google.com/recaptcha/api.js'></script>
+    {% if paymentFormConfig.js %}
+        <script>
+            window.addEventListener('load', function(ev) {
+                {{ paymentFormConfig.js|raw }}
+            });
+        </script>
     {% endif %}
-    {{ form_end(form) }}
-    <div id="{{ idDivResultSearch | raw }}">
-        <div class="panel-body"></div>
+    <body>
+    <div id="mbh-form-payment-accordion">
+        <div id="mbh-form-payment-accordion-search" class="panel panel-primary">
+            <div class="panel-heading">
+                <h4>{{ 'api.payment_form.step_1' | trans }}</h4>
+            </div>
+            <div id="mbh-form-payment-accordion-search" class="panel-body">
+                {% form_theme form '@MBHOnline/ApiPaymentForm/Form/block.html.twig' %}
+                {{ form_start(form, {'action': url('online_api_payment_form_search') ,'attr': {'class': 'panel-body', 'id': formId}}) }}
+                {{ form_widget(form) }}
+                {% if paymentFormConfig.enabledReCaptcha %}
+                    <div class="form-group g-recaptcha" data-sitekey="{{ recaptcha.site }}"></div>
+                    <script src='https://www.google.com/recaptcha/api.js'></script>
+                {% endif %}
+                {{ form_end(form) }}
+            </div>
+        </div>
+        <div id="mbh-form-payment-generate" class="panel panel-primary">
+            <div class="panel-heading">
+                <h4>{{ 'api.payment_form.step_2' | trans }}</h4>
+            </div>
+            <div id="{{ idDivResultSearch | raw }}">
+            </div>
+        </div>
+        <div id="mbh-form-payment-pay" class="panel panel-primary">
+            <div class="panel-heading">
+                <h4>{{ 'api.payment_form.step_3' | trans }}</h4>
+            </div>
+            <div class="panel-body">
+                <div id="payment-btn">
+
+                </div>
+            </div>
+        </div>
+
     </div>
-    <script>
-      {% include '@MBHOnline/ApiPaymentForm/' ~ paymentSystem ~ '/func.js.twig' %}
-    </script>
+
+    {% if constant('MBH\\Bundle\\ClientBundle\\Document\\PaymentSystem\\NewRbk::KEY') in paymentSystems %}
+        {% include '@MBHClient/PaymentSystem/newRbk/scripts_for_iframe.html.twig' %}
+        <script>
+            document.addEventListener('mbh-loaded-btn-for-pay', function(evt) {
+                mbhFuncPaymentFormForNewRbk();
+            });
+        </script>
+    {% endif %}
+    
     </body>
 
     </html>

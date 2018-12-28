@@ -684,11 +684,11 @@ class BillingApi
      */
     private function getBillingEntityById($endpointSettings, $id, $locale = null)
     {
+        $endpoint = $endpointSettings['endpoint'];
         if (is_null($id)) {
-            throw new \InvalidArgumentException('ID is not specified');
+            throw new \InvalidArgumentException('Endpoint "' . $endpoint . '": ID is not specified');
         }
 
-        $endpoint = $endpointSettings['endpoint'];
         if (!isset($this->loadedEntities[$endpoint][$id])) {
             $url = $this->getBillingUrl($endpoint, $id, $locale);
             try {
@@ -830,7 +830,8 @@ class BillingApi
      */
     private function logErrorAndThrowException($exception, $url): void
     {
-        $message = $exception->getResponse() ? (string)$exception->getResponse()->getBody : $exception->getMessage();
+        /** @var RequestException $exception */
+        $message = $exception->getMessage();
         $this->logErrorResponse($message, $url, []);
         throw new \RuntimeException('Can not get data by url ' . $url);
     }

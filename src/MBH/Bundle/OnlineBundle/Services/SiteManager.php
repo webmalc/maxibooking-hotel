@@ -6,13 +6,12 @@ use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Service\DocumentFieldsManager;
 use MBH\Bundle\BaseBundle\Service\WarningsCompiler;
-use MBH\Bundle\BillingBundle\Lib\Model\Client;
-use MBH\Bundle\BillingBundle\Lib\Model\WebSite;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\ClientBundle\Service\ClientManager;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
+use MBH\Bundle\OnlineBundle\Document\PaymentFormConfig;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
@@ -20,11 +19,9 @@ use Symfony\Component\Translation\TranslatorInterface;
 
 class SiteManager
 {
-    const DEFAULT_RESULTS_PAGE = '/results/index.html';
-    const PERSONAL_DATA_POLICIES_PAGE = '/personal-data-policies/index.html?q';
+    const DEFAULT_RESULTS_PAGE = '/results';
+    const PERSONAL_DATA_POLICIES_PAGE = '/personal-data-policies?q';
     const DEFAULT_BOOTSTRAP_THEME = 'cerulean';
-    const SITE_DOMAIN = '.maaaxi.com';
-    const SITE_PROTOCOL = 'https://';
     const MANDATORY_FIELDS_BY_ROUTE_NAMES = [
         Hotel::class => [
             'hotel_edit'                => ['description', 'logoImage'],
@@ -136,6 +133,23 @@ class SiteManager
         return $formConfig;
     }
 
+    public function fetchPaymentFormConfig(): PaymentFormConfig
+    {
+        $formConfig = $this->dm->getRepository(PaymentFormConfig::class)->findOneBy(['forMbSite' => true]);
+        if ($formConfig === null) {
+            $formConfig = new PaymentFormConfig();
+            $formConfig->setForMbSite(true);
+            $formConfig->setUseAccordion(true);
+            $formConfig->setIsFullWidth(true);
+            $formConfig->setTheme(FormConfig::THEMES[self::DEFAULT_BOOTSTRAP_THEME]);
+            $formConfig->setFrameHeight(600);
+
+            $this->dm->persist($formConfig);
+        }
+
+        return $formConfig;
+    }
+
     /**
      * @param $document
      * @param FormInterface $form
@@ -171,23 +185,23 @@ class SiteManager
 
     /**
      * @param Hotel $hotel
-     * @param Client $client
      * @return SiteConfig
      */
-    public function createOrUpdateForHotel(Client $client, Hotel $hotel = null)
+    public function createOrUpdateForHotel(Hotel $hotel = null)
     {
         $config = $this->getSiteConfig();
         if (is_null($config)) {
             $config = new SiteConfig();
             $this->dm->persist($config);
 
-            $siteDomain = $this->compileSiteDomain($client);
+            $clientSite = $this->clientManager->getClientSite();
+            if (is_null($clientSite)) {
+                throw new \RuntimeException('There is no created client site');
+            }
 
+            $host = parse_url($clientSite->getUrl())['host'];
+            $siteDomain = substr($host, 0, strpos($host, SiteConfig::DOMAIN));
             $config->setSiteDomain($siteDomain);
-            $clientSite = (new WebSite())
-                ->setUrl($this->compileSiteAddress($siteDomain))
-                ->setClient($client->getLogin());
-            $this->billingApi->addClientSite($clientSite);
         }
 
         if (!is_null($hotel)) {
@@ -223,7 +237,10 @@ class SiteManager
      */
     public function checkSiteDomain(string $siteDomain)
     {
-        $sitesResult = $this->billingApi->getSitesByUrlResult($this->compileSiteAddress($siteDomain));
+        $tempSiteConfig = new SiteConfig();
+        $tempSiteConfig->setSiteDomain($siteDomain);
+
+        $sitesResult = $this->billingApi->getSitesByUrlResult($this->compileSiteAddress($tempSiteConfig));
 
         return $sitesResult->isSuccessful() && empty($sitesResult->getData());
     }
@@ -269,7 +286,7 @@ class SiteManager
      */
     public function updateSiteFormConfig(SiteConfig $config, FormConfig $formConfig, array $paymentTypes = null)
     {
-        $siteAddress = $this->compileSiteAddress($config->getSiteDomain());
+        $siteAddress = $this->compileSiteAddress($config);
 
         $roomTypes = [];
         foreach ($config->getHotels() as $hotel) {
@@ -296,7 +313,7 @@ class SiteManager
     public function getSiteAddress()
     {
         return $this->getSiteConfig() && $this->getSiteConfig()->getSiteDomain()
-            ? $this->compileSiteAddress($this->getSiteConfig()->getSiteDomain())
+            ? $this->compileSiteAddress($this->getSiteConfig())
             : null;
     }
 
@@ -304,34 +321,14 @@ class SiteManager
      * @param string $siteDomain
      * @return string
      */
-    public function compileSiteAddress(string $siteDomain)
+    public function compileSiteAddress(SiteConfig $config)
     {
-        return self::SITE_PROTOCOL . $siteDomain . self::SITE_DOMAIN;
-    }
+        $format = '%s://%s';
 
-    /**
-     * @param Client $client
-     * @return null|string
-     */
-    private function compileSiteDomain(Client $client)
-    {
-        $siteDomain = '';
-        if ($this->checkSiteDomain($client->getLogin())) {
-            $siteDomain = $client->getLogin();
-        } elseif ($client->getCity()) {
-            $domainWithCityName = $client->getLogin().'-'.$this->billingApi->getCityById(
-                    $client->getCity(),
-                    'en'
-                )->getName();
-            if ($this->checkSiteDomain($domainWithCityName)) {
-                $siteDomain = $domainWithCityName;
-            }
+        if ($config->getDomain() !== SiteConfig::FAKE_DOMAIN_FOR_DEV) {
+            $format .= '%s';
         }
 
-        if (empty($siteDomain)) {
-            $siteDomain = $client->getLogin().rand(0, 1000000);
-        }
-
-        return $siteDomain;
+        return sprintf($format, $config->getScheme(), $config->getSiteDomain(), $config->getDomain());
     }
 }

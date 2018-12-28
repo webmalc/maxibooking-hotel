@@ -72,23 +72,24 @@ class HundredOneHotelsController extends Controller
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $errorMessage = $this->get('mbh.channelmanager.hundred_one_hotels')->sendTestRequestAndGetErrorMessage($config);
-            if (isset($errorMessage)) {
+            if ($config->getIsEnabled() && isset($errorMessage)) {
                 $this->addFlash('danger', $errorMessage);
             } else {
                 /* @var $dm DocumentManager; */
                 $dm = $this->get('doctrine_mongodb')->getManager();
-                $dm->persist($config);
-                $dm->flush();
-
                 $channelManagerService = $this->get('mbh.channelmanager');
-                $channelManagerService->updateInBackground();
+                $dm->persist($config);
 
-                $this->addFlash('success', 'controller.bookingController.settings_saved_success');
                 if (!$config->isReadyToSync()) {
+                    $config->setIsMainSettingsFilled(true);
                     $channelManagerHumanName = $channelManagerService->getServiceHumanName('hundred_one_hotels');
                     $this->get('mbh.messages_store')
                         ->sendCMConfirmationMessage($config, $channelManagerHumanName, $this->get('mbh.notifier.mailer'));
                 }
+                $dm->flush();
+
+                $this->addFlash('success', 'controller.bookingController.settings_saved_success');
+                $channelManagerService->updateInBackground();
             }
         }
 
@@ -133,6 +134,10 @@ class HundredOneHotelsController extends Controller
 
             $userName = $this->getUser()->getUsername();
             $this->get('mbh.channelmanager')->logCollectionChanges($config, 'tariffs', $userName, $prevTariffs);
+            if (!$config->isReadyToSync()) {
+                $config->setIsTariffsConfigured(true);
+            }
+
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();
@@ -190,6 +195,10 @@ class HundredOneHotelsController extends Controller
 
             $userName = $this->getUser()->getUsername();
             $this->get('mbh.channelmanager')->logCollectionChanges($config, 'rooms', $userName, $prevRooms);
+            if (!$config->isReadyToSync()) {
+                $config->setIsRoomsConfigured(true);
+            }
+
             $this->dm->flush();
 
             $this->get('mbh.channelmanager')->updateInBackground();

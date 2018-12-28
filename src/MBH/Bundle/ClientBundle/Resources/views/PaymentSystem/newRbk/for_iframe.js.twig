@@ -1,11 +1,11 @@
 {% include 'MBHClientBundle:PaymentSystem/newRbk:event.js.twig' %}
 var mbhNewRbkIframe = {
-  urlPostMessage : '{{ referer }}',
-  typePostMessage: '{{ constant('MBH\\Bundle\\ClientBundle\\Document\\PaymentSystem\\NewRbk::TYPE_POST_MSG') }}',
+  urlPostMessage : '{{ referer | raw }}',
+  typePostMessage: '{{ constant('MBH\\Bundle\\ClientBundle\\Document\\PaymentSystem\\NewRbk::TYPE_POST_MSG') | raw }}',
   addListener    : function() {
     mbhNewRbk_Event.finished.create();
     var self = this;
-    window.addEventListener("message", function(e) {
+    window.addEventListener('message', function(e) {
       if (e.origin != self.urlPostMessage) {
           {#// что-то прислали с неизвестного домена - проигнорируем..#}
         return;

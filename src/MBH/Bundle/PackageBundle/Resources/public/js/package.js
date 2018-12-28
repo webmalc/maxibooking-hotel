@@ -90,16 +90,14 @@ var initAccommodationTab = function() {
     var arrivalDate = $arrivalDate.val();
     var arrivalTime = $arrival.val();
     var arrivalDate = new Date(arrivalDate.replace(pattern, '$3-$2-$1') + 'T' + arrivalTime + ':00');
-    arrivalDate.setHours(arrivalDate.getHours() - mbh.UTCHoursOffset);
     var isSuitArrival = !$checkIn.is(':checked') || arrivalDate && arrivalTime &&
-        lateEarlyDateChecker.checkLateArrival(Package.begin, arrivalDate);
+        lateEarlyDateChecker.checkLateArrival(Package.begin, arrivalDate, packageHotelArrivalHour);
 
     var departureDate = $departureDate.val();
     var departureTime = $departure.val();
     var departureDate = new Date(departureDate.replace(pattern, '$3-$2-$1') + 'T' + departureTime + ':00');
-    departureDate.setHours(departureDate.getHours() - mbh.UTCHoursOffset);
     var isSuitDeparture = !$checkOut.is(':checked') || departureDate && departureTime &&
-        lateEarlyDateChecker.checkEarlyDeparture(Package.end, departureDate);
+        lateEarlyDateChecker.checkEarlyDeparture(Package.end, departureDate, packageHotelDepartureHour);
 
     lateEarlyDateChecker.status = null;
     if (earlyCheckInServiceIsEnabled && lateCheckOutServiceIsEnabled && !isSuitArrival && !isSuitDeparture) {

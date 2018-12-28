@@ -98,7 +98,7 @@ class ApiExtraController extends Controller
         $register = $sbrfHelper->register($cashDocument, $request);
 
         /** @var RegisterResponse $response */
-        $response = $sbrfHelper->request($register);
+        $response = $sbrfHelper->request($register, $sberbank->isEnvTest());
 
         $logger = $this->container->get('mbh.payment_sberbank.logger');
         $dataForLogger = ' Data response: ' . var_export($response, true);

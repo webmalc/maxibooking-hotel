@@ -138,3 +138,15 @@ services:
         arguments: ['%locale%']
         tags:
             - {name: form.type}
+
+    mbh.token_user_provider:
+        class: MBH\Bundle\UserBundle\Security\ApiTokenUserProvider
+        arguments:
+          - '%billing_front_token%'
+    mbh.token_authenticator:
+        class: MBH\Bundle\UserBundle\Security\ApiTokenAuthenticator
+        arguments:
+          - '%client%'
+
+    mbh.api_access_denied_handler:
+        class: MBH\Bundle\UserBundle\Security\ApiAccessDeniedHandler

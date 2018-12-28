@@ -8,14 +8,14 @@ namespace MBH\Bundle\OnlineBundle\Lib;
 
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Query\Builder;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\OnlineBundle\Document\PaymentFormConfig;
 use MBH\Bundle\OnlineBundle\Validator\Constraints as CustomAssert;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\Request;
 
 class SearchForm
 {
@@ -28,7 +28,7 @@ class SearchForm
     /**
      * @var string
      */
-    private $numberOrder;
+    private $numberPackage;
 
     /**
      * @var string|null
@@ -39,6 +39,26 @@ class SearchForm
      * @var string
      */
     private $configId;
+
+    /**
+     * @var string
+     */
+    private $hotelId;
+
+    /**
+     * @var Hotel[]|array
+     */
+    private $hotels;
+
+    /**
+     * @var PaymentFormConfig
+     */
+    private $paymentFormConfig;
+
+    /**
+     * @var Order
+     */
+    private $order;
 
     /**
      * @var ContainerInterface
@@ -71,23 +91,23 @@ class SearchForm
      */
     public function setPhoneOrEmail(?string $phoneOrEmail): void
     {
-        $this->phoneOrEmail = $phoneOrEmail;
+        $this->phoneOrEmail = trim($phoneOrEmail);
     }
 
     /**
      * @return null|string
      */
-    public function getNumberOrder(): ?string
+    public function getNumberPackage(): ?string
     {
-        return $this->numberOrder;
+        return $this->numberPackage;
     }
 
     /**
-     * @param null|string $numberOrder
+     * @param null|string $numberPackage
      */
-    public function setNumberOrder(?string $numberOrder): void
+    public function setNumberPackage(?string $numberPackage): void
     {
-        $this->numberOrder = $numberOrder;
+        $this->numberPackage = trim($numberPackage);
     }
 
     /**
@@ -103,7 +123,7 @@ class SearchForm
      */
     public function setUserName(?string $userName): void
     {
-        $this->userName = $userName;
+        $this->userName = trim($userName);
     }
 
     /**
@@ -111,11 +131,21 @@ class SearchForm
      */
     public function isUserNameVisible(): bool
     {
-        /** @var PaymentFormConfig $config */
-        $config = $this->dm->getRepository('MBHOnlineBundle:PaymentFormConfig')
-            ->find($this->getConfigId());
+        return $this->getPaymentFormConfig()->isFieldUserNameIsVisible();
+    }
 
-        return $config->isFieldUserNameIsVisible();
+    private function loadPaymentFormConfig(): void
+    {
+        $this->paymentFormConfig = $this->dm->getRepository('MBHOnlineBundle:PaymentFormConfig')
+            ->find($this->getConfigId());
+    }
+
+    /**
+     * @return PaymentFormConfig
+     */
+    public function getPaymentFormConfig(): PaymentFormConfig
+    {
+        return $this->paymentFormConfig;
     }
 
     /**
@@ -132,29 +162,56 @@ class SearchForm
     public function setConfigId(string $configId): void
     {
         $this->configId = $configId;
+
+        $this->loadPaymentFormConfig();
+
+        $this->setHotels($this->getPaymentFormConfig()->getHotels()->toArray());
+    }
+
+    /**
+     * @return array|Hotel[]
+     */
+    public function getHotels(): array
+    {
+        return $this->hotels;
+    }
+
+    /**
+     * @param array|Hotel[] $hotels
+     */
+    private function setHotels(array $hotels): void
+    {
+        $this->hotels = $hotels;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHotelId(): ?string
+    {
+        return $this->hotelId;
+    }
+
+    /**
+     * @param string[] $hotelId
+     */
+    public function setHotelId(?string $hotelId): void
+    {
+        $this->hotelId = $hotelId;
     }
 
     public function reCaptchaIsEnabled(): bool
     {
-        /** @var PaymentFormConfig $config */
-        $config = $this->dm->getRepository('MBHOnlineBundle:PaymentFormConfig')
-            ->find($this->getConfigId());
-        if ($config === null) {
-            $logger = $this->container->get('logger');
-            $logger->addError('not found id for PaymentFormConfig');
-
-            return true;
-        }
-
-        return $config->isEnabledReCaptcha();
+        return $this->getPaymentFormConfig()->isEnabledReCaptcha();
     }
 
     public function search(): SearchFormResult
     {
+        /** TODO добавить логер */
         /** @var Package $package */
         $package = $this->dm->getRepository('MBHPackageBundle:Package')
             ->findOneBy([
-                'numberWithPrefix' => $this->getNumberOrder(),
+                'numberWithPrefix' => $this->getNumberPackage(),
             ]);
 
         $result = new SearchFormResult($this->container);
@@ -163,101 +220,117 @@ class SearchForm
             return $result;
         }
 
-        $order = $package->getOrder();
+        if ($package->getRoomType()->getHotel()->getId() !== $this->getHotelId()) {
+            return $result;
+        }
 
-        if (!$this->isPayer($order)) {
+        $this->order = $package->getOrder();
+
+        if ($this->order === null) {
+            return $result;
+        }
+
+        if (!$this->isPayer()) {
             return $result;
         }
 
         $result->orderIsFound();
 
-        if ($order->getIsPaid()) {
+        if ($this->order->getIsPaid()) {
             return $result;
         }
 
-        $result->setTotal($package->getPrice() - $order->getPaid());
-        $result->setPackageId($package->getId());
+        $result->setTotal($package->getPrice() - $this->order->getPaid());
+        $result->setOrderId($this->order->getId());
 
         return $result;
-
     }
 
     /**
      * Проверка на существование плательщика
      *
-     * @param Order $order
      * @return bool
      */
-    private function isPayer(Order $order): bool
+    private function isPayer(): bool
     {
-        $criteria = [];
+        /* возможно лучше другой параметр использовать и дополнительный.
+           типа искать вместе или одного совпадения достаточно.
+           Сейчас только вместе.
+         */
+        if ($this->isUserNameVisible()) {
+            if (!$this->checkName()) {
+                return false;
+            };
+        }
+
+        if ($this->order->getOrganization() !== null) {
+            return $this->checkOrganization();
+        }
+
+        return $this->checkTourist();
+    }
+
+    /**
+     * @return bool
+     */
+    private function checkName(): bool
+    {
+        $name = $this->getUserName();
+        $check = function ($srcName) use ($name) {
+            return preg_match('@' . $name . '@iu', $srcName);
+        };
+        if ($this->order->getOrganization() !== null) {
+            return $check($this->order->getOrganization()->getName());
+        }
+
+        return $check($this->order->getMainTourist()->getFullName());
+    }
+
+    /**
+     * @return bool
+     */
+    private function checkOrganization(): bool
+    {
+        $org = $this->order->getOrganization();
 
         if ($this->isEmail()) {
-            $criteria['email'] = $this->getPhoneOrEmail();
-        } else {
-            $criteria['phone'] = $this->getPhoneOrEmail();
+            return $this->checkEmail($org);
         }
 
-        $payer = null;
+        return $org->getPhone() === Tourist::cleanPhone($this->getPhoneOrEmail());
+    }
 
-        if ($order->getOrganization() !== null) {
-            $this->addCriteriaNaming($criteria);
-            $payer = $this->dm->getRepository('MBHPackageBundle:Organization')
-                ->findOneBy($criteria);
-            if ($payer !== null) {
-                $hiIsOwner = $order->getOrganization() === $payer;
-            }
-        } else {
-            $this->addCriteriaNaming($criteria, false);
-            $tourist = $this->dm->getRepository('MBHPackageBundle:Tourist');
-            if ($this->isEmail()) {
-                $payer = $tourist->findOneBy($criteria);
-            } else {
-                /** @var Builder $qb */
-                $qb = $tourist->createQueryBuilder();
-                if ($this->isNameNeed($criteria)) {
-                    $qb->addAnd($qb->expr()->field('lastName')->equals($criteria['lastName']));
-                }
-                $phone = Tourist::cleanPhone($criteria['phone']);
-                $qb->addOr($qb->expr()->field('mobilePhone')->equals($phone));
-                $qb->addOr($qb->expr()->field('phone')->equals($phone));
-                $payer = $qb->getQuery()->getSingleResult();
-            }
-            if ($payer !== null) {
-                $hiIsOwner = $order->getMainTourist() === $payer;
-            }
-        }
+    /**
+     * @return bool
+     */
+    private function checkTourist(): bool
+    {
+        $t = $this->order->getMainTourist();
 
-        if ($payer === null || !$hiIsOwner) {
+        if ($t === null) {
             return false;
         }
 
-        return true;
+        if ($this->isEmail()) {
+            return $this->checkEmail($t);
+        }
+
+        $phone = $this->dexNumber(Tourist::cleanPhone($this->getPhoneOrEmail()));
+
+        if ($this->dexNumber($t->getPhone(true)) === $phone || $this->dexNumber($t->getMobilePhone(true)) === $phone) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
-     * @param array $criteria
+     * @param PayerInterface $payer
      * @return bool
      */
-    private function isNameNeed(array $criteria): bool
+    private function checkEmail(PayerInterface $payer): bool
     {
-        return !empty($criteria['lastName']);
-    }
-
-    /**
-     * @param $criteria
-     * @param bool $isOrganization
-     */
-    private function addCriteriaNaming(&$criteria ,bool $isOrganization = true): void
-    {
-        if ($this->getUserName() !== null) {
-            $c = ['$regex' => $this->getUserName(), '$options' => 'i'];
-            if ($isOrganization) {
-                $criteria['name'] = $c;
-            } else {
-                $criteria['lastName'] = $c;
-            }
-        }
+        return $payer->getEmail() === $this->getPhoneOrEmail();
     }
 
     /**
@@ -266,5 +339,14 @@ class SearchForm
     private function isEmail(): bool
     {
         return strpos($this->getPhoneOrEmail(), '@') !== false;
+    }
+
+    /**
+     * @param string $phone
+     * @return string
+     */
+    private function dexNumber(string $phone): string
+    {
+        return substr($phone, -10);
     }
 }

@@ -81,7 +81,7 @@ final class UniversalCommand extends Command
             $commandLine = sprintf('php console %s %s --env=%s %s', $command, $params, $env, $isDebug ?'': '--no-debug');
             $this->addMessage('Execute command '. $commandLine .' for client '.$client);
             try {
-                $process = new Process($commandLine, $consoleFolder, ['MB_CLIENT' => $client], null, 180);
+                $process = new Process($commandLine, $consoleFolder, ['MB_CLIENT' => $client], null, 360);
                 $process->mustRun();
                 $this->addMessage('Done. '.$process->getOutput());
             } catch (\Throwable $e) {

@@ -85,13 +85,11 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
             ->setFullTitle($parent->getFullTitle() . '-' . $this->container->get('translator')->trans('price.tariffcontroller.children_tariff'))
             ->setHotel($parent->getHotel())
             ->setParent($parent)
-            ->setIsEnabled(false)
         ;
         $this->dm->persist($tariff);
         $this->dm->flush();
 
-        $request->getSession()->getFlashBag()
-            ->set('success', $this->container->get('translator')->trans('price.tariffcontroller.children_tariff_successfully_created'));
+        $this->addFlash('success', 'price.tariffcontroller.children_tariff_successfully_created');
 
         return $this->redirect($this->generateUrl('tariff_edit', ['id' => $tariff->getId()]));
     }
@@ -213,6 +211,10 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
      * @Security("is_granted('ROLE_TARIFF_EDIT')")
      * @Template("MBHPriceBundle:Tariff:edit.html.twig")
      * @ParamConverter(class="MBHPriceBundle:Tariff")
+     * @param Request $request
+     * @param Tariff $entity
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \MBH\Bundle\BaseBundle\Lib\Exception
      */
     public function updateAction(Request $request, Tariff $entity)
     {
@@ -226,8 +228,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $this->dm->persist($entity);
-            $this->dm->flush();
+            $this->get('mbh.tariff_manager')->updateTariff($entity);
 
             $this->addFlash('success', 'price.tariffcontroller.entry_successfully_updated');
 
@@ -250,7 +251,7 @@ class TariffController extends Controller implements CheckHotelControllerInterfa
     /**
      * Displays a form to edit an existing entity.
      *
-     * @Route("/{id}/edit", name="tariff_edit")
+     * @Route("/{id}", name="tariff_edit")
      * @Method("GET")
      * @Security("is_granted('ROLE_TARIFF_EDIT')")
      * @Template()

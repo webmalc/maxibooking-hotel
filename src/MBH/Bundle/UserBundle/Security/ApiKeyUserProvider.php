@@ -3,6 +3,7 @@
 namespace MBH\Bundle\UserBundle\Security;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -23,7 +24,7 @@ class ApiKeyUserProvider implements UserProviderInterface
     public function getUsernameForApiKey($apiKey)
     {
         $user = $this->dm->getRepository('MBHUserBundle:User')->findOneBy(['apiToken.token' => $apiKey]);
-        if (is_null($user)) {
+        if ($user === null) {
             throw new UsernameNotFoundException('User by token ' . $apiKey . 'not found!');
         }
 
@@ -52,7 +53,7 @@ class ApiKeyUserProvider implements UserProviderInterface
     {
         $user = $this->dm->getRepository('MBHUserBundle:User')->findOneBy(['username' => $username]);
 
-        if (is_null($user)) {
+        if ($user === null) {
             throw new UsernameNotFoundException('User with name ' . $username . ' not found!');
         }
 
@@ -75,6 +76,10 @@ class ApiKeyUserProvider implements UserProviderInterface
      */
     public function refreshUser(UserInterface $user)
     {
+        if (!$user instanceof User) {
+            throw new UnsupportedUserException(sprintf('Expected an instance of MBH\Bundle\UserBundle\Document\User, but got "%s".', get_class($user)));
+        }
+
         return $this->dm->find('MBHUserBundle:User', $user->getId());
     }
 

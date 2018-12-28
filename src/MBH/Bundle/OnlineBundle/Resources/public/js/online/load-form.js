@@ -29,25 +29,190 @@ function addLoadEvent(func) {
     }
 }
 
-function onLoadFormLoad() {
-    var getCoords = function (elem) {
-        var box = elem.getBoundingClientRect();
+function OnLoadFormLoad() {
+    this.formWrapper = null;
+    this.spinner = null;
+    this.formCalendar = null;
+    this.formIframe = null;
+    this.iframeWidth = typeof(frameWidth) !== 'undefined' ? frameWidth : 300;
+    this.iframeHeight = typeof(frameHeight) !== 'undefined' ? frameHeight : 400;
+    this.itIsFirstLoad = true;
+}
 
-        var body = document.body;
-        var docEl = document.documentElement;
+OnLoadFormLoad.prototype.createIframeWithCalendar = function() {
+    var calendarFrame = document.createElement('iframe');
+    calendarFrame.id = 'mbh-form-calendar';
+    calendarFrame.style.display = 'none';
+    calendarFrame.style.zIndex = '1000';
+    calendarFrame.style.position = 'absolute';
+    calendarFrame.style.top = '0px';
+    calendarFrame.setAttribute('scrolling', "no");
+    calendarFrame.setAttribute('frameborder', 0);
+    calendarFrame.setAttribute('width', 310);
+    calendarFrame.setAttribute('height', 270);
+    calendarFrame.setAttribute('src', config.calendar_url);
 
-        var scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop;
-        var scrollLeft = window.pageXOffset || docEl.scrollLeft || body.scrollLeft;
+    document.body.appendChild(calendarFrame);
 
-        var clientTop = docEl.clientTop || body.clientTop || 0;
-        var clientLeft = docEl.clientLeft || body.clientLeft || 0;
+    return calendarFrame;
+};
 
-        var top = box.top + scrollTop - clientTop;
-        var left = box.left + scrollLeft - clientLeft;
+OnLoadFormLoad.prototype.waitingSpinner =  function() {
+    var text = /\.ru/.test(window.location.hostname) ? 'Подождите...' : 'Please wait...',
+        spinner = document.createElement('div');
+    spinner.id = 'mbh-form-load-spinner';
+    spinner.className = 'alert alert-info';
+    spinner.innerHTML = '<i class="fa fa-spinner fa-spin"></i> ' + text;
 
-        return {top: Math.round(top), left: Math.round(left)};
-    };
+    this.formWrapper.appendChild(spinner);
 
+    return spinner;
+};
+
+OnLoadFormLoad.prototype.getCoords = function () {
+    var box = this.formIframe.getBoundingClientRect();
+
+    var body = document.body;
+    var docEl = document.documentElement;
+
+    var scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop;
+    var scrollLeft = window.pageXOffset || docEl.scrollLeft || body.scrollLeft;
+
+    var clientTop = docEl.clientTop || body.clientTop || 0;
+    var clientLeft = docEl.clientLeft || body.clientLeft || 0;
+
+    var top = box.top + scrollTop - clientTop;
+    var left = box.left + scrollLeft - clientLeft;
+
+    return {top: Math.round(top), left: Math.round(left)};
+};
+
+OnLoadFormLoad.prototype.hideCalendar = function () {
+    this.formCalendar.style.display = 'none';
+};
+
+OnLoadFormLoad.prototype.processMessage = function (e) {
+    if (e.data.type !== 'mbh') {
+        return;
+    }
+    var target = null;
+    if (e.data.target === 'form') {
+        target = this.formIframe;
+    }
+    if (e.data.target === 'calendar') {
+        target = this.formCalendar;
+    }
+
+    if (target) {
+        target.contentWindow.postMessage(e.data, '*');
+    }
+    if (e.data.action === 'showCalendar') {
+        var c = this.getCoords();
+        this.formCalendar.style.display = 'block';
+        this.formCalendar.style.top = (e.data.top + c.top - 10) + 'px';
+        this.formCalendar.style.left = (isMobileDevice() ? e.data.left : (e.data.left + c.left)) + 'px';
+        this.formCalendar.contentWindow.postMessage(e.data, '*');
+    }
+    if (e.data.action === 'hideCalendar') {
+        this.hideCalendar();
+    }
+};
+
+OnLoadFormLoad.prototype.resizeIframeWidth = function () {
+    var width = window.outerWidth;
+    if (this.formIframe && width) {
+        this.formIframe.width = width < this.iframeWidth ? width : this.iframeWidth;
+    }
+};
+OnLoadFormLoad.prototype.resizeIframeHeight = function (event) {
+    if (event.data.type !== 'mbh') {
+        return;
+    }
+    if (event.data.action === 'formResize') {
+        var formIframe = document.getElementById("mbh-form-iframe");
+        formIframe.height = event.data.formHeight + 5;
+    }
+};
+
+OnLoadFormLoad.prototype.createIframeWithForm = function (locale) {
+    var urlIndex = window.location.href.indexOf('?');
+    var url;
+    if (urlIndex !== -1) {
+        url = window.location.href.slice(urlIndex);
+    } else {
+        url = '?url=' + window.location.pathname;
+    }
+    if (config.form_url.indexOf('?') > -1) {
+        url = url.replace('?', '&');
+    }
+
+    var fullUrl = config.form_url + url;
+
+    if (locale !== undefined) {
+        fullUrl = fullUrl.replace(/(\?|&)locale=\w*/, '$1locale=' + locale);
+    }
+
+    this.formIframe = document.createElement('iframe');
+    this.formIframe.id = 'mbh-form-iframe';
+    this.formIframe.scrolling = 'no';
+    this.formIframe.frameBorder = '0';
+    this.formIframe.src = fullUrl;
+    this.formIframe.hidden = true;
+};
+
+OnLoadFormLoad.prototype.exec = function (locale) {
+    this.formWrapper = document.getElementById('mbh-form-wrapper');
+    if (!this.formWrapper) {
+        return;
+    }
+
+    if (this.itIsFirstLoad) {
+        this.metric();
+    }
+
+    var self = this;
+
+    this.formWrapper.innerText = '';
+
+    this.spinner = this.waitingSpinner();
+
+    this.createIframeWithForm(locale);
+    this.formWrapper.appendChild(this.formIframe);
+
+    this.formIframe.addEventListener('load', function() {
+        self.hideWaitingSpinner(this);
+    }, {once: true});
+
+    if (this.itIsFirstLoad) {
+        this.formCalendar = this.createIframeWithCalendar();
+
+        document.addEventListener("click", function(ev) {
+            self.hideCalendar();
+        });
+        document.addEventListener("keyup", function (e) {
+            if (e.keyCode === 27) {
+                self.hideCalendar();
+            }
+        });
+    }
+
+    if (this.itIsFirstLoad) {
+        setInterval(function () {
+            self.resizeIframeWidth();
+        }, 300);
+
+        window.addEventListener('message', function(ev) {
+            self.processMessage(ev);
+        }, false);
+        window.addEventListener("message", function(ev) {
+            self.resizeIframeHeight(ev);
+        }, false);
+    }
+
+    this.itIsFirstLoad = false;
+};
+
+OnLoadFormLoad.prototype.metric = function () {
     var useYaMetrics = typeof yaCounterId !== 'undefined';
     if (useYaMetrics) {
         var yaCounterObjName = 'yaCounter' + yaCounterId;
@@ -95,95 +260,6 @@ function onLoadFormLoad() {
         ga('send', 'pageview');
     }
 
-    var formWrapper = document.getElementById('mbh-form-wrapper');
-    if (!formWrapper) {
-        return;
-    }
-
-    var urlIndex = window.location.href.indexOf('?');
-    var url;
-    if (urlIndex !== -1) {
-        url = window.location.href.slice(urlIndex);
-    } else {
-        url = '?url=' + window.location.pathname;
-    }
-    if (config.form_url.indexOf('?') > -1) {
-        url = url.replace('?', '&');
-    }
-
-    var iframeWidth = typeof(frameWidth) !== 'undefined' ? frameWidth : 300;
-    var iframeHeight = typeof(frameHeight) !== 'undefined' ? frameHeight : 400;
-
-    formWrapper.innerHTML = '<iframe id="mbh-form-iframe" scrolling="no" frameborder="0" width="'
-        + "auto" + '" height="' + "auto" + '" src="' + config.form_url + url + '"></iframe>';
-
-    var calendarFrame = document.createElement('iframe');
-    calendarFrame.id = 'mbh-form-calendar';
-    calendarFrame.style = 'display: none; z-index: 1000; position: absolute; top: 0px;';
-    calendarFrame.setAttribute('scrolling', "no");
-    calendarFrame.setAttribute('frameborder', 0);
-    calendarFrame.setAttribute('width', 310);
-    calendarFrame.setAttribute('height', 270);
-    calendarFrame.setAttribute('src', config.calendar_url);
-
-    document.body.appendChild(calendarFrame);
-
-    var formIframe = document.getElementById('mbh-form-iframe');
-    var formCalendar = document.getElementById('mbh-form-calendar');
-    var hideCalendar = function () {
-        formCalendar.style.display = 'none';
-    };
-    var processMessage = function (e) {
-        if (e.data.type !== 'mbh') {
-            return;
-        }
-        var target = null;
-        if (e.data.target === 'form') {
-            target = formIframe;
-        }
-        if (e.data.target === 'calendar') {
-            target = formCalendar;
-        }
-        if (target) {
-            target.contentWindow.postMessage(e.data, '*');
-        }
-        if (e.data.action === 'showCalendar') {
-            var c = getCoords(formIframe);
-            formCalendar.style.display = 'block';
-            formCalendar.style.top = (e.data.top + c.top - 10) + 'px';
-            formCalendar.style.left = (isMobileDevice() ? e.data.left : (e.data.left + c.left)) + 'px';
-            formCalendar.contentWindow.postMessage(e.data, '*');
-        }
-        if (e.data.action === 'hideCalendar') {
-            hideCalendar();
-        }
-    };
-
-    document.addEventListener("click", hideCalendar);
-    document.addEventListener("keyup", function (e) {
-        if (e.keyCode === 27) {
-            hideCalendar();
-        }
-    });
-
-    var resizeIframeWidth = function () {
-            var width = window.outerWidth;
-            if (formIframe && width) {
-                formIframe.width = width < iframeWidth ? width : iframeWidth;
-            }
-        },
-        resizeIframeHeight = function (event) {
-            if (event.data.type !== 'mbh') {
-                return;
-            }
-            if (event.data.action === 'formResize') {
-                var formIframe = document.getElementById("mbh-form-iframe");
-                formIframe.height = event.data.formHeight + 5;
-            }
-        };
-    setInterval(function () {
-        resizeIframeWidth();
-    }, 300);
     var processMetricMessage = function (e) {
         if (e.data.type === 'form-event') {
             var purposeType = e.data.purpose;
@@ -196,16 +272,16 @@ function onLoadFormLoad() {
         }
     };
 
-    if (window.addEventListener) {
-        window.addEventListener("message", processMessage, false);
-        window.addEventListener("message", resizeIframeHeight, false);
-        window.addEventListener("message", processMetricMessage, false);
-    } else {
-        window.attachEvent("onmessage", processMessage);
-        window.attachEvent("onmessage", resizeIframeHeight);
-        window.attachEvent("onmessage", processMetricMessage);
-    }
-}
+    window.addEventListener("message", processMetricMessage, false);
+};
 
-addLoadEvent(onLoadFormLoad);
+OnLoadFormLoad.prototype.hideWaitingSpinner = function (_this) {
+    this.spinner.className = '';
+    this.spinner.innerHTML = '';
+    _this.hidden = false;
+};
+
+var onLoadFormLoad = new OnLoadFormLoad();
+
+addLoadEvent(onLoadFormLoad.exec());
 

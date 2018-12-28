@@ -75,6 +75,8 @@
     "symfony/polyfill-php72": "^1.7",
     "snc/redis-bundle": "^2.1",
     "symfony/serializer": "3.3.18",
+    "eluceo/ical": "^0.14.0",
+    "johngrogg/ics-parser": "^2.1",
     "facebook/webdriver": "^1.6"
   },
   "require-dev": {

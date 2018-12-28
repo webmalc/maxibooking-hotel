@@ -17,6 +17,8 @@ class Client
     private $id;
     /** @var  string */
     private $login;
+    /** @var string */
+    private $login_alias;
     /** @var  string */
     private $email;
     /** @var  string */
@@ -109,6 +111,25 @@ class Client
     public function setLogin(string $login): Client
     {
         $this->login = $login;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLogin_alias(): ?string
+    {
+        return $this->login_alias;
+    }
+
+    /**
+     * @param string $login_alias
+     * @return Client
+     */
+    public function setLogin_alias(?string $login_alias): Client
+    {
+        $this->login_alias = $login_alias;
 
         return $this;
     }
@@ -362,7 +383,7 @@ class Client
     /**
      * @return string
      */
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -371,7 +392,7 @@ class Client
      * @param string $name
      * @return Client
      */
-    public function setName(string $name)
+    public function setName(?string $name)
     {
         $this->name = $name;
 
@@ -411,6 +432,7 @@ class Client
     }
 
     /**
+     * @param string|null $domainName
      * @return string
      */
     public function getUrl(string $domainName = null): ?string

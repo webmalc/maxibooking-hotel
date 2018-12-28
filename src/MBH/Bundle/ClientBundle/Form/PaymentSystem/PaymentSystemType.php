@@ -92,10 +92,15 @@ abstract class PaymentSystemType extends AbstractType
             $common['attr'] = ['data-required' => true];
         }
 
+        $notUseNotBlank = isset($data['constraints']['NotBlank']) && $data['constraints']['NotBlank'] === false;
+        if ($notUseNotBlank) {
+            unset($data['constraints']['NotBlank']);
+        }
         /**
+         * TODO: переделать
          * атрибут дисеблед пока встречается только в группе при фискализации
          */
-        if (!(isset($data['attr']['disabled']) && $data['attr']['disabled'] === true)) {
+        if (!(isset($data['attr']['disabled']) && $data['attr']['disabled'] === true) && !$notUseNotBlank) {
             $common['constraints'] = [new NotBlank()];
         }
 
@@ -130,7 +135,6 @@ abstract class PaymentSystemType extends AbstractType
             $requiredInFronend = true;
 
             if ($event->getData() instanceof FiscalizationInterface) {
-//                $disabledTaxion = !$event->getData()->isWithFiscalization();
                 $disabledTaxion = false;
                 $requiredInFronend = $event->getData()->isWithFiscalization();
             } else {

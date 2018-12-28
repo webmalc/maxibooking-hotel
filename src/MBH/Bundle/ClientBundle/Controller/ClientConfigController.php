@@ -4,9 +4,11 @@ namespace MBH\Bundle\ClientBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Lib\Exception;
+use MBH\Bundle\BillingBundle\Service\BillingResponseHandler;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\ColorsConfig;
 use MBH\Bundle\ClientBundle\Form\ClientConfigType;
+use MBH\Bundle\ClientBundle\Form\ClientMessagesType;
 use MBH\Bundle\ClientBundle\Form\ClientPaymentSystemType;
 use MBH\Bundle\ClientBundle\Form\PaymentSystemsUrlsType;
 use MBH\Bundle\ClientBundle\Form\ColorsType;
@@ -15,6 +17,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -80,12 +83,18 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
                 $this->get('mbh.site_manager')->changeSiteAvailability($entity->isMBSiteEnabled());
             }
 
-            $this->dm->persist($entity);
-            $this->dm->flush();
+            $loginAlias = $request->request->get($form->getName())['login_alias'];
+            $errors = $this->get('mbh.client_manager')->changeLoginAlias($loginAlias);
+            if (empty($errors)) {
+                $this->dm->persist($entity);
+                $this->dm->flush();
 
-            $this->addFlash('success', 'controller.clientConfig.params_success_save');
+                $this->addFlash('success', 'controller.clientConfig.params_success_save');
 
-            return $this->redirect($this->generateUrl('client_config'));
+                return $this->redirect($this->generateUrl('client_config'));
+            } else {
+                $this->get('mbh.form_data_handler')->fillFormByBillingErrors($form, $errors);
+            }
         }
 
         return [
@@ -182,6 +191,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
      * @param $request Request
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      * @throws Exception
+     * @throws \Exception
      */
     public function paymentSystemSaveAction(Request $request)
     {
@@ -282,5 +292,44 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
         $this->addFlash('success', 'controller.color_settings_action.config_successful_reset');
 
         return $this->redirectToRoute('color_settings');
+    }
+
+    /**
+     * @Security("is_granted('ROLE_CLIENT_CONFIG_EDIT')")
+     * @Template()
+     * @Method({"GET", "POST"})
+     * @Route("/client_messages", name="client_messages")
+     * @param Request $request
+     * @return array
+     */
+    public function clientMessagesAction(Request $request)
+    {
+        $form = $this->createForm(ClientMessagesType::class, $this->clientConfig);
+
+        $form->handleRequest($request);
+        if ($form->isValid()) {
+            $this->dm->flush();
+
+            $this->addFlash('success', 'controller.clientConfig.params_success_save');
+        }
+
+        return [
+            'entity' => $this->clientConfig,
+            'form' => $form->createView(),
+            'logs' => $this->logs($this->clientConfig)
+        ];
+    }
+
+    /**
+     * @Security("is_granted('ROLE_CLIENT_CONFIG_EDIT')")
+     * @Route("/reset_login_alias", name="reset_login_alias")
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \Exception
+     */
+    public function resetLoginAliasAction()
+    {
+        $this->get('mbh.client_manager')->changeLoginAlias(null);
+
+        return $this->redirectToRoute('client_config');
     }
 }

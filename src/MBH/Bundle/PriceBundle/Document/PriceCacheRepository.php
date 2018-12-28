@@ -14,25 +14,26 @@ class PriceCacheRepository extends DocumentRepository
      * @return array
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function findForDashboard(int $period, string $roomTypeKey = 'roomType'): array
+    public function findForDashboard(int $period, bool $isUseCategory = false): array
     {
         $begin = new \DateTime('midnight');
         $end = new \DateTime('midnight +' . $period . ' days');
         $tariffs = $this->getDocumentManager()->getRepository('MBHPriceBundle:Tariff')
             ->getBaseTariffsIds();
-        $caches = $this->createQueryBuilder()
-            ->select('hotel.id', 'roomType.id', 'tariff.id', 'date', 'price', 'roomTypeCategory.id')
+
+        $roomTypeField = $isUseCategory ? 'roomTypeCategory' : 'roomType';
+
+        $caches =  $this->createQueryBuilder()
+            ->select('hotel.id', $roomTypeField.'.id', 'tariff.id', 'date', 'price')
             ->field('date')->gte($begin)->lte($end)
             ->field('tariff.id')->in($tariffs)
-            ->sort('date')->sort('hotel.id')->sort('roomType.id')
-            ->field($roomTypeKey)->exists(true)
+            ->sort('date')->sort('hotel.id')->sort($roomTypeField.'.id')
+            ->field($roomTypeField)->exists(true)
             ->hydrate(false)
-            ->getQuery()->execute()->toArray();
+            ->getQuery()
+            ->execute()->toArray();
 
-
-        $result = $this->convertRawMongoData($caches, $roomTypeKey);
-
-        return $result;
+        return $this->convertRawMongoData($caches, $roomTypeField);
     }
 
     /**
@@ -57,7 +58,7 @@ class PriceCacheRepository extends DocumentRepository
         }
 
         if (!is_null($tariffIds)) {
-            $cachesQb->field('tariff.id')->in($roomTypeIds);
+            $cachesQb->field('tariff.id')->in($tariffIds);
         }
 
         $result = $this->convertRawMongoData($cachesQb->getQuery()->execute());

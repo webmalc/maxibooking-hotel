@@ -110,7 +110,8 @@ class Calculation
         if ($services instanceof \Traversable) {
             $services = iterator_to_array($services);
         }
-        if ($newDoc) {
+
+        if ($newDoc && !in_array($newDoc, $services)) {
             $services[] = $newDoc;
         }
         foreach ($services as $service) {
@@ -378,7 +379,13 @@ class Calculation
                     $dayPrice -= PromotionConditionFactory::calcDiscount($promotion, $dayPrice, true);
                 }
 
-                $packagePrice = $this->getPackagePrice($dayPrice, $cache->getDate(), $cache->getTariff(), $roomType, $special);
+                //workaround solution caused by doctrine bug
+                if ($cache->getTariff()->getId() === $originTariff) {
+                    $packagePriceTariff = $originTariff;
+                } else {
+                    $packagePriceTariff = $this->dm->find('MBHPriceBundle:Tariff', $cache->getTariff()->getId());
+                }
+                $packagePrice = $this->getPackagePrice($dayPrice, $cache->getDate(), $packagePriceTariff, $roomType, $special);
                 $dayPrice = $packagePrice->getPrice();
                 $dayPrices[str_replace('.', '_', $day)] = $dayPrice;
 
@@ -420,6 +427,23 @@ class Calculation
     protected function getTotalPrice($total)
     {
         return $total;
+    }
+
+    /**
+     * @param $price
+     * @param Tariff $tariff
+     * @return float|int
+     */
+    public function getPriceWithTariffPromotionDiscount(float $price, Tariff $tariff)
+    {
+        $tariffPromotion = $tariff->getDefaultPromotion();
+        if (empty($tariffPromotion)) {
+            return $price;
+        }
+
+        return $tariffPromotion->getIsPercentDiscount()
+            ? $price * (100 - $tariffPromotion->getDiscount()) / 100
+            : $price - $tariffPromotion->getDiscount();
     }
 
     /**

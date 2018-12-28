@@ -39,6 +39,7 @@ class ChessBoardController extends BaseController
             'titleSubPadding' => 0,
             'titleSubFontSize' => 11,
             'leftRoomsAndNoAccFontSize' => 16,
+            'titleLength' => 18
         ],
         [
             'headerWidth' => 180,
@@ -50,6 +51,7 @@ class ChessBoardController extends BaseController
             'titleSubPadding' => 0,
             'titleSubFontSize' => 13,
             'leftRoomsAndNoAccFontSize' => 16,
+            'titleLength' => 18
         ],
         [
             'headerWidth' => 200,
@@ -61,6 +63,7 @@ class ChessBoardController extends BaseController
             'titleSubPadding' => 5,
             'titleSubFontSize' => 13,
             'leftRoomsAndNoAccFontSize' => 16,
+            'titleLength' => 21
         ],
         [
             'headerWidth' => 200,
@@ -72,6 +75,7 @@ class ChessBoardController extends BaseController
             'titleSubPadding' => 0,
             'titleSubFontSize' => 15,
             'leftRoomsAndNoAccFontSize' => 20,
+            'titleLength' => 21
         ],
     ];
 
@@ -81,9 +85,69 @@ class ChessBoardController extends BaseController
      * @param Request $request
      * @Security("is_granted('ROLE_ACCOMMODATION_REPORT')")
      * @return array
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws \Exception
      */
     public function indexAction(Request $request)
+    {
+        $searchForm = $this->createForm(
+            SearchType::class,
+            null,
+            [
+                'security' => $this->container->get('mbh.hotel.selector'),
+                'dm' => $this->dm,
+                'hotel' => $this->hotel,
+                'roomManager' => $this->get('mbh.hotel.room_type_manager'),
+            ]
+        );
+        $touristForm = $this->createForm(TouristType::class, null, ['genders' => $this->container->getParameter('mbh.gender.types')]);
+
+        $stylesFileNumber = $request->cookies->get('chessboardSizeNumber') ?? 1;
+
+        $rightsChecker = $this->get('security.authorization_checker');
+        $canCreatePackage = $rightsChecker->isGranted('ROLE_PACKAGE_NEW') && $rightsChecker->isGranted('ROLE_SEARCH') ? 'true' : 'false';
+        $clientConfig = $this->clientConfig;
+        $displayDisabledRoomType = !$clientConfig->isDisableableOn();
+        $canBookWithoutPayer = $clientConfig->isCanBookWithoutPayer();
+
+        $roomTypesCallback = function () {
+            return $this->dm->getRepository('MBHHotelBundle:RoomType')->findBy([]);
+        };
+        $isDisableableOn = $this->container->get('mbh.client_config_manager')->fetchConfig()->isDisableableOn();
+
+        $tourist = new Tourist();
+        $tourist->setDocumentRelation(new DocumentRelation());
+        $tourist->setBirthplace(new BirthPlace());
+        $tourist->setCitizenshipTld(Country::RUSSIA_TLD);
+        $tourist->getDocumentRelation()->setType(FMSDictionaries::RUSSIAN_PASSPORT_ID);
+
+        return [
+            'defaultBegin' => (new \DateTime('midnight'))->modify('-5 days'),
+            'defaultEnd' => (new \DateTime('midnight'))->modify('+30 days'),
+            'searchForm' => $searchForm->createView(),
+            'touristForm' => $touristForm->createView(),
+            'documentForm' => $this->createForm(DocumentRelationType::class, $tourist)->createView(),
+            'addressForm' => $this->createForm(AddressObjectDecomposedType::class, $tourist->getAddressObjectDecomposed())->createView(),
+            'hotels' => $this->dm->getRepository('MBHHotelBundle:Hotel')->findBy(['isEnabled' => true]),
+            'roomTypes' => $this->helper->getFilteredResult($this->dm, $roomTypesCallback, $isDisableableOn),
+            'housings' => $this->hotel->getHousings(),
+            'floors' => $this->dm->getRepository('MBHHotelBundle:Room')->fetchFloors(),
+            'canCreatePackage' => $canCreatePackage,
+            'canBookWithoutPayer' => $canBookWithoutPayer ? 'true' : 'false',
+            'displayDisabledRoomType' => $displayDisabledRoomType,
+            'sizes' => self::SIZE_CONFIGS,
+            'stylesFileNumber' => $stylesFileNumber,
+        ];
+    }
+
+    /**
+     * @Security("is_granted('ROLE_ACCOMMODATION_REPORT')")
+     * @Route("/table", name="chessboard_table", options={"expose"=true})
+     * @Template()
+     * @param Request $request
+     * @return array
+     * @throws \Exception
+     */
+    public function tableAction(Request $request)
     {
         $filterData = $this->getFilterData($request);
 
@@ -99,74 +163,26 @@ class ChessBoardController extends BaseController
                 null,
                 $filterData['pageNumber']
             );
-
-        $form = $this->createForm(
-            SearchType::class,
-            null,
-            [
-                'security' => $this->container->get('mbh.hotel.selector'),
-                'dm' => $this->dm,
-                'hotel' => $this->hotel,
-                'roomManager' => $this->get('mbh.hotel.room_type_manager'),
-            ]
-        );
-
-        $stylesFileNumber = $request->cookies->get('chessboardSizeNumber') ?? 1;
-
-        $rightsChecker = $this->get('security.authorization_checker');
-        $canCreatePackage = $rightsChecker->isGranted('ROLE_PACKAGE_NEW') && $rightsChecker->isGranted('ROLE_SEARCH') ? 'true' : 'false';
-        $clientConfig = $this->clientConfig;
-        $displayDisabledRoomType = !$clientConfig->isDisableableOn();
-        $canBookWithoutPayer = $clientConfig->isCanBookWithoutPayer();
-
-        $tourist = new Tourist();
-        $tourist->setDocumentRelation(new DocumentRelation());
-        $tourist->setBirthplace(new BirthPlace());
-        $tourist->setCitizenshipTld(Country::RUSSIA_TLD);
-        $tourist->getDocumentRelation()->setType(FMSDictionaries::RUSSIAN_PASSPORT_ID);
         $colorSettings = $this->dm->getRepository('MBHClientBundle:ColorsConfig')->fetchConfig();
-        $numberOfRooms = $clientConfig->getFrontSettings()->getRoomsInChessboard($this->getUser()->getUsername());
+        $numberOfRooms = $this->clientConfig->getFrontSettings()->getRoomsInChessboard($this->getUser()->getUsername());
 
         return [
-            'pageCount' => $numberOfRooms != 0 ? ceil($builder->getRoomCount() / $numberOfRooms) : 1,
-            'pageNumber' => $filterData['pageNumber'],
-            'searchForm' => $form->createView(),
             'beginDate' => $filterData['begin'],
             'endDate' => $filterData['end'],
-            'calendarData' => $builder->getCalendarData(),
-            'days' => $builder->getDaysArray(),
-            'roomTypesData' => $builder->getRoomTypeData(),
-            'leftRoomsData' => $builder->getLeftRoomCounts(),
-            'roomStatusIcons' => $this->getParameter('mbh.room_status_icons'),
-            'packages' => addslashes(json_encode($builder->getAccommodationIntervals())),
+            'pageCount' => $numberOfRooms != 0 ? ceil($builder->getRoomCount() / $numberOfRooms) : 1,
+            'pageNumber' => $filterData['pageNumber'],
+            'noAccommodationCounts' => addslashes(json_encode($builder->getDayNoAccommodationPackageCounts())),
             'noAccommodationIntervals' => addslashes(json_encode($builder->getNoAccommodationPackageIntervals())),
             'leftRoomsJsonData' => addslashes(json_encode($builder->getLeftRoomCounts())),
-            'noAccommodationCounts' => addslashes(json_encode($builder->getDayNoAccommodationPackageCounts())),
-            'roomTypes' => $builder->getAvailableRoomTypes(),
-            'housings' => $this->hotel->getHousings(),
-            'floors' => $this->dm->getRepository('MBHHotelBundle:Room')->fetchFloors(),
-            'canCreatePackage' => $canCreatePackage,
-            'canBookWithoutPayer' => $canBookWithoutPayer ? 'true' : 'false',
-            'displayDisabledRoomType' => $displayDisabledRoomType,
-            'touristForm' => $this->createForm(
-                TouristType::class,
-                null,
-                ['genders' => $this->container->getParameter('mbh.gender.types')]
-            )->createView(),
-            'documentForm' => $this->createForm(DocumentRelationType::class, $tourist)
-                ->createView(),
-            'addressForm' => $this->createForm(
-                AddressObjectDecomposedType::class,
-                $tourist->getAddressObjectDecomposed()
-            )
-                ->createView(),
+            'packages' => addslashes(json_encode($builder->getAccommodationIntervals())),
             'sizes' => self::SIZE_CONFIGS,
-            'stylesFileNumber' => $stylesFileNumber,
+            'stylesFileNumber' => $request->cookies->get('chessboardSizeNumber') ?? 1,
+            'days' => $builder->getDaysArray(),
+            'calendarData' => $builder->getCalendarData(),
+            'roomTypesData' => $builder->getRoomTypeData(),
+            'roomStatusIcons' => $this->getParameter('mbh.room_status_icons'),
             'colors' => $colorSettings->__toArray(),
-            'hotels' => $this->dm
-                ->getRepository('MBHHotelBundle:Hotel')
-                ->findBy(['isEnabled' => true]),
-            'selectedHotelIds' => $filterData['hotelIds']
+            'leftRoomsData' => $builder->getLeftRoomCounts(),
         ];
     }
 
@@ -244,7 +260,8 @@ class ChessBoardController extends BaseController
         \DateTime $updatedBeginDate,
         \DateTime $updatedEndDate,
         ChessBoardMessageFormatter $messageFormatter
-    ) {
+    )
+    {
         $oldPackage = clone $package;
         $accommodation->setAccommodation($updatedRoom);
 
@@ -316,7 +333,8 @@ class ChessBoardController extends BaseController
         Room $updatedRoom,
         Package $package,
         ChessBoardMessageFormatter &$messageFormatter
-    ) {
+    )
+    {
         $rightsChecker = $this->get('security.authorization_checker');
         if (!($rightsChecker->isGranted('ROLE_PACKAGE_VIEW_ALL')
             || ($rightsChecker->isGranted('ROLE_PACKAGE_EDIT_ALL')
@@ -346,7 +364,8 @@ class ChessBoardController extends BaseController
         \DateTime $updatedBeginDate,
         \DateTime $updatedEndDate,
         ChessBoardMessageFormatter $messageFormatter
-    ) {
+    )
+    {
         $rightsChecker = $this->get('security.authorization_checker');
         if (!($rightsChecker->isGranted('ROLE_PACKAGE_EDIT') && ($rightsChecker->isGranted('ROLE_PACKAGE_EDIT_ALL')
                 || $rightsChecker->isGranted('EDIT', $oldPackage))
@@ -446,6 +465,7 @@ class ChessBoardController extends BaseController
      * @param Request $request
      * @Security("is_granted('ROLE_ACCOMMODATION_REPORT')")
      * @return JsonResponse
+     * @throws \Exception
      */
     public function getPackagesData(Request $request)
     {
@@ -458,6 +478,7 @@ class ChessBoardController extends BaseController
      * @Route("/change_number_of_rooms/{numberOfRooms}", name="change_number_of_rooms", options={"expose"=true})
      * @Method("GET")
      * @param int $numberOfRooms
+     * @Security("is_granted('ROLE_ACCOMMODATION_REPORT')")
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function changeNumberOfRoomsOnPage(int $numberOfRooms)
@@ -471,6 +492,7 @@ class ChessBoardController extends BaseController
     /**
      * @param Request $request
      * @return string
+     * @throws \Exception
      */
     private function getChessBoardDataByFilters(Request $request)
     {
@@ -507,12 +529,12 @@ class ChessBoardController extends BaseController
             $data = $request->request->all();
         }
 
-        if (isset($data['filter_begin'])) {
+        if (isset($data['filter_begin']) && !empty($data['filter_begin'])) {
             $beginDate = $this->helper->getDateFromString($data['filter_begin']);
         } else {
             $beginDate = (new \DateTime('midnight'))->modify('-5 days');
         }
-        if (isset($data['filter_end'])) {
+        if (isset($data['filter_end']) && !empty($data['filter_end'])) {
             $endDate = $this->helper->getDateFromString($data['filter_end']);
         } else {
             $endDate = (new \DateTime('midnight'))->modify('+30 days');
