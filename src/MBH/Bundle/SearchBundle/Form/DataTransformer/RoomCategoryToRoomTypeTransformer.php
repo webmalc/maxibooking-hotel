@@ -17,17 +17,24 @@ class RoomCategoryToRoomTypeTransformer implements DataTransformerInterface
 
     public function reverseTransform($value)
     {
-        $result = [];
+        $roomTypeFromCategories = [];
+        $roomTypesNoCategory = [];
         if ($value->count()) {
             foreach ($value as $roomTypeOrCategory) {
                 if ($roomTypeOrCategory instanceof RoomTypeCategory) {
-                    $result[] = $roomTypeOrCategory->getTypes()->toArray();
+                    $roomTypeFromCategories[] = $roomTypeOrCategory->getTypes()->toArray();
+                } else {
+                    $roomTypesNoCategory[] = $roomTypeOrCategory;
                 }
             }
-            $result = array_merge(...$result);
+            if (\count($roomTypeFromCategories)) {
+                $roomTypeFromCategories = array_merge(...$roomTypeFromCategories);
+            }
         }
 
-        return new ArrayCollection($result);
+        $roomTypes = new ArrayCollection(array_merge($roomTypeFromCategories, $roomTypesNoCategory));
+
+        return $roomTypes;
     }
 
 }
