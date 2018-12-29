@@ -104,7 +104,5 @@ window.addEventListener('load', function(ev) {
         });
     });
 
-
-
     mbhIframe.accordion();
 });
