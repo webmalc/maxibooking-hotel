@@ -67,7 +67,7 @@
             </div>
             <div id="mbh-form-payment-accordion-search" class="panel-body">
                 {% form_theme form '@MBHOnline/ApiPaymentForm/Form/block.html.twig' %}
-                {{ form_start(form, {'action': url('online_api_payment_form_search') ,'attr': {'class': 'panel-body', 'id': formId}}) }}
+                {{ form_start(form, {'action': url('online_api_payment_form_search', {locale: locale}) ,'attr': {'class': 'panel-body', 'id': formId}}) }}
                 {{ form_widget(form) }}
                 {% if paymentFormConfig.enabledReCaptcha %}
                     <div class="form-group g-recaptcha" data-sitekey="{{ recaptcha.site }}"></div>
