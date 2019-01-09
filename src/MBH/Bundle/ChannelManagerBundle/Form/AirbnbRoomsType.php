@@ -68,7 +68,7 @@ class AirbnbRoomsType extends AbstractType
     {
         $regexp = sprintf('/^https:\/\/.+?\.%s\..*/', Airbnb::DOMAIN_NAME);
         if (!is_null($syncUrl) && !preg_match($regexp, $syncUrl)) {
-            $context->addViolation('validator.airbnb_rooms_type.sync_url');
+            $context->addViolation('validator.airbnb_rooms_type.sync_url', ['%airbnbName%' => Airbnb::DOMAIN_NAME]);
         }
     }
 
