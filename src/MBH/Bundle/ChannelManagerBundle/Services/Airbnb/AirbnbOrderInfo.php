@@ -165,6 +165,6 @@ class AirbnbOrderInfo extends AbstractOrderInfo
 
     public function getNote(): string
     {
-        return $this->orderData['DESCRIPTION'];
+        return $this->orderData['DESCRIPTION'] ?? '';
     }
 }
