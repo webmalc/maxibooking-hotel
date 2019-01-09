@@ -66,8 +66,9 @@ class AirbnbRoomsType extends AbstractType
 
     public function validateSyncUrl(?string $syncUrl, ExecutionContextInterface $context)
     {
-        if (!is_null($syncUrl) && !Utils::startsWith($syncUrl, Airbnb::SYNC_URL_BEGIN)) {
-            $context->addViolation('validator.airbnb_rooms_type.sync_url');
+        $regexp = sprintf('/^https:\/\/.+?\.%s\..*/', Airbnb::DOMAIN_NAME);
+        if (!is_null($syncUrl) && !preg_match($regexp, $syncUrl)) {
+            $context->addViolation('validator.airbnb_rooms_type.sync_url', ['%airbnbName%' => Airbnb::DOMAIN_NAME]);
         }
     }
 
