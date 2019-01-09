@@ -1107,6 +1107,7 @@ var ChessBoardManager = /** @class */ (function () {
      */
     ChessBoardManager.prototype.getPackageData = function ($packageElement) {
         var packageOffset = $packageElement.offset();
+        console.log(packageOffset);
         var roomLine = $('.roomDates, .leftRoomsLine').filter(function () {
             return ChessBoardManager.isOffsetsEqual($(this).offset().top + subtrahend / 2, packageOffset.top);
         });
@@ -1121,8 +1122,13 @@ var ChessBoardManager = /** @class */ (function () {
         var endDateLeftOffset = packageOffset.left
             + parseInt($packageElement.get(0).style.width, 10)
             - this.getPackageToMiddayOffset();
+        console.dir(dateElements);
+        console.dir(startDateLeftOffset);
+        console.dir(endDateLeftOffset);
         var startDate = this.getDateStringByLeftOffset(dateElements, startDateLeftOffset);
         var endDate = this.getDateStringByLeftOffset(dateElements, endDateLeftOffset);
+        console.dir(startDate);
+        console.dir(endDate);
         var paidStatus;
         if ($packageElement.hasClass('warning')) {
             paidStatus = 'warning';
