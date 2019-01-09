@@ -21,8 +21,9 @@ use Symfony\Component\HttpFoundation\Request;
 
 class Airbnb extends AbstractChannelManagerService
 {
-    const NAME = 'airbnb';
-    const SYNC_URL_BEGIN = 'https://www.airbnb.';
+    public const NAME = 'airbnb';
+    public const DOMAIN_NAME = self::NAME;
+    public const SYNC_URL_BEGIN = 'https://www.' . self::DOMAIN_NAME . '.';
     const CONFIG = 'AirbnbConfig';
     const PERIOD_LENGTH = '1 year';
 
