@@ -1,13 +1,90 @@
-{% include 'MBHClientBundle:PaymentSystem/newRbk:for_parent.js.twig' %}
+{% include 'MBHClientBundle:PaymentSystem/newRbk:event.js.twig' %}
+{# это для загрузки на родительскую (откуда будет загружаться iframe) страницу #}
+function MbhNewRbk(customEvent) {
+    this.successUrl = '{{ successUrl | default('') }}';
+    this.urlPostMessage = '{{ app.request.getSchemeAndHttpHost() }}';
+    this.typePostMessage = '{{ constant('MBH\\Bundle\\ClientBundle\\Document\\PaymentSystem\\NewRbk::TYPE_POST_MSG') }}';
+    this.iframe = null;
+    this.scriptId = 'mbh-script-newrbk';
+    this.scriptSrc = '{{ constant('MBH\\Bundle\\ClientBundle\\Document\\PaymentSystem\\NewRbk::URL_FOR_CHECKOUT_JS') }}';
+    this.customEvent = customEvent;
+    this._init = false;
+}
+
+MbhNewRbk.prototype.getScript = function() {
+    var script = document.createElement('script');
+    script.id = this.scriptId;
+    script.src = this.scriptSrc;
+
+    return script;
+};
+
+MbhNewRbk.prototype.addListener = function() {
+    this.customEvent.finished.create();
+    var self = this;
+    window.addEventListener("message", function(e) {
+        if (e.origin != self.urlPostMessage) {
+            {#// что-то прислали с неизвестного домена - проигнорируем..#}
+            return;
+        }
+        if (e.data.type !== self.typePostMessage) {
+            return;
+        }
+        self.openCheckout(e.data.data);
+    })
+};
+
+MbhNewRbk.prototype.sendMsg = function(msg) {
+    this.getIframe().postMessage({type: this.typePostMessage, data: msg}, this.urlPostMessage);
+};
+
+MbhNewRbk.prototype.openCheckout = function(data) {
+    var self = this;
+    data.finished = function() {
+        self.customEvent.finished.dispatch();
+        self.sendMsg('finished');
+    };
+    {#data.opened = function() {#}
+    {#console.log('Checkout opened');#}
+    {#};#}
+    {#data.closed = function() {#}
+    {#console.log('Checkout closed');#}
+    {#};#}
+    var checkout = RbkmoneyCheckout.configure(data);
+    checkout.open()
+};
+
+MbhNewRbk.prototype.getIframe = function() {
+    if (this.iframe === null) {
+        var parent = document.getElementById(this.scriptId).parentNode;
+        if (parent.id.search('mbh') == -1) {
+            console.error('Parent node maker not the MBH');
+            return;
+        }
+        this.iframe = window.frames[parent.querySelector('iframe[id^="mbh"]').id];
+    }
+
+    return this.iframe;
+};
+
+MbhNewRbk.prototype.init = function() {
+    if (!this._init) {
+        this.addListener()
+        var wrapper = document.getElementById('mbh-results-wrapper');
+        if (wrapper === null) {
+            wrapper = document.getElementById('mbh-payment-form-wrapper');
+        }
+        wrapper.appendChild(this.getScript());
+        this._init = true;
+    }
+};
+
+var mbhNewRbk = new MbhNewRbk(mbhNewRbk_Event);
 
 window.addEventListener('load', function(ev) {
-  var wrapper = document.getElementById('mbh-results-wrapper');
-  if (wrapper === null) {
-      wrapper = document.getElementById('mbh-payment-form-wrapper');
-  }
-  wrapper.appendChild(mbhNewRbk.getScript());
+  mbhNewRbk.init();
 });
 
 document.addEventListener('mbh_payment_finished', function() {
-  window.location.href = '{{ successUrl | default('') }}';
+  window.location.href = mbhNewRbk.successUrl;
 });
