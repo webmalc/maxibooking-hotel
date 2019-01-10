@@ -1249,7 +1249,6 @@ class ChessBoardManager {
      */
     public getPackageData($packageElement) {
         let packageOffset = $packageElement.offset();
-        console.log(packageOffset);
         let roomLine = $('.roomDates, .leftRoomsLine').filter(function () {
             return ChessBoardManager.isOffsetsEqual($(this).offset().top + subtrahend / 2, packageOffset.top);
         });
@@ -1269,15 +1268,8 @@ class ChessBoardManager {
             - this.getPackageToMiddayOffset()
         ;
 
-        console.dir(dateElements);
-        console.dir(startDateLeftOffset);
-        console.dir(endDateLeftOffset);
-
         let startDate = this.getDateStringByLeftOffset(dateElements, startDateLeftOffset);
         let endDate = this.getDateStringByLeftOffset(dateElements, endDateLeftOffset);
-
-        console.dir(startDate);
-        console.dir(endDate);
 
         let paidStatus;
         if ($packageElement.hasClass('warning')) {
@@ -1307,10 +1299,10 @@ class ChessBoardManager {
             || (firstIntOffset === secondIntOffset - 1);
     }
 
-    private getDateStringByLeftOffset($dateElements, leftOffset) {
+    private getDateStringByLeftOffset($dateElements, leftOffset): string {
         let dateElement = $dateElements.filter((index, cell) => {
             let cellOffset = $(cell).offset().left;
-            const difference = cellOffset - leftOffset;
+            const difference = Math.round(cellOffset - leftOffset);
 
             return difference <= (this.arrowWidth * 2) && difference >= 0;
         });
