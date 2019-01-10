@@ -27,7 +27,7 @@ class SearchCacheInvalidatorTest extends WebTestCase
         $date = new \DateTime("midnight + ${dateOffset} days");
         $container = $this->getContainer();
         $dm = $container->get('doctrine.odm.mongodb.document_manager');
-        $tariffId = $dm->getRepository(Tariff::class)->findOneBy(['fullTitle' => 'Основной тариф'])->getId();
+        $tariffId = $dm->getRepository(Tariff::class)->findOneBy(['fullTitle' => 'UpTariff'])->getId();
         $isUseCategory = $container->get('mbh.hotel.room_type_manager')->useCategories;
         $excludeRoomTypeType = !$isUseCategory ? 'roomTypeCategory' : 'roomType';
         $priceCache = $dm->getRepository(PriceCache::class)->findOneBy(

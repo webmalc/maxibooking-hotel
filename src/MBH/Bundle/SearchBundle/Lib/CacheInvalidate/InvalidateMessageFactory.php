@@ -78,31 +78,31 @@ class InvalidateMessageFactory
             return $this->createRoomCacheGenerator($invalidateQuery);
         }
 
-        throw new InvalidateException('Can not found Adapter');
+        throw new InvalidateException('Adapter is not found.');
 
     }
 
     private function createPriceCache(InvalidateQuery $invalidateQuery): InvalidateMessageInterface
     {
-        /** @var PriceCache $object */
-        $object = $invalidateQuery->getObject();
+        /** @var PriceCache $priceCache */
+        $priceCache = $invalidateQuery->getObject();
         $message = new InvalidateMessage();
 
         $isUseCategory = $this->roomManager->useCategories;
         $roomTypeIds = [];
         if ($isUseCategory) {
-            $category = $object->getRoomTypeCategory();
+            $category = $priceCache->getRoomTypeCategory();
             $roomTypes = $category->getTypes();
             foreach ($roomTypes as $roomType) {
                 $roomTypeIds[] = $roomType->getId();
             }
         } else {
-            $roomTypeIds = (array)$object->getRoomType()->getId();
+            $roomTypeIds = (array)$priceCache->getRoomType()->getId();
         }
         $message
-            ->setBegin($object->getDate())
-            ->setEnd($object->getDate())
-            ->setTariffIds((array)$object->getTariff()->getId())
+            ->setBegin($priceCache->getDate())
+            ->setEnd($priceCache->getDate())
+            ->setTariffIds((array)$priceCache->getTariff()->getId())
             ->setRoomTypeIds($roomTypeIds);
 
         return $message;
@@ -110,56 +110,56 @@ class InvalidateMessageFactory
 
     private function createRestrictions(InvalidateQuery $invalidateQuery): InvalidateMessageInterface
     {
-        $object = $invalidateQuery->getObject();
+        $restriction = $invalidateQuery->getObject();
         $message = new InvalidateMessage();
         $message
-            ->setBegin($object->getDate())
-            ->setEnd($object->getDate())
-            ->setTariffIds((array)$object->getTariff()->getId())
-            ->setRoomTypeIds((array)$object->getRoomType()->getId());
+            ->setBegin($restriction->getDate())
+            ->setEnd($restriction->getDate())
+            ->setTariffIds((array)$restriction->getTariff()->getId())
+            ->setRoomTypeIds((array)$restriction->getRoomType()->getId());
 
         return $message;
     }
 
     private function createRoomCache(InvalidateQuery $invalidateQuery): InvalidateMessageInterface
     {
-        /** @var RoomCache $object */
-        $object = $invalidateQuery->getObject();
+        /** @var RoomCache $roomCache */
+        $roomCache = $invalidateQuery->getObject();
         $message = new InvalidateMessage();
         $message
-            ->setBegin($object->getDate())
-            ->setEnd($object->getDate())
-            ->setRoomTypeIds((array)$object->getRoomType()->getId());
+            ->setBegin($roomCache->getDate())
+            ->setEnd($roomCache->getDate())
+            ->setRoomTypeIds((array)$roomCache->getRoomType()->getId());
 
         return $message;
     }
 
     private function createRoomType(InvalidateQuery $invalidateQuery): InvalidateMessageInterface
     {
-        /** @var RoomType $object */
-        $object = $invalidateQuery->getObject();
+        /** @var RoomType $roomType */
+        $roomType = $invalidateQuery->getObject();
         $message = new InvalidateMessage();
-        $message->setRoomTypeIds((array)$object->getId());
+        $message->setRoomTypeIds((array)$roomType->getId());
 
         return $message;
     }
 
     private function createTariff(InvalidateQuery $invalidateQuery): InvalidateMessageInterface
     {
-        /** @var Tariff $object */
-        $object = $invalidateQuery->getObject();
+        /** @var Tariff $tariff */
+        $tariff = $invalidateQuery->getObject();
         $message = new InvalidateMessage();
-        $message->setTariffIds((array)$object->getId());
+        $message->setTariffIds((array)$tariff->getId());
 
         return $message;
     }
 
     private function createPackage(InvalidateQuery $invalidateQuery): InvalidateMessageInterface
     {
-        /** @var Package $object */
-        $object = $invalidateQuery->getObject();
+        /** @var Package $package */
+        $package = $invalidateQuery->getObject();
         $message = new InvalidateMessage();
-        $message->setRoomTypeIds((array)$object->getRoomType()->getId());
+        $message->setRoomTypeIds((array)$package->getRoomType()->getId());
 
         return $message;
     }
