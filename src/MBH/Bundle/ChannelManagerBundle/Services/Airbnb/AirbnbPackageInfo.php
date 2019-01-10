@@ -112,7 +112,8 @@ class AirbnbPackageInfo extends AbstractPackageInfo
 
         $rawPayerNameData = explode(' ', $this->packageData['SUMMARY']);
         $payerName = $rawPayerNameData[0];
-        $payerSurname = $rawPayerNameData[1];
+        //** TODO: HotFix when description has one word. */
+        $payerSurname = $rawPayerNameData[1] ?? $payerName;
 
         $payer = $this->dm
             ->getRepository('MBHPackageBundle:Tourist')
