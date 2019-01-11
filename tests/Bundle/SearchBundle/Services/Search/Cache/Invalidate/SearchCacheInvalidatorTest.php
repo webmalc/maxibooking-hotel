@@ -5,8 +5,10 @@ namespace Tests\Bundle\SearchBundle\Services\Search\Cache\Invalidate;
 
 
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\PriceBundle\Document\PriceCache;
 use MBH\Bundle\PriceBundle\Document\Restriction;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
@@ -35,9 +37,29 @@ class SearchCacheInvalidatorTest extends WebTestCase
         );
         $invalidateQuery = new InvalidateQuery();
         $invalidateQuery->setObject($priceCache)
-            ->setType(InvalidateQuery::PRICE_CACHE)
-        ;
+            ->setType(InvalidateQuery::PRICE_CACHE);
 
+        $this->invalidate($invalidateQuery, $data['expected']['keysNumToInvalidate']);
+    }
+
+    /**
+     * @param $data
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\InvalidateException
+     * @dataProvider restrictionInvalidateProvider
+     */
+    public function testInvalidateRestriction($data): void
+    {
+        $dateOffset = $data['offset'];
+        $date = new \DateTime("midnight + ${dateOffset} days");
+        $restriction = $this->getContainer()->get('doctrine.odm.mongodb.document_manager')->getRepository(
+            Restriction::class
+        )->findOneBy(
+            ['date' => $date]
+        );
+        $invalidateQuery = new InvalidateQuery();
+        $invalidateQuery->setObject($restriction)
+            ->setType(InvalidateQuery::RESTRICTIONS);
         $this->invalidate($invalidateQuery, $data['expected']['keysNumToInvalidate']);
     }
 
@@ -69,7 +91,7 @@ class SearchCacheInvalidatorTest extends WebTestCase
         $tariff = $this->getContainer()->get('doctrine.odm.mongodb.document_manager')->getRepository(
             Tariff::class
         )->findOneBy(
-            []
+            ['fullTitle' => 'UpTariff']
         );
 
         $invalidateQuery = new InvalidateQuery();
@@ -100,25 +122,34 @@ class SearchCacheInvalidatorTest extends WebTestCase
         $this->invalidate($invalidateQuery, $data['expected']['keysNumToInvalidate']);
     }
 
-    /**
-     * @param $data
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\InvalidateException
-     * @dataProvider restrictionInvalidateProvider
-     */
-    public function testInvalidateRestriction($data): void
+    public function testInvalidatePriceGenerator()
     {
-        $dateOffset = $data['offset'];
-        $date = new \DateTime("midnight + ${dateOffset} days");
-        $restriction = $this->getContainer()->get('doctrine.odm.mongodb.document_manager')->getRepository(
-            Restriction::class
-        )->findOneBy(
-            ['date' => $date]
-        );
-        $invalidateQuery = new InvalidateQuery();
-        $invalidateQuery->setObject($restriction)
-            ->setType(InvalidateQuery::RESTRICTIONS);
-        $this->invalidate($invalidateQuery, $data['expected']['keysNumToInvalidate']);
+        $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
+
+        $hotel = $dm->getRepository(Hotel::class)->findOneBy([]);
+        $tariffs = $dm->getRepository(Tariff::class)
+            ->findBy(
+                [
+                    'fullTitle' => ['$in' => ['UpTariff', 'DownTariff']],
+                    'hotel.id' => $hotel->getId()
+                ]);
+        $isUseCategory = $this->getContainer()->get('mbh.hotel.room_type_manager')->useCategories;
+        $roomTypeType = $isUseCategory ? RoomTypeCategory::class : RoomType::class;
+        $roomTypes = $dm->getRepository($roomTypeType)->findBy([
+            'hotel.id' => $hotel->getId()
+        ]);
+        $tariffIds = Helper::toIds($tariffs);
+        $roomTypeIds = Helper::toIds($roomTypes);
+        $data = [
+            'begin' => new \DateTime('midnight +8 days'),
+            'end' => new \DateTime('midnight +12 days'),
+            'tariffIds' => $tariffIds,
+            'roomTypeIds' => $roomTypeIds,
+            'type' => InvalidateQuery::PRICE_GENERATOR
+        ];
+        $creator = $this->getContainer()->get('mbh_search.query_creator_factory')->create($data);
+        $invalidateQuery = $creator->createInvalidateQuery($data);
+        $this->getContainer()->get('mbh_search.search_cache_invalidator')->invalidateByQuery($invalidateQuery);
     }
 
 
@@ -157,6 +188,39 @@ class SearchCacheInvalidatorTest extends WebTestCase
             )->getQuery()->execute()->toArray();
 
         $this->assertEmpty($cacheResultItem);
+    }
+
+    public function priceCacheInvalidateProvider(): array
+    {
+        return [
+            [
+                [
+                    'offset' => 8,
+                    'expected' => [
+                        'keysNumToInvalidate' => 4,
+                    ],
+                ],
+
+            ],
+            [
+                [
+                    'offset' => 12,
+                    'expected' => [
+                        'keysNumToInvalidate' => 2,
+                    ],
+                ],
+
+            ],
+            [
+                [
+                    'offset' => 15,
+                    'expected' => [
+                        'keysNumToInvalidate' => 0,
+                    ],
+                ],
+
+            ],
+        ];
     }
 
     public function restrictionInvalidateProvider(): array
@@ -232,7 +296,7 @@ class SearchCacheInvalidatorTest extends WebTestCase
                 [
                     'offset' => 3,
                     'expected' => [
-                        'keysNumToInvalidate' => 21,
+                        'keysNumToInvalidate' => 21 * 2,
                     ],
                 ],
 
@@ -241,7 +305,7 @@ class SearchCacheInvalidatorTest extends WebTestCase
                 [
                     'offset' => 5,
                     'expected' => [
-                        'keysNumToInvalidate' => 21,
+                        'keysNumToInvalidate' => 21 * 2,
                     ],
                 ],
 
@@ -250,40 +314,7 @@ class SearchCacheInvalidatorTest extends WebTestCase
                 [
                     'offset' => 10,
                     'expected' => [
-                        'keysNumToInvalidate' => 21,
-                    ],
-                ],
-
-            ],
-        ];
-    }
-
-    public function priceCacheInvalidateProvider(): array
-    {
-        return [
-            [
-                [
-                    'offset' => 3,
-                    'expected' => [
-                        'keysNumToInvalidate' => 1,
-                    ],
-                ],
-
-            ],
-            [
-                [
-                    'offset' => 5,
-                    'expected' => [
-                        'keysNumToInvalidate' => 2,
-                    ],
-                ],
-
-            ],
-            [
-                [
-                    'offset' => 10,
-                    'expected' => [
-                        'keysNumToInvalidate' => 1,
+                        'keysNumToInvalidate' => 21 * 2,
                     ],
                 ],
 

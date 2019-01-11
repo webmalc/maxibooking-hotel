@@ -5,11 +5,13 @@ namespace MBH\Bundle\SearchBundle\Lib\CacheInvalidate;
 
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PriceBundle\Document\PriceCache;
+use MBH\Bundle\PriceBundle\Document\Restriction;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\InvalidateException;
@@ -99,10 +101,14 @@ class InvalidateMessageFactory
         } else {
             $roomTypeIds = (array)$priceCache->getRoomType()->getId();
         }
+
+        $priceCacheTariff = $priceCache->getTariff();
+
+        $tariffIds = array_merge((array)$priceCacheTariff->getId(), $this->getChildrenTariffIds($priceCacheTariff, 'prices'));
         $message
-            ->setBegin($priceCache->getDate())
-            ->setEnd($priceCache->getDate())
-            ->setTariffIds((array)$priceCache->getTariff()->getId())
+            ->setBegin(clone $priceCache->getDate())
+            ->setEnd(clone $priceCache->getDate())
+            ->setTariffIds($tariffIds)
             ->setRoomTypeIds($roomTypeIds);
 
         return $message;
@@ -110,12 +116,15 @@ class InvalidateMessageFactory
 
     private function createRestrictions(InvalidateQuery $invalidateQuery): InvalidateMessageInterface
     {
+        /** @var Restriction $restriction */
         $restriction = $invalidateQuery->getObject();
         $message = new InvalidateMessage();
+        $tariff = $restriction->getTariff();
+        $tariffIds = array_merge((array)$tariff->getId(), $this->getChildrenTariffIds($tariff, 'restrictions'));
         $message
-            ->setBegin($restriction->getDate())
-            ->setEnd($restriction->getDate())
-            ->setTariffIds((array)$restriction->getTariff()->getId())
+            ->setBegin(clone $restriction->getDate())
+            ->setEnd(clone $restriction->getDate())
+            ->setTariffIds($tariffIds)
             ->setRoomTypeIds((array)$restriction->getRoomType()->getId());
 
         return $message;
@@ -127,8 +136,8 @@ class InvalidateMessageFactory
         $roomCache = $invalidateQuery->getObject();
         $message = new InvalidateMessage();
         $message
-            ->setBegin($roomCache->getDate())
-            ->setEnd($roomCache->getDate())
+            ->setBegin(clone $roomCache->getDate())
+            ->setEnd(clone $roomCache->getDate())
             ->setRoomTypeIds((array)$roomCache->getRoomType()->getId());
 
         return $message;
@@ -149,7 +158,13 @@ class InvalidateMessageFactory
         /** @var Tariff $tariff */
         $tariff = $invalidateQuery->getObject();
         $message = new InvalidateMessage();
-        $message->setTariffIds((array)$tariff->getId());
+        $childrenTariffs = $tariff->getChildren();
+        $childrenTariffIds = [];
+        if (null !== $childrenTariffs) {
+            $childrenTariffIds = Helper::toIds($childrenTariffs);
+        }
+        $tariffIds = array_merge((array)$tariff->getId(), $childrenTariffIds);
+        $message->setTariffIds($tariffIds);
 
         return $message;
     }
@@ -183,10 +198,13 @@ class InvalidateMessageFactory
             $roomTypeIds = $invalidateQuery->getRoomTypeIds();
         }
 
+        $priceGeneratorTariffIds = $invalidateQuery->getTariffIds();
+        $tariffIds = $this->getMainAndChildrenTariffIdsFromArray($priceGeneratorTariffIds, 'prices');
+
         $message
-            ->setBegin($invalidateQuery->getBegin())
-            ->setEnd($invalidateQuery->getEnd())
-            ->setTariffIds($invalidateQuery->getTariffIds())
+            ->setBegin(clone $invalidateQuery->getBegin())
+            ->setEnd(clone $invalidateQuery->getEnd())
+            ->setTariffIds($tariffIds)
             ->setRoomTypeIds($roomTypeIds);
 
         return $message;
@@ -214,5 +232,46 @@ class InvalidateMessageFactory
 
         return $message;
     }
+
+    private function getMainAndChildrenTariffIdsFromArray(array $tariffIds, string $inheritanceType): array
+    {
+        $tariffs = $this->dm->getRepository(Tariff::class)->findBy(['id' => ['$in' => $tariffIds]]);
+        $tariffIds = [];
+        if (is_iterable($tariffs)) {
+            foreach ($tariffs as $tariff) {
+                $tariffIds[] = (array)$tariff->getId();
+                $tariffIds[] = $this->getChildrenTariffIds($tariff, $inheritanceType);
+            }
+        }
+
+        if(!empty($tariffIds)) {
+            $tariffIds = array_merge(...$tariffIds);
+        }
+
+        return $tariffIds;
+    }
+
+    private function getChildrenTariffIds(Tariff $tariff, string $inheritanceType): array
+    {
+        $types = [
+            'rooms' => 'isInheritRooms', 'restrictions' => 'isInheritRestrictions', 'prices' => 'isInheritPrices'
+        ];
+
+        $childrenTariffIds = [];
+        if (null !== $childrenTariffs = $tariff->getChildren()) {
+
+            if (count($tariffs = $childrenTariffs->toArray())) {
+                $method = $types[$inheritanceType];
+                $actualChildrenTariffs = array_filter($tariffs, function (Tariff $tariff) use ($method) {
+                    return $tariff->getChildOptions()->$method();
+                });
+                $childrenTariffIds = Helper::toIds($actualChildrenTariffs);
+            }
+
+        }
+
+        return $childrenTariffIds;
+    }
+
 
 }

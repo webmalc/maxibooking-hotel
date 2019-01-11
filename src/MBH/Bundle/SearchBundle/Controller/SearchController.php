@@ -140,6 +140,7 @@ class SearchController extends Controller
         }
 
         return $this->render('@MBHSearch/Search/searcher.html.twig', ['form' => $viewForm]);
+//        return $this->render('@MBHSearch/Search/searcher.html.twig', ['form' => $viewForm]);
     }
 
     /**

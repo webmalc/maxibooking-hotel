@@ -4,6 +4,7 @@
 namespace MBH\Bundle\SearchBundle\Services\Cache\Invalidate;
 
 
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\SearchBundle\Document\SearchResultCacheItem;
 use MBH\Bundle\SearchBundle\Document\SearchResultCacheItemRepository;
 use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateMessageFactory;
@@ -103,12 +104,17 @@ class SearchCacheInvalidator
 
     private function addWindowsPeriod($begin, $end): void
     {
-        if ($begin instanceof \DateTime) {
-            $begin->modify('- 7 days');
+        $dm = $this->cacheItemRepository->getDocumentManager();
+        $config = $dm->getRepository(ClientConfig::class)->fetchConfig();
+        if ($config->getSearchWindows()) {
+            if ($begin instanceof \DateTime) {
+                $begin->modify('- 7 days');
+            }
+            if ($end instanceof \DateTime) {
+                $end->modify('+ 7 days');
+            }
         }
-        if ($end instanceof \DateTime) {
-            $end->modify('+ 7 days');
-        }
+
 
     }
 
