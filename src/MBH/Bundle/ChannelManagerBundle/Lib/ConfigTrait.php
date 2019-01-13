@@ -10,24 +10,28 @@ trait ConfigTrait
     /**
      * @ODM\Field(type="bool")
      * @var bool
+     * @Gedmo\Versioned
      */
     private $isMainSettingsFilled = false;
 
     /**
      * @ODM\Field(type="bool")
      * @var bool
+     * @Gedmo\Versioned
      */
     private $isConfirmedWithDataWarnings = false;
 
     /**
      * @ODM\Field(type="bool")
      * @var bool
+     * @Gedmo\Versioned
      */
     private $isTariffsConfigured = false;
 
     /**
      * @ODM\Field(type="bool")
      * @var bool
+     * @Gedmo\Versioned
      */
     private $isRoomsConfigured = false;
 
