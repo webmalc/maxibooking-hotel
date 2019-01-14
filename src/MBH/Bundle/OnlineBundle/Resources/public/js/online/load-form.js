@@ -159,7 +159,7 @@ OnLoadFormLoad.prototype.createIframeWithForm = function (locale) {
     this.formIframe.frameBorder = '0';
     this.formIframe.src = fullUrl;
     this.formIframe.hidden = true;
-    this.formIframe.title = 'Frame with search form.';
+    this.formIframe.title = 'Frame with search form';
 };
 
 OnLoadFormLoad.prototype.exec = function (locale) {
@@ -185,6 +185,8 @@ OnLoadFormLoad.prototype.exec = function (locale) {
         self.hideWaitingSpinner(this);
     }, {once: true});
 
+    self.resizeIframeWidth();
+
     if (this.itIsFirstLoad) {
         this.formCalendar = this.createIframeWithCalendar();
 
@@ -196,12 +198,15 @@ OnLoadFormLoad.prototype.exec = function (locale) {
                 self.hideCalendar();
             }
         });
-    }
 
-    if (this.itIsFirstLoad) {
-        setInterval(function () {
-            self.resizeIframeWidth();
-        }, 300);
+        var eventDispatcher = null;
+
+        window.addEventListener('resize', function(ev) {
+            if (eventDispatcher) clearTimeout(eventDispatcher);
+            eventDispatcher = setTimeout(function () {
+                self.resizeIframeWidth();
+            }, 200);
+        });
 
         window.addEventListener('message', function(ev) {
             self.processMessage(ev);
