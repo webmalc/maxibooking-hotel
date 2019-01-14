@@ -26,6 +26,7 @@ class Airbnb extends AbstractChannelManagerService
     public const SYNC_URL_BEGIN = 'https://www.' . self::DOMAIN_NAME . '.';
     const CONFIG = 'AirbnbConfig';
     const PERIOD_LENGTH = '1 year';
+    const CLOSED_PERIOD_SUMMARY = 'Not available';
 
     /**
      * @param \DateTime $begin
@@ -97,6 +98,9 @@ class Airbnb extends AbstractChannelManagerService
                     $events = $iCalResponse->cal['VEVENT'];
 
                     foreach ($events as $event) {
+                        if ($event['SUMMARY'] === self::CLOSED_PERIOD_SUMMARY) {
+                            continue;
+                        }
                         $orderInfo = $this->container
                             ->get('mbh.airbnb_order_info')
                             ->setInitData($event, $room, $config->getTariffs()->first()->getTariff());
