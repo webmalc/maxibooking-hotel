@@ -50,6 +50,7 @@ class PriceCacheRepository extends DocumentRepository
             ->createQueryBuilder()
             ->select('hotel.id', 'roomType.id', 'tariff.id', 'date', 'price')
             ->field('date')->gte($begin)->lte($end)
+            ->field('isEnabled')->equals(true)
             ->sort('date')->sort('hotel.id')->sort('roomType.id')
             ->hydrate(false);
 
