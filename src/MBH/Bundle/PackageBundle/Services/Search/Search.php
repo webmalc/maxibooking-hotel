@@ -264,13 +264,21 @@ class Search implements SearchInterface
                 if ($restriction->getMaxStayArrival() && $restriction->getDate()->format('d.m.Y') == $query->begin->format('d.m.Y') && $duration > $restriction->getMaxStayArrival()) {
                     $delete = true;
                 }
-
+                /** Hotfix #2581 */
+//                //MaxGuest
+//                if ($restriction->getMaxGuest() && $query->getTotalPlaces() > $restriction->getMaxGuest() && !$query->isIgnoreGuestRestriction()) {
+//                    $delete = true;
+//                }
+//                //MinGuest
+//                if ($restriction->getMinGuest() && $restriction->getMinGuest() > $query->getTotalPlaces() && !$query->isIgnoreGuestRestriction()) {
+//                    $delete = true;
+//                }
                 //MaxGuest
-                if ($restriction->getMaxGuest() && $query->getTotalPlaces() > $restriction->getMaxGuest() && !$query->isIgnoreGuestRestriction()) {
+                if ($restriction->getMaxGuest() && $query->getTotalPlacesStayRestriction() > $restriction->getMaxGuest() && !$query->isIgnoreGuestRestriction()) {
                     $delete = true;
                 }
                 //MinGuest
-                if ($restriction->getMinGuest() && $restriction->getMinGuest() > $query->getTotalPlaces() && !$query->isIgnoreGuestRestriction()) {
+                if ($restriction->getMinGuest() && $restriction->getMinGuest() > $query->getTotalPlacesStayRestriction() && !$query->isIgnoreGuestRestriction()) {
                     $delete = true;
                 }
                 //ClosedOnArrival

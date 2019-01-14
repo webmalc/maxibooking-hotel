@@ -11,6 +11,7 @@ use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -152,7 +153,7 @@ class SearchQuery extends Base
     
     /**
      * Tariff id
-     * @var mixed
+     * @var mixed|Tariff
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\PriceBundle\Document\Tariff")
      */
     public $tariff;
@@ -318,6 +319,28 @@ class SearchQuery extends Base
     public function getTotalPlaces()
     {
         return (int) $this->adults + (int) $this->children;
+    }
+
+    /** Hotfix #2581 */
+    public function getTotalPlacesStayRestriction()
+    {
+        $adults = (int)$this->adults;
+        $infants = 0;
+
+        $infantAge = $this->tariff->getInfantAge();
+        $childrenAges = $this->childrenAges;
+        if (is_iterable($childrenAges)) {
+            $infants = \count(array_filter(
+                $childrenAges,
+                function ($age) use ($infantAge) {
+                    return $age <= $infantAge;
+                }
+            ));
+        }
+
+        $children = $this->children - $infants;
+
+        return $adults + $children;
     }
 
     /**
