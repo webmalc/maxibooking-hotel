@@ -70,7 +70,7 @@
                     {{ (special is defined and special is not empty)?special.begin|date('d.m.Y'):data.begin }}
                 </div>
                 <div class="date">
-                    с 12:00
+                    с 13:00
                 </div>
             </div>
             <div class="days col-xs-4">
@@ -86,14 +86,14 @@
 
                 </div>
                 <div class="date">
-                    до 12:00
+                    до 11:00
                 </div>
             </div>
         </div>
         <div class="guests">
 
             {#<div>Гости: {{ data.adults }} взрослых {{ data.children }} ребёнок</div>#}
-            <div>Гости: {{ data.adults }}{{ data.children?'+'~data.children }}{{ data.infants?'+'~data.infants }}</div>
+            <div>Гости: {{ data.adults }}{{ data.children?'+'~data.children }}{#{{ data.infants?'+'~data.infants }}#}</div>
             <div>Тариф: {{ special?'Специальное предложение':tariff.fullTitle }}</div>
         </div>
 
