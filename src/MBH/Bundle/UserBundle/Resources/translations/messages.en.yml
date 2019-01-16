@@ -105,6 +105,7 @@ view.personal_account.orders.payment_status: 'Payment Status'
 view.personal_account.orders.payment_period: 'Payment period'
 view.personal_account.orders.payment_date: 'Payment date'
 view.personal_account.orders.creation_date: 'Creation date'
+view.personal_account.orders.expired_date: 'Payment before'
 view.personal_account.orders.apply_button.title: Search
 view.personal_account.tariff.current: 'Current tariff'
 view.personal_account.tariff.next: 'Planned rate'
