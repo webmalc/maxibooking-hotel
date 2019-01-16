@@ -83,8 +83,10 @@
                 const end = this.linkEnd;
                 const tariff = this.result.resultTariff.id;
                 const roomType = this.result.resultRoomType.id;
-                const adults = this.result.prices[this.currentPriceIndex].searchAdults;
-                const children = this.result.prices[this.currentPriceIndex].searchChildren;
+                // const adults = this.result.prices[this.currentPriceIndex].searchAdults;
+                // const children = this.result.prices[this.currentPriceIndex].searchChildren;
+                const adults = this.result.resultConditions.adults;
+                const children = this.result.resultConditions.children;
                 const childrenAges = this.result.resultConditions.childrenAges;
                 const order = this.result.resultConditions.order;
                 const forceBooking = this.isForceBooking === false ? 0 : 1;
