@@ -33,7 +33,8 @@ var initAccommodationTab = function() {
       $departure = $('#mbh_bundle_packagebundle_package_accommodation_type_departureTime_time'),
       datepickerOptions = {
         autoclose: true,
-        format   : 'dd.mm.yyyy'
+        format   : 'dd.mm.yyyy',
+        language: mbh.language !== undefined ? mbh.language : 'us'
       };
 
   $arrivalDate.on('change', function() {
