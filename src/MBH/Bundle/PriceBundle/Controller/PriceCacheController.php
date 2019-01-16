@@ -200,9 +200,10 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
 
             $factory = new PriceCacheFactory();
             $newPriceCache = $factory->create($prices);
+            $isUseCategory = $this->manager->useCategories;
             $newPriceCache
                 ->setHotel($this->hotel)
-                ->setCategoryOrRoomType($priceCache->getCategoryOrRoomType())
+                ->setCategoryOrRoomType($priceCache->getCategoryOrRoomType($isUseCategory), $isUseCategory)
                 ->setTariff($priceCache->getTariff())
                 ->setDate($priceCache->getDate());
 
