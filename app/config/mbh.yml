@@ -8,7 +8,8 @@ parameters:
           ru: 'support@maxi-booking.ru'
           en: 'support@maxi-booking.com'
 
-    #currencies
+    #currencies. key ISO 4217.
+    # (при добавлении нужено название валюты с ключем form.clientConfigType.currency.options.{key})
     mbh.currency.data:
       usd: {text: '$', small: '¢', icon: 'fa fa-usd'}
       eur: {text: '€', small: '¢', icon: 'fa fa-eur'}
@@ -19,6 +20,7 @@ parameters:
       gel: {text: 'Lari', small: 't', icon: 'fa fa-money'}
       inr: {text: '₹', small: 'paisa', icon: 'fa fa-inr'}
       pln: {text: 'zł', small: 'gr', icon: 'fa fa-money'}
+      tbh: {text: '฿', small: 'satang', icon: 'fa fa-money'}
 
     # ReCaptcha
     mbh.recaptcha:
