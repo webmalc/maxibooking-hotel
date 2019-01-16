@@ -1,0 +1,5 @@
+div.alert.alert-warning {
+  i.fa.fa-spinner {
+    margin-right: 0.3em;
+  }
+}

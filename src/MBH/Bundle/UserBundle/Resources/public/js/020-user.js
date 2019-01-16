@@ -261,17 +261,50 @@ function handlePaymentCardForm() {
     }
 }
 
+function WaitingSpinner() {
+    this._$list = $('#waiting-spinner-payments-list-modal');
+    this._$details = $('#waiting-spinner-payment-details-modal');
+}
+
+WaitingSpinner.prototype._create = function($container) {
+    mbh.loader.acceptTo($container);
+};
+
+WaitingSpinner.prototype._clear = function($container) {
+    $container.html('');
+};
+
+WaitingSpinner.prototype.createForList = function() {
+    this._create(this._$list);
+};
+
+WaitingSpinner.prototype.clearList = function() {
+    this._clear(this._$list);
+};
+
+WaitingSpinner.prototype.createForDetails = function() {
+    this._create(this._$details);
+};
+
+WaitingSpinner.prototype.clearDetails = function() {
+    this._clear(this._$details);
+};
+
+var waitingSpinner = new WaitingSpinner();
+
 function hangOnPayButtonHandler() {
     var $paymentListModal = $('.show-payments-list');
     $paymentListModal.click(function () {
         var $modalBody = $('#payments-list-modal-body');
+
+        waitingSpinner.createForList();
         $('#payments-list-modal').modal('show');
         $modalBody.hide();
         var orderId = this.getAttribute('data-order-id');
 
         $.get(Routing.generate('order_payment_systems', {orderId: orderId}), function (response) {
             handleBillButton();
-
+            waitingSpinner.clearList();
             var order = response['order'];
             var orderInfo = Translator.trans('view.pay_order_modal.payment_sum', {'price': order.price + ' ' + order.currency, 'orderNumber': order.id});
             $('#payment-order-block').html(orderInfo);
@@ -288,11 +321,12 @@ function hangOnPayButtonHandler() {
                 }
             });
 
-            var $selectPaymentSystemButton = $('#select-payment-system-button');
-            var $paymentDetailsModal = $('#payment-details-modal');
+            var $selectPaymentSystemButton = $('#select-payment-system-button'),
+                $paymentDetailsModal = $('#payment-details-modal');
             $selectPaymentSystemButton.unbind('click').click(function () {
+                waitingSpinner.createForDetails();
                 var url = Routing.generate('payment_system_details', {paymentSystemName: $paymentTypesSelect.val(), orderId: order.id});
-                $paymentDetailsModal.find('iFrame').prop('src', url);
+                $paymentDetailsModal.find('iFrame').prop('src', url).attr('onload', 'waitingSpinner.clearDetails()');
                 $paymentDetailsModal.find('h4.modal-title').html(orderInfo);
                 $paymentDetailsModal.modal('show');
             });
