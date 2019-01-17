@@ -19,6 +19,7 @@ class WarmUpCacheSearcher extends AbstractCacheSearcher
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
      * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearcherException
      */
     public function search(SearchQuery $searchQuery): void
     {

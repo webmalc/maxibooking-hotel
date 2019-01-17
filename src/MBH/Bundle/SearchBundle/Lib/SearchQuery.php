@@ -99,6 +99,9 @@ class SearchQuery
     /** @var int */
     private $errorLevel = 0;
 
+    /** @var string */
+    private $searchConditionsId;
+
     /**
      * @return mixed
      */
@@ -333,6 +336,9 @@ class SearchQuery
 
     public function unsetConditions(): void
     {
+        if ($this->searchConditions) {
+            $this->searchConditionsId = $this->searchConditions->getId();
+        }
         $this->searchConditions = null;
     }
 
@@ -354,6 +360,16 @@ class SearchQuery
     {
         return $this->errorLevel;
     }
+
+    /**
+     * @return string
+     */
+    public function getSearchConditionsId(): string
+    {
+        return $this->searchConditionsId;
+    }
+
+
 
     public static function createInstance(SearchConditions $conditions, \DateTime $begin, \DateTime $end, array $tariffRoomType): SearchQuery
     {
