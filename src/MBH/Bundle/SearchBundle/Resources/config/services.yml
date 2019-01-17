@@ -159,11 +159,6 @@ services:
         class: MBH\Bundle\SearchBundle\Lib\Combinations\CacheKey\ChildFreeCacheKey
         parent: mbh_search.cache_key_abstract
 
-    mbh_search.warm_up_searcher:
-        class: MBH\Bundle\SearchBundle\Services\Search\WarmUpSearcher
-        arguments:
-            - '@old_sound_rabbit_mq.warm_up_search_producer'
-
     mbh_search.searcher:
         class: MBH\Bundle\SearchBundle\Services\Search\Searcher
         arguments:
@@ -224,6 +219,7 @@ services:
         class: MBH\Bundle\SearchBundle\RabbitMQ\WarmUpConsumer
         arguments:
             - '@mbh_search.warm_up_cache_searcher'
+            - '@mbh_search.search_conditions_repository'
 
 
     mbh_search.invalidate_consumer:
@@ -280,6 +276,7 @@ services:
         - '@mbh_search.search_cache_item_repository'
         - '@snc_redis.cache_results_client'
         - '@mbh_search.invalidate_adapter_factory'
+        - '@event_dispatcher'
 
     mbh_search.query_creator_factory:
         class: MBH\Bundle\SearchBundle\Services\Cache\InvalidateQueue\QueryCreatorFactory
@@ -436,10 +433,11 @@ services:
         arguments:
             - '@mbh_search.search_condition_creator'
             - '@mbh_search.search_query_generator'
-            - '@mbh_search.warm_up_searcher'
             - '@mbh_search.combinator'
             - '@mbh_search.tariff_repository'
             - '@mbh_search.cache_logger'
+            - '@old_sound_rabbit_mq.warm_up_search_producer'
+            - '@mbh_search.search_conditions_repository'
 
 
     ### Combinations

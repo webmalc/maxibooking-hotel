@@ -6,6 +6,7 @@ namespace MBH\Bundle\SearchBundle\Services\Cache;
 
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PriceBundle\Document\TariffRepository;
+use MBH\Bundle\SearchBundle\Document\SearchConditionsRepository;
 use MBH\Bundle\SearchBundle\Lib\Combinations\CombinationInterface;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\GuestCombinator;
@@ -13,6 +14,7 @@ use MBH\Bundle\SearchBundle\Services\Search\CacheSearcher;
 use MBH\Bundle\SearchBundle\Services\Search\WarmUpSearcher;
 use MBH\Bundle\SearchBundle\Services\SearchConditionsCreator;
 use MBH\Bundle\SearchBundle\Services\SearchQueryGenerator;
+use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 use Psr\Log\LoggerInterface;
 
 class CacheWarmer
@@ -34,10 +36,7 @@ class CacheWarmer
      * @var SearchConditionsCreator
      */
     private $conditionCreator;
-    /**
-     * @var CacheSearcher
-     */
-    private $warmUpSearcher;
+
     /**
      * @var GuestCombinator
      */
@@ -47,29 +46,38 @@ class CacheWarmer
      */
     private $tariffRepository;
 
+    /** @var ProducerInterface */
+    private $producer;
+
+    /** @var SearchConditionsRepository */
+    private $conditionRepository;
+
     /**
      * CacheWarmer constructor.
      * @param SearchConditionsCreator $creator
      * @param SearchQueryGenerator $queryGenerator
-     * @param WarmUpSearcher $searcher
      * @param GuestCombinator $combinator
      * @param TariffRepository $tariffRepository
      * @param LoggerInterface $logger
+     * @param ProducerInterface $producer
+     * @param SearchConditionsRepository $conditionsRepository
      */
     public function __construct(
         SearchConditionsCreator $creator,
         SearchQueryGenerator $queryGenerator,
-        WarmUpSearcher $searcher,
         GuestCombinator $combinator,
         TariffRepository $tariffRepository,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        ProducerInterface $producer,
+        SearchConditionsRepository $conditionsRepository
     ) {
         $this->logger = $logger;
         $this->conditionCreator = $creator;
         $this->queryGenerator = $queryGenerator;
-        $this->warmUpSearcher = $searcher;
         $this->combinator = $combinator;
         $this->tariffRepository = $tariffRepository;
+        $this->producer = $producer;
+        $this->conditionRepository = $conditionsRepository;
     }
 
     /**
@@ -208,17 +216,19 @@ class CacheWarmer
     protected function doWarmUp(array $conditionsData, int $priority = 1): void
     {
         $conditions = $this->conditionCreator->createSearchConditions($conditionsData);
-        $conditions->setId('warmerConditions');
+        $dm = $this->conditionRepository->getDocumentManager();
+        $dm->persist($conditions);
+        $dm->flush($conditions);
+
         $queries = $this->queryGenerator->generate($conditions);
         array_map(
             function (SearchQuery $query) {
                 $query->unsetConditions();
-            },
-            $queries
-        );
+            }, $queries);
         $queryChunks = array_chunk($queries, self::QUEUE_CHUNK_NUM);
         foreach ($queryChunks as $chunk) {
-            $this->warmUpSearcher->search($chunk, '', ['priority' => $priority]);
+            $message = serialize($chunk);
+            $this->producer->publish($message, '', ['priority' => $priority]);
         }
     }
 }
