@@ -89,21 +89,20 @@ abstract class AbstractCacheSearchResult implements SearchCacheInterface
     public function saveToCache(Result $result, SearchQuery $searchQuery): void
     {
         $key = $this->createKey($searchQuery);
-        $cacheItem = $this->dm->getRepository(SearchResultCacheItem::class)->findOneBy(
-            ['cacheResultKey' => $key]
-        );
-        if (null === $cacheItem) {
+        $cacheItemId = $this->dm->getRepository(SearchResultCacheItem::class)->fetchIdByCacheKey($key);
+        if (null === $cacheItemId) {
             $cacheItem = SearchResultCacheItem::createInstance($result);
             $cacheItem->setCacheResultKey($key);
             $this->dm->persist($cacheItem);
             $this->dm->flush($cacheItem);
+            $cacheItemId = $cacheItem->getId();
         } else  {
             $this->logger->info('SearchCacheItemResult duplicated key='.$key);
         }
 
         try {
             $this->filter->filter($result, $searchQuery->getErrorLevel());
-            $result->setCacheItemId($cacheItem->getId());
+            $result->setCacheItemId($cacheItemId);
             $cacheResult = $this->serializer->serialize($result);
         } catch (FilterResultException $e) {
             $cacheResult = false;

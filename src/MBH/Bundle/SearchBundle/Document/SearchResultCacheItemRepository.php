@@ -46,6 +46,17 @@ class SearchResultCacheItemRepository extends DocumentRepository
 
     }
 
+    public function fetchIdByCacheKey(string $key)
+    {
+        return $this->createQueryBuilder()
+            ->hydrate(false)
+            ->distinct('id')
+            ->field('cacheResultKey')->equals($key)
+            ->getQuery()
+            ->getSingleResult();
+
+    }
+
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
