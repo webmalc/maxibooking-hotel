@@ -336,7 +336,6 @@ class Airbnb extends AbstractChannelManagerService
                 ->toDateTime()
                 ->setTimezone(new \DateTimeZone(date_default_timezone_get()));
             $packageEnd = ($rawPackage['end']->toDateTime())
-                ->modify('-1 day')
                 ->setTimezone(new \DateTimeZone(date_default_timezone_get()));
 
             $packagePeriods[] = [
