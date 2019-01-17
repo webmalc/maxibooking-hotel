@@ -15,6 +15,7 @@ use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Cache\ErrorFilters\ErrorResultFilterInterface;
 use MBH\Bundle\SearchBundle\Services\Data\Serializers\ResultSerializer;
 use Predis\Client;
+use Psr\Log\LoggerInterface;
 
 abstract class AbstractCacheSearchResult implements SearchCacheInterface
 {
@@ -37,14 +38,19 @@ abstract class AbstractCacheSearchResult implements SearchCacheInterface
     /** @var ErrorResultFilterInterface */
     protected $filter;
 
+    /** @var LoggerInterface */
+    protected $logger;
+
     /**
      * SearchCache constructor.
      * @param SearchResultCacheItemRepository $cacheItemRepository
      * @param ResultSerializer $serializer
      * @param Client $client
      * @param CacheKeyCreator $keyCreator
+     * @param ErrorResultFilterInterface $filter
+     * @param LoggerInterface $logger
      */
-    public function __construct(SearchResultCacheItemRepository $cacheItemRepository, ResultSerializer $serializer, Client $client, CacheKeyCreator $keyCreator, ErrorResultFilterInterface $filter)
+    public function __construct(SearchResultCacheItemRepository $cacheItemRepository, ResultSerializer $serializer, Client $client, CacheKeyCreator $keyCreator, ErrorResultFilterInterface $filter, LoggerInterface $logger)
     {
         $this->cacheItemRepository = $cacheItemRepository;
         $this->serializer = $serializer;
@@ -52,6 +58,7 @@ abstract class AbstractCacheSearchResult implements SearchCacheInterface
         $this->keyCreator = $keyCreator;
         $this->dm = $cacheItemRepository->getDocumentManager();
         $this->filter = $filter;
+        $this->logger = $logger;
     }
 
 
@@ -81,11 +88,18 @@ abstract class AbstractCacheSearchResult implements SearchCacheInterface
      */
     public function saveToCache(Result $result, SearchQuery $searchQuery): void
     {
-        $cacheItem = SearchResultCacheItem::createInstance($result);
         $key = $this->createKey($searchQuery);
-        $cacheItem->setCacheResultKey($key);
-        $this->dm->persist($cacheItem);
-        $this->dm->flush($cacheItem);
+        $cacheItem = $this->dm->getRepository(SearchResultCacheItem::class)->findOneBy(
+            ['cacheResultKey' => $key]
+        );
+        if (null === $cacheItem) {
+            $cacheItem = SearchResultCacheItem::createInstance($result);
+            $cacheItem->setCacheResultKey($key);
+            $this->dm->persist($cacheItem);
+            $this->dm->flush($cacheItem);
+        } else  {
+            $this->logger->info('SearchCacheItemResult duplicated key='.$key);
+        }
 
         try {
             $this->filter->filter($result, $searchQuery->getErrorLevel());

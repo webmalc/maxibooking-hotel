@@ -411,6 +411,7 @@ services:
             - '@snc_redis.cache_results_client'
             - '@mbh_search.cache_key_creator'
             - '@mbh_search.error_result_filter'
+            - '@mbh_search.save_cache_logger'
         abstract: true
 
     mbh_search.cache_search:
@@ -589,6 +590,30 @@ services:
         calls:
             - [pushHandler, ['@mbh_search.cache_logger_handler']]
 
+    mbh_search.save_cache_logger_handler:
+        class: Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.save.cache.log", 200]
+        public: false
+
+    mbh_search.save_cache_logger:
+        class: Monolog\Logger
+        arguments: ['save_cache']
+        calls:
+            - [pushHandler, ['@mbh_search.save_cache_logger_handler']]
+
+
+    mbh_search.compare_logger_handler:
+        class: Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.search_compare.log", 200]
+        public: false
+
+    mbh_search.compare_logger:
+        class: Monolog\Logger
+        arguments: ['search_compare']
+        calls:
+        - [pushHandler, ['@mbh_search.compare_logger_handler']]
+
+#data collector
     mbh_search.cache_collector:
         class: MBH\Bundle\SearchBundle\DataCollector\ResultCachedCollector
         arguments:
