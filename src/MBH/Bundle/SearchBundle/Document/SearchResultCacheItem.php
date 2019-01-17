@@ -96,6 +96,7 @@ class SearchResultCacheItem
     /**
      * @var string
      * @ODM\Field(type="string")
+     * @ODM\Index()
      * @Assert\NotNull()
      */
     private $cacheResultKey;
