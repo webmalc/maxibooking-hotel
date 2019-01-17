@@ -7,6 +7,7 @@ namespace MBH\Bundle\SearchBundle\Services\Cache;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PriceBundle\Document\TariffRepository;
 use MBH\Bundle\SearchBundle\Lib\Combinations\CombinationInterface;
+use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\GuestCombinator;
 use MBH\Bundle\SearchBundle\Services\Search\CacheSearcher;
 use MBH\Bundle\SearchBundle\Services\Search\WarmUpSearcher;
@@ -128,7 +129,7 @@ class CacheWarmer
             'adults' => $combination['adults'],
             'children' => $combination['children'],
             'tariffs' => $tariffIds,
-            'roomTypes' => $roomTypeIds
+            'roomTypes' => $roomTypeIds,
         ];
 
         $this->doWarmUp($conditionsData);
@@ -143,7 +144,7 @@ class CacheWarmer
                 /**@var \DateTime $beginDay */
                 $dates[] = [
                     'begin' => clone $beginDay,
-                    'end' => (clone $beginDay)->modify("+ ${offset} days")
+                    'end' => (clone $beginDay)->modify("+ ${offset} days"),
                 ];
             }
         }
@@ -199,7 +200,13 @@ class CacheWarmer
     {
         $conditions = $this->conditionCreator->createSearchConditions($conditionsData);
         $conditions->setId('warmerConditions');
-        $queries = $this->queryGenerator->generate($conditions, false);
+        $queries = $this->queryGenerator->generate($conditions);
+        array_map(
+            function (SearchQuery $query) {
+                $query->unsetConditions();
+            },
+            $queries
+        );
         $queryChunks = array_chunk($queries, self::QUEUE_CHUNK_NUM);
         foreach ($queryChunks as $chunk) {
             $this->warmUpSearcher->search($chunk, '', ['priority' => $priority]);
