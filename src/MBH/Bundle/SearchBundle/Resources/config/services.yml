@@ -241,7 +241,7 @@ services:
         class: MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminer
         arguments:
             - '@event_dispatcher'
-            - '@mbh_search.occupancy_determiner_common'
+            - '@mbh_search.occupancy_determiner_factory'
             - '@mbh_search.shared_data_fetcher'
 
     mbh_search.occupancy_determiner_common:
@@ -249,6 +249,9 @@ services:
 
     mbh_search.occupancy_determiner_child_free_tariff:
         class: MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\ChildFreeOccupancyDeterminer
+
+    mbh_search.occupancy_warm_up_determiner:
+        class: MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\WarmUpOccupancyDeterminer
 
     mbh_search.occupancy_determiner_factory:
         class: MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminerFactory

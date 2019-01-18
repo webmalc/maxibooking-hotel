@@ -15,8 +15,8 @@ class OccupancyDeterminer
     /** @var EventDispatcherInterface */
     private $dispatcher;
 
-    /** @var OccupancyDeterminerInterface */
-    private $commonDeterminer;
+    /** @var OccupancyDeterminerFactory */
+    private $occupancyDeterminerFactory;
 
     /** @var SharedDataFetcher */
     private $sharedDataFetcher;
@@ -24,13 +24,13 @@ class OccupancyDeterminer
     /**
      * ActualAgesDeterminer constructor.
      * @param EventDispatcherInterface $dispatcher
-     * @param OccupancyDeterminerInterface $commonDeterminer
+     * @param OccupancyDeterminerFactory $commonDeterminer
      * @param SharedDataFetcher $dataFetcher
      */
-    public function __construct(EventDispatcherInterface $dispatcher, OccupancyDeterminerInterface $commonDeterminer, SharedDataFetcher $dataFetcher)
+    public function __construct(EventDispatcherInterface $dispatcher, OccupancyDeterminerFactory $commonDeterminer, SharedDataFetcher $dataFetcher)
     {
         $this->dispatcher = $dispatcher;
-        $this->commonDeterminer = $commonDeterminer;
+        $this->occupancyDeterminerFactory = $commonDeterminer;
         $this->sharedDataFetcher = $dataFetcher;
     }
 
@@ -55,8 +55,14 @@ class OccupancyDeterminer
                 return $occupancies;
             }
         }
+        //** TODO: Need tests */
+        if ($searchQuery->isWarmUp()) {
+            $determiner = $this->occupancyDeterminerFactory->create(OccupancyDeterminerFactory::WARM_UP_DETERMINER);
+        } else {
+            $determiner = $this->occupancyDeterminerFactory->create(OccupancyDeterminerFactory::COMMON_DETERMINER);
+        }
 
-        return $this->commonDeterminer->determine($searchOccupancy, $tariff,  $roomType);
+        return $determiner->determine($searchOccupancy, $tariff,  $roomType);
     }
 
 }

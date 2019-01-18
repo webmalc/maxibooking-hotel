@@ -13,6 +13,8 @@ class OccupancyDeterminerFactory
 
     public const COMMON_DETERMINER = 'mbh_search.occupancy_determiner_common';
 
+    public const WARM_UP_DETERMINER = 'mbh_search.occupancy_warm_up_determiner';
+
     public const CHILD_FREE_TARIFF_DETERMINER = 'mbh_search.occupancy_determiner_child_free_tariff';
     /** @var ContainerInterface */
     private $container;
@@ -34,6 +36,9 @@ class OccupancyDeterminerFactory
      */
     public function create(string $type): OccupancyDeterminerInterface
     {
+        if ($type === self::WARM_UP_DETERMINER) {
+            return $this->container->get('mbh_search.occupancy_warm_up_determiner');
+        }
         if ($type === self::COMMON_DETERMINER) {
             return $this->container->get('mbh_search.occupancy_determiner_common');
         }

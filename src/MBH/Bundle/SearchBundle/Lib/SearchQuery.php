@@ -102,6 +102,9 @@ class SearchQuery
     /** @var string */
     private $searchConditionsId;
 
+    /** @var bool */
+    private $isWarmUp;
+
     /**
      * @return mixed
      */
@@ -369,6 +372,27 @@ class SearchQuery
         return $this->searchConditionsId;
     }
 
+    /**
+     * @return bool
+     */
+    public function isWarmUp(): bool
+    {
+        return $this->isWarmUp;
+    }
+
+    /**
+     * @param bool $isWarmUp
+     * @return SearchQuery
+     */
+    public function setIsWarmUp(bool $isWarmUp): SearchQuery
+    {
+        $this->isWarmUp = $isWarmUp;
+
+        return $this;
+    }
+
+
+
 
 
     public static function createInstance(SearchConditions $conditions, \DateTime $begin, \DateTime $end, array $tariffRoomType): SearchQuery
@@ -388,6 +412,7 @@ class SearchQuery
             ->setIsForceBooking($conditions->isForceBooking())
             ->setSearchHash($conditions->getSearchHash())
             ->setErrorLevel($conditions->getErrorLevel())
+            ->setIsWarmUp($conditions->isThisWarmUp())
         ;
 
         return $searchQuery;

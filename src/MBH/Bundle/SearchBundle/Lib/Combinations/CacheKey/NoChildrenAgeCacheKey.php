@@ -26,9 +26,10 @@ class NoChildrenAgeCacheKey extends AbstractKey
 
     public function getWarmUpKey(SearchQuery $searchQuery): string
     {
+        $occupancies = $this->determiner->determine($searchQuery, OccupancyDeterminerFactory::WARM_UP_DETERMINER);
         $key = $this->getSharedPartKey($searchQuery);
-        $key .= '_' . $searchQuery->getAdults();
-        $key .= '_' . $searchQuery->getChildren();
+        $key .= '_' . $occupancies->getAdults();
+        $key .= '_' . $occupancies->getChildren();
 
         return $key;
     }

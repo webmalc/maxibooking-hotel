@@ -7,9 +7,10 @@ namespace MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\OccupancyDeterminerException;
+use MBH\Bundle\SearchBundle\Services\Search\Determiners\OccupancyDeterminerInterface;
 use MBH\Bundle\SearchBundle\Services\Search\Determiners\OccupancyInterface;
 
-abstract class AbstractDeterminer
+abstract class AbstractDeterminer implements OccupancyDeterminerInterface
 {
 
     public function determine(OccupancyInterface $occupancy, Tariff $tariff, RoomType $roomType): OccupancyInterface
