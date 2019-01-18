@@ -421,6 +421,9 @@ class ApiController extends Controller
 
             $tariffResults = $search->searchTariffs($query);
             $selectedHotel = $this->dm->getRepository(Hotel::class)->find($request->get('hotel'));
+            if ($selectedHotel === null && $formConfig->getHotels()->count() === 1) {
+                $selectedHotel = $formConfig->getHotels()->toArray()[0];
+            }
             if ($selectedHotel !== null) {
                 $tariffResults = array_filter($tariffResults, function(Tariff $tariff) use ($selectedHotel) {
                     return $tariff->getHotel() === $selectedHotel;
