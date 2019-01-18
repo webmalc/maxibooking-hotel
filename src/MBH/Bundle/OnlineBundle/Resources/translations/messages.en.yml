@@ -140,9 +140,9 @@ api.payment_form.pay_order.total: Total
 api.payment_form.pay_order.submit: Pay
 api.payment_form.generate_invoce.submit: 'Generate payment document'
 api.payment_form.payment_action.error: 'Incorrect form data.'
-api.payment_form.step_1: 'Step 1 - My Bookings.'
-api.payment_form.step_2: 'Step 2 - Confirm Payment amount.'
-api.payment_form.step_3: 'Step 3 - Pay Online.'
+api.payment_form.step_1: 'Step 1 - My Bookings'
+api.payment_form.step_2: 'Step 2 - Confirm Payment amount'
+api.payment_form.step_3: 'Step 3 - Pay Online'
 api.payment_form.search.not_valid_fields: 'Field phone/email not valid'
 site_manager.description.hotel: 'Description of the object'
 site_manager.photos_tab.hotel: 'Photos of the object'
