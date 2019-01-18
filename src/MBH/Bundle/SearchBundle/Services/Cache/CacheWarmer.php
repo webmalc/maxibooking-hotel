@@ -21,7 +21,7 @@ class CacheWarmer
 {
 
     /** @var int */
-    public const QUEUE_CHUNK_NUM = 100;
+    private const QUEUE_CHUNK_NUM = 50;
 
     public const MIN_BOOKING_LENGTH = 5;
 
@@ -204,7 +204,7 @@ class CacheWarmer
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
      */
-    private function doWarmUp(array $conditionsData, int $priority = 1): void
+    protected function doWarmUp(array $conditionsData, int $priority = 1): void
     {
         $conditions = $this->conditionCreator->createSearchConditions($conditionsData);
         $dm = $this->conditionRepository->getDocumentManager();
