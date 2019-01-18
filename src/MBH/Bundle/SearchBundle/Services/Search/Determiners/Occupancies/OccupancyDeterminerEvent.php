@@ -103,6 +103,7 @@ class OccupancyDeterminerEvent extends Event
     public function setTariff(Tariff $tariff): OccupancyDeterminerEvent
     {
         $this->tariff = $tariff;
+
         return $this;
     }
 
