@@ -6,6 +6,28 @@
 {% form_theme images_form '@MBHHotel/Hotel/fieldsGroupWithButton.html.twig' %}
 {% form_theme panorama_form '@MBHHotel/Hotel/fieldsGroupWithButton.html.twig' %}
 
+{% block scripts %}
+    {{ parent() }}
+
+    {% javascripts filter='uglifyjs2'
+        'assets/vendor/croppie/croppie.min.js'
+        '@MBHHotelBundle/Resources/public/js/hotel-image/010-image-crop.js'
+    %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+{% endblock %}
+
+{% block styles %}
+    {{ parent() }}
+
+    {% stylesheets filter='cssrewrite, uglifycss'
+        'assets/vendor/croppie/croppie.css'%}
+        <link rel="stylesheet" href="{{ asset_url }}"/>
+    {% endstylesheets %}
+{% endblock %}
+
+
 {% block content %}
     {% include 'MBHHotelBundle:Hotel:tabs.html.twig' with {'active': 4, 'entity': entity} %}
     <div class="tab-content">
@@ -65,11 +87,5 @@
 
 {% block form_row %}
 
-{% endblock %}
-
-{% block scripts %}
-    {{ parent() }}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.2/croppie.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.2/croppie.min.css">
 {% endblock %}
 
