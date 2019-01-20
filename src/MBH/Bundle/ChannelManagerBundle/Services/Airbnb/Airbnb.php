@@ -156,11 +156,9 @@ class Airbnb extends AbstractChannelManagerService
                 return ['begin' => $emptyCachePeriod->getBegin(), 'end' => $emptyCachePeriod->getEnd()];
             }, array_merge($emptyPriceCachePeriods, $emptyRoomCachePeriods, $closedPeriods));
 
-            $busyPeriods = array_merge($this->getPackagePeriods($roomType, $begin, $end), $emptyCachePeriods);
-
             $combinedPeriods = $this->container
                 ->get('mbh.periods_compiler')
-                ->combineIntersectedPeriods($busyPeriods);
+                ->combineIntersectedPeriods($emptyCachePeriods);
 
             foreach ($combinedPeriods as $period) {
                 $this->addEvent($calendar, $period['begin'], $period['end']);
@@ -304,47 +302,5 @@ class Airbnb extends AbstractChannelManagerService
         }
 
         return $packagesByRoomIds;
-    }
-
-    /**
-     * @param RoomType $roomType
-     * @param \DateTime  $begin
-     * @param \DateTime  $end
-     * @return array
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     */
-    private function getPackagePeriods(RoomType $roomType, \DateTime $begin, \DateTime $end)
-    {
-        $packageCriteria = new PackageQueryCriteria();
-        $packageCriteria->filter = 'live_between';
-        $packageCriteria->liveBegin = $begin;
-        $packageCriteria->liveEnd = $end;
-        $packageCriteria->addRoomTypeCriteria($roomType);
-
-        $rawPackages = $this->dm
-            ->getRepository('MBHPackageBundle:Package')
-            ->queryCriteriaToBuilder($packageCriteria)
-            ->hydrate(false)
-            ->select(['begin', 'end'])
-            ->getQuery()
-            ->execute()
-            ->toArray();
-
-        $packagePeriods = [];
-        foreach ($rawPackages as $rawPackage) {
-            $packageBegin = $rawPackage['begin']
-                ->toDateTime()
-                ->setTimezone(new \DateTimeZone(date_default_timezone_get()));
-            $packageEnd = ($rawPackage['end']->toDateTime())
-                ->modify('-1 day')
-                ->setTimezone(new \DateTimeZone(date_default_timezone_get()));
-
-            $packagePeriods[] = [
-                'begin' => $packageBegin >= $begin ? $packageBegin : $begin,
-                'end' => $packageEnd <= $end ? $packageEnd : $end
-            ];
-        }
-
-        return $packagePeriods;
     }
 }
