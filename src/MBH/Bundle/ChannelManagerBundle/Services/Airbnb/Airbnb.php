@@ -149,7 +149,7 @@ class Airbnb extends AbstractChannelManagerService
             $emptyPriceCachePeriods = $warningsCompiler
                 ->getEmptyCachePeriodsForRoomTypeAndTariff($roomType, $begin, $end, $tariff, PriceCache::class, 'price');
             $emptyRoomCachePeriods = $warningsCompiler
-                ->getEmptyCachePeriodsForRoomTypeAndTariff($roomType, $begin, $end, $tariff, RoomCache::class, 'totalRooms');
+                ->getEmptyCachePeriodsForRoomTypeAndTariff($roomType, $begin, $end, $tariff, RoomCache::class, 'leftRooms');
             $closedPeriods = $warningsCompiler->getClosedPeriods($begin, $end, $roomType, $tariff);
 
             $emptyCachePeriods = array_map(function (EmptyCachePeriod $emptyCachePeriod) {
@@ -243,7 +243,7 @@ class Airbnb extends AbstractChannelManagerService
         $vEvent = new Event();
         $vEvent->setDtStart($begin);
         //if "notime" param is true, vendor increase end date by one day(class Event, line 263)
-        $vEvent->setDtEnd(($end)->modify('-1 day'));
+        $vEvent->setDtEnd($end);
         $vEvent->setNoTime(true);
 
         $calendar->addComponent($vEvent);
@@ -317,8 +317,8 @@ class Airbnb extends AbstractChannelManagerService
     {
         $packageCriteria = new PackageQueryCriteria();
         $packageCriteria->filter = 'live_between';
-        $packageCriteria->begin = $begin;
-        $packageCriteria->end = $end;
+        $packageCriteria->liveBegin = $begin;
+        $packageCriteria->liveEnd = $end;
         $packageCriteria->addRoomTypeCriteria($roomType);
 
         $rawPackages = $this->dm
