@@ -56,14 +56,25 @@ class PaymentFormType extends AbstractType implements DecorationTypeInterface
                     'help'     => 'form.payment.formType.fieldUserNameIsVisible.help',
                 ]
             )
+            /** пока неиспользуется */
+//            ->add(
+//                'enabledShowAmount',
+//                CheckboxType::class,
+//                [
+//                    'label'    => 'form.payment.formType.enabledShowAmount',
+//                    'group'    => 'form.formType.parameters',
+//                    'required' => false,
+//                    'help'     =>  'form.payment.formType.enabledShowAmount_help',
+//                ]
+//            )
             ->add(
-                'enabledShowAmount',
+                'useAccordion',
                 CheckboxType::class,
                 [
-                    'label'    => 'form.payment.formType.enabledShowAmount',
+                    'label'    => 'form.payment.formType.useAccordion',
                     'group'    => 'form.formType.parameters',
                     'required' => false,
-                    'help'     =>  'form.payment.formType.enabledShowAmount_help',
+                    'help'     => 'form.payment.formType.useAccordion_help',
                 ]
             )
             ->add(
@@ -75,14 +86,14 @@ class PaymentFormType extends AbstractType implements DecorationTypeInterface
                     'required' => false,
                     'help'     => 'form.payment.formType.enabledReCaptcha.help',
                 ]
-            );
+            )
+        ;
 
         $builder
             ->add($this->isFullWidth($builder))
             ->add($this->frameWidth($builder))
             ->add($this->frameHeight($builder))
             ->add($this->css($builder))
-            ->add($this->isHorizontal($builder))
             ->add($this->cssLibraries($builder))
             ->add($this->theme($builder));
 

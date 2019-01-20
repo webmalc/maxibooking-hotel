@@ -9,6 +9,7 @@ use Symfony\Component\Config\Loader\LoaderInterface;
 
 class AppKernel extends Kernel
 {
+    public const ENV_DEV = 'dev';
     /** @var string */
     const CLIENT_VARIABLE = 'MB_CLIENT';
     /** @var string */
@@ -81,7 +82,7 @@ class AppKernel extends Kernel
 
         );
 
-        if (in_array($this->getEnvironment(), array('dev', 'test'))) {
+        if (in_array($this->getEnvironment(), array(self::ENV_DEV, 'test'))) {
             $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
             $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
             $bundles[] = new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
@@ -126,6 +127,6 @@ class AppKernel extends Kernel
      */
     public function isDevEnv()
     {
-        return $this->getEnvironment() === 'dev';
+        return $this->getEnvironment() === self::ENV_DEV;
     }
 }

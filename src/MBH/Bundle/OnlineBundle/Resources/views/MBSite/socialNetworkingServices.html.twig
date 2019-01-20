@@ -1,0 +1,22 @@
+{% extends "MBHOnlineBundle:MBSite:layout.html.twig" %}
+
+{% set title_url = path('site_settings') %}
+{% set small_title = 'site_form.social_networking.label'|trans %}
+
+{% set active = hotelsSettings|length + 4 %}
+
+{% block content %}
+    {{ parent() }}
+
+    <div class="tab-content">
+    {{ form_start(form, { 'attr':{'class':'form-horizontal'}}) }}
+    <dl>
+        {% for sns in form.snss %}
+            <dd>{{ form_widget(sns) }}</dd>
+        {% endfor %}
+    </dl>
+
+    {% include 'MBHBaseBundle:Actions:new.html.twig' %}
+    {{ form_end(form) }}
+
+{% endblock %}

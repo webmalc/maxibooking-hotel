@@ -104,10 +104,10 @@ class BillingApi
     }
 
     /**
-     * @param string $dateString
+     * @param string|null $dateString
      * @return bool|\DateTime
      */
-    public static function getDateByBillingFormat(string $dateString)
+    public static function getDateByBillingFormat(?string $dateString)
     {
         $date = \DateTime::createFromFormat(self::BILLING_DATETIME_FORMAT, $dateString);
         if (!$date instanceof \DateTime) {

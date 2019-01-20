@@ -150,8 +150,7 @@
                             <strong>{{ 'package.edit.order_type'|trans({}, 'MBHPackageBundle') }}</strong>
                         </td>
                         <td>
-                                            <span
-                                                    class="text-{{ statuses[status].class }}">{{ statuses[status].title|trans }} {% if status == 'channel_manager' %}({{ package.channelManagerType }}){% endif %}</span>
+                            <span class="text-{{ statuses[status].class }}">{{ statuses[status].title|trans }} {% if status == 'channel_manager' %}({{ package.channelManagerType }}){% endif %}</span>
                             {% if package.deletedAt %} &nbsp;
                                 <small class="text-danger"><i
                                             class="fa fa-trash-o"> </i> {{ 'package.edit.deleted'|trans({}, 'MBHPackageBundle') }}
@@ -188,7 +187,13 @@
                                     <div id="main-query{{ loop.index }}" style="display: none;">
                                         <small>
                                             <p>
-                                                {{ query.createdAt|date('d.m.Y') }}
+                                                {{ 'pacakge.edit.date_of_creation'|trans }} - <strong>{{ query.createdAt|date('d.m.Y H:i') }}</strong>
+                                            </p>
+                                            <p>
+                                                {{ 'form.packageMainType.begin'|trans}} - <strong>{{ query.begin|date('d.m.Y') }}</strong>
+                                            </p>
+                                            <p>
+                                                {{ 'form.packageMainType.end'|trans}} - <strong>{{ query.end|date('d.m.Y') }}</strong>
                                             </p>
                                             {% if query.adults %}
                                                 <p>

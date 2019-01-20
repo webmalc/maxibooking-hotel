@@ -9,20 +9,24 @@ use MBH\Bundle\PackageBundle\Document\Tourist;
 
 class TouristData extends AbstractFixture implements OrderedFixtureInterface
 {
+    public const TOURIST_RICK_DATA = ['name' => 'Рик', 'lastName' => 'Санчез', 'patronymic' => 'Terror_Rick', 'email' => 'terror_rickc@dimension.c137'];
+    public const TOURIST_RICK_KEY = 'rick';
+
     const TOURIST_DATA = [
         'ru' => [
-            'sergei' => ['name' => 'Сергей', 'lastName' => 'Виноградов', 'patronymic' => 'Иванович'],
-            'ivan' => ['name' => 'Иван', 'lastName' => 'Алексеев', 'patronymic' => 'Сергеевич'],
+            'sergei'    => ['name' => 'Сергей', 'lastName' => 'Виноградов', 'patronymic' => 'Иванович'],
+            'ivan'      => ['name' => 'Иван', 'lastName' => 'Алексеев', 'patronymic' => 'Сергеевич'],
             'alexander' => ['name' => 'Александр', 'lastName' => 'Тищенко', 'patronymic' => 'Евгеньевич'],
-            'petr' => ['name' => 'Петр', 'lastName' => 'Петренко', 'patronymic' => 'Петрович'],
-            'arseniy' => ['name' => 'Арсений', 'lastName' => 'Всеволодов', 'patronymic' => 'Александрович']
+            'petr'      => ['name' => 'Петр', 'lastName' => 'Петренко', 'patronymic' => 'Петрович'],
+            'arseniy'   => ['name' => 'Арсений', 'lastName' => 'Всеволодов', 'patronymic' => 'Александрович'],
+            self::TOURIST_RICK_KEY => self::TOURIST_RICK_DATA,
         ],
         'en' => [
             'sigmund' => ['name' => 'Sigmund', 'lastName' => 'Parker'],
-            'corrie' => ['name' => 'Corrie', 'lastName' => 'Rye'],
-            'lynne' => ['name' => 'Lynne', 'lastName' => 'Payton'],
-            'mort' => ['name' => 'Mort', 'lastName' => 'Mitchell'],
-        ]
+            'corrie'  => ['name' => 'Corrie', 'lastName' => 'Rye'],
+            'lynne'   => ['name' => 'Lynne', 'lastName' => 'Payton'],
+            'morty'   => ['name' => 'Morty', 'lastName' => 'Smith'],
+        ],
     ];
 
     /**
@@ -50,6 +54,11 @@ class TouristData extends AbstractFixture implements OrderedFixtureInterface
             if ($locale === 'ru') {
                 $tourist->setPatronymic($touristData['patronymic']);
             }
+
+            if (isset($touristData['email'])) {
+                $tourist->setEmail($touristData['email']);
+            }
+
             $manager->persist($tourist);
 
             $this->setReference($reference, $tourist);

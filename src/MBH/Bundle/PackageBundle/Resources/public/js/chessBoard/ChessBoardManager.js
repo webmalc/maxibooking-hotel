@@ -1154,7 +1154,7 @@ var ChessBoardManager = /** @class */ (function () {
         var _this = this;
         var dateElement = $dateElements.filter(function (index, cell) {
             var cellOffset = $(cell).offset().left;
-            var difference = cellOffset - leftOffset;
+            var difference = Math.round(cellOffset - leftOffset);
             return difference <= (_this.arrowWidth * 2) && difference >= 0;
         });
         var dateNumber = $dateElements.index(dateElement);

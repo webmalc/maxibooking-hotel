@@ -179,6 +179,7 @@ view.personal_account.orders.apply_button.title: Применить
 view.personal_account.orders.creation_date: 'Дата создания'
 view.personal_account.orders.payment_date: 'Дата оплаты'
 view.personal_account.orders.payment_period: 'Период оплаты'
+view.personal_account.orders.expired_date: 'Оплатить до'
 view.personal_account.orders.sum: Сумма
 view.personal_account.orders.show: Смотреть
 view.personal_account.orders.payment_status: 'Статус оплаты'

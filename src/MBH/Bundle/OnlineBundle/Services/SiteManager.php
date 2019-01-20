@@ -11,6 +11,7 @@ use MBH\Bundle\ClientBundle\Service\ClientManager;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
+use MBH\Bundle\OnlineBundle\Document\PaymentFormConfig;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
@@ -18,11 +19,9 @@ use Symfony\Component\Translation\TranslatorInterface;
 
 class SiteManager
 {
-    const DEFAULT_RESULTS_PAGE = '/results/index.html';
-    const PERSONAL_DATA_POLICIES_PAGE = '/personal-data-policies/index.html?q';
+    const DEFAULT_RESULTS_PAGE = '/results';
+    const PERSONAL_DATA_POLICIES_PAGE = '/personal-data-policies?q';
     const DEFAULT_BOOTSTRAP_THEME = 'cerulean';
-    const SITE_DOMAIN = '.maaaxi.com';
-    const SITE_PROTOCOL = 'https://';
     const MANDATORY_FIELDS_BY_ROUTE_NAMES = [
         Hotel::class => [
             'hotel_edit'                => ['description', 'logoImage'],
@@ -134,6 +133,23 @@ class SiteManager
         return $formConfig;
     }
 
+    public function fetchPaymentFormConfig(): PaymentFormConfig
+    {
+        $formConfig = $this->dm->getRepository(PaymentFormConfig::class)->findOneBy(['forMbSite' => true]);
+        if ($formConfig === null) {
+            $formConfig = new PaymentFormConfig();
+            $formConfig->setForMbSite(true);
+            $formConfig->setUseAccordion(true);
+            $formConfig->setIsFullWidth(true);
+            $formConfig->setTheme(FormConfig::THEMES[self::DEFAULT_BOOTSTRAP_THEME]);
+            $formConfig->setFrameHeight(600);
+
+            $this->dm->persist($formConfig);
+        }
+
+        return $formConfig;
+    }
+
     /**
      * @param $document
      * @param FormInterface $form
@@ -184,7 +200,7 @@ class SiteManager
             }
 
             $host = parse_url($clientSite->getUrl())['host'];
-            $siteDomain = substr($host, 0, strpos($host, SiteManager::SITE_DOMAIN));
+            $siteDomain = substr($host, 0, strpos($host, SiteConfig::DOMAIN));
             $config->setSiteDomain($siteDomain);
         }
 
@@ -221,7 +237,10 @@ class SiteManager
      */
     public function checkSiteDomain(string $siteDomain)
     {
-        $sitesResult = $this->billingApi->getSitesByUrlResult($this->compileSiteAddress($siteDomain));
+        $tempSiteConfig = new SiteConfig();
+        $tempSiteConfig->setSiteDomain($siteDomain);
+
+        $sitesResult = $this->billingApi->getSitesByUrlResult($this->compileSiteAddress($tempSiteConfig));
 
         return $sitesResult->isSuccessful() && empty($sitesResult->getData());
     }
@@ -267,7 +286,7 @@ class SiteManager
      */
     public function updateSiteFormConfig(SiteConfig $config, FormConfig $formConfig, array $paymentTypes = null)
     {
-        $siteAddress = $this->compileSiteAddress($config->getSiteDomain());
+        $siteAddress = $this->compileSiteAddress($config);
 
         $roomTypes = [];
         foreach ($config->getHotels() as $hotel) {
@@ -294,7 +313,7 @@ class SiteManager
     public function getSiteAddress()
     {
         return $this->getSiteConfig() && $this->getSiteConfig()->getSiteDomain()
-            ? $this->compileSiteAddress($this->getSiteConfig()->getSiteDomain())
+            ? $this->compileSiteAddress($this->getSiteConfig())
             : null;
     }
 
@@ -302,8 +321,14 @@ class SiteManager
      * @param string $siteDomain
      * @return string
      */
-    public function compileSiteAddress(string $siteDomain)
+    public function compileSiteAddress(SiteConfig $config)
     {
-        return self::SITE_PROTOCOL . $siteDomain . self::SITE_DOMAIN;
+        $format = '%s://%s';
+
+        if ($config->getDomain() !== SiteConfig::FAKE_DOMAIN_FOR_DEV) {
+            $format .= '%s';
+        }
+
+        return sprintf($format, $config->getScheme(), $config->getSiteDomain(), $config->getDomain());
     }
 }

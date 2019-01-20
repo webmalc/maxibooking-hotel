@@ -32,7 +32,13 @@ class PaymentFormController extends Controller
     {
         $paymentForms = $this->dm->getRepository('MBHOnlineBundle:PaymentFormConfig')->findAll();
 
-        return compact('paymentForms');
+        $siteConfig = $this->get('mbh.site_manager')->getSiteConfig();
+        $hasEnabledMBSite = $siteConfig !== null && $siteConfig->getIsEnabled();
+
+        return [
+            'paymentForms'     => $paymentForms,
+            'hasEnabledMBSite' => $hasEnabledMBSite,
+        ];
     }
 
     /**

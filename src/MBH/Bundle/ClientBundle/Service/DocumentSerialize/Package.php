@@ -28,6 +28,7 @@ class Package extends Common
         'getDepartureTime',
         'getPrice|money',
         'getServicesPrice|money',
+        'getOneDayPrice|money'
     ];
 
     public function getRoomName(): string

@@ -93,13 +93,7 @@ class ClientConfigController extends Controller implements CheckHotelControllerI
 
                 return $this->redirect($this->generateUrl('client_config'));
             } else {
-                if (count($errors) === 1 && array_key_exists('login_alias', $errors)) {
-                    foreach ($errors['login_alias'] as $error) {
-                        $form->get('login_alias')->addError(new FormError($error));
-                    }
-                } else {
-                    throw new \Exception(json_encode($errors, JSON_UNESCAPED_UNICODE));
-                }
+                $this->get('mbh.form_data_handler')->fillFormByBillingErrors($form, $errors);
             }
         }
 

@@ -15,6 +15,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class SiteConfig extends Base
 {
+    public const SCHEME = 'https';
+    public const DOMAIN = '.maaaxi.com';
+    public const FAKE_DOMAIN_FOR_DEV = 'fakeDomain';
+
     const COLORS_BY_THEMES = [
         'autumn' => [
             'main' => '#832736',
@@ -92,12 +96,40 @@ class SiteConfig extends Base
     /**
      * @var string
      * @ODM\Field(type="string")
+     * @Assert\NotBlank()
+     */
+    private $scheme = self::SCHEME;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
+     * @Assert\NotBlank()
+     */
+    private $domain = self::DOMAIN;
+
+    /**
+     * @var string
+     * @ODM\Field(type="string")
      */
     private $colorTheme = 'black01';
+
+    /**
+     * @var null|string
+     * @ODM\Field(type="string")
+     */
+    private $paymentFormId;
+
+    /**
+     * @ODM\EmbedMany(targetDocument="MBH\Bundle\OnlineBundle\Document\SocialNetworkingService", strategy="set")
+     * strategy="set" для хранения как ассоциативный массив
+     * @var ArrayCollection|SocialNetworkingService[]
+     */
+    private $socialNetworkingServices;
 
     public function __construct()
     {
         $this->hotels = new ArrayCollection();
+        $this->socialNetworkingServices = new ArrayCollection();
     }
 
     /**
@@ -231,5 +263,69 @@ class SiteConfig extends Base
     public function getThemeColors()
     {
         return self::COLORS_BY_THEMES[$this->getColorTheme()];
+    }
+
+    /**
+     * @return string
+     */
+    public function getScheme(): string
+    {
+        return $this->scheme;
+    }
+
+    /**
+     * @param string $scheme
+     */
+    public function setScheme(string $scheme): void
+    {
+        $this->scheme = $scheme;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDomain(): string
+    {
+        return $this->domain;
+    }
+
+    /**
+     * @param string $domain
+     */
+    public function setDomain(string $domain): void
+    {
+        $this->domain = $domain;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getPaymentFormId(): ?string
+    {
+        return $this->paymentFormId;
+    }
+
+    /**
+     * @param null|string $paymentFormId
+     */
+    public function setPaymentFormId(?string $paymentFormId): void
+    {
+        $this->paymentFormId = $paymentFormId;
+    }
+
+    /**
+     * @return \Doctrine\ODM\MongoDB\PersistentCollection|SocialNetworkingService[]
+     */
+    public function getSocialNetworkingServices(): \Doctrine\ODM\MongoDB\PersistentCollection
+    {
+        return $this->socialNetworkingServices;
+    }
+
+    /**
+     * @param ArrayCollection|SocialNetworkingService[] $socialNetworkingServices
+     */
+    public function setSocialNetworkingServices(ArrayCollection $socialNetworkingServices): void
+    {
+        $this->socialNetworkingServices = $socialNetworkingServices;
     }
 }

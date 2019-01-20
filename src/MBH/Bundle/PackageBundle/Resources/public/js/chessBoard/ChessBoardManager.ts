@@ -1299,10 +1299,10 @@ class ChessBoardManager {
             || (firstIntOffset === secondIntOffset - 1);
     }
 
-    private getDateStringByLeftOffset($dateElements, leftOffset) {
+    private getDateStringByLeftOffset($dateElements, leftOffset): string {
         let dateElement = $dateElements.filter((index, cell) => {
             let cellOffset = $(cell).offset().left;
-            const difference = cellOffset - leftOffset;
+            const difference = Math.round(cellOffset - leftOffset);
 
             return difference <= (this.arrowWidth * 2) && difference >= 0;
         });

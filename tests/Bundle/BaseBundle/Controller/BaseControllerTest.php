@@ -30,7 +30,8 @@ class BaseControllerTest extends WebTestCase
         'fail_payment',
         'online_poll_js',
         "fos_user_security_login",
-        "fos_user_resetting_request"
+        "fos_user_resetting_request",
+        'online_api_payment_form_payment',
     ];
 
     const EXCLUDED_ROUTES = [
@@ -61,7 +62,7 @@ class BaseControllerTest extends WebTestCase
         'fos_user_profile_show',            //not used
         'api_success_url',                  //master test there is, but if not setting client config -> 404, so common exclude
         'api_fail_url',                     //master test there is, but if not setting client config -> 404, so common exclude
-        'reset_login_alias',                 //redirect
+        'reset_login_alias'                 //redirect
     ];
 
     private const ROUTES_WITH_OWN_TEST = [
@@ -131,6 +132,7 @@ class BaseControllerTest extends WebTestCase
         'document_templates_edit',
         'document_templates_show',
         'document_templates_delete',
+        'site_config_social_networking_services',
     ];
 
     private const ROUTERS_CHANNEL_MANAGER = [
@@ -191,6 +193,11 @@ class BaseControllerTest extends WebTestCase
         self::clearDB();
     }
 
+    public function setUp()
+    {
+        /**пустым переопределением убираем двойное создание клиета */
+    }
+
     /**
      * @return array
      */
@@ -214,11 +221,12 @@ class BaseControllerTest extends WebTestCase
      */
     public function testRouteAlways302(string $url)
     {
-        $this->client->followRedirects(true);
+        $client = static::makeClient(true);
+        $client->followRedirects(true);
 
-        $this->client->request('GET', $url);
+        $client->request('GET', $url);
 
-        $this->assertStatusCodeWithMsg($url, 200);
+        $this->assertStatusCodeWithMsg($url, 200, $client);
     }
 
     /**

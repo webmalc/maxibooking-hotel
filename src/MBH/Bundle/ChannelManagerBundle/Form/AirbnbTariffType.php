@@ -29,7 +29,7 @@ class AirbnbTariffType extends AbstractType
                     return $repository->fetchQueryBuilder($options['hotel'], null, true);
                 },
                 'help' => 'form.airbnb_tariff_type.tariff.help',
-                'data' => $selectedTariff ? $selectedTariff : $hotel->getBaseTariff()
+                'data' => $selectedTariff ? $selectedTariff->getTariff() : $hotel->getBaseTariff()
             ]);
     }
 
