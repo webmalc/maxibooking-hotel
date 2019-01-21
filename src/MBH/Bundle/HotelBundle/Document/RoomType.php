@@ -20,7 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields={"fullTitle", "hotel"}, message="Такой тип номера уже существует")
- *
+ * @ODM\Index(keys={"deletedAt"="asc"})
  * @ODM\HasLifecycleCallbacks
  */
 class RoomType extends Base implements RoomTypeInterface

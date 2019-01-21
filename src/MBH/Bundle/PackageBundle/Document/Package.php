@@ -28,8 +28,8 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks
  * @MongoDBUnique(fields="numberWithPrefix", message="Такой номер брони уже существует")
- * @ODM\Index(keys={"begin"="asc","end"="asc","roomType"="asc", "virtualRoom"="asc", "deletedAt"="asc", "_id"="asc" })
-
+ * @ODM\Index(name="search_rt_del_end_begin", keys={"roomType"="asc", "deletedAt"="asc", "end"="asc", "begin"="asc"})
+ * @ODM\Index(name="search_del_end_begin", keys={"deletedAt"="asc", "end"="asc", "begin"="asc"})
  */
 class Package extends Base implements \JsonSerializable
 {

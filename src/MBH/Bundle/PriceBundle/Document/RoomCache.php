@@ -14,6 +14,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Gedmo\Loggable
  * @MongoDBUnique(fields={"roomType", "date", "tariff"}, message="RoomCache already exist.")
  * @ODM\Index(keys={"hotel"="asc","roomType"="asc","date"="asc"})
+ * @ODM\Index(name="search_roomtype_tariff_date", keys={"roomType"="asc","date"="asc","totalRooms"="asc"})
+
  */
 class RoomCache extends Base
 {
