@@ -24,6 +24,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields={"fullTitle", "hotel"}, message="mbhpricebundle.document.tariff.takoy.tarif.uzhe.sushchestvuyet")
  * @ODM\HasLifecycleCallbacks
+ * @ODM\Index(name="search_enabled_deletedAt", keys={"isEnabled"="asc","deletedAt"="asc"})
  */
 class Tariff extends Base implements ConditionsInterface
 {

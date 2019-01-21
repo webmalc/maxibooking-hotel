@@ -26,6 +26,7 @@ use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields={"fullTitle", "hotel"}, message="mbhhotelbundle.document.roomtype.takoy.tip.nomera.uzhe.sushchestvuyet")
  * @Disableable\Disableable
+ * @ODM\Index(keys={"deletedAt"="asc"})
  * @ODM\HasLifecycleCallbacks
  */
 class RoomType extends Base implements RoomTypeInterface

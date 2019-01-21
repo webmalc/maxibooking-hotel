@@ -20,6 +20,7 @@ use MBH\Bundle\BaseBundle\Lib\Disableable as Disableable;
  * @ODM\HasLifecycleCallbacks
  * @Disableable\Disableable
  * @ODM\Index(keys={"hotel"="asc","roomType"="asc","tariff"="asc","date"="asc"})
+ * @ODM\Index(name="search_enabled_date_roomType", keys={"isEnabled"="asc","date"="asc","roomType"="asc"})
  */
 class PriceCache extends Base
 {
