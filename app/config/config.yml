@@ -366,7 +366,6 @@ liip_imagine:
                 max: [1980,1280]
             post_processors:
               jpegoptim: { strip_all: true, max: 100, progressive: true }
-              optipng: { strip_all: true , level: 1}
 
         size_500x500:
             quality: 80
@@ -375,7 +374,6 @@ liip_imagine:
                 max: [500,500]
             post_processors:
               jpegoptim: { strip_all: true, max: 80, progressive: true }
-              optipng: { strip_all: true, level: 1 }
 
         protected_scaler:
             cache: protected_cached_images
