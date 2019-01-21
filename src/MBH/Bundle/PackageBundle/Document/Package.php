@@ -31,6 +31,9 @@ use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks
  * @MongoDBUnique(fields="numberWithPrefix", message="mbhpackagebundle.document.package.takoy.nomer.broni.uzhe.sushchestvuyet")
+ * @MongoDBUnique(fields="numberWithPrefix", message="Такой номер брони уже существует")
+ * @ODM\Index(keys={"begin"="asc","end"="asc","roomType"="asc", "virtualRoom"="asc", "deletedAt"="asc", "_id"="asc" })
+
  */
 class Package extends Base implements \JsonSerializable
 {
