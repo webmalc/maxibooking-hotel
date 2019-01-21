@@ -45,16 +45,17 @@ class AsyncResultStore implements AsyncResultStoreInterface
     {
         $hash = $conditions->getSearchHash();
         if ($result instanceof Result) {
-            $uniqueId = $result->getId();
+            $resultUniqueId = $result->getId();
             $data = $this->serializer->serialize($result);
         } else {
-            $uniqueId = $result['id'];
+            $resultUniqueId = $result['id'];
             $data = $this->serializer->encodeArrayToJson($result);
         }
 
-        $key = $hash . $uniqueId;
+//        $key = $hash . $uniqueId;
         /** @var Result $searchResult */
-        $this->cache->set($key, $data);
+        $this->cache->set($resultUniqueId, $data);
+        $this->cache->sadd($hash, [$resultUniqueId]);
     }
 
     /**
@@ -84,21 +85,19 @@ class AsyncResultStore implements AsyncResultStoreInterface
             throw new AsyncResultReceiverException('Some error! Taken results more than Expected!');
         }
 
-        $prefix = (string)$this->cache->getOptions()->prefix;
-        $keys = $this->cache->keys($hash . '*');
-        array_walk($keys, function (&$key) use ($prefix) {
-            $key = str_replace($prefix, '', $key);
-        });
+        $keys = $this->cache->smembers($hash);
 
         foreach ($keys as $key) {
             $results[] = $this->cache->get($key);
             $keysForDelete[] = $key;
+            $this->cache->srem($hash, $key);
         }
         if (\count($keysForDelete)) {
             $received = $this->cache->del($keysForDelete);
+
         }
 
-        $this->cache->set('received'. $hash, (int)$receivedCount + $received);
+        $this->cache->set('received'. $hash, $receivedCount + $received);
         $results = array_map([$this->serializer, 'decodeJsonToArray'], $results);
 
         $results = $this->finalResultsBuilder
