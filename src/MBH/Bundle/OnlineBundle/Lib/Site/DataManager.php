@@ -16,6 +16,7 @@ use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 abstract class DataManager
 {
     public const FILTER_SIZE_1980X1280 = 'size_1980x1280';
+    public const FILTER_SIZE_500X500 = 'size_500x500';
     public const FILTER_THUMB_155x155 = 'thumb_155x155';
     public const FILTER_SCALER = 'scaler';
 
@@ -62,7 +63,7 @@ abstract class DataManager
             $imageData
                 ->setIsMain($image->getIsDefault())
                 ->setUrl($this->generateUrl($image))
-                ->setSmallUrl($this->generateUrl($image, self::FILTER_THUMB_155x155))
+                ->setSmallUrl($this->generateUrl($image, self::FILTER_SIZE_500X500))
                 ->setHeight($image->getHeight())
                 ->setWidth($image->getWidth());
 

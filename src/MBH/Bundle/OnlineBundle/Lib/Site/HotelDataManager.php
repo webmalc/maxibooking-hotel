@@ -95,7 +95,7 @@ class HotelDataManager extends DataManager
                 }
             }
             if (!empty($this->hotel->getMapImage())) {
-                $comprehensiveData['mapUrl'] = $this->generateUrl($this->hotel->getMapImage(), 'scaler');
+                $comprehensiveData['mapUrl'] = $this->generateUrl($this->hotel->getMapImage(), self::FILTER_SCALER);
             }
 
             $data = array_merge($data, $comprehensiveData);
