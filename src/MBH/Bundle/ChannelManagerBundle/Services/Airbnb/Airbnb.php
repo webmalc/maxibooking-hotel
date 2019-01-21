@@ -154,18 +154,16 @@ class Airbnb extends AbstractChannelManagerService
             $emptyPriceCachePeriods = $warningsCompiler
                 ->getEmptyCachePeriodsForRoomTypeAndTariff($roomType, $begin, $end, $tariff, PriceCache::class, 'price');
             $emptyRoomCachePeriods = $warningsCompiler
-                ->getEmptyCachePeriodsForRoomTypeAndTariff($roomType, $begin, $end, $tariff, RoomCache::class, 'totalRooms');
+                ->getEmptyCachePeriodsForRoomTypeAndTariff($roomType, $begin, $end, $tariff, RoomCache::class, 'leftRooms');
             $closedPeriods = $warningsCompiler->getClosedPeriods($begin, $end, $roomType, $tariff);
 
             $emptyCachePeriods = array_map(function (EmptyCachePeriod $emptyCachePeriod) {
                 return ['begin' => $emptyCachePeriod->getBegin(), 'end' => $emptyCachePeriod->getEnd()];
             }, array_merge($emptyPriceCachePeriods, $emptyRoomCachePeriods, $closedPeriods));
 
-            $busyPeriods = array_merge($this->getPackagePeriods($roomType, $begin, $end), $emptyCachePeriods);
-
             $combinedPeriods = $this->container
                 ->get('mbh.periods_compiler')
-                ->combineIntersectedPeriods($busyPeriods);
+                ->combineIntersectedPeriods($emptyCachePeriods);
 
             foreach ($combinedPeriods as $period) {
                 $this->addEvent($calendar, $period['begin'], $period['end']);
@@ -248,7 +246,7 @@ class Airbnb extends AbstractChannelManagerService
         $vEvent = new Event();
         $vEvent->setDtStart($begin);
         //if "notime" param is true, vendor increase end date by one day(class Event, line 263)
-        $vEvent->setDtEnd(($end)->modify('-1 day'));
+        $vEvent->setDtEnd($end);
         $vEvent->setNoTime(true);
 
         $calendar->addComponent($vEvent);
@@ -309,46 +307,5 @@ class Airbnb extends AbstractChannelManagerService
         }
 
         return $packagesByRoomIds;
-    }
-
-    /**
-     * @param RoomType $roomType
-     * @param \DateTime  $begin
-     * @param \DateTime  $end
-     * @return array
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     */
-    private function getPackagePeriods(RoomType $roomType, \DateTime $begin, \DateTime $end)
-    {
-        $packageCriteria = new PackageQueryCriteria();
-        $packageCriteria->filter = 'live_between';
-        $packageCriteria->begin = $begin;
-        $packageCriteria->end = $end;
-        $packageCriteria->addRoomTypeCriteria($roomType);
-
-        $rawPackages = $this->dm
-            ->getRepository('MBHPackageBundle:Package')
-            ->queryCriteriaToBuilder($packageCriteria)
-            ->hydrate(false)
-            ->select(['begin', 'end'])
-            ->getQuery()
-            ->execute()
-            ->toArray();
-
-        $packagePeriods = [];
-        foreach ($rawPackages as $rawPackage) {
-            $packageBegin = $rawPackage['begin']
-                ->toDateTime()
-                ->setTimezone(new \DateTimeZone(date_default_timezone_get()));
-            $packageEnd = ($rawPackage['end']->toDateTime())
-                ->setTimezone(new \DateTimeZone(date_default_timezone_get()));
-
-            $packagePeriods[] = [
-                'begin' => $packageBegin >= $begin ? $packageBegin : $begin,
-                'end' => $packageEnd <= $end ? $packageEnd : $end
-            ];
-        }
-
-        return $packagePeriods;
     }
 }

@@ -97,14 +97,9 @@ class AirbnbTest extends UnitTestCase
         $calendar = new ICal($generatedRoomCalendar);
         $events = $calendar->events();
 
-        $eventCausedByPackages = $events[0];
-        $this->assertEquals((new \DateTime())->format('Ymd'), $eventCausedByPackages->dtstart);
-        //package begin is now +10 days, length 8 days, -1 day because last day of package is free
-        $this->assertEquals((new \DateTime('+18 days -1 day'))->format('Ymd'), $eventCausedByPackages->dtend);
-
         $lastEvent = end($events);
         $dayAfterLastRoomCache = new \DateTime(RoomCacheData::PERIOD_LENGTH_STR);
-        $lastDayOfSentData = new \DateTime('midnight +' . Airbnb::PERIOD_LENGTH);
+        $lastDayOfSentData = new \DateTime('midnight + 1 day +' . Airbnb::PERIOD_LENGTH);
         $this->assertEquals($dayAfterLastRoomCache->format('Ymd'), $lastEvent->dtstart);
         $this->assertEquals($lastDayOfSentData->format('Ymd'), $lastEvent->dtend);
     }
