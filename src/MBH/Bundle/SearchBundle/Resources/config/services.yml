@@ -628,16 +628,16 @@ services:
         - [pushHandler, ['@mbh_search.compare_logger_handler']]
 
 #data collector
-    mbh_search.cache_collector:
-        class: MBH\Bundle\SearchBundle\DataCollector\ResultCachedCollector
-        arguments:
-            - '@snc_redis.cache_results_client'
-            - '@mbh_search.search_cache_item_repository'
-        tags:
-            -
-                name: data_collector
-                template: 'MBHSearchBundle:DataCollector:template.html.twig'
-                id: 'search.cache.collector'
+#    mbh_search.cache_collector:
+#        class: MBH\Bundle\SearchBundle\DataCollector\ResultCachedCollector
+#        arguments:
+#            - '@snc_redis.cache_results_client'
+#            - '@mbh_search.search_cache_item_repository'
+#        tags:
+#            -
+#                name: data_collector
+#                template: 'MBHSearchBundle:DataCollector:template.html.twig'
+#                id: 'search.cache.collector'
 
 #subscriber
     mbh_search.combination.event.subscriber:
