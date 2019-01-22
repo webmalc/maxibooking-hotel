@@ -44,6 +44,15 @@ class Calculation
     }
 
 
+    /**
+     * @param CalcQuery $calcQuery
+     * @return array
+     * @throws CalcHelperException
+     * @throws CalculationException
+     * @throws SharedFetcherException
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\PriceCachesMergerException
+     */
     public function calcPrices(CalcQuery $calcQuery): array
     {
         $priceCaches = $this->priceCacheMerger->getMergedPriceCaches($calcQuery);
@@ -51,6 +60,14 @@ class Calculation
         return $this->getPrices($priceCaches, $calcQuery);
     }
 
+    /**
+     * @param array $priceCaches
+     * @param CalcQuery $calcQuery
+     * @return array
+     * @throws CalcHelperException
+     * @throws CalculationException
+     * @throws SharedFetcherException
+     */
     private function getPrices(array $priceCaches, CalcQuery $calcQuery): array
     {
         $prices = [];
@@ -121,7 +138,7 @@ class Calculation
             $multiPrices = ($addsAdults + $addsChildren) > 1;
             $isIndividualPrices = $calcQuery->isIndividualAdditionalPrices();
 
-            $mainChildrenPrice = $this->getMainChildrenPrice($rawPriceCache, $calcQuery, $mainChildren);
+            $mainChildrenPrice = $this->getMainChildrenPrice($rawPriceCache, $calcQuery, $mainChildren, $all);
             $mainAdultPrice = $this->getMainAdultsPrice($rawPriceCache, $calcQuery, $mainAdults, $all);
             $additionalAdultPrice = $this->getAdditionalAdultsPrice($rawPriceCache, $addsAdults, $multiPrices, $isIndividualPrices);
             $additionalChildrenPrice = $this->getAdditionalChildrenPrice($rawPriceCache, $addsChildren, $multiPrices, $addsAdults, $isIndividualPrices, $promotion);
@@ -147,7 +164,7 @@ class Calculation
     }
 
 
-    private function getMainAdultsPrice(array $rawPriceCache, CalcQuery $calcQuery, int $mainAdults, int $all): int
+    private function getMainAdultsPrice(array $rawPriceCache, CalcQuery $calcQuery, int $mainAdults, int $all): float
     {
         $adultPrice = $rawPriceCache['price'];
         $price = $adultPrice;
@@ -162,7 +179,17 @@ class Calculation
         return $price;
     }
 
-    private function getMainChildrenPrice(array $rawPriceCache, CalcQuery $calcQuery, int $mainChildren, Promotion $promotion = null)
+    /**
+     * @param array $rawPriceCache
+     * @param CalcQuery $calcQuery
+     * @param int $mainChildren
+     * @param int $all
+     * @param Promotion|null $promotion
+     * @return float|int
+     * @throws CalcHelperException
+     * @throws CalculationException
+     */
+    private function getMainChildrenPrice(array $rawPriceCache, CalcQuery $calcQuery, int $mainChildren, int $all, Promotion $promotion = null): float
 
     {
         $price = 0;
@@ -189,7 +216,7 @@ class Calculation
      * @return float|int
      * @throws CalculationAdditionalPriceException
      */
-    private function getAdditionalAdultsPrice(array $rawPriceCache, int $addsAdults, bool $multiPrices, bool $isIndividualPrices)
+    private function getAdditionalAdultsPrice(array $rawPriceCache, int $addsAdults, bool $multiPrices, bool $isIndividualPrices): float
     {
         $addsAdultsPrices = 0;
         if (!$addsAdults) {
@@ -212,7 +239,17 @@ class Calculation
         return $addsAdultsPrices;
     }
 
-    private function getAdditionalChildrenPrice(array $rawPriceCache, int $addsChildren, bool $multiPrices, int $addsAdults, bool $isIndividualPrices, Promotion $promotion = null): int
+    /**
+     * @param array $rawPriceCache
+     * @param int $addsChildren
+     * @param bool $multiPrices
+     * @param int $addsAdults
+     * @param bool $isIndividualPrices
+     * @param Promotion|null $promotion
+     * @return int
+     * @throws CalculationAdditionalPriceException
+     */
+    private function getAdditionalChildrenPrice(array $rawPriceCache, int $addsChildren, bool $multiPrices, int $addsAdults, bool $isIndividualPrices, Promotion $promotion = null): float
     {
         $addsChildrenPrice = 0;
         if (!$addsChildren) {
@@ -239,7 +276,7 @@ class Calculation
         return $addsChildrenPrice;
     }
 
-    private function multiAdditionalPricesCalc($addsAdults, $additionalPrices, $additionalPrice, $offset = 0): int
+    private function multiAdditionalPricesCalc($addsAdults, $additionalPrices, $additionalPrice, $offset = 0): float
     {
         $result = 0;
         for ($i = 0; $i < $addsAdults; $i++) {
@@ -280,6 +317,14 @@ class Calculation
     }
 
     //Сортировка кто на основное, кто на доп места.
+
+    /**
+     * @param int $adults
+     * @param int $children
+     * @param int $places
+     * @param Promotion|null $promotion
+     * @return array
+     */
     private function getSortedTourists(int $adults, int $children, int $places, Promotion $promotion = null): array
     {
         if ($promotion) {
@@ -328,6 +373,13 @@ class Calculation
         ];
     }
 
+    /**
+     * @param Promotion|null $promotion
+     * @param int $duration
+     * @param int $adultsCombination
+     * @param int $childrenCombination
+     * @return bool
+     */
     private function checkPromoConditions(Promotion $promotion = null, int $duration, int $adultsCombination, int $childrenCombination): bool
     {
         $promoConditions = (bool)PromotionConditionFactory::checkConditions(
