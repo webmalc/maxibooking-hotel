@@ -420,13 +420,21 @@ class ApiController extends Controller
             $search = $this->get('mbh.package.search');
 
             $tariffResults = $search->searchTariffs($query);
-            $selectedHotel = $this->dm->getRepository(Hotel::class)->find($request->get('hotel'));
-            if ($selectedHotel === null && $formConfig->getHotels()->count() === 1) {
-                $selectedHotel = $formConfig->getHotels()->toArray()[0];
+            $selectedHotels = [];
+
+            if (!empty($request->get('hotel'))) {
+                $selectedHotel = $this->dm->getRepository(Hotel::class)->find($request->get('hotel'));
+                if ($selectedHotel !== null) {
+                    $selectedHotels = [$selectedHotel];
+                }
+            } else {
+                $selectedHotels = $formConfig->getHotels()->toArray();
             }
-            if ($selectedHotel !== null) {
-                $tariffResults = array_filter($tariffResults, function(Tariff $tariff) use ($selectedHotel) {
-                    return $tariff->getHotel() === $selectedHotel;
+
+            if ($selectedHotels !== []) {
+                $selectedHotelIds = array_map(function (Hotel $hotel) {return $hotel->getId(); }, $selectedHotels);
+                $tariffResults = array_filter($tariffResults, function(Tariff $tariff) use ($selectedHotelIds) {
+                    return in_array($tariff->getHotel()->getId(), $selectedHotelIds);
                 });
             }
 
