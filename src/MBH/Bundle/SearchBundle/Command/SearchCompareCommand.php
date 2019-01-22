@@ -19,6 +19,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class SearchCompareCommand extends Command
@@ -63,10 +64,12 @@ class SearchCompareCommand extends Command
     {
         $this->setName('mbh:search:compare');
         $this
-            ->addOption('tariffId', null, InputArgument::OPTIONAL, 'TariffId for specific search.')
-            ->addOption('roomTypeId', null, InputArgument::OPTIONAL, 'RoomTypeId for specific search.')
-            ->addOption('begin', null, InputArgument::OPTIONAL, 'Begin d.m.Y')
-            ->addOption('end', null, InputArgument::OPTIONAL, 'End d.m.Y');
+            ->addOption('tariffId', null, InputOption::VALUE_OPTIONAL, 'TariffId for specific search.')
+            ->addOption('roomTypeId', null, InputOption::VALUE_OPTIONAL, 'RoomTypeId for specific search.')
+            ->addOption('begin', null, InputOption::VALUE_OPTIONAL, 'Begin d.m.Y')
+            ->addOption('end', null, InputOption::VALUE_OPTIONAL, 'End d.m.Y')
+            ->addOption('cache', null, InputOption::VALUE_NONE, 'is Use cache ?')
+        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -108,7 +111,7 @@ class SearchCompareCommand extends Command
                     'roomTypes' => $categoryId ?? [],
                     'tariffs' => $tariffIds,
                     'errorLevel' => 0,
-                    'isUseCache' => false
+                    'isUseCache' => $input->getOption('cache')
                 ];
                 $newResult = $this->newSearchResults($data);
                 $oldResult = $this->oldSearchResults($data);
@@ -132,19 +135,6 @@ class SearchCompareCommand extends Command
 
     private function compareResults(array $compareData, array $data)
     {
-
-//        $result[$data['begin']
-//        .'_'
-//        .$data['end']
-//        .'_'
-//        .$data['adults']
-//        .'_'
-//        .$data['children'].
-//        '_'.
-//        implode(
-//            '_',
-//            $data['childrenAges'] ?? []
-//        )] = array_values($results);
         $matched = array_filter(
             $compareData,
             function ($result) {
