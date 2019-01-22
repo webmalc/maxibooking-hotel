@@ -112,20 +112,26 @@ class PackageRepository extends DocumentRepository
         return $qb->select(['virtualRoom', 'begin', 'end'])->hydrate(false)->getQuery()->execute()->toArray();
     }
 
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param RoomType|null $roomType
+     * @param Package|null $exclude
+     * @return Builder
+     */
     private function fetchWithVirtualRoomsQB(\DateTime $begin, \DateTime $end, RoomType $roomType = null, Package $exclude = null){
-        $qb = $this->createQueryBuilder()
-            ->field('begin')->lte($end)
-            ->field('end')->gte($begin)
-            ->field('virtualRoom')->notEqual(null)
-            ->field('deletedAt')->equals(null);
-
-        if ($roomType) {
-            $qb->field('roomType.id')->equals($roomType->getId());
-        }
-
+        $qb = $this->createQueryBuilder();
         if ($exclude) {
             $qb->field('id')->notEqual($exclude->getId());
         }
+        if ($roomType) {
+            $qb->field('roomType.id')->equals($roomType->getId());
+        }
+        $qb
+            ->field('end')->gte($begin)
+            ->field('begin')->lte($end)
+            ->field('virtualRoom')->notEqual(null)
+            ->field('deletedAt')->equals(null);
 
         return $qb;
     }

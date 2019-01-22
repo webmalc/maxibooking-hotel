@@ -18,6 +18,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @MongoDBUnique(fields={"fullTitle", "roomType"}, message="mbhhotelbundle.document.room.takoy.nomer.uzhe.sushchestvuyet")
  * @ODM\Index(name="search_enabled_roomType", keys={"isEnabled"="asc","roomType"="asc"})
+ * @ODM\Index(name="search_deletedAt", keys={"deletedAt"="asc"})
+ * @ODM\Index(name="search_enabled_deletedAt", keys={"isEnabled"="asc","deletedAt"="asc"})
  */
 class Room extends Base
 {

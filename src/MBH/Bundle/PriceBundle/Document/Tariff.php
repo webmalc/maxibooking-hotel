@@ -25,6 +25,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @MongoDBUnique(fields={"fullTitle", "hotel"}, message="mbhpricebundle.document.tariff.takoy.tarif.uzhe.sushchestvuyet")
  * @ODM\HasLifecycleCallbacks
  * @ODM\Index(name="search_enabled_deletedAt", keys={"isEnabled"="asc","deletedAt"="asc"})
+ * @ODM\Index(name="search_deletedAt", keys={"deletedAt"="asc"})
+ *
  */
 class Tariff extends Base implements ConditionsInterface
 {

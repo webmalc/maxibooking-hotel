@@ -220,6 +220,7 @@ class RoomType extends Base implements RoomTypeInterface
     /**
      * @var RoomTypeCategory|null
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\RoomTypeCategory", inversedBy="types")
+     * @ODM\Index()
      */
     protected $category;
 
