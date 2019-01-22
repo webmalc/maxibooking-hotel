@@ -164,7 +164,7 @@ class Calculation
     }
 
 
-    private function getMainAdultsPrice(array $rawPriceCache, CalcQuery $calcQuery, int $mainAdults, int $all): int
+    private function getMainAdultsPrice(array $rawPriceCache, CalcQuery $calcQuery, int $mainAdults, int $all): float
     {
         $adultPrice = $rawPriceCache['price'];
         $price = $adultPrice;
@@ -189,7 +189,7 @@ class Calculation
      * @throws CalcHelperException
      * @throws CalculationException
      */
-    private function getMainChildrenPrice(array $rawPriceCache, CalcQuery $calcQuery, int $mainChildren, int $all, Promotion $promotion = null)
+    private function getMainChildrenPrice(array $rawPriceCache, CalcQuery $calcQuery, int $mainChildren, int $all, Promotion $promotion = null): float
 
     {
         $price = 0;
@@ -216,7 +216,7 @@ class Calculation
      * @return float|int
      * @throws CalculationAdditionalPriceException
      */
-    private function getAdditionalAdultsPrice(array $rawPriceCache, int $addsAdults, bool $multiPrices, bool $isIndividualPrices)
+    private function getAdditionalAdultsPrice(array $rawPriceCache, int $addsAdults, bool $multiPrices, bool $isIndividualPrices): float
     {
         $addsAdultsPrice = 0;
         if (!$addsAdults) {
@@ -249,7 +249,7 @@ class Calculation
      * @return int
      * @throws CalculationAdditionalPriceException
      */
-    private function getAdditionalChildrenPrice(array $rawPriceCache, int $addsChildren, bool $multiPrices, int $addsAdults, bool $isIndividualPrices, Promotion $promotion = null): int
+    private function getAdditionalChildrenPrice(array $rawPriceCache, int $addsChildren, bool $multiPrices, int $addsAdults, bool $isIndividualPrices, Promotion $promotion = null): float
     {
         $addsChildrenPrice = 0;
         if (!$addsChildren) {
@@ -276,7 +276,7 @@ class Calculation
         return $addsChildrenPrice;
     }
 
-    private function multiAdditionalPricesCalc($addsAdults, $additionalPrices, $additionalPrice, $offset = 0): int
+    private function multiAdditionalPricesCalc($addsAdults, $additionalPrices, $additionalPrice, $offset = 0): float
     {
         $result = 0;
         for ($i = 0; $i < $addsAdults; $i++) {
