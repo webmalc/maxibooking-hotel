@@ -26,7 +26,7 @@ class SearchCompareCommand extends Command
 {
 
     /** @var int */
-    private const PRICE_MISMATCH_THRESHOLD = 10;
+    private const PRICE_MISMATCH_THRESHOLD = 1;
 
     /** @var NewSearch */
     private $newSearch;
@@ -127,10 +127,7 @@ class SearchCompareCommand extends Command
                 $this->compareResults($compareData, $data);
 
             }
-
         }
-
-
     }
 
     private function compareResults(array $compareData, array $data)
@@ -143,7 +140,7 @@ class SearchCompareCommand extends Command
 
                 return $oldTotal !== null && $newTotal !== null && (abs(
                             $oldTotal - $newTotal
-                        ) < self::PRICE_MISMATCH_THRESHOLD);
+                        ) <= self::PRICE_MISMATCH_THRESHOLD);
             }
         );
 
@@ -177,7 +174,7 @@ class SearchCompareCommand extends Command
 
                 return $oldTotal !== null && $newTotal !== null && abs(
                         $oldTotal - $newTotal
-                    ) >= self::PRICE_MISMATCH_THRESHOLD;
+                    ) > self::PRICE_MISMATCH_THRESHOLD;
             }
         );
 
