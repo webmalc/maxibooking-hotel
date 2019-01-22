@@ -14,6 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Gedmo\Loggable
  * @MongoDBUnique(fields={"roomType", "date", "tariff"}, message="Restriction already exist.")
  * @ODM\Index(name="search_roomtype_tariff_date", keys={"roomType"="asc","tariff"="asc","date"="asc"})
+ * @ODM\Index(name="search_roomtype_date", keys={"roomType"="asc","date"="asc"})
  */
 class Restriction extends Base
 {

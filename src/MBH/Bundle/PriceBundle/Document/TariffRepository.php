@@ -95,8 +95,7 @@ class TariffRepository extends DocumentRepository
         $queryBuilder = $this->createQueryBuilder();
 
         $queryBuilder
-            ->field('id')->equals($tariffId)
-            ->limit(1);
+            ->field('id')->equals($tariffId);
 
         /** @var Tariff $result */
         $result = $queryBuilder->getQuery()->getSingleResult();
@@ -126,8 +125,7 @@ class TariffRepository extends DocumentRepository
         $queryBuilder = $this->createQueryBuilder();
 
         $queryBuilder->field('isDefault')->equals(true)
-            ->field('hotel.id')->equals($hotel->getId())
-            ->limit(1);
+            ->field('hotel.id')->equals($hotel->getId());
 
         if ($online !== null) {
             $queryBuilder->field('isOnline')->equals(boolval($online));

@@ -219,6 +219,7 @@ class CacheWarmer
         $dm = $this->conditionRepository->getDocumentManager();
         $dm->persist($conditions);
         $dm->flush($conditions);
+        $dm->clear();
 
         $queries = $this->queryGenerator->generate($conditions);
         array_map(

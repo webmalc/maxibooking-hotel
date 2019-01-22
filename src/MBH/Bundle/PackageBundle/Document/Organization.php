@@ -178,6 +178,7 @@ class Organization implements PayerInterface, RecipientInterface, AddressInterfa
 
     /**
      * @ODM\ReferenceMany(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="organization")
+     * @ODM\Index()
      */
     protected $hotels;
     /**
