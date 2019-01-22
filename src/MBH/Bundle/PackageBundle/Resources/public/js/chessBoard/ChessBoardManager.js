@@ -154,8 +154,8 @@ var ChessBoardManager = /** @class */ (function () {
         if (canCreatePackage) {
             var eventName = isMobileDevice() ? 'contextmenu' : 'mousedown';
             dateElements.on(eventName, function (event) {
-                var tempStyle = chessBoardContentBlock.style.overflow;
-                chessBoardContentBlock.style.overflow = 'hidden';
+                // const tempStyle = chessBoardContentBlock.style.overflow;
+                // chessBoardContentBlock.style.overflow = 'hidden';
                 event.preventDefault();
                 var startXPosition = event.pageX;
                 var startLeftScroll = chessBoardContentBlock.scrollLeft;
@@ -193,7 +193,7 @@ var ChessBoardManager = /** @class */ (function () {
                     newPackage.style.width = packageWidth + 'px';
                 });
                 $(document).on('mouseup touchend', function () {
-                    chessBoardContentBlock.style.overflow = tempStyle;
+                    // chessBoardContentBlock.style.overflow = tempStyle;
                     $document.unbind('mousemove  mouseup touchend');
                     if ((newPackage.style.width) && _this.isPackageLocationCorrect(newPackage) && newPackage.id) {
                         var packageData = _this.getPackageData($(newPackage));

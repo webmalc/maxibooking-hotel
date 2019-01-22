@@ -208,8 +208,8 @@ class ChessBoardManager {
         if (canCreatePackage) {
             const eventName = isMobileDevice() ? 'contextmenu' : 'mousedown';
             dateElements.on(eventName, (event) => {
-                const tempStyle = chessBoardContentBlock.style.overflow;
-                chessBoardContentBlock.style.overflow = 'hidden';
+                // const tempStyle = chessBoardContentBlock.style.overflow;
+                // chessBoardContentBlock.style.overflow = 'hidden';
                 event.preventDefault();
                 const startXPosition = event.pageX;
                 const startLeftScroll = chessBoardContentBlock.scrollLeft;
@@ -249,7 +249,7 @@ class ChessBoardManager {
                     newPackage.style.width = packageWidth + 'px';
                 });
                 $(document).on('mouseup touchend', () => {
-                    chessBoardContentBlock.style.overflow = tempStyle;
+                    // chessBoardContentBlock.style.overflow = tempStyle;
                     $document.unbind('mousemove  mouseup touchend');
                     if ((newPackage.style.width) && this.isPackageLocationCorrect(newPackage) && newPackage.id) {
                         const packageData = this.getPackageData($(newPackage));
