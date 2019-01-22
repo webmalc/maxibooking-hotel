@@ -46,7 +46,7 @@ var dangerTr = function() {
 };
 
 mbh.loader = {
-    html: '<div class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i>'+ Translator.trans("package.processing") +'...</div>',
+    html: '<div class="alert alert-warning waiting-spinner"><i class="fa fa-spinner fa-spin"></i>'+ Translator.trans("package.processing") +'...</div>',
     acceptTo: function($container) {
         $container.html(this.html);
     }
