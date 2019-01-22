@@ -27,16 +27,20 @@ class Calculation
      */
     private $sharedDataFetcher;
 
+    /** @var int */
+    private $priceRoundSign;
+
 
     /**
      * Calculation constructor.
      * @param PriceCachesMerger $merger
      * @param SharedDataFetcher $sharedDataFetcher
      */
-    public function __construct(PriceCachesMerger $merger, SharedDataFetcher $sharedDataFetcher)
+    public function __construct(PriceCachesMerger $merger, SharedDataFetcher $sharedDataFetcher, int $priceRoundSign)
     {
         $this->priceCacheMerger = $merger;
         $this->sharedDataFetcher = $sharedDataFetcher;
+        $this->priceRoundSign = $priceRoundSign;
     }
 
 
@@ -142,8 +146,6 @@ class Calculation
             $dayPrice = $mainAdultPrice + $mainChildrenPrice + $additionalAdultPrice + $additionalChildrenPrice;
 
             $dayPrice -= PromotionConditionFactory::calcDiscount($promotion, $dayPrice, true);
-            $dayPrice = round($dayPrice, 0, PHP_ROUND_HALF_UP);
-
 
             $rawPriceDate = Helper::convertMongoDateToDate($rawPriceCache['date']);
             /** @var Tariff $tariff */
@@ -155,7 +157,7 @@ class Calculation
         }
 
         return [
-            'total' => $total,
+            'total' => round($total, $this->priceRoundSign),
             'prices' => $dayPrices,
             'packagePrices' => $packagePrices,
         ];

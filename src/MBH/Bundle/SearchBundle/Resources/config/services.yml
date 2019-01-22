@@ -184,11 +184,16 @@ services:
             - '@mbh_search.room_fetcher'
             - '@mbh_search.package_accommodation_fetcher'
 
+    mbh_search.price_round_sign:
+        class: stdClass
+        factory: ['@mbh_search.client_config', getPriceRoundSign]
+
     mbh_search.calculation:
         class: MBH\Bundle\SearchBundle\Services\Calc\Calculation
         arguments:
             - '@mbh_search.price_caches_merger'
             - '@mbh_search.shared_data_fetcher'
+            - '@mbh_search.price_round_sign'
 
     mbh_search.price_caches_merger:
         class: MBH\Bundle\SearchBundle\Services\Calc\PriceCachesMerger
@@ -340,6 +345,10 @@ services:
         factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
         arguments:
             - MBH\Bundle\ClientBundle\Document\ClientConfig
+
+    mbh_search.client_config:
+        class: MBH\Bundle\ClientBundle\Document\ClientConfig
+        factory: ["@mbh_search.client_config_repository", fetchConfig]
 
     mbh_search.restriction_repository:
         class: MBH\Bundle\PriceBundle\Document\RestrictionRepository
