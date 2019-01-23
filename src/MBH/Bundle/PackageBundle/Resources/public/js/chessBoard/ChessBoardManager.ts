@@ -33,6 +33,11 @@ class ChessBoardManager {
     private distanceByHovering = 4;
     private arrowWidth;
 
+    private _typesTypeColumn: HTMLElement;
+    private _monthsAndDates: HTMLElement;
+    private _headerTitle: HTMLElement;
+    private _chessboardTable: HTMLElement;
+
     public static deletePackageElement(packageId) {
         let packageElement = document.getElementById(packageId);
         if (packageElement) {
@@ -146,6 +151,11 @@ class ChessBoardManager {
     }
 
     private initParams() {
+        this._typesTypeColumn = document.getElementById('roomTypeColumn');
+        this._monthsAndDates = document.getElementById('months-and-dates');
+        this._headerTitle = document.getElementById('header-title');
+        this._chessboardTable = document.getElementById('chessboardTable');
+
         this.currentSizeConfigNumber = currentStyleConfigNumber;
         this.colors = colors;
         this.arrowWidth = this.getArrowWidth();
@@ -162,7 +172,7 @@ class ChessBoardManager {
     private initChessboardTable() {
         this.initParams();
         const chessBoardContentBlock = document.getElementById('accommodation-chessBoard-content');
-        const chessboardTable = document.getElementById('chessboardTable');
+
         this.setContentWidth(chessBoardContentBlock);
 
         $('.sidebar-toggle').click(() => {
@@ -183,10 +193,10 @@ class ChessBoardManager {
 
         if (!isMobileDevice()) {
             const chessboardContentTopOffset = $(chessBoardContentBlock).offset().top;
-            const chessboardTableTopOffset = $(chessboardTable).offset().top;
+            const chessboardTableTopOffset = $(this._chessboardTable).offset().top;
             //Фиксирование верхнего и левого блоков таблицы
-            chessboardTable.onscroll = function () {
-                ChessBoardManager.onChessboardTableScroll(chessboardTable, chessboardContentTopOffset - chessboardTableTopOffset);
+            this._chessboardTable.onscroll = () => {
+                this.onChessboardTableScroll(chessboardContentTopOffset - chessboardTableTopOffset);
             };
         }
 
@@ -198,7 +208,8 @@ class ChessBoardManager {
         if (canCreatePackage) {
             const eventName = isMobileDevice() ? 'contextmenu' : 'mousedown';
             dateElements.on(eventName, (event) => {
-                chessBoardContentBlock.style.overflow = 'hidden';
+                // const tempStyle = chessBoardContentBlock.style.overflow;
+                // chessBoardContentBlock.style.overflow = 'hidden';
                 event.preventDefault();
                 const startXPosition = event.pageX;
                 const startLeftScroll = chessBoardContentBlock.scrollLeft;
@@ -238,7 +249,7 @@ class ChessBoardManager {
                     newPackage.style.width = packageWidth + 'px';
                 });
                 $(document).on('mouseup touchend', () => {
-                    chessBoardContentBlock.style.overflow = 'auto';
+                    // chessBoardContentBlock.style.overflow = tempStyle;
                     $document.unbind('mousemove  mouseup touchend');
                     if ((newPackage.style.width) && this.isPackageLocationCorrect(newPackage) && newPackage.id) {
                         const packageData = this.getPackageData($(newPackage));
@@ -378,21 +389,15 @@ class ChessBoardManager {
         return griddedOffset;
     }
 
-    protected static onChessboardTableScroll(chessboardTable, chessboardContentTopOffset) {
+    protected onChessboardTableScroll(chessboardContentTopOffset) {
         'use strict';
-        let types = document.getElementById('roomTypeColumn');
-        types.style.left = chessboardTable.scrollLeft + 'px';
+        this._typesTypeColumn.style.left = this._chessboardTable.scrollLeft + 'px';
 
-        let monthsAndDates = document.getElementById('months-and-dates');
-        const scrollTop = chessboardTable.scrollTop > chessboardContentTopOffset ? chessboardTable.scrollTop - chessboardContentTopOffset : 0;
-        console.log(chessboardTable.scrollTop );
-        console.log(chessboardContentTopOffset);
-        console.log(scrollTop);
-        monthsAndDates.style.top = scrollTop + 'px';
+        const scrollTop = this._chessboardTable.scrollTop > chessboardContentTopOffset ? this._chessboardTable.scrollTop - chessboardContentTopOffset : 0;
+        this._monthsAndDates.style.top = scrollTop + 'px';
 
-        let headerTitle = document.getElementById('header-title');
-        headerTitle.style.top = scrollTop + 'px';
-        headerTitle.style.left = chessboardTable.scrollLeft + 'px';
+        this._headerTitle.style.top = scrollTop + 'px';
+        this._headerTitle.style.left = this._chessboardTable.scrollLeft + 'px';
     }
 
     protected getPackageLengthRestriction(startDate, isLeftMouseShift, tableStartDate, tableEndDate) {
