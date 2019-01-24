@@ -4,17 +4,23 @@
 namespace MBH\Bundle\SearchBundle\Services\Cache\Invalidate;
 
 
+use Doctrine\MongoDB\ArrayIterator;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\SearchBundle\Document\SearchResultCacheItem;
 use MBH\Bundle\SearchBundle\Document\SearchResultCacheItemRepository;
 use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateMessageFactory;
 use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateMessageInterface;
 use MBH\Bundle\SearchBundle\Lib\CacheInvalidate\InvalidateQuery;
+use MBH\Bundle\SearchBundle\Lib\Events\InvalidateKeysEvent;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultCacheException;
 use Predis\Client;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class SearchCacheInvalidator
 {
+    public const INVALIDATOR_KEY_INVALIDATE = 'invalidator.key.invalidate';
+
+    private const INVALIDATOR_MAX_KEYS_THRESHOLD = 10000;
 
     /** @var SearchResultCacheItemRepository */
     private $cacheItemRepository;
@@ -25,20 +31,26 @@ class SearchCacheInvalidator
     /** @var InvalidateMessageFactory */
     private $invalidateAdapterFactory;
 
+    /** @var EventDispatcherInterface */
+    private $dispatcher;
+
     /**
      * SearchCacheInvalidator constructor.
      * @param SearchResultCacheItemRepository $cacheItemRepository
      * @param Client $redis
      * @param InvalidateMessageFactory $factory
+     * @param EventDispatcherInterface $dispatcher
      */
     public function __construct(
         SearchResultCacheItemRepository $cacheItemRepository,
         Client $redis,
-        InvalidateMessageFactory $factory
+        InvalidateMessageFactory $factory,
+        EventDispatcherInterface $dispatcher
     ) {
         $this->cacheItemRepository = $cacheItemRepository;
         $this->redis = $redis;
         $this->invalidateAdapterFactory = $factory;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
@@ -71,11 +83,18 @@ class SearchCacheInvalidator
         //** TODO: Temporary add window days (7 days) */
         $this->addWindowsPeriod($begin, $end);
 
-        $keys = $this->cacheItemRepository->fetchCachedKeys($begin, $end, $roomTypeIds, $tariffIds);
-        if (\count($keys)) {
+        /** @var ArrayIterator $keysIterator */
+        $keysIterator = $this->cacheItemRepository->fetchCachedKeys($begin, $end, $roomTypeIds, $tariffIds);
+        if (($keysAmount = $keysIterator->count()) && $keysAmount < self::INVALIDATOR_MAX_KEYS_THRESHOLD) {
+            $keys = $keysIterator->toArray();
             $this->redis->del($keys);
             $this->cacheItemRepository->removeItemsByDates($begin, $end, $roomTypeIds, $tariffIds);
+
+            $event = new InvalidateKeysEvent();
+            $event->setKeys($keys);
+            $this->dispatcher->dispatch(static::INVALIDATOR_KEY_INVALIDATE, $event);
         }
+
     }
 
     /**
@@ -94,6 +113,10 @@ class SearchCacheInvalidator
         if (1 !== $deleted) {
             throw new SearchResultCacheException('No removed cache item from cache while invalidate');
         }
+
+        $event = new InvalidateKeysEvent();
+        $event->setKeys([$key]);
+        $this->dispatcher->dispatch(static::INVALIDATOR_KEY_INVALIDATE, $event);
     }
 
     public function flushCache(): void

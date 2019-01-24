@@ -378,7 +378,6 @@ services:
       arguments:
             - MBH\Bundle\SearchBundle\Document\SearchResultCacheItem
 #
-
 # Блок работы с данными
     mbh_search.data_holder:
         class: MBH\Bundle\SearchBundle\Lib\DataHolder
@@ -607,6 +606,8 @@ services:
     mbh_search.cache_logger_handler:
         class: Monolog\Handler\StreamHandler
         arguments: ["%kernel.logs_dir%/%kernel.environment%.cache.log", 200]
+        public: false
+
     mbh_search.cache_logger:
         class: Monolog\Logger
         arguments: ['cache']
@@ -648,11 +649,19 @@ services:
 #                template: 'MBHSearchBundle:DataCollector:template.html.twig'
 #                id: 'search.cache.collector'
 
-#subscriber
+#subscribers
     mbh_search.combination.event.subscriber:
         class: MBH\Bundle\SearchBundle\EventSubscriber\GuestCombinatorSubscriber
         tags:
             - {name: kernel.event_subscriber, event: combination.childrenAges }
+
+    mbh_search.invalidate.event.subscriber:
+        arguments:
+              - '@mbh_search.cache_warmer'
+              - '@mbh_search.cache_key_creator'
+        class: MBH\Bundle\SearchBundle\EventSubscriber\InvalidateEventSubscriber
+        tags:
+            - {name: kernel.event_subscriber, event: invalidator.key.invalidate }
 
 #error result filter
     mbh_search.error_result_filter:

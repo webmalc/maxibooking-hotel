@@ -8,6 +8,7 @@ use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\ClientConfigRepository;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use Symfony\Component\Form\AbstractType;
@@ -35,7 +36,7 @@ class SearchConditionsType extends AbstractType
     /**
      * @int
      */
-    public const MAX_CHILDREN_AGE = 13;
+    public const MAX_CHILDREN_AGE = 15;
 
     /**
      * @param FormBuilderInterface $builder
@@ -47,22 +48,36 @@ class SearchConditionsType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('begin', DateType::class, array(
-                'label' => 'form.searchType.check_in',
-                'widget' => 'single_text',
-                'format' => 'dd.MM.yyyy',
-                'required' => true,
-                'error_bubbling' => true,
-                'attr' => array('class' => 'datepicker begin-datepicker mbh-daterangepicker', 'data-date-format' => 'dd.mm.yyyy')
-            ))
-            ->add('end', DateType::class, array(
-                'label' => 'Отъезд',
-                'widget' => 'single_text',
-                'format' => 'dd.MM.yyyy',
-                'required' => true,
-                'error_bubbling' => true,
-                'attr' => array('class' => 'datepicker end-datepicker mbh-daterangepicker', 'data-date-format' => 'dd.mm.yyyy')
-            ))
+            ->add(
+                'begin',
+                DateType::class,
+                [
+                    'label' => 'form.searchType.check_in',
+                    'widget' => 'single_text',
+                    'format' => 'dd.MM.yyyy',
+                    'required' => true,
+                    'error_bubbling' => true,
+                    'attr' => [
+                        'class' => 'datepicker begin-datepicker mbh-daterangepicker',
+                        'data-date-format' => 'dd.mm.yyyy',
+                    ],
+                ]
+            )
+            ->add(
+                'end',
+                DateType::class,
+                [
+                    'label' => 'Отъезд',
+                    'widget' => 'single_text',
+                    'format' => 'dd.MM.yyyy',
+                    'required' => true,
+                    'error_bubbling' => true,
+                    'attr' => [
+                        'class' => 'datepicker end-datepicker mbh-daterangepicker',
+                        'data-date-format' => 'dd.mm.yyyy',
+                    ],
+                ]
+            )
             ->add(
                 'adults',
                 IntegerType::class,
@@ -97,26 +112,41 @@ class SearchConditionsType extends AbstractType
                         'attr' => [
                             'class' => 'plain-html children_age_select',
                         ],
-                        'data' => 12
+                        'data' => 12,
                     ],
                     'prototype' => true,
                     'allow_add' => true,
                     'allow_delete' => true,
                     'by_reference' => false,
                 ]
-            )
-            ->add(
+            );
+
+        if ($options['isForceDisableCategory']) {
+            $builder->add(
+                'roomTypes',
+                DocumentType::class,
+                [
+                    'class' => RoomType::class,
+                    'multiple' => true,
+                ]
+            );
+        } else {
+            $builder->add(
                 'roomTypes',
                 RoomTypesType::class
-            )
+            );
+        }
+
+        $builder
             ->add(
-                'order', NumberType::class,
+                'order',
+                NumberType::class,
                 [
                     'required' => false,
                     'label' => false,
                     'attr' => [
-                        'class' => 'input-xs only-int form-control input-sm'
-                    ]
+                        'class' => 'input-xs only-int form-control input-sm',
+                    ],
                 ]
             )
             ->add(
@@ -205,7 +235,7 @@ class SearchConditionsType extends AbstractType
                 [
                     'data_class' => SearchConditions::class,
                     'csrf_protection' => false,
-
+                    'isForceDisableCategory' => false,
                 ]
             );
     }

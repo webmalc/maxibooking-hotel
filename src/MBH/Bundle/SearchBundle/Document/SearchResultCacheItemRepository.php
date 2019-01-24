@@ -41,7 +41,6 @@ class SearchResultCacheItemRepository extends DocumentRepository
             ->distinct('cacheResultKey')
             ->getQuery()
             ->execute()
-            ->toArray()
         ;
 
     }

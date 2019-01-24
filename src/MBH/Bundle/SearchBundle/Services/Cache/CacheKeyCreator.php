@@ -57,6 +57,19 @@ class CacheKeyCreator
     }
 
     /**
+     * @param string $key
+     * @return array
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\CacheKeyFactoryException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
+     */
+    public function extractWarmUpKey(string $key): array
+    {
+        $tariffId = explode('_', $key)[3];
+
+        return $this->getCreator($tariffId)->extractWarmUpKey($key);
+    }
+
+    /**
      * @param string $tariffId
      * @return \MBH\Bundle\SearchBundle\Lib\Combinations\CacheKey\CacheKeyInterface
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\CacheKeyFactoryException
