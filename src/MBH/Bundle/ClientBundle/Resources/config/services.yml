@@ -1,5 +1,5 @@
 parameters:
-    log_file.documents_template_update: !php/const:MBH\Bundle\ClientBundle\Command\DocumentTemplateUpdateCommand::FILE_LOG_NAME
+    log_file.documents_template: !php/const:MBH\Bundle\ClientBundle\Command\DocumentTemplateUpdateCommand::FILE_LOG_NAME
 
 services:
     mbh.mbhs:
@@ -105,16 +105,16 @@ services:
         arguments:
             - '@service_container'
 
-    mbh.document_template_update.logger:
+    mbh.document_template.logger:
           class:     Symfony\Bridge\Monolog\Logger
           arguments: [app]
           calls:
-              - [pushHandler, ['@mbh.document_template_update.logger_handler']]
+              - [pushHandler, ['@mbh.document_template.logger_handler']]
 
-    mbh.document_template_update.logger_handler:
+    mbh.document_template.logger_handler:
         class:     Monolog\Handler\StreamHandler
         arguments:
-            - "%kernel.logs_dir%/%kernel.environment%.%log_file.documents_template_update%"
+            - "%kernel.logs_dir%/%kernel.environment%.%log_file.documents_template%"
             - 200
 
     mbh.payment_tinkoff.logger:
