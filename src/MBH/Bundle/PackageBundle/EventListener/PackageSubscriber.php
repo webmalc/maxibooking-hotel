@@ -67,6 +67,8 @@ class PackageSubscriber implements EventSubscriber
             $entity->setServicesPrice(0);
             $dm->persist($entity);
             $dm->flush($entity);
+
+            $this->cacheInvalidate($entity);
         }
 
     }

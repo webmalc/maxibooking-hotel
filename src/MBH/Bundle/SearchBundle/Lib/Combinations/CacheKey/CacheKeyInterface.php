@@ -11,4 +11,6 @@ interface CacheKeyInterface
     public function getKey(SearchQuery $searchQuery): string;
 
     public function getWarmUpKey(SearchQuery $searchQuery): string;
+
+    public function extractWarmUpKey(string $key): array;
 }

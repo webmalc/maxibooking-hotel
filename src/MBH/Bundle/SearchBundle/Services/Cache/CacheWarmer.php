@@ -131,9 +131,9 @@ class CacheWarmer
     public function warmUpSpecificQuery(
         \DateTime $begin,
         \DateTime $end,
-        ?array $roomTypeIds = [],
-        ?array $tariffIds = [],
-        ?array $combination = []
+        array $roomTypeIds = [],
+        array $tariffIds = [],
+        array $combination = []
     ): void {
         $conditionsData = [
             'begin' => $begin->format('d.m.Y'),
@@ -145,8 +145,10 @@ class CacheWarmer
             'isThisWarmUp' => true,
             'adults' => $combination['adults'],
             'children' => $combination['children'],
+            'childrenAges' => $combination['childrenAges'] ?? [],
             'tariffs' => $tariffIds,
             'roomTypes' => $roomTypeIds,
+            'isForceDisableCategory' => true
         ];
 
         $this->doWarmUp($conditionsData);
@@ -210,8 +212,6 @@ class CacheWarmer
      * @param int $priority
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
      */
     protected function doWarmUp(array $conditionsData, int $priority = 1): void
     {

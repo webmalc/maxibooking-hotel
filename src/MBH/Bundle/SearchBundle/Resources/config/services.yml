@@ -657,11 +657,19 @@ services:
 #                template: 'MBHSearchBundle:DataCollector:template.html.twig'
 #                id: 'search.cache.collector'
 
-#subscriber
+#subscribers
     mbh_search.combination.event.subscriber:
         class: MBH\Bundle\SearchBundle\EventSubscriber\GuestCombinatorSubscriber
         tags:
             - {name: kernel.event_subscriber, event: combination.childrenAges }
+
+    mbh_search.invalidate.event.subscriber:
+        arguments:
+              - '@mbh_search.cache_warmer'
+              - '@mbh_search.cache_key_creator'
+        class: MBH\Bundle\SearchBundle\EventSubscriber\InvalidateEventSubscriber
+        tags:
+            - {name: kernel.event_subscriber, event: invalidator.key.invalidate }
 
 #compare command
     mbh_search.compare.command:

@@ -174,7 +174,11 @@ class InvalidateMessageFactory
         /** @var Package $package */
         $package = $invalidateQuery->getObject();
         $message = new InvalidateMessage();
-        $message->setRoomTypeIds((array)$package->getRoomType()->getId());
+        $message
+            ->setRoomTypeIds((array)$package->getRoomType()->getId())
+            ->setBegin($package->getBegin())
+            ->setEnd($package->getEnd())
+        ;
 
         return $message;
     }

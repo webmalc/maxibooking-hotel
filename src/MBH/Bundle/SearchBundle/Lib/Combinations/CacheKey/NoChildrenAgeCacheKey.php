@@ -24,6 +24,10 @@ class NoChildrenAgeCacheKey extends AbstractKey
         return $key;
     }
 
+    /**
+     * @param SearchQuery $searchQuery
+     * @return string
+     */
     public function getWarmUpKey(SearchQuery $searchQuery): string
     {
         $occupancies = $this->determiner->determine($searchQuery, OccupancyDeterminerFactory::WARM_UP_DETERMINER);
@@ -32,6 +36,27 @@ class NoChildrenAgeCacheKey extends AbstractKey
         $key .= '_' . $occupancies->getChildren();
 
         return $key;
+    }
+
+    /**
+     * @param string $key
+     * @return array
+     * @throws \Exception
+     */
+    public function extractWarmUpKey(string $key): array
+    {
+        [$begin, $end, $roomTypeId, $tariffId, $adults, $children] = explode('_', $key);
+
+        return [
+            'begin' => new \DateTime($begin),
+            'end' => new \DateTime($end),
+            'roomTypeId' => $roomTypeId,
+            'tariffId' => $tariffId,
+            'combination' => [
+                'adults' => $adults,
+                'children' => $children,
+            ],
+        ];
     }
 
 
