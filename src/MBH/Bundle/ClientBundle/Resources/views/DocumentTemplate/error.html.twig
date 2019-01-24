@@ -1,0 +1,10 @@
+{% extends 'MBHClientBundle:DocumentTemplate:layout.html.twig' %}
+
+{% set title = 'errors'|trans %}
+{% set small_title = 'views.documentTempalte.index'|trans({}, 'MBHClientBundle') %}
+
+{% block content %}
+    <div class="alert alert-warning">
+        {{ msg }}
+    </div>
+{% endblock %}
