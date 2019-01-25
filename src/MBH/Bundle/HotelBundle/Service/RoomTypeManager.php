@@ -73,4 +73,24 @@ class RoomTypeManager
     {
         return $this->getRepository()->find($id);
     }
+
+    /**
+     * Get room types sorted by keys ['hotel', 'rooms']
+     *
+     * @return array
+     */
+    public function getSortedByHotels()
+    {
+        $roomTypes = $this->getRooms();
+        $result = [];
+
+        /** @var RoomTypeInterface $roomType */
+        foreach ($roomTypes as $roomType) {
+            isset($result[$roomType->getHotel()->getId()])
+                ? $result[$roomType->getHotel()->getId()]['rooms'][] = $roomType
+                : $result[$roomType->getHotel()->getId()] = ['hotel' => $roomType->getHotel(), 'rooms' => [$roomType]];
+        }
+
+        return $result;
+    }
 }

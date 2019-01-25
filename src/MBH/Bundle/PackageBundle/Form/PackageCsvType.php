@@ -26,6 +26,12 @@ class PackageCsvType extends AbstractType
                 'attr' => array('checked' => 'checked'),
                 'group' => 'csv.form.group',
             ])
+            ->add('orderSource', CheckboxType::class, [
+                'label' => 'csv.type.order.source',
+                'required' => false,
+                'attr' => array('checked' => 'checked'),
+                'group' => 'csv.form.group',
+            ])
             ->add('numberWithPrefix', CheckboxType::class, [
                 'label' => 'csv.form.numberWithPrefix',
                 'required' => false,
@@ -145,6 +151,12 @@ class PackageCsvType extends AbstractType
             ])
             ->add('confirmed', HiddenType::class, [
                 'required' => false,
+            ])
+            ->add('query', HiddenType::class, [
+                'required' => false
+            ])
+            ->add('source', HiddenType::class, [
+                'required' => false
             ])
             ->add('quick_link', HiddenType::class, [
                 'required' => false,

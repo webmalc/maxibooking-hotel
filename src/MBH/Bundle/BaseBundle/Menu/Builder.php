@@ -103,28 +103,28 @@ class Builder implements ContainerAwareInterface
             ->setAttributes(['dropdown' => true, 'icon' => $this->container->get('mbh.currency')->info()['icon']]);
 
 
-        //Tasks links
-        $queryCriteria = new TaskQueryCriteria();
-        $queryCriteria->userGroups = $user->getGroups();
-        $queryCriteria->performer = $user;
-        $queryCriteria->onlyOwned = true;
-        $queryCriteria->status = 'open';
-        $queryCriteria->hotel = $hotel;
-
-        $openTaskCount = $this->container->get('mbh.hotel.task_repository')->getCountByCriteria($queryCriteria);
-
-        $taskAttributes = ['icon' => 'fa fa-tasks'];
-
-        if ($openTaskCount > 0) {
-            $taskAttributes += [
-                'badge' => true,
-                'badge_class' => 'bg-red',
-                'badge_id' => 'task-counter',
-                'badge_value' => $openTaskCount
-            ];
-        }
-
-        $menu->addChild('task', ['route' => 'task', 'label' => 'menu.label.task'])->setAttributes($taskAttributes);
+//        //Tasks links
+//        $queryCriteria = new TaskQueryCriteria();
+//        $queryCriteria->userGroups = $user->getGroups();
+//        $queryCriteria->performer = $user;
+//        $queryCriteria->onlyOwned = true;
+//        $queryCriteria->status = 'open';
+//        $queryCriteria->hotel = $hotel;
+//
+//        $openTaskCount = $this->container->get('mbh.hotel.task_repository')->getCountByCriteria($queryCriteria);
+//
+//        $taskAttributes = ['icon' => 'fa fa-tasks'];
+//
+//        if ($openTaskCount > 0) {
+//            $taskAttributes += [
+//                'badge' => true,
+//                'badge_class' => 'bg-red',
+//                'badge_id' => 'task-counter',
+//                'badge_value' => $openTaskCount
+//            ];
+//        }
+//
+//        $menu->addChild('task', ['route' => 'task', 'label' => 'menu.label.task'])->setAttributes($taskAttributes);
 
         $menu['prices']->addChild('tariff', ['route' => 'tariff', 'label' => 'menu.label.nomandprice.tariff'])
             ->setAttributes(['icon' => 'fa fa-sliders']);

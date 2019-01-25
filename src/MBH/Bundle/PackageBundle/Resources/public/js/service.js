@@ -11,6 +11,8 @@ var docReadyServices = function() {
         }
         var priceInput = $('#mbh_bundle_packagebundle_package_service_type_price'),
             nightsDiv = nightsInput.closest('div.form-group'),
+            recalcCausedByGuestsNumberChangeInput = $('#mbh_bundle_packagebundle_package_service_type_recalcCausedByTouristsNumberChange'),
+            recalcCausedByGuestsNumberChangeDiv = recalcCausedByGuestsNumberChangeInput.closest('div.form-group'),
             personsInput = $('#mbh_bundle_packagebundle_package_service_type_persons'),
             personsDiv = personsInput.closest('div.form-group'),
             dateInput = $('#mbh_bundle_packagebundle_package_service_type_begin'),
@@ -30,6 +32,7 @@ var docReadyServices = function() {
             form = recalcInput.closest('form[name="mbh_bundle_packagebundle_package_service_type"]'),
 
             hide = function() {
+                recalcCausedByGuestsNumberChangeDiv.hide();
                 nightsDiv.hide();
                 personsDiv.hide();
                 recalcDiv.hide();
@@ -58,6 +61,11 @@ var docReadyServices = function() {
                 if (info.calcType === 'per_night' || info.calcType === 'per_stay') {
                     personsInput.val(personsInput.val() || services.package_guests);
                     personsDiv.show();
+                    recalcCausedByGuestsNumberChangeDiv.show();
+                    var isRecalcWithGuests = typeof currentService !== 'undefined' && currentService.serviceId === serviceInput.val()
+                        ? currentService.isRecalcWithGuests
+                        : info.isRecalcWithGuests;
+                    recalcCausedByGuestsNumberChangeInput.bootstrapSwitch('state', isRecalcWithGuests);
                 }
                 if (info.calcType === 'per_night') {
                     nightsInput.val(nightsInput.val() || services.package_duration);
@@ -259,11 +267,13 @@ var docReadyServices = function() {
         }
     }).fnDraw();
 
-    $serviceFilterForm.find('input, select').on('change switchChange.bootstrapSwitch', function() {
+    var redraw = function() {
         if (!processing || 1) {
             $serviceTable.dataTable().fnDraw();
         }
-    });
+    };
+    $serviceFilterForm.find('input:not(.datepicker), select').on('change switchChange.bootstrapSwitch', redraw);
+    $serviceFilterForm.find('input.datepicker').on('changeDate clearDate', redraw);
 };
 
 $(document).ready(function() {

@@ -28,11 +28,21 @@
             </div>
             <div class="input">
                 <i class="fa fa-bed" title='{{ 'package.index.room_type'|trans }}' data-toggle='tooltip'></i>&nbsp <select
-                        data-placeholder="{{ 'package.index.room_type'|trans }}" id="package-filter-roomType"
+                        data-placeholder="{{ 'package.index.room_type'|trans }}" id="package-filter-roomType" multiple
                         class="package-filter form-control input-sm">
                     <option></option>
                     {% for roomType in roomTypes %}
                         <option value="{{ roomType.id }}">{{ roomType.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="input">
+                <i class="fa fa-compass" title='{{ 'package.index.filter.package_source.title'|trans }}' data-toggle='tooltip'></i>&nbsp <select
+                        data-placeholder="{{ 'package.index.filter.package_source.placeholder'|trans }}" id="package-source-filter"
+                        class="package-filter form-control input-sm plain-html">
+                    <option></option>
+                    {% for source in packageSources %}
+                        <option value="{{ source.id }}">{{ source.name }}</option>
                     {% endfor %}
                 </select>
             </div>

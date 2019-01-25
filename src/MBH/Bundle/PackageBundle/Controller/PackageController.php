@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Controller;
 
+use Exception;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\BaseBundle\Controller\DeletableControllerInterface;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
@@ -121,6 +122,7 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             ], $data));
 
         return [
+            'packageSources' => $this->dm->getRepository('MBHPackageBundle:PackageSource')->findAll(),
             'roomTypes' => $this->get('mbh.hotel.selector')->getSelected()->getRoomTypes(),
             'statuses' => $this->container->getParameter('mbh.package.statuses'),
             'count' => $count
@@ -145,11 +147,12 @@ class PackageController extends Controller implements CheckHotelControllerInterf
 
             $data = [
                 'hotel' => $this->get('mbh.hotel.selector')->getSelected(),
-                'roomType' => $formData['roomType'],
+                'roomType' => $this->helper->getDataFromMultipleSelectField(explode(',', $formData['roomType'])),
                 'status' => $formData['status'],
                 'deleted' => (boolean)$formData['deleted'],
                 'begin' => $formData['begin'],
                 'end' => $formData['end'],
+                'source' => $formData['source'],
                 'dates' => $formData['dates'],
                 'paid' => $formData['paid'],
                 'confirmed' => $formData['confirmed'],
@@ -250,11 +253,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             ->getQueryBuilderByRequestData($request, $this->getUser(), $this->get('mbh.hotel.selector')->getSelected());
 
         $entities = $qb->getQuery()->execute();
-        $summary = $this->dm
-            ->getRepository('MBHPackageBundle:Package')
-            ->fetchSummary($qb
-                ->limit(0)
-                ->skip(0));
+        $summary = $this->get('mbh.order_manager')
+            ->calculateSummary($qb->limit(0)->skip(0));
         //TODO: Check $entities->count() must be != count($entities)
         //see cdec6e8455be089388e580a32838f42241dc7d25
         return [
@@ -355,6 +355,10 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             throw $this->createNotFoundException();
         }
 
+        if (!empty($package->getDeletedAt())) {
+            throw new \InvalidArgumentException('Package with id "' . $package->getId() . '" is already deleted!');
+        }
+
         /** @var AuthorizationChecker $authorizationChecker */
         $authorizationChecker = $this->get('security.authorization_checker');
 
@@ -391,11 +395,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             //check by search
             $newTariff = $form->get('tariff')->getData();
             $orderManager = $this->get('mbh.order_manager');
-            if ($package->getPackagePrice() != $oldPackage->getPackagePrice()
-                && $package->getBegin() == $oldPackage->getBegin()
-                && $package->getEnd() == $oldPackage->getEnd()) {
-                $orderManager->updatePricesByDate($package, $newTariff);
-            }
 
             $result = $orderManager->updatePackage($oldPackage, $package, $newTariff);
             if ($result instanceof Package) {
@@ -822,6 +821,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
             $this->dm->getFilterCollection()->enable('softdeleteable');
         }
+        if (!empty($room->getDeletedAt())) {
+            throw new Exception('Room ' . $room->getId() . ' is deleted!');
+        }
 
         $package = $this->dm->getRepository('MBHPackageBundle:Package')->find($id);
         $accommodation = new PackageAccommodation();
@@ -863,11 +865,15 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @param Request $request
      * @param PackageAccommodation $accommodation
      * @return array|Response
+     * @throws Exception
      */
     public function accommodationEditAction(Request $request, PackageAccommodation $accommodation)
     {
         if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
             $this->dm->getFilterCollection()->enable('softdeleteable');
+        }
+        if (!empty($accommodation->getRoom()->getDeletedAt())) {
+            throw new Exception('Room ' . $accommodation->getRoom()->getId() . ' is deleted!');
         }
 
         $form = $this->createForm(PackageAccommodationRoomType::class, $accommodation);
@@ -1090,12 +1096,16 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      */
     public function deleteModalAction(Request $request, Package $entity)
     {
+        if (!empty($entity->getDeletedAt())) {
+            throw new \InvalidArgumentException('Package with id "' . $entity->getId() . '" is already deleted!');
+        }
         $form = $this->createForm(PackageDeleteReasonType::class, $entity);
         $form->handleRequest($request);
 
         if (!$this->container->get('mbh.package.permissions')->checkHotel($entity)) {
             throw $this->createNotFoundException();
         }
+
 
         if ($form->isValid()) {
             $orderId = $entity->getOrder()->getId();

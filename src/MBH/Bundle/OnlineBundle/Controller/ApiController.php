@@ -248,7 +248,6 @@ class ApiController extends Controller
             throw $this->createNotFoundException();
         }
         $response = $clientConfig->checkRequest($request, $paymentSystemName);
-
         if (!$response) {
             $logger->info('FAIL. '.$logText.' .Bad signature');
             throw $this->createNotFoundException();
@@ -534,7 +533,7 @@ class ApiController extends Controller
      */
     public function createPackagesAction(Request $request)
     {
-//        $this->addAccessControlAllowOriginHeaders();
+        header('Access-Control-Allow-Origin: ' . ExternalApiController::LIVADIA_SITE);
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
         $requestJson = json_decode($request->getContent());
@@ -638,6 +637,10 @@ class ApiController extends Controller
      */
     private function sendNotifications(Order $order)
     {
+        foreach ($order->getPackages() as $package) {
+            $this->dm->refresh($package);
+            $this->get('logger')->info(count($package->getServices()));
+        }
         try {
             //backend
             $notifier = $this->container->get('mbh.notifier');

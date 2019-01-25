@@ -236,6 +236,11 @@ class LocalAddressesDataToBillingConvertCommand extends ContainerAwareCommand
         $relations['vega_visa']= 139356;
         $relations['vega_military_id_soldier'] = 102990;
         $relations['vega_seaman'] = 103021;
+        $relations['vega_migration_cart'] = 103022;
+        $relations['vega_predost_temporate_asylum'] = 102977;
+        $relations['vega_return_certificate'] = 102983;
+        $relations['vega_predost_temporate_asylum'] = 102977;
+        $relations['vega_temporary_residence permit_foreigner'] = 139373;
 
         return $relations;
     }

@@ -29,6 +29,7 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class ExternalApiController extends BaseController
 {
+    const LIVADIA_SITE = 'https://livadiahotel.ru';
     /**
      * @Route("/roomTypes")
      * @param Request $request
@@ -36,15 +37,22 @@ class ExternalApiController extends BaseController
      */
     public function getRoomTypesAction(Request $request)
     {
+
         $requestHandler = $this->get('mbh.api_handler');
         $responseCompiler = $this->get('mbh.api_response_compiler');
         $queryData = $request->query;
+
+        $onlineFormId = $queryData->get('onlineFormId');
+        /** @var FormConfig $formConfig */
+        $formConfig = $requestHandler->getFormConfig($onlineFormId, $responseCompiler);
+        if (!is_null($formConfig)) {
+            $this->addAccessControlAllowOriginHeaders([$formConfig->getResultsUrl()]);
+        }
 
         $responseCompiler = $requestHandler->checkIsArrayFields($queryData, ['roomTypeIds', 'hotelIds'], $responseCompiler);
 
         $isEnabled = !empty($queryData->get('isEnabled')) ? $queryData->get('isEnabled') === 'true' : true;
         $isFull = !empty($queryData->get('isFull')) ? $queryData->get('isFull') === 'true' : false;
-        $onlineFormId = $queryData->get('onlineFormId');
 
         $roomTypeIds = $queryData->get('roomTypeIds');
         $hotelIds = $queryData->get('hotelIds');
@@ -72,8 +80,6 @@ class ExternalApiController extends BaseController
             ->getQuery()
             ->execute();
 
-        /** @var FormConfig $formConfig */
-        $formConfig = $requestHandler->getFormConfig($onlineFormId, $responseCompiler);
         if ($responseCompiler->isSuccessFull()) {
             $responseData = [];
             $domainName = $this->getParameter('router.request_context.host');
@@ -101,6 +107,7 @@ class ExternalApiController extends BaseController
      */
     public function getTariffsAction(Request $request)
     {
+        header('Access-Control-Allow-Origin: ' . self::LIVADIA_SITE);
         $requestHandler = $this->get('mbh.api_handler');
         $responseCompiler = $this->get('mbh.api_response_compiler');
         $this->setLocaleByRequest();
@@ -149,6 +156,7 @@ class ExternalApiController extends BaseController
      */
     public function getHotelsAction(Request $request)
     {
+        header('Access-Control-Allow-Origin: ' . self::LIVADIA_SITE);
         $requestHandler = $this->get('mbh.api_handler');
         $queryData = $request->query;
         $isEnabled = !empty($queryData->get('isEnabled')) ? $queryData->get('isEnabled') === 'true' : true;
@@ -192,6 +200,7 @@ class ExternalApiController extends BaseController
      */
     public function getServicesAction(Request $request)
     {
+        header('Access-Control-Allow-Origin: ' . self::LIVADIA_SITE);
         $responseCompiler = $this->get('mbh.api_response_compiler');
         $requestHandler = $this->get('mbh.api_handler');
         $queryData = $request->query;
@@ -226,6 +235,7 @@ class ExternalApiController extends BaseController
      */
     public function addCashDocumentAndRedirectToPayment(Order $order)
     {
+        $prepaymentPercent = 10;
         if ($order->getCashDocuments()->count() == 0) {
             $cashDocument = new CashDocument();
             $cashDocument->setIsConfirmed(false)
@@ -234,7 +244,7 @@ class ExternalApiController extends BaseController
                 ->setOperation('in')
                 ->setOrder($order)
                 ->setTouristPayer($order->getMainTourist())
-                ->setTotal($order->getPrice());
+                ->setTotal($order->getPrice() * $prepaymentPercent / 100);
 
             $order->addCashDocument($cashDocument);
             $this->dm->persist($cashDocument);
@@ -264,6 +274,7 @@ class ExternalApiController extends BaseController
      */
     public function getBookingOptions(Request $request)
     {
+        header('Access-Control-Allow-Origin: ' . self::LIVADIA_SITE);
         $responseCompiler = $this->get('mbh.api_response_compiler');
         $requestHandler = $this->get('mbh.api_handler');
         $queryData = $request->query;
@@ -288,7 +299,6 @@ class ExternalApiController extends BaseController
         $query->begin = $this->helper->getDateFromString($request->get('begin'));
         $query->end = $this->helper->getDateFromString($request->get('end'));
         $query->adults = (int)$request->get('adults');
-        $query->childrenAges = !is_null($request->get('children')) ? $request->get('children') : [];
 
         if (!is_null($roomTypeIds)) {
             foreach ($roomTypeIds as $roomTypeId) {
@@ -326,8 +336,10 @@ class ExternalApiController extends BaseController
         }
 
         $query->setChildrenAges(
-            !empty($request->get('children-ages')) && $query->children > 0 ? $request->get('children-ages') : []
+            !empty($request->get('childrenAges')) ? $request->get('childrenAges') : []
         );
+
+        $query->children = !is_array($request->get('childrenAges')) ? 0 : count($request->get('childrenAges'));
 
         if (!$responseCompiler->isSuccessFull()) {
             return $responseCompiler->getResponse();

@@ -26,6 +26,7 @@
                     'includeArrival': '{{ service.includeArrival ? 1 : 0 }}',
                     'includeDeparture': '{{ service.includeDeparture ? 1 : 0 }}',
                     'calcTypeStr': '{{ config.calcTypes[service.calcType]}}',
+                    'isRecalcWithGuests': {{ service.recalcCausedByTouristsNumberChange == true ? 'true' : 'false' }},
                     'price': {% if service.calcType == 'day_percent' %}{{ entity.oneDayPrice() }} * {{ service.price }} / 100 {% else %} {{ service.price}} {% endif %},
                 'priceRaw': {{ service.price }}
             },

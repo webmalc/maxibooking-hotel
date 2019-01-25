@@ -2,157 +2,153 @@
 {% spaceless %}
     <!DOCTYPE html>
     <html lang="{{ locale }}">
-        <head>
-            <meta charset="utf-8">
-            <meta http-equiv="X-UA-Compatible" content="IE=edge">
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            <meta name="keywords" content="{% block meta_keywords %}{{project_title}}{% endblock %}">
-            <meta name="author" content="webmalc">
-            <meta name="description" content="{% block meta_description %}{{project_title}}{% endblock %}">
-            <title>{% block title %}{{project_title}}{% if title is defined %}: {{ title|trans }}{% endif %}{% endblock %}</title>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="keywords" content="{% block meta_keywords %}{{ project_title }}{% endblock %}">
+        <meta name="author" content="webmalc">
+        <meta name="description" content="{% block meta_description %}{{ project_title }}{% endblock %}">
+        <title>{% block title %}{{ project_title }}{% if title is defined %}: {{ title|trans }}{% endif %}{% endblock %}</title>
 
-            {% block styles %}
+        {% block styles %}
 
-                {% stylesheets filter='cssrewrite, uglifycss'
-                    'assets/vendor/admin-lte/bootstrap/css/bootstrap.min.css'
-                    'assets/vendor/font-awesome/css/font-awesome.min.css'
-                    'assets/vendor/font-awesome-animation/src/font-awesome-animation.css'
-                    'assets/vendor/select2/dist/css/select2.min.css'
-                    'assets/vendor/bootstrap-switch/dist/css/bootstrap2/bootstrap-switch.min.css'
-                    'assets/vendor/datatables/media/css/dataTables.bootstrap.min.css'
-                    'assets/vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css'
-                    'assets/vendor/fancybox/source/jquery.fancybox.css'
-                    'assets/vendor/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.min.css'
-                    'assets/vendor/ionicons/css/ionicons.min.css'
-                    'assets/vendor/admin-lte/dist/css/AdminLTE.min.css'
-                    'assets/vendor/admin-lte/dist/css/skins/skin-blue.min.css'
-                    'assets/vendor/admin-lte/plugins/colorpicker/bootstrap-colorpicker.min.css'
-                    'assets/vendor/admin-lte/plugins/timepicker/bootstrap-timepicker.min.css'
-                    'assets/vendor/bootstrap-daterangepicker/daterangepicker.css'
-                    '@MBHBaseBundle/Resources/public/css/app/*'
-                    '@MBHBaseBundle/Resources/public/css/mbsuperfont/styles.less'
-                %}
-                <link rel="stylesheet" href="{{ asset_url }}"/>
-                {% endstylesheets %}
+            {% stylesheets filter='cssrewrite, uglifycss'
+            'assets/vendor/admin-lte/bootstrap/css/bootstrap.min.css'
+            'assets/vendor/font-awesome/css/font-awesome.min.css'
+            'assets/vendor/font-awesome-animation/src/font-awesome-animation.css'
+            'assets/vendor/select2/dist/css/select2.min.css'
+            'assets/vendor/bootstrap-switch/dist/css/bootstrap2/bootstrap-switch.min.css'
+            'assets/vendor/datatables/media/css/dataTables.bootstrap.min.css'
+            'assets/vendor/bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css'
+            'assets/vendor/fancybox/source/jquery.fancybox.css'
+            'assets/vendor/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.min.css'
+            'assets/vendor/ionicons/css/ionicons.min.css'
+            'assets/vendor/admin-lte/dist/css/AdminLTE.min.css'
+            'assets/vendor/admin-lte/dist/css/skins/skin-blue.min.css'
+            'assets/vendor/admin-lte/plugins/colorpicker/bootstrap-colorpicker.min.css'
+            'assets/vendor/admin-lte/plugins/timepicker/bootstrap-timepicker.min.css'
+            'assets/vendor/bootstrap-daterangepicker/daterangepicker.css'
+            '@MBHBaseBundle/Resources/public/css/app/*'
+            '@MBHBaseBundle/Resources/public/css/mbsuperfont/styles.less' %}
+            <link rel="stylesheet" href="{{ asset(asset_url) }}"/>
+            {% endstylesheets %}
 
-                {% stylesheets filter='cssrewrite, uglifycss, scssphp'
-                    'assets/vendor/datatables-buttons/css/common.scss'
-                    'assets/vendor/datatables-buttons/css/mixins.scss'
-                    'assets/vendor/datatables-buttons/css/buttons.bootstrap.scss'
-                %}
-                <link rel="stylesheet" href="{{ asset_url }}"/>
-                {% endstylesheets %}
-                <link rel="stylesheet" href="{{ asset('assets/vendor/admin-lte/plugins/iCheck/all.css') }}">
-            {% endblock %}
-        </head>
+            {% stylesheets filter='cssrewrite, uglifycss, scssphp'
+            'assets/vendor/datatables-buttons/css/common.scss'
+            'assets/vendor/datatables-buttons/css/mixins.scss'
+            'assets/vendor/datatables-buttons/css/buttons.bootstrap.scss' %}
+            <link rel="stylesheet" href="{{ asset(asset_url) }}"/>
+            {% endstylesheets %}
+            <link rel="stylesheet" href="{{ asset('assets/vendor/admin-lte/plugins/iCheck/all.css') }}">
+        {% endblock %}
+    </head>
 
-        <body class="hold-transition {{ loginPage is defined ? 'login-page' : 'skin-blue sidebar-mini fixed' }}">
-        <script type="text/javascript">
-            if (localStorage.getItem('sidebar-collapse') == 'close') {
-                document.getElementsByTagName('body')[0].className+=' sidebar-collapse'
+    <body class="hold-transition {{ loginPage is defined ? 'login-page' : 'skin-blue sidebar-mini fixed' }}">
+    <script type="text/javascript">
+        if (localStorage.getItem('sidebar-collapse') == 'close') {
+            document.getElementsByTagName('body')[0].className += ' sidebar-collapse'
+        }
+    </script>
+
+    {% block body %}{% endblock %}
+
+    {% block scripts %}
+        {#Client config set Date#}
+        {% set datePickerBeginDate = client_config().getActualBeginDate()|date('d.m.Y') %}
+        <script>
+            var mbh = {
+                currency: {
+                    icon: "{{ currency().icon }}",
+                    text: "{{ currency().text }}"
+
+                },
+                justLogin: {{ app.session.get('mbh.justLogin') ? 1 : 0 }},
+                startDatePick: '{{ datePickerBeginDate|date('d.m.Y') }}',
+                UTCHoursOffset: {{ mbh_timezone_offset_get() / 3600 }},
+                utils: {}
             }
         </script>
+        {{ app.session.remove('mbh.justLogin') }}
 
-        {% block body %}{% endblock %}
+        {% javascripts filter='uglifyjs2'
+        'assets/vendor/jquery/dist/jquery.min.js'
+        'assets/vendor/bootstrap/dist/js/bootstrap.min.js'
+        'assets/vendor/select2/dist/js/select2.full.min.js'
+        'assets/vendor/select2/dist/js/i18n/ru.js'
+        'assets/vendor/bootstrap-switch/dist/js/bootstrap-switch.min.js'
+        'assets/vendor/datatables/media/js/jquery.dataTables.min.js'
+        'assets/vendor/datatables/media/js/dataTables.bootstrap.min.js'
+        'assets/vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js'
+        'assets/vendor/fancybox/source/jquery.fancybox.js'
+        'assets/vendor/tinycolor/dist/tinycolor-min.js'
+        'assets/vendor/jquery.cookie/jquery.cookie.js'
+        'assets/vendor/admin-lte/plugins/timepicker/bootstrap-timepicker.min.js'
+        'assets/vendor/tinymce/tinymce.min.js'
+        'assets/vendor/tinymce/themes/modern/theme.min.js'
+        'assets/vendor/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.min.js'
+        'assets/vendor/jquery-mask-plugin/dist/jquery.mask.min.js'
+        'assets/vendor/phoenix/jquery.phoenix.min.js'
+        'assets/vendor/jquery-number/jquery.number.min.js'
+        'assets/vendor/bootstrap-file-input/bootstrap.file-input.js'
+        'assets/vendor/admin-lte/plugins/timepicker/bootstrap-timepicker.min.js'
+        'bundles/fosjsrouting/js/router.js'
+        '@MBHBaseBundle/Resources/public/js/lte/options.js'
+        'assets/vendor/admin-lte/plugins/slimScroll/jquery.slimscroll.min.js'
+        'assets/vendor/admin-lte/dist/js/app.min.js'
+        'assets/vendor/admin-lte/plugins/fastclick/fastclick.min.js'
+        'assets/vendor/admin-lte/plugins/colorpicker/bootstrap-colorpicker.min.js'
+        'assets/vendor/admin-lte/plugins/iCheck/icheck.min.js'
+        'assets/vendor/moment/min/moment-with-locales.min.js'
+        'assets/vendor/bootstrap-daterangepicker/daterangepicker.js'
+        'assets/vendor/readmore-js/readmore.min.js'
+        'bundles/bazingajstranslation/js/translator.min.js' %}
 
-        {% block scripts %}
-            {#Client config set Date#}
-            {% set datePickerBeginDate = client_config().getActualBeginDate()|date('d.m.Y')  %}
-            <script>
-                var mbh = {
-                    currency: {
-                        icon: "{{ currency().icon }}",
-                        text: "{{ currency().text }}"
+        <script type="text/javascript" src="{{ asset(asset_url) }}"></script>
+        {% endjavascripts %}
 
-                    },
-                    justLogin: {{ app.session.get('mbh.justLogin') ? 1 : 0 }}, 
-                    startDatePick: '{{ datePickerBeginDate|date('d.m.Y') }}',
-                    UTCHoursOffset: {{ mbh_timezone_offset_get() / 3600 }},
-                    utils: {}
-                }
-            </script>
-            {{ app.session.remove('mbh.justLogin') }}
+        {% if locale starts with 'en' %}
+            {% set bootstrapLocale = 'en-GB' %}
+            {% set select2Locale = 'en' %}
+            {% set frontMessagesLocale = 'en' %}
+        {% elseif locale starts with 'ru' %}
+            {% set bootstrapLocale = 'ru' %}
+            {% set select2Locale = 'ru' %}
+            {% set frontMessagesLocale = 'ru' %}
+        {% endif %}
+        {% set bootstrapLocaleFile = 'assets/vendor/bootstrap-datepicker/dist/locales/bootstrap-datepicker.' ~ bootstrapLocale ~ '.min.js' %}
+        {% set select2LocaleFile = 'assets/vendor/select2/dist/js/i18n/' ~ select2Locale ~ '.js' %}
+        {% set frontMessagesFile = 'js/translations/front_messages/' ~ frontMessagesLocale ~ '.js' %}
 
-            {% javascripts filter='uglifyjs2'
-                'assets/vendor/jquery/dist/jquery.min.js'
-                'assets/vendor/bootstrap/dist/js/bootstrap.min.js'
-                'assets/vendor/select2/dist/js/select2.full.min.js'
-                'assets/vendor/select2/dist/js/i18n/ru.js'
-                'assets/vendor/bootstrap-switch/dist/js/bootstrap-switch.min.js'
-                'assets/vendor/datatables/media/js/jquery.dataTables.min.js'
-                'assets/vendor/datatables/media/js/dataTables.bootstrap.min.js'
-                'assets/vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js'
-                'assets/vendor/fancybox/source/jquery.fancybox.js'
-                'assets/vendor/tinycolor/dist/tinycolor-min.js'
-                'assets/vendor/jquery.cookie/jquery.cookie.js'
-                'assets/vendor/admin-lte/plugins/timepicker/bootstrap-timepicker.min.js'
-                'assets/vendor/tinymce/tinymce.min.js'
-                'assets/vendor/tinymce/themes/modern/theme.min.js'
-                'assets/vendor/bootstrap-touchspin/dist/jquery.bootstrap-touchspin.min.js'
-                'assets/vendor/jquery-mask-plugin/dist/jquery.mask.min.js'
-                'assets/vendor/phoenix/jquery.phoenix.min.js'
-                'assets/vendor/jquery-number/jquery.number.min.js'
-                'assets/vendor/bootstrap-file-input/bootstrap.file-input.js'
-                'assets/vendor/admin-lte/plugins/timepicker/bootstrap-timepicker.min.js'
-                'bundles/fosjsrouting/js/router.js'
-                '@MBHBaseBundle/Resources/public/js/lte/options.js'
-                'assets/vendor/admin-lte/plugins/slimScroll/jquery.slimscroll.min.js'
-                'assets/vendor/admin-lte/dist/js/app.min.js'
-                'assets/vendor/admin-lte/plugins/fastclick/fastclick.min.js'
-                'assets/vendor/admin-lte/plugins/colorpicker/bootstrap-colorpicker.min.js'
-                'assets/vendor/admin-lte/plugins/iCheck/icheck.min.js'
-                'assets/vendor/moment/min/moment-with-locales.min.js'
-                'assets/vendor/bootstrap-daterangepicker/daterangepicker.js'
-                'assets/vendor/readmore-js/readmore.min.js'
-                'bundles/bazingajstranslation/js/translator.min.js'
-            %}
+        <script type="text/javascript" src="{{ asset(bootstrapLocaleFile) }}"></script>
+        <script type="text/javascript" src="{{ asset(select2LocaleFile) }}"></script>
+        <script type="text/javascript" src="{{ asset(frontMessagesFile) }}"></script>
 
-            <script type="text/javascript" src="{{ asset_url }}"></script>
-            {% endjavascripts %}
+        <script src="https://cdn.datatables.net/buttons/1.1.2/js/dataTables.buttons.min.js"></script>
+        <script src="//cdn.datatables.net/buttons/1.1.2/js/buttons.flash.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+        <script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
+        <script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
+        <script src="//cdn.datatables.net/buttons/1.1.2/js/buttons.html5.min.js"></script>
+        <script src="//cdn.datatables.net/buttons/1.1.2/js/buttons.print.min.js"></script>
 
-            {% if locale starts with 'en' %}
-                {% set bootstrapLocale = 'en-GB' %}
-                {% set select2Locale = 'en' %}
-                {% set frontMessagesLocale = 'en' %}
-            {% elseif locale starts with 'ru' %}
-                {% set bootstrapLocale = 'ru' %}
-                {% set select2Locale = 'ru' %}
-                {% set frontMessagesLocale = 'ru' %}
-            {% endif %}
-            {% set bootstrapLocaleFile = 'assets/vendor/bootstrap-datepicker/dist/locales/bootstrap-datepicker.' ~ bootstrapLocale ~ '.min.js' %}
-            {% set select2LocaleFile = 'assets/vendor/select2/dist/js/i18n/' ~ select2Locale ~ '.js' %}
-            {% set frontMessagesFile = 'js/translations/front_messages/' ~ frontMessagesLocale ~ '.js' %}
+        {% javascripts filter='uglifyjs2'
+        '@MBHBaseBundle/Resources/public/js/app/*' %}
+        <script type="text/javascript" src="{{ asset(asset_url) }}"></script>
+        {% endjavascripts %}
 
-            <script type="text/javascript" src="{{ asset(bootstrapLocaleFile) }}"></script>
-            <script type="text/javascript" src="{{ asset(select2LocaleFile) }}"></script>
-            <script type="text/javascript" src="{{ asset(frontMessagesFile) }}"></script>
+        {% if app.environment == 'dev' %}
+        <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
+        {% else %}
 
-            <script src="https://cdn.datatables.net/buttons/1.1.2/js/dataTables.buttons.min.js"></script>
-            <script src="//cdn.datatables.net/buttons/1.1.2/js/buttons.flash.min.js"></script>
-            <script src="//cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
-            <script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
-            <script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
-            <script src="//cdn.datatables.net/buttons/1.1.2/js/buttons.html5.min.js"></script>
-            <script src="//cdn.datatables.net/buttons/1.1.2/js/buttons.print.min.js"></script>
-
-            {% javascripts filter='uglifyjs2'
-            '@MBHBaseBundle/Resources/public/js/app/*'
-            %}
-            <script type="text/javascript" src="{{ asset_url }}"></script>
-            {% endjavascripts %}
-
-            {% if app.environment == 'dev' %}
-                <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
-            {% else %}
-
-            <script src="{{ asset('js/fos_js_routes.js') }}"></script>
-            {% endif %}
-            <script>
-                moment.locale(document.documentElement.lang);
-            </script>
-        {% endblock %}
+        <script src="{{ asset('js/fos_js_routes.js') }}"></script>
+        {% endif %}
+        <script>
+            moment.locale(document.documentElement.lang);
+        </script>
+    {% endblock %}
 
     </body>
-</html>
+    </html>
 {% endspaceless %}
 

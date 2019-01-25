@@ -5,64 +5,104 @@
 
 {% block content %}
 
+    {% embed 'MBHBaseBundle:Partials:embed_filter.html.twig' with {'id': 'cash-filter-form-widget'} %}
+        {% block content %}
+            <form class="form-inline search-form filter-form remember" id="service-filter" role="form">
+                <div class="input">
+                    <i class="fa fa-calendar" title="{{ "package.service.index.period"|trans({}, "MBHPackageBundle") }}"
+                       data-toggle='tooltip'></i>
+                    &nbsp
+                    {# form_widget(form.begin) #}
+                    <input type="text" name="begin" class="datepicker begin-datepicker  form-control input-sm"
+                           data-date-format="dd.mm.yyyy" value="{{ "-1 week"|date("d.m.Y") }}">
+                </div>
+                <div class="input">
+                    — &nbsp
+                    <input type="text" name="end" class="datepicker end-datepicker form-control input-sm"
+                           data-date-format="dd.mm.yyyy" value="{{ "now"|date("d.m.Y") }}">
+                </div>
 
-    {% include 'MBHBaseBundle:Partials:filter.html.twig' with {'id': 'service-filter-widget'}%}
-        <form class="form-inline search-form filter-form remember" id="service-filter" role="form">
-            <div class="input">
-                <i class="fa fa-calendar" title="{{ "package.service.index.period"|trans({}, "MBHPackageBundle") }}"
-                   data-toggle='tooltip'></i>
-                &nbsp
-                {# form_widget(form.begin) #}
-                <input type="text" name="begin" class="datepicker begin-datepicker  form-control input-sm"
-                       data-date-format="dd.mm.yyyy" value="{{ "-1 week"|date("d.m.Y") }}">
-            </div>
-            <div class="input">
-                — &nbsp
-                <input type="text" name="end" class="datepicker end-datepicker form-control input-sm"
-                       data-date-format="dd.mm.yyyy" value="{{ "now"|date("d.m.Y") }}">
-            </div>
+                {% include 'MBHBaseBundle:Partials:datepickerPeriodSelect.html.twig' %}
 
-            {% include 'MBHBaseBundle:Partials:datepickerPeriodSelect.html.twig' %}
+                <div class="input">
+                    <select id="package-filter-dates" name="package-filter-dates-type"
+                            class="package-filter form-control input-sm">
+                        <option value="begin">{{ 'package.index.check_in'|trans({}, 'MBHPackageBundle') }}</option>
+                        <option value="end">{{ 'package.index.check_out'|trans({}, 'MBHPackageBundle') }}</option>
+                        <option value="accommodation">{{ 'package.index.accommodation'|trans({}, 'MBHPackageBundle') }}</option>
+                    </select>
+                </div>
+                <div class="input">
+                    <i class="fa fa-plug" title='{{ "package.service.index.filter"|trans({}, "MBHPackageBundle") }}'
+                       data-toggle='tooltip'></i>&nbsp
 
-            <div class="input">
-                <select id="package-filter-dates" name="package-filter-dates-type" class="package-filter form-control input-sm">
-                    <option value="begin">{{ 'package.index.check_in'|trans({}, 'MBHPackageBundle') }}</option>
-                    <option value="end">{{ 'package.index.check_out'|trans({}, 'MBHPackageBundle') }}</option>
-                    <option value="accommodation">{{ 'package.index.accommodation'|trans({}, 'MBHPackageBundle') }}</option>
-                </select>
-            </div>
-            <div class="input">
-                <i class="fa fa-plug" title='{{ "package.service.index.filter"|trans({}, "MBHPackageBundle") }}'
-                                  data-toggle='tooltip'></i>&nbsp
+                    <select name="category" id="select-category" id="filter"
+                            data-placeholder="{{ 'service.index.category'|trans }}">
+                        <option></option>
+                        {% for group, catsList in categories %}
+                            <optgroup label="{{ group }}">
+                                {% for key, cat in catsList %}
+                                    <option value="{{ key }}">{{ cat }}</option>
+                                {% endfor %}
+                            </optgroup>
+                        {% endfor %}
+                    </select>
+                </div>
 
-                <select name="category" id="select-category" id="filter" data-placeholder="{{ 'service.index.category'|trans }}">
-                    <option></option>
-                    {% for group, catsList in categories %}
-                        <optgroup label="{{ group }}">
-                            {% for key, cat in catsList %}
-                                <option value="{{ key }}">{{ cat }}</option>
-                            {% endfor %}
-                        </optgroup>
-                    {% endfor %}
-                </select>
-            </div>
+                <div class="input">
+                    - &nbsp
+                    <select name="service" id="select-service" id="filter"
+                            data-placeholder="{{ 'service.index.all_categories'|trans }}">
+                        <option></option>
+                        {% for key, service in services %}
+                            <option value="{{ key }}" data-category="{{ service.category.id }}">{{ service }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="input">
+                    <i class="fa fa-bed" title='{{ "package.service.index.filter.room_types"|trans({}, "MBHPackageBundle") }}'
+                       data-toggle='tooltip'></i>&nbsp;
 
-            <div class="input">
-                - &nbsp
-                <select name="service" id="select-service" id="filter" data-placeholder="{{ 'service.index.all_categories'|trans }}">
-                    <option></option>
-                    {% for key, service in services %}
-                        <option value="{{ key }}" data-category="{{ service.category.id }}">{{ service }}</option>
-                    {% endfor %}
-                </select>
-            </div>
+                    <select name="roomTypes" id="select-roomtype" multiple
+                            data-placeholder="{{ 'package.service.index.filter.room_types'|trans({}, "MBHPackageBundle") }}">
+                        <option></option>
+                        {% for hotelId, hotelRoomsData in roomTypesByHotels %}
+                            <optgroup label="{{ hotelRoomsData['hotel'].getName() }}">
+                                {% for roomType in hotelRoomsData['rooms'] %}
+                                    <option value="{{ roomType.id }}">{{ roomType.name }}</option>
+                                {% endfor %}
+                            </optgroup>
+                        {% endfor %}
+                    </select>
+                </div>
 
-            <div class="input">
-                <i class="fa fa-trash-o" title='{{ "package.service.index.show_deleted"|trans({}, "MBHPackageBundle") }}' data-toggle='tooltip'></i>
-                &nbsp;
-                <input name="deleted" type="checkbox">
-            </div>
-        </form>
+                <div class="input">
+                    <i class="fa fa-home" title='{{ "package.service.index.filter.housings"|trans({}, "MBHPackageBundle") }}'
+                       data-toggle='tooltip'></i>&nbsp;
+
+                    <select name="housings" id="select-housing" multiple
+                            data-placeholder="{{ 'package.service.index.filter.housings'|trans({}, "MBHPackageBundle") }}">
+                        <option></option>
+                        {% for hotelId, hotelHousingsData in housingsByHotels %}
+                            <optgroup label="{{ hotelHousingsData['hotel'].getName() }}">
+                                {% for housing in hotelHousingsData['housings'] %}
+                                    <option value="{{ housing.id }}">{{ housing.name }}</option>
+                                {% endfor %}
+                            </optgroup>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="input">
+                    <i class="fa fa-trash-o"
+                       title='{{ "package.service.index.show_deleted"|trans({}, "MBHPackageBundle") }}'
+                       data-toggle='tooltip'></i>
+                    &nbsp;
+                    <input name="deleted" type="checkbox">
+                </div>
+            </form>
+        {% endblock content %}
+    {% endembed %}
 
     <table id="service-table"
            class="table not-auto-datatable table-striped table-hover table-condensed table-icons">
@@ -72,9 +112,16 @@
             <th class="td-xs">#</th>
             <th class="td-md">{{ "package.service.date"|trans({}, "MBHPackageBundle") }}</th>
             <th>{{ "package.service.title"|trans({}, "MBHPackageBundle") }}</th>
-            <th class="td-xs"><i class="fa fa-moon-o" data-toggle="tooltip" title="{{ "package.service.nights"|trans({}, "MBHPackageBundle") }}"></i></th>
-            <th class="td-xs"><i class="fa fa-male" data-toggle="tooltip" title="{{ "package.service.guests"|trans({}, "MBHPackageBundle") }}"></i></th>
-            <th class="td-xs"><i class="fa fa-signal" data-toggle="tooltip" title="{{ "package.service.amount"|trans({}, "MBHPackageBundle") }}"></i></th>
+            <th class="td-xs"><i class="fa fa-moon-o" data-toggle="tooltip"
+                                 title="{{ "package.service.nights"|trans({}, "MBHPackageBundle") }}"></i></th>
+            <th class="td-xs"><i class="fa fa-male" data-toggle="tooltip"
+                                 title="{{ "package.service.guests"|trans({}, "MBHPackageBundle") }}"></i></th>
+            <th class="td-xs"><i class="fa fa-user" data-toggle="tooltip"
+                                 title="{{ "package.service.total_guests"|trans({}, "MBHPackageBundle") }}"></i></th>
+            <th class="td-xs"><i class="fa fa-users" data-toggle="tooltip"
+                                 title="{{ "package.service.tourists"|trans({}, "MBHPackageBundle") }}"></i></th>
+            <th class="td-xs"><i class="fa fa-signal" data-toggle="tooltip"
+                                 title="{{ "package.service.amount"|trans({}, "MBHPackageBundle") }}"></i></th>
             <th class="td-md">{{ "package.service.tourist"|trans({}, "MBHPackageBundle") }}</th>
             <th class="td-sm text-right">{{ "package.service.result"|trans({}, "MBHPackageBundle") }}</th>
             <th class="td-sm text-right">{{ "package.service.payment"|trans({}, "MBHPackageBundle") }}</th>

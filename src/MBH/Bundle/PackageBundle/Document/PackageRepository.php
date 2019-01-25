@@ -574,6 +574,9 @@ class PackageRepository extends DocumentRepository
         if (isset($data['status']) && !empty($data['status'])) {
             $orderData = array_merge($orderData, ['asIdsArray' => true, 'status' => $data['status']]);
         }
+        if (isset($data['source']) && !empty($data['source'])) {
+            $orderData = array_merge($orderData, ['asIdsArray' => true, 'source' => $data['source']]);
+        }
         if (!empty($orderData)) {
             if ($isShowDeleted && $dm->getFilterCollection()->isEnabled('softdeleteable')) {
                 $dm->getFilterCollection()->disable('softdeleteable');
@@ -617,10 +620,7 @@ class PackageRepository extends DocumentRepository
 
         //roomType
         if (isset($data['roomType']) && !empty($data['roomType'])) {
-            if ($data['roomType'] instanceof RoomType) {
-                $data['roomType'] = $data['roomType']->getId();
-            }
-            $qb->field('roomType.id')->equals($data['roomType']);
+            $qb->field('roomType.id')->in($data['roomType']);
         }
 
         //get dates
@@ -639,22 +639,12 @@ class PackageRepository extends DocumentRepository
 
         if ($dateType == 'accommodation') {
             if ($data['begin'] && $data['end']) {
-                $expr = $qb->expr();
-                $expr->addOr(
-                    $qb->expr()
-                        ->field('begin')->gte($data['begin'])->lte($data['end'])
-                );
-                $expr->addOr(
-                    $qb->expr()
-                        ->field('end')->gte($data['begin'])->lte($data['end'])
-                );
-                $expr->addOr(
-                    $qb->expr()
-                        ->field('begin')->lte($data['begin'])
-                        ->field('end')->gte($data['end'])
-                );
-
-                $qb->addAnd($expr);
+                if ($data['end']) {
+                    $qb->field('begin')->lte($data['end']);
+                }
+                if ($data['begin']) {
+                    $qb->field('end')->gt($data['begin']);
+                }
             }
         } else {
             if (isset($data['begin']) && !empty($data['begin'])) {
@@ -733,6 +723,14 @@ class PackageRepository extends DocumentRepository
             }
 
             $qb->addOr($qb->expr()->field('numberWithPrefix')->equals(new \MongoRegex('/.*'.$query.'.*/ui')));
+
+            $queryRoomTypesIds = $this->dm
+                ->getRepository('MBHHotelBundle:RoomType')
+                ->getByQueryName($query);
+
+            if (!empty($queryRoomTypesIds)) {
+                $qb->addOr($qb->expr()->field('roomType.id')->in($queryRoomTypesIds));
+            }
         }
 
         //isCheckIn
@@ -1081,5 +1079,59 @@ class PackageRepository extends DocumentRepository
             ->field('order.id')->in($ordersIds)
             ->getQuery()
             ->execute();
+    }
+
+    /**
+     * @param $dateFilterType
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param array|null $roomTypesIds
+     * @param array|null $housingsIds
+     * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function getPackageIdsByFilter($dateFilterType, ?\DateTime $begin, ?\DateTime $end, ?array $roomTypesIds, ?array $housingsIds) {
+        $queryCriteria = new PackageQueryCriteria();
+
+        if (in_array($dateFilterType, ['begin', 'end'])) {
+            $queryCriteria->dateFilterBy = $dateFilterType;
+            $queryCriteria->begin = $begin;
+            $queryCriteria->end = $end;
+        } elseif ($dateFilterType === 'accommodation') {
+            $queryCriteria->filter = 'live_between';
+            $queryCriteria->liveBegin = $begin;
+            $queryCriteria->liveEnd = $end;
+        } else {
+            throw new \InvalidArgumentException('Incorrect date filter type:' . $dateFilterType);
+        }
+
+        if (!empty($roomTypesIds)) {
+            foreach ($roomTypesIds as $roomTypeId) {
+                $queryCriteria->addRoomTypeCriteria($roomTypeId);
+            }
+        }
+
+        if (!empty($housingsIds)) {
+            $roomsInHousings = $this->dm->getRepository('MBHHotelBundle:Room')->getRoomsIdsByHousingsIds($housingsIds);
+            if (empty($roomsInHousings)) {
+                return [];
+            }
+
+            $accIds = $this->dm->getRepository('MBHPackageBundle:PackageAccommodation')->getByRoomsIds($roomsInHousings, true);
+            if (empty($accIds)) {
+                return [];
+            }
+
+            foreach ($accIds as $accommodationId) {
+                $queryCriteria->addAccommodation($accommodationId);
+            }
+        }
+
+        return $this
+            ->queryCriteriaToBuilder($queryCriteria)
+            ->distinct('id')
+            ->getQuery()
+            ->execute()
+            ->toArray();
     }
 }

@@ -43,7 +43,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
 
         return [
             'types' => $this->container->getParameter('mbh.analytics.types'),
-            'roomTypes' => $roomTypes
+            'roomTypes' => $roomTypes,
         ];
     }
 
@@ -79,11 +79,15 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
     public function salesServicesAction()
     {
         $data = [];
+        $packages = $this->getPackages()->toArray();
+        $packageServicesByPackageIds = $this->getPackageServicesByPackageIds($packages);
 
         foreach ($this->getPackages() as $package) {
-
+            $packageServices = isset($packageServicesByPackageIds[$package->getId()])
+                ? $packageServicesByPackageIds[$package->getId()]
+                : [];
             /** @var PackageService $packageService */
-            foreach ($package->getServices() as $packageService) {
+            foreach ($packageServices as $packageService) {
                 $id = $packageService->getService()->getId();
                 $day = $package->getCreatedAt()->format('d.m.Y');
                 $month = $package->getCreatedAt()->format('m.Y');
@@ -115,12 +119,18 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
     public function salesCashDocumentsAction()
     {
         $data = $ids = [];
+        /** @var Package[] $packages */
+        $packages = $this->getPackages()->toArray();
+        $cashDocumentsByOrdersIds = $this->getPackagesCashDocumentsByOrdersIds($packages);
 
-        foreach ($this->getPackages() as $package) {
+        foreach ($packages as $package) {
             $id = $package->getRoomType()->getId();
+            $cashDocuments = isset($cashDocumentsByOrdersIds[$package->getOrder()->getId()])
+                ? $cashDocumentsByOrdersIds[$package->getOrder()->getId()]
+                : [];
 
             /** @var CashDocument $cashDocument */
-            foreach ($package->getOrder()->getCashDocuments() as $cashDocument) {
+            foreach ($cashDocuments as $cashDocument) {
 
                 if (in_array($cashDocument->getId(), $ids)) {
                     continue;
@@ -379,7 +389,7 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
     {
         return new JsonResponse([
             'error' => null,
-            'html' => $this->renderView('MBHPackageBundle:Analytics:response.html.twig', ['chart' => $chart])
+            'html' => $this->renderView('MBHPackageBundle:Analytics:response.html.twig', ['chart' => $chart]),
         ]);
     }
 
@@ -556,6 +566,16 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
         }
         $series = $totalValues = $allValues = [];
         $i = 0;
+        if ($categoryGetMethod === 'getRoomTypes') {
+            $roomTypes = $this->$categoryGetMethod()->toArray();
+            $numberOfRoomsByHotels = [];
+            /** @var RoomType $roomType */
+            foreach ($roomTypes as $roomType) {
+                isset($numberOfRoomsByHotels[$roomType->getHotel()->getId()])
+                    ? $numberOfRoomsByHotels[$roomType->getHotel()->getId()]+= $roomType->getRooms()->count()
+                    : $numberOfRoomsByHotels[$roomType->getHotel()->getId()] =  $roomType->getRooms()->count();
+            }
+        }
         foreach ($this->$categoryGetMethod() as $category) {
             if ($this->isDisplayedCategory($category, $requestedRoomTypes, $categoryGetMethod)) {
                 $series[$i]['name'] = $this->getCategoryName($category);
@@ -590,11 +610,16 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
                 }
                 if ($categoryGetMethod == 'getRoomTypes') {
                     $hotelTotalValueTitle = 'total_' . $category->getHotel()->getId();
-                    $totalValues[$hotelTotalValueTitle][$dayId] = isset($totalValues[$hotelTotalValueTitle][$dayId])
-                        ? $totalValues[$hotelTotalValueTitle][$dayId] + $value
+                    $addition = $this->getRequest()->query->get('type') === 'hotel_occupancy'
+                        ? ($category->getRooms()->count() !== 0
+                            ? ($value * $category->getRooms()->count()  / $numberOfRoomsByHotels[$category->getHotel()->getId()])
+                            : 0)
                         : $value;
+                    $totalValues[$hotelTotalValueTitle][$dayId] = isset($totalValues[$hotelTotalValueTitle][$dayId])
+                        ? $totalValues[$hotelTotalValueTitle][$dayId] + $addition
+                        : $addition;
                 }
-
+//$pers = $rooms / $total * 100; $rooms = $pers / 100 * $total
                 $totalValues['byAll'][$dayId] = $totalValues['byAll'][$dayId] + $value;
                 if ($this->isDisplayedCategory($category, $requestedRoomTypes, $categoryGetMethod)) {
                     if ($months) {
@@ -694,5 +719,49 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
             ->sort('begin', 'asc');
 
         return $qb->getQuery()->execute();
+    }
+
+    /**
+     * @param array $packages
+     * @return mixed
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    private function getPackagesCashDocumentsByOrdersIds(array $packages)
+    {
+        $ordersIds = array_map(function (Package $package) {
+            return $package->getOrder()->getId();
+        }, $packages);
+
+        $cashDocuments = $this->dm
+            ->getRepository('MBHCashBundle:CashDocument')
+            ->createQueryBuilder()
+            ->field('order.id')->in($ordersIds)
+            ->getQuery()
+            ->execute()
+            ->toArray();
+
+        return $this->helper->sortByValueByCallback($cashDocuments, function(CashDocument $cashDocument) {
+            return $cashDocument->getOrder()->getId();
+        }, true);
+    }
+
+    /**
+     * @param array $packages
+     * @return array
+     */
+    private function getPackageServicesByPackageIds(array $packages)
+    {
+        $packagesIds = $this->helper->toIds($packages);
+        $packageServices = $this->dm
+            ->getRepository('MBHPackageBundle:PackageService')
+            ->createQueryBuilder()
+            ->field('package.id')->in($packagesIds)
+            ->getQuery()
+            ->execute()
+            ->toArray();
+
+        return $this->helper->sortByValueByCallback($packageServices, function(PackageService $packageService) {
+            return $packageService->getPackage()->getId();
+        }, true);
     }
 }

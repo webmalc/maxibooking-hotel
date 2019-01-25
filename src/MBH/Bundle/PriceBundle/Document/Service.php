@@ -96,7 +96,31 @@ class Service extends Base
      * )
      */
     protected $price = 0;
-    
+
+    /**
+     * @var float
+     * @Gedmo\Versioned
+     * @ODM\Field(type="float")
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(
+     *      min=0,
+     *      minMessage="mbhpricebundle.document.price_can_not_be_less_than_zero"
+     * )
+     */
+    protected $innerPrice;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    protected $includeInAccommodationPrice = false;
+
+    /**
+     * @var bool
+     * @ODM\Field(type="bool")
+     */
+    protected $subtractFromAccommodationPrice = false;
+
     /**
      * @var boolean
      * @Gedmo\Versioned
@@ -139,7 +163,14 @@ class Service extends Base
      * @Assert\Type(type="boolean")
      */
     protected $recalcWithPackage = false;
-    
+
+    /**
+     * @var bool
+     * @Gedmo\Versioned()
+     * @ODM\Field(type="bool")
+     */
+    protected $recalcCausedByTouristsNumberChange = false;
+
     /**
      * @var boolean
      * @Gedmo\Versioned
@@ -173,6 +204,82 @@ class Service extends Base
      * @Assert\Type(type="boolean")
      */
     private $includeDeparture;
+
+    /**
+     * @return mixed
+     */
+    public function getInnerPrice()
+    {
+        return $this->innerPrice;
+    }
+
+    /**
+     * @param mixed $innerPrice
+     * @return Service
+     */
+    public function setInnerPrice($innerPrice)
+    {
+        $this->innerPrice = $innerPrice;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function subtractFromAccommodationPrice(): ?bool
+    {
+        return $this->subtractFromAccommodationPrice;
+    }
+
+    /**
+     * @param bool $subtractFromAccommodationPrice
+     * @return Service
+     */
+    public function setSubtractFromAccommodationPrice(bool $subtractFromAccommodationPrice): Service
+    {
+        $this->subtractFromAccommodationPrice = $subtractFromAccommodationPrice;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isIncludeInAccommodationPrice(): ?bool
+    {
+        return $this->includeInAccommodationPrice;
+    }
+
+    /**
+     * @param bool $includeInAccommodationPrice
+     * @return Service
+     */
+    public function setIncludeInAccommodationPrice(bool $includeInAccommodationPrice): Service
+    {
+        $this->includeInAccommodationPrice = $includeInAccommodationPrice;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRecalcCausedByTouristsNumberChange(): ?bool
+    {
+        return $this->recalcCausedByTouristsNumberChange;
+    }
+
+    /**
+     * @param bool $recalcCausedByTouristsNumberChange
+     * @return Service
+     */
+    public function setRecalcCausedByTouristsNumberChange(bool $recalcCausedByTouristsNumberChange): Service
+    {
+        $this->recalcCausedByTouristsNumberChange = $recalcCausedByTouristsNumberChange;
+
+        return $this;
+    }
 
     /**
      * Set category

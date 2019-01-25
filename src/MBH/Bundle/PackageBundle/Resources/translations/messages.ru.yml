@@ -1,4 +1,5 @@
 form.orderTouristType.fio: ФИО
+report.filling.filling.recalculate_price_of_accommodation: 'Пересчет стоимости проживания'
 form.orderTouristType.find_guest: 'Найти гостя'
 form.orderTouristType.placeholder_fio: 'Иванов Иван Иванович'
 form.orderTouristType.placeholder_surname: Иванов
@@ -12,6 +13,8 @@ form.orderTouristType.min_surname: 'Слишком короткая фамили
 form.orderTouristType.max_surname: 'Слишком длинная фамилия'
 form.orderTouristType.second_name: Отчество
 form.orderTouristType.placeholder_second_name: Иванович
+package.index.filter.package_source.title: 'Источник продаж'
+package.index.filter.package_source.placeholder: 'Источник продаж'
 form.orderTouristType.min_second_name: 'Слишком короткое отчество'
 form.orderTouristType.max_second_name: 'Слишком длинное отчество'
 form.orderTouristType.birth_date: 'Дата рождения'
@@ -532,13 +535,14 @@ report.filling_table_rows.number_of_rooms: 'Номерной фонд'
 report.filling_table_rows.number_of_busy_rooms: 'Забронировано номеров'
 report.filling_table_rows.balance_on_sale: 'Остаток (в продаже)'
 report.filling_table_rows.balanse_number_of_rooms: 'Остаток (номерной фонд)'
-report.filling_table_rows.reserved_rooms_from_room_fund: 'Заполненность ном. фонда'
+report.filling_table_rows.reserved_rooms_from_room_fund: 'Заполняемость ном. фонда'
 report.filling_table_rows.reserved_rooms: 'Забронировано номеров %'
 report.filling_table_rows.number_of_rooms_without_payment: 'Номера без оплаты (брони)'
 report.filling_table_rows.total_number_of_guests: 'Гостей всего'
 report.filling_table_rows.guests_per_room: 'Гостей на 1 номер'
 report.filling_table_rows.cost_of_living: 'Стоимость проживания'
 report.filling_table_rows.cost_of_services: 'Стоимость услуг'
+report.filling_table_rows.average_price_for_room_night_realtion: 'Ср.цена за номер/ночь'
 report.filling_table_rows.total_cost: 'Общая стоимость'
 report.filling_table_rows.received_in_fact: 'Получено фактически'
 report.filling_table_rows.received_in_fact_in_percents: 'Получено фактически %'
@@ -711,7 +715,8 @@ validator.form.image.min.error: Превышено минимальное зна
 validator.form.image.max.error: Превышено максимальное занчение
 validator.form.image.type.error: Не корректное значение данных
 csv.type.package: Тип брони
-csv.type.order.type: Тип заказа
+csv.type.order.type: Канал продаж
+csv.type.order.source: 'Источник продаж'
 csv.type.begin: С
 csv.type.end: По
 csv.type.tariffAccomodation: Размещение
@@ -1275,3 +1280,4 @@ mbh.analytics.types.sales_sources: "Источники продаж"
 mbh.analytics.types.hotel_occupancy: "Заполняемость отеля"
 mbh.analytics.types.sales_services: "Динамика реализации услуг"
 mbh.analytics.types.sales_managers: "Менеджеры и брони"
+report.filling_report.export_to_csv_button.title: 'Выгрузка'

@@ -764,7 +764,7 @@ class RoomType extends Base implements RoomTypeInterface
         /** @var Image $image */
         foreach ($this->getOnlineImages() as $image) {
             $roomTypeImageData = ['isMain' => $image->getIsDefault()];
-            $roomTypeImageData['url'] = 'http://' . $domain . '/' . $helper->asset($image, 'imageFile');
+            $roomTypeImageData['url'] = 'https://' . $domain . '/' . $helper->asset($image, 'imageFile');
             if ($image->getWidth()) {
                 $roomTypeImageData['width'] = (int)$image->getWidth();
             }

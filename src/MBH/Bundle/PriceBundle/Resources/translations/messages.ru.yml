@@ -24,6 +24,8 @@ mbhpricebundle.form.restrictiongeneratortype.zakrito: 'Закрыто?'
 mbhpricebundle.form.restrictiongeneratortype.max_kolichestvo_gostey: 'Макс. количество гостей'
 mbhpricebundle.form.restrictiongeneratortype.ogranichenie_po_kolichestvu_gostey: 'Ограничение по количеству гостей'
 form.promotionType.label.fullTitle: Название
+mbhpricebundle.form.servicetype.is_recalc_with_change_touris_number.label: 'Изменять количество гостей?'
+mbhpricebundle.form.servicetype.is_recalc_with_change_touris_number.help: 'Изменять количество гостей в услуге при изменении количества гостей в брони?'
 mbhpricebundle.view.tariff.index.osnovnoy: Основной
 form.promotionType.label.title: 'Внутреннее название'
 mbhpricebundle.form.servicetype.opisaniye: Описание
@@ -48,6 +50,13 @@ mbhpricebundle.form.pricecachegeneratortype.vsedninedeli: 'Все дни нед�
 special.roomTypes: 'Типы номеров'
 mbhpricebundle.form.pricecachegeneratortype.tipynomerovdlyagotorykhbudetproizvedenageneratsiyatsen: 'Типы номеров для которых будет произведена генерация цен'
 special.tariffs: Тарифы
+mbhpricebundle.form.servicetype.inner_price.label: 'Цена для пересчета'
+mbhpricebundle.form.servicetype.inner_price.placeholder: 'Не используется'
+mbhpricebundle.form.servicetype.include_in_accommodation_price.label: 'Включить в стоимость проживания?'
+mbhpricebundle.form.servicetype.include_in_accommodation_price.help: 'При внутреннем расчете стоимости проживания, цена услуги добавляется к стоимости проживания?'
+mbhpricebundle.form.servicetype.subtract_from_accommodation_price.label: 'Вычесть из стоимости проживания?'
+mbhpricebundle.form.servicetype.subtract_from_accommodation_price.help: 'При внутреннем расчете стоимости проживания, цена услуги вычитается из стоимости проживания?'
+mbhpricebundle.form.servicetype.inner_price.help: 'Цена используется для пересчета стоимости проживания'
 mbhpricebundle.form.pricecachegeneratortype.tarifydlyagotorykhbudetproizvedenageneratsiyatsen: 'Тарифы для которых будет произведена генерация цен'
 mbhpricebundle.view.service.index.tsena: Цена
 mbhpricebundle.view.pricecache.layout.tseny: Цены

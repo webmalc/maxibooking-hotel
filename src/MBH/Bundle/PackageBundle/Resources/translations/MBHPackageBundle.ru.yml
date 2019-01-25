@@ -16,9 +16,13 @@ order.cash.income: Приход
 order.cash.outcome: Расход
 order.cash.is_paid: Оплачен
 order.cash.payment_way: 'Способ оплаты'
+package.service.index.filter.room_types: 'Тип номера'
+package.service.index.filter.housings: Корпус
 order.cash.operation_type: 'Вид операции'
 order.cash.date: Дата
 order.cash.removed: Удален
+package.service.total_guests: 'Гостей в брони'
+package.service.tourists: 'Оформлено гостей в брони'
 order.cash.no: нет
 order.cash.edit_record: 'Редактирование записи'
 order.cash.remove_record: 'Удаление записи'

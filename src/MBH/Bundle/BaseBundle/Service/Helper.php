@@ -560,11 +560,11 @@ class Helper
      */
     public function getDataFromMultipleSelectField($fieldData)
     {
-        if (!empty($fieldData) && is_array($fieldData)) {
-            return  array_values(array_diff($fieldData, array('', null, false)));
+        if (!is_array($fieldData)) {
+            $fieldData = [$fieldData];
         }
 
-        return [];
+        return array_values(array_diff($fieldData, ['', null, false]));
     }
 
     public function getTimeZone(?ClientConfig $clientConfig = null)

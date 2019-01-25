@@ -12,10 +12,27 @@ $(document).ready(function () {
             } else {
                dates.hide();
             }
+            var $recalcByGuests = $('.recalc-caused-by-guests').closest('div.form-group');
+            if (type.val() === "per_night" || type.val() === "per_stay") {
+                $recalcByGuests.show();
+            } else {
+                $recalcByGuests.hide();
+            }
         };
         toggle();
         type.change(toggle);
     }());
+
+    var $includeAccPriceInput = $('#mbh_bundle_pricebundle_service_type_includeInAccommodationPrice');
+    var $subtractAccPriceInput = $('#mbh_bundle_pricebundle_service_type_subtractFromAccommodationPrice');
+    if ($includeAccPriceInput.length === 1) {
+        var $includeAndSubtractInputs = $includeAccPriceInput.add($subtractAccPriceInput);
+        $includeAndSubtractInputs.on('switchChange.bootstrapSwitch', function () {
+            if ($includeAndSubtractInputs.bootstrapSwitch('state') === true) {
+                $includeAndSubtractInputs.not($(this)).bootstrapSwitch('state', false);
+            }
+        });
+    }
 
     (function () {
 

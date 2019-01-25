@@ -9,7 +9,7 @@
      '@MBHPackageBundle/Resources/public/js/*'
      '@MBHCashBundle/Resources/public/js/cash.js'
     %}
-    <script type="text/javascript" src="{{ asset_url }}"></script>
+    <script type="text/javascript" src="{{ asset(asset_url) }}"></script>
     {% endjavascripts %}
 
 {% endblock %}
@@ -18,6 +18,6 @@
     {{ parent() }}
     
     {% stylesheets filter='cssrewrite, uglifycss' '@MBHPackageBundle/Resources/public/css/*'%}
-    <link rel="stylesheet" href="{{ asset_url }}"/>
+    <link rel="stylesheet" href="{{ asset(asset_url) }}"/>
     {% endstylesheets %}
 {% endblock %}

@@ -26,9 +26,14 @@ class RoomCacheRecalculateCommand extends ContainerAwareCommand
         $start = new \DateTime();
         $num = 0;
 
-
         if ($input->getOption('roomTypes')) {
             $roomTypes = explode(',', trim($input->getOption('roomTypes'), ','));
+        } else {
+            $roomTypes = $helper
+                ->toIds($this->getContainer()
+                    ->get('doctrine.odm.mongodb.document_manager')
+                    ->getRepository('MBHHotelBundle:RoomType')
+                    ->findAll());
         }
 
         $recalculationResult = $this->getContainer()->get('mbh.room.cache')->recalculateByPackages(

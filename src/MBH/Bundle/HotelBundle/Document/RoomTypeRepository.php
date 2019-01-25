@@ -63,4 +63,40 @@ class RoomTypeRepository extends DocumentRepository implements RoomTypeRepositor
     }
 
 
+    /**
+     * @param array $roomTypeIds
+     * @param array|null $hotelIds
+     * @return array|RoomType[]
+     */
+    public function getByIdsAndHotelsIds(array $roomTypeIds = null, array $hotelIds = null)
+    {
+        $qb = $this->createQueryBuilder();
+
+        if (!is_null($roomTypeIds)) {
+            $qb->field('id')->in($roomTypeIds);
+        }
+        if (!is_null($hotelIds)) {
+            $qb->field('hotel.id')->in($hotelIds);
+        }
+
+        return $qb->getQuery()->toArray();
+    }
+
+    /**
+     * @param string $query
+     * @return mixed
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function getByQueryName(string $query)
+    {
+        $qb = $this->createQueryBuilder();
+
+        return $qb
+            ->addOr($qb->expr()->field('title')->equals(new \MongoRegex('/^.*' . $query . '.*/ui')))
+            ->addOr($qb->expr()->field('fullTitle')->equals(new \MongoRegex('/^.*' . $query . '.*/ui')))
+            ->distinct('id')
+            ->getQuery()
+            ->execute()
+            ->toArray();
+    }
 }

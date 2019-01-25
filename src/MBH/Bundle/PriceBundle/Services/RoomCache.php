@@ -191,13 +191,25 @@ class RoomCache
         array $tariffs = [],
         array $weekdays = []
     ) {
-
         $endWithDay = clone $end;
         $endWithDay->modify('+1 day');
         $roomCaches = $updateCaches = $updates = $remove = [];
 
         (empty($availableRoomTypes)) ? $roomTypes = $hotel->getRoomTypes()->toArray(
         ) : $roomTypes = $availableRoomTypes;
+
+        $loggerMessage = 'Begin update of room caches with parameters:'
+            . ' begin: ' . $begin->format('d.m.Y')
+            . ', end: ' . $end->format('d.m.Y')
+            . ', hotel ID: ' . $hotel->getId()
+            . ', number of rooms: ' . $rooms
+            . ', is closed: ' . ($isClosed ? 'true' : 'false')
+            . ', available room type: ' . join(', ', $this->helper->toIds($availableRoomTypes))
+            . ', tariffs: ' . join(', ', $this->helper->toIds($tariffs))
+            . ', available room type: ' . join(', ', $weekdays)
+        ;
+
+        $this->container->get('logger')->addAlert($loggerMessage);
 
         // find && group old caches
         $oldRoomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')

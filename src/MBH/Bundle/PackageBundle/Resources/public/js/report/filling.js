@@ -4,11 +4,12 @@ $(document).ready(function ($) {
     var $fillingForm = $('#filling-table-filter'),
         $fillingTableWrapper = $('#filling-table-wrapper');
 
-    $fillingForm.find('input, select').on('switchChange.bootstrapSwitch change', function () {
+    $('#filling-filter-button').click(function () {
         if(!inProcess) {
             $fillingTableWrapper.html(mbh.loader.html);
             var filterData = $fillingForm.serializeObject();
             filterData['isEnabled'] = $fillingForm.find('#filling-report-filter-isEnabled').bootstrapSwitch('state');
+            filterData['recalculate-accommodation'] = $fillingForm.find('#filling-report-filter-recalculate-accommodation').bootstrapSwitch('state');
             updateRoomTypesForm(filterData);
         }
     });
@@ -26,4 +27,9 @@ $(document).ready(function ($) {
             }
         });
     }
+
+
+    $('#filling-filter-export-button').on('touchstart click', function () {
+        $('#filling-table').tableToCSV();
+    });
 });

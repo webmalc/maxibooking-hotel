@@ -297,6 +297,18 @@ class Order extends Base
         return $this->packages;
     }
 
+    public function getPackagesSortedByNumber()
+    {
+        $packages = $this->packages->toArray();
+        usort($packages, function ($a, $b) {
+            /** @var Package $a */
+            /** @var Package $b */
+            return ($a->getNumber() < $b->getNumber()) ? -1 : 1;
+        });
+
+        return new ArrayCollection($packages);
+    }
+
     /**
      * Set mainTourist
      *

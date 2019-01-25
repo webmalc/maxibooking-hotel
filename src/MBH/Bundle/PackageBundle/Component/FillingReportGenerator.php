@@ -4,7 +4,9 @@ namespace MBH\Bundle\PackageBundle\Component;
 
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
+use MBH\Bundle\PriceBundle\Document\Service;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
 /**
@@ -38,7 +40,7 @@ class FillingReportGenerator
      * @param $isOnlyEnabledRooms
      * @return array
      */
-    public function generate(\DateTime $begin, \DateTime $end, array $roomTypes, $statusOptions, $isOnlyEnabledRooms)
+    public function generate(\DateTime $begin, \DateTime $end, array $roomTypes, $statusOptions, $isOnlyEnabledRooms, $recalculateAccommodationCauseOfServices = false)
     {
         $dm = $this->container->get('doctrine_mongodb')->getManager();
         $manager = $this->container->get('mbh.hotel.room_type_manager');
@@ -87,12 +89,28 @@ class FillingReportGenerator
         ]);
 
         $packagesByRoomType = [];
+        $packageIds = [];
+        $ordersIds = [];
+        /** @var Package $package */
         foreach($allPackages as $package) {
             $roomTypeID = $package->getRoomType()->getId();
             if (!isset($packagesByRoomType[$roomTypeID])) {
                 $packagesByRoomType[$roomTypeID] = [];
             }
             $packagesByRoomType[$roomTypeID][] = $package;
+            $packageIds[] = $package->getId();
+            $ordersIds[] = $package->getOrder()->getId();
+        }
+
+        $dm->getRepository('MBHPackageBundle:Order')->getByOrdersIds($ordersIds)->toArray();
+        /** @var PackageService[] $packageServices */
+        $packageServices = $dm->getRepository('MBHPackageBundle:PackageService')->findBy(['package.id' => ['$in' => $packageIds]]);
+        $packageServicesByPackageIds = [];
+
+        foreach ($packageServices as $packageService) {
+            isset($packageServicesByPackageIds[$packageService->getPackage()->getId()])
+                ? $packageServicesByPackageIds[$packageService->getPackage()->getId()][] = $packageService
+                : $packageServicesByPackageIds[$packageService->getPackage()->getId()] = [$packageService];
         }
 
         $tableDataByRoomType = [];
@@ -126,7 +144,7 @@ class FillingReportGenerator
                 '$lte' => $end,
             ],
             'roomType.id' => ['$in' => $roomTypeIDs],
-            'hotel.id' => $this->hotel->getId(),
+//            'hotel.id' => $this->hotel->getId(),
             'tariff' => null
         ]);
 
@@ -154,6 +172,7 @@ class FillingReportGenerator
         $numberOfRoomsByRoomTypeIds = $dm
             ->getRepository('MBHHotelBundle:Room')
             ->getNumberOfRoomsByRoomTypeIds($statuses, $includeWithoutStatuses, $isOnlyEnabledRooms);
+        $servicesByCategoriesTotal = [];
 
         foreach($roomTypes as $roomType) {
             $roomTypeID = $roomType->getId();
@@ -177,13 +196,15 @@ class FillingReportGenerator
             $uniqueAdults = [];
 
             $packageDaysTotal = 0;
+            $servicesByCategories = [];
 
             foreach($rangeDateList as $date) {
+                $dateString = $date->format('d.m.Y');
                 //RoomCache Rows Data
                 /** @var RoomCache|null $roomCache */
                 $roomCache =
-                    isset($roomCachesByRoomTypeAndDate[$roomTypeID]) && isset($roomCachesByRoomTypeAndDate[$roomTypeID][$date->format('d.m.Y')]) ?
-                        $roomCachesByRoomTypeAndDate[$roomTypeID][$date->format('d.m.Y')] :
+                    isset($roomCachesByRoomTypeAndDate[$roomTypeID]) && isset($roomCachesByRoomTypeAndDate[$roomTypeID][$dateString]) ?
+                        $roomCachesByRoomTypeAndDate[$roomTypeID][$dateString] :
                         null;
 
                 $roomCacheRow = $roomCache ? [
@@ -210,8 +231,8 @@ class FillingReportGenerator
 
                     if($pcRoomTypeId == $rtRoomTypeId && $priceCache->getDate()->getTimestamp() == $date->getTimestamp()) {
                         $totalRooms = 0;
-                        if(isset($roomCachesByRoomTypeAndDate[$roomTypeID][$date->format('d.m.Y')])) {
-                            $totalRooms = $roomCachesByRoomTypeAndDate[$roomTypeID][$date->format('d.m.Y')]->getTotalRooms();
+                        if(isset($roomCachesByRoomTypeAndDate[$roomTypeID][$dateString])) {
+                            $totalRooms = $roomCachesByRoomTypeAndDate[$roomTypeID][$dateString]->getTotalRooms();
                         }
 
                         $packageRowData['maxIncome'] += $priceCache->getMaxIncome($roomType->getPlaces(), $roomType->getAdditionalPlaces()) * $totalRooms;
@@ -229,20 +250,46 @@ class FillingReportGenerator
                     }
 
                     foreach($filteredPackages as $package) {
-                        $priceByDate = $package->getPricesByDateWithDiscount();
-                        $packagePrice = 0;
-                        if(isset($priceByDate[$date->format('d_m_Y')])) {
-                            $packagePrice = $priceByDate[$date->format('d_m_Y')];
-                        }
-                        $packageRowData['packagePrice'] += $packagePrice;
+                        $packagePriceWithDiscount = $package->getPackagePriceByDate($date, true);
+                        $packagePrice = !is_null($packagePriceWithDiscount) ? $packagePriceWithDiscount->getPrice() : 0;
 
                         $servicesPrice = 0;
-                        foreach($package->getServices() as $service) {
-                            if($date >= $service->getBegin() && $date < $service->getEnd()) {
-                                $servicesPrice += $service->calcTotal() / $service->getNights();
+                        /** @var PackageService[] $packageServicesList */
+                        $packageServicesList = isset($packageServicesByPackageIds[$package->getId()])
+                            ? $packageServicesByPackageIds[$package->getId()]
+                            : [];
+
+                        foreach($packageServicesList as $packageService) {
+                            $service = $packageService->getService();
+                            if($date >= $packageService->getBegin() && $date < $packageService->getEnd() || $packageService->getEnd() == $date) {
+                                $serviceDayPrice = $packageService->calcTotal() / $packageService->getNights();
+                                if ($recalculateAccommodationCauseOfServices) {
+                                    if ($service->getInnerPrice()) {
+                                        $singleServicePrice = $this->container
+                                            ->get('mbh.order_manager')
+                                            ->getPackageServicePrice($service, $package, true);
+                                        $serviceDayInnerPrice = $packageService->calcTotal(true, $singleServicePrice)
+                                            / $packageService->getNights();
+                                    } else {
+                                        $serviceDayInnerPrice = $serviceDayPrice;
+                                    }
+
+                                    if ($service->isIncludeInAccommodationPrice()) {
+                                        $packagePrice += $serviceDayInnerPrice;
+                                        $serviceDayPrice -= $serviceDayInnerPrice;
+                                    } elseif ($service->subtractFromAccommodationPrice()) {
+                                        $packagePrice -= $serviceDayInnerPrice;
+                                        $serviceDayPrice += $serviceDayInnerPrice;
+                                    }
+                                }
+
+                                $servicesPrice += $serviceDayPrice;
+                                $this->addServicePrice($service, $servicesByCategories, $serviceDayPrice, $dateString);
+                                $this->addServicePrice($service, $servicesByCategoriesTotal, $serviceDayPrice, $dateString);
                             }
                         }
 
+                        $packageRowData['packagePrice'] += $packagePrice;
                         $packageRowData['servicePrice'] += $servicesPrice;
 
                         $relationPaid = $package->getOrder()->getPrice() ?
@@ -271,7 +318,7 @@ class FillingReportGenerator
 
                 $rowDate['hotelRooms'] = $roomTypeRooms;
 
-                $rows[$date->format('d.m.Y')] = $rowDate;
+                $rows[$dateString] = $rowDate;
 
                 foreach($rowDate as $key => $rowData) {
                     $totals[$key] = $totals[$key] + $rowData;
@@ -288,10 +335,13 @@ class FillingReportGenerator
             $totals['paidPercent'] = $totals['paidPercent'] / $columnCount;
             $totals['maxIncomePercent'] = $totals['maxIncomePercent'] / $columnCount;
             $totals['hotelRooms'] = $roomTypeRooms * $columnCount;
+            $totals['roomGuests'] = $totals['packagesCount'] != 0 ? $totals['guests'] / $totals['packagesCount'] : 0;
 
             $tableDataByRoomType[$roomTypeID] = [
                 'rows' => $rows,
-                'totals' => $totals
+                'totals' => $totals,
+                'servicesData' => $servicesByCategories,
+                'totalServicesData' => $this->calcTotalServicePrices($servicesByCategories)
             ];
         }
 
@@ -379,14 +429,17 @@ class FillingReportGenerator
             $totals['packagesCountPercent'] = isset($totals['packagesCountPercent']) ? $totals['packagesCountPercent'] / $roomTypeCount : 0;
             $totals['paidPercent'] =  isset($totals['paidPercent']) ? $totals['paidPercent'] / $roomTypeCount : 0;
             $totals['maxIncomePercent'] = isset($totals['maxIncomePercent']) ? $totals['maxIncomePercent'] / $roomTypeCount : 0;
-            $totals['numberOfPackagesToRoomFundRelation'] = isset($totals['numberOfPackagesToRoomFundRelation']) ?
-                $totals['numberOfPackagesToRoomFundRelation']
+            $totals['numberOfPackagesToRoomFundRelation'] = $totals['hotelRooms'] != 0  ?
+                $totals['packagesCount'] / $totals['hotelRooms'] * 100
                 : 0;
+            $totals['roomGuests'] = $totals['packagesCount'] != 0 ? $totals['guests'] / $totals['packagesCount'] : 0;
         }
 
         $totalTableData = [
             'rows' => $totalRows,
             'totals' => $totals,
+            'servicesData' => $servicesByCategoriesTotal,
+            'totalServicesData' => $this->calcTotalServicePrices($servicesByCategoriesTotal)
         ];
 
         return [
@@ -394,5 +447,50 @@ class FillingReportGenerator
             'tableDataByRoomType' => $tableDataByRoomType,
             'totalTableData' => $totalTableData
         ];
+    }
+
+    /**
+     * @param $service
+     * @param $servicesByCategories
+     * @param $dateString
+     * @param $serviceDayPrice
+     */
+    private function addServicePrice(Service $service, &$servicesByCategories, $serviceDayPrice, $dateString): void
+    {
+        $serviceCategory = $service->getCategory();
+        if (!isset($servicesByCategories[$serviceCategory->getName()])) {
+            $servicesByCategories[$serviceCategory->getName()] = [
+                'category' => $serviceCategory,
+                'servicePricesByDates' => [],
+            ];
+        }
+
+        if (!isset($servicesByCategories[$serviceCategory->getName()]['servicePricesByDates'][$dateString])) {
+            $servicesByCategories[$serviceCategory->getName()]['servicePricesByDates'][$dateString] = $serviceDayPrice;
+        } else {
+            $servicesByCategories[$serviceCategory->getName()]['servicePricesByDates'][$dateString] += $serviceDayPrice;
+        }
+    }
+
+    /**
+     * @param array $servicesDataByCategories
+     * @return array
+     */
+    private function calcTotalServicePrices(array $servicesDataByCategories)
+    {
+        $result = [];
+        foreach ($servicesDataByCategories as $categoryId => $servicesDataByCategory) {
+            $categorySum = 0;
+            foreach ($servicesDataByCategory['servicePricesByDates'] as $servicePricesByDate) {
+                $categorySum += $servicePricesByDate;
+            }
+
+            $result[$categoryId] = [
+                'category' => $servicesDataByCategory['category'],
+                'sum' => $categorySum
+            ];
+        }
+
+        return $result;
     }
 }

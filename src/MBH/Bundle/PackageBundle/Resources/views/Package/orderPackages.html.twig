@@ -1,5 +1,5 @@
 {% if app.request.isxmlhttprequest is empty %}
-{% set packages = entity.order.packages %}
+{% set packages = entity.order.getPackagesSortedByNumber() %}
 {% if packages|length > 1 %}
 
     {% set deleted = app.request.cookies.get('order-packages-panel-deleted') is not empty ? true : false %}

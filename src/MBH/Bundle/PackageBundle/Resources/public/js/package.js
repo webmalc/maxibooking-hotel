@@ -225,7 +225,7 @@ var docReadyPackages = function () {
             return '<span><i class="' + $(originalOption).data('icon') + '"></i> ' + icon.text + '</span>';
         };
 
-        $('#package-filter-status').each(function () {
+        $('#package-filter-status, #package-source-filter').each(function () {
             $(this).select2({
                 placeholder: $(this).prop('data-placeholder'),
                 allowClear: true,
@@ -303,6 +303,7 @@ var docReadyPackages = function () {
                                 $('#mbh_bundle_packagebundle_package_csv_type_paid').val($('#package-filter-paid').val())
                                 $('#mbh_bundle_packagebundle_package_csv_type_confirmed').val($('#package-filter-confirmed').val())
                                 $('#mbh_bundle_packagebundle_package_csv_type_deleted').val(($('#package-filter-deleted').is(':checked')) ? 1 : 0)
+                                $('#mbh_bundle_packagebundle_package_csv_type_source').val($('#package-source-filter').val());
                                 $('#mbh_bundle_packagebundle_package_csv_type_quick_link').val($('#package-table-quick-links .btn-primary').attr('data-value'))
                                 $('.modal.in').modal('hide')
                             });
@@ -322,6 +323,7 @@ var docReadyPackages = function () {
                 d.begin = $('#package-filter-begin').val();
                 d.end = $('#package-filter-end').val();
                 d.roomType = $('#package-filter-roomType').val();
+                d.source = $('#package-source-filter').val();
                 d.status = $('#package-filter-status').val();
                 d.deleted = ($('#package-filter-deleted').is(':checked')) ? 1 : 0;
                 d.dates = $('#package-filter-dates').val();

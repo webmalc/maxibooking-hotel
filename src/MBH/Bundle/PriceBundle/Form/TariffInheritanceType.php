@@ -31,16 +31,16 @@ class TariffInheritanceType extends AbstractType
                 'help' => 'mbhpricebundle.form.tariffinheritancetype.tseny.help'
             ])
             ->add('inheritRestrictions', CheckboxType::class, [
-                'label' => 'mbhpricebundle.form.tariffinheritancetype.usloviya.i.ogranicheniya',
+                'label' => 'mbhpricebundle.form.tariffinheritancetype.usloviyaiogranicheniya',
                 'group' => $group,
                 'required' => false,
-                'help' => 'mbhpricebundle.form.tariffinheritancetype.nasledovatʹ.li.usloviya.i.ogranicheniya.ot.roditelʹskogo.tarifa'
+                'help' => 'mbhpricebundle.form.tariffinheritancetype.nasledovatʹliusloviyaiogranicheniyaotroditelʹskogotarifa'
             ])
             ->add('inheritRooms', CheckboxType::class, [
                 'label' => 'mbhpricebundle.form.tariffinheritancetype.kvoty',
                 'group' => $group,
                 'required' => false,
-                'help' => 'mbhpricebundle.form.tariffinheritancetype.nasledovatʹ.li.kvoty.nomerov.ot.roditelʹskogo.tarif'
+                'help' => 'mbhpricebundle.form.tariffinheritancetype.nasledovatʹlikvotynomerovotroditelʹskogotarif'
             ])
         ;
     }

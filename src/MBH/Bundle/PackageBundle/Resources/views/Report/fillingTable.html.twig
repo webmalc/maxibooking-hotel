@@ -40,7 +40,6 @@
             {% endfor %}
             <td>{{ 'report.filling.filling_table.total'|trans }}</td>
         </tr>
-
         {% include 'MBHPackageBundle:Report:fillingTableRows.html.twig' with {tableData: totalTableData} %}
     {% endif %}
     </tbody>

@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PriceBundle\Form;
 
+use MBH\Bundle\PriceBundle\Document\Service;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -9,6 +10,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * Class ServiceType
@@ -67,6 +70,13 @@ class ServiceType extends AbstractType
                 'help' => 'mbhpricebundle.form.servicetype.is_displaceable.help',
                 'attr' => ['class' => 'toggle-date'],
             ])
+            ->add('recalcCausedByTouristsNumberChange', CheckboxType::class, [
+                'label' => 'mbhpricebundle.form.servicetype.is_recalc_with_change_touris_number.label',
+                'group' => 'price.form.public_information',
+                'required' => false,
+                'help' => 'mbhpricebundle.form.servicetype.is_recalc_with_change_touris_number.help',
+                'attr' => ['class' => 'recalc-caused-by-guests'],
+            ])
             ->add('includeArrival', CheckboxType::class, [
                 'label' => 'mbhpricebundle.form.servicetype.includeArrival',
                 'value' => true,
@@ -88,6 +98,25 @@ class ServiceType extends AbstractType
                 'group' => 'price.form.public_information',
                 'required' => false,
                 'attr' => ['placeholder' => 'price.form.service_not_use', 'class' => 'spinner price-spinner'],
+            ])
+            ->add('innerPrice', TextType::class, [
+                'label' => 'mbhpricebundle.form.servicetype.inner_price.label',
+                'help' => 'mbhpricebundle.form.servicetype.inner_price.help',
+                'group' => 'price.form.public_information',
+                'required' => false,
+                'attr' => ['class' => 'spinner price-spinner', 'placeholder' => 'mbhpricebundle.form.servicetype.inner_price.placeholder']
+            ])
+            ->add('includeInAccommodationPrice', CheckboxType::class, [
+                'label' => 'mbhpricebundle.form.servicetype.include_in_accommodation_price.label',
+                'help' => 'mbhpricebundle.form.servicetype.include_in_accommodation_price.help',
+                'group' => 'price.form.public_information',
+                'required' => false
+            ])
+            ->add('subtractFromAccommodationPrice', CheckboxType::class, [
+                'label' => 'mbhpricebundle.form.servicetype.subtract_from_accommodation_price.label',
+                'help' => 'mbhpricebundle.form.servicetype.subtract_from_accommodation_price.help',
+                'group' => 'price.form.public_information',
+                'required' => false
             ])
             ->add('date', CheckboxType::class, [
                 'label' => 'price.form.date',
@@ -119,9 +148,17 @@ class ServiceType extends AbstractType
             ]);
     }
 
+    public function validate(Service $service, ExecutionContextInterface $context)
+    {
+        if ($service->isIncludeInAccommodationPrice() && $service->subtractFromAccommodationPrice()) {
+            $context->addViolation('service_type.service_price_can_not_be_subtracted_and_added_in_accommodation_price');
+        }
+    }
+
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
+            'constraints' => [new Callback([$this, 'validate'])],
             'data_class' => 'MBH\Bundle\PriceBundle\Document\Service',
             'calcTypes' => []
         ));

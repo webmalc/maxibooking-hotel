@@ -3,7 +3,7 @@
 {% trans_default_domain 'FOSUserBundle' %}
 
 {% block content %}
-    <script src='https://www.google.com/recaptcha/api.js'></script>
+    {#<script src='https://www.google.com/recaptcha/api.js'></script>#}
 
     <form name="loginForm" action="{{ path("fos_user_security_check") }}" class="form login-form" role="form"
           method="post" accept-charset="UTF-8">
@@ -26,7 +26,7 @@
             <span class="glyphicon glyphicon-lock form-control-feedback"></span>
         </div>
 
-        <div class="form-group g-recaptcha" data-sitekey="{{ recaptcha.site }}"></div>
+        {#<div class="form-group g-recaptcha" data-sitekey="{{ recaptcha.site }}"></div>#}
 
 
         <div class="row margin-left-sm">

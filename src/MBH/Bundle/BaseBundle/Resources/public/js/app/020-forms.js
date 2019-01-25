@@ -19,7 +19,7 @@ var BILLING_API_SETTINGS = {
     cities: {
         url: 'https://billing.maxi-booking.com/ru/cities',
         id: 'id',
-        text: 'display_name'
+        text: 'full_name'
     },
     fmsKpp: {
         url: 'https://billing.maxi-booking.com/ru/fms-kpp',

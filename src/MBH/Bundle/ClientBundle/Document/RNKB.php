@@ -13,7 +13,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  */
 class RNKB implements PaymentSystemInterface
 {
-    const COMMISSION = 0.035;
+//    const COMMISSION = 0.035;
 
     /**
      * @var string
@@ -116,7 +116,7 @@ class RNKB implements PaymentSystemInterface
             'disabled' => $createdAt <= new \DateTime(),
             'touristEmail' => $payer ? $payer->getEmail() : null,
             'touristPhone' => $payer ? $payer->getPhone(true) : null,
-            'comment' => 'Order # ' . $cashDocument->getOrder()->getId() . '. CashDocument #' . $cashDocument->getId(),
+            'comment' => 'Order # ' . $cashDocument->getOrder()->getId() . '. CashDocument #' . $cashDocument->getId() . '. Tourist:  ' . $payer->getName(),
             'signature' => $this->getSignature($cashDocument, $url),
         ];
     }
@@ -142,15 +142,15 @@ class RNKB implements PaymentSystemInterface
      */
     public function checkRequest(Request $request)
     {
-        $cashDocumentId = $request->get('Order_ID');
+        $cashDocumentId = $request->get('Order_IDP');
         $status = $request->get('Status');
         $requestSignature = $request->get('Signature');
 
-        if (!$cashDocumentId || !$status || !$requestSignature || !in_array($status, ['authorized', 'paid'])) {
+        if (!$cashDocumentId || !$status || !$requestSignature || !in_array($status, ['authorized', 'preauthorized'])) {
             return false;
         }
         $signature = $cashDocumentId . $status . $this->getKey();
-        $signature = strtoupper(md5($signature));
+        $signature = mb_convert_encoding(strtoupper(md5($signature)), 'UTF-8');
 
         if ($signature != $requestSignature) {
             return false;
@@ -158,7 +158,7 @@ class RNKB implements PaymentSystemInterface
 
         return [
             'doc' => $cashDocumentId,
-            'commission' => self::COMMISSION,
+//            'commission' => self::COMMISSION,
             'commissionPercent' => true,
             'text' => 'OK'
         ];

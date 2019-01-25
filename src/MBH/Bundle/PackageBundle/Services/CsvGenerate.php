@@ -19,6 +19,7 @@ class CsvGenerate
     const DATA = [
         'type' => ['title' => 'csv.type.package', 'method' => 'getStatus'],
         'typeOrder' => ['title' => 'csv.type.order.type', 'method' => 'getOrder'],
+        'orderSource' => ['title' => 'csv.type.order.source', 'method' => 'getSource'],
         'numberWithPrefix' => ['title' => '#', 'method' => 'getNumberWithPrefix'],
         'dateBegin' => ['title' => 'csv.type.begin', 'method' => 'getBegin'],
         'dateEnd' => ['title' => 'csv.type.end', 'method' => 'getEnd'],

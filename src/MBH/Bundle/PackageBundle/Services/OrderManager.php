@@ -16,6 +16,7 @@ use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\PackageCreationException;
+use MBH\Bundle\PriceBundle\Document\Service;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use MBH\Bundle\PackageBundle\Document\PackageService;
@@ -87,6 +88,10 @@ class OrderManager implements Searchable
             $old->getIsForceBooking() == $new->getIsForceBooking() &&
             ($updateTariff == null || $updateTariff->getId() == $old->getTariff()->getId())
         ) {
+            if ($new->getPackagePrice() != $old->getPackagePrice()) {
+                $this->updatePricesByDate($new, $updateTariff);
+            }
+
             return $new;
         }
 
@@ -230,12 +235,30 @@ class OrderManager implements Searchable
             $service->setBegin(null)->setEnd(null)->setUpdatedAt(new \DateTime());
             $this->dm->persist($service);
         }
+        $this->recalculateServicesCausedOfChangeNumberOfTourists($package);
         $this->dm->flush();
         if (count($services)) {
             $this->flashBag->add('warning', 'controller.packageController.record_edited_success_services');
         }
         return $package;
     }
+
+    /**
+     * @param Package $package
+     */
+    private function recalculateServicesCausedOfChangeNumberOfTourists(Package $package)
+    {
+        $servicesPrice = 0;
+        foreach ($package->getServices() as $packageService) {
+            if ($packageService->isRecalcCausedByTouristsNumberChange()) {
+                $packageService->setPersons($package->getAdults() + $package->getChildren());
+            }
+            $servicesPrice += $packageService->calcTotal();
+        }
+
+        $package->setServicesPrice($servicesPrice);
+    }
+
 
     /**
      * @param array $data
@@ -663,13 +686,16 @@ class OrderManager implements Searchable
             //find package
             foreach ($order->getPackages() as $package) {
                 if ($package->getTariff()->getHotel()->getId() == $service->getCategory()->getHotel()->getId()) {
+                    /** @var Package $package */
                     $package = $this->dm->getRepository('MBHPackageBundle:Package')->find($package->getId());
+
+                    $price = $this->getPackageServicePrice($service, $package);
 
                     $packageService = new PackageService();
                     $packageService->setPackage($package)
                         ->setService($service)
                         ->setAmount((int)$info['amount'])
-                        ->setPrice($service->getPrice());
+                        ->setPrice($price);
 
                     $this->dm->persist($packageService);
                     $this->dm->flush();
@@ -684,7 +710,7 @@ class OrderManager implements Searchable
 
     public function updatePricesByDate(Package $package, ?Tariff $tariff)
     {
-        $newDailyPrice = $package->getPrice() / $package->getNights();
+        $newDailyPrice = $package->getPackagePrice() / $package->getNights();
         $newPricesByDate = [];
         $begin = clone $package->getBegin();
         $end = clone $package->getEnd();
@@ -698,12 +724,12 @@ class OrderManager implements Searchable
                     $firstPackagePrice = current($prices);
                     $packagePrice = clone $firstPackagePrice;
                     $packagePrice->setDate($day);
-                    $packagePrice->setPrice($newDailyPrice);
                 } else {
                     $packagePrice = new PackagePrice($day, $newDailyPrice, $tariff ? $tariff : $package->getTariff());
                 }
                 $package->addPackagePrice($packagePrice);
             }
+            $packagePrice->setPrice($newDailyPrice);
             if (!is_null($tariff)) {
                 $packagePrice->setTariff($tariff);
             }
@@ -721,8 +747,9 @@ class OrderManager implements Searchable
     {
         $data = [
             'hotel' => $hotel,
-            'roomType' => $request->get('roomType'),
+            'roomType' => $this->helper->getDataFromMultipleSelectField($request->get('roomType')),
             'status' => $request->get('status'),
+            'source' => $request->get('source'),
             'deleted' => $request->get('deleted'),
             'begin' => $request->get('begin'),
             'end' => $request->get('end'),
@@ -857,13 +884,13 @@ class OrderManager implements Searchable
             if(isset($rawPackageData['totalOverwrite'])) {
                 $price = $rawPackageData['totalOverwrite'];
             } else {
-                $price = $rawPackageData['price'];
+                $price = $packagePrice = isset($rawPackageData['price']) ? $rawPackageData['price'] : 0;
                 if (isset($rawPackageData['servicesPrice'])) {
                     $price += $rawPackageData['servicesPrice'];
                 }
                 if (isset($rawPackageData['discount'])) {
                     $discount = isset($rawPackageData['isPercentDiscount']) && $rawPackageData['isPercentDiscount']
-                        ? $rawPackageData['price'] * $rawPackageData['discount']/100
+                        ? $packagePrice * $rawPackageData['discount']/100
                         : $rawPackageData['discount'];
                     $price -= $discount;
                 }
@@ -886,5 +913,33 @@ class OrderManager implements Searchable
             'nights' => $numberOfNights,
             'guests' => $numberOfGuests,
         ];
+    }
+
+    /**
+     * @param Service $service
+     * @param Package $package
+     * @param bool $forInnerCalculation
+     * @return float|int
+     */
+    public function getPackageServicePrice(Service $service, Package $package, $forInnerCalculation = false)
+    {
+        if (!$forInnerCalculation || is_null($service->getInnerPrice())) {
+            $servicePrice = $service->getPrice();
+        } else {
+            $servicePrice = $service->getInnerPrice();
+        }
+
+        if ($service->getCalcType() == 'day_percent') {
+            $date = null;
+            if ($service->getCode() === 'Early check-in') {
+                $date = $package->getBegin();
+            } elseif ($service->getCode() === 'Late check-out') {
+                $date = (clone $package->getEnd())->modify('-1 day');
+            }
+
+            return $package->getPriceByDate($date) * $servicePrice / 100;
+        }
+
+        return $servicePrice;
     }
 }

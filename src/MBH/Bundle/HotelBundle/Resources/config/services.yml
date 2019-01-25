@@ -102,3 +102,7 @@ services:
         arguments: ['@translator']
         tags:
             - {name: form.type}
+
+    mbh.housing_manager:
+        class: MBH\Bundle\HotelBundle\Service\HousingManager
+        arguments: ['@doctrine.odm.mongodb.document_manager']

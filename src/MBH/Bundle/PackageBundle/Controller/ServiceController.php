@@ -51,7 +51,9 @@ class ServiceController extends BaseController
 
         return [
             'services' => $services,
-            'categories' => $categories
+            'categories' => $categories,
+            'roomTypesByHotels' => $this->get('mbh.hotel.room_type_manager')->getSortedByHotels(),
+            'housingsByHotels' => $this->get('mbh.housing_manager')->getSortedByHotels()
         ];
     }
 
@@ -68,6 +70,8 @@ class ServiceController extends BaseController
         $end = $helper->getDateFromString($request->get('end'));
         $service = $request->get('service');
         $category = $request->get('category');
+        $housingsIds = $this->helper->getDataFromMultipleSelectField($request->get('housings'));
+        $roomTypesIds = $this->helper->getDataFromMultipleSelectField($request->get('roomTypes'));
         $services = null;
 
         //cat services
@@ -82,29 +86,22 @@ class ServiceController extends BaseController
             $services = [$service];
         }
 
-        if (!$begin) {
-            $begin = new \DateTime('midnight -7 days');
-        }
-
-        if (!$end) {
-            $end = new \DateTime('midnight +1 day');
-        }
-
         /** @var DocumentRepository $repository */
         $repository = $this->dm->getRepository('MBHPackageBundle:PackageService');
         $queryBuilder = $repository->createQueryBuilder();
 
         $packageFilterType = $request->get('package-filter-dates-type');
-        $packageIds = $this->getPackageIdsByFilter($packageFilterType, $begin, $end);
+        $packageIds = $this->dm
+            ->getRepository('MBHPackageBundle:Package')
+            ->getPackageIdsByFilter($packageFilterType, $begin, $end, $roomTypesIds, $housingsIds);
         $queryBuilder->field('package.id')->in($packageIds);
 
-        $queryBuilder->addNor($queryBuilder->expr()
-            ->addOr($queryBuilder->expr()
-                ->field('begin')->gt($begin)->addAnd($queryBuilder->expr()->field('begin')->gt($end))
-            )->addOr($queryBuilder->expr()
-                ->field('end')->lt($begin)->addAnd($queryBuilder->expr()->field('end')->lt($end))
-            )
-        );
+        if (!is_null($end)) {
+            $queryBuilder->field('begin')->lte($end);
+        }
+        if (!is_null($begin)) {
+            $queryBuilder->field('end')->gte($begin);
+        }
 
         $tableParams = ClientDataTableParams::createFromRequest($request);
         $tableParams->setSortColumnFields([
@@ -196,35 +193,5 @@ class ServiceController extends BaseController
             'totals' => json_encode($totals),
             'config' => $this->container->getParameter('mbh.services'),
         ];
-    }
-
-    private function getPackageIdsByFilter($dateFilterType, \DateTime $begin, \DateTime $end) {
-        $packageIds = [];
-
-        $queryCriteria = new PackageQueryCriteria();
-        switch ($dateFilterType) {
-            case 'begin':
-                $queryCriteria->dateFilterBy = 'begin';
-                $queryCriteria->begin = $begin;
-                $queryCriteria->end = $end;
-                break;
-            case 'end':
-                $queryCriteria->dateFilterBy = 'end';
-                $queryCriteria->begin = $begin;
-                $queryCriteria->end = $end;
-                break;
-            case 'accommodation':
-                $queryCriteria->filter = 'live_between';
-                $queryCriteria->liveBegin = $begin;
-                $queryCriteria->liveEnd = $end;
-                break;
-        }
-
-        $packages = $this->dm->getRepository('MBHPackageBundle:Package')->findByQueryCriteria($queryCriteria);
-        foreach ($packages as $package) {
-            $packageIds[] = $package->getId();
-        }
-
-        return $packageIds;
     }
 }

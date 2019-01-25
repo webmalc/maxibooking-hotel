@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\OnlineBundle\Services\ApiHandler;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\Tariff;
@@ -152,5 +153,34 @@ class PackagePrice
         return $this;
     }
 
+    /**
+     * @return float
+     */
+    public function getPriceWithoutPromotionDiscount()
+    {
+        if (!$this->getPromotion()) {
+            return $this->getPrice();
+        }
 
+        if ($this->getPromotion()->getIsPercentDiscount()) {
+            return $this->getPromotion()->getDiscount() < 100
+                ? $this->getPrice() / (1 - ($this->getPromotion()->getDiscount() / 100))
+                : 0;
+        }
+
+        return $this->getPrice() + $this->getPromotion()->getDiscount();
+    }
+
+    /**
+     * @return array
+     */
+    public function getJsonSerialized()
+    {
+        return [
+            'date' => $this->getDate()->format(ApiHandler::DATE_FORMAT),
+            'price' => $this->getPrice(),
+            'tariff' => $this->getTariff()->getId(),
+            'promotion' => $this->getPromotion() ? $this->getPromotion()->getId() : null
+        ];
+    }
 }

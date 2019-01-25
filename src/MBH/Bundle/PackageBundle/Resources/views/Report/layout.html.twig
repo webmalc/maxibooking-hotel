@@ -5,7 +5,7 @@
     {% javascripts filter='?uglifyjs2'
         '@MBHPackageBundle/Resources/public/js/report/*'
     %}
-    <script type="text/javascript" src="{{ asset_url }}"></script>
+    <script type="text/javascript" src="{{ asset(asset_url) }}"></script>
     {% endjavascripts %}
 {% endblock %}
 

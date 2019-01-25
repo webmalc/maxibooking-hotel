@@ -81,7 +81,7 @@ class Cash
             . '</span>';
 
         $message
-            ->setRecipients([$order->getMainTourist()])
+            ->setRecipients([$order->getPayer()])
             ->setFrom('system')
             ->setType('info')
             ->setLink('hide')

@@ -190,7 +190,34 @@ class PackageService extends Base
      * @Assert\Type(type="boolean")
      */
     protected $isCustomPrice = false;
-    
+
+    /**
+     * @var bool
+     * @Gedmo\Versioned()
+     * @ODM\Field(type="bool")
+     * @Assert\Type(type="boolean")
+     */
+    protected $recalcCausedByTouristsNumberChange = false;
+
+    /**
+     * @return bool
+     */
+    public function isRecalcCausedByTouristsNumberChange(): ?bool
+    {
+        return $this->recalcCausedByTouristsNumberChange;
+    }
+
+    /**
+     * @param bool $recalcCausedByTouristsNumberChange
+     * @return PackageService
+     */
+    public function setRecalcCausedByTouristsNumberChange(bool $recalcCausedByTouristsNumberChange): PackageService
+    {
+        $this->recalcCausedByTouristsNumberChange = $recalcCausedByTouristsNumberChange;
+
+        return $this;
+    }
+
     /**
      * @return int
      * @throws \Exception
@@ -346,15 +373,23 @@ class PackageService extends Base
     }
 
     /**
+     * @param bool $forInnerCalculation
+     * @param null $singlePrice
      * @return int
      */
-    public function calcTotal()
+    public function calcTotal($forInnerCalculation = false, $singlePrice = null)
     {
-        if (!empty($this->getTotalOverwrite())) {
+        if (!empty($this->getTotalOverwrite()) && !$forInnerCalculation) {
             return $this->getTotalOverwrite();
         }
 
-        $price = $this->getPrice() * $this->getAmount();
+        if (is_null($singlePrice)) {
+            $singlePrice = $forInnerCalculation && !is_null($this->getService()->getInnerPrice())
+                ? $this->getService()->getInnerPrice()
+                : $this->getPrice();
+        }
+
+        $price = $singlePrice * $this->getAmount();
 
         if ($this->getCalcType() == 'per_night') {
             $price *= $this->getNights();

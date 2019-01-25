@@ -18,3 +18,13 @@
     {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entry, 'logs': logs, 'delete_route': 'price_service_category_entry_delete' } %}
     
 {% endblock %}
+
+{% block scripts %}
+    {{ parent() }}
+    <script>
+        var currentService = {
+            serviceId: "{{ service.service.id}}",
+            isRecalcWithGuests: {{ service.recalcCausedByTouristsNumberChange == true ? "true" : "false"}}
+        };
+    </script>
+{% endblock %}

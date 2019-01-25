@@ -614,7 +614,15 @@ class ChessBoardDataBuilder
         if (!$this->isRoomTypesInit) {
 
             $this->roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
-                ->fetch($this->hotel, $this->getRoomTypeIds())->toArray();
+                ->fetchQueryBuilder($this->hotel, $this->getRoomTypeIds())
+                ->getQuery()
+                ->execute()
+                ->toArray();
+            usort($this->roomTypes, function ($a, $b) {
+                /** @var RoomType $a */
+                /** @var RoomType $b */
+                return ($a->getId() < $b->getId()) ? -1 : 1;
+            });
 
             $this->isRoomTypesInit = true;
         }

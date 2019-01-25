@@ -111,19 +111,8 @@ class HotelController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $entity->uploadFile();
-
-            $this->dm->persist($entity);
-            $this->dm->flush();
-
-            $request->getSession()->getFlashBag()
-                ->set('success', $this->get('translator')->trans('controller.hotelController.record_created_success'));
-
-            //todo: create services
-            $console = $this->container->get('kernel')->getRootDir() . '/../bin/console ';
-            $client = $this->container->getParameter('client');
-            $process = new Process('nohup php ' . $console . 'doctrine:mongodb:fixtures:load --append --no-debug > /dev/null 2>&1 &', null, [\AppKernel::CLIENT_VARIABLE => $client]);
-            $process->run();
+            $this->get('mbh.hotel.hotel_manager')->create($entity);
+            $this->addFlash('success', 'controller.hotelController.record_created_success');
 
             return $this->afterSaveRedirect('hotel', $entity->getId());
         }

@@ -547,6 +547,15 @@ class SearchResult
      */
     public function getJsonSerialized()
     {
+        $packagePrices = [];
+        $originalPrice = 0;
+
+        /** @var PackagePrice $packagePrice */
+        foreach ($this->getPackagePrices($this->getAdults(), $this->getChildren()) as $packagePrice) {
+            $packagePrices[] = $packagePrice->getJsonSerialized();
+            $originalPrice += $packagePrice->getPriceWithoutPromotionDiscount();
+        }
+
         $data = [
             'begin' => $this->getBegin()->format(ApiHandler::DATE_FORMAT),
             'end' => $this->getEnd()->format(ApiHandler::DATE_FORMAT),
@@ -554,9 +563,12 @@ class SearchResult
             'children' => $this->getChildren(),
             'roomType' => $this->getRoomType()->getId(),
             'tariff' => $this->getTariff()->getId(),
+            'price' => $this->getPrice($this->getAdults(), $this->getChildren()),
+            'priceWithoutPromotionDiscount' => round($originalPrice, 2),
             'prices' => $this->prices,
+            'packagePrices' => $packagePrices,
             'roomsCount' => $this->getRoomsCount(),
-            'nights' => $this->getNights()
+            'nights' => (int)$this->getNights()
         ];
 
         return $data;
