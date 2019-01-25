@@ -2,7 +2,7 @@
 
 {% block scripts %}
     {{ parent() }}
-    {% javascripts filter='?uglifyjs2'
+    {% javascripts filter='uglifyjs2'
         '@MBHPackageBundle/Resources/public/js/report/*'
     %}
     <script type="text/javascript" src="{{ asset(asset_url) }}"></script>

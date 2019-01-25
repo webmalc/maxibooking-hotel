@@ -26,10 +26,9 @@ $(document).ready(function ($) {
                 inProcess = false;
             }
         });
-    }
-
+    };
 
     $('#filling-filter-export-button').on('touchstart click', function () {
-        $('#filling-table').tableToCSV();
+        $('#filling-table').tableToCSV(true);
     });
 });

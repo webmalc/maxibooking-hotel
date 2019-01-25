@@ -210,10 +210,176 @@ function getScrollableTableTemplate($table, tableOffset) {
     return templateTable;
 }
 
-jQuery.fn.tableToCSV = function () {
+function UnicodeToWin1251() {
+    this._INDEX_BY_CODE_POINT = {
+        "152": 24,
+        "160": 32,
+        "164": 36,
+        "166": 38,
+        "167": 39,
+        "169": 41,
+        "171": 43,
+        "172": 44,
+        "173": 45,
+        "174": 46,
+        "176": 48,
+        "177": 49,
+        "181": 53,
+        "182": 54,
+        "183": 55,
+        "187": 59,
+        "1025": 40,
+        "1026": 0,
+        "1027": 1,
+        "1028": 42,
+        "1029": 61,
+        "1030": 50,
+        "1031": 47,
+        "1032": 35,
+        "1033": 10,
+        "1034": 12,
+        "1035": 14,
+        "1036": 13,
+        "1038": 33,
+        "1039": 15,
+        "1040": 64,
+        "1041": 65,
+        "1042": 66,
+        "1043": 67,
+        "1044": 68,
+        "1045": 69,
+        "1046": 70,
+        "1047": 71,
+        "1048": 72,
+        "1049": 73,
+        "1050": 74,
+        "1051": 75,
+        "1052": 76,
+        "1053": 77,
+        "1054": 78,
+        "1055": 79,
+        "1056": 80,
+        "1057": 81,
+        "1058": 82,
+        "1059": 83,
+        "1060": 84,
+        "1061": 85,
+        "1062": 86,
+        "1063": 87,
+        "1064": 88,
+        "1065": 89,
+        "1066": 90,
+        "1067": 91,
+        "1068": 92,
+        "1069": 93,
+        "1070": 94,
+        "1071": 95,
+        "1072": 96,
+        "1073": 97,
+        "1074": 98,
+        "1075": 99,
+        "1076": 100,
+        "1077": 101,
+        "1078": 102,
+        "1079": 103,
+        "1080": 104,
+        "1081": 105,
+        "1082": 106,
+        "1083": 107,
+        "1084": 108,
+        "1085": 109,
+        "1086": 110,
+        "1087": 111,
+        "1088": 112,
+        "1089": 113,
+        "1090": 114,
+        "1091": 115,
+        "1092": 116,
+        "1093": 117,
+        "1094": 118,
+        "1095": 119,
+        "1096": 120,
+        "1097": 121,
+        "1098": 122,
+        "1099": 123,
+        "1100": 124,
+        "1101": 125,
+        "1102": 126,
+        "1103": 127,
+        "1105": 56,
+        "1106": 16,
+        "1107": 3,
+        "1108": 58,
+        "1109": 62,
+        "1110": 51,
+        "1111": 63,
+        "1112": 60,
+        "1113": 26,
+        "1114": 28,
+        "1115": 30,
+        "1116": 29,
+        "1118": 34,
+        "1119": 31,
+        "1168": 37,
+        "1169": 52,
+        "8211": 22,
+        "8212": 23,
+        "8216": 17,
+        "8217": 18,
+        "8218": 2,
+        "8220": 19,
+        "8221": 20,
+        "8222": 4,
+        "8224": 6,
+        "8225": 7,
+        "8226": 21,
+        "8230": 5,
+        "8240": 9,
+        "8249": 11,
+        "8250": 27,
+        "8364": 8,
+        "8470": 57,
+        "8482": 25
+    };
+}
 
-    var clean_text = function (text) {
-        text = text.replace(/"/g, '""').replace(/(\r\n\t|\n|\r\t)/gm,"");
+UnicodeToWin1251.prototype.change = function (str) {
+    var object = {},
+        hasOwnProperty = object.hasOwnProperty;
+    var length = str.length;
+    var index = -1;
+    var codePoint;
+    var pointer;
+    var result = '';
+    while (++index < length) {
+        codePoint = str.charCodeAt(index);
+        if (codePoint >= 0x00 && codePoint <= 0x7F) {
+            result += '%' + (codePoint<16?'0':'') + codePoint.toString(16);
+            continue;
+        }
+        if (hasOwnProperty.call(this._INDEX_BY_CODE_POINT, codePoint)) {
+            pointer = this._INDEX_BY_CODE_POINT[codePoint];
+            result += '%' + (codePoint<16?'0':'') + (pointer + 0x80).toString(16);
+        } else {
+            result += error(codePoint, mode);
+        }
+    }
+
+    return result;
+};
+
+var unicodeToWin1251 = new UnicodeToWin1251();
+
+jQuery.fn.tableToCSV = function (unicodeToWin) {
+
+    unicodeToWin = typeof unicodeToWin !== 'undefined' ? unicodeToWin : false;
+
+    var clean_text = function (text, unicodeToWin) {
+        text = text.replace(/"/g, '""').replace(/(\r\n\t|\n|\r\t|\s{2})/gm,"");
+        if (unicodeToWin) {
+            text = unicodeToWin1251.change(text);
+        }
+
         return '"' + text + '"';
     };
 
@@ -226,11 +392,11 @@ jQuery.fn.tableToCSV = function () {
         $table.find('tr').each(function () {
             var data = [];
             $(this).find('th').each(function () {
-                var text = clean_text($(this).text());
+                var text = clean_text($(this).text(), unicodeToWin);
                 title.push(text);
             });
             $(this).find('td').each(function () {
-                var text = clean_text($(this).text());
+                var text = clean_text($(this).text(), unicodeToWin);
                 data.push(text);
             });
             data = data.join(";");
@@ -239,8 +405,11 @@ jQuery.fn.tableToCSV = function () {
         title = title.join(";");
         rows = rows.join("\n");
 
-        var csv = title + rows;
-        var uri = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+        var csv = title + rows,
+            uri = 'data:text/csv;charset=' + (unicodeToWin ? 'windows-1251' : 'utf-8') +',';
+
+        uri += unicodeToWin ? csv : encodeURIComponent(csv);
+
         var download_link = document.createElement('a');
         download_link.href = uri;
         var ts = moment().format('DD.MM.YYYY HH:mm');
@@ -252,6 +421,7 @@ jQuery.fn.tableToCSV = function () {
         document.body.appendChild(download_link);
         download_link.click();
         document.body.removeChild(download_link);
+
     });
 };
 
