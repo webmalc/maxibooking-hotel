@@ -94,7 +94,7 @@
                         <div class="row spacer-top">
                             <div class="col-md-12 text-right btn-list">
 
-                                {% if is_granted('ROLE_ORGANIZATION_PAYER') %}
+                                {% if is_granted('ROLE_ORGANIZATION_EDIT') %}
                                 <a href="{{ path('organization_edit', {id: entity.organization.id }) }}"
                                    class="btn btn-success btn-sm" title="" data-toggle="tooltip"
                                    data-original-title="{{ 'order.organization_edit.edit_entry'|trans }}"><i class="fa fa-pencil-square-o"></i></a>
