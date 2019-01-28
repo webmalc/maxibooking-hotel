@@ -71,6 +71,10 @@ class HundredOneHotelsController extends Controller
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            if (!$config->isMainSettingsFilled()) {
+                $config->setIsEnabled(true);
+            }
+
             $errorMessage = $this->get('mbh.channelmanager.hundred_one_hotels')->sendTestRequestAndGetErrorMessage($config);
             if ($config->getIsEnabled() && isset($errorMessage)) {
                 $this->addFlash('danger', $errorMessage);
@@ -226,7 +230,7 @@ class HundredOneHotelsController extends Controller
     {
         $config = $this->hotel->getHundredOneHotelsConfig();
         if ($config) {
-            $this->get('mbh.channelmanager')->pullOrdersInBackground(HundredOneHotels::CHANNEL_MANAGER_TYPE, true);
+            $this->get('mbh.channelmanager')->pullOrdersInBackground('hundred_one_hotels', true);
             $this->addFlash('warning', 'controller.expediaController.old_ordes_sync_start');
         }
 
