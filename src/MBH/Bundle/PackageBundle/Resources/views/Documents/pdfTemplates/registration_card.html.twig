@@ -2,17 +2,20 @@
 <html lang="ru">
 <head>
     <meta charset="utf-8">
-    <title>Pdf</title>
+    <title>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.registratsionnaya.kartochka'|trans }}</title>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic&subset=latin,cyrillic'
+          rel='stylesheet' type='text/css'>
     <style type="text/css">
         body {
             font-family: "Open Sans"; /*Arial*/
             font-size: 16px;
+            margin: 0;
         }
 
         .document {
-            padding-top: 0px;
-            width: 900px;
-            margin: 0 auto;
+            padding-top: 0;
+            width: 950px;
+            margin: 0;
         }
 
         .ib {
@@ -45,10 +48,11 @@
         .header {
             width: 100%;
             border-bottom: solid 2px;
+            height: 100px;
         }
 
         .table {
-            width: 900px;
+            width: 950px;
         }
 
         .table td {
@@ -83,7 +87,7 @@
             font-size: 14px
         }
         .description {
-            width: 900px;
+            width: 950px;
         }
 
         .description .text {
@@ -159,12 +163,12 @@
         }
 
         .bottom .permission {
-            width: 900px;
+            width: 950px;
         }
 
         .bottom .permission-table {
             padding: 10px;
-            width: 900px;
+            width: 950px;
             border-top: solid 2px #000000;
         }
 
@@ -200,11 +204,13 @@
             padding: 5px;
             font-size: 14px;
         }
+        .hotel-logo {
+            max-height: 100px;
+            max-width: 100px;
+        }
     </style>
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic&subset=latin,cyrillic'
-          rel='stylesheet' type='text/css'>
-<body>
 </head>
+<body>
 <div class="document">
 
     {% set organization = null %}
@@ -256,7 +262,7 @@
                         </td>
                         <td style="width: 20%">
                             {% if hotel.logoImage %}
-                                <img src="{{ absolute_url(asset(vich_uploader_asset(hotel.logoImage, 'imageFile')|imagine_filter('scaler'))) }}">
+                                <img class="hotel-logo" src="{{ absolute_url(asset(vich_uploader_asset(hotel.logoImage, 'imageFile')|imagine_filter('thumb_100x100'))) }}">
                             {% endif %}
                         </td>
                     </tr>
@@ -362,7 +368,7 @@
                             <div class="field">
                                 <div class="title">
                                     <div>Issued by</div>
-                                    <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.vydan'|trans }} </div>
+                                    <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.vydan'|trans }}</div>
                                 </div>
                                 <div class="area" style="height: 38px !important;">
                                     {% if tourist and tourist.documentRelation  %}
@@ -378,7 +384,7 @@
                             <div class="field">
                                 <div class="title">
                                     <div>Country</div>
-                                    <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.strana'|trans }} </div>
+                                    <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.strana'|trans }}</div>
                                 </div>
                                 <div class="area">{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.countryTld %} {{ get_country(tourist.addressObjectDecomposed.countryTld).name }} {% endif %}</div>
                             </div>
@@ -387,7 +393,7 @@
                             <div class="field">
                                 <div class="title">
                                     <div>Zip-code</div>
-                                    <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.indeks'|trans }} </div>
+                                    <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.indeks'|trans }}</div>
                                 </div>
                                 <div class="area">{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.zipCode %} {{ tourist.addressObjectDecomposed.zipCode }} {% endif %}</div>
                             </div>
@@ -408,7 +414,7 @@
                             <div class="field">
                                 <div class="title" style="width: 55px">
                                     <div>City</div>
-                                    <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.gorod'|trans }} </div>
+                                    <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.gorod'|trans }}</div>
                                 </div>
                                 <div style="margin-left: 56px"
                                      class="area">{% if tourist and tourist.addressObjectDecomposed and tourist.addressObjectDecomposed.city %} {{ tourist.addressObjectDecomposed.city }} {% endif %}</div>
@@ -420,7 +426,7 @@
                             <div class="field">
                                 <div class="title">
                                     <div>Street</div>
-                                    <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.ulitsa'|trans }} </div>
+                                    <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.ulitsa'|trans }}</div>
                                 </div>
                                 <div class="area">{% if tourist and tourist.addressObjectDecomposed %} {{ tourist.addressObjectDecomposed.street }} {% endif %}</div>
                             </div>
@@ -470,7 +476,7 @@
                             <div class="field">
                                 <div class="title">
                                     <div>Type</div>
-                                    <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.tip'|trans }} </div>
+                                    <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.tip'|trans }}</div>
                                 </div>
                                 <div class="area">{% if package.accommodation and package.accommodation.roomType %}{{ package.accommodation.roomType.internationalTitle }}{% endif %}</div>
                             </div>
@@ -479,7 +485,7 @@
                             <div class="field">
                                 <div class="title">
                                     <div>Room</div>
-                                    <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.nomer'|trans }} </div>
+                                    <div>{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.nomer'|trans }}</div>
                                 </div>
                                 <div class="area">{% if package.accommodation %}{{ package.accommodation.fullTitle }}{% endif %}</div>
                             </div>
@@ -530,21 +536,20 @@
                     <div class="agree">
                         <div style="display: inline-block;float: left">{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.s_usloviyami_oplati_vozvrata_i_etc'|trans }}
                         </div>
-                        &nbsp
                         <div class="fields">
                             <div>
-                                <div style="width: 170px" class="area">&nbsp</div>
+                                <div style="width: 170px" class="area"></div>
                                 <div style="display: block; font-size: 12px; font-weight: normal;">
                                     SIGNATURE {{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.podpis'|trans }}</div>
                             </div>
                             <div>
                                 <div style="width: 140px" class="area">
-                                    &nbsp{% if tourist %}{{ tourist|initial }}{% endif %}</div>
-                                <div style="display: block; font-size: 12px; font-weight: normal;">{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.rasshifrovka.podpisi'|trans }} </div>
+                                    {% if tourist %}{{ tourist|initial }}{% endif %}</div>
+                                <div style="display: block; font-size: 12px; font-weight: normal;">{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.rasshifrovka.podpisi'|trans }}</div>
                             </div>
                             <div>
-                                <div style="width: 90px" class="area">&nbsp{{ 'now'|date('d.m.Y') }}</div>
-                                <div style="display: block; font-size: 12px; font-weight: normal;">{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.data'|trans }} </div>
+                                <div style="width: 90px" class="area">{{ 'now'|date('d.m.Y') }}</div>
+                                <div style="display: block; font-size: 12px; font-weight: normal;">{{ 'mbhpackagebundle.view.documents.pdftemplates.registration_card.data'|trans }}</div>
                             </div>
                         </div>
                     </div>
