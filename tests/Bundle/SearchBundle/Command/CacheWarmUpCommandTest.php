@@ -48,6 +48,7 @@ class CacheWarmUpCommandTest extends KernelTestCase
                 'command' => $command->getName(),
                 '--begin' => $input['begin'],
                 '--end' => $input['end'],
+                '--flush' => null
             ]
         );
 

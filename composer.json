@@ -28,7 +28,7 @@
     "symfony/monolog-bundle": "@stable",
     "sensio/distribution-bundle": "@stable",
     "symfony/polyfill-apcu": "^1.0",
-    "sensio/framework-extra-bundle": "*@stable",
+    "sensio/framework-extra-bundle": "<4",
     "incenteev/composer-parameter-handler": "^2.0@stable",
     "doctrine/mongodb": "^1.6.1",
     "doctrine/mongodb-odm": "^1.2.3",
