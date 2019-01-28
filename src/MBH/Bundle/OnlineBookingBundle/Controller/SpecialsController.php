@@ -62,7 +62,7 @@ class SpecialsController extends BaseController
         $ids = [];
         foreach ($specials as $special) {
             /** @var Special $special */
-            array_push($ids, $special->getHotel()->getId());
+            $ids[] = $special->getHotel()->getId();
         }
 
         return array_unique($ids);

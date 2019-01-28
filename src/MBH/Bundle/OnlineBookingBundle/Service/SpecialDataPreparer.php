@@ -245,7 +245,7 @@ class SpecialDataPreparer
         if ($mainImage instanceof Image || $mainImage instanceof RoomTypeImage) {
             $result[] = $mainImage->getPath();
         } else {
-            $result = self::NO_IMAGE_PATH;
+            $result[] = self::NO_IMAGE_PATH;
         }
 
         foreach ($roomType->getImages() as $image) {
