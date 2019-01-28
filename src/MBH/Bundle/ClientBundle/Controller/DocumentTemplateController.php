@@ -140,7 +140,7 @@ class DocumentTemplateController extends BaseController
      */
     public function showAction(DocumentTemplate $doc, Package $package)
     {
-        // для перехвата нотисов в проде
+        // for interceptor notices in prod
         $this->container->get('twig')->enableStrictVariables();
 
         try {
