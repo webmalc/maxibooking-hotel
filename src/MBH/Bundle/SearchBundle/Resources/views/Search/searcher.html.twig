@@ -1,8 +1,12 @@
 {% extends 'MBHPackageBundle:Search:layout.html.twig' %}
 {% set small_title = "search.index.search"|trans({}, "MBHPackageBundle") %}
 {% set layout = "box" %}
-
 {% block content %}
+
+    {#form  theme это костылина для возрастов детей. Без нее отрабатывает кастомный form.fields и делает какую то муть#}
+{% form_theme form '@MBHSearchBundle/Form/form_div_layout.html.twig' %}
+
+
     <link rel="stylesheet" href="{{ asset('bundles/mbhsearch/css/search.css') }}">
     <div class="box box-default box-solid" id="searcher">
         <div class="box-header">
