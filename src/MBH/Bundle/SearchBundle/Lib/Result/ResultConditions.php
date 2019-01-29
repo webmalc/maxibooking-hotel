@@ -154,6 +154,7 @@ class ResultConditions
         return $this;
     }
 
+
     public static function createInstance(SearchConditions $conditions): ResultConditions
     {
         $searchConditions = new self();

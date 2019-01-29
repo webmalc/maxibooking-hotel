@@ -11,6 +11,8 @@ use MBH\Bundle\SearchBundle\Lib\Exceptions\RoomTypesTypeException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultCacheException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -145,18 +147,25 @@ class SearchController extends Controller
     }
 
     /**
-     * Uses direct from twig
-     * @return Response
-     */
+     * Search action
+     * @Route("/", name="package_new_search", options={"expose"=true})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_SEARCH')")
+     **/
+
     public function searcherAction(Request $request): Response
     {
         $initSearchConditions = new SearchConditions();
         $initSearchConditions
             ->setAdults(1)
             ->setChildren(0)
-            ->setChildrenAges([]);
-
-        $form = $this->createForm(SearchConditionsType::class, $initSearchConditions);
+            ->setChildrenAges([])
+        ;
+        $options = [];
+        if ($orderId = $request->get('order')) {
+            $options['order'] = $orderId;
+        }
+        $form = $this->createForm(SearchConditionsType::class, $initSearchConditions, $options);
         try {
             $viewForm = $form->createView();
         } catch (RoomTypesTypeException $exception) {
@@ -168,7 +177,6 @@ class SearchController extends Controller
         }
 
         return $this->render('@MBHSearch/Search/searcher.html.twig', ['form' => $viewForm]);
-//        return $this->render('@MBHSearch/Search/searcher.html.twig', ['form' => $viewForm]);
     }
 
     /**

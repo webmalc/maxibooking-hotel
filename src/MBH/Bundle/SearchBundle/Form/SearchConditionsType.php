@@ -140,13 +140,15 @@ class SearchConditionsType extends AbstractType
         $builder
             ->add(
                 'order',
-                NumberType::class,
+                IntegerType::class,
                 [
                     'required' => false,
+                    'mapped' => false,
                     'label' => false,
                     'attr' => [
                         'class' => 'input-xs only-int form-control input-sm',
                     ],
+                    'data' => $options['order']
                 ]
             )
             ->add(
@@ -255,6 +257,7 @@ class SearchConditionsType extends AbstractType
                     'data_class' => SearchConditions::class,
                     'csrf_protection' => false,
                     'isForceDisableCategory' => false,
+                    'order' => null
                 ]
             );
     }

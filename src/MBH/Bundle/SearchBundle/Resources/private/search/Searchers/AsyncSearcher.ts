@@ -62,7 +62,6 @@ export class AsyncSearcher extends Searcher {
             }
         } catch (e) {
             this.onStopSearch(ajax);
-            console.log('ya ya')
         }
     }
 }

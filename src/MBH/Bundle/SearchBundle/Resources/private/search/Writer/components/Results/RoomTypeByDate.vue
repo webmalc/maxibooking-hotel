@@ -13,7 +13,7 @@
                     <th class="td-md"></th>
                 </tr>
                 </thead>
-                <tbody is="DateResults" :results="dateResults" :isForceBooking="isForceBooking"></tbody>
+                <tbody is="DateResults" :results="dateResults" :isForceBooking="isForceBooking" :order="order"></tbody>
             </table>
         </td>
     </tr>
@@ -25,7 +25,7 @@
     import DateResults from './DateResults';
     export default Vue.extend({
         name: "RoomTypeByDate",
-        props: ['date', 'dateResults', 'isForceBooking'],
+        props: ['date', 'dateResults', 'isForceBooking', 'order'],
         components: {
             DateResults
         }

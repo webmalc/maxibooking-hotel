@@ -95,7 +95,7 @@ class Builder
         $search = [
             'reservations' => [
                 'options'    => [
-                    'route' => 'package_search',
+                    'route' => 'package_new_search',
                     'label' => 'menu.label.podbor',
                 ],
                 'attributes' => ['icon' => 'fa fa-search'],

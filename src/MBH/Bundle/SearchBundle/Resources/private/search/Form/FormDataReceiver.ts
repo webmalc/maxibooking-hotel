@@ -41,6 +41,10 @@ export class FormDataReceiver implements DataReceiverInterface {
         return data;
     }
 
+    public getOrder(): number {
+        return Number(this.getFormFieldValue('order'));
+    }
+
 
     private bindHandlers(): void {
         this.$children.on('input', (e) => {

@@ -177,13 +177,6 @@ class SearchConditions extends Base
      */
     private $isUseCache = true;
 
-    /**
-     * @var string
-     * @Assert\Type(type="string")
-     * @ODM\Field(type="string")
-     */
-    private $order;
-
     /** @var bool */
     private $isSpecialStrict = false;
 
@@ -534,25 +527,6 @@ class SearchConditions extends Base
     public function getMaxEnd(): \DateTime
     {
         return (clone $this->getEnd())->modify("+{$this->getAdditionalEnd()} days");
-    }
-
-    /**
-     * @return string
-     */
-    public function getOrder()
-    {
-        return $this->order;
-    }
-
-    /**
-     * @param string $order
-     * @return SearchConditions
-     */
-    public function setOrder(string $order): SearchConditions
-    {
-        $this->order = $order;
-
-        return $this;
     }
 
 

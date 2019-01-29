@@ -360,12 +360,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         if (!$this->container->get('mbh.package.permissions')->checkHotel($package)) {
             throw $this->createNotFoundException();
         }
-//        $order = $package->getOrder();
-//        $package->setDeletedAt(null);
-//        $order->setDeletedAt(null);
-//        $this->dm->persist($package);
-//        $this->dm->persist($order);
-//        $this->dm->flush();
 
         /** @var AuthorizationChecker $authorizationChecker */
         $authorizationChecker = $this->get('security.authorization_checker');

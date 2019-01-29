@@ -4,7 +4,7 @@
         <td colspan="8">{{roomType.name}}: {{roomType.hotelName}}</td>
     </tr>
     <tr is="RoomTypeByDate" v-for="(dateResults, key) in results" :date="key" :dateResults="dateResults"
-        :isForceBooking="isForceBooking"></tr>
+        :isForceBooking="isForceBooking" :order="order"></tr>
     </tbody>
 </template>
 
@@ -14,7 +14,7 @@
 
     export default Vue.extend({
         name: "RoomTypeResults",
-        props: ['roomType', 'results', 'isForceBooking'],
+        props: ['roomType', 'results', 'isForceBooking', 'order'],
         components: {
             RoomTypeByDate
         }

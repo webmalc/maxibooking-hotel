@@ -11,9 +11,8 @@
     %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
-    {# New search#}
-    <script src="{{ asset('build/search.js') }}"></script>
-    {# end new search #}
+    {% block customJs %}
+    {% endblock %}
     {% include '@MBHPackage/Report/graphModal.html.twig' %}
 {% endblock %}
 

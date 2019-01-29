@@ -77,7 +77,7 @@
                 {% set package = supposeAccommodation %}
             {% endif %}
 
-            {% set settle_link = path('package_search') ~ '#' ~ {'s': {
+            {% set settle_link = path('package_new_search') ~ '#' ~ {'s': {
                 'begin' : 'today'|date('d.m.Y'), 'end' : 'tomorrow'|date('d.m.Y'),
                 'roomType': (room.roomType ? [room.roomType.id] : null), 'room': room.id
                 }}|url_encode

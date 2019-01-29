@@ -73,7 +73,7 @@ class Builder implements ContainerAwareInterface
             if ($checker->isGranted('ROLE_ORDER_EDIT') && $checker->isGranted('ROLE_PACKAGE_NEW') && ($checker->isGranted('EDIT', $package->getOrder()) || $checker->isGranted('ROLE_PACKAGE_EDIT_ALL'))) {
                 $rootItem
                     ->addChild('Order search ', [
-                        'route' => 'package_search',
+                        'route' => 'package_new_search',
                         'routeParameters' => ['order' => $package->getOrder()->getId()],
                         'label' => $translator->trans('order.package.add', [], 'MBHPackageBundle')
                     ])

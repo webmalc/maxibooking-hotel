@@ -1,29 +1,43 @@
-<link rel="stylesheet" href="{{ asset('bundles/mbhsearch/css/search.css') }}">
-<div class="box box-default box-solid" id="searcher">
-    <div class="box-header">
-        <h3 class="box-title">{{ header|default('form.filter')|trans|raw }}
-            {% if smallHeader is defined and smallHeader is not empty %}
-                <small>{{ smallHeader|trans|raw }}</small>
-            {% endif %}
-        </h3>
-        <div class="box-tools pull-right">
-            <button class="btn btn-box-tool form-group-collapse"id="searcher-collapse"
-                    data-widget="collapse"><i class="fa fa-minus"></i></button>
+{% extends 'MBHPackageBundle:Search:layout.html.twig' %}
+{% set small_title = "search.index.search"|trans({}, "MBHPackageBundle") %}
+{% set layout = "box" %}
+
+{% block content %}
+    <link rel="stylesheet" href="{{ asset('bundles/mbhsearch/css/search.css') }}">
+    <div class="box box-default box-solid" id="searcher">
+        <div class="box-header">
+            <h3 class="box-title">{{ header|default('form.filter')|trans|raw }}
+                {% if smallHeader is defined and smallHeader is not empty %}
+                    <small>{{ smallHeader|trans|raw }}</small>
+                {% endif %}
+            </h3>
+            <div class="box-tools pull-right">
+                <button class="btn btn-box-tool form-group-collapse" id="searcher-collapse"
+                        data-widget="collapse"><i class="fa fa-minus"></i></button>
+            </div>
+        </div>
+        <div class="{{ class|default('bg-gray-disabled color-palette') }} box-body">
+            {{ include('@MBHSearch/Search/form/search.form.html.twig') }}
         </div>
     </div>
-    <div class="{{ class|default('bg-gray-disabled color-palette') }} box-body">
-        {{ include('@MBHSearch/Search/form/search.form.html.twig') }}
+
+    <div id="package-searcher-results-wrapper">
+
     </div>
-</div>
 
-<div id="package-searcher-results-wrapper">
+    <div id="search_results"></div>
 
-</div>
+    <div class="alert alert-danger hide" id="accommodation-alert">
+        <i class="fa fa-exclamation-circle"></i> {{ "accommodation.alert"|trans({}, "MBHPackageBundle") }}
+    </div>
 
-<div id="search_results"></div>
+    <div id="specials"></div>
 
-<div class="alert alert-danger hide" id="accommodation-alert">
-    <i class="fa fa-exclamation-circle"></i> {{ "accommodation.alert"|trans({}, "MBHPackageBundle") }}
-</div>
+{% endblock content %}
 
-<div id="specials"></div>
+
+{% block customJs %}
+    {# New search#}
+    <script src="{{ asset('build/search.js') }}"></script>
+    {# end new search #}
+{% endblock %}

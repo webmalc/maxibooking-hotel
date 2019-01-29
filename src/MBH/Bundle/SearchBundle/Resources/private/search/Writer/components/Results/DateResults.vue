@@ -1,6 +1,6 @@
 <template>
     <tbody>
-    <tr @booking="booking($event)" is="Result" v-for="(result, key) in sortedResults" :key="key" :result="result" :isForceBooking="isForceBooking"></tr>
+    <tr @booking="booking($event)" is="Result" v-for="(result, key) in sortedResults" :key="key" :result="result" :isForceBooking="isForceBooking" :order="order"></tr>
     </tbody>
 </template>
 
@@ -10,7 +10,7 @@
 
     export default Vue.extend({
         name: "DateResults",
-        props: ['results', 'isForceBooking'],
+        props: ['results', 'isForceBooking', 'order'],
         methods: {
             booking: function (count: number) {
                 for (let index in this.results) {

@@ -13,7 +13,7 @@
         </tr>
         </thead>
         <tbody is="RoomTypeResults" v-for="(data, key) in rawData" :roomType="data.roomType" :results="data.results"
-               :key="key" :isForceBooking="isForceBooking">
+               :key="key" :isForceBooking="isForceBooking" :order="order">
         </tbody>
     </table>
 </template>
@@ -24,22 +24,26 @@
 
     export default Vue.extend({
         name: 'SearchResults',
-        props: ['rawData'],
+        props: ['rawData', 'form'],
         components: {
             RoomTypeResults
         },
 
         created: function () {
             let switcher = $('#search_conditions_isForceBooking');
+            let orderField = $('#search_conditions_order');
             let that = this;
             switcher.on('switchChange.bootstrapSwitch', function (event, state) {
                 that.isForceBooking = state;
-                console.log('yaya');
+            });
+            orderField.on('change', function () {
+                that.order = that.form.getOrder()
             });
         },
         data: function () {
             return {
-                isForceBooking: false
+                isForceBooking: false,
+                order: this.form.getOrder()
             }
         }
     })

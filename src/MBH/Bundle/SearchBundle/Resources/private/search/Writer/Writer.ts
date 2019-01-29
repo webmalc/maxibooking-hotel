@@ -1,3 +1,5 @@
+import {FormDataReceiver} from "../Form/FormDataReceiver";
+
 declare let Routing: Routing;
 
 import Vue from 'vue';
@@ -9,9 +11,11 @@ export class Writer {
     private data: any = {};
     public searchStatus: { [index: string]: string } = {state: 'new'};
     private rootApp: any;
+    private formDataReceiver: FormDataReceiver;
 
 
-    constructor() {
+    constructor(formDataReceiver: FormDataReceiver) {
+        this.formDataReceiver = formDataReceiver;
         this.init();
     }
 
@@ -34,10 +38,11 @@ export class Writer {
     private searchVueInit(): void {
         this.rootApp = new Vue({
             el: '#search_results',
-            template: '<SearchResults v-bind:rawData="rawData" />',
+            template: '<SearchResults :rawData="rawData" :form="form" />',
             components: {SearchResults},
             data: {
-                rawData: this.data
+                rawData: this.data,
+                form: this.formDataReceiver
             }
         })
     }
