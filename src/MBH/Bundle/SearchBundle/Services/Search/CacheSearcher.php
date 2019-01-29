@@ -6,7 +6,6 @@ namespace MBH\Bundle\SearchBundle\Services\Search;
 
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
-use MBH\Bundle\SearchBundle\Services\Cache\SearchCacheInterface;
 
 class CacheSearcher extends AbstractCacheSearcher
 {

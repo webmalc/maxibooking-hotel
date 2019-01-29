@@ -9,6 +9,12 @@ use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 
 class SearcherFactory
 {
+
+    /**
+     * @var bool
+     * temporary disable cache
+     */
+    private const IS_USE_CACHE = false;
     /** @var Searcher */
     private $searcher;
 
@@ -29,7 +35,7 @@ class SearcherFactory
 
     public function getSearcher(bool $isUseCache = false): SearcherInterface
     {
-        if ($isUseCache) {
+        if (self::IS_USE_CACHE && $isUseCache) {
             return $this->cacheSearcher;
         }
 
