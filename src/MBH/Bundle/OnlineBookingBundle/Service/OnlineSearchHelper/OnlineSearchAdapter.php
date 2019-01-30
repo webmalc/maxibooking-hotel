@@ -86,7 +86,10 @@ class OnlineSearchAdapter
                 $searchResult->setTariff($tariff);
                 $newResultPrices = reset($currentResult['prices']);
                 $prices = [
-                     $newResultPrices['searchAdults'].'_'.$newResultPrices['searchChildren'] => $newResultPrices['total']
+                    //** HotFix when adapt with childrenAge difference */
+//                     $newResultPrices['searchAdults'].'_'.$newResultPrices['searchChildren'] => $newResultPrices['total']
+                    $adults.'_'.$children => $newResultPrices['total']
+
                 ];
                 $searchResult->setPrices($prices);
                 $dayPrices = $newResultPrices['dayPrices'];
