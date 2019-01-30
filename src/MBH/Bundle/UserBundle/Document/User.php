@@ -175,7 +175,10 @@ class User extends BaseUser implements RecipientInterface
      */
     protected $locked;
 
-    /** @var \DateTime */
+    /** @var \DateTime
+     * @ODM\Field(type="date")
+     * @Assert\DateTime()
+     */
     protected $expiresAt;
 
     /**
@@ -225,7 +228,7 @@ class User extends BaseUser implements RecipientInterface
         return $this->expiresAt;
     }
 
-    public function setExpiresAt(\DateTime $dateTime)
+    public function setExpiresAt($dateTime)
     {
         $this->expiresAt = $dateTime;
 

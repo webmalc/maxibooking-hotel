@@ -36,7 +36,7 @@ export abstract class Searcher {
             const data = await ajax;
             this.drawSpecialResults(data);
         } catch (e) {
-            console.error('Ошибка получеия спец предложений однако');
+            console.error('Ошибка получеия спец предложений, однако!');
             console.log(e);
         }
     }
