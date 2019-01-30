@@ -175,6 +175,9 @@ class User extends BaseUser implements RecipientInterface
      */
     protected $locked;
 
+    /** @var \DateTime */
+    protected $expiresAt;
+
     /**
      * Hook timestampable behavior
      * updates createdAt, updatedAt fields
@@ -220,6 +223,13 @@ class User extends BaseUser implements RecipientInterface
     public function getExpiresAt()
     {
         return $this->expiresAt;
+    }
+
+    public function setExpiresAt(\DateTime $dateTime)
+    {
+        $this->expiresAt = $dateTime;
+
+        return $this;
     }
 
     /**
