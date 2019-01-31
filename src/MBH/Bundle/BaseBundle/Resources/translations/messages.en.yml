@@ -82,8 +82,9 @@ mailer.closedTasks.number: Number
 mailer.closedTasks.performer: Performer
 mailer.closedTasks.closed: Closed
 mailer.userArrival.greet: 'Hello, {name}!'
-mailer.userArrival.reminder: 'We are reminding you about booking in our hotel for TOMORROW {begin}. Please contact us in case of arrival time change.'
+mailer.userArrival.reminder: 'We are reminding you about booking in our hotel for TOMORROW {begin} Please let us know if your reservation is not relevant.'
 mailer.userArrival.reminder2: 'Information about your room facilities, check-in terms and additional services of our hotel you can find on our website.'
+mailer.userArrival.reminder3: 'The hotel charges a refundable deposit in the amount of 3000 rubles per room and returned upon departure.'
 mailer.userArrival.about_hotel: 'About hotel'
 mailer.userArrival.numbers_servies: 'Rooms and facilities'
 mailer.userArrival.trip_schema: Map

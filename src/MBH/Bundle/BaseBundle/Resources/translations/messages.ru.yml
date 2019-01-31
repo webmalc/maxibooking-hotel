@@ -175,8 +175,9 @@ mailer.closedTasks.number: Номер
 mailer.closedTasks.performer: Исполнитель
 mailer.closedTasks.closed: Закрыта
 mailer.userArrival.greet: 'Здравствуйте, {name}!'
-mailer.userArrival.reminder: 'Спешим напомнить, что для вас зарезервирован номер в нашем отеле на ЗАВТРА {begin} Пожалуйста, свяжитесь с нами в случае изменения времени прибытия.'
+mailer.userArrival.reminder: 'Спешим напомнить, что для вас зарезервирован номер в нашем отеле на ЗАВТРА {begin} Пожалуйста, сообщите нам, если Ваша бронь не актуальна.'
 mailer.userArrival.reminder2: 'По комплектации вашего номера, условиям заселения, а также о дополнительных услугах нашего отеля вы можете узнать на нашем сайте.'
+mailer.userArrival.reminder3: 'В отеле взимается возвратный обеспечительный платеж в размере 3000 руб за номер и возвращается при выезде.'
 mailer.userArrival.about_hotel: 'Об отеле'
 mailer.userArrival.numbers_servies: 'Номера и услуги'
 mailer.userArrival.trip_schema: 'Схема проезда'
