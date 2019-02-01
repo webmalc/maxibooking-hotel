@@ -6,6 +6,8 @@ use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\BillingBundle\Lib\Model\Country;
 use MBH\Bundle\ClientBundle\Service\DocumentSerialize\Mortal;
 use MBH\Bundle\ClientBundle\Service\DocumentSerialize\Organization;
+use MBH\Bundle\OnlineBundle\Lib\ContactHotelPaymentForm;
+use MBH\Bundle\OnlineBundle\Lib\PaymentSystemHelper;
 use MBH\Bundle\PackageBundle\Lib\AddressInterface;
 use MBH\Bundle\UserBundle\DataFixtures\MongoDB\UserData;
 use MBH\Bundle\UserBundle\Document\User;
@@ -434,7 +436,13 @@ class Extension extends \Twig_Extension
             'is_mb_user'              => new \Twig_SimpleFunction('is_mb_user', [$this, 'isMBUser'], ['is_safe' => ['html']]),
             'get_properties'          => new \Twig_SimpleFunction('get_properties', [$this, 'getMethodsForTemplate'], ['is_safe' => ['html']]),
             'get_guide_article_url'   => new \Twig_SimpleFunction('get_guide_article_url', [$this, 'getGuideArticleUrl'], ['is_safe' => ['html']]),
+            'contact_hotel'           => new \Twig_SimpleFunction('contact_hotel', [$this, 'getContactHotelIfNotSetPaymentSystem'], ['is_safe' => ['html']]),
         ];
+    }
+
+    public function getContactHotelIfNotSetPaymentSystem(PaymentSystemHelper $paymentSystemsHelper): string
+    {
+        return new ContactHotelPaymentForm($paymentSystemsHelper);
     }
 
     /**

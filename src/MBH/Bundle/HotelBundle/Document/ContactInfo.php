@@ -87,7 +87,7 @@ class ContactInfo
      */
     public function getPhoneNumber($original = false): ?string
     {
-        return Tourist::formatPhone($this->phoneNumber, $original);
+        return $this->phoneNumber !== null ? Tourist::formatPhone($this->phoneNumber, $original) : null;
     }
 
     /**
