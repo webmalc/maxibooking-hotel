@@ -163,7 +163,7 @@ site_form.key_words.label: Tags
 site_form.is_enabled.label: 'Active?'
 site_form.payment_form.label: 'Use payment form?'
 site_form.payment_form.help: 'Using the payment form, you can find a reservation by number and pay for it.'
-site_form.payment_form.help_with_disabled: 'To use the form, you need to set up a <a href="%href%" title="Save changes">payment system</a>.<br>Using the payment form, you can find a reservation by number and pay for it.'
+site_form.payment_form.help_with_disabled: 'To receive payments you need to configure <a href="%href%" title="Click to setup">payment system</a>.<br>Using the payment form, you can find a reservation by number and pay for it.'
 site_form.social_networking.label: 'Social Networking Services'
 views.mb_site.index.main_settings: Settings
 views.mb_site.index.paymentSystem.label: 'Payment System'
