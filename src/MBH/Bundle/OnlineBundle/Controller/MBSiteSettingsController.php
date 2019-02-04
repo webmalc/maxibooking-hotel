@@ -54,6 +54,7 @@ class MBSiteSettingsController extends BaseController
             ),
             'socialNetworks'       => $siteConfig->getSocialNetworkingServices()->getValues(),
             'paymentSystems'       => $this->clientConfig->getPaymentSystems(),
+            'usePaymentForm'       => $siteConfig->isUsePaymentForm(),
         ]);
     }
 }
