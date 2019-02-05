@@ -21,7 +21,8 @@
             </div>
         </div>
         <div class="{{ class|default('bg-gray-disabled color-palette') }} box-body">
-            {{ include('@MBHSearch/Search/form/search.form.html.twig') }}
+            {#{{ include('@MBHSearch/Search/form/search.form.html.twig') }}#}
+            <div id="vue-searcher"></div>
         </div>
     </div>
 
@@ -42,6 +43,7 @@
 
 {% block customJs %}
     {# New search#}
+    <link href="{{ asset('build/search.css') }}" rel="stylesheet"/>
     <script src="{{ asset('build/search.js') }}"></script>
     {# end new search #}
 {% endblock %}
