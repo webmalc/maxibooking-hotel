@@ -95,10 +95,13 @@
                 <th style="{{ cellStyleServiceTable(600, 'center') ~ verticalAlign }}width:40%;">
                     {{ 'mailer.order.title'|trans(transParams) }}
                 </th>
+                <th style="{{ cellStyleServiceTable(600, 'center') ~ verticalAlign }}width:5%;">
+                    {{ "package.service.guests"|trans({}, "MBHPackageBundle") }}
+                </th>
                 <th style="{{ cellStyleServiceTable(600, 'center') ~ verticalAlign }}width:20%;">
                     {{ "package.service.date"|trans({}, "MBHPackageBundle") }}
                 </th>
-                <th style="{{ cellStyleServiceTable(600, 'center') ~ verticalAlign }}width:20%;">
+                <th style="{{ cellStyleServiceTable(600, 'center') ~ verticalAlign }}width:5%;">
                     {{ 'mailer.order.quantity'|trans(transParams) }}
                 </th>
                 <th style="{{ cellStyleServiceTable(600, 'right') ~ verticalAlign }}width:18%;">
@@ -112,6 +115,14 @@
                 <tr>
                     <td style="{{ cellStyleServiceTable(400) ~ backgroundColor }}">{{ loop.index }}</td>
                     <td style="{{ cellStyleServiceTable(400) ~ backgroundColor }}">{{ service.service }}</td>
+                    <td style="{{ cellStyleServiceTable(400, 'center') ~ backgroundColor }}">
+                        {% if service.calcType != constant('MBH\\Bundle\\PackageBundle\\Document\\PackageService::TYPE_NOT_APPLICABLE')
+                            and service.calcType != constant('MBH\\Bundle\\PackageBundle\\Document\\PackageService::TYPE_DAY_PERCENT')%}
+                            {{ service.persons }}
+                        {% else %}
+                            &nbsp;
+                        {% endif %}
+                    </td>
                     <td style="{{ cellStyleServiceTable(400, 'center') ~ backgroundColor }}">
                         {% if service.calcType == constant('MBH\\Bundle\\PackageBundle\\Document\\PackageService::TYPE_PER_NIGHT') %}
                             <span>{{ service.nights }}&#8194;{{ 'nights'|transchoice(service.nights) }}</span>
