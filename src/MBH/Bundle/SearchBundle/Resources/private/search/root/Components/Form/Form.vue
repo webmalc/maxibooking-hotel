@@ -6,35 +6,49 @@
         </div>
         <div class="input ">
             <i class="fa fa-calendar-plus-o " title="" data-toggle="tooltip"
-               data-original-title="Дополнительные дни поиска"></i>&nbsp;
-            <input type="number" v-model="additionalBegin" class="input-xxs">
+               data-original-title="Дополнительные дни до даты поиска."></i>&nbsp;
+            <input type="number" v-model="additionalBegin" class="input-xxs" min="0" :max="maxAdditionalDays">
         </div>
         <div class="input ">
             <i class="fa fa-calendar-plus-o " title="" data-toggle="tooltip"
-               data-original-title="Дополнительные дни поиска"></i>&nbsp;
-            <input type="number" v-model="additionalEnd" class="input-xxs">
+               data-original-title="Дополнительные дни после даты поиска."></i>&nbsp;
+            <input type="number" v-model="additionalEnd" class="input-xxs" min="0" :max="maxAdditionalDays">
         </div>
 
-        <div class="input"><i class="fa fa-male" title="" data-toggle="tooltip" data-original-title="Взрослые"></i>&nbsp;
+        <div class="input"><i class="fa fa-male" title="" data-toggle="tooltip" data-original-title="Взрослые."></i>&nbsp;
             <input type="number" required="required" min="0"
-                max="6" class="input-xxs" v-model="adults">
+                   :max="maxAdults" class="input-xxs" v-model="adults">
         </div>
 
         <div class="input children_age_holder_parent">
-            <i class="fa fa-child" title="" data-toggle="tooltip" data-original-title="Дети"></i>&nbsp;
-            <input type="number" required="required" min="0" max="6" class="input-xxs" v-model="children">
+            <i class="fa fa-child" title="" data-toggle="tooltip" data-original-title="Дети."></i>&nbsp;
+            <input type="number" required="required" min="0" :max="maxChildren" class="input-xxs" v-model="children">
             &nbsp;
-            <i class="fa fa-sort-numeric-asc" title="" data-toggle="tooltip" data-original-title="Возраст детей"></i>
+            <i class="fa fa-sort-numeric-asc" title="" data-toggle="tooltip" data-original-title="Возраст детей."></i>
             <div v-if="children" class="children_age_holder_vue">
                 <div>
-                    <ChildrenAgeInput v-for="key in children" :key="key-1" />
-                    <!---->
-                    <!--<select class="plain-html">-->
-                        <!--<option value="0">0</option>-->
-                        <!--<option value="1">1</option>-->
-                    <!--</select>-->
+                    <ChildrenAgeInput v-for="key in children" :key="key-1"/>
                 </div>
             </div>
+        </div>
+
+        <div class="input"><i class="fa fa-bed" title="" data-toggle="tooltip" data-original-title="Тип номера."></i>&nbsp;
+            <RoomTypeInput/>
+        </div>
+
+        <div class="input">
+            <i class="fa fa-file-text-o" title="" data-toggle="tooltip" data-original-title="Номер заказа"></i>&nbsp;
+        <input v-model="orderId" type="number" class="only-int input-xs" min="0">
+        </div>
+
+        <div class="input">
+            <i class="fa fa-exclamation-circle" title="" data-toggle="tooltip" data-original-title="Игнорировать условия и ограничения"></i>&nbsp;
+            <CheckBox v-model="isForceBooking" :label-id="'isForceBookingLabelId'"/>
+        </div>
+
+        <div class="input">
+            <i class="fa fa-star" title="" data-toggle="tooltip" data-original-title="Строгое соответствие спец. предложений"></i>&nbsp;
+            <CheckBox v-model="isSpecialStrict" :label-id="'isSpecialStrictLabelId'"/>
         </div>
 
     </div>
@@ -45,22 +59,35 @@
 <script lang="ts">
     import RangePicker from './RangePicker.vue'
     import ChildrenAgeInput from './ChildrenAgeInput.vue'
-    import {mapState} from 'vuex';
+    import RoomTypeInput from './RoomTypeInput.vue';
+    import CheckBox from './CheckBox.vue';
 
     export default {
         name: "Form",
 
         components: {
             RangePicker,
-            ChildrenAgeInput
+            ChildrenAgeInput,
+            RoomTypeInput,
+            CheckBox
         },
+        data() {
+            return {
+                maxAdults: 6,
+                maxChildren: 6,
+                maxAdditionalDays: 7
+
+            }
+        },
+
         computed: {
             additionalBegin: {
                 get() {
                     return this.$store.state.form.additionalBegin
                 },
                 set(value) {
-                    this.$store.commit('form/setAdditionalBegin', value)
+                    value = Math.max(0, Math.min(Number(value), this.maxAdditionalDays));
+                    this.$store.commit('form/setAdditionalBegin', Number(value))
                 }
             },
             additionalEnd: {
@@ -68,7 +95,8 @@
                     return this.$store.state.form.additionalEnd
                 },
                 set(value) {
-                    this.$store.commit('form/setAdditionalEnd', value)
+                    value = Math.max(0, Math.min(Number(value), this.maxAdditionalDays));
+                    this.$store.commit('form/setAdditionalEnd', Number(value))
                 }
             },
             adults: {
@@ -76,6 +104,7 @@
                     return this.$store.state.form.adults
                 },
                 set(value) {
+                    value = Math.max(0, Math.min(Number(value), this.maxAdults));
                     this.$store.commit('form/setAdults', value)
                 }
             },
@@ -84,13 +113,34 @@
                     return this.$store.state.form.children
                 },
                 set(value) {
-                    this.$store.commit('form/setChildren', value)
+                    value = Math.max(0, Math.min(Number(value), this.maxChildren));
+                    this.$store.commit('form/setChildren', value);
                 }
             },
-            ...mapState({
-                begin: state => state.form.begin,
-                end: state => state.form.end
-            })
+            orderId: {
+                get() {
+                    return this.$store.state.form.orderId || '';
+                },
+                set(value) {
+                    this.$store.commit('form/setOrderId', Number(value));
+                }
+            },
+            isForceBooking: {
+                get() {
+                    return this.$store.state.form.isForceBooking;
+                },
+                set(value) {
+                    this.$store.commit('form/setIsForceBooking', Boolean(value))
+                }
+            },
+            isSpecialStrict: {
+                get() {
+                    return this.$store.state.form.isSpecialStrict;
+                },
+                set(value) {
+                    this.$store.commit('form/setIsSpecialStrict', Boolean(value))
+                }
+            }
         },
     }
 </script>
@@ -123,7 +173,7 @@
 </style>
 
 
-<!--<div class="input"><i class="fa fa-bed" title="" data-toggle="tooltip" data-original-title="Тип номера"></i>&nbsp;<select-->
+<!--<select-->
 <!--id="search_conditions_roomTypes" name="search_conditions[roomTypes][]" multiple=""-->
 <!--class="select2 select2-hidden-accessible" tabindex="-1" aria-hidden="true">-->
 <!--<optgroup label="Пансионат Азовский">-->
@@ -150,7 +200,10 @@
 <!--<option value="57051d7574eb53441c8b4849">АЛ номера комфорт в корпусах</option>-->
 <!--<option value="57051d8674eb53441c8b484b">АЛ номера комфорт плюс</option>-->
 <!--</optgroup>-->
-<!--</select><span class="select2 select2-container select2-container&#45;&#45;default" dir="ltr"-->
+<!--</select>-->
+
+
+<!--<span class="select2 select2-container select2-container&#45;&#45;default" dir="ltr"-->
 <!--style="width: 250px;"><span class="selection"><span-->
 <!--class="select2-selection select2-selection&#45;&#45;multiple" role="combobox" aria-haspopup="true"-->
 <!--aria-expanded="false" tabindex="-1"><ul class="select2-selection__rendered"><li-->

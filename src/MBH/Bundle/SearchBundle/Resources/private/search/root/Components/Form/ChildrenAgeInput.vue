@@ -19,12 +19,10 @@
         methods: {
             updateAge(event) {
                 const value = event.target[event.target.selectedIndex].value;
-                this.$store.commit('form/setChildrenAges', {key : this.currentKey, value: value});
+                this.$store.commit('form/setChildrenAges', {key : this.currentKey, value: Number(value)});
             }
         },
         created() {
-            console.log('before created');
-            console.log(this.selected);
             this.$store.commit('form/setChildrenAges', {key : this.currentKey, value: this.selected});
         },
         destroyed() {

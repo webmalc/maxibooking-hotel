@@ -9,7 +9,7 @@ export class Root {
             el: '#vue-searcher',
             template: '<VueRoot />',
             render: h => h(VueRoot),
-            store: store
+            store
         })
     }
 }
