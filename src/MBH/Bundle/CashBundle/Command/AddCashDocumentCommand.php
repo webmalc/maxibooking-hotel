@@ -18,11 +18,16 @@ class AddCashDocumentCommand extends ContainerAwareCommand
 {
     public const COMMAND_NAME = 'mbh:helper:add_cash_documents';
 
-    private const OPT_NAME_BEGIN_DATE = 'begin-date';
-    private const OPT_NAME_END_DATE = 'end-date';
-    private const OPT_NAME_NOT_CONFIRMED = 'not-confirmed';
-    private const OPT_NAME_NOT_ADD_PAYER = 'not-add-payer';
-    private const OPT_NAME_TOTAL_ALL = 'full-cost';
+    public const FORMAT_DATE = 'd.m.Y';
+
+    public const MSG_ERROR_INCORRECT_DATE = 'Check date.';
+    public const MSG_SUCCESS = 'Create cash document: %s.';
+
+    public const OPT_NAME_BEGIN_DATE = 'begin-date';
+    public const OPT_NAME_END_DATE = 'end-date';
+    public const OPT_NAME_NOT_CONFIRMED = 'not-confirmed';
+    public const OPT_NAME_NOT_ADD_PAYER = 'not-add-payer';
+    public const OPT_NAME_TOTAL_ALL = 'full-cost';
 
     protected function configure()
     {
@@ -50,8 +55,9 @@ EOF
         $criteria = $this->prepareCriteria($input);
 
         if ($criteria === []) {
-            $output->writeln('Check date.');
-            exit(1);
+            $output->writeln(self::MSG_ERROR_INCORRECT_DATE);
+
+            return 1;
         }
 
         $addPayer = !$input->getOption(self::OPT_NAME_NOT_ADD_PAYER);
@@ -101,7 +107,9 @@ EOF
 
         $dm->flush();
 
-        $output->writeln(sprintf('Create cash document: %s.', $countUpdate));
+        $output->writeln(sprintf(self::MSG_SUCCESS, $countUpdate));
+
+        return 0;
     }
 
     private function prepareCriteria(InputInterface $input): array
@@ -136,10 +144,8 @@ EOF
             return null;
         }
 
-        $format = 'd.m.Y';
+        $date = \DateTime::createFromFormat(self::FORMAT_DATE, $inputOption);
 
-        $date = \DateTime::createFromFormat($format, $inputOption);
-
-        return $date && $date->format($format) === $inputOption ? $date : null;
+        return $date && $date->format(self::FORMAT_DATE) === $inputOption ? $date : null;
     }
 }
