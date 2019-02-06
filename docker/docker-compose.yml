@@ -33,7 +33,7 @@ mbh-redis:
      - "6378:6379"
 
 mbh-mongo:
-  image: mongo:latest
+  image: mongo:3.4
   container_name: mbh-mongo
   command: mongod --setParameter failIndexKeyTooLong=false
   volumes:
