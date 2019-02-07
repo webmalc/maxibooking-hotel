@@ -3,6 +3,7 @@
 namespace MBH\Bundle\BaseBundle\Service;
 
 use MBH\Bundle\BaseBundle\Document\Image;
+use MBH\Bundle\OnlineBundle\Exception\FailLoadPanoramaException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class ImageManager
@@ -25,10 +26,15 @@ class ImageManager
         list(, $imageData) = explode(',', $imageData);
         $imageData = base64_decode($imageData);
 
-        $path = $this->projectDir . '/web/upload/images/temp_image.png';
-        file_put_contents($path, $imageData);
+        $im = imagecreatefromstring($imageData);
+        if ($im === false) {
+            throw new FailLoadPanoramaException();
+        }
 
-        $imageFile = new UploadedFile($path, $imageName, null, null, null, true);
+        $path = $this->projectDir . '/web/upload/images/temp_image.jpeg';
+        imagejpeg($im, $path);
+
+        $imageFile = new UploadedFile($path, $imageName, 'image/jpg', null, null, true);
 
         return (new Image())->setImageFile($imageFile);
     }
