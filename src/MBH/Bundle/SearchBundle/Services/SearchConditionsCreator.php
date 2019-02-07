@@ -34,6 +34,7 @@ class SearchConditionsCreator
     {
         try {
             $options = [];
+            /** Для прогрева кэша нужно включить эту опцию, в случае если используются категорию иначе не правильно отработает форма. */
             if ($data['isForceDisableCategory'] ?? null) {
                 $options['isForceDisableCategory'] = true;
                 $options['allow_extra_fields'] = true;

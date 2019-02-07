@@ -66,9 +66,21 @@ const mutations = {
 
 };
 
+const getters = {
+    getSearchConditions: (state) => {
+        return {
+            begin: state.begin.format('DD.MM.YYYY'),
+            end: state.end.format('DD.MM.YYYY'),
+            adults: state.adults,
+            children: state.children
+        }
+    }
+};
+
 
 export default {
     namespaced: true,
     state,
-    mutations
+    mutations,
+    getters
 }

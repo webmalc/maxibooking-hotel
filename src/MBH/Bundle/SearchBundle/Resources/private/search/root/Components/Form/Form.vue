@@ -51,6 +51,10 @@
             <CheckBox v-model="isSpecialStrict" :label-id="'isSpecialStrictLabelId'"/>
         </div>
 
+        <div class="input">
+            <SearchButton />
+        </div>
+
     </div>
 
 
@@ -61,6 +65,7 @@
     import ChildrenAgeInput from './ChildrenAgeInput.vue'
     import RoomTypeInput from './RoomTypeInput.vue';
     import CheckBox from './CheckBox.vue';
+    import SearchButton from './SearchButton.vue';
 
     export default {
         name: "Form",
@@ -69,17 +74,16 @@
             RangePicker,
             ChildrenAgeInput,
             RoomTypeInput,
-            CheckBox
+            CheckBox,
+            SearchButton
         },
         data() {
             return {
                 maxAdults: 6,
                 maxChildren: 6,
                 maxAdditionalDays: 7
-
             }
         },
-
         computed: {
             additionalBegin: {
                 get() {
@@ -141,7 +145,8 @@
                     this.$store.commit('form/setIsSpecialStrict', Boolean(value))
                 }
             }
-        },
+
+        }
     }
 </script>
 

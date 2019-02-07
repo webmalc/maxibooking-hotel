@@ -17,7 +17,6 @@
         },
         mounted() {
             this.uniqueId = this._uid;
-            console.log(this.uniqueId);
             $(this.$el).bootstrapSwitch({
                 'size': 'small',
                 'onText': 'да',
