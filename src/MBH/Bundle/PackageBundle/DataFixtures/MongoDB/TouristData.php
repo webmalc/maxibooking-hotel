@@ -22,7 +22,7 @@ class TouristData extends AbstractFixture implements OrderedFixtureInterface
                                        'lastName'   => 'Всеволодов',
                                        'patronymic' => 'Александрович',
             ],
-            'morty'                => ['name' => 'Морти', 'lastName' => 'Смит'],
+            'morty'                => ['name' => 'Морти', 'lastName' => 'Симит', 'patronymic' => 'Джерривич'],
             self::TOURIST_RICK_KEY => self::TOURIST_RICK_DATA,
         ],
         'en' => [
@@ -30,7 +30,7 @@ class TouristData extends AbstractFixture implements OrderedFixtureInterface
             'corrie'               => ['name' => 'Corrie', 'lastName' => 'Rye'],
             'lynne'                => ['name' => 'Lynne', 'lastName' => 'Payton'],
             'morty'                => ['name' => 'Morty', 'lastName' => 'Smith'],
-            self::TOURIST_RICK_KEY => self::TOURIST_RICK_DATA,
+            self::TOURIST_RICK_KEY => ['name' => 'Rick', 'lastName' => 'Sanchez'],
         ],
     ];
 
