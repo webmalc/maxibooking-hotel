@@ -4,7 +4,7 @@
     <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>Maxibooking</title>
+        <title>Maxibooking Payment Form</title>
         <style>
             .panel-heading.ui-accordion-header {
                 margin: unset;
@@ -27,17 +27,18 @@
                 crossorigin="anonymous"></script>
         <script>
             function MbhIframe() {
-                this.idFormPayment = 'go-form';
-                this.actionPayment = '{{ url('online_api_payment_form_payment', {locale: locale}) }}';
-                this.form = {
-                    submitBtn: '{{ 'api.payment_form.generate_invoce.submit' | trans }}',
-                    label    : '{{ 'api.payment_form.pay_order.total' | trans }}',
-                    options  : '{{ paymentSystems | raw }}'
-                };
-                this.onlyOneSystem = {{ onlyOneSystem ? 'true' : 'false' }};
                 this.idFormSearch = '{{ formId }}';
                 this.idDivResultSearch = '{{ idDivResultSearch }}';
-                this.useAccordion = {{ paymentFormConfig.useAccordion ? 'true' : 'false' }};
+                this.textWithoutPaymentSystem = '{{ paymentSystemHelper.usedPaymentSystems == [] ? contact_hotel(paymentSystemHelper) : ''}}';
+                this._idFormPayment = 'go-form';
+                this._actionPayment = '{{ url('online_api_payment_form_payment', {locale: locale}) }}';
+                this._form = {
+                    submitBtn: '{{ 'api.payment_form.generate_invoce.submit' | trans }}',
+                    label    : '{{ 'api.payment_form.pay_order.total' | trans }}',
+                    options  : '{{ paymentSystemHelper.htmlOptionsForSelectTag | raw }}'
+                };
+                this._onlyOneSystem = {{ paymentSystemHelper.onePaymentSystem ? 'true' : 'false' }};
+                this._useAccordion = {{ paymentFormConfig.useAccordion ? 'true' : 'false' }};
             }
         </script>
         {% javascripts filter='uglifyjs2'
@@ -96,7 +97,7 @@
 
     </div>
 
-    {% if constant('MBH\\Bundle\\ClientBundle\\Document\\PaymentSystem\\NewRbk::KEY') in paymentSystems %}
+    {% if constant('MBH\\Bundle\\ClientBundle\\Document\\PaymentSystem\\NewRbk::KEY') in paymentSystemHelper.usedPaymentSystems %}
         {% include '@MBHClient/PaymentSystem/newRbk/scripts_for_iframe.html.twig' %}
         <script>
             document.addEventListener('mbh-loaded-btn-for-pay', function(evt) {

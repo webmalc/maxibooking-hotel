@@ -43,7 +43,7 @@ class SearchForm
     /**
      * @var string
      */
-    private $hotelId;
+    private $selectedHotelId;
 
     /**
      * @var Hotel[]|array
@@ -187,17 +187,17 @@ class SearchForm
     /**
      * @return string
      */
-    public function getHotelId(): ?string
+    public function getSelectedHotelId(): ?string
     {
-        return $this->hotelId;
+        return $this->selectedHotelId;
     }
 
     /**
-     * @param string[] $hotelId
+     * @param string[] $selectedHotelId
      */
-    public function setHotelId(?string $hotelId): void
+    public function setSelectedHotelId(?string $selectedHotelId): void
     {
-        $this->hotelId = $hotelId;
+        $this->selectedHotelId = $selectedHotelId;
     }
 
     public function reCaptchaIsEnabled(): bool
@@ -220,7 +220,7 @@ class SearchForm
             return $result;
         }
 
-        if ($package->getRoomType()->getHotel()->getId() !== $this->getHotelId()) {
+        if ($package->getRoomType()->getHotel()->getId() !== $this->getSelectedHotelId()) {
             return $result;
         }
 
