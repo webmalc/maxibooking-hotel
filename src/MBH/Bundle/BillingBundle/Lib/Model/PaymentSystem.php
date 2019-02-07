@@ -122,7 +122,7 @@ class PaymentSystem
      */
     public function setHtml($html)
     {
-        $this->html = $html;
+        $this->html = trim($html);
 
         return $this;
     }
