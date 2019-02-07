@@ -140,11 +140,33 @@ class DocumentTemplateController extends BaseController
      */
     public function showAction(DocumentTemplate $doc, Package $package)
     {
-        $content = $this->get('mbh.template_formatter')->generateDocumentTemplate($doc, $package, $this->getUser());
+        // for interceptor notices in prod
+        $this->container->get('twig')->enableStrictVariables();
 
-        return new Response($content, 200, [
-            'Content-Type' => 'application/pdf'
-        ]);
+        try {
+            $content = $this->get('mbh.template_formatter')->generateDocumentTemplate($doc, $package, $this->getUser());
+
+            return new Response($content, 200, [
+                'Content-Type' => 'application/pdf'
+            ]);
+        } catch (\Twig_Error $twigError) {
+            $msg = $this->get('translator')->trans(
+                'clientbundle.controller.documentTemplateController.error_generate_pdf.template',
+                [
+                    '%error_msg%' => $twigError->getRawMessage()
+                ]
+            );
+
+        } catch (\Exception $exception) {
+            $msg = $this->get('translator')->trans(
+                'clientbundle.controller.documentTemplateController.error_generate_pdf.other',
+                [
+                    '%error_msg%' => $exception->getMessage()
+                ]
+            );
+        }
+
+        return $this->render('@MBHClient/DocumentTemplate/error.html.twig', ['msg' => $msg]);
     }
 
     /**

@@ -18,7 +18,7 @@ class DocumentTemplateUpdateCommand extends ContainerAwareCommand
 {
     public const COMMAND_NAME = 'mbh:document_template:update';
 
-    public const FILE_LOG_NAME = 'document_template_update.log';
+    public const FILE_LOG_NAME = 'document_template.log';
 
     public const MSG_OK_ALL_UPDATE = 'OK. Update all templates.';
 
@@ -144,7 +144,7 @@ class DocumentTemplateUpdateCommand extends ContainerAwareCommand
      */
     private function logger(string $msg)
     {
-        $this->getContainer()->get('mbh.document_template_update.logger')
+        $this->getContainer()->get('mbh.document_template.logger')
             ->addInfo($msg);
     }
 

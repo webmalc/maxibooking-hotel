@@ -96,8 +96,8 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
         //Defaults
         if (!$request->isMethod(Request::METHOD_POST)) {
             $cash
-                ->setOperation('in')
-                ->setMethod('cash')
+                ->setOperation(CashDocument::OPERATION_IN)
+                ->setMethod(CashDocument::METHOD_CASH)
                 ->setDocumentDate(new \DateTime('now'))
                 ->setIsPaid(true)
                 ->setPaidDate(new \DateTime('now'))

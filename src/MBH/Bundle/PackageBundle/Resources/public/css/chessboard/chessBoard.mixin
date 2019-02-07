@@ -20,12 +20,6 @@ body {
   margin: 5px;
 }
 
-#accommodation-chessBoard-content .tile .title .roomType-text {
-  font-size: 13px;
-  font-weight: bold;
-  color: #3C3C3C;
-}
-
 #accommodation-chessBoard-filter-floor {
   width: 120px !important;
 }
@@ -245,6 +239,7 @@ body {
   -ms-user-select: none;
 
   strong.disabled-room-type {
+    color: red!important;
     text-decoration: line-through;
   }
   #header-title {
@@ -267,10 +262,38 @@ body {
     z-index: 200;
     border-left: 1px solid #ddd;
     background-color: white;
-    display: inline-block;
+    //display: inline-block;
     width: @roomTypeColumnWidth;
     top: (@height * 2 + 1);
     position: absolute;
+
+    .tile {
+      .title {
+        display: flex;
+        align-items: center;
+        i + .roomType-text {
+          margin-left: 0.3em;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+
+      .title-sub {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        span {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .room-status {
+          display: flex;
+        }
+      }
+    }
   }
   .calendarDays li {
     display: block;
@@ -357,55 +380,66 @@ body {
     display: table-cell;
     vertical-align: middle;
   }
-  .tile .day {
-    border-right: 1px solid #e3e3e3;
-    font-size: @tileFontSize;
-    line-height: 16px;
-    font-weight: bold;
-    padding: @dayTopPadding 5px;
-    height: @height;
-    position: relative;
-    text-align: center;
-  }
-  .tile .day span {
-    display: block;
-    text-align: center;
-    font-size: @tileFontSize;
-    font-weight: normal;
-    color: #999;
 
-  }
-  .tile .title {
-    border-right: 1px solid #e3e3e3;
-    font-size: @titleSubFontSize;
-    font-weight: bold;
-    padding: 0px 5px;
-    height: @height;
-    position: relative;
-    text-align: left;
-    display: table-cell;
-    vertical-align: middle;
-    width: @roomTypeColumnWidth - 1;
-  }
-  .tile .title-sub {
-    border-right: 1px solid #e3e3e3;
-    font-size: @titleSubFontSize;
-    font-weight: bold;
-    color: #3C3C3C;
-    padding: @titleSubPadding 5px 0 9px;
-    height: @height;
-    position: relative;
-    text-align: left;
-    display: table-cell;
-    vertical-align: middle;
-    width: @roomTypeColumnWidth - 1;
-    a:hover {
-      cursor: default;
+  .tile {
+    .day {
+      border-right: 1px solid #e3e3e3;
+      font-size: @tileFontSize;
+      line-height: 16px;
+      font-weight: bold;
+      padding: @dayTopPadding 5px;
+      height: @height;
+      position: relative;
+      text-align: center;
+
+      span {
+        display: block;
+        text-align: center;
+        font-size: @tileFontSize;
+        font-weight: normal;
+        color: #999;
+
+      }
     }
-    a {
-      color: #3d5471;
+
+    .title {
+      border-right: 1px solid #e3e3e3;
+      font-size: @titleSubFontSize;
+      font-weight: bold;
+      padding: 0 5px;
+      height: @height;
+      position: relative;
+      text-align: left;
+      display: table-cell;
+      vertical-align: middle;
+      width: @roomTypeColumnWidth - 1;
+
+      .roomType-text {
+        font-size: 13px;
+        font-weight: bold;
+        color: #3C3C3C;
+      }
+    }
+
+    .title-sub {
+      border-right: 1px solid #e3e3e3;
+      font-size: @titleSubFontSize;
+      font-weight: bold;
+      color: #3C3C3C;
+      padding: @titleSubPadding 5px 0 9px;
+      height: @height;
+      position: relative;
+      text-align: left;
+      display: table-cell;
+      vertical-align: middle;
+      width: @roomTypeColumnWidth - 1;
+
+      span {
+        color: #3d5471;
+      }
     }
   }
+
   .tile .price {
     color: #868686;
     font-weight: normal;
@@ -440,18 +474,18 @@ body {
     overflow: hidden;
     white-space: nowrap;
   }
-  .tile-coming {
-    //background-image: url('/bundles/mbhpackage/images/coming-cm.png');
-  }
-  .tile-coming-out {
-    //background-image: url('/bundles/mbhpackage/images/outcoming-cm.png');
-  }
-  .tile-coming-out-in {
-    //background-image: url('/bundles/mbhpackage/images/outcoming-coming-cm.png');
-  }
-  .tile-coming-in-out {
-    //background-image: url('/bundles/mbhpackage/images/coming-outcoming-cm.png');
-  }
+  //.tile-coming {
+  //  //background-image: url('/bundles/mbhpackage/images/coming-cm.png');
+  //}
+  //.tile-coming-out {
+  //  //background-image: url('/bundles/mbhpackage/images/outcoming-cm.png');
+  //}
+  //.tile-coming-out-in {
+  //  //background-image: url('/bundles/mbhpackage/images/outcoming-coming-cm.png');
+  //}
+  //.tile-coming-in-out {
+  //  //background-image: url('/bundles/mbhpackage/images/coming-outcoming-cm.png');
+  //}
   .fa-big-icon1 {
     font-size: 8px;
     padding: 1px 0 0 0px;

@@ -104,6 +104,8 @@ form.clientConfigType.default_adults_quantity.help: 'Number of adults in the sea
 form.clientConfigType.default_children_quantity.label: 'Number of children'
 form.clientConfigType.default_children_quantity.help: 'Number of children in the search form'
 clientbundle.controller.documentTemplateController.entry_successfully_eited: 'The entry is successfully edited'
+clientbundle.controller.documentTemplateController.error_generate_pdf.template: 'When generating the document, an error was detected in the template: %error_msg%.'
+clientbundle.controller.documentTemplateController.error_generate_pdf.other: 'When generating the document, an error was detected: %error_msg%.'
 clientbundle.service.mbhs.sms_not_send: 'SMS message was not sent. Error:'
 form.clientConfigType.queryStat.label: 'Query statistics'
 form.clientConfigType.queryStat.help: 'Turn on/off query statistics collection'
