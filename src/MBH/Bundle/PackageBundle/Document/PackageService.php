@@ -38,6 +38,11 @@ class PackageService extends Base
      */
     use BlameableDocument;
 
+    public const TYPE_PER_STAY = 'per_stay';
+    public const TYPE_PER_NIGHT = 'per_night';
+    public const TYPE_NOT_APPLICABLE = 'not_applicable';
+    public const TYPE_DAY_PERCENT = 'day_percent';
+
     /**
      * @var \MBH\Bundle\PriceBundle\Document\Service
      * @Gedmo\Versioned
@@ -224,13 +229,13 @@ class PackageService extends Base
     public function getActuallyAmount()
     {
         $type = $this->getService()->getCalcType();
-        if ($type == 'per_stay') {
+        if ($type == self::TYPE_PER_STAY) {
             return $this->getAmount() * $this->getPersons();
         }
-        if ($type == 'per_night') {
+        if ($type == self::TYPE_PER_NIGHT) {
             return $this->getPersons() * $this->getNights() * $this->getAmount();
         }
-        if ($type == 'not_applicable' or $type == 'day_percent') {
+        if ($type == self::TYPE_NOT_APPLICABLE or $type == self::TYPE_DAY_PERCENT) {
             return $this->getAmount();
         }
 
@@ -332,11 +337,11 @@ class PackageService extends Base
     {
         $result = $this->getAmount();
 
-        if ($this->getCalcType() == 'per_night') {
+        if ($this->getCalcType() == self::TYPE_PER_NIGHT) {
             $result *= $this->getNights();
         }
 
-        if (!in_array($this->getCalcType(), ['not_applicable', 'day_percent'])) {
+        if (!in_array($this->getCalcType(), [self::TYPE_NOT_APPLICABLE, self::TYPE_DAY_PERCENT])) {
             $result *= $this->getPersons();
         }
 
@@ -390,11 +395,11 @@ class PackageService extends Base
 
         $price = $singlePrice * $this->getAmount();
 
-        if ($this->getCalcType() == 'per_night') {
+        if ($this->getCalcType() == self::TYPE_PER_NIGHT) {
             $price *= $this->getNights();
         }
 
-        if (!in_array($this->getCalcType(), ['not_applicable', 'day_percent'])) {
+        if (!in_array($this->getCalcType(), [self::TYPE_NOT_APPLICABLE, self::TYPE_DAY_PERCENT])) {
             $price *= $this->getPersons();
         }
 
@@ -476,11 +481,11 @@ class PackageService extends Base
         $service  = $this->getService();
         $calcType = $service->getCalcType();
 
-        if ($calcType == 'per_stay' || !$this->getNights()) {
+        if ($calcType == self::TYPE_PER_STAY || !$this->getNights()) {
             $this->setNights(1);
         }
 
-        if (in_array($calcType, ['not_applicable', 'day_percent'])) {
+        if (in_array($calcType, [self::TYPE_NOT_APPLICABLE, self::TYPE_DAY_PERCENT])) {
             $this->setNights(1);
             $this->setPersons(1);
         }
@@ -493,7 +498,7 @@ class PackageService extends Base
             $this->setTime(null);
         }
 
-        if ($calcType != 'per_stay') {
+        if ($calcType != self::TYPE_PER_STAY) {
             if (!$this->getBegin() || !$service->getDate()) {
                 $this->setBegin($this->getPackage()->getBegin());
             }

@@ -82,7 +82,11 @@ class Extension extends \Twig_Extension
             $this->translator->trans('twig.extension.december', [])
         ];
 
-        return $date->format('d') . "<span class='date-month'>" . $months[$date->format('n') - 1] . '</span>';
+        return sprintf(
+            '%s&nbsp<span class=\"date-month\">%s</span>.',
+            $date->format('d'),
+            $months[$date->format('n') - 1]
+        );
     }
 
     public function md5($value)

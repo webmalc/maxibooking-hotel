@@ -1,7 +1,13 @@
 {% extends 'MBHBaseBundle:Mailer:base.html.twig' %}
 
+{% macro cellStyleServiceTable(fontWeight, textAlign = 'left') %}
+    border-bottom:1px solid #dddddd;padding:9px;font-weight:{{ fontWeight }};text-align:{{ textAlign }};
+{% endmacro %}
+{% from '@MBHBase/Mailer/order.html.twig' import cellStyleServiceTable %}
+{% set backgroundColor = 'background-color: #f9f9f9;' %}
+{% set verticalAlign = 'vertical-align:bottom;' %}
 {% block text %}
-
+{% spaceless %}
     {% if prependText is defined and prependText %}
         <p style="{{ pStyles }}">{{ prependText|trans(transParams)|raw }}</p><br>
     {% endif %}
@@ -16,36 +22,33 @@
     <table style="width:100%;border-collapse: collapse;border-spacing: 0;border: 1px solid #dddddd;font-family:Tahoma,Arial;color:#333;font-size:14px;">
         <thead>
         <tr>
-            <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:12%;">
-                #
-            </th>
-            <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:30%;">
+            <th style="{{ cellStyleServiceTable(600, 'center') ~ verticalAlign }}width:12%;">#</th>
+            <th style="{{ cellStyleServiceTable(600, 'center') ~ verticalAlign }}width:30%;">
                 {{ 'mailer.order.date'|trans(transParams) }}
             </th>
-            <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:40%;">
+            <th style="{{ cellStyleServiceTable(600, 'center') ~ verticalAlign }}width:50%;">
                 {{ 'mailer.order.number'|trans(transParams) }}
             </th>
-            <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:40%;">
+            <th style="{{ cellStyleServiceTable(600, 'center') ~ verticalAlign }}white-space: nowrap;">
                 {{ 'mailer.order.arrival'|trans(transParams) }}
             </th>
-            <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:40%;">
+            <th style="{{ cellStyleServiceTable(600, 'center') ~ verticalAlign }}white-space: nowrap;">
                 {{ 'mailer.order.departure'|trans(transParams) }}
             </th>
-            <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:right;width:18%;">
+            <th style="{{ cellStyleServiceTable(600, 'right') ~ verticalAlign }}width:18%;">
                 {{ 'mailer.order.cost'|trans(transParams) }}
             </th>
         </tr>
         </thead>
         <tbody>
-
         {% for package in order.packages if package.getDeletedAt is empty %}
             <tr>
-                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">{{ package.numberWithPrefix }}</td>
-                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">{{ package.begin|mbh_format }}
-                    - {{ package.end|mbh_format }}<br>
+                <td style="{{ cellStyleServiceTable(400) ~ backgroundColor }}">{{ package.numberWithPrefix }}</td>
+                <td style="{{ cellStyleServiceTable(400) ~ backgroundColor }}">
+                    {{ package.begin|mbh_format }}&ndash;{{ package.end|mbh_format }}<br>
                     <small style="color:#888;">{{ package.nights }} {{ 'nights'|transchoice(package.nights) }}</small>
                 </td>
-                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
+                <td style="{{ cellStyleServiceTable(400) ~ backgroundColor }}">
                     {{ isSomeLanguage is not defined or isSomeLanguage or not package.roomType.internationalTitle ? package.roomType.fullTitle : package.roomType.internationalTitle }}
                     <br>
                     <small style="color:#888;">
@@ -61,13 +64,13 @@
                         {% endif %}
                     </small>
                 </td>
-                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
+                <td style="{{ cellStyleServiceTable(400, 'center') ~ backgroundColor }}">
                     {{ package.arrivalTime ? package.arrivalTime|date('H:i') : package.hotel.packageArrivalTime ~ ':00' }}
                 </td>
-                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
+                <td style="{{ cellStyleServiceTable(400, 'center') ~ backgroundColor }}">
                     {{ package.departureTime ? package.departureTime|date('H:i') : package.hotel.packageDepartureTime ~ ':00' }}
                 </td>
-                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:right;background-color: #f9f9f9;">{{ package.getPackagePrice(true)|number_format(2) }}</td>
+                <td style="{{ cellStyleServiceTable(400, 'right') ~ backgroundColor }}">{{ package.getPackagePrice(true)|number_format(2) }}</td>
             </tr>
 
             {% if services is empty and package.services is not empty %}
@@ -88,32 +91,60 @@
         <table style="width:100%;border-collapse: collapse;border-spacing: 0;border: 1px solid #dddddd;font-family:Tahoma,Arial;color:#333;font-size:14px;">
             <thead>
             <tr>
-                <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:42%;">
+                <th style="{{ cellStyleServiceTable(600, 'center') ~ verticalAlign }}width:2%;">#</th>
+                <th style="{{ cellStyleServiceTable(600, 'center') ~ verticalAlign }}width:40%;">
                     {{ 'mailer.order.title'|trans(transParams) }}
                 </th>
-                <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:left;width:40%;">
+                <th style="{{ cellStyleServiceTable(600, 'center') ~ verticalAlign }}width:5%;">
+                    {{ "package.service.guests"|trans({}, "MBHPackageBundle") }}
+                </th>
+                <th style="{{ cellStyleServiceTable(600, 'center') ~ verticalAlign }}width:20%;">
+                    {{ "package.service.date"|trans({}, "MBHPackageBundle") }}
+                </th>
+                <th style="{{ cellStyleServiceTable(600, 'center') ~ verticalAlign }}width:5%;">
                     {{ 'mailer.order.quantity'|trans(transParams) }}
                 </th>
-                <th style="border-bottom:1px solid #dddddd;font-weight:600;vertical-align:bottom;padding:9px;text-align:right;width:18%;">
+                <th style="{{ cellStyleServiceTable(600, 'right') ~ verticalAlign }}width:18%;">
                     {{ 'mailer.order.cost'|trans(transParams) }}
                 </th>
             </tr>
             </thead>
-            {% for package in order.packages if package.getDeletedAt is empty %}
-            {% for service in package.services if service.getDeletedAt is empty %}
             <tbody>
-            <tr>
-                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
-                    {{ service.service }}
-                </td>
-                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:left;background-color: #f9f9f9;">
-                    {{ service.amount }}
-                </td>
-                <td style="border-bottom:1px solid #dddddd;font-weight:400;padding:9px;text-align:right;background-color: #f9f9f9;">
-                    {{ service.total }}
-                </td>
-            </tr>
-            {% endfor %}
+            {% for package in order.packages if package.getDeletedAt is empty %}
+                {% for service in package.services if service.getDeletedAt is empty %}
+                <tr>
+                    <td style="{{ cellStyleServiceTable(400) ~ backgroundColor }}">{{ loop.index }}</td>
+                    <td style="{{ cellStyleServiceTable(400) ~ backgroundColor }}">{{ service.service }}</td>
+                    <td style="{{ cellStyleServiceTable(400, 'center') ~ backgroundColor }}">
+                        {% if service.calcType != constant('MBH\\Bundle\\PackageBundle\\Document\\PackageService::TYPE_NOT_APPLICABLE')
+                            and service.calcType != constant('MBH\\Bundle\\PackageBundle\\Document\\PackageService::TYPE_DAY_PERCENT')%}
+                            {{ service.persons }}
+                        {% else %}
+                            &nbsp;
+                        {% endif %}
+                    </td>
+                    <td style="{{ cellStyleServiceTable(400, 'center') ~ backgroundColor }}">
+                        {% if service.calcType == constant('MBH\\Bundle\\PackageBundle\\Document\\PackageService::TYPE_PER_NIGHT') %}
+                            <span>{{ service.nights }}&#8194;{{ 'nights'|transchoice(service.nights) }}</span>
+                        {% elseif service.calcType == constant('MBH\\Bundle\\PackageBundle\\Document\\PackageService::TYPE_PER_STAY') %}
+                            <span>{{ service.begin|mbh_format }}&ndash;{{ service.end|mbh_format }}</span>
+                        {% elseif service.service.date %}
+                            {{ service.begin|date('d.m.Y') }}
+                        {% else %}
+                            &nbsp;
+                        {% endif %}
+                    </td>
+                    <td style="{{ cellStyleServiceTable(400, 'center') ~ backgroundColor }}">
+                        {% if service.calcType == constant('MBH\\Bundle\\PackageBundle\\Document\\PackageService::TYPE_NOT_APPLICABLE')
+                                or service.amount > 1 %}
+                            {{ service.amount }}
+                        {% else %}
+                            &nbsp;
+                        {% endif %}
+                    </td>
+                    <td style="{{ cellStyleServiceTable(400, 'right') ~ backgroundColor }}">{{ service.total }}</td>
+                </tr>
+                {% endfor %}
             {% endfor %}
             </tbody>
         </table>
@@ -176,7 +207,7 @@
     {% if appendText is defined and appendText %}
         <br><p style="{{ pStyles }}">{{ appendText|trans(transParams)|raw }}</p>
     {% endif %}
-
+{% endspaceless %}
 {% endblock %}
 
 {% block signatureAppendText %}{% endblock %}
