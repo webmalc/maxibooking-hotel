@@ -193,8 +193,7 @@ class ApiController extends Controller
             : $twig->render('MBHOnlineBundle:Api:form.html.twig', $context);
 
         return [
-            'styles' => $this->get('templating')->render('MBHOnlineBundle:Api:form.css.twig'),
-            'text' => $text,
+            'text'               => $text,
             'isDisplayChildAges' => $formConfig->isIsDisplayChildrenAges(),
         ];
     }

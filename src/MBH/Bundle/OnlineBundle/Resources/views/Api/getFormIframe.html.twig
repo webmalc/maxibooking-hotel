@@ -24,6 +24,23 @@
         {% endfor %}
     {% endif %}
     {% include '@MBHOnline/Api/siteStyles.html.twig' %}
+
+    {% block styles %}
+        {% stylesheets filter='cssrewrite, uglifycss'
+            '@MBHOnlineBundle/Resources/public/css/api/style_iframe.less'
+        %}
+            <link rel="stylesheet" href="{{ asset_url }}"/>
+        {% endstylesheets %}
+
+        {% if formConfig.isHorizontal %}
+            {% stylesheets filter='cssrewrite, uglifycss'
+                '@MBHOnlineBundle/Resources/public/css/api/form_if_horizontal.less'
+            %}
+                <link rel="stylesheet" href="{{ asset_url }}"/>
+            {% endstylesheets %}
+        {% endif %}
+
+    {% endblock %}
 </head>
 
 <body style="background-color: transparent;">
@@ -44,9 +61,7 @@
         </script>
         {% endif %}
     {% endif %}
-    {#<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>#}
     <script src="//code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
-    {#<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>#}
     <script src="//code.jquery.com/ui/1.11.1/jquery-ui.min.js" integrity="sha256-4JY5MVcEmAVSuS6q4h9mrwCm6KNx91f3awsSQgwu0qc=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="{{ url('online_form_get', {id: formId, locale: locale}) }}"></script>
 </body>
