@@ -45,6 +45,11 @@ class ChessBoardManager {
         }
     }
 
+    private static getPositionX(event): number
+    {
+        return event.type === 'mousemove' || event.type === 'mousedown' ? event.pageX : event.originalEvent.touches[0].pageX;
+    }
+
     private getPackageToMiddayOffset() {
         let config = this.getStylesConfig();
         return Math.round(config.tableCellWidth / 2) + this.arrowWidth;
@@ -169,15 +174,21 @@ class ChessBoardManager {
         this.updateTable();
     }
 
+    /** TODO */
+    private _chessBoardContentBlock;
+    private _$document;
+    private _wrapper;
+    private _templatePackageElement;
+
     private initChessboardTable() {
         this.initParams();
-        const chessBoardContentBlock = document.getElementById('accommodation-chessBoard-content');
+        this._chessBoardContentBlock = document.getElementById('accommodation-chessBoard-content');
 
-        this.setContentWidth(chessBoardContentBlock);
+        this.setContentWidth();
 
         $('.sidebar-toggle').click(() => {
             setTimeout(() => {
-                this.setContentWidth(chessBoardContentBlock);
+                this.setContentWidth();
             }, 1000)
         });
 
@@ -192,7 +203,7 @@ class ChessBoardManager {
         });
 
         if (!isMobileDevice()) {
-            const chessboardContentTopOffset = $(chessBoardContentBlock).offset().top;
+            const chessboardContentTopOffset = $(this._chessBoardContentBlock).offset().top;
             const chessboardTableTopOffset = $(this._chessboardTable).offset().top;
             //Фиксирование верхнего и левого блоков таблицы
             this._chessboardTable.onscroll = () => {
@@ -200,69 +211,93 @@ class ChessBoardManager {
             };
         }
 
-        let templatePackageElement = ChessBoardManager.getTemplateElement();
+        this._templatePackageElement = ChessBoardManager.getTemplateElement();
         //Создание брони
         let dateElements = $('.date, .leftRooms');
-        const $document = $(document);
-        let wrapper = $('#calendarWrapper');
+        this._$document = $(document);
+        this._wrapper = $('#calendarWrapper');
         if (canCreatePackage) {
-            const eventName = isMobileDevice() ? 'contextmenu' : 'mousedown';
-            dateElements.on(eventName, (event) => {
-                // const tempStyle = chessBoardContentBlock.style.overflow;
-                // chessBoardContentBlock.style.overflow = 'hidden';
-                event.preventDefault();
-                const startXPosition = event.pageX;
-                const startLeftScroll = chessBoardContentBlock.scrollLeft;
-                let newPackage = <HTMLElement>templatePackageElement.cloneNode(true);
-                newPackage.classList.add('success');
+            if (isMobileDevice()) {
+                let doubleTap = false,
+                    countDb = 0;
+                let timer;
 
-                const dateJqueryObject = $(event.target.parentNode);
-                const currentRoomDateElements = dateJqueryObject.parent().children();
-                const startDateNumber = currentRoomDateElements.index(dateJqueryObject);
-                const startDate = moment(this.tableStartDate).add(startDateNumber, 'day');
-                newPackage = this.setPackageOffset(newPackage, startDate, dateJqueryObject.parent().parent(), wrapper);
-                newPackage.id = 'newPackage' + packages.length;
-                newPackage.style.zIndex = '999';
-                newPackage.style.width = styleConfigs[this.currentSizeConfigNumber].tableCellWidth - (this.arrowWidth * 2) + 'px';
-                const newPackageStartXOffset = parseInt(newPackage.style.left, 10);
+                dateElements.on('touchstart', event => {
+                    countDb++;
 
-                $(document).on('touchmove mousemove', (event) => {
-                    const isMouseMoveEvent = event.type === 'mousemove';
-                    const scrollOffset = chessBoardContentBlock.scrollLeft - startLeftScroll;
-                    const mouseXOffset = startXPosition - (isMouseMoveEvent ? event.pageX : event.originalEvent.touches[0].pageX);
-                    const isLeftMouseShift = mouseXOffset > 0;
-                    const packageLengthRestriction = this.getPackageLengthRestriction(startDate, isLeftMouseShift, this.tableStartDate, this.tableEndDate);
-                    const griddedOffset = this.getGriddedOffset(mouseXOffset, scrollOffset, packageLengthRestriction);
-                    const leftMouseOffset = isLeftMouseShift ? griddedOffset : 0;
-                    const packageWidth = griddedOffset - 2 * this.arrowWidth;
+                    timer = setTimeout(() => {
+                        if (doubleTap) {
+                            clearTimeout(timer);
+                        }
+                        countDb = 0;
+                    }, 300);
 
-                    if (this.isPackageLocationCorrect(newPackage)) {
-                        newPackage.classList.add('success');
-                        newPackage.classList.remove('danger');
-                        newPackage.style.backgroundColor = '';
-                    } else {
-                        newPackage.classList.remove('success');
-                        newPackage.style.setProperty('background-color', this.colors['danger_add'], 'important');
-                        newPackage.classList.add('danger');
+                    if (countDb === 2 ) {
+                        doubleTap = true;
+                        clearTimeout(timer);
+                        this.createPackageInScreen(event);
                     }
-                    newPackage.style.left = newPackageStartXOffset - leftMouseOffset + 'px';
-                    newPackage.style.width = packageWidth + 'px';
                 });
-                $(document).on('mouseup touchend', () => {
-                    // chessBoardContentBlock.style.overflow = tempStyle;
-                    $document.unbind('mousemove  mouseup touchend');
-                    if ((newPackage.style.width) && this.isPackageLocationCorrect(newPackage) && newPackage.id) {
-                        const packageData = this.getPackageData($(newPackage));
-                        this.saveNewPackage(packageData);
-                    }
-                    this.updateTable();
-                });
-                event.target.ondragstart = function () {
-                    return false;
-                };
-                wrapper.append(newPackage);
-            });
+
+            } else {
+                dateElements.on('mousedown', event => this.createPackageInScreen(event));
+            }
         }
+    }
+
+    private createPackageInScreen(event) {
+        event.preventDefault();
+        const startXPosition = ChessBoardManager.getPositionX(event);
+        const startLeftScroll = this._chessBoardContentBlock.scrollLeft;
+        let newPackage = <HTMLElement>this._templatePackageElement.cloneNode(true);
+
+        newPackage.classList.add('success');
+
+        const dateJqueryObject = $(event.target.parentNode);
+        const currentRoomDateElements = dateJqueryObject.parent().children();
+        const startDateNumber = currentRoomDateElements.index(dateJqueryObject);
+        const startDate = moment(this.tableStartDate).add(startDateNumber, 'day');
+        newPackage = this.setPackageOffset(newPackage, startDate, dateJqueryObject.parent().parent(), this._wrapper);
+        newPackage.id = 'newPackage' + Object.keys(packages).length;
+        newPackage.style.zIndex = '999';
+        newPackage.style.width = styleConfigs[this.currentSizeConfigNumber].tableCellWidth - (this.arrowWidth * 2) + 'px';
+        const newPackageStartXOffset = parseInt(newPackage.style.left, 10);
+        $(document).on('touchmove mousemove', (event) => {
+            const eventPageX = ChessBoardManager.getPositionX(event);
+            const scrollOffset = this._chessBoardContentBlock.scrollLeft - startLeftScroll;
+            const mouseXOffset = startXPosition - eventPageX;
+
+            const isLeftMouseShift = mouseXOffset > 0;
+            const packageLengthRestriction = this.getPackageLengthRestriction(startDate, isLeftMouseShift, this.tableStartDate, this.tableEndDate);
+            const griddedOffset = this.getGriddedOffset(mouseXOffset, scrollOffset, packageLengthRestriction);
+            const leftMouseOffset = isLeftMouseShift ? griddedOffset : 0;
+            const packageWidth = griddedOffset - 2 * this.arrowWidth;
+
+            if (this.isPackageLocationCorrect(newPackage)) {
+                newPackage.classList.add('success');
+                newPackage.classList.remove('danger');
+                newPackage.style.backgroundColor = '';
+            } else {
+                newPackage.classList.remove('success');
+                newPackage.style.setProperty('background-color', this.colors['danger_add'], 'important');
+                newPackage.classList.add('danger');
+            }
+            newPackage.style.left = newPackageStartXOffset - leftMouseOffset + 'px';
+            newPackage.style.width = packageWidth + 'px';
+        });
+        $(document).on('mouseup touchend', () => {
+            // chessBoardContentBlock.style.overflow = tempStyle;
+            this._$document.unbind('mousemove mouseup touchend');
+            if ((newPackage.style.width) && this.isPackageLocationCorrect(newPackage) && newPackage.id) {
+                const packageData = this.getPackageData($(newPackage));
+                this.saveNewPackage(packageData);
+            }
+            this.updateTable();
+        });
+        event.target.ondragstart = function () {
+            return false;
+        };
+        this._wrapper.append(newPackage);
     }
 
     private changeScale(sliderValue) {
@@ -299,14 +334,14 @@ class ChessBoardManager {
         document.cookie = updatedCookie;
     }
 
-    protected setContentWidth(chessBoardContentBlock) {
+    protected setContentWidth() {
         let contentWidth = parseInt($('#months-and-dates').css('width'), 10)
             + styleConfigs[this.currentSizeConfigNumber].headerWidth + ChessBoardManager.SCROLL_BAR_WIDTH;
 
-        if (parseInt($(chessBoardContentBlock).css('width'), 10) > contentWidth) {
-            chessBoardContentBlock.style.width = contentWidth + 'px';
+        if (parseInt($(this._chessBoardContentBlock).css('width'), 10) > contentWidth) {
+            this._chessBoardContentBlock.style.width = contentWidth + 'px';
         } else {
-            chessBoardContentBlock.style.width = 'auto';
+            this._chessBoardContentBlock.style.width = 'auto';
         }
     }
 
