@@ -2,8 +2,9 @@ import * as moment from 'moment';
 import Vue from 'vue';
 moment.locale('ru');
 
-const defaultBegin = moment('24.04.2019', 'DD.MM.YYYY');
-const defaultEnd = defaultBegin.clone().add(1, 'days');
+const date = moment();
+const defaultBegin = date.format('DD.MM.YYYY');
+const defaultEnd = date.clone().add(1, 'days').format('DD.MM.YYYY');
 
 const state: object = {
     begin: defaultBegin,
@@ -16,16 +17,20 @@ const state: object = {
     selectedRoomTypes: [],
     orderId: 0,
     isForceBooking: false,
-    isSpecialStrict: false
+    isSpecialStrict: false,
+    isUseCache: false,
+    errorLevel: 0,
+    isOnline: false,
+    roomTypeSelections: []
 
 };
 
 const mutations = {
     setBegin(state, begin) {
-        state.begin = moment(begin, 'DD.MM.YYYY');
+        state.begin = begin;
     },
     setEnd(state, end) {
-        state.end = moment(end, 'DD.MM.YYYY');
+        state.end = end;
     },
     setAdditionalBegin(state, value) {
         state.additionalBegin = value;
@@ -62,6 +67,9 @@ const mutations = {
     },
     setIsSpecialStrict(state, payload) {
         state.isSpecialStrict = payload;
+    },
+    setRoomTypeSelections(state, payload) {
+        state.roomTypeSelections = payload;
     }
 
 };
@@ -69,12 +77,26 @@ const mutations = {
 const getters = {
     getSearchConditions: (state) => {
         return {
-            begin: state.begin.format('DD.MM.YYYY'),
-            end: state.end.format('DD.MM.YYYY'),
+            begin: state.begin,
+            end: state.end,
             adults: state.adults,
-            children: state.children
+            children: state.children,
+            childrenAges: state.childrenAges,
+            roomTypes: state.selectedRoomTypes,
+            isForceBooking: state.isForceBooking,
+            isSpecialStrict: state.isSpecialStrict,
+            order: state.orderId,
+            additionalBegin: state.additionalBegin,
+            additionalEnd: state.additionalEnd,
+            isUseCache: state.isUseCache,
+            errorLevel: state.errorLevel,
+            isOnline: state.isOnline
         }
     }
+};
+
+const actions = {
+
 };
 
 
@@ -82,5 +104,6 @@ export default {
     namespaced: true,
     state,
     mutations,
-    getters
+    getters,
+    actions
 }

@@ -144,7 +144,7 @@
                 set(value) {
                     this.$store.commit('form/setIsSpecialStrict', Boolean(value))
                 }
-            }
+            },
 
         }
     }

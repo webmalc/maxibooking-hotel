@@ -49,8 +49,9 @@
             end: state => state.form.end,
         }),
         mounted() {
-            options.startDate = this.begin;
-            options.endDate = this.end;
+            console.log(this.begin)
+            options.startDate = moment(this.begin, 'DD.MM.YYYY');
+            options.endDate = moment(this.end, 'DD.MM.YYYY');
             $('input[name="dates"]')
                 .daterangepicker(options)
                 .on('apply.daterangepicker', (ev,picker) => {

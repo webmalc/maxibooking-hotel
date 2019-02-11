@@ -4,6 +4,7 @@ namespace MBH\Bundle\SearchBundle\Controller;
 
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Document\SearchResultCacheItem;
+use MBH\Bundle\SearchBundle\Form\RoomTypesType;
 use MBH\Bundle\SearchBundle\Form\SearchConditionsType;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\AsyncResultReceiverException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\GroupingFactoryException;
@@ -15,6 +16,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Form\ChoiceList\View\ChoiceGroupView;
+use Symfony\Component\Form\ChoiceList\View\ChoiceView;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -80,7 +83,7 @@ class SearchController extends Controller
             '@MBHSearch/Search/specials.html.twig',
             [
                 'specials' => $specials,
-                'query' => $conditions
+                'query' => $conditions,
             ]
         );
     }
@@ -143,6 +146,7 @@ class SearchController extends Controller
         $conditions = new SearchConditions();
         $conditions->setBegin($begin)->setEnd($end)->setAdults($adults)->setChildren($children)->setChildrenAges($childrenAges);
         $form = $this->createForm(SearchConditionsType::class, $conditions);
+
         return $this->render('@MBHSearch/Search/client.html.twig', ['form' => $form->createView()]);
     }
 
@@ -155,28 +159,63 @@ class SearchController extends Controller
 
     public function searcherAction(Request $request): Response
     {
-        $initSearchConditions = new SearchConditions();
-        $initSearchConditions
-            ->setAdults(1)
-            ->setChildren(0)
-            ->setChildrenAges([])
-        ;
-        $options = [];
-        if ($orderId = $request->get('order')) {
-            $options['order'] = $orderId;
-        }
-        $form = $this->createForm(SearchConditionsType::class, $initSearchConditions, $options);
-        try {
-            $viewForm = $form->createView();
-        } catch (RoomTypesTypeException $exception) {
-            /** @var Session $session */
-            $session = $request->getSession();
-            $session->getFlashBag()->set('error', $exception->getMessage());
+//        $initSearchConditions = new SearchConditions();
+//        $initSearchConditions
+//            ->setAdults(1)
+//            ->setChildren(0)
+//            ->setChildrenAges([])
+//        ;
+//        $options = [];
+//        if ($orderId = $request->get('order')) {
+//            $options['order'] = $orderId;
+//        }
+//        $form = $this->createForm(SearchConditionsType::class, $initSearchConditions, $options);
+//        try {
+//            $viewForm = $form->createView();
+//        } catch (RoomTypesTypeException $exception) {
+//            /** @var Session $session */
+//            $session = $request->getSession();
+//            $session->getFlashBag()->set('error', $exception->getMessage());
+//
+//            return new Response();
+//        }
+//        $roomTypeView = $viewForm['roomTypes']->vars;
+        $orderId = $request->get('order');
+        $roomTypeForm = $this->createForm(RoomTypesType::class)->createView();
+        $formChoices = $roomTypeForm->vars['choices'];
 
-            return new Response();
+        $choices = [];
+        foreach ($formChoices as $groupChoice) {
+            /** @var ChoiceGroupView $groupChoice */
+            /** @var ChoiceView $choice */
+            $children = [];
+            foreach ($groupChoice->getIterator() as $choice) {
+                $children[] = [
+                    'id' => $choice->value,
+                    'text' => $choice->label,
+                ];
+            }
+            $choices[] = [
+                'text' => $groupChoice->label,
+                'children' => $children,
+            ];
         }
 
-        return $this->render('@MBHSearch/Search/searcher.html.twig', ['form' => $viewForm]);
+//        if ($request->isXmlHttpRequest()) {
+//            $data = [
+//                'begin' => '24.04.2019',
+//                'choices' => $choices,
+//            ];
+//
+//            return new JsonResponse($data);
+//        }
+
+        return $this->render('@MBHSearch/Search/searcher.html.twig', [
+            'order' => $orderId,
+            'begin' => '24.04.2019',
+            'end' => '26.04.2019',
+            'roomTypes' => $choices
+        ]);
     }
 
     /**

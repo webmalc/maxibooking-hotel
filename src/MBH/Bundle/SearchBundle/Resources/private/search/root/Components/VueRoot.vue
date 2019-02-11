@@ -1,5 +1,6 @@
 <template>
     <div>
+
         <div class="box box-default box-solid" id="searcher">
             <div class="box-header">
                 <h3 class="box-title">Фильтр
@@ -14,6 +15,7 @@
                 <Form/>
             </div>
         </div>
+
         <Status/>
     </div>
 </template>
@@ -21,7 +23,6 @@
 <script lang="ts">
     import Form from "./Form/Form.vue";
     import Status from "./Status.vue";
-    import {mapActions} from "vuex";
 
     export default {
         name: "VueRoot",

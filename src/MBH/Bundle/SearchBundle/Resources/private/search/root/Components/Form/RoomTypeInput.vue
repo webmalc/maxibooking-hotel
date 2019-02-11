@@ -3,38 +3,15 @@
 </template>
 
 <script>
-    const data = [
-        {
-            id: 0,
-            text: 'enhancement'
-        },
-        {
-            id: 1,
-            text: 'bug'
-        },
-        {
-            id: 2,
-            text: 'duplicate'
-        },
-        {
-            id: 3,
-            text: 'invalid'
-        },
-        {
-            id: 4,
-            text: 'wontfix'
-        }
-    ];
-
     export default {
         name: "RoomTypeInput",
-        data() {
-            return {
-                selected: []
+        computed: {
+            selections() {
+                return this.$store.state.form.roomTypeSelections;
             }
         },
         mounted() {
-            $(this.$el).select2({data: data})
+            $(this.$el).select2({data: this.selections})
                 .on('select2:select',  (e) => {
                     this.$store.commit('form/addToSelectedRoomTypes', e.params.data.id);
                 })
