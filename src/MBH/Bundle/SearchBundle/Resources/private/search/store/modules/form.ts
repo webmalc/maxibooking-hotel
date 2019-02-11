@@ -19,7 +19,7 @@ const state: object = {
     isForceBooking: false,
     isSpecialStrict: false,
     isUseCache: false,
-    errorLevel: 0,
+    errorLevel: 255,
     isOnline: false,
     roomTypeSelections: []
 
@@ -105,5 +105,5 @@ export default {
     state,
     mutations,
     getters,
-    actions
+    actions,
 }

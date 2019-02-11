@@ -44,12 +44,11 @@
     };
     export default {
         name: "RangePicker",
-        computed: mapState({
-            begin: state => state.form.begin,
-            end: state => state.form.end,
-        }),
+        computed: mapState(
+            'form',
+            ['begin', 'end']
+        ),
         mounted() {
-            console.log(this.begin)
             options.startDate = moment(this.begin, 'DD.MM.YYYY');
             options.endDate = moment(this.end, 'DD.MM.YYYY');
             $('input[name="dates"]')

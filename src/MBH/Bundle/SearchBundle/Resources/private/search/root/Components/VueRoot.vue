@@ -23,6 +23,7 @@
 <script lang="ts">
     import Form from "./Form/Form.vue";
     import Status from "./Status.vue";
+    import {mapState} from "vuex";
 
     export default {
         name: "VueRoot",
@@ -32,7 +33,7 @@
         },
         computed: {
             searchStatus() {
-                return this.$store.state.search.status;
+                return this.$store.getters['search/getIsSearchStarted'];
             },
             isAdditionalDates() {
                 return Boolean(this.$store.state.form.additionalBegin || this.$store.state.form.additionalEnd);
@@ -46,10 +47,14 @@
                 this.$store.dispatch('search/asyncSearch')
             }
         },
+        ...mapState(
+            'search',
+            ['forceSyncSearch']
+        ),
         watch: {
             searchStatus: function (searchStarted) {
                 if (searchStarted) {
-                    this.isAdditionalDates ? this.asyncSearch() : this.syncSearch();
+                    (this.isAdditionalDates && !this.forceSyncSearch) ? this.asyncSearch() : this.syncSearch();
                 }
             }
         }

@@ -159,6 +159,9 @@
         width: 40px !important;
 
     }
+    .children_age_holder_parent {
+        position: relative;
+    }
 
     .children_age_holder_vue {
         position: absolute;

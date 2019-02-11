@@ -4,7 +4,10 @@
     </select>
 </template>
 
-<script>
+<script lang="ts">
+
+    import {mapMutations} from 'vuex';
+
     export default {
         name: "ChildrenAgeInput",
         computed: {
@@ -19,14 +22,16 @@
         methods: {
             updateAge(event) {
                 const value = event.target[event.target.selectedIndex].value;
-                this.$store.commit('form/setChildrenAges', {key : this.currentKey, value: Number(value)});
-            }
+                this.setChildrenAges({key : this.currentKey, value: Number(value)});
+            },
+            ...mapMutations('form', ['setChildrenAges', 'deleteChildrenAge'])
+
         },
         created() {
-            this.$store.commit('form/setChildrenAges', {key : this.currentKey, value: this.selected});
+            this.setChildrenAges({key : this.currentKey, value: this.selected});
         },
         destroyed() {
-            this.$store.commit('form/deleteChildrenAge', this.currentKey )
+            this.deleteChildrenAge(this.currentKey);
         }
     }
 </script>

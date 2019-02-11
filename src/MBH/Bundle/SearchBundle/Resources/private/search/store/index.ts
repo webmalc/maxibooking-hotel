@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 import createLogger from 'vuex/dist/logger';
 import form from './modules/form';
 import search from './modules/search';
+import results from './modules/results';
 
 Vue.use(Vuex);
 
@@ -13,19 +14,15 @@ if(debug) {
 }
 
 function builder(initData) {
-    const store =  new Vuex.Store({
+    return  new Vuex.Store({
         strict: debug,
         plugins: plugins,
         modules: {
-            form,
-            search
+            results: results,
+            form: form,
+            search: search
         }
     });
-
-    // store.commit('form/setBegin', initData.begin);
-    // store.commit('form/setRoomTypeSelections', initData.choices);
-
-    return store;
 }
 
 
