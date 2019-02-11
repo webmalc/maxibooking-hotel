@@ -183,7 +183,10 @@ class SearchConditions extends Base
     /** @var bool */
     private $isThisWarmUp = false;
 
-    /** @var int */
+    /** @var int
+     *@Assert\Type(type="int")
+     *@ODM\Field(type="int")
+     */
     private $errorLevel = ErrorResultFilter::DISABLE;
 
 

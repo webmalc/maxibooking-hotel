@@ -176,7 +176,7 @@ services:
             - '@mbh_search.search_condition_creator'
             - '@mbh_search.search_query_generator'
             - '@old_sound_rabbit_mq.async_search_producer'
-            - '@mbh_search.results_final_builder'
+            - '@mbh_search.results_answer_manager'
 
     mbh_search.accommodation_room_searcher:
         class: MBH\Bundle\SearchBundle\Services\AccommodationRoomSearcher
@@ -582,10 +582,16 @@ services:
 #SearchResult To JSON
 
     mbh_search.results_final_builder:
+        public: false
         class: MBH\Bundle\SearchBundle\Services\FinalSearchResultsBuilder
         arguments:
             - '@mbh_search.result_serializer'
             - '@mbh_search.error_result_filter'
+
+    mbh_search.results_answer_manager:
+        class: MBH\Bundle\SearchBundle\Services\Search\FinalSearchResultsAnswerManager
+        arguments:
+            - '@mbh_search.results_final_builder'
 
 #AsyncStores
     mbh_search.async_result_store:
@@ -593,7 +599,7 @@ services:
         arguments:
             - '@snc_redis.results_client'
             - '@mbh_search.result_serializer'
-            - '@mbh_search.results_final_builder'
+            - '@mbh_search.results_answer_manager'
 
 #serializer
     mbh_search.serializer:

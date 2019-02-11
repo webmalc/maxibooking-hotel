@@ -51,6 +51,7 @@ class SearchQueryGenerator
             $begin = $period['begin'];
             $end = $period['end'];
             if ($dayGrouped) {
+                /** Групировка по дням нужна для асинхронного вывода - даты поиска в приоритете если есть допдаты */
                 $queryGroup = new DayGroupSearchQuery();
                 /** @noinspection TypeUnsafeComparisonInspection */
                 $isMainGroup = ($begin == $conditions->getBegin()) && ($end == $conditions->getEnd());

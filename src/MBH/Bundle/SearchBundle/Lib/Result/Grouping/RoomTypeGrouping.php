@@ -21,10 +21,8 @@ class RoomTypeGrouping implements GroupingInterface
         $groupedByRoomTypeId = $this->groupByRoomTypeId($searchResults);
 
         $grouped = array_map(function ($groupedResults) {
-            /** @var Result[] $groupedResults */
             return [
                 'roomType' => $groupedResults[0]['resultRoomType'],
-//                'results' => $groupedResults
                 'results' => $this->groupByDateTime($groupedResults)
 
             ];

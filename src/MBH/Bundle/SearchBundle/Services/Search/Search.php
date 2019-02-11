@@ -40,7 +40,7 @@ class Search
     /** @var ProducerInterface */
     private $producer;
 
-    /** @var FinalSearchResultsBuilder */
+    /** @var FinalSearchResultsAnswerManager */
     private $resultsBuilder;
 
     /**
@@ -51,7 +51,7 @@ class Search
      * @param SearchConditionsCreator $conditionsCreator
      * @param SearchQueryGenerator $queryGenerator
      * @param ProducerInterface $producer
-     * @param FinalSearchResultsBuilder $builder
+     * @param FinalSearchResultsAnswerManager $builder
      */
     public function __construct(
         RestrictionsCheckerService $restrictionsChecker,
@@ -60,7 +60,7 @@ class Search
         SearchConditionsCreator $conditionsCreator,
         SearchQueryGenerator $queryGenerator,
         ProducerInterface $producer,
-        FinalSearchResultsBuilder $builder
+        FinalSearchResultsAnswerManager $builder
     )
     {
         $this->restrictionChecker = $restrictionsChecker;
@@ -91,7 +91,7 @@ class Search
     )
     {
         $conditions = $this->createSearchConditions($data);
-        $searchQueries = $this->queryGenerator->generate($conditions, false);
+        $searchQueries = $this->queryGenerator->generate($conditions);
         if (self::PRE_RESTRICTION_CHECK) {
             $searchQueries = array_filter($searchQueries, [$this->restrictionChecker, 'check']);
         }
@@ -101,13 +101,13 @@ class Search
             $results[] = $searcher->search($searchQuery);
         }
 
-        $results = $this->resultsBuilder
-            ->set($results)
-            ->errorFilter($conditions->getErrorLevel())
-            ->setGrouping($grouping)
-            ->createJson($isCreateJson)
-            ->createAnswer($isCreateAnswer)
-            ->getResults();
+        $results = $this->resultsBuilder->createAnswer(
+            $results,
+            $conditions->getErrorLevel(),
+            $grouping,
+            $isCreateJson,
+            $isCreateAnswer);
+
 
         return $results;
     }

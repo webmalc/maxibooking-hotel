@@ -4,7 +4,6 @@
 namespace MBH\Bundle\SearchBundle\Lib\Result\Grouping;
 
 
-use MBH\Bundle\SearchBundle\Lib\Result\Result;
 
 class RoomTypeCategoryGrouping extends RoomTypeGrouping
 {

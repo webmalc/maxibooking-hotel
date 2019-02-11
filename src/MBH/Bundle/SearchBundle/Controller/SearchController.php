@@ -159,27 +159,6 @@ class SearchController extends Controller
 
     public function searcherAction(Request $request): Response
     {
-//        $initSearchConditions = new SearchConditions();
-//        $initSearchConditions
-//            ->setAdults(1)
-//            ->setChildren(0)
-//            ->setChildrenAges([])
-//        ;
-//        $options = [];
-//        if ($orderId = $request->get('order')) {
-//            $options['order'] = $orderId;
-//        }
-//        $form = $this->createForm(SearchConditionsType::class, $initSearchConditions, $options);
-//        try {
-//            $viewForm = $form->createView();
-//        } catch (RoomTypesTypeException $exception) {
-//            /** @var Session $session */
-//            $session = $request->getSession();
-//            $session->getFlashBag()->set('error', $exception->getMessage());
-//
-//            return new Response();
-//        }
-//        $roomTypeView = $viewForm['roomTypes']->vars;
         $orderId = $request->get('order');
         $roomTypeForm = $this->createForm(RoomTypesType::class)->createView();
         $formChoices = $roomTypeForm->vars['choices'];
@@ -200,15 +179,6 @@ class SearchController extends Controller
                 'children' => $children,
             ];
         }
-
-//        if ($request->isXmlHttpRequest()) {
-//            $data = [
-//                'begin' => '24.04.2019',
-//                'choices' => $choices,
-//            ];
-//
-//            return new JsonResponse($data);
-//        }
 
         return $this->render('@MBHSearch/Search/searcher.html.twig', [
             'order' => $orderId,
