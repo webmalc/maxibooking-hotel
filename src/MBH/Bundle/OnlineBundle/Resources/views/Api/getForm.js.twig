@@ -2,8 +2,7 @@
 var isDisplayChildAges = {{ isDisplayChildAges ? 'true' : 'false' }};
 jQuery(document).ready(function() {
     var wrapper = jQuery('#mbh-form-wrapper');
-    wrapper.html("{{ styles|escape('js') }}{{ text|escape('js') }}");
-
+    wrapper.html("{{ text|escape('js') }}");
 
     var begin = jQuery('#mbh-form-begin'),
         end = jQuery('#mbh-form-end'),
