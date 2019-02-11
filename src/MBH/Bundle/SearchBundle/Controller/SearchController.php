@@ -4,6 +4,7 @@ namespace MBH\Bundle\SearchBundle\Controller;
 
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Document\SearchResultCacheItem;
+use MBH\Bundle\SearchBundle\Form\RoomTypesType;
 use MBH\Bundle\SearchBundle\Form\SearchConditionsType;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\AsyncResultReceiverException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\GroupingFactoryException;
@@ -11,8 +12,12 @@ use MBH\Bundle\SearchBundle\Lib\Exceptions\RoomTypesTypeException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultCacheException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Form\ChoiceList\View\ChoiceGroupView;
+use Symfony\Component\Form\ChoiceList\View\ChoiceView;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +26,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 /**
  * Class SearchController
  * @package MBH\Bundle\SearchBundle\Controller
- * @Route("/search")
+ * @Route("/")
  */
 class SearchController extends Controller
 {
@@ -113,34 +118,46 @@ class SearchController extends Controller
         $conditions = new SearchConditions();
         $conditions->setBegin($begin)->setEnd($end)->setAdults($adults)->setChildren($children)->setChildrenAges($childrenAges);
         $form = $this->createForm(SearchConditionsType::class, $conditions);
+
         return $this->render('@MBHSearch/Search/client.html.twig', ['form' => $form->createView()]);
     }
 
     /**
-     * Uses direct from twig
-     * @return Response
-     */
+     * Search action
+     * @Route("/", name="package_new_search", options={"expose"=true})
+     * @Method("GET")
+     * @Security("is_granted('ROLE_SEARCH')")
+     **/
+
     public function searcherAction(Request $request): Response
     {
-        $initSearchConditions = new SearchConditions();
-        $initSearchConditions
-            ->setAdults(1)
-            ->setChildren(0)
-            ->setChildrenAges([]);
+        $orderId = $request->get('order');
+        $roomTypeForm = $this->createForm(RoomTypesType::class)->createView();
+        $formChoices = $roomTypeForm->vars['choices'];
 
-        $form = $this->createForm(SearchConditionsType::class, $initSearchConditions);
-        try {
-            $viewForm = $form->createView();
-        } catch (RoomTypesTypeException $exception) {
-            /** @var Session $session */
-            $session = $request->getSession();
-            $session->getFlashBag()->set('error', $exception->getMessage());
-
-            return new Response();
+        $choices = [];
+        foreach ($formChoices as $groupChoice) {
+            /** @var ChoiceGroupView $groupChoice */
+            /** @var ChoiceView $choice */
+            $children = [];
+            foreach ($groupChoice->getIterator() as $choice) {
+                $children[] = [
+                    'id' => $choice->value,
+                    'text' => $choice->label,
+                ];
+            }
+            $choices[] = [
+                'text' => $groupChoice->label,
+                'children' => $children,
+            ];
         }
 
-        return $this->render('@MBHSearch/Search/searcher.html.twig', ['form' => $viewForm]);
-//        return $this->render('@MBHSearch/Search/searcher.html.twig', ['form' => $viewForm]);
+        return $this->render('@MBHSearch/Search/searcher.html.twig', [
+            'order' => $orderId,
+            'begin' => '24.04.2019',
+            'end' => '26.04.2019',
+            'roomTypes' => $choices
+        ]);
     }
 
     /**

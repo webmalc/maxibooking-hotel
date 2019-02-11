@@ -115,6 +115,7 @@ class FinalSearchResultsBuilder
         }
 
         if ($this->isCreateAnswer) {
+
             $results = [
                 'results' => $results
             ];
@@ -140,7 +141,7 @@ class FinalSearchResultsBuilder
         }
     }
 
-    public function unsetResults(): void
+    private function unsetResults(): void
     {
         $this->results = null;
     }
