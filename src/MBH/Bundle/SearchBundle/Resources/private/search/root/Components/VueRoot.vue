@@ -17,46 +17,65 @@
         </div>
 
         <Status/>
+        <ResultsWrapper :results="prioritySortedResults" />
+
+
     </div>
 </template>
 
 <script lang="ts">
+    import {mapState} from "vuex";
     import Form from "./Form/Form.vue";
     import Status from "./Status.vue";
-    import {mapState} from "vuex";
+    import ResultsWrapper from './Results/ResultsWrapper.vue';
+
 
     export default {
         name: "VueRoot",
         components: {
             Form,
-            Status
+            Status,
+            ResultsWrapper
         },
         computed: {
+            prioritySortedResults() {
+                return this.$store.getters['results/getPrioritySortedResults'];
+            },
             searchStatus() {
                 return this.$store.getters['search/getIsSearchStarted'];
             },
             isAdditionalDates() {
                 return Boolean(this.$store.state.form.additionalBegin || this.$store.state.form.additionalEnd);
-            }
+            },
         },
         methods: {
             syncSearch() {
                 this.$store.dispatch('search/syncSearch');
             },
             asyncSearch() {
-                this.$store.dispatch('search/asyncSearch')
+                this.$store.dispatch('search/asyncSearch');
+            },
+            sortAllPrices() {
+                this.$store.commit('results/sortAllPrices');
             }
+
         },
         ...mapState(
             'search',
             ['forceSyncSearch']
         ),
         watch: {
-            searchStatus: function (searchStarted) {
+            searchStatus: function (searchStarted, searchStopped) {
                 if (searchStarted) {
                     (this.isAdditionalDates && !this.forceSyncSearch) ? this.asyncSearch() : this.syncSearch();
                 }
+                if (searchStopped) {
+                    this.sortAllPrices();
+                }
             }
+        },
+        beforeMount() {
+            this.sortAllPrices();
         }
     }
 
