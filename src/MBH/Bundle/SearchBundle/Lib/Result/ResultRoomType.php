@@ -23,6 +23,9 @@ class ResultRoomType
     /** @var string */
     private $hotelName = '';
 
+    /** @var int */
+    private $priority = 100;
+
     /**
      * @return string
      */
@@ -118,8 +121,21 @@ class ResultRoomType
         return $this;
     }
 
+    /**
+     * @return int
+     */
+    public function getPriority(): int
+    {
+        return $this->priority;
+    }
 
-
+    /**
+     * @param int $priority
+     */
+    public function setPriority(int $priority): void
+    {
+        $this->priority = $priority;
+    }
 
     public static function createInstance(RoomType $roomType): ResultRoomType
     {
@@ -127,12 +143,17 @@ class ResultRoomType
         $category = $roomType->getCategory();
         $categoryName = $category ? $category->getName() : '';
         $categoryId = $category ? $category->getId() : '';
+        $hotel = $roomType->getHotel();
         $resultRoomType
             ->setId($roomType->getId())
             ->setName($roomType->getName())
             ->setCategoryName($categoryName)
             ->setCategoryId($categoryId)
-            ->setHotelName($roomType->getHotel()->getName());
+            ->setHotelName($hotel->getName());
+
+        if ($hotel->getIsDefault()) {
+            $resultRoomType->setPriority(10);
+        }
 
         return $resultRoomType;
     }

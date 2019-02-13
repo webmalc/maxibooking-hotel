@@ -105,19 +105,19 @@ class FinalSearchResultsBuilder
 
         if (\count($results)) {
             $results = array_filter($results, [$this, 'filterError']);
-        }
 
-        if ($this->grouping && \count($results)) {
-            $groupingFactory = new GroupingFactory();
-            /** @noinspection CallableParameterUseCaseInTypeContextInspection */
-            $grouping = $groupingFactory->createGrouping($this->grouping);
-            $results = $grouping->group($results);
+            if ($this->grouping) {
+                $groupingFactory = new GroupingFactory();
+                /** @noinspection CallableParameterUseCaseInTypeContextInspection */
+                $grouping = $groupingFactory->createGrouping($this->grouping);
+                $results = $grouping->group($results);
+            }
         }
 
         if ($this->isCreateAnswer) {
 
             $results = [
-                'results' => $results
+                'results' => \count($results) ? $results : []
             ];
         }
 
