@@ -17,8 +17,14 @@ class ResultRoomType
     /** @var string */
     private $categoryName = '';
 
+    /** @var string|null */
+    private $categoryId;
+
     /** @var string */
     private $hotelName = '';
+
+    /** @var int */
+    private $priority = 100;
 
     /**
      * @return string
@@ -96,17 +102,58 @@ class ResultRoomType
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
+    public function getCategoryId(): ?string
+    {
+        return $this->categoryId;
+    }
+
+    /**
+     * @param string|null $categoryId
+     * @return ResultRoomType
+     */
+    public function setCategoryId(?string $categoryId): ResultRoomType
+    {
+        $this->categoryId = $categoryId;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPriority(): int
+    {
+        return $this->priority;
+    }
+
+    /**
+     * @param int $priority
+     */
+    public function setPriority(int $priority): void
+    {
+        $this->priority = $priority;
+    }
 
     public static function createInstance(RoomType $roomType): ResultRoomType
     {
         $resultRoomType = new self();
         $category = $roomType->getCategory();
         $categoryName = $category ? $category->getName() : '';
+        $categoryId = $category ? $category->getId() : '';
+        $hotel = $roomType->getHotel();
         $resultRoomType
             ->setId($roomType->getId())
             ->setName($roomType->getName())
             ->setCategoryName($categoryName)
-            ->setHotelName($roomType->getHotel()->getName());
+            ->setCategoryId($categoryId)
+            ->setHotelName($hotel->getName());
+
+        if ($hotel->getIsDefault()) {
+            $resultRoomType->setPriority(10);
+        }
 
         return $resultRoomType;
     }
