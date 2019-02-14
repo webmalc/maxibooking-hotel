@@ -8,7 +8,16 @@
 <script lang="ts">
     export default {
         name: "Icon",
-        props: ['isCached', 'cacheItemId'],
+        props: {
+            isCached: Boolean,
+            cacheItemId: String
+        },
+        data: function () {
+            return {
+                invalidated: false
+
+            }
+        },
         computed: {
             icon: function () {
                 return {
@@ -28,22 +37,6 @@
             }
 
 
-        },
-        // methods: {
-        //     invalidate: function (e) {
-        //         if (!this.invalidated) {
-        //             this.invalidated = true;
-        //             let url = Routing.generate('invalidate_item', {'id': this.cacheItemId});
-        //             $.get(url);
-        //         }
-        //     }
-        //
-        // },
-        data: function () {
-            return {
-                invalidated: false
-
-            }
         }
     }
 </script>

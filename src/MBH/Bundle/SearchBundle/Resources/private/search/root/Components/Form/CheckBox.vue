@@ -5,10 +5,13 @@
 <script>
     export default {
         name: "CheckBox",
-        props: ['checked', 'labelId'],
         model: {
             prop: 'checked',
             event: 'change'
+        },
+        props: {
+            checked: Boolean,
+            labelId: String
         },
         data() {
             return {

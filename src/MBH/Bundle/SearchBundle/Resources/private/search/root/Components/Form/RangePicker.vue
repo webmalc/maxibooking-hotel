@@ -53,7 +53,7 @@
             options.endDate = moment(this.end, 'DD.MM.YYYY');
             $('input[name="dates"]')
                 .daterangepicker(options)
-                .on('apply.daterangepicker', (ev,picker) => {
+                .on('apply.daterangepicker', (ev, picker) => {
                     this.$store.commit('form/setBegin', picker.startDate.format('DD.MM.YYYY'));
                     this.$store.commit('form/setEnd', picker.endDate.format('DD.MM.YYYY'));
                 });

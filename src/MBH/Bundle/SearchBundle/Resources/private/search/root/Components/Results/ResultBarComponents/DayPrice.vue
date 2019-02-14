@@ -15,7 +15,16 @@
 
     export default {
         name: "DayPrice",
-        props: ['dayPrices'],
+        directives: {
+            popover: {
+                inserted: function (el) {
+                    $(el).popover();
+                }
+            }
+        },
+        props: {
+            dayPrices: Array
+        },
         computed: {
             detail: function () {
                 let html: string = '';
@@ -26,13 +35,6 @@
                 }
 
                 return `<small>${html}</small>`;
-            }
-        },
-        directives: {
-            popover: {
-                inserted: function (el) {
-                    $(el).popover();
-                }
             }
         }
     }

@@ -19,6 +19,12 @@
                 return this.$vnode.key;
             }
         },
+        created() {
+            this.setChildrenAges({key : this.currentKey, value: this.selected});
+        },
+        destroyed() {
+            this.deleteChildrenAge(this.currentKey);
+        },
         methods: {
             updateAge(event) {
                 const value = event.target[event.target.selectedIndex].value;
@@ -26,12 +32,6 @@
             },
             ...mapMutations('form', ['setChildrenAges', 'deleteChildrenAge'])
 
-        },
-        created() {
-            this.setChildrenAges({key : this.currentKey, value: this.selected});
-        },
-        destroyed() {
-            this.deleteChildrenAge(this.currentKey);
         }
     }
 </script>

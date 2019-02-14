@@ -19,7 +19,7 @@
                 <td colspan="7">{{name(roomTypeGroupedResult)}}</td>
             </tr>
 
-            <tr v-for="(dateGroupedResults, dateKey) in roomTypeGroupedResult.results" :key="dateKey">
+            <tr v-for="(dateGroupedResults, dateKey) in sortedDateResults(roomTypeGroupedResult.roomType.id)" :key="dateKey">
                 <td colspan="7">
                     <table style="width: 100%;"
                            class="not-auto-datatable package-search-table table table-striped table-hover table-condensed table-icons table-actions">
@@ -34,7 +34,9 @@
                             <th class="td-md"></th>
                         </tr>
                         </thead>
-                        <tbody is="DateResults" :dateKey="dateKey" :roomTypeKey="roomTypeGroupedResult.roomType.id"></tbody>
+                        <tbody>
+                        <tr is="ResultBar" v-for="(barResult, groupedKey) in dateGroupedResults" :key="groupedKey" :result="barResult"></tr>
+                        </tbody>
                     </table>
                 </td>
             </tr>
@@ -45,13 +47,18 @@
 
 <script lang="ts">
     import moment from 'moment';
-    import DateResults from './DateResults.vue';
+    import ResultBar from './ResultBar.vue'
 
 
     moment.locale('ru');
     export default {
         name: "ResultsWrapper",
-        props: ['results'],
+        components: {
+            ResultBar
+        },
+        props: {
+            results: Array
+        },
         data() {
             return {
                 sortType: {
@@ -66,9 +73,9 @@
             datedName(firstResultInArray) {
                 return `${moment(firstResultInArray.begin).format('DD MMMM YYYY')} - ${moment(firstResultInArray.end).format('DD MMMM YYYY')}`
             },
-        },
-        components: {
-            DateResults
+            sortedDateResults(roomTypeId) {
+                return this.$store.getters['results/getSortedDayResults'](roomTypeId);
+            }
         }
     }
 </script>

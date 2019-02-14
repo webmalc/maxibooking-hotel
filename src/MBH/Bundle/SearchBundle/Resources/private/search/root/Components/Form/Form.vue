@@ -68,7 +68,7 @@
     import SearchButton from './SearchButton.vue';
 
     export default {
-        name: "Form",
+        name: "AppForm",
 
         components: {
             RangePicker,

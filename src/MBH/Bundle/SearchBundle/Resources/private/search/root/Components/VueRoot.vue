@@ -48,6 +48,23 @@
                 return Boolean(this.$store.state.form.additionalBegin || this.$store.state.form.additionalEnd);
             },
         },
+        watch: {
+            searchStatus: function (searchStarted, searchStopped) {
+                if (searchStarted) {
+                    (this.isAdditionalDates && !this.forceSyncSearch) ? this.asyncSearch() : this.syncSearch();
+                }
+                if (searchStopped) {
+                    this.sortAllPrices();
+                }
+            }
+        },
+        ...mapState(
+            'search',
+            ['forceSyncSearch']
+        ),
+        beforeMount() {
+            this.sortAllPrices();
+        },
         methods: {
             syncSearch() {
                 this.$store.dispatch('search/syncSearch');
@@ -59,23 +76,6 @@
                 this.$store.commit('results/sortAllPrices');
             }
 
-        },
-        ...mapState(
-            'search',
-            ['forceSyncSearch']
-        ),
-        watch: {
-            searchStatus: function (searchStarted, searchStopped) {
-                if (searchStarted) {
-                    (this.isAdditionalDates && !this.forceSyncSearch) ? this.asyncSearch() : this.syncSearch();
-                }
-                if (searchStopped) {
-                    this.sortAllPrices();
-                }
-            }
-        },
-        beforeMount() {
-            this.sortAllPrices();
         }
     }
 

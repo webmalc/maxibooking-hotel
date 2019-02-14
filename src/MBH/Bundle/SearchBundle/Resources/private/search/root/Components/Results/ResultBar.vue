@@ -3,7 +3,7 @@
         <td class="text-center table-icon">
             <Icon :isCached="result.cached" :cacheItemId="result.cacheItemId"></Icon>
         </td>
-        <td>{{titleBegin}}-{{titleEnd}}<br>
+        <td>{{titleBegin}}-{{titleEnd}} {{exactDay ? '': ' (доп. даты)'}}<br>
             <small>{{night}} ночей</small>
         </td>
         <td>{{tariff.name}}<br>
@@ -36,7 +36,7 @@
         <td class="text-center">
             <a v-if="minRooms > 0" :href="bookingLink" target="_blank"
                class="btn btn-success btn-xs package-search-book"
-               :title="'Бронировать номер. Всего номеров: ' + minRooms">
+               :title="'Бронировать номер. Всего номеров: ' + minRooms" @click="decreaseRoomAvailability">
                 <i class="fa fa-book"></i><span class="package-search-book-reservation-text"> Бронировать</span>
             </a>
         </td>
@@ -47,18 +47,20 @@
 <script lang="ts">
     import Icon from './ResultBarComponents/Icon.vue';
     import DayPrice from './ResultBarComponents/DayPrice.vue';
-    import moment from 'moment';
     import accounting from 'accounting';
+    import moment from 'moment';
 
     declare let Routing: Routing;
 
 
     export default {
         name: "ResultBar",
-        props: ['result'],
         components: {
             Icon,
             DayPrice
+        },
+        props: {
+            result: Object
         },
         data() {
             return {
@@ -120,13 +122,22 @@
                     childrenAges: childrenAges,
                     quantity: this.quantity,
                     order: order,
-                    forceBooking: forceBooking
+                    forceBooking: forceBooking,
+                    isUseCache: false
                 });
             }
         },
         methods: {
             rounded: function (price: number) {
                 return accounting.formatMoney(price, "", 2, ",", ".")
+            },
+            decreaseRoomAvailability() {
+                const result = this.result;
+                this.$store.commit('results/bookingAction', {
+                    roomType: result.resultRoomType.id,
+                    amount: this.quantity
+                });
+                this.quantity = Math.min(this.quantity, this.minRooms);
             }
         }
     }
