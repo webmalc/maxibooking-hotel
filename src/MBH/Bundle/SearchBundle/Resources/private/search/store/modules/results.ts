@@ -1405,7 +1405,6 @@ const getters = {
 
         return sortable;
     },
-
     getPrioritySortedResults: state => {
         const rawResults = state.successes;
         let sortable = [];
@@ -1445,6 +1444,18 @@ const getters = {
 
         return sortable;
     },
+    getErrorsByType: state => type => {
+        let results = [];
+        const allErrors = state.errors;
+        for (let roomTypeKey in allErrors) {
+            if (allErrors.hasOwnProperty(roomTypeKey)) {
+                let roomTypeResult = allErrors[roomTypeKey];
+                let roomType = roomTypeResult.roomType;
+                let dateResults = roomTypeResult.results;
+
+            }
+        }
+    }
 };
 
 export default {

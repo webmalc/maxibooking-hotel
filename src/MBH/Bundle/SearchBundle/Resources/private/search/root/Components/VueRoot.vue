@@ -19,6 +19,7 @@
         <Status/>
         <ResultsWrapper :results="prioritySortedResults" />
         <Specials />
+        <!--<SearchErrors />-->
 
 
 
@@ -31,6 +32,7 @@
     import Status from "./Status.vue";
     import ResultsWrapper from './Results/ResultsWrapper.vue';
     import Specials from './Specials.vue';
+    import SearchErrors from './Errors/SearchErrors.vue';
 
 
     export default {
@@ -39,7 +41,8 @@
             Form,
             Status,
             ResultsWrapper,
-            Specials
+            Specials,
+            SearchErrors
         },
         computed: {
             prioritySortedResults() {

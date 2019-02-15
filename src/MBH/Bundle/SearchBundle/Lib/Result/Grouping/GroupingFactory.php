@@ -17,7 +17,7 @@ class GroupingFactory
      * @return GroupingInterface
      * @throws GroupingFactoryException
      */
-    public function createGrouping(string $grouping, bool $isSplitError = true): GroupingInterface
+    public function createGrouping(string $grouping, bool $isSplitError): GroupingInterface
     {
         if (!\in_array($grouping, self::GROUPERS, true)) {
             throw new GroupingFactoryException('There is no grouper with name '.$grouping);

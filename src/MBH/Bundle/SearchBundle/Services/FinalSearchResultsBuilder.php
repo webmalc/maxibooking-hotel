@@ -109,7 +109,7 @@ class FinalSearchResultsBuilder
             if ($this->grouping) {
                 $groupingFactory = new GroupingFactory();
                 /** @noinspection CallableParameterUseCaseInTypeContextInspection */
-                $grouping = $groupingFactory->createGrouping($this->grouping);
+                $grouping = $groupingFactory->createGrouping($this->grouping, $this->filterLevel);
                 $results = $grouping->group($results);
             }
         }
