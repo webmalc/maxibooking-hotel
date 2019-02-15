@@ -180,10 +180,13 @@ class SearchController extends Controller
             ];
         }
 
+        $begin = new \DateTime('24.04.2019 midnight');
+        $end = (clone $begin)->modify('+7 days');
+
         return $this->render('@MBHSearch/Search/searcher.html.twig', [
             'order' => $orderId,
-            'begin' => '13.05.2019',
-            'end' => '27.05.2019',
+            'begin' => $begin,
+            'end' => $end,
             'roomTypes' => $choices
         ]);
     }

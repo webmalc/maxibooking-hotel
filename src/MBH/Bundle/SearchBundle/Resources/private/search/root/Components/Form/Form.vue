@@ -1,5 +1,13 @@
 <template>
-    <transition name="fade" appear>
+    <transition
+            name="animated-css"
+            enter-active-class="animated fadeIn"
+            leave-active-class="animated fadeOut"
+            mode="out-in"
+            class="animated-status"
+            :duration="{enter:200, leave: 200}"
+            appear
+    >
     <div class="data-form">
         <div class="input">
             <i class="fa fa-calendar" title="" data-toggle="tooltip" data-original-title="Заезд"></i>&nbsp;
@@ -8,12 +16,12 @@
         <div class="input ">
             <i class="fa fa-calendar-plus-o " title="" data-toggle="tooltip"
                data-original-title="Дополнительные дни до даты поиска."></i>&nbsp;
-            <input type="number" v-model="additionalBegin" class="input-xxs" min="0" :max="maxAdditionalDays">
+            <input type="number" v-model="additionalBegin" class="input-xxs" min="0" :max="maxAdditionalDays" disabled>
         </div>
         <div class="input ">
             <i class="fa fa-calendar-plus-o " title="" data-toggle="tooltip"
                data-original-title="Дополнительные дни после даты поиска."></i>&nbsp;
-            <input type="number" v-model="additionalEnd" class="input-xxs" min="0" :max="maxAdditionalDays">
+            <input type="number" v-model="additionalEnd" class="input-xxs" min="0" :max="maxAdditionalDays" disabled>
         </div>
 
         <div class="input"><i class="fa fa-male" title="" data-toggle="tooltip" data-original-title="Взрослые."></i>&nbsp;
@@ -179,15 +187,4 @@
             width: 40px !important;
         }
     }
-
-    .fade-enter-active{
-        transition: opacity .5s;
-    }
-    .fade-leave-active {
-        transition: opacity .2s;
-    }
-    .fade-enter, .fade-leave-to {
-        opacity: 0;
-    }
-
 </style>

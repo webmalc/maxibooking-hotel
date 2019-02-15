@@ -90,5 +90,5 @@
 </script>
 
 <style scoped>
-
+    @import "~animate.css";
 </style>

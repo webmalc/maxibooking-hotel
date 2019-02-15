@@ -1,5 +1,5 @@
 import Vue from 'vue';
-
+import * as _ from 'lodash';
 
 const state = {
     successes:{} /*{
@@ -1306,6 +1306,19 @@ const mutations = {
             }
         }
     },
+    shuffle(state){
+        for (let resultId in state.successes) {
+            if (state.successes.hasOwnProperty(resultId)) {
+                let dayResults = state.successes[resultId].results;
+                for (let dateKey in dayResults) {
+                    if (dayResults.hasOwnProperty(dateKey)) {
+                        dayResults[dateKey] = _.shuffle(dayResults[dateKey]);
+                    }
+                }
+
+            }
+        }
+    },
     sortPricesInsideDay(state, payload) {
         let results =  state.successes[payload.roomTypeId].results[payload.dateKey];
         results.sort(function (resA, resB) {
@@ -1391,8 +1404,8 @@ const getters = {
         });
 
         return sortable;
-    }
-    ,
+    },
+
     getPrioritySortedResults: state => {
         const rawResults = state.successes;
         let sortable = [];

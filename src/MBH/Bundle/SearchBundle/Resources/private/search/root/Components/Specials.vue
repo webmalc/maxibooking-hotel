@@ -1,5 +1,11 @@
 <template>
-    <transition appear name="fade">
+    <transition
+            enter-active-class="animated fadeInUp"
+            leave-active-class="animated fadeOutDown"
+            mode="out-in"
+            :duration="{enter:100, leave: 100}"
+            appear
+    >
     <div v-html="specials" v-if="specials"></div>
     </transition>
 </template>

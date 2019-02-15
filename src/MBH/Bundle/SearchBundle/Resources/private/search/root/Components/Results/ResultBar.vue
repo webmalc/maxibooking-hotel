@@ -1,4 +1,5 @@
 <template>
+
     <tr :class="{success: exactDay}">
         <td class="text-center table-icon">
             <Icon :isCached="result.cached" :cacheItemId="result.cacheItemId"></Icon>

@@ -12,8 +12,8 @@
             {#{{ include('@MBHSearch/Search/form/search.form.html.twig') }}#}
     <div id="vue-searcher"
          data-order="{{ order }}"
-         data-begin="{{ begin }}"
-         data-end="{{ end }}"
+         data-begin="{{ begin|date('d.m.Y') }}"
+         data-end="{{ end|date('d.m.Y') }}"
          data-room-types="{{ roomTypes|json_encode(256) }}"
     >
 

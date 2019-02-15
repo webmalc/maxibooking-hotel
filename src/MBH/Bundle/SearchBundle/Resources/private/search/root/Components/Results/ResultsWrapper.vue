@@ -1,6 +1,6 @@
 <template>
-    <transition appear name="fade">
     <div v-if="isResults" id="search_results">
+        <!--<button @click="shuffle">button</button>-->
         <table class="not-auto-datatable package-search-table table table-striped table-hover table-condensed table-icons table-actions">
             <thead>
             <tr>
@@ -22,10 +22,17 @@
 
 
             <tr>
-                <td colspan="7">
+                <transition-group
+                        colspan="7" tag="td"
+                        enter-active-class="animated fadeIn"
+                        leave-active-class="animated fadeOut"
+                        :duration="{enter:200, leave: 200}"
+                        type="transition"
+                        appear
+                >
                     <table style="width: 100%;"
                            class="not-auto-datatable package-search-table table table-striped table-hover table-condensed table-icons table-actions"
-                           v-for="(dateGroupedResults, dateKey) in sortedDateResults(roomTypeGroupedResult.roomType.id)" :key="dateKey"
+                           v-for="(dateGroupedResults, dateKey) in sortedDateResults(roomTypeGroupedResult.roomType.id)" :key="`date-key-${dateKey}`"
                     >
                         <thead>
                         <tr>
@@ -38,17 +45,22 @@
                             <th class="td-md"></th>
                         </tr>
                         </thead>
-                        <tbody>
-                        <tr is="ResultBar" v-for="(barResult, groupedKey) in dateGroupedResults" :key="groupedKey" :result="barResult"></tr>
-                        </tbody>
+                        <transition-group
+                            tag="tbody"
+                            enter-active-class="animated fadeIn"
+                            :duration="{enter:800}"
+                            name="result-bar"
+                            appear
+                        >
+                        <tr is="ResultBar" v-for="(barResult, groupedKey) in dateGroupedResults" :key="`bar-key-${groupedKey}`" :result="barResult"></tr>
+                        </transition-group>
                     </table>
-                </td>
+                </transition-group>
             </tr>
 
             </tbody>
         </table>
     </div>
-    </transition>
 </template>
 
 <script lang="ts">
@@ -86,22 +98,13 @@
             },
             sortedDateResults(roomTypeId) {
                 return this.$store.getters['results/getSortedDayResults'](roomTypeId);
+            },
+            shuffle() {
+                this.$store.commit('results/shuffle');
             }
         }
     }
 </script>
 
 <style scoped>
-    .fade-enter-active{
-        transition: opacity 1ms;
-    }
-    .fade-leave-active {
-        transition: opacity 1ms;
-    }
-    .fade-enter, .fade-leave-to {
-        opacity: 0;
-    }
-    .bars-move {
-        transition: transform .3s;
-    }
 </style>
