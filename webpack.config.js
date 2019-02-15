@@ -6,7 +6,7 @@ Encore
     .setOutputPath('web/build')
     .setPublicPath('/build')
     .addEntry('search', __dirname + '/src/MBH/Bundle/SearchBundle/Resources/private/search/index.ts')
-    .enableLessLoader()
+    .enableSassLoader()
     .enableSourceMaps(!Encore.isProduction())
     .cleanupOutputBeforeBuild()
     .enableBuildNotifications()
@@ -23,6 +23,7 @@ Encore
         )
     )
     .addPlugin(new VueLoaderPlugin())
+    .enableBuildNotifications(false)
 ;
 
 let config = Encore.getWebpackConfig();
