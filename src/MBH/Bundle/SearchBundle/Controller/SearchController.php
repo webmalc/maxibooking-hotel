@@ -182,8 +182,8 @@ class SearchController extends Controller
 
         return $this->render('@MBHSearch/Search/searcher.html.twig', [
             'order' => $orderId,
-            'begin' => '24.04.2019',
-            'end' => '26.04.2019',
+            'begin' => '13.05.2019',
+            'end' => '27.05.2019',
             'roomTypes' => $choices
         ]);
     }

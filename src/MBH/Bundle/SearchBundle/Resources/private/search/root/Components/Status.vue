@@ -1,17 +1,23 @@
 <template>
-    <div v-if="state === 'new'" class="bg-gray color-palette alert">
-        <i class="fa fa-search"></i> {{message.new}}
+    <div class="search-block">
+    <transition name="fade" mode="out-in" appear>
+        <div v-if="state === 'new'" class="bg-gray color-palette alert" :key="state">
+            <i class="fa fa-search"></i> {{message.new}}
+        </div>
+        <div v-else-if="state === 'process'" class="alert alert-warning" :key="state"><i class="fa fa-spinner fa-spin"></i>
+            {{message.process}}
+        </div>
+        <div v-else-if="state === 'noResults'" class="alert alert-success" :key="state"><i class="fa fa-exclamation-circle"></i>
+            {{message.noResults}}
+        </div>
+        <div v-else-if="state === 'success'" class="alert alert-success" :key="state"><i class="fa fa-exclamation-circle"></i>
+            {{message.success}}
+        </div>
+        <div v-else-if="state === 'error'" class="alert alert-danger" :key="state"><i class="fa fa-exclamation-circle"></i>
+            {{message.error}} {{errorMessage}}.
+        </div>
+    </transition>
     </div>
-    <div v-else-if="state === 'process'" class="alert alert-warning"><i class="fa fa-spinner fa-spin"></i>
-        {{message.process}}
-    </div>
-    <div v-else-if="state === 'noResults'" class="alert alert-warning"><i class="fa fa-exclamation-circle"></i>
-        {{message.noResults}}
-    </div>
-    <div v-else-if="state === 'error'" class="alert alert-danger"><i class="fa fa-exclamation-circle"></i>
-        {{message.error}} {{errorMessage}}.
-    </div>
-
 </template>
 
 <script lang="ts">
@@ -25,7 +31,8 @@
                     new: 'Введите данные для поиска.',
                     process: 'Подождите...',
                     noResults: 'Поиск выполнен.',
-                    error: 'Произошла ошибка при запросе в базу данных!'
+                    error: 'Произошла ошибка при запросе в базу данных!',
+                    success: 'Результаты поиска:'
                 }
             }
         },
@@ -44,6 +51,9 @@
                 if (false === this.status && !this.isResults && this.count > 0 && false === this.error) {
                     state = 'noResults';
                 }
+                if (false === this.status && this.isResults && this.count > 0 && false === this.error) {
+                    state = 'success';
+                }
 
                 return state;
             },
@@ -59,5 +69,13 @@
 </script>
 
 <style scoped>
-
+    .fade-enter-active{
+        transition: opacity .2s;
+    }
+    .fade-leave-active {
+        transition: opacity .2s;
+    }
+    .fade-enter, .fade-leave-to {
+        opacity: 0;
+    }
 </style>

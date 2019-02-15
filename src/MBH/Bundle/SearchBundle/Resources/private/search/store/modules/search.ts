@@ -8,6 +8,7 @@ const state = {
     asyncSearchStartUrl: 'search_start_async',
     asyncSearchUrl: 'search_async_results',
     syncSearchUrl: 'search_sync_start_json',
+    specialRoute: 'search_specials',
     errorResults: [],
     forceSyncSearch: false
 };
@@ -57,12 +58,30 @@ const getters = {
 };
 
 const actions = {
+    async specialSearch({state, rootGetters, commit}) {
+        let conditions = rootGetters['form/getSearchConditions'];
+        let url = Routing.generate(state.specialRoute);
+        try {
+            const response = await request(url, conditions);
+            if (!response.ok) {
+                const error = await response.json();
+                // noinspection ExceptionCaughtLocallyJS
+                throw new Error(error['error']);
+            } else {
+                let data = await response.text();
+                commit('results/setSpecialsHtml', data, {root: true});
+            }
+        } catch (err) {
+            console.log(err);
+        }
+
+    },
     async syncSearch({state, rootGetters, commit}) {
         commit('setSearchSyncType');
         commit('results/clearResults',null , {root: true});
         let conditions = rootGetters['form/getSearchConditions'];
-        let url = Routing.generate(state.syncSearchUrl, {grouping: 'roomType'});
         try {
+            let url = Routing.generate(state.syncSearchUrl, {grouping: 'roomType'});
             const response = await request(url, conditions);
             if (!response.ok) {
                 const error = await response.json();
@@ -76,8 +95,6 @@ const actions = {
         } catch (err) {
             commit('stopSearchWithError', err.message);
         }
-
-
     },
 
     async asyncSearch({state, rootGetters, commit}) {

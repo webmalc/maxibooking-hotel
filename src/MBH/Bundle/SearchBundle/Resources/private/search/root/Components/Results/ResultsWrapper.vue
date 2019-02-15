@@ -1,5 +1,6 @@
 <template>
-    <div id="search_results">
+    <transition appear name="fade">
+    <div v-if="isResults" id="search_results">
         <table class="not-auto-datatable package-search-table table table-striped table-hover table-condensed table-icons table-actions">
             <thead>
             <tr>
@@ -19,10 +20,13 @@
                 <td colspan="7">{{name(roomTypeGroupedResult)}}</td>
             </tr>
 
-            <tr v-for="(dateGroupedResults, dateKey) in sortedDateResults(roomTypeGroupedResult.roomType.id)" :key="dateKey">
+
+            <tr>
                 <td colspan="7">
                     <table style="width: 100%;"
-                           class="not-auto-datatable package-search-table table table-striped table-hover table-condensed table-icons table-actions">
+                           class="not-auto-datatable package-search-table table table-striped table-hover table-condensed table-icons table-actions"
+                           v-for="(dateGroupedResults, dateKey) in sortedDateResults(roomTypeGroupedResult.roomType.id)" :key="dateKey"
+                    >
                         <thead>
                         <tr>
                             <th class="td-xxs"></th>
@@ -40,9 +44,11 @@
                     </table>
                 </td>
             </tr>
+
             </tbody>
         </table>
     </div>
+    </transition>
 </template>
 
 <script lang="ts">
@@ -66,6 +72,11 @@
                 }
             }
         },
+        computed: {
+            isResults() {
+                return this.$store.getters['results/isResults'];
+            }
+        },
         methods: {
             name(result) {
                 return `${result.roomType.name}: ${result.roomType.hotelName}`;
@@ -81,5 +92,16 @@
 </script>
 
 <style scoped>
-
+    .fade-enter-active{
+        transition: opacity 1ms;
+    }
+    .fade-leave-active {
+        transition: opacity 1ms;
+    }
+    .fade-enter, .fade-leave-to {
+        opacity: 0;
+    }
+    .bars-move {
+        transition: transform .3s;
+    }
 </style>

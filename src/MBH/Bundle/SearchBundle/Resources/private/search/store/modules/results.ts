@@ -2,7 +2,7 @@ import Vue from 'vue';
 
 
 const state = {
-    successes: {
+    successes:{} /*{
                 "5703c7eb74eb53976f8b4569": {
                     "roomType": {
                         "id": "5703c7eb74eb53976f8b4569",
@@ -1238,9 +1238,10 @@ const state = {
                         ]
                     }
                 }
-    },
+    }*/,
     errors: {},
-    amount: 0
+    amount: 0,
+    specialsHtml: ''
 };
 
 const minPriceInDays = (dayResults) => {
@@ -1265,6 +1266,9 @@ const minPriceInDay = (dayResult) => {
 };
 
 const mutations = {
+    setSpecialsHtml(state, payload) {
+        state.specialsHtml = payload;
+    },
     addResults(state, payload) {
         if (payload.results.hasOwnProperty('success')) {
             const successes = payload.results.success;
@@ -1282,6 +1286,7 @@ const mutations = {
         state.successes = {};
         state.errors = {};
         state.amount = 0;
+        state.specialsHtml = '';
     },
     sortAllPrices(state) {
         for (let resultId in state.successes) {

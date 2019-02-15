@@ -12,12 +12,14 @@
                 </div>
             </div>
             <div class="bg-gray-disabled color-palette box-body">
-                <Form/>
+                <Form />
             </div>
         </div>
 
         <Status/>
         <ResultsWrapper :results="prioritySortedResults" />
+        <Specials />
+
 
 
     </div>
@@ -28,6 +30,7 @@
     import Form from "./Form/Form.vue";
     import Status from "./Status.vue";
     import ResultsWrapper from './Results/ResultsWrapper.vue';
+    import Specials from './Specials.vue';
 
 
     export default {
@@ -35,7 +38,8 @@
         components: {
             Form,
             Status,
-            ResultsWrapper
+            ResultsWrapper,
+            Specials
         },
         computed: {
             prioritySortedResults() {
@@ -52,6 +56,7 @@
             searchStatus: function (searchStarted, searchStopped) {
                 if (searchStarted) {
                     (this.isAdditionalDates && !this.forceSyncSearch) ? this.asyncSearch() : this.syncSearch();
+                    this.specialSearch();
                 }
                 if (searchStopped) {
                     this.sortAllPrices();
@@ -71,6 +76,9 @@
             },
             asyncSearch() {
                 this.$store.dispatch('search/asyncSearch');
+            },
+            specialSearch() {
+                this.$store.dispatch('search/specialSearch');
             },
             sortAllPrices() {
                 this.$store.commit('results/sortAllPrices');
