@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "805c0fffda93e8bfae3fa77324ae7788",
+    "content-hash": "593c221ad4742ace3db6fa0ef950c3e6",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -259,12 +259,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/webmalc/MongoDBAclBundle.git",
-                "reference": "87bf62c5ad7b64fe86938e471b8f78371bdf6a84"
+                "reference": "59a8c3eb88190aba790c92f8918222d719d67306"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webmalc/MongoDBAclBundle/zipball/87bf62c5ad7b64fe86938e471b8f78371bdf6a84",
-                "reference": "87bf62c5ad7b64fe86938e471b8f78371bdf6a84",
+                "url": "https://api.github.com/repos/webmalc/MongoDBAclBundle/zipball/59a8c3eb88190aba790c92f8918222d719d67306",
+                "reference": "59a8c3eb88190aba790c92f8918222d719d67306",
                 "shasum": ""
             },
             "require": {
@@ -305,7 +305,7 @@
             "support": {
                 "source": "https://github.com/webmalc/MongoDBAclBundle/tree/master"
             },
-            "time": "2017-06-28 10:42:05"
+            "time": "2019-02-18T11:36:44+00:00"
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -1230,7 +1230,7 @@
                 "mongodb",
                 "persistence"
             ],
-            "time": "2017-08-09 13:56:03"
+            "time": "2017-08-09T13:56:03+00:00"
         },
         {
             "name": "doctrine/mongodb-odm",
@@ -1313,7 +1313,7 @@
                 "odm",
                 "persistence"
             ],
-            "time": "2017-08-17 07:43:06"
+            "time": "2017-08-17T07:43:06+00:00"
         },
         {
             "name": "doctrine/mongodb-odm-bundle",
@@ -1387,7 +1387,7 @@
                 "persistence",
                 "symfony"
             ],
-            "time": "2017-08-15 12:49:26"
+            "time": "2017-08-15T12:49:26+00:00"
         },
         {
             "name": "egulias/email-validator",
@@ -3498,7 +3498,7 @@
                 "i18n",
                 "translation"
             ],
-            "time": "2017-07-16 15:18:56"
+            "time": "2017-07-16T15:18:56+00:00"
         },
         {
             "name": "liip/imagine-bundle",
@@ -3956,7 +3956,7 @@
                 "manager",
                 "myallocator"
             ],
-            "time": "2017-02-06 23:10:05"
+            "time": "2017-02-06T23:10:05+00:00"
         },
         {
             "name": "nelmio/api-doc-bundle",
@@ -4354,7 +4354,7 @@
                 "templating",
                 "twig"
             ],
-            "time": "2016-02-09 14:23:53"
+            "time": "2016-02-09T14:23:53+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -5461,7 +5461,7 @@
                 "translatable",
                 "tree"
             ],
-            "time": "2017-01-13 18:32:32"
+            "time": "2017-01-13T18:32:32+00:00"
         },
         {
             "name": "stripe/stripe-php",
