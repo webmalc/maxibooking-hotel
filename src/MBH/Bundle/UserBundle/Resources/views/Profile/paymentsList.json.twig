@@ -7,6 +7,7 @@
         [
             "<div class=\"text-center\">{{ order.createdAsDateTime|date('d.m.Y') }}</div>",
             "<div class=\"text-center\">{{ order.expiredDateAsDateTime|date('d.m.Y') }}</div>",
+            "<div class=\"text-center\">{{ order.paidDateAsDateTime ? order.paidDateAsDateTime|date('d.m.Y') : '' }}</div>",
             "<div class=\"text-center\">{{ order.price ~ ' ' ~ order.price_currency }}</div>",
             "<div class=\"table-actions-td text-center\">{{ order.translatedStatus|trans }}</div>",
             "<div><div class=\"btn-list text-right\">{% if order.status != 'paid' %} <button type=\"button\" class='btn btn-warning btn-xs show-payments-list' data-order-id='{{ order.id }}'> {{ 'view.personal_account.pay_button.title'|trans }}</button>{% endif %}</div></div>"

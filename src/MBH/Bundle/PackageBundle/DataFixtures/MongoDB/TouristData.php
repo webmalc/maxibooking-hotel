@@ -14,18 +14,23 @@ class TouristData extends AbstractFixture implements OrderedFixtureInterface
 
     const TOURIST_DATA = [
         'ru' => [
-            'sergei'    => ['name' => 'Сергей', 'lastName' => 'Виноградов', 'patronymic' => 'Иванович'],
-            'ivan'      => ['name' => 'Иван', 'lastName' => 'Алексеев', 'patronymic' => 'Сергеевич'],
-            'alexander' => ['name' => 'Александр', 'lastName' => 'Тищенко', 'patronymic' => 'Евгеньевич'],
-            'petr'      => ['name' => 'Петр', 'lastName' => 'Петренко', 'patronymic' => 'Петрович'],
-            'arseniy'   => ['name' => 'Арсений', 'lastName' => 'Всеволодов', 'patronymic' => 'Александрович'],
+            'sergei'               => ['name' => 'Сергей', 'lastName' => 'Виноградов', 'patronymic' => 'Иванович'],
+            'ivan'                 => ['name' => 'Иван', 'lastName' => 'Алексеев', 'patronymic' => 'Сергеевич'],
+            'alexander'            => ['name' => 'Александр', 'lastName' => 'Тищенко', 'patronymic' => 'Евгеньевич'],
+            'petr'                 => ['name' => 'Петр', 'lastName' => 'Петренко', 'patronymic' => 'Петрович'],
+            'arseniy'              => ['name'       => 'Арсений',
+                                       'lastName'   => 'Всеволодов',
+                                       'patronymic' => 'Александрович',
+            ],
+            'morty'                => ['name' => 'Морти', 'lastName' => 'Симит', 'patronymic' => 'Джерривич'],
             self::TOURIST_RICK_KEY => self::TOURIST_RICK_DATA,
         ],
         'en' => [
-            'sigmund' => ['name' => 'Sigmund', 'lastName' => 'Parker'],
-            'corrie'  => ['name' => 'Corrie', 'lastName' => 'Rye'],
-            'lynne'   => ['name' => 'Lynne', 'lastName' => 'Payton'],
-            'morty'   => ['name' => 'Morty', 'lastName' => 'Smith'],
+            'sigmund'              => ['name' => 'Sigmund', 'lastName' => 'Parker'],
+            'corrie'               => ['name' => 'Corrie', 'lastName' => 'Rye'],
+            'lynne'                => ['name' => 'Lynne', 'lastName' => 'Payton'],
+            'morty'                => ['name' => 'Morty', 'lastName' => 'Smith'],
+            self::TOURIST_RICK_KEY => ['name' => 'Rick', 'lastName' => 'Sanchez'],
         ],
     ];
 

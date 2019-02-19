@@ -138,11 +138,12 @@ class SiteManager
         $formConfig = $this->dm->getRepository(PaymentFormConfig::class)->findOneBy(['forMbSite' => true]);
         if ($formConfig === null) {
             $formConfig = new PaymentFormConfig();
-            $formConfig->setForMbSite(true);
-            $formConfig->setUseAccordion(true);
-            $formConfig->setIsFullWidth(true);
-            $formConfig->setTheme(FormConfig::THEMES[self::DEFAULT_BOOTSTRAP_THEME]);
-            $formConfig->setFrameHeight(600);
+            $formConfig
+                ->setForMbSite(true)
+                ->setUseAccordion(true)
+                ->setIsFullWidth(true)
+                ->setTheme(FormConfig::THEMES[self::DEFAULT_BOOTSTRAP_THEME])
+                ->setFrameHeight(600);
 
             $this->dm->persist($formConfig);
         }
@@ -190,12 +191,12 @@ class SiteManager
     public function createOrUpdateForHotel(Hotel $hotel = null)
     {
         $config = $this->getSiteConfig();
-        if (is_null($config)) {
+        if ($config === null) {
             $config = new SiteConfig();
             $this->dm->persist($config);
 
             $clientSite = $this->clientManager->getClientSite();
-            if (is_null($clientSite)) {
+            if ($clientSite === null) {
                 throw new \RuntimeException('There is no created client site');
             }
 
@@ -204,11 +205,17 @@ class SiteManager
             $config->setSiteDomain($siteDomain);
         }
 
-        if (!is_null($hotel)) {
+        if ($hotel !== null) {
             $config->addHotel($hotel);
         }
 
+        /** @var PaymentFormConfig $paymentForm */
+        $paymentForm = $this->fetchPaymentFormConfig();
+        $paymentForm->setHotels($config->getHotels()->toArray());
+        $this->dm->persist($paymentForm);
+
         $this->updateSiteFormConfig($config, $this->fetchFormConfig());
+
 
         return $config;
     }

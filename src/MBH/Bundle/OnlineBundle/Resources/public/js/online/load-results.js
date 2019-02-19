@@ -91,7 +91,7 @@ function onLoadResultsLoad() {
         url = url.replace('?', '&');
     }
 
-    resultsWrapper.innerHTML = '<iframe id="mbh-results-iframe" scrolling="no" frameborder="0" width="100%" height="300" src="' + configResults.results_url + url + '"></iframe>';
+    resultsWrapper.innerHTML = '<iframe id="mbh-results-iframe" title="Frame with result" scrolling="no" frameborder="0" width="100%" height="300" src="' + configResults.results_url + url + '"></iframe>';
     var resultsIframe = document.getElementById('mbh-results-iframe');
     var resize = function () {
         resultsIframe.style.height = resultsIframe.contentWindow.document.body.scrollHeight + 'px';

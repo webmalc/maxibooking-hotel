@@ -15,6 +15,7 @@ use MBH\Bundle\OnlineBundle\Exception\NotFoundConfigPaymentFormException;
 use MBH\Bundle\OnlineBundle\Form\OrderSearchType;
 use MBH\Bundle\OnlineBundle\Lib\HolderDataForRenderBtn;
 use MBH\Bundle\OnlineBundle\Lib\SearchForm;
+use MBH\Bundle\OnlineBundle\Lib\PaymentSystemHelper;
 use MBH\Bundle\OnlineBundle\Services\RenderPaymentButton;
 use MBH\Bundle\PackageBundle\Document\Order;
 use ReCaptcha\ReCaptcha;
@@ -79,45 +80,20 @@ class ApiPaymentFormController extends Controller
 
         $search = $this->container->get('mbh.online.search_order');
         $search->setConfigId($formId);
-        $search->setHotelId($request->get('hotel'));
+        $search->setSelectedHotelId($request->get('hotel'));
 
         $form = $this->createForm(OrderSearchType::class, $search);
 
         $refer = preg_match('/(.*:\/\/.*?)\//', $request->headers->get('referer'), $match);
 
-        $paymentSystems = $this->clientConfig->getPaymentSystems();
-        $onlyOneSystem = count($paymentSystems) === 1;
-        /** @var ExtraData $extra */
-        $extra = $this->get('mbh.payment_extra_data');
-        $trans = $this->get('translator');
-
-        $options = function (array $usedPaymentSystems, bool $onlyOneSystem) use ($extra, $trans): string {
-            $paymentSystems = array_map(
-                function ($systemName) use ($trans) {
-                    return $trans->trans($systemName);
-                    },
-                $extra->getPaymentSystems()
-            );
-
-            $format = '<option value="%s"' . ($onlyOneSystem ? ' selected' : '') . '>%s</option>';
-
-            $html = '';
-            foreach ($usedPaymentSystems as $paymentSystem) {
-                $html .= sprintf($format, $paymentSystem, $paymentSystems[$paymentSystem]);
-            }
-
-            return $html;
-        };
-
         return [
-            'form'              => $form->createView(),
-            'formId'            => OrderSearchType::PREFIX,
-            'paymentFormConfig' => $paymentFormConfig,
-            'referer'           => $match[1] ?? '*',
-            'paymentSystems'    => $options($paymentSystems, $onlyOneSystem),
-            'onlyOneSystem'     => $onlyOneSystem,
-            'siteConfig'        => $this->get('mbh.site_manager')->getSiteConfig(),
-            'locale'            => $this->getRequest()->getLocale(),
+            'form'                => $form->createView(),
+            'formId'              => OrderSearchType::PREFIX,
+            'paymentFormConfig'   => $paymentFormConfig,
+            'referer'             => $match[1] ?? '*',
+            'siteConfig'          => $this->get('mbh.site_manager')->getSiteConfig(),
+            'locale'              => $this->getRequest()->getLocale(),
+            'paymentSystemHelper' => new PaymentSystemHelper($this->container, $this->clientConfig, $search),
         ];
     }
 

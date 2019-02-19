@@ -1937,107 +1937,6 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
         return $this;
     }
 
-    /**
-     * @param UploaderHelper $helper
-     * @param CacheManager $cacheManager
-     * @return array
-     */
-    public function getImagesData(UploaderHelper $helper, CacheManager $cacheManager)
-    {
-        $imagesData = [];
-        /** @var Image $image */
-        foreach ($this->getImages() as $image) {
-            $imageData = ['isMain' => $image->getIsDefault()];
-            $imageData['url'] = $cacheManager->getBrowserPath($helper->asset($image, 'imageFile'), 'scaler');
-            if ($image->getWidth()) {
-                $imageData['width'] = (int)$image->getWidth();
-            }
-            if ($image->getHeight()) {
-                $imageData['height'] = (int)$image->getHeight();
-            }
-            $imagesData[] = $imageData;
-        }
-
-        return $imagesData;
-    }
-
-    /**
-     * @param bool $isFull
-     * @param UploaderHelper $uploaderHelper
-     * @param CacheManager|null $cacheManager
-     * @return array
-     */
-    public function getJsonSerialized($isFull = false, UploaderHelper $uploaderHelper= null, CacheManager $cacheManager = null)
-    {
-        $data = [
-            'id' => $this->getId(),
-            'title' => $this->getFullTitle() ?? $this->getInternationalTitle(),
-        ];
-
-        if ($isFull) {
-            $comprehensiveData = [
-                'isEnabled' => $this->getIsEnabled(),
-                'isDefault' => $this->getIsDefault(),
-                'isHostel' => $this->getIsHostel(),
-                'description' => $this->getDescription(),
-                'facilities' => $this->getFacilities()
-            ];
-            if (!is_null($uploaderHelper) && !is_null($cacheManager)) {
-                $comprehensiveData['photos'] = $this->getImagesData($uploaderHelper, $cacheManager);
-                if (!empty($this->getLogoImage())) {
-                    $comprehensiveData['logoUrl'] = $cacheManager->getBrowserPath($uploaderHelper->asset($this->getLogoImage(), 'imageFile'), 'scaler');
-                }
-            } else {
-                throw new \InvalidArgumentException('It\'s required uploader helper and current domain for serialization of the full information about the hotel!');
-            }
-
-//            if (!is_null($this->latitude)) {
-//                $comprehensiveData['latitude'] = $this->latitude;
-//            }
-//            if (!is_null($this->longitude)) {
-//                $comprehensiveData['longitude'] = $this->longitude;
-//            }
-            if (!empty($this->street)) {
-                $comprehensiveData['street'] = $this->street;
-            }
-            if (!empty($this->house)) {
-                $comprehensiveData['house'] = $this->house;
-            }
-            if (!empty($this->corpus)) {
-                $comprehensiveData['corpus'] = $this->corpus;
-            }
-            if (!empty($this->flat)) {
-                $comprehensiveData['flat'] = $this->flat;
-            }
-            if (!empty($this->zipCode)) {
-                $comprehensiveData['zipCode'] = $this->zipCode;
-            }
-            if (!empty($this->getContactInformation())) {
-                $contactsInfo = $this->getContactInformation();
-                $contactsInfoArray = [];
-                if (!empty($contactsInfo->getEmail())) {
-                    $contactsInfoArray['email'] = $contactsInfo->getEmail();
-                }
-                if (!empty($contactsInfo->getPhoneNumber())) {
-                    $contactsInfoArray['phone'] = $contactsInfo->getPhoneNumber();
-                }
-                if (!empty($contactsInfoArray)) {
-                    $comprehensiveData['contacts'] = $contactsInfoArray;
-                }
-            }
-            if (!empty($this->getMapImage())) {
-                $comprehensiveData['mapUrl'] = $cacheManager->getBrowserPath($uploaderHelper->asset($this->getMapImage(), 'imageFile'), 'scaler');
-            }
-
-            $data = array_merge($data, $comprehensiveData);
-        }
-
-        return $data;
-    }
-
-    /**
-     * @return bool
-     */
     public function isSearchActive(): bool
     {
         return (bool)$this->isSearchActive;
@@ -2049,4 +1948,5 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
 
         return $this;
     }
+
 }

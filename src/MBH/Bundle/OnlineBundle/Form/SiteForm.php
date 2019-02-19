@@ -153,13 +153,11 @@ class SiteForm extends AbstractType
             CheckboxType::class,
             [
                 'label'    => 'site_form.payment_form.label',
-                'mapped'   => false,
                 'required' => false,
-                'data'     => $siteConfig !== null && $siteConfig->getPaymentFormId() !== null,
+                'data'     => $siteConfig !== null ? $siteConfig->isUsePaymentForm() : true,
                 'help'     => $disabledSettingPaymentForm
                     ? $this->translator->trans('site_form.payment_form.help_with_disabled', ['%href%' => $url])
                     : 'site_form.payment_form.help',
-                'disabled' => $disabledSettingPaymentForm,
             ]
         );
     }

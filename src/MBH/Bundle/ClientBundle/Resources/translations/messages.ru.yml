@@ -20,6 +20,7 @@ form.clientConfigType.currency.options.gel: 'Грузинские лари'
 form.clientConfigType.currency.options.usd: Доллары
 form.clientConfigType.currency.options.inr: 'Инди́йская рупия'
 form.clientConfigType.currency.options.pln: 'Польский злотый'
+form.clientConfigType.currency.options.tbh: 'Тайский бат'
 form.clientConfigType.sms_notification: 'Смс оповещение?'
 form.clientConfigType.notice_unpaid: 'Отправлять письмо о неоплаченных бронях через?'
 form.clientConfigType.is_notice_unpaid: 'Отправлять уведомление о неоплаченной брони через указанное количество дней'
@@ -127,6 +128,8 @@ form.clientPaymentSystemType.payment_system_paypal_login: Логин
 form.documentTemplateType.hotel: Отель
 clientbundle.controller.documentTemplateController.entry_successfully_created: 'Запись успешно создана.'
 clientbundle.controller.documentTemplateController.entry_successfully_eited: 'Запись успешно отредактирована.'
+clientbundle.controller.documentTemplateController.error_generate_pdf.template: 'При генерации документа, обнаружена ошибка в шаблоне: %error_msg%.'
+clientbundle.controller.documentTemplateController.error_generate_pdf.other: 'При генерации документа, обнаружена ошибка: %error_msg%'
 clientbundle.service.mbhs.sms_not_send: 'Sms не отправлено. Ошибка:'
 form.clientConfigType.queryStat.label: 'Статистика запросов'
 form.clientConfigType.queryStat.help: 'Включить/выключить сбор статистики запросов'

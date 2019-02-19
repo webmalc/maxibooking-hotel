@@ -11,6 +11,9 @@ var ChessBoardManager = /** @class */ (function () {
             packageElement.parentElement.removeChild(packageElement);
         }
     };
+    ChessBoardManager.getPositionX = function (event) {
+        return event.type === 'mousemove' || event.type === 'mousedown' ? event.pageX : event.originalEvent.touches[0].pageX;
+    };
     ChessBoardManager.prototype.getPackageToMiddayOffset = function () {
         var config = this.getStylesConfig();
         return Math.round(config.tableCellWidth / 2) + this.arrowWidth;
@@ -104,6 +107,10 @@ var ChessBoardManager = /** @class */ (function () {
         });
     };
     ChessBoardManager.prototype.initParams = function () {
+        this._typesTypeColumn = document.getElementById('roomTypeColumn');
+        this._monthsAndDates = document.getElementById('months-and-dates');
+        this._headerTitle = document.getElementById('header-title');
+        this._chessboardTable = document.getElementById('chessboardTable');
         this.currentSizeConfigNumber = currentStyleConfigNumber;
         this.colors = colors;
         this.arrowWidth = this.getArrowWidth();
@@ -119,12 +126,11 @@ var ChessBoardManager = /** @class */ (function () {
     ChessBoardManager.prototype.initChessboardTable = function () {
         var _this = this;
         this.initParams();
-        var chessBoardContentBlock = document.getElementById('accommodation-chessBoard-content');
-        var chessboardTable = document.getElementById('chessboardTable');
-        this.setContentWidth(chessBoardContentBlock);
+        this._chessBoardContentBlock = document.getElementById('accommodation-chessBoard-content');
+        this.setContentWidth();
         $('.sidebar-toggle').click(function () {
             setTimeout(function () {
-                _this.setContentWidth(chessBoardContentBlock);
+                _this.setContentWidth();
             }, 1000);
         });
         $('.pagination-sm a').click(function (event) {
@@ -136,73 +142,93 @@ var ChessBoardManager = /** @class */ (function () {
             window.location.href = Routing.generate('change_number_of_rooms', { numberOfRooms: $numberOfRoomsSelect.val() });
         });
         if (!isMobileDevice()) {
-            var chessboardContentTopOffset_1 = $(chessBoardContentBlock).offset().top;
-            var chessboardTableTopOffset_1 = $(chessboardTable).offset().top;
+            var chessboardContentTopOffset_1 = $(this._chessBoardContentBlock).offset().top;
+            var chessboardTableTopOffset_1 = $(this._chessboardTable).offset().top;
             //Фиксирование верхнего и левого блоков таблицы
-            chessboardTable.onscroll = function () {
-                ChessBoardManager.onChessboardTableScroll(chessboardTable, chessboardContentTopOffset_1 - chessboardTableTopOffset_1);
+            this._chessboardTable.onscroll = function () {
+                _this.onChessboardTableScroll(chessboardContentTopOffset_1 - chessboardTableTopOffset_1);
             };
         }
-        var templatePackageElement = ChessBoardManager.getTemplateElement();
+        this._templatePackageElement = ChessBoardManager.getTemplateElement();
         //Создание брони
         var dateElements = $('.date, .leftRooms');
-        var $document = $(document);
-        var wrapper = $('#calendarWrapper');
+        this._$document = $(document);
+        this._wrapper = $('#calendarWrapper');
         if (canCreatePackage) {
-            var eventName = isMobileDevice() ? 'contextmenu' : 'mousedown';
-            dateElements.on(eventName, function (event) {
-                chessBoardContentBlock.style.overflow = 'hidden';
-                event.preventDefault();
-                var startXPosition = event.pageX;
-                var startLeftScroll = chessBoardContentBlock.scrollLeft;
-                var newPackage = templatePackageElement.cloneNode(true);
-                newPackage.classList.add('success');
-                var dateJqueryObject = $(event.target.parentNode);
-                var currentRoomDateElements = dateJqueryObject.parent().children();
-                var startDateNumber = currentRoomDateElements.index(dateJqueryObject);
-                var startDate = moment(_this.tableStartDate).add(startDateNumber, 'day');
-                newPackage = _this.setPackageOffset(newPackage, startDate, dateJqueryObject.parent().parent(), wrapper);
-                newPackage.id = 'newPackage' + packages.length;
-                newPackage.style.zIndex = '999';
-                newPackage.style.width = styleConfigs[_this.currentSizeConfigNumber].tableCellWidth - (_this.arrowWidth * 2) + 'px';
-                var newPackageStartXOffset = parseInt(newPackage.style.left, 10);
-                $(document).on('touchmove mousemove', function (event) {
-                    var isMouseMoveEvent = event.type === 'mousemove';
-                    var scrollOffset = chessBoardContentBlock.scrollLeft - startLeftScroll;
-                    var mouseXOffset = startXPosition - (isMouseMoveEvent ? event.pageX : event.originalEvent.touches[0].pageX);
-                    var isLeftMouseShift = mouseXOffset > 0;
-                    var packageLengthRestriction = _this.getPackageLengthRestriction(startDate, isLeftMouseShift, _this.tableStartDate, _this.tableEndDate);
-                    var griddedOffset = _this.getGriddedOffset(mouseXOffset, scrollOffset, packageLengthRestriction);
-                    var leftMouseOffset = isLeftMouseShift ? griddedOffset : 0;
-                    var packageWidth = griddedOffset - 2 * _this.arrowWidth;
-                    if (_this.isPackageLocationCorrect(newPackage)) {
-                        newPackage.classList.add('success');
-                        newPackage.classList.remove('danger');
-                        newPackage.style.backgroundColor = '';
+            if (isMobileDevice()) {
+                var doubleTap_1 = false, countDb_1 = 0;
+                var timer_1;
+                dateElements.on('touchstart', function (event) {
+                    countDb_1++;
+                    timer_1 = setTimeout(function () {
+                        if (doubleTap_1) {
+                            clearTimeout(timer_1);
+                        }
+                        countDb_1 = 0;
+                    }, 300);
+                    if (countDb_1 === 2) {
+                        doubleTap_1 = true;
+                        clearTimeout(timer_1);
+                        _this.createPackageInScreen(event);
                     }
-                    else {
-                        newPackage.classList.remove('success');
-                        newPackage.style.setProperty('background-color', _this.colors['danger_add'], 'important');
-                        newPackage.classList.add('danger');
-                    }
-                    newPackage.style.left = newPackageStartXOffset - leftMouseOffset + 'px';
-                    newPackage.style.width = packageWidth + 'px';
                 });
-                $(document).on('mouseup touchend', function () {
-                    chessBoardContentBlock.style.overflow = 'auto';
-                    $document.unbind('mousemove  mouseup touchend');
-                    if ((newPackage.style.width) && _this.isPackageLocationCorrect(newPackage) && newPackage.id) {
-                        var packageData = _this.getPackageData($(newPackage));
-                        _this.saveNewPackage(packageData);
-                    }
-                    _this.updateTable();
-                });
-                event.target.ondragstart = function () {
-                    return false;
-                };
-                wrapper.append(newPackage);
-            });
+            }
+            else {
+                dateElements.on('mousedown', function (event) { return _this.createPackageInScreen(event); });
+            }
         }
+    };
+    ChessBoardManager.prototype.createPackageInScreen = function (event) {
+        var _this = this;
+        event.preventDefault();
+        var startXPosition = ChessBoardManager.getPositionX(event);
+        var startLeftScroll = this._chessBoardContentBlock.scrollLeft;
+        var newPackage = this._templatePackageElement.cloneNode(true);
+        newPackage.classList.add('success');
+        var dateJqueryObject = $(event.target.parentNode);
+        var currentRoomDateElements = dateJqueryObject.parent().children();
+        var startDateNumber = currentRoomDateElements.index(dateJqueryObject);
+        var startDate = moment(this.tableStartDate).add(startDateNumber, 'day');
+        newPackage = this.setPackageOffset(newPackage, startDate, dateJqueryObject.parent().parent(), this._wrapper);
+        newPackage.id = 'newPackage' + Object.keys(packages).length;
+        newPackage.style.zIndex = '999';
+        newPackage.style.width = styleConfigs[this.currentSizeConfigNumber].tableCellWidth - (this.arrowWidth * 2) + 'px';
+        var newPackageStartXOffset = parseInt(newPackage.style.left, 10);
+        $(document).on('touchmove mousemove', function (event) {
+            var eventPageX = ChessBoardManager.getPositionX(event);
+            var scrollOffset = _this._chessBoardContentBlock.scrollLeft - startLeftScroll;
+            var mouseXOffset = startXPosition - eventPageX;
+            var isLeftMouseShift = mouseXOffset > 0;
+            var packageLengthRestriction = _this.getPackageLengthRestriction(startDate, isLeftMouseShift, _this.tableStartDate, _this.tableEndDate);
+            var griddedOffset = _this.getGriddedOffset(mouseXOffset, scrollOffset, packageLengthRestriction);
+            var leftMouseOffset = isLeftMouseShift ? griddedOffset : 0;
+            var packageWidth = griddedOffset - 2 * _this.arrowWidth;
+            if (_this.isPackageLocationCorrect(newPackage)) {
+                newPackage.classList.add('success');
+                newPackage.classList.remove('danger');
+                newPackage.style.backgroundColor = '';
+            }
+            else {
+                newPackage.classList.remove('success');
+                newPackage.style.setProperty('background-color', _this.colors['danger_add'], 'important');
+                newPackage.classList.add('danger');
+            }
+            newPackage.style.left = newPackageStartXOffset - leftMouseOffset + 'px';
+            newPackage.style.width = packageWidth + 'px';
+        });
+        $(document).on('mouseup touchend', function () {
+            // chessBoardContentBlock.style.overflow = tempStyle;
+            _this._$document.unbind('mousemove mouseup touchend');
+            if ((newPackage.style.width) && _this.isPackageLocationCorrect(newPackage) && newPackage.id) {
+                var packageData = _this.getPackageData($(newPackage));
+                _this.saveNewPackage(packageData);
+            }
+            _this.updateTable();
+        });
+        event.target.ondragstart = function () {
+            return false;
+        };
+        this._wrapper.append(newPackage);
     };
     ChessBoardManager.prototype.changeScale = function (sliderValue) {
         if (this.currentSizeConfigNumber !== sliderValue && sliderValue >= 0 && sliderValue <= maxSliderSize) {
@@ -233,14 +259,14 @@ var ChessBoardManager = /** @class */ (function () {
         }
         document.cookie = updatedCookie;
     };
-    ChessBoardManager.prototype.setContentWidth = function (chessBoardContentBlock) {
+    ChessBoardManager.prototype.setContentWidth = function () {
         var contentWidth = parseInt($('#months-and-dates').css('width'), 10)
             + styleConfigs[this.currentSizeConfigNumber].headerWidth + ChessBoardManager.SCROLL_BAR_WIDTH;
-        if (parseInt($(chessBoardContentBlock).css('width'), 10) > contentWidth) {
-            chessBoardContentBlock.style.width = contentWidth + 'px';
+        if (parseInt($(this._chessBoardContentBlock).css('width'), 10) > contentWidth) {
+            this._chessBoardContentBlock.style.width = contentWidth + 'px';
         }
         else {
-            chessBoardContentBlock.style.width = 'auto';
+            this._chessBoardContentBlock.style.width = 'auto';
         }
     };
     ChessBoardManager.prototype.saveNewPackage = function (packageData) {
@@ -310,19 +336,13 @@ var ChessBoardManager = /** @class */ (function () {
         griddedOffset = griddedOffset > packageLengthRestriction ? packageLengthRestriction : griddedOffset;
         return griddedOffset;
     };
-    ChessBoardManager.onChessboardTableScroll = function (chessboardTable, chessboardContentTopOffset) {
+    ChessBoardManager.prototype.onChessboardTableScroll = function (chessboardContentTopOffset) {
         'use strict';
-        var types = document.getElementById('roomTypeColumn');
-        types.style.left = chessboardTable.scrollLeft + 'px';
-        var monthsAndDates = document.getElementById('months-and-dates');
-        var scrollTop = chessboardTable.scrollTop > chessboardContentTopOffset ? chessboardTable.scrollTop - chessboardContentTopOffset : 0;
-        console.log(chessboardTable.scrollTop);
-        console.log(chessboardContentTopOffset);
-        console.log(scrollTop);
-        monthsAndDates.style.top = scrollTop + 'px';
-        var headerTitle = document.getElementById('header-title');
-        headerTitle.style.top = scrollTop + 'px';
-        headerTitle.style.left = chessboardTable.scrollLeft + 'px';
+        this._typesTypeColumn.style.left = this._chessboardTable.scrollLeft + 'px';
+        var scrollTop = this._chessboardTable.scrollTop > chessboardContentTopOffset ? this._chessboardTable.scrollTop - chessboardContentTopOffset : 0;
+        this._monthsAndDates.style.top = scrollTop + 'px';
+        this._headerTitle.style.top = scrollTop + 'px';
+        this._headerTitle.style.left = this._chessboardTable.scrollLeft + 'px';
     };
     ChessBoardManager.prototype.getPackageLengthRestriction = function (startDate, isLeftMouseShift, tableStartDate, tableEndDate) {
         'use strict';
@@ -1154,7 +1174,7 @@ var ChessBoardManager = /** @class */ (function () {
         var _this = this;
         var dateElement = $dateElements.filter(function (index, cell) {
             var cellOffset = $(cell).offset().left;
-            var difference = cellOffset - leftOffset;
+            var difference = Math.round(cellOffset - leftOffset);
             return difference <= (_this.arrowWidth * 2) && difference >= 0;
         });
         var dateNumber = $dateElements.index(dateElement);

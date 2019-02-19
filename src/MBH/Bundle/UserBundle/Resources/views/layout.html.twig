@@ -3,6 +3,13 @@
 {% block scripts %}
     {{ parent() }}
 
+    <script type="application/javascript">
+        var namePaymentBtn = {
+            bill: '{{ 'view.pay_order_modal.open_bill'|trans }}',
+            other: 'Выбрать'
+        }
+    </script>
+
     {% javascripts filter='uglifyjs2''@MBHUserBundle/Resources/public/js/*'%}
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}

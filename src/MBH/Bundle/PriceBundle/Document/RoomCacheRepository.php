@@ -45,7 +45,7 @@ class RoomCacheRepository extends DocumentRepository
     {
         $cachesQb =  $this
             ->createQueryBuilder()
-            ->select('hotel.id', 'roomType.id', 'tariff.id', 'date', 'totalRooms')
+            ->select('hotel.id', 'roomType.id', 'tariff.id', 'date', 'totalRooms', 'leftRooms')
             ->field('date')->gte($begin)->lte($end)
             ->sort('date')->sort('hotel.id')->sort('roomType.id')
             ->hydrate(false);

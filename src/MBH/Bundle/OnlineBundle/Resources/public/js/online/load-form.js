@@ -51,6 +51,7 @@ OnLoadFormLoad.prototype.createIframeWithCalendar = function() {
     calendarFrame.setAttribute('width', 310);
     calendarFrame.setAttribute('height', 270);
     calendarFrame.setAttribute('src', config.calendar_url);
+    calendarFrame.setAttribute('title', 'Support frame with calendar for search form.');
 
     document.body.appendChild(calendarFrame);
 
@@ -158,6 +159,7 @@ OnLoadFormLoad.prototype.createIframeWithForm = function (locale) {
     this.formIframe.frameBorder = '0';
     this.formIframe.src = fullUrl;
     this.formIframe.hidden = true;
+    this.formIframe.title = 'Frame with search form.';
 };
 
 OnLoadFormLoad.prototype.exec = function (locale) {

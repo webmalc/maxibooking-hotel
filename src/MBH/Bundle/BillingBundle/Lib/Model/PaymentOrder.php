@@ -171,7 +171,7 @@ class PaymentOrder
      * @param mixed $paid_date
      * @return PaymentOrder
      */
-    public function setPaidDate($paid_date)
+    public function setPaid_date($paid_date)
     {
         $this->paid_date = $paid_date;
 

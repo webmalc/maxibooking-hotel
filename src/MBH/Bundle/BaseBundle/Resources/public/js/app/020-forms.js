@@ -344,7 +344,7 @@ var docReadyForms = function () {
         radioClass: 'iradio_minimal-blue'
     });
 
-    bootstrapSwitchConfig.size = 'mini'
+    bootstrapSwitchConfig.size = 'mini';
     $('.checkbox-mini').bootstrapSwitch(bootstrapSwitchConfig);
 
     //Select2 configuration
@@ -378,7 +378,7 @@ var docReadyForms = function () {
     var optionForDatepicker = {
         common:function () {
             return {
-                language: "ru",
+                language: mbh.language !== undefined ? mbh.language : 'us',
                 todayHighlight: true,
                 autoclose: true,
                 format: 'dd.mm.yyyy',

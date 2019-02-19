@@ -60,7 +60,7 @@ class WarningsCompiler
                     $cachePeriods = $this->periodsCompiler
                         ->getPeriodsByFieldNames($periodBegin, $periodsEnd, $caches, [$comparedField], 'd.m.Y', true);
                     foreach ($cachePeriods as $periodNumber => $cachePeriodData) {
-                        if ((is_null($cachePeriodData['data']) || $cachePeriodData['data'][$comparedField] === 0)
+                        if ((is_null($cachePeriodData['data']) || $cachePeriodData['data'][$comparedField] <= 0)
                             && ($withLastPeriod || $periodNumber !== (count($cachePeriods) - 1))) {
                             if (!isset($periodsWithoutPrice[$hotelId][$roomTypeId][$tariffId])) {
                                 $periodsWithoutPrice[$hotelId][$roomTypeId][$tariffId] = [];

@@ -120,6 +120,12 @@ class SiteConfig extends Base
     private $paymentFormId;
 
     /**
+     * @var bool
+     * @ODM\Field(type="boolean")
+     */
+    private $usePaymentForm = true;
+
+    /**
      * @ODM\EmbedMany(targetDocument="MBH\Bundle\OnlineBundle\Document\SocialNetworkingService", strategy="set")
      * strategy="set" для хранения как ассоциативный массив
      * @var ArrayCollection|SocialNetworkingService[]
@@ -311,6 +317,24 @@ class SiteConfig extends Base
     public function setPaymentFormId(?string $paymentFormId): void
     {
         $this->paymentFormId = $paymentFormId;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUsePaymentForm(): bool
+    {
+        return $this->usePaymentForm;
+    }
+
+    /**
+     * @param bool $usePaymentForm
+     */
+    public function setUsePaymentForm(bool $usePaymentForm): self
+    {
+        $this->usePaymentForm = $usePaymentForm;
+
+        return $this;
     }
 
     /**

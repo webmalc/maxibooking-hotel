@@ -33,11 +33,21 @@ class ChessBoardManager {
     private distanceByHovering = 4;
     private arrowWidth;
 
+    private _typesTypeColumn: HTMLElement;
+    private _monthsAndDates: HTMLElement;
+    private _headerTitle: HTMLElement;
+    private _chessboardTable: HTMLElement;
+
     public static deletePackageElement(packageId) {
         let packageElement = document.getElementById(packageId);
         if (packageElement) {
             packageElement.parentElement.removeChild(packageElement);
         }
+    }
+
+    private static getPositionX(event): number
+    {
+        return event.type === 'mousemove' || event.type === 'mousedown' ? event.pageX : event.originalEvent.touches[0].pageX;
     }
 
     private getPackageToMiddayOffset() {
@@ -146,6 +156,11 @@ class ChessBoardManager {
     }
 
     private initParams() {
+        this._typesTypeColumn = document.getElementById('roomTypeColumn');
+        this._monthsAndDates = document.getElementById('months-and-dates');
+        this._headerTitle = document.getElementById('header-title');
+        this._chessboardTable = document.getElementById('chessboardTable');
+
         this.currentSizeConfigNumber = currentStyleConfigNumber;
         this.colors = colors;
         this.arrowWidth = this.getArrowWidth();
@@ -159,15 +174,21 @@ class ChessBoardManager {
         this.updateTable();
     }
 
+    /** TODO */
+    private _chessBoardContentBlock;
+    private _$document;
+    private _wrapper;
+    private _templatePackageElement;
+
     private initChessboardTable() {
         this.initParams();
-        const chessBoardContentBlock = document.getElementById('accommodation-chessBoard-content');
-        const chessboardTable = document.getElementById('chessboardTable');
-        this.setContentWidth(chessBoardContentBlock);
+        this._chessBoardContentBlock = document.getElementById('accommodation-chessBoard-content');
+
+        this.setContentWidth();
 
         $('.sidebar-toggle').click(() => {
             setTimeout(() => {
-                this.setContentWidth(chessBoardContentBlock);
+                this.setContentWidth();
             }, 1000)
         });
 
@@ -182,76 +203,101 @@ class ChessBoardManager {
         });
 
         if (!isMobileDevice()) {
-            const chessboardContentTopOffset = $(chessBoardContentBlock).offset().top;
-            const chessboardTableTopOffset = $(chessboardTable).offset().top;
+            const chessboardContentTopOffset = $(this._chessBoardContentBlock).offset().top;
+            const chessboardTableTopOffset = $(this._chessboardTable).offset().top;
             //Фиксирование верхнего и левого блоков таблицы
-            chessboardTable.onscroll = function () {
-                ChessBoardManager.onChessboardTableScroll(chessboardTable, chessboardContentTopOffset - chessboardTableTopOffset);
+            this._chessboardTable.onscroll = () => {
+                this.onChessboardTableScroll(chessboardContentTopOffset - chessboardTableTopOffset);
             };
         }
 
-        let templatePackageElement = ChessBoardManager.getTemplateElement();
+        this._templatePackageElement = ChessBoardManager.getTemplateElement();
         //Создание брони
         let dateElements = $('.date, .leftRooms');
-        const $document = $(document);
-        let wrapper = $('#calendarWrapper');
+        this._$document = $(document);
+        this._wrapper = $('#calendarWrapper');
         if (canCreatePackage) {
-            const eventName = isMobileDevice() ? 'contextmenu' : 'mousedown';
-            dateElements.on(eventName, (event) => {
-                chessBoardContentBlock.style.overflow = 'hidden';
-                event.preventDefault();
-                const startXPosition = event.pageX;
-                const startLeftScroll = chessBoardContentBlock.scrollLeft;
-                let newPackage = <HTMLElement>templatePackageElement.cloneNode(true);
-                newPackage.classList.add('success');
+            if (isMobileDevice()) {
+                let doubleTap = false,
+                    countDb = 0;
+                let timer;
 
-                const dateJqueryObject = $(event.target.parentNode);
-                const currentRoomDateElements = dateJqueryObject.parent().children();
-                const startDateNumber = currentRoomDateElements.index(dateJqueryObject);
-                const startDate = moment(this.tableStartDate).add(startDateNumber, 'day');
-                newPackage = this.setPackageOffset(newPackage, startDate, dateJqueryObject.parent().parent(), wrapper);
-                newPackage.id = 'newPackage' + packages.length;
-                newPackage.style.zIndex = '999';
-                newPackage.style.width = styleConfigs[this.currentSizeConfigNumber].tableCellWidth - (this.arrowWidth * 2) + 'px';
-                const newPackageStartXOffset = parseInt(newPackage.style.left, 10);
+                dateElements.on('touchstart', event => {
+                    countDb++;
 
-                $(document).on('touchmove mousemove', (event) => {
-                    const isMouseMoveEvent = event.type === 'mousemove';
-                    const scrollOffset = chessBoardContentBlock.scrollLeft - startLeftScroll;
-                    const mouseXOffset = startXPosition - (isMouseMoveEvent ? event.pageX : event.originalEvent.touches[0].pageX);
-                    const isLeftMouseShift = mouseXOffset > 0;
-                    const packageLengthRestriction = this.getPackageLengthRestriction(startDate, isLeftMouseShift, this.tableStartDate, this.tableEndDate);
-                    const griddedOffset = this.getGriddedOffset(mouseXOffset, scrollOffset, packageLengthRestriction);
-                    const leftMouseOffset = isLeftMouseShift ? griddedOffset : 0;
-                    const packageWidth = griddedOffset - 2 * this.arrowWidth;
+                    timer = setTimeout(() => {
+                        if (doubleTap) {
+                            clearTimeout(timer);
+                        }
+                        countDb = 0;
+                    }, 300);
 
-                    if (this.isPackageLocationCorrect(newPackage)) {
-                        newPackage.classList.add('success');
-                        newPackage.classList.remove('danger');
-                        newPackage.style.backgroundColor = '';
-                    } else {
-                        newPackage.classList.remove('success');
-                        newPackage.style.setProperty('background-color', this.colors['danger_add'], 'important');
-                        newPackage.classList.add('danger');
+                    if (countDb === 2 ) {
+                        doubleTap = true;
+                        clearTimeout(timer);
+                        this.createPackageInScreen(event);
                     }
-                    newPackage.style.left = newPackageStartXOffset - leftMouseOffset + 'px';
-                    newPackage.style.width = packageWidth + 'px';
                 });
-                $(document).on('mouseup touchend', () => {
-                    chessBoardContentBlock.style.overflow = 'auto';
-                    $document.unbind('mousemove  mouseup touchend');
-                    if ((newPackage.style.width) && this.isPackageLocationCorrect(newPackage) && newPackage.id) {
-                        const packageData = this.getPackageData($(newPackage));
-                        this.saveNewPackage(packageData);
-                    }
-                    this.updateTable();
-                });
-                event.target.ondragstart = function () {
-                    return false;
-                };
-                wrapper.append(newPackage);
-            });
+
+            } else {
+                dateElements.on('mousedown', event => this.createPackageInScreen(event));
+            }
         }
+    }
+
+    private createPackageInScreen(event) {
+        event.preventDefault();
+        const startXPosition = ChessBoardManager.getPositionX(event);
+        const startLeftScroll = this._chessBoardContentBlock.scrollLeft;
+        let newPackage = <HTMLElement>this._templatePackageElement.cloneNode(true);
+
+        newPackage.classList.add('success');
+
+        const dateJqueryObject = $(event.target.parentNode);
+        const currentRoomDateElements = dateJqueryObject.parent().children();
+        const startDateNumber = currentRoomDateElements.index(dateJqueryObject);
+        const startDate = moment(this.tableStartDate).add(startDateNumber, 'day');
+        newPackage = this.setPackageOffset(newPackage, startDate, dateJqueryObject.parent().parent(), this._wrapper);
+        newPackage.id = 'newPackage' + Object.keys(packages).length;
+        newPackage.style.zIndex = '999';
+        newPackage.style.width = styleConfigs[this.currentSizeConfigNumber].tableCellWidth - (this.arrowWidth * 2) + 'px';
+        const newPackageStartXOffset = parseInt(newPackage.style.left, 10);
+        $(document).on('touchmove mousemove', (event) => {
+            const eventPageX = ChessBoardManager.getPositionX(event);
+            const scrollOffset = this._chessBoardContentBlock.scrollLeft - startLeftScroll;
+            const mouseXOffset = startXPosition - eventPageX;
+
+            const isLeftMouseShift = mouseXOffset > 0;
+            const packageLengthRestriction = this.getPackageLengthRestriction(startDate, isLeftMouseShift, this.tableStartDate, this.tableEndDate);
+            const griddedOffset = this.getGriddedOffset(mouseXOffset, scrollOffset, packageLengthRestriction);
+            const leftMouseOffset = isLeftMouseShift ? griddedOffset : 0;
+            const packageWidth = griddedOffset - 2 * this.arrowWidth;
+
+            if (this.isPackageLocationCorrect(newPackage)) {
+                newPackage.classList.add('success');
+                newPackage.classList.remove('danger');
+                newPackage.style.backgroundColor = '';
+            } else {
+                newPackage.classList.remove('success');
+                newPackage.style.setProperty('background-color', this.colors['danger_add'], 'important');
+                newPackage.classList.add('danger');
+            }
+            newPackage.style.left = newPackageStartXOffset - leftMouseOffset + 'px';
+            newPackage.style.width = packageWidth + 'px';
+        });
+        $(document).on('mouseup touchend', () => {
+            // chessBoardContentBlock.style.overflow = tempStyle;
+            this._$document.unbind('mousemove mouseup touchend');
+            if ((newPackage.style.width) && this.isPackageLocationCorrect(newPackage) && newPackage.id) {
+                const packageData = this.getPackageData($(newPackage));
+                this.saveNewPackage(packageData);
+            }
+            this.updateTable();
+        });
+        event.target.ondragstart = function () {
+            return false;
+        };
+        this._wrapper.append(newPackage);
     }
 
     private changeScale(sliderValue) {
@@ -288,14 +334,14 @@ class ChessBoardManager {
         document.cookie = updatedCookie;
     }
 
-    protected setContentWidth(chessBoardContentBlock) {
+    protected setContentWidth() {
         let contentWidth = parseInt($('#months-and-dates').css('width'), 10)
             + styleConfigs[this.currentSizeConfigNumber].headerWidth + ChessBoardManager.SCROLL_BAR_WIDTH;
 
-        if (parseInt($(chessBoardContentBlock).css('width'), 10) > contentWidth) {
-            chessBoardContentBlock.style.width = contentWidth + 'px';
+        if (parseInt($(this._chessBoardContentBlock).css('width'), 10) > contentWidth) {
+            this._chessBoardContentBlock.style.width = contentWidth + 'px';
         } else {
-            chessBoardContentBlock.style.width = 'auto';
+            this._chessBoardContentBlock.style.width = 'auto';
         }
     }
 
@@ -378,21 +424,15 @@ class ChessBoardManager {
         return griddedOffset;
     }
 
-    protected static onChessboardTableScroll(chessboardTable, chessboardContentTopOffset) {
+    protected onChessboardTableScroll(chessboardContentTopOffset) {
         'use strict';
-        let types = document.getElementById('roomTypeColumn');
-        types.style.left = chessboardTable.scrollLeft + 'px';
+        this._typesTypeColumn.style.left = this._chessboardTable.scrollLeft + 'px';
 
-        let monthsAndDates = document.getElementById('months-and-dates');
-        const scrollTop = chessboardTable.scrollTop > chessboardContentTopOffset ? chessboardTable.scrollTop - chessboardContentTopOffset : 0;
-        console.log(chessboardTable.scrollTop );
-        console.log(chessboardContentTopOffset);
-        console.log(scrollTop);
-        monthsAndDates.style.top = scrollTop + 'px';
+        const scrollTop = this._chessboardTable.scrollTop > chessboardContentTopOffset ? this._chessboardTable.scrollTop - chessboardContentTopOffset : 0;
+        this._monthsAndDates.style.top = scrollTop + 'px';
 
-        let headerTitle = document.getElementById('header-title');
-        headerTitle.style.top = scrollTop + 'px';
-        headerTitle.style.left = chessboardTable.scrollLeft + 'px';
+        this._headerTitle.style.top = scrollTop + 'px';
+        this._headerTitle.style.left = this._chessboardTable.scrollLeft + 'px';
     }
 
     protected getPackageLengthRestriction(startDate, isLeftMouseShift, tableStartDate, tableEndDate) {
@@ -1299,10 +1339,10 @@ class ChessBoardManager {
             || (firstIntOffset === secondIntOffset - 1);
     }
 
-    private getDateStringByLeftOffset($dateElements, leftOffset) {
+    private getDateStringByLeftOffset($dateElements, leftOffset): string {
         let dateElement = $dateElements.filter((index, cell) => {
             let cellOffset = $(cell).offset().left;
-            const difference = cellOffset - leftOffset;
+            const difference = Math.round(cellOffset - leftOffset);
 
             return difference <= (this.arrowWidth * 2) && difference >= 0;
         });

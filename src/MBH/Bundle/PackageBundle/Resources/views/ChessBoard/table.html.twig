@@ -259,7 +259,6 @@
     </div>
     <!---------------------------- ROOM TYPES ------------------------->
     <div id="roomTypeColumn">
-        {% set titleLength = ((headerWidth / titleSubFontSize) * 1.3)|round(1, 'floor') %}
         {% set withoutAccommodationText = 'chessboard_manager.without_accommodation.tile.text'|trans %}
         {% for roomTypeId, roomTypeData in roomTypesData %}
             {% if roomTypeData['rooms']|length > 0 %}
@@ -268,53 +267,39 @@
                         <li class="tile tile-not-selected tile-free both not-standard-tile"
                             style="width:{{ headerWidth - 1 }}px; background-color: white;">
                             <div class="title">
-                                <strong {% if not roomTypeData.isEnabled %} class="disabled-room-type"{% endif %}
-                                        {% if roomTypeData.name|length > titleLength %} data-html="true" data-toggle="tooltip" data-container="body" data-placement="top" title="{{ roomTypeData.name }}" {% endif %}
-                                        class="roomType-text">
-
-                                    <i class="fa fa-bed"></i> {{ roomTypeData.name[0:titleLength] }}</strong>
+                                <i class="fa fa-bed"></i>
+                                <strong class="roomType-text{{ roomTypeData.isEnabled ? '' : ' disabled-room-type' }}"
+                                        title="{{ roomTypeData.name }}">{{ roomTypeData.name }}</strong>
                             </div>
                         </li>
                         <li class="tile tile-not-selected tile-free both not-standard-tile"
                             style="width:{{ headerWidth }}px;">
-                            <div class="title-sub">
-                                {% set withoutAccommodationText = 'chessboard_manager.without_accommodation.tile.text'|trans %}
-                                <div {% if withoutAccommodationText|length > titleLength %} data-html="true" data-toggle="tooltip" data-container="body" data-placement="top" title="{{ withoutAccommodationText }}" {% endif %}>
-                                    {{ withoutAccommodationText[0:titleLength] }}
-                                </div>
+                            <div class="title-sub" title="{{ withoutAccommodationText }}">
+                                <span>{{ withoutAccommodationText }}</span>
                             </div>
                         </li>
                         {% for key, roomData in roomTypeData['rooms'] %}
                             <li class="tile tile-not-selected tile-free both not-standard-tile"
                                 style="width:{{ headerWidth }}px;">
-                                <div class="title-sub">
-                                    {% set toolTip = '' %}
-                                    {% if roomData.room.housing %}
-                                        {% set toolTip = 'chessboard.index.housing'|trans ~ ' "' ~ roomData.room.housing.name ~'"' %}
-                                    {% endif %}
-                                    {% if roomData.room.floor %}
-                                        {% set floorText = "chessboard.index.floor"|trans ~ " " ~ roomData.room.floor %}
-                                        {% if toolTip is empty %}
-                                            {% set toolTip = floorText %}
-                                        {% else %}
-                                            {% set toolTip = toolTip ~ '<br>' ~ floorText %}
-                                        {% endif %}
-                                    {% endif %}
-
-                                    <a {% if toolTip != '' %} data-html="true" data-toggle="tooltip" data-container="body" data-placement="top" title="{{ toolTip }}" {% endif %}>{{ roomData.name[0:20] }}</a>
-
-                                    <div class="text-right" style="height: {{ tileFontSize }}px;">
-                                        {% if roomData.statuses is iterable and roomData.statuses is not empty %}
+                                {% set toolTip = roomData.name %}
+                                {% if roomData.room.housing %}
+                                    {% set toolTip = toolTip ~ ', ' ~ 'chessboard.index.housing'|trans ~ ' "' ~ roomData.room.housing.name ~'"' %}
+                                {% endif %}
+                                {% if roomData.room.floor %}
+                                    {% set toolTip = toolTip ~ ', ' ~ "chessboard.index.floor"|trans ~ " " ~ roomData.room.floor %}
+                                {% endif %}
+                                <div class="title-sub" title="{{ toolTip }}">
+                                    <span>{{ roomData.name }}</span>
+                                    {% if roomData.statuses is iterable and roomData.statuses is not empty %}
+                                        <div class="room-status">
                                             {% for status in roomData.statuses %}
                                                 {% if status.code in roomStatusIcons|keys %}
-                                                    <i style="position: relative; bottom: 10px; font-size: {{ tileFontSize }}px;"
-                                                       data-container="body"
-                                                       class=" fa mbf-{{ roomStatusIcons[status.code] }}"
-                                                       title="{{ status }}" data-toggle="tooltip"></i>
+                                                    <i class=" fa mbf-{{ roomStatusIcons[status.code] }}"
+                                                       title="{{ status }}"></i>
                                                 {% endif %}
                                             {% endfor %}
-                                        {% endif %}
-                                    </div>
+                                        </div>
+                                    {% endif %}
                                 </div>
                             </li>
                         {% endfor %}

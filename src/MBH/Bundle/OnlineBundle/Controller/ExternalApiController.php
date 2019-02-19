@@ -7,6 +7,8 @@ use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
+use MBH\Bundle\OnlineBundle\Lib\Site\HotelDataManager;
+use MBH\Bundle\OnlineBundle\Lib\Site\RoomTypeDataManager;
 use MBH\Bundle\OnlineBundle\Services\ApiHandler;
 use MBH\Bundle\OnlineBundle\Services\ApiResponseCompiler;
 use MBH\Bundle\PackageBundle\Document\Order;
@@ -105,6 +107,12 @@ class ExternalApiController extends BaseController
         if ($responseCompiler->isSuccessful()) {
             $responseData = [];
             /** @var RoomType $roomType */
+
+            $roomTypeDataManage = new RoomTypeDataManager(
+                $this->get('vich_uploader.templating.helper.uploader_helper'),
+                $this->get('liip_imagine.cache.manager')
+            );
+
             foreach ($roomTypes as $roomType) {
                 if (is_null($formConfig)
                     || ($formConfig->getHotels()->contains($roomType->getHotel())
@@ -116,10 +124,8 @@ class ExternalApiController extends BaseController
                         $roomType->setLocale($request->getLocale());
                         $this->dm->refresh($roomType);
                     }
-                    $responseData[] = $roomType->getJsonSerialized($isFull,
-                        $this->get('vich_uploader.templating.helper.uploader_helper'),
-                        $this->get('liip_imagine.cache.manager')
-                    );
+                    $roomTypeDataManage->setRoomType($roomType);
+                    $responseData[] = $roomTypeDataManage->getJsonSerialized($isFull);
                 }
             }
             $responseCompiler->setData($responseData);
@@ -235,11 +241,13 @@ class ExternalApiController extends BaseController
                     $this->dm->refresh($hotel);
                 }
 
-                $hotelData = $hotel->getJsonSerialized(
-                    $isFull,
+                $mangerHotelData = new HotelDataManager(
+                    $hotel,
                     $this->get('vich_uploader.templating.helper.uploader_helper'),
                     $this->get('liip_imagine.cache.manager')
                 );
+
+                $hotelData = $mangerHotelData->getJsonSerialized($isFull);
                 if ($isFull && $hotel->getCityId()) {
                     $hotelData['city'] = $this->get('mbh.billing.api')->getCityById($hotel->getCityId())->getName();
                 }

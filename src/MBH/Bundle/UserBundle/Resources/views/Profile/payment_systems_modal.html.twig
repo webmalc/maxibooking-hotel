@@ -7,8 +7,9 @@
                 </button>
                 <h4 class="modal-title text-center">{{ 'view.payment_systems_modal.header_title'|trans }}</h4>
             </div>
-            <div class="modal-body" id="payments-list-modal-body">
-                <div class="panel-body">
+            <div class="modal-body">
+                <div id="waiting-spinner-payments-list-modal"></div>
+                <div class="panel-body" id="payments-list-modal-body">
                     {% if errors is defined %}
                         <div style="background-color: #dd4b39 !important; color: white" class="alert alert-danger"><i
                                     class="fa fa-exclamation-circle"></i>&nbsp;
@@ -32,10 +33,6 @@
 
                         <br>
                         <button class="btn btn-primary" id="select-payment-system-button">Выбрать</button>
-                        <button class="btn btn-primary" id="download-bill-button">
-                            {{ 'view.pay_order_modal.open_bill'|trans }}
-                        </button>
-                        <input type="hidden" id="bill-content">
                     {% endif %}
                 </div>
             </div>

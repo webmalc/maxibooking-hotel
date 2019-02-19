@@ -40,11 +40,11 @@ class PaymentFormSubscriber implements EventSubscriber
         $entity = $args->getDocument();
 
         if ($entity instanceof PaymentFormConfig) {
-            $this->remoteIdFromSiteConfig($entity, $args);
+            $this->removeIdFromSiteConfig($entity, $args);
         }
     }
 
-    private function remoteIdFromSiteConfig(PaymentFormConfig $formConfig, LifecycleEventArgs $args): void
+    private function removeIdFromSiteConfig(PaymentFormConfig $formConfig, LifecycleEventArgs $args): void
     {
         if (!$formConfig->isForMbSite()) {
             return;

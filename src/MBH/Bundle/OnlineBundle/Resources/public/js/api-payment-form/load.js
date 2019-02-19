@@ -1,16 +1,16 @@
 MbhIframe.prototype.addFormPayment = function(data) {
-    var html = '<form id="' + this.idFormPayment + '" method="post" action="' + this.actionPayment + '" class="panel-body">' +
+    var html = '<form id="' + this._idFormPayment + '" method="post" action="' + this._actionPayment + '" class="panel-body">' +
     '<div class="form-group form-group-sm"> ' +
-        '<label for="total" class="col-form-label col-form-label-sm">' + this.form.label + '</label>' +
+        '<label for="total" class="col-form-label col-form-label-sm">' + this._form.label + '</label>' +
         '<div class="form-field">' +
         '<input type="number" class="form-control input-sm" name="total" min="1" step="0.01" max="' + data.total + '" value="' + data.total + '">' +
         '</div></div>' +
         '<input type="hidden" name="orderId" value="' + data.orderId + '">' +
-        '<div class="form-group"' + (this.onlyOneSystem ? ' style="display: none;"' : '') + '>' +
-        '<select class="form-control input-sm" name="paymentSystemName">' + this.form.options + '</select> ' +
+        '<div class="form-group"' + (this._onlyOneSystem ? ' style="display: none;"' : '') + '>' +
+        '<select class="form-control input-sm" name="paymentSystemName">' + this._form.options + '</select> ' +
         '</div>' +
         '<div class="form-group">' +
-        '<input type="submit" value="' + this.form.submitBtn + '" class="btn btn-success btn-block">' +
+        '<input type="submit" value="' + this._form.submitBtn + '" class="btn btn-success btn-block">' +
         '</div>';
     html += '</form>';
 
@@ -35,7 +35,7 @@ MbhIframe.prototype.clearDiv = function(id) {
 };
 
 MbhIframe.prototype.accordion = function() {
-    if (this.useAccordion === true) {
+    if (this._useAccordion === true) {
         this.accordionFunc()
     }
 };
@@ -70,21 +70,26 @@ window.addEventListener('load', function(ev) {
         e.preventDefault();
         mbhIframe.clearDiv(mbhIframe.idDivResultSearch);
         mbhIframe.clearDiv('payment-btn');
-        $.post(this.action, $(this).serialize())
-        .done(function(data) {
-            if (typeof data.error !== 'undefined') {
-                mbhIframe.updateResultDiv('danger', data.error);
-            } else {
-                if (data.needIsPaid) {
-                    mbhIframe.updateResultDiv('info', mbhIframe.addFormPayment(data.data));
+        if (mbhIframe.textWithoutPaymentSystem === '') {
+            $.post(this.action, $(this).serialize())
+            .done(function(data) {
+                if (typeof data.error !== 'undefined') {
+                    mbhIframe.updateResultDiv('danger', data.error);
                 } else {
-                    mbhIframe.updateResultDiv('success', data.data);
+                    if (data.needIsPaid) {
+                        mbhIframe.updateResultDiv('info', mbhIframe.addFormPayment(data.data));
+                    } else {
+                        mbhIframe.updateResultDiv('success', data.data);
+                    }
                 }
-            }
+                document.dispatchEvent(new CustomEvent('mbh-loaded-result-search'));
+            }).error(function(error) {
+                console.error(error);
+            });
+        } else {
+            mbhIframe.updateResultDiv('warning', mbhIframe.textWithoutPaymentSystem);
             document.dispatchEvent(new CustomEvent('mbh-loaded-result-search'));
-        }).error(function(error) {
-            console.error(error);
-        });
+        }
     });
 
     formResult.addEventListener('submit', function(e) {
@@ -103,8 +108,6 @@ window.addEventListener('load', function(ev) {
             console.error(error);
         });
     });
-
-
 
     mbhIframe.accordion();
 });

@@ -67,12 +67,12 @@ class OrderSearchType extends AbstractType
             }
 
             $builder->add(
-                'hotelId',
+                'selectedHotelId',
                 ChoiceType::class,
                 [
                     'label'      => 'form.online.order_search.hotel',
                     'choices'    => $hotels,
-                    'data'       => $search->getHotelId(),
+                    'data'       => $search->getSelectedHotelId(),
                     'label_attr' => $commonLabelAttr,
                     'group'      => $commonGroup,
                     'attr'       => $commonInputAttr,
@@ -80,10 +80,10 @@ class OrderSearchType extends AbstractType
             );
         } else {
             $builder->add(
-                'hotelId',
+                'selectedHotelId',
                 HiddenType::class,
                 [
-                    'data' => $search->getHotelId() ?? $search->getHotels()[0]->getId(),
+                    'data' => $search->getSelectedHotelId() ?? $search->getHotels()[0]->getId(),
                 ]
             );
         }

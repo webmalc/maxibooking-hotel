@@ -193,8 +193,7 @@ class ApiController extends Controller
             : $twig->render('MBHOnlineBundle:Api:form.html.twig', $context);
 
         return [
-            'styles' => $this->get('templating')->render('MBHOnlineBundle:Api:form.css.twig'),
-            'text' => $text,
+            'text'               => $text,
             'isDisplayChildAges' => $formConfig->isIsDisplayChildrenAges(),
         ];
     }
@@ -419,21 +418,39 @@ class ApiController extends Controller
         } else {
             $search = $this->get('mbh.package.search');
 
-            if (empty($query->tariff)) {
-                $tariffResults = array_filter($search->searchTariffs($query), function(Tariff $tariff) use ($formConfig) {
-                    return $formConfig->getHotels()->isEmpty() || $formConfig->getHotels()->contains($tariff->getHotel());
+            $tariffResults = $search->searchTariffs($query);
+            $selectedHotels = [];
+
+            if (!empty($request->get('hotel'))) {
+                $selectedHotel = $this->dm->getRepository(Hotel::class)->find($request->get('hotel'));
+                if ($selectedHotel !== null) {
+                    $selectedHotels = [$selectedHotel];
+                }
+            } else {
+                $selectedHotels = $formConfig->getHotels()->toArray();
+            }
+
+            if ($selectedHotels !== []) {
+                $selectedHotelIds = array_map(function (Hotel $hotel) {return $hotel->getId(); }, $selectedHotels);
+                $tariffResults = array_filter($tariffResults, function(Tariff $tariff) use ($selectedHotelIds) {
+                    return in_array($tariff->getHotel()->getId(), $selectedHotelIds);
                 });
+            }
+
+            if (empty($query->tariff)) {
                 $results = $search->searchBeforeResult($query, $tariffResults);
                 if (!empty($results)) {
                     $defaultTariff = current($results)->getTariff();
                 }
             } else {
                 $results = $search->search($query);
-                $defaultTariff = $query->tariff instanceof Tariff ? $query->tariff : $this->dm->find('MBHPriceBundle:Tariff', $query->tariff);
+                $defaultTariff = $query->tariff instanceof Tariff
+                    ? $query->tariff
+                    : $this->dm->find('MBHPriceBundle:Tariff', $query->tariff);
             }
         }
 
-        $hotels = $services = [];
+        $hotels = [];
 
         // sort results
         usort(
@@ -468,9 +485,6 @@ class ApiController extends Controller
         foreach ($results as $result) {
             $hotel = $result->getRoomType()->getHotel();
             $hotels[$hotel->getId()] = $hotel;
-        }
-        foreach ($hotels as $hotel) {
-            $services = array_merge($services, $hotel->getServices(true, true));
         }
 
         $facilityArray = [];

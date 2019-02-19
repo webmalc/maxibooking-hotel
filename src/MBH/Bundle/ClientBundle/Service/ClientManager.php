@@ -107,7 +107,7 @@ class ClientManager
     {
         $totalNumbersOfRoomsByDates = [];
         foreach ($rawNewRoomCachesData as $rawRoomCache) {
-            if (!isset($rawRoomCache['tariff'])) {
+            if (!empty($rawRoomCache['tariff'])) {
                 /** @var \MongoDate $date */
                 $date = $rawRoomCache['date'];
                 $dateString = $date->toDateTime()->format('d.m.Y');

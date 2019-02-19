@@ -317,9 +317,6 @@ class ProfileController extends Controller
         /** @var PaymentSystem $paymentSystem */
         foreach ($paymentSystemsResult->getData() as $paymentSystem) {
             $paymentSystemData = ['id' => $paymentSystem->getId(), 'name' => $paymentSystem->getName()];
-            if ($paymentSystem->getId() === 'bill') {
-                $paymentSystemData['html'] = $paymentSystem->getHtml();
-            }
             $paymentSystems[] = $paymentSystemData;
         }
 
@@ -347,7 +344,10 @@ class ProfileController extends Controller
             ->get('mbh.billing.api')
             ->getPaymentSystemForOrderByName($paymentSystemName, $orderId);
 
-        return ['html' => $paymentSystem->getHtml()];
+        return [
+            'html'         => $paymentSystem->getHtml(),
+            'onlyResponse' => $paymentSystemName === 'bill',
+        ];
     }
 
     /**

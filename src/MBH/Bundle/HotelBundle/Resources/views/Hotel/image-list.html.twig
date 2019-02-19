@@ -1,7 +1,7 @@
 <div class="row">
     {% for image in images %}
         <div class="col-md-1" style="margin-bottom: 15px;">
-            <a href=" {{ vich_uploader_asset(image, 'imageFile') | imagine_filter('scaler') }}"
+            <a href="{{ vich_uploader_asset(image, 'imageFile') | imagine_filter('size_1980x1280') }}"
                class="fancybox" rel="gallery" data-fancybox-title="{{ image.imageName }}">
                 <img src="{{ vich_uploader_asset(image, 'imageFile') | imagine_filter('thumb_100x100') }}"
                      class="img-thumbnail"/>

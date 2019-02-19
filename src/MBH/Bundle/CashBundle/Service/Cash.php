@@ -52,7 +52,7 @@ class Cash
 
         /** @var CashDocument $cash */
         foreach ($docs as $cash) {
-            if ($cash->getOperation() == 'in') {
+            if ($cash->getOperation() === CashDocument::OPERATION_IN) {
                 $result['totalIn'] += $cash->getTotal();
             } else {
                 $result['totalOut'] += $cash->getTotal();
