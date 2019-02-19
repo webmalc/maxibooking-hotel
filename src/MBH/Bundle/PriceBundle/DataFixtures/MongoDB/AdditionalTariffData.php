@@ -61,6 +61,7 @@ class AdditionalTariffData extends AbstractFixture implements OrderedFixtureInte
                     ->setParent($upTariff)
                     ->setChildOptions($childOptions)
                     ->setHotel($hotel);
+
                 $manager->persist($childUpTariff);
 
                 $manager->flush();

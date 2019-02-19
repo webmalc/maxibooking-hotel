@@ -72,8 +72,9 @@ class CalculationTest extends SearchWebTestCase
                 $clientConfigRepo = $this->createMock(ClientConfigRepository::class);
                 $clientConfig = $this->createMock(ClientConfig::class);
                 $clientConfig->expects($this->any())->method('getUseRoomTypeCategory')->willReturn(true);
-                $clientConfigRepo->expects($this->any())->method('fetchConfig')->willReturn($clientConfig);
+                $clientConfig->expects($this->any())->method('getPriceRoundSign')->willReturn(2);
                 $this->getContainer()->set('mbh_search.client_config_repository', $clientConfigRepo);
+                $clientConfigRepo->expects($this->any())->method('fetchConfig')->willReturn($clientConfig);
             }
 
             $actual = $this->getContainer()->get('mbh_search.calculation')->calcPrices($calcQuery);

@@ -32,8 +32,8 @@ class SearchControllerTest extends SearchWebTestCase
             $this->assertTrue($response->isSuccessful(), 'status code = '.$response->getStatusCode());
             $this->assertJson($json);
             $answer = json_decode($json, true);
-            $this->assertCount($grouping ? 6 : 8, $answer['results']);
-            $actualResults = $answer['results'];
+            $this->assertCount($grouping ? 6 : 8, $answer['results']['success']);
+            $actualResults = $answer['results']['success'];
             if (!$grouping) {
                 foreach ($actualResults as $actualResult) {
                     $this->assertArrayHasKey('resultConditions', $actualResult);

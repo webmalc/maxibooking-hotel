@@ -9,7 +9,8 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher;
-use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\CommonOccupancyDeterminer;
+use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminerFactory;
+use MBH\Bundle\SearchBundle\Services\Search\Determiners\OccupancyDeterminerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminer as ActualDeterminer;
 
@@ -24,8 +25,8 @@ class ActualOccupancyDeterminerTest extends WebTestCase
         $dispatcher = $this->createMock(EventDispatcherInterface::class);
         $dispatcher->expects($this->once())->method('dispatch');
 
-        $determiner = $this->createMock(CommonOccupancyDeterminer::class);
-        $determiner->expects($this->once())->method('determine');
+        $determiner = $this->createMock(OccupancyDeterminerFactory::class);
+        $determiner->expects($this->once())->method('create')->willReturn($this->createMock(OccupancyDeterminerInterface::class));
 
         $service = new ActualDeterminer($dispatcher, $determiner, $dataFetcher);
 
@@ -35,7 +36,9 @@ class ActualOccupancyDeterminerTest extends WebTestCase
             ->setRoomTypeId('fakeRoomTypeId')
             ->setAdults(1)
             ->setChildren(1)
-            ->setChildrenAges([1]);
+            ->setChildrenAges([1])
+            ->setIsWarmUp(false)
+        ;
 
         $service->determine($searchQuery, 'fakeEvent');
 

@@ -28,18 +28,19 @@ class FinalSearchResultsAnswerManager
     /**
      * @param $results
      * @param int $errorLevel
-     * @param string $grouping
+     * @param string $grouperName
      * @param bool $isCreateJson
      * @param bool $isCreateAnswer
      * @return mixed
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\GroupingFactoryException
      */
-    public function createAnswer($results, int $errorLevel, string $grouping, bool $isCreateJson, bool $isCreateAnswer)
+    public function createAnswer($results, int $errorLevel, bool $isCreateJson, bool $isCreateAnswer, string $grouperName = null)
     {
+
         return $this->builder
             ->set($results)
             ->errorFilter($errorLevel)
-            ->setGrouping($grouping)
+            ->setGrouping($grouperName)
             ->createJson($isCreateJson)
             ->createAnswer($isCreateAnswer)
             ->getResults();

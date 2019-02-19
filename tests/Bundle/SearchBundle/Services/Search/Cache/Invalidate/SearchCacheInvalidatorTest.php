@@ -380,9 +380,9 @@ class SearchCacheInvalidatorTest extends WebTestCase
                 'isUseCache' => true,
                 'errorLevel' => ErrorResultFilter::ALL
             ];
-            $results[] = $search->searchSync($conditionsBlank, false);
+            $results[] = $search->searchSync($conditionsBlank);
         }
 
-        return array_merge(...$results);
+           return array_merge(...array_values(array_merge_recursive(...$results)));
     }
 }

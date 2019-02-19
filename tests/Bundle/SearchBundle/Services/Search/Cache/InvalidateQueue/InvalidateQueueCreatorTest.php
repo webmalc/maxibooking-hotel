@@ -54,6 +54,8 @@ class InvalidateQueueCreatorTest extends WebTestCase
         $roomType = $this->getDocument(RoomType::class);
         /** @var Tariff $tariff */
         $tariff = $this->getDocument(Tariff::class);
+        /** @var Tariff $parentTariff */
+        $parentTariff = $this->getParentTariff();
 
         return [
             [
@@ -114,13 +116,13 @@ class InvalidateQueueCreatorTest extends WebTestCase
                     'end' =>  new \DateTime('midnight +3 days'),
                     'type' => InvalidateQuery::PRICE_GENERATOR,
                     'roomTypeIds' => ['fakeRoomType1', 'fakeRoomType2'],
-                    'tariffIds' => ['fakeTariffId1', 'fakeTariffId2']
+                    'tariffIds' => [$parentTariff->getId()]
                 ],
                 'expected' => [
                     'begin' => new \DateTime('midnight'),
                     'end' => new \DateTime('midnight +3 days'),
                     'roomTypeIds' => ['fakeRoomType1', 'fakeRoomType2'],
-                    'tariffIds' => ['fakeTariffId1', 'fakeTariffId2'],
+                    'tariffIds' => [$parentTariff->getId(), $parentTariff->getChildren()->toArray()[0]->getId()],
                 ],
             ],
             [
@@ -129,13 +131,13 @@ class InvalidateQueueCreatorTest extends WebTestCase
                     'end' =>  new \DateTime('midnight +3 days'),
                     'type' => InvalidateQuery::RESTRICTION_GENERATOR,
                     'roomTypeIds' => ['fakeRoomType1', 'fakeRoomType2'],
-                    'tariffIds' => ['fakeTariffId1', 'fakeTariffId2']
+                    'tariffIds' => [$parentTariff->getId()]
                 ],
                 'expected' => [
                     'begin' => new \DateTime('midnight'),
                     'end' => new \DateTime('midnight +3 days'),
                     'roomTypeIds' => ['fakeRoomType1', 'fakeRoomType2'],
-                    'tariffIds' => ['fakeTariffId1', 'fakeTariffId2'],
+                    'tariffIds' => [$parentTariff->getId(), $parentTariff->getChildren()->toArray()[0]->getId()],
                 ],
             ],
         ];
@@ -146,6 +148,15 @@ class InvalidateQueueCreatorTest extends WebTestCase
         $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
 
         return $dm->getRepository($documentName)->findOneBy([]);
+    }
+
+    private function getParentTariff()
+    {
+        $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
+        $repo = $dm->getRepository(Tariff::class);
+        $tariff = $repo->findOneBy(['parent' => ['$exists' => true]]);
+
+        return $tariff->getParent();
     }
 
 }
