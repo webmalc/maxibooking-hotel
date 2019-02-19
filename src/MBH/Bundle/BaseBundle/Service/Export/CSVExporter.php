@@ -44,13 +44,13 @@ class CSVExporter
             $exportedFieldsNames[] = $this->translator->trans($exportedField);
         }
 
-        $rows = [join(";", $exportedFieldsNames)];
+        $rows = [implode(";", $exportedFieldsNames)];
         foreach ($handledData as $handledEntityData) {
-            $rows[] = join(';', $handledEntityData);
+            $rows[] = implode(';', $handledEntityData);
         }
 
-        $content = join("\n", $rows);
-        $content =  mb_convert_encoding($content,'windows-1251//TRANSLIT', 'UTF-8');
+        $content = implode("\n", $rows);
+        $content =  mb_convert_encoding($content,'windows-1251', 'UTF-8');
 
         return $this->getCsvAttachmentResponse($content);
     }
