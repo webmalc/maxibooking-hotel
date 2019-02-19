@@ -104,9 +104,10 @@ class Search
         $results = $this->resultsBuilder->createAnswer(
             $results,
             $conditions->getErrorLevel(),
-            $grouping,
             $isCreateJson,
-            $isCreateAnswer);
+            $isCreateAnswer,
+            $grouping
+        );
 
 
         return $results;
@@ -142,7 +143,7 @@ class Search
                 'searchQueries' => serialize($queries)
             ];
             $msgBody = json_encode($message);
-            $this->producer->publish($msgBody, '', ['priority' => $groupSearchQuery->getType() === DayGroupSearchQuery::MAIN_DATES ? 10: 1]);
+            $this->producer->publish($msgBody, '', ['priority' => $groupSearchQuery->getType() === DayGroupSearchQuery::MAIN_DATES ? 10 : 1]);
         }
 
         $conditions->setExpectedResultsCount($countQueries);

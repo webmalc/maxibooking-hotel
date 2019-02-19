@@ -35,6 +35,7 @@ class Calculation
      * Calculation constructor.
      * @param PriceCachesMerger $merger
      * @param SharedDataFetcher $sharedDataFetcher
+     * @param int $priceRoundSign
      */
     public function __construct(PriceCachesMerger $merger, SharedDataFetcher $sharedDataFetcher, int $priceRoundSign)
     {

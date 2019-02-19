@@ -74,7 +74,7 @@ class FinalSearchResultsBuilder
         return $this;
     }
 
-    public function setGrouping(string $grouping = null): self
+    public function setGrouping(?string $grouping): self
     {
         $this->grouping = $grouping;
 
@@ -106,12 +106,10 @@ class FinalSearchResultsBuilder
         if (\count($results)) {
             $results = array_filter($results, [$this, 'filterError']);
 
-            if ($this->grouping) {
-                $groupingFactory = new GroupingFactory();
-                /** @noinspection CallableParameterUseCaseInTypeContextInspection */
-                $grouping = $groupingFactory->createGrouping($this->grouping, $this->filterLevel);
-                $results = $grouping->group($results);
-            }
+            $groupingFactory = new GroupingFactory();
+            /** @noinspection CallableParameterUseCaseInTypeContextInspection */
+            $grouping = $groupingFactory->createGrouping($this->grouping);
+            $results = $grouping->group($results);
         }
 
         if ($this->isCreateAnswer) {

@@ -7,13 +7,9 @@ namespace Tests\Bundle\SearchBundle\Services\Search;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
-use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Cache\ErrorFilters\ErrorResultFilter;
 use OldSound\RabbitMqBundle\RabbitMq\Producer;
-use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
-use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
 class SearchTest extends SearchWebTestCase
@@ -35,7 +31,9 @@ class SearchTest extends SearchWebTestCase
         $search = $this->getContainer()->get('mbh_search.search');
         $conditionData = $this->createConditionData($data);
         $actual = $search->searchSync($conditionData);
-        $this->assertCount($data['expected']['successResults'], $actual);
+        $success = $actual['success'];
+        $errors = $actual['errors'];
+        $this->assertCount($data['expected']['successResults'], $success + $errors);
         foreach ($actual as $result) {
             $this->assertInternalType('array', $result);
         }
@@ -53,7 +51,9 @@ class SearchTest extends SearchWebTestCase
         $conditionData = $this->createConditionData($data);
         $conditionData['errorLevel'] = ErrorResultFilter::ALL;
         $actual = $search->searchSync($conditionData);
-        $this->assertCount($data['expected']['searchCount'], $actual);
+        $success = $actual['success'];
+        $errors = $actual['errors'];
+        $this->assertCount($data['expected']['searchCount'], $success+$errors);
         foreach ($actual as $result) {
             $this->assertInternalType('array', $result);
         }

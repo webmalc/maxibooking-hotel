@@ -217,11 +217,12 @@ class InvalidateMessageFactory
     private function createRestrictionGenerator(InvalidateQuery $invalidateQuery): InvalidateMessageInterface
     {
         $message = new InvalidateMessage();
+        $tariffIds = $this->getMainAndChildrenTariffIdsFromArray($invalidateQuery->getTariffIds(), 'prices');
         $message
             ->setBegin($invalidateQuery->getBegin())
             ->setEnd($invalidateQuery->getEnd())
             ->setRoomTypeIds($invalidateQuery->getRoomTypeIds())
-            ->setTariffIds($invalidateQuery->getTariffIds());
+            ->setTariffIds($tariffIds);
 
         return $message;
     }

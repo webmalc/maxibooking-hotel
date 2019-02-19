@@ -7,11 +7,13 @@ namespace Tests\Bundle\SearchBundle\Services\Search\Cache;
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Combinations\CombinationInterface;
+use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Cache\CacheWarmer;
 use MBH\Bundle\SearchBundle\Services\GuestCombinator;
 use MBH\Bundle\SearchBundle\Services\Search\WarmUpSearcher;
 use MBH\Bundle\SearchBundle\Services\SearchConditionsCreator;
 use MBH\Bundle\SearchBundle\Services\SearchQueryGenerator;
+use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 
 class CacheWarmerTest extends WebTestCase
 {
@@ -70,7 +72,7 @@ class CacheWarmerTest extends WebTestCase
         ];
 
         $combinator = $this->createMock(GuestCombinator::class);
-        $combinator->expects($this->exactly(1 * $dateMultiplier))->method('getCombinations')->willReturn(
+        $combinator->expects($this->exactly(1))->method('getCombinations')->willReturn(
             $combinationInterfaces
         );
         $container->set('mbh_search.combinator', $combinator);
@@ -88,13 +90,20 @@ class CacheWarmerTest extends WebTestCase
         $container->set('mbh_search.search_condition_creator', $conditionCreator);
 
 
-        $searcher = $this->createMock(WarmUpSearcher::class);
-        $searcher->expects($this->exactly(40 * $dateMultiplier))->method('search')->with($this->isType('array'));
-        $container->set('mbh_search.warm_up_searcher', $searcher);
-
         $queryGenerator = $this->createMock(SearchQueryGenerator::class);
-        $queryGenerator->expects($this->exactly(4 * $dateMultiplier))->method('generate')->willReturn(range(0, 999));
+        $queryGenerator->expects($this->exactly(4 * $dateMultiplier))->method('generate')->willReturnCallback(function() {
+            $queries = [];
+            foreach (range(0, 99) as $index) {
+                $queries[] = new SearchQuery();
+            }
+
+            return $queries;
+        });
         $container->set('mbh_search.search_query_generator', $queryGenerator);
+
+        $producer = $this->createMock(ProducerInterface::class);
+        $container->set('old_sound_rabbit_mq.warm_up_search_producer', $producer);
+
 
 
         $warmer = $this->getContainer()->get('mbh_search.cache_warmer');

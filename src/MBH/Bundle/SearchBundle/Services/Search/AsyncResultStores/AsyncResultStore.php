@@ -56,7 +56,6 @@ class AsyncResultStore implements AsyncResultStoreInterface
             $data = $this->serializer->encodeArrayToJson($result);
         }
 
-//        $key = $hash . $uniqueId;
         /** @var Result $searchResult */
         $this->cache->set($resultUniqueId, $data);
         $this->cache->sadd($hash, [$resultUniqueId]);
@@ -64,7 +63,7 @@ class AsyncResultStore implements AsyncResultStoreInterface
 
     /**
      * @param SearchConditions $conditions
-     * @param null $grouping
+     * @param null $grouperName
      * @param bool $isCreateJson
      * @param bool $isCreateAnswer
      * @return mixed
@@ -73,7 +72,7 @@ class AsyncResultStore implements AsyncResultStoreInterface
      */
     public function receive(
         SearchConditions $conditions,
-        $grouping = null,
+        $grouperName = null,
         bool $isCreateJson = false,
         bool $isCreateAnswer = false
     ) {
@@ -111,9 +110,9 @@ class AsyncResultStore implements AsyncResultStoreInterface
         $results = $this->finalResultsBuilder->createAnswer(
             $results,
             $conditions->getErrorLevel(),
-            $grouping,
             $isCreateJson,
-            $isCreateAnswer
+            $isCreateAnswer,
+            $grouperName
         );
 
         return $results;

@@ -20,6 +20,7 @@ use MBH\Bundle\SearchBundle\Lib\Result\ResultTariff;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Cache\CacheSearchResults;
 use Predis\Client;
+use Psr\Log\LoggerInterface;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
 class CacheSearchResultsTest extends SearchWebTestCase
@@ -68,6 +69,8 @@ class CacheSearchResultsTest extends SearchWebTestCase
         });
 
         $dmMock = $this->createMock(DocumentManager::class);
+        $repositoryMock = $this->createMock(SearchResultCacheItemRepository::class);
+
         $dmMock->expects($this->once())->method('persist')->willReturnCallback(function ($actual) use (&$result, &$createdKey){
             /** @var SearchResultCacheItem $actual */
             $this->assertInstanceOf(SearchResultCacheItem::class, $actual);
@@ -79,13 +82,20 @@ class CacheSearchResultsTest extends SearchWebTestCase
             $actual->setId('fakeTestId');
         });
 
-        $repositoryMock = $this->createMock(SearchResultCacheItemRepository::class);
+        $dmMock->expects($this->once())->method('getRepository')->willReturn($repositoryMock);
+
+
         $repositoryMock->expects($this->once())->method('getDocumentManager')->willReturn($dmMock);
+        $repositoryMock->expects($this->once())->method('fetchIdByCacheKey')->willReturn(null);
 
         $serializer = $this->getContainer()->get('mbh_search.result_serializer');
         $keyCreator = $this->getContainer()->get('mbh_search.cache_key_creator');
         $filter = $this->getContainer()->get('mbh_search.error_result_filter');
-        $service = new CacheSearchResults($repositoryMock, $serializer, $redisMock, $keyCreator, $filter);
+
+        $logger = $this->createMock(LoggerInterface::class);
+
+
+        $service = new CacheSearchResults($repositoryMock, $serializer, $redisMock, $keyCreator, $filter, $logger);
 
         $result = $data['result'];
         /** @noinspection PhpUnusedLocalVariableInspection */
