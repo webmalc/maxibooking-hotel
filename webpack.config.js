@@ -1,12 +1,12 @@
 var Encore = require('@symfony/webpack-encore');
 webpack = require("webpack");
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
-var fs = require("fs");
+var fs = require('fs');
 Encore
     .setOutputPath('web/build')
     .setPublicPath('/build')
     .addEntry('search', __dirname + '/src/MBH/Bundle/SearchBundle/Resources/private/search/index.ts')
-    .enableLessLoader()
+    .enableSassLoader()
     .enableSourceMaps(!Encore.isProduction())
     .cleanupOutputBeforeBuild()
     .enableBuildNotifications()
@@ -23,6 +23,7 @@ Encore
         )
     )
     .addPlugin(new VueLoaderPlugin())
+    .enableBuildNotifications(false)
 ;
 
 let config = Encore.getWebpackConfig();

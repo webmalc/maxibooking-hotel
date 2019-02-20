@@ -10,7 +10,7 @@ interface SearchDataType {
     tariffs?: any,
     hotels?: any,
     order?: number,
-    isForceBooking?: boolean,
+    isForceBooking?: boolean|number,
     isSpecialStrict?: boolean,
     isUseCache?: boolean
 }

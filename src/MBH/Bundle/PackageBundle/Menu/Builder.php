@@ -6,7 +6,6 @@ use Knp\Menu\FactoryInterface;
 use Knp\Menu\MenuItem;
 use MBH\Bundle\ClientBundle\Document\DocumentTemplate;
 use MBH\Bundle\PackageBundle\Document\Package;
-use MBH\Bundle\PackageBundle\DocumentGenerator\Template\TemplateGeneratorFactory;
 use MBH\Bundle\PackageBundle\DocumentGenerator\Xls\XlsGeneratorFactory;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
@@ -66,7 +65,7 @@ class Builder implements ContainerAwareInterface
 
             $rootItem
                 ->addChild('Package search', [
-                    'uri' => $this->container->get('router')->generate('package_search') . '#' . twig_urlencode_filter(['s' => $searchQuery]),
+                    'uri' => $this->container->get('router')->generate('package_new_search') . '#' . twig_urlencode_filter(['s' => $searchQuery]),
                     'label' => $translator->trans('package.actions.find_similar', [], 'MBHPackageBundle')
                 ])
                 ->setAttribute('icon', 'fa fa-search');
@@ -74,7 +73,7 @@ class Builder implements ContainerAwareInterface
             if ($checker->isGranted('ROLE_ORDER_EDIT') && $checker->isGranted('ROLE_PACKAGE_NEW') && ($checker->isGranted('EDIT', $package->getOrder()) || $checker->isGranted('ROLE_PACKAGE_EDIT_ALL'))) {
                 $rootItem
                     ->addChild('Order search ', [
-                        'route' => 'package_search',
+                        'route' => 'package_new_search',
                         'routeParameters' => ['order' => $package->getOrder()->getId()],
                         'label' => $translator->trans('order.package.add', [], 'MBHPackageBundle')
                     ])

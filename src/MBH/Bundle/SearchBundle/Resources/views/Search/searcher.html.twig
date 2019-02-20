@@ -3,13 +3,7 @@
 {% set layout = "box" %}
 {% block content %}
 
-    {#form  theme это костылина для возрастов детей. Без нее отрабатывает кастомный form.fields и делает какую то муть#}
-{#{% form_theme form '@MBHSearchBundle/Form/form_div_layout.html.twig' %}#}
 
-
-    {#<link rel="stylesheet" href="{{ asset('bundles/mbhsearch/css/search.css') }}">#}
-
-            {#{{ include('@MBHSearch/Search/form/search.form.html.twig') }}#}
     <div id="vue-searcher"
          data-order="{{ order }}"
          data-begin="{{ begin }}"
@@ -19,14 +13,6 @@
 
     </div>
 
-
-
-    {#<div class="alert alert-danger hide" id="accommodation-alert">#}
-        {#<i class="fa fa-exclamation-circle"></i> {{ "accommodation.alert"|trans({}, "MBHPackageBundle") }}#}
-    {#</div>#}
-
-    <div id="specials"></div>
-
 {% endblock content %}
 
 
@@ -34,5 +20,6 @@
     {# New search#}
     <link href="{{ asset('build/search.css') }}" rel="stylesheet"/>
     <script src="{{ asset('build/search.js') }}"></script>
+
     {# end new search #}
 {% endblock %}

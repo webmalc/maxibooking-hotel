@@ -7,17 +7,24 @@
     </small>
 </template>
 
-
-
 <script lang="ts">
+    declare let $: any;
+    import moment from 'moment';
+    import accounting from 'accounting';
 
-    import Vue from 'vue';
-    import * as moment from 'moment';
-    import accounting from "accounting";
-    moment.locale('ru');
-    export default Vue.extend({
+
+    export default {
         name: "DayPrice",
-        props: ['dayPrices'],
+        directives: {
+            popover: {
+                inserted: function (el) {
+                    $(el).popover();
+                }
+            }
+        },
+        props: {
+            dayPrices: Array
+        },
         computed: {
             detail: function () {
                 let html: string = '';
@@ -29,15 +36,8 @@
 
                 return `<small>${html}</small>`;
             }
-        },
-        directives: {
-            popover: {
-                inserted: function (el) {
-                    $(el).popover();
-                }
-            }
         }
-    });
+    }
 </script>
 
 <style scoped>

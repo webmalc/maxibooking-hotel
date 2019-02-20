@@ -11,7 +11,8 @@ imports:
 
 framework:
     assets:
-        version: "v%assetic_version%"
+#        version: "v%assetic_version%"
+        json_manifest_path: '%kernel.project_dir%/web/build/manifest.json'
     serializer:
         enabled: true
         enable_annotations: true
