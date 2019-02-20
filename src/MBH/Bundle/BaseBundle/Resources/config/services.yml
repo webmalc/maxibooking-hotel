@@ -540,10 +540,6 @@ services:
         class: MBH\Bundle\BaseBundle\Service\ExceptionManager
         arguments: ['@exception_notifier', '@kernel', '@security.token_storage']
 
-    mbh.serializer:
-        class: MBH\Bundle\BaseBundle\Service\MBHSerializer
-        arguments: ['@property_accessor', '@mbh.document_fields_manager', '@doctrine.odm.mongodb.document_manager']
-
     mbh.image_manager:
         class: MBH\Bundle\BaseBundle\Service\ImageManager
         arguments: ['%kernel.project_dir%']

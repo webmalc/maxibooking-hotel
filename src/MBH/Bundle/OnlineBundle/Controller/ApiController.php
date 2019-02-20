@@ -512,7 +512,7 @@ class ApiController extends Controller
      * @Method("POST")
      * @Template()
      */
-    public function getUserFormAction(Request $request)
+    public function  getUserFormAction(Request $request)
     {
         $this->setLocaleByRequest();
         $requestJson = json_decode($request->getContent());
