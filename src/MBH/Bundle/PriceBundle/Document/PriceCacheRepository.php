@@ -10,18 +10,15 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 class PriceCacheRepository extends DocumentRepository
 {
     /**
-     * @param int $period
      * @return array
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function findForDashboard(int $period, bool $isUseCategory = false): array
+    public function findForDashboard(int $period, string $roomTypeField): array
     {
         $begin = new \DateTime('midnight');
         $end = new \DateTime('midnight +' . $period . ' days');
         $tariffs = $this->getDocumentManager()->getRepository('MBHPriceBundle:Tariff')
             ->getBaseTariffsIds();
-
-        $roomTypeField = $isUseCategory ? 'roomTypeCategory' : 'roomType';
 
         $caches =  $this->createQueryBuilder()
             ->select('hotel.id', $roomTypeField.'.id', 'tariff.id', 'date', 'price')
