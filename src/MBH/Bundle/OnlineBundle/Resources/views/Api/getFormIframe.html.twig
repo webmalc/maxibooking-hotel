@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" />
     {% javascripts filter='uglifyjs2'
         '@MBHBaseBundle/Resources/public/js/first/010-nativ-func.js'
+        '@MBHOnlineBundle/Resources/public/js/online/search-form.js'
     %}
         <script type="text/javascript" src="{{ absolute_url(asset_url) }}"></script>
     {% endjavascripts %}
@@ -29,14 +30,14 @@
         {% stylesheets filter='cssrewrite, uglifycss'
             '@MBHOnlineBundle/Resources/public/css/api/style_iframe.less'
         %}
-            <link rel="stylesheet" href="{{ asset_url }}"/>
+            <link rel="stylesheet" href="{{ absolute_url(asset_url) }}"/>
         {% endstylesheets %}
 
         {% if formConfig.isHorizontal %}
             {% stylesheets filter='cssrewrite, uglifycss'
                 '@MBHOnlineBundle/Resources/public/css/api/form_if_horizontal.less'
             %}
-                <link rel="stylesheet" href="{{ asset_url }}"/>
+                <link rel="stylesheet" href="{{ absolute_url(asset_url) }}"/>
             {% endstylesheets %}
         {% endif %}
 
