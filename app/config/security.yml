@@ -1,6 +1,4 @@
 security:
-    acl:
-        provider: mongodb_acl_provider
 
     encoders:
         FOS\UserBundle\Model\UserInterface: sha512

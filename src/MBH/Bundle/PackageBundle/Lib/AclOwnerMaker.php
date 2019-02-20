@@ -3,11 +3,8 @@
 namespace MBH\Bundle\PackageBundle\Lib;
 
 
-use Dinhkhanh\MongoDBAclBundle\Security\Domain\MutableAclProvider;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Gedmo\Blameable\Traits\Blameable;
 use MBH\Bundle\BaseBundle\Document\Base;
-use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
 use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
@@ -20,9 +17,7 @@ use Symfony\Component\Security\Acl\Permission\MaskBuilder;
  */
 class AclOwnerMaker
 {
-    /**
-     * @var MutableAclProvider
-     */
+
     private $aclProvider;
 
     /**
@@ -32,9 +27,8 @@ class AclOwnerMaker
 
     /**
      * PackageOwnerMaker constructor.
-     * @param MutableAclProvider $aclProvider
      */
-    public function __construct(MutableAclProvider $aclProvider, DocumentManager $dm)
+    public function __construct(bool $aclProvider, DocumentManager $dm)
     {
         $this->aclProvider = $aclProvider;
         $this->dm = $dm;
@@ -48,6 +42,7 @@ class AclOwnerMaker
     public function insertAcl(User $user, Base $document)
 
     {
+        throw new \RuntimeException('Create Voters!');
         if (!$user->isSuperAdmin()) {
             $aclProvider = $this->aclProvider;
             try {
@@ -70,6 +65,8 @@ class AclOwnerMaker
      */
     public function assignOwnerToDocument(User $user, Base $document, $isSetAcl = true)
     {
+        throw new \RuntimeException('Create Voters!');
+
         /** @var \Gedmo\Blameable\Traits\Blameable $document*/
         if (method_exists($document, 'getCreatedBy') && !$document->getCreatedBy()) {
             $document->setCreatedBy($user->getUsername());

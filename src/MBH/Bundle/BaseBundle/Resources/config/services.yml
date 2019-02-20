@@ -29,9 +29,6 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
 
-    mongodb_acl_provider:
-            parent: doctrine_mongodb.odm.security.acl.provider
-
     mbh.twig.hotel_selector_extension:
         class: MBH\Bundle\BaseBundle\Twig\HotelSelectorExtension
         arguments: ['@service_container']
