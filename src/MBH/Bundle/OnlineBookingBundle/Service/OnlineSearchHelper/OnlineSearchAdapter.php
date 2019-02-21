@@ -55,6 +55,7 @@ class OnlineSearchAdapter
 
     private function adaptResults(array $searchResults): array
     {
+        $searchResults = $searchResults['success'];
         $adaptedResults = [];
         if (count($searchResults)) {
             foreach ($searchResults as $roomTypeCategoryId => $results) {
