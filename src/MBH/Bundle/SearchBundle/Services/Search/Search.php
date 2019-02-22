@@ -91,14 +91,19 @@ class Search
     )
     {
         $conditions = $this->createSearchConditions($data);
-        $searchQueries = $this->queryGenerator->generate($conditions);
-        if (self::PRE_RESTRICTION_CHECK) {
-            $searchQueries = array_filter($searchQueries, [$this->restrictionChecker, 'check']);
-        }
-        $results = [];
+        $queryGroups = $this->queryGenerator->generate($conditions, 'QueryGroupSync');
+
         $searcher = $this->searcherFactory->getSearcher($conditions->isUseCache());
-        foreach ($searchQueries as $searchQuery) {
-            $results[] = $searcher->search($searchQuery);
+
+        $results = [];
+        foreach ($queryGroups as $queryGroup) {
+            $searchQueries = $queryGroup->getSearchQueries();
+            if (self::PRE_RESTRICTION_CHECK) {
+                $searchQueries = array_filter($searchQueries, [$this->restrictionChecker, 'check']);
+            }
+            foreach ($searchQueries as $searchQuery) {
+                $results[] = $searcher->search($searchQuery);
+            }
         }
 
         $results = $this->resultsBuilder->createAnswer(
@@ -124,15 +129,14 @@ class Search
     {
 
         $conditions = $this->createSearchConditions($data);
-        $dayGroupedSearchQueries = $this->queryGenerator->generate($conditions, true);
-        //** TODO: Create SearchQueryGroup */
+        $queryGroups = $this->queryGenerator->generate($conditions, 'QueryGroupByDay');
 
         $conditionsId = $conditions->getId();
         $countQueries = 0;
-        foreach ($dayGroupedSearchQueries as $groupSearchQuery) {
+        foreach ($queryGroups as $queryGroup) {
             $queries = [];
-            /** @var DayGroupSearchQuery $groupSearchQuery */
-            foreach ($groupSearchQuery->getSearchQueries() as $searchQuery) {
+            /** @var DayGroupSearchQuery $queryGroup */
+            foreach ($queryGroup->getSearchQueries() as $searchQuery) {
                 /** @var SearchQuery $searchQuery */
                 $searchQuery->unsetConditions();
                 $queries[] = $searchQuery;
@@ -143,7 +147,7 @@ class Search
                 'searchQueries' => serialize($queries)
             ];
             $msgBody = json_encode($message);
-            $this->producer->publish($msgBody, '', ['priority' => $groupSearchQuery->getType() === DayGroupSearchQuery::MAIN_DATES ? 10 : 1]);
+            $this->producer->publish($msgBody, '', ['priority' => $queryGroup->getType() === DayGroupSearchQuery::MAIN_DATES ? 10 : 1]);
         }
 
         $conditions->setExpectedResultsCount($countQueries);

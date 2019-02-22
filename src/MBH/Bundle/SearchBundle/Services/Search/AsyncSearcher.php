@@ -9,6 +9,7 @@ use MBH\Bundle\SearchBundle\Document\SearchConditionsRepository;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\ConsumerSearchException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
+use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupInterface;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStoreInterface;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStore;
 
@@ -38,8 +39,9 @@ class AsyncSearcher
         $this->searcherFactory = $searcherFactory;
     }
 
-    public function search(string $conditionsId, array $searchQueries): void
+    public function search(string $conditionsId, QueryGroupInterface $groupedQueries): void
     {
+        $searchQueries = $groupedQueries->getSearchQueries();
 
         /** @var SearchConditions $conditions */
         $conditions = $this->conditionsRepository->find($conditionsId);
