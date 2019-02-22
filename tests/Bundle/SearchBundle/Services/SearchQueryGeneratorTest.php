@@ -40,7 +40,7 @@ class SearchQueryGeneratorTest extends WebTestCase
             ->setChildren(4)
             ->setAdditionalBegin($additionalDays);
 
-        $actual = $generator->generate($conditions, false);
+        $actual = $generator->generate($conditions);
         $expectedCount = $this->getAllExpectedVariants($dateBegin, $dateEnd, $additionalDays);
 
         $this->assertCount($expectedCount, $actual);

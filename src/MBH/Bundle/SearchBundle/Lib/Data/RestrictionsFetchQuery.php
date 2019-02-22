@@ -75,8 +75,6 @@ class RestrictionsFetchQuery extends BaseFetchQuery
         return $this;
     }
 
-
-
     public static function createInstanceFromSearchQuery(SearchQuery $searchQuery)
     {
         /** @var self $restrictionQuery */
