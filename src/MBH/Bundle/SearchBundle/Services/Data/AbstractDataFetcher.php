@@ -42,6 +42,7 @@ abstract class AbstractDataFetcher implements DataFetcherInterface
         }
         $data = $this->fetchData($fetchQuery);
         if (!$this->cache->has($hash)) {
+            //** TODO: add ttl ?? */
             $this->cache->set($hash, $data);
         }
 

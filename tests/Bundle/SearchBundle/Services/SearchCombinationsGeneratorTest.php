@@ -13,9 +13,10 @@ use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
 use MBH\Bundle\SearchBundle\Lib\Result\DayGroupSearchQuery;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
-use MBH\Bundle\SearchBundle\Services\SearchQueryGenerator;
+use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupByRoomType;
+use MBH\Bundle\SearchBundle\Services\SearchCombinationsGenerator;
 
-class SearchQueryGeneratorTest extends WebTestCase
+class SearchCombinationsGeneratorTest extends WebTestCase
 {
     /** @var DocumentManager */
     private $dm;
@@ -28,7 +29,7 @@ class SearchQueryGeneratorTest extends WebTestCase
 
     public function testGenerate()
     {
-        $generator = $this->getContainer()->get('mbh_search.search_query_generator');
+        $generator = $this->getContainer()->get('mbh_search.search_combinations_generator');
         $dateBegin = new \DateTime('2018-04-21 midnight');
         $dateEnd = new \DateTime('2018-04-22 midnight');
         $additionalDays = 10;
@@ -40,7 +41,7 @@ class SearchQueryGeneratorTest extends WebTestCase
             ->setChildren(4)
             ->setAdditionalBegin($additionalDays);
 
-        $actual = $generator->generate($conditions);
+        $actual = $generator->generate($conditions)->createSearchQueries($conditions);
         $expectedCount = $this->getAllExpectedVariants($dateBegin, $dateEnd, $additionalDays);
 
         $this->assertCount($expectedCount, $actual);
@@ -48,10 +49,11 @@ class SearchQueryGeneratorTest extends WebTestCase
             $this->assertInstanceOf(SearchQuery::class, $result);
         }
 
-        $actual = $generator->generate($conditions, true);
-        $this->assertCount(231, $actual);
-        foreach ($actual as $result) {
-            $this->assertInstanceOf(DayGroupSearchQuery::class, $result);
+        $searchCombinations = $generator->generate($conditions);
+        $grouper = $this->getContainer()->get('mbh_search.query_group_creator');
+        $actual = $grouper->createQueryGroups($conditions, $searchCombinations, 'QueryGroupByRoomType');
+        foreach ($actual as $group) {
+            $this->assertInstanceOf(QueryGroupByRoomType::class, $group);
         }
 
     }
@@ -60,8 +62,8 @@ class SearchQueryGeneratorTest extends WebTestCase
     {
         $tariff = $this->dm->getRepository(Tariff::class)->findOneBy([]);
 
-        $generator = $this->getContainer()->get('mbh_search.search_query_generator');
-        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getTariffs');
+        $generator = $this->getContainer()->get('mbh_search.search_combinations_generator');
+        $method = $this->getPrivateMethod(SearchCombinationsGenerator::class, 'getTariffs');
         $rawTariffIds = Helper::toIds(new ArrayCollection([$tariff]));
         $actual = $method->invokeArgs($generator, [$rawTariffIds, [], true]);
 
@@ -74,8 +76,8 @@ class SearchQueryGeneratorTest extends WebTestCase
     public function testGetTariffIdsNoTariffNoHotel(): void
     {
         $tariffs = $this->dm->getRepository(Tariff::class)->findAll();
-        $generator = $this->getContainer()->get('mbh_search.search_query_generator');
-        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getTariffs');
+        $generator = $this->getContainer()->get('mbh_search.search_combinations_generator');
+        $method = $this->getPrivateMethod(SearchCombinationsGenerator::class, 'getTariffs');
         $rawTariffIds = Helper::toIds(new ArrayCollection());
         $actual = $method->invokeArgs($generator, [$rawTariffIds, [], false]);
 
@@ -95,8 +97,8 @@ class SearchQueryGeneratorTest extends WebTestCase
         $strangerHotel = $this->dm->createQueryBuilder(Hotel::class)->field('id')->notEqual($hotelId)->limit(
             1
         )->getQuery()->execute()->toArray();
-        $generator = $this->getContainer()->get('mbh_search.search_query_generator');
-        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getTariffs');
+        $generator = $this->getContainer()->get('mbh_search.search_combinations_generator');
+        $method = $this->getPrivateMethod(SearchCombinationsGenerator::class, 'getTariffs');
         $rawTariffIds = Helper::toIds(new ArrayCollection([$tariff]));
         $actual = $method->invokeArgs(
             $generator,
@@ -118,8 +120,8 @@ class SearchQueryGeneratorTest extends WebTestCase
         $hotel = $this->dm->getRepository(Hotel::class)->findOneBy([]);
         $tariffs = $this->dm->createQueryBuilder(Tariff::class)->field('hotel.id')->equals($hotel->getId())->getQuery(
         )->execute()->toArray();
-        $generator = $this->getContainer()->get('mbh_search.search_query_generator');
-        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getTariffs');
+        $generator = $this->getContainer()->get('mbh_search.search_combinations_generator');
+        $method = $this->getPrivateMethod(SearchCombinationsGenerator::class, 'getTariffs');
         $rawTariffIds = Helper::toIds(new ArrayCollection());
         $actual = $method->invokeArgs($generator, [$rawTariffIds, [$hotel->getId()], false]);
 
@@ -132,8 +134,8 @@ class SearchQueryGeneratorTest extends WebTestCase
     public function testGetRoomTypeIdsOneRoomTypeNoHotel(): void
     {
         $roomType = $this->dm->getRepository(RoomType::class)->findOneBy([]);
-        $generator = $this->getContainer()->get('mbh_search.search_query_generator');
-        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getRoomTypeIds');
+        $generator = $this->getContainer()->get('mbh_search.search_combinations_generator');
+        $method = $this->getPrivateMethod(SearchCombinationsGenerator::class, 'getRoomTypeIds');
         $roomTypeIds = Helper::toIds(new ArrayCollection([$roomType]));
         $actual = $method->invokeArgs($generator, [$roomTypeIds, []]);
         $expected = [
@@ -155,8 +157,8 @@ class SearchQueryGeneratorTest extends WebTestCase
         $hotelIds = Helper::toIds($hotel);
         $roomTypeIds = Helper::toIds(new ArrayCollection([$roomType]));
 
-        $generator = $this->getContainer()->get('mbh_search.search_query_generator');
-        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getRoomTypeIds');
+        $generator = $this->getContainer()->get('mbh_search.search_combinations_generator');
+        $method = $this->getPrivateMethod(SearchCombinationsGenerator::class, 'getRoomTypeIds');
         $actual = $method->invokeArgs($generator, [$roomTypeIds, [$hotelIds]]);
         $expected = [
             $roomType->getHotel()->getId() => [
@@ -170,8 +172,8 @@ class SearchQueryGeneratorTest extends WebTestCase
     public function testGetRoomTypeIdsNoRoomTypeNoHotel(): void
     {
         $roomTypes = $this->dm->getRepository(RoomType::class)->findAll();
-        $generator = $this->getContainer()->get('mbh_search.search_query_generator');
-        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getRoomTypeIds');
+        $generator = $this->getContainer()->get('mbh_search.search_combinations_generator');
+        $method = $this->getPrivateMethod(SearchCombinationsGenerator::class, 'getRoomTypeIds');
         $actual = $method->invokeArgs($generator, [[], []]);
         $expected = [];
         foreach ($roomTypes as $roomType) {
@@ -188,8 +190,8 @@ class SearchQueryGeneratorTest extends WebTestCase
         $roomTypes = $this->dm->createQueryBuilder(RoomType::class)->field('hotel.id')->equals(
             $hotel->getId()
         )->getQuery()->execute()->toArray();
-        $generator = $this->getContainer()->get('mbh_search.search_query_generator');
-        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getRoomTypeIds');
+        $generator = $this->getContainer()->get('mbh_search.search_combinations_generator');
+        $method = $this->getPrivateMethod(SearchCombinationsGenerator::class, 'getRoomTypeIds');
         $actual = $method->invokeArgs($generator, [[], [$hotel->getId()]]);
         $expected = [];
         foreach ($roomTypes as $roomType) {
@@ -206,8 +208,8 @@ class SearchQueryGeneratorTest extends WebTestCase
         $hotelsIds = Helper::toIds($hotels);
         $roomTypes = $this->dm->createQueryBuilder(RoomType::class)->field('hotel.id')->in($hotelsIds)->getQuery(
         )->execute()->toArray();
-        $generator = $this->getContainer()->get('mbh_search.search_query_generator');
-        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'getRoomTypeIds');
+        $generator = $this->getContainer()->get('mbh_search.search_combinations_generator');
+        $method = $this->getPrivateMethod(SearchCombinationsGenerator::class, 'getRoomTypeIds');
         $actual = $method->invokeArgs($generator, [[], $hotelsIds]);
         $expected = [];
         foreach ($roomTypes as $roomType) {
@@ -223,8 +225,8 @@ class SearchQueryGeneratorTest extends WebTestCase
      */
     public function testFailCombineTariffWithRoomType($roomTypeIds, $tariffIds): void
     {
-        $generator = $this->getContainer()->get('mbh_search.search_query_generator');
-        $method = $this->getPrivateMethod(SearchQueryGenerator::class, 'combineTariffWithRoomType');
+        $generator = $this->getContainer()->get('mbh_search.search_combinations_generator');
+        $method = $this->getPrivateMethod(SearchCombinationsGenerator::class, 'combineTariffWithRoomType');
         $this->expectException(SearchQueryGeneratorException::class);
         $method->invokeArgs($generator, [$roomTypeIds, $tariffIds]);
 

@@ -14,6 +14,7 @@ use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupInterface;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStoreInterface;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStore;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncSearcher;
+use MBH\Bundle\SearchBundle\Services\Search\AsyncSearchers\AsyncSearcherInterface;
 use MBH\Bundle\SearchBundle\Services\Search\Searcher;
 use MBH\Bundle\SearchBundle\Services\Search\SearcherFactory;
 use OldSound\RabbitMqBundle\RabbitMq\ConsumerInterface;
@@ -22,12 +23,12 @@ use PhpAmqpLib\Message\AMQPMessage;
 class AsyncSearchConsumer implements ConsumerInterface
 {
 
-    /** @var AsyncSearcher */
-    private $consumerSearch;
+    /** @var AsyncSearcherInterface[] */
+    private $asyncSearcherMap = [];
 
-    public function __construct(AsyncSearcher $consumerSearch)
+    public function addSearcher(string $name, AsyncSearcherInterface $asyncSearcher): void
     {
-        $this->consumerSearch = $consumerSearch;
+        $this->asyncSearcherMap[$name] = $asyncSearcher;
     }
 
 
@@ -35,9 +36,10 @@ class AsyncSearchConsumer implements ConsumerInterface
     {
         $body = json_decode($msg->getBody(), true);
         $conditionsId = $body['conditionsId'];
-        $searchQueries = unserialize($body['searchQueries'], [QueryGroupInterface::class => true]);
-
-        $this->consumerSearch->search($conditionsId, $searchQueries);
+        /** @var QueryGroupInterface $searchQueryGroup */
+        $searchQueryGroup = unserialize($body['searchQueriesGroup'], [QueryGroupInterface::class => true]);
+        $asyncSearcher = $this->asyncSearcherMap[$searchQueryGroup->getGroupName()];
+        $asyncSearcher->search($conditionsId, $searchQueryGroup);
     }
 
 }

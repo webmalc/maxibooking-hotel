@@ -9,6 +9,8 @@ use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Cache\ErrorFilters\ErrorResultFilter;
+use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupByRoomType;
+use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupInterface;
 use OldSound\RabbitMqBundle\RabbitMq\Producer;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
@@ -77,15 +79,20 @@ class SearchTest extends SearchWebTestCase
      * @param iterable $data
      * @throws SearchConditionException
      * @throws SearchQueryGeneratorException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\QueryGroupException
      */
-    public function testSearchAsync(iterable $data): void
+    public function testSearchAsync($data): void
     {
         $expected = $data['expected'];
         $producer = $this->createMock(Producer::class);
-        $producer->expects($this->exactly(1))->method('publish')->willReturnCallback(function (string $message) {
+        $producer->expects($this->exactly(2))->method('publish')->willReturnCallback(function (string $message) {
             $msg = json_decode($message, true);
             $this->assertNotEmpty($msg['conditionsId']);
-            $this->assertContainsOnlyInstancesOf(SearchQuery::class, unserialize($msg['searchQueries']));
+            /** @var QueryGroupByRoomType $searchQueryGroup */
+            $searchQueryGroup = unserialize($msg['searchQueriesGroup']);
+            $this->assertInstanceOf(QueryGroupByRoomType::class, $searchQueryGroup);
+            $this->assertContainsOnlyInstancesOf(SearchQuery::class, $searchQueryGroup->getSearchQueries());
+
         });
         $this->getContainer()->set('old_sound_rabbit_mq.async_search_producer', $producer);
         $conditionData = $this->createConditionData($data);

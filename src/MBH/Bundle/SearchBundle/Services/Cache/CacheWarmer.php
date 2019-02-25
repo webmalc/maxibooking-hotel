@@ -13,7 +13,7 @@ use MBH\Bundle\SearchBundle\Services\GuestCombinator;
 use MBH\Bundle\SearchBundle\Services\Search\CacheSearcher;
 use MBH\Bundle\SearchBundle\Services\Search\WarmUpSearcher;
 use MBH\Bundle\SearchBundle\Services\SearchConditionsCreator;
-use MBH\Bundle\SearchBundle\Services\SearchQueryGenerator;
+use MBH\Bundle\SearchBundle\Services\SearchCombinationsGenerator;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -27,8 +27,8 @@ class CacheWarmer
 
     public const MAX_BOOKING_LENGTH = 16;
 
-    /** @var SearchQueryGenerator */
-    private $queryGenerator;
+    /** @var SearchCombinationsGenerator */
+    private $searchCombinationsGenerator;
 
     /** @var LoggerInterface */
     private $logger;
@@ -55,7 +55,7 @@ class CacheWarmer
     /**
      * CacheWarmer constructor.
      * @param SearchConditionsCreator $creator
-     * @param SearchQueryGenerator $queryGenerator
+     * @param SearchCombinationsGenerator $queryGenerator
      * @param GuestCombinator $combinator
      * @param TariffRepository $tariffRepository
      * @param LoggerInterface $logger
@@ -64,7 +64,7 @@ class CacheWarmer
      */
     public function __construct(
         SearchConditionsCreator $creator,
-        SearchQueryGenerator $queryGenerator,
+        SearchCombinationsGenerator $queryGenerator,
         GuestCombinator $combinator,
         TariffRepository $tariffRepository,
         LoggerInterface $logger,
@@ -73,7 +73,7 @@ class CacheWarmer
     ) {
         $this->logger = $logger;
         $this->conditionCreator = $creator;
-        $this->queryGenerator = $queryGenerator;
+        $this->searchCombinationsGenerator = $queryGenerator;
         $this->combinator = $combinator;
         $this->tariffRepository = $tariffRepository;
         $this->producer = $producer;
@@ -212,7 +212,7 @@ class CacheWarmer
         $dm->flush($conditions);
         $dm->clear();
 
-        $queries = $this->queryGenerator->generate($conditions);
+        $queries = $this->searchCombinationsGenerator->generate($conditions)->createSearchQueries($conditions);
         array_map(
             function (SearchQuery $query) {
                 $query->unsetConditions();

@@ -16,8 +16,9 @@ use MBH\Bundle\SearchBundle\Lib\SearchQueryHelper;
 use MBH\Bundle\SearchBundle\Lib\DataHolder;
 use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupCreator;
 use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupInterface;
+use MBH\Bundle\SearchBundle\Services\Search\SearchCombinations;
 
-class SearchQueryGenerator
+class SearchCombinationsGenerator
 {
     /** @var AdditionalDatesGenerator */
     private $addDatesGenerator;
@@ -25,24 +26,18 @@ class SearchQueryGenerator
     /** @var DataHolder */
     private $dataHolder;
 
-    /** @var QueryGroupCreator */
-    private $queryGroupCreator;
-
     public function __construct(AdditionalDatesGenerator $generator, DataHolder $contentHolder)
     {
         $this->addDatesGenerator = $generator;
         $this->dataHolder = $contentHolder;
-        $this->queryGroupCreator = new QueryGroupCreator();
     }
 
     /**
      * @param SearchConditions $conditions
-     * @param string $queryGroupName
-     * @return QueryGroupInterface[]
+     * @return SearchCombinations
      * @throws SearchQueryGeneratorException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\QueryGroupException
      */
-    public function generate(SearchConditions $conditions, string $queryGroupName): array
+    public function generate(SearchConditions $conditions): SearchCombinations
     {
         $dates = $this->addDatesGenerator->generate(
             $conditions->getBegin(),
@@ -52,37 +47,11 @@ class SearchQueryGenerator
         );
 
         $tariffRoomTypeCombinations = $this->getTariffRoomTypesCombinations($conditions);
+        $searchCombinations = new SearchCombinations();
+        $searchCombinations->setDates($dates)->setTariffRoomTypeCombinations($tariffRoomTypeCombinations);
 
-        $result = $this->queryGroupCreator->createQueryGroups(
-            $conditions,
-            $dates,
-            $tariffRoomTypeCombinations,
-            $queryGroupName
-        );
 
-//        $result = [];
-//        foreach ($dates as $period) {
-//            $begin = $period['begin'];
-//            $end = $period['end'];
-
-//            if ($dayGrouped) {
-//                /** Групировка по дням нужна для асинхронного вывода - даты поиска в приоритете если есть допдаты */
-//                $queryGroup = new DayGroupSearchQuery();
-//                /** @noinspection TypeUnsafeComparisonInspection */
-//                $isMainGroup = ($begin == $conditions->getBegin()) && ($end == $conditions->getEnd());
-//                $queryGroup->setBegin($begin)->setEnd($end)->setType($isMainGroup ? DayGroupSearchQuery::MAIN_DATES : DayGroupSearchQuery::ADDITIONAL_DATES);
-//                foreach ($tariffRoomTypeCombinations as $combination) {
-//                    $queryGroup->addSearchQuery(SearchQuery::createInstance($conditions, $begin, $end, $combination));
-//                }
-//                $result[] = $queryGroup;
-//            } else {
-//                foreach ($tariffRoomTypeCombinations as $combination) {
-//                    $result [] = SearchQuery::createInstance($conditions, $begin, $end, $combination);
-//                }
-//            }
-//        }
-
-        return $result;
+        return $searchCombinations;
     }
 
 

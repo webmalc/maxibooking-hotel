@@ -1,0 +1,59 @@
+<?php
+
+
+namespace MBH\Bundle\SearchBundle\Services\Search\AsyncSearchers;
+
+
+use MBH\Bundle\SearchBundle\Document\SearchConditions;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\AsyncResultReceiverException;
+use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupByRoomType;
+use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupInterface;
+use Predis\Client;
+
+class RoomTypeSearchDecisionMaker implements AsyncSearchDecisionMakerInterface
+{
+
+    /** @var int  */
+    public const ROOM_TYPE_SEARCHED_THRESHOLD = 2;
+
+    /** @var Client */
+    private $cache;
+
+    /**
+     * RoomTypeSearchDecisionMaker constructor.
+     * @param Client $cache
+     */
+    public function __construct(Client $cache)
+    {
+        $this->cache = $cache;
+    }
+
+    public function isNeedSearch(SearchConditions $conditions, QueryGroupInterface $group): bool
+    {
+        if (!$group instanceof QueryGroupByRoomType) {
+            throw new AsyncResultReceiverException('Wrong query group in RoomType Decision maker');
+        }
+        $roomTypeId = $group->getRoomTypeId();
+        $hash = $conditions->getSearchHash();
+
+        return ((int)$this->cache->get($this->getKey($hash, $roomTypeId)) < self::ROOM_TYPE_SEARCHED_THRESHOLD);
+    }
+
+    public function markFoundedResults(SearchConditions $conditions, QueryGroupInterface $group, bool $isFounded): void
+    {
+        if (!$group instanceof QueryGroupByRoomType) {
+            throw new AsyncResultReceiverException('Wrong query group in RoomType Decision maker');
+        }
+
+        if ($isFounded) {
+            $key = $this->getKey($conditions->getSearchHash(), $group->getRoomTypeId());
+            $this->cache->incr($key);
+        }
+    }
+
+    private function getKey(string $hash, string $roomTypeId): string
+    {
+        return 'already_received_room_types_' .$roomTypeId.'_'. $hash;
+    }
+
+}

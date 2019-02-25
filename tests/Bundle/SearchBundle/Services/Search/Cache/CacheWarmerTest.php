@@ -10,9 +10,10 @@ use MBH\Bundle\SearchBundle\Lib\Combinations\CombinationInterface;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Cache\CacheWarmer;
 use MBH\Bundle\SearchBundle\Services\GuestCombinator;
+use MBH\Bundle\SearchBundle\Services\Search\SearchCombinations;
 use MBH\Bundle\SearchBundle\Services\Search\WarmUpSearcher;
 use MBH\Bundle\SearchBundle\Services\SearchConditionsCreator;
-use MBH\Bundle\SearchBundle\Services\SearchQueryGenerator;
+use MBH\Bundle\SearchBundle\Services\SearchCombinationsGenerator;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 
 class CacheWarmerTest extends WebTestCase
@@ -90,16 +91,20 @@ class CacheWarmerTest extends WebTestCase
         $container->set('mbh_search.search_condition_creator', $conditionCreator);
 
 
-        $queryGenerator = $this->createMock(SearchQueryGenerator::class);
+        $queryGenerator = $this->createMock(SearchCombinationsGenerator::class);
         $queryGenerator->expects($this->exactly(4 * $dateMultiplier))->method('generate')->willReturnCallback(function() {
-            $queries = [];
-            foreach (range(0, 99) as $index) {
-                $queries[] = new SearchQuery();
-            }
 
-            return $queries;
+            $combinations = new SearchCombinations();
+            $combinations->setDates(['period1' => ['begin' => new \DateTime('midnight'), 'end' => new \DateTime('midnight +1 day')]]);
+            $tariffRoomType = [
+                ['tariffId' => 'fakeTariffId1', 'roomTypeId' => 'fakeRoomTypeId1', 'restrictionTariffId' => 'fakeTariffId1'],
+                ['tariffId' => 'fakeTariffId1', 'roomTypeId' => 'fakeRoomTypeId2', 'restrictionTariffId' => 'fakeTariffId1']
+            ];
+            $combinations->setTariffRoomTypeCombinations($tariffRoomType);
+
+            return $combinations;
         });
-        $container->set('mbh_search.search_query_generator', $queryGenerator);
+        $container->set('mbh_search.search_combinations_generator', $queryGenerator);
 
         $producer = $this->createMock(ProducerInterface::class);
         $container->set('old_sound_rabbit_mq.warm_up_search_producer', $producer);

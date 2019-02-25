@@ -402,6 +402,7 @@ class SearchQuery
             ->setBegin($begin)
             ->setEnd($end)
             ->setTariffId($tariffRoomType['tariffId'])
+            //** TODO: remove restrictionTariffId and create Service to Determine RestrictionTariff ??? */
             ->setRestrictionTariffId($tariffRoomType['restrictionTariffId'])
             ->setRoomTypeId($tariffRoomType['roomTypeId'])
             ->setSearchConditions($conditions)

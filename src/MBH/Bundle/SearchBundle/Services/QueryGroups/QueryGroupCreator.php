@@ -9,25 +9,21 @@ use MBH\Bundle\SearchBundle\Lib\Exceptions\QueryGroupException;
 use MBH\Bundle\SearchBundle\Services\QueryGroups\Factories\DayQueryGroupFactory;
 use MBH\Bundle\SearchBundle\Services\QueryGroups\Factories\QueryGroupFactoryInterface;
 use MBH\Bundle\SearchBundle\Services\QueryGroups\Factories\RoomTypeQueryGroupFactory;
-use MBH\Bundle\SearchBundle\Services\QueryGroups\Factories\SyncQueryGroupFactory;
+use MBH\Bundle\SearchBundle\Services\Search\SearchCombinations;
 
 class QueryGroupCreator
 {
 
     /**
      * @param SearchConditions $conditions
-     * @param array $dates
-     * @param array $combinations
+     * @param SearchCombinations $combinations
      * @param string $groupName
      * @return QueryGroupInterface[]
      * @throws QueryGroupException
      */
-    public function createQueryGroups(SearchConditions $conditions, array $dates, array $combinations, string $groupName): array
+    public function createQueryGroups(SearchConditions $conditions, SearchCombinations $combinations, string $groupName): array
     {
         switch ($groupName) {
-            case 'QueryGroupSync':
-                $factory = new SyncQueryGroupFactory();
-                break;
             case 'QueryGroupByRoomType':
                 $factory = new RoomTypeQueryGroupFactory();
                 break;
@@ -39,7 +35,7 @@ class QueryGroupCreator
         }
 
         /** @var QueryGroupFactoryInterface $factory */
-        return $factory->createQueryGroups($conditions, $dates, $combinations);
+        return $factory->createQueryGroups($conditions, $combinations);
 
     }
 }

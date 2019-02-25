@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Tests\Bundle\SearchBundle\Services\Search;
+namespace Tests\Bundle\SearchBundle\Services\Search\AsyncSearchers;
 
 
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -10,13 +10,15 @@ use MBH\Bundle\SearchBundle\Document\SearchConditionsRepository;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\ConsumerSearchException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
+use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupByRoomType;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStore;
+use MBH\Bundle\SearchBundle\Services\Search\AsyncSearchers\AsyncSearcherGroupedByRoomType;
 use MBH\Bundle\SearchBundle\Services\Search\CacheSearcher;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncSearcher;
 use MBH\Bundle\SearchBundle\Services\Search\SearcherFactory;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
-class AsyncSearcherTest extends SearchWebTestCase
+class AsyncSearcherGroupedByRoomTypeTest extends SearchWebTestCase
 {
 
     public function testSearch(): void
@@ -57,12 +59,14 @@ class AsyncSearcherTest extends SearchWebTestCase
 
 
         $searchQuery = $this->createMock(SearchQuery::class);
+        $group = new QueryGroupByRoomType();
+        $group->setSearchQueries([clone $searchQuery, clone $searchQuery, clone $searchQuery]);
 
-        $search = new AsyncSearcher($conditionsRepository, $resultStore, $searcherFactory);
-        $search->search('fakeConditionsId', [clone $searchQuery, clone $searchQuery, clone $searchQuery]);
-        $search->search('fakeConditionsId', [clone $searchQuery, clone $searchQuery, clone $searchQuery]);
+        $search = new AsyncSearcherGroupedByRoomType($conditionsRepository, $resultStore, $searcherFactory);
+        $search->search('fakeConditionsId', $group);
+        $search->search('fakeConditionsId', $group);
         $this->expectException(ConsumerSearchException::class);
-        $search->search('fakeConditionsId', [clone $searchQuery, clone $searchQuery, clone $searchQuery]);
+        $search->search('fakeConditionsId', $group);
 
     }
 }
