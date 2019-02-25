@@ -28,8 +28,16 @@ class Package extends Common
         'getDepartureTime',
         'getPrice|money',
         'getServicesPrice|money',
-        'getOneDayPrice|money'
+        'getOneDayPrice|money',
     ];
+
+    /**
+     * @return Order
+     */
+    public function getOrder(): Order
+    {
+        return $this->helper->entityDecoratorInstance($this->entity->getOrder());
+    }
 
     public function getRoomName(): string
     {
@@ -105,12 +113,21 @@ class Package extends Common
     public function allTourists(): array
     {
         $return = [];
-        $mortalSerialize = $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Mortal');
         foreach ($this->entity->getTourists() as $tourist) {
-            $return[] = (clone $mortalSerialize)->newInstance($tourist);
+            $return[] = $this->helper->entityDecoratorInstance($tourist);
         }
 
         return $return;
+    }
+
+    public function getTouristsAsString(): string
+    {
+        $tourists = [];
+        foreach ($this->entity->getTourists() as $tourist) {
+            $tourists[] = $tourist->getShortName();
+        }
+
+        return implode(', ', $tourists);
     }
 
     /**
