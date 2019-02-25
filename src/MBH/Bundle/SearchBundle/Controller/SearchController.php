@@ -96,7 +96,7 @@ class SearchController extends Controller
      *      options={"expose"=true}
      *     )
      */
-    public function asyncSearchAction(Request $request)
+    public function asyncSearchAction(Request $request): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
         $search = $this->get('mbh_search.search');

@@ -10,10 +10,13 @@ use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
 use MBH\Bundle\SearchBundle\Lib\Result\DayGroupSearchQuery;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
+use MBH\Bundle\SearchBundle\Services\QueryGroups\AsyncQueryGroupInterface;
+use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupCreator;
+use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupInterface;
 use MBH\Bundle\SearchBundle\Services\RestrictionsCheckerService;
 use MBH\Bundle\SearchBundle\Services\SearchConditionsCreator;
 use MBH\Bundle\SearchBundle\Services\FinalSearchResultsBuilder;
-use MBH\Bundle\SearchBundle\Services\SearchQueryGenerator;
+use MBH\Bundle\SearchBundle\Services\SearchCombinationsGenerator;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
 
 class Search
@@ -34,8 +37,8 @@ class Search
     /** @var SearchConditionsCreator */
     private $conditionsCreator;
 
-    /** @var SearchQueryGenerator */
-    private $queryGenerator;
+    /** @var SearchCombinationsGenerator */
+    private $combinationsGenerator;
 
     /** @var ProducerInterface */
     private $producer;
@@ -43,33 +46,39 @@ class Search
     /** @var FinalSearchResultsAnswerManager */
     private $resultsBuilder;
 
+    /** @var QueryGroupCreator */
+    private $queryGroupCreator;
+
     /**
      * Search constructor.
      * @param RestrictionsCheckerService $restrictionsChecker
      * @param SearcherFactory $factory
      * @param DocumentManager $documentManager
      * @param SearchConditionsCreator $conditionsCreator
-     * @param SearchQueryGenerator $queryGenerator
+     * @param SearchCombinationsGenerator $queryGenerator
      * @param ProducerInterface $producer
      * @param FinalSearchResultsAnswerManager $builder
+     * @param QueryGroupCreator $groupCreator
      */
     public function __construct(
         RestrictionsCheckerService $restrictionsChecker,
         SearcherFactory $factory,
         DocumentManager $documentManager,
         SearchConditionsCreator $conditionsCreator,
-        SearchQueryGenerator $queryGenerator,
+        SearchCombinationsGenerator $queryGenerator,
         ProducerInterface $producer,
-        FinalSearchResultsAnswerManager $builder
+        FinalSearchResultsAnswerManager $builder,
+        QueryGroupCreator $groupCreator
     )
     {
         $this->restrictionChecker = $restrictionsChecker;
         $this->searcherFactory = $factory;
         $this->dm = $documentManager;
         $this->conditionsCreator = $conditionsCreator;
-        $this->queryGenerator = $queryGenerator;
+        $this->combinationsGenerator = $queryGenerator;
         $this->producer = $producer;
         $this->resultsBuilder = $builder;
+        $this->queryGroupCreator = $groupCreator;
     }
 
 
@@ -91,19 +100,17 @@ class Search
     )
     {
         $conditions = $this->createSearchConditions($data);
-        $queryGroups = $this->queryGenerator->generate($conditions, 'QueryGroupSync');
+        $searchCombinations = $this->combinationsGenerator->generate($conditions);
+        $searchQueries = $searchCombinations->createSearchQueries($conditions);
 
         $searcher = $this->searcherFactory->getSearcher($conditions->isUseCache());
 
         $results = [];
-        foreach ($queryGroups as $queryGroup) {
-            $searchQueries = $queryGroup->getSearchQueries();
-            if (self::PRE_RESTRICTION_CHECK) {
-                $searchQueries = array_filter($searchQueries, [$this->restrictionChecker, 'check']);
-            }
-            foreach ($searchQueries as $searchQuery) {
-                $results[] = $searcher->search($searchQuery);
-            }
+        if (self::PRE_RESTRICTION_CHECK) {
+            $searchQueries = array_filter($searchQueries, [$this->restrictionChecker, 'check']);
+        }
+        foreach ($searchQueries as $searchQuery) {
+            $results[] = $searcher->search($searchQuery);
         }
 
         $results = $this->resultsBuilder->createAnswer(
@@ -124,30 +131,27 @@ class Search
      * @return string
      * @throws SearchConditionException
      * @throws SearchQueryGeneratorException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\QueryGroupException
      */
     public function searchAsync(array $data): string
     {
 
         $conditions = $this->createSearchConditions($data);
-        $queryGroups = $this->queryGenerator->generate($conditions, 'QueryGroupByDay');
+        $searchCombinations = $this->combinationsGenerator->generate($conditions);
+        $queryGroups = $this->queryGroupCreator->createQueryGroups($conditions, $searchCombinations, 'QueryGroupByRoomType');
 
         $conditionsId = $conditions->getId();
         $countQueries = 0;
+        /** @var AsyncQueryGroupInterface|QueryGroupInterface $queryGroup */
         foreach ($queryGroups as $queryGroup) {
-            $queries = [];
-            /** @var DayGroupSearchQuery $queryGroup */
-            foreach ($queryGroup->getSearchQueries() as $searchQuery) {
-                /** @var SearchQuery $searchQuery */
-                $searchQuery->unsetConditions();
-                $queries[] = $searchQuery;
-                $countQueries++;
-            }
+            $queryGroup->unsetConditions();
+            $countQueries += $queryGroup->countQueries();
             $message = [
                 'conditionsId' => $conditionsId,
-                'searchQueries' => serialize($queries)
+                'searchQueriesGroup' => serialize($queryGroup)
             ];
             $msgBody = json_encode($message);
-            $this->producer->publish($msgBody, '', ['priority' => $queryGroup->getType() === DayGroupSearchQuery::MAIN_DATES ? 10 : 1]);
+            $this->producer->publish($msgBody, '', ['priority' => $queryGroup->getQueuePriority()]);
         }
 
         $conditions->setExpectedResultsCount($countQueries);

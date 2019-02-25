@@ -11,6 +11,7 @@ use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
+use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupInterface;
 
 abstract class SearchWebTestCase extends WebTestCase
 {
@@ -25,7 +26,7 @@ abstract class SearchWebTestCase extends WebTestCase
         $this->getContainer()->get('snc_redis.results_client')->flushall();
     }
 
-    protected function createConditionData(array $data)
+    protected function createConditionData(iterable $data): array
     {
         $begin = new \DateTime("midnight +{$data['beginOffset']} days");
         $end = new \DateTime("midnight +{$data['endOffset']} days");
@@ -125,7 +126,7 @@ abstract class SearchWebTestCase extends WebTestCase
     protected function createSearchQueries(array $data): array
     {
         $conditions = $this->createSearchCondition($data);
-        $searchQueries = $this->getContainer()->get('mbh_search.search_query_generator')->generate($conditions);
+        $searchQueries = $this->getContainer()->get('mbh_search.search_combinations_generator')->generate($conditions)->createSearchQueries($conditions);
 
         return $searchQueries;
     }

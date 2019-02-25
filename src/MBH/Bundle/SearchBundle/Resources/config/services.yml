@@ -1,9 +1,12 @@
 services:
-    mbh_search.search_query_generator:
-        class: MBH\Bundle\SearchBundle\Services\SearchQueryGenerator
+    mbh_search.search_combinations_generator:
+        class: MBH\Bundle\SearchBundle\Services\SearchCombinationsGenerator
         arguments:
             - '@mbh_search.additional_days_generator'
             - '@mbh_search.data_holder'
+
+    mbh_search.query_group_creator:
+        class: MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupCreator
 
     mbh_search.search_conditions_roomtype_type:
         class: MBH\Bundle\SearchBundle\Form\RoomTypesType
@@ -93,20 +96,24 @@ services:
 
 
 #search
-
     mbh_search.special_search:
-        class: MBH\Bundle\SearchBundle\Services\Search\SpecialSearch
-        arguments:
-           - '@mbh_search.special_repository'
-           - '@mbh.hotel.room_type_manager'
-           - '@mbh_search.room_type_category_repository'
+      class: MBH\Bundle\SearchBundle\Services\Search\SpecialSearch
+      arguments:
+        - '@mbh_search.special_repository'
+        - '@mbh.hotel.room_type_manager'
+        - '@mbh_search.room_type_category_repository'
 
-    mbh_search.async_searcher:
-        class: MBH\Bundle\SearchBundle\Services\Search\AsyncSearcher
+    mbh_search.async_searcher_grouped_by_room_type:
+        class: MBH\Bundle\SearchBundle\Services\Search\AsyncSearchers\AsyncSearcherGroupedByRoomType
         arguments:
             - '@mbh_search.search_conditions_repository'
             - '@mbh_search.async_result_store'
             - '@mbh_search.searcher_factory'
+            - '@mbh_search.room_type_search_decision_maker'
+
+    mbh_search.room_type_search_decision_maker:
+        class: MBH\Bundle\SearchBundle\Services\Search\AsyncSearchers\RoomTypeSearchDecisionMaker
+        arguments: ['@snc_redis.cache_results_client']
 
     mbh_search.searcher_factory:
         class: MBH\Bundle\SearchBundle\Services\Search\SearcherFactory
@@ -174,9 +181,10 @@ services:
             - '@mbh_search.searcher_factory'
             - '@doctrine.odm.mongodb.document_manager'
             - '@mbh_search.search_condition_creator'
-            - '@mbh_search.search_query_generator'
+            - '@mbh_search.search_combinations_generator'
             - '@old_sound_rabbit_mq.async_search_producer'
             - '@mbh_search.results_answer_manager'
+            - '@mbh_search.query_group_creator'
 
     mbh_search.accommodation_room_searcher:
         class: MBH\Bundle\SearchBundle\Services\AccommodationRoomSearcher
@@ -216,9 +224,8 @@ services:
 # async receive results
     mbh_search.asycn_search:
         class: MBH\Bundle\SearchBundle\RabbitMQ\AsyncSearchConsumer
-        arguments:
-            - '@mbh_search.async_searcher'
-
+        calls:
+            - [addSearcher, ['queryGroupByRoomType', '@mbh_search.async_searcher_grouped_by_room_type']]
 
     mbh_search.warm_up_search:
         class: MBH\Bundle\SearchBundle\RabbitMQ\WarmUpConsumer
@@ -446,7 +453,7 @@ services:
         class: MBH\Bundle\SearchBundle\Services\Cache\CacheWarmer
         arguments:
             - '@mbh_search.search_condition_creator'
-            - '@mbh_search.search_query_generator'
+            - '@mbh_search.search_combinations_generator'
             - '@mbh_search.combinator'
             - '@mbh_search.tariff_repository'
             - '@mbh_search.cache_logger'

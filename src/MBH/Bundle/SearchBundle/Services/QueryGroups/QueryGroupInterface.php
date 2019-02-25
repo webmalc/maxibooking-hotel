@@ -11,7 +11,7 @@ interface QueryGroupInterface
     /** @return SearchQuery[] */
     public function getSearchQueries(): array;
 
-    public function getGroupName(): string;
-
     public function getQueuePriority(): int;
+
+    public function getGroupName(): string;
 }

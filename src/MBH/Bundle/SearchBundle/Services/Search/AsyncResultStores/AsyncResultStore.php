@@ -128,19 +128,4 @@ class AsyncResultStore implements AsyncResultStoreInterface
         $this->cache->set('received_fake'.$hash, (int)$fakeReceived + $number);
     }
 
-    public function increaseAlreadySearchedDay(string $hash): void
-    {
-        $alreadySearched = $this->getAlreadySearchedDay($hash);
-        $this->cache->set('already_received_group_'.$hash, $alreadySearched + 1);
-    }
-
-    /**
-     * @param string $hash
-     * @return int
-     */
-    public function getAlreadySearchedDay(string $hash): int
-    {
-        return (int)$this->cache->get('already_received_group_'.$hash);
-    }
-
 }

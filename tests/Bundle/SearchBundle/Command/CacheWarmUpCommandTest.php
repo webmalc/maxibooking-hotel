@@ -21,12 +21,13 @@ class CacheWarmUpCommandTest extends KernelTestCase
         $container = $kernel->getContainer();
 
         $warmer = $this->createMock(CacheWarmer::class);
-        $container->set('mbh_search.cache_warmer', $warmer);
         $warmer->expects($this->once())->method('warmUp')->willReturnCallback(
             function ($begin, $end) {
                 $this->assertEquals(new \DateTime('01-01-2018'), $begin);
                 $this->assertEquals(new \DateTime('01-01-2019'), $end);
             });
+
+        $container->set('mbh_search.cache_warmer', $warmer);
 
         $searchCache = $this->createMock(CacheSearchResults::class);
         $searchCache->expects($this->once())->method('flushCache');
