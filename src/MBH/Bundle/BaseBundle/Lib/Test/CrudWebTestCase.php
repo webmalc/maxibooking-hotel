@@ -356,7 +356,6 @@ abstract class CrudWebTestCase extends WebTestCase
         $this->clickLinkInList($url, ' a[data-text="Вы действительно хотите удалить запись «' . $title . '»?"]', true);
         $this->assertSame($count, $this->getListCrawler()->filter($this->getListContainer() . 'a[rel="main"]')->count());
     }
-
     /**
      * @param array|null $values
      * @param array|null $errors
@@ -413,6 +412,7 @@ abstract class CrudWebTestCase extends WebTestCase
      * @param string|null $title
      * @param string|null $titleEdited
      * @param string|null $formName
+     * @throws \Exception
      */
     protected function editFormBaseTest(array $values = null, string $url = null, string $title = null, string $titleEdited = null, string $formName = null)
     {
@@ -438,11 +438,14 @@ abstract class CrudWebTestCase extends WebTestCase
      * @param string $url
      * @param string $filter
      * @param bool $redirect
+     * @param array $params
+     * @param string $method
      * @return \Symfony\Component\DomCrawler\Crawler
+     * @throws \Exception
      */
-    protected function clickLinkInList(string $url = null, string $filter, bool $redirect = false)
+    protected function clickLinkInList(string $url = null, string $filter, bool $redirect = false, array $params = [], string $method = 'GET')
     {
-        $crawler = $this->getListCrawler($url);
+        $crawler = $this->getListCrawler($url, $method);
         $link = $crawler->filter($this->getListContainer() . $filter)->link();
 
         $crawler = $this->client->click($link);
@@ -467,5 +470,73 @@ abstract class CrudWebTestCase extends WebTestCase
             }
         }
         return true;
+    }
+
+    /**
+     * @param string $method
+     * @param string $url
+     * @param array|null $params
+     * @return \Symfony\Component\DomCrawler\Crawler
+     * @throws \Exception
+     */
+    protected function getListCrawlerJsonResponse($url = null, $method = 'GET', array $params = []): Crawler
+    {
+        $url = $url ?? $this->getListUrl();
+        $this->client->request($method, $url, $params, [], $this->getListHeaders());
+        $response = $this->client->getResponse()->getContent();
+
+        if( !isset( ((array)json_decode($response))['data'] ) )
+            throw new \Exception('Data key is not defined in response json. Try to override CrudWebTestTestCase\getListCrawlerNotHtmlResponse()');
+
+        $htmlData = $this->arraysFromValidJsonToSting( ((array)json_decode($response))['data'] );
+
+        /*
+         * uri param is not using in this case but has been set because Crawler constructor needs it to be set anyways
+         */
+        return new Crawler($htmlData, 'http://localhost');
+    }
+
+    /**
+     * @param string $url
+     * @param string $filter
+     * @param bool $redirect
+     * @param array $params
+     * @param string $method
+     * @return \Symfony\Component\DomCrawler\Crawler
+     * @throws \Exception
+     */
+    protected function clickLinkInListWithParams(string $url = null, string $filter, bool $redirect = false, array $params = [], string $method = 'GET')
+    {
+        $crawler = $this->getListCrawlerJsonResponse($url, $method, $params);
+
+        $link = $crawler->filter($this->getListContainer() . $filter)->link();
+
+        $crawler = $this->client->click($link);
+        if ($redirect) {
+            $crawler = $this->client->followRedirect();
+        }
+
+        return $crawler;
+    }
+
+    /**
+     * @param array $array
+     * @return string
+     */
+    private function arraysFromValidJsonToSting(array $array) : string
+    {
+        $imploded = '';
+        foreach ($array as $key => $value){
+            if(is_array($key))
+                $imploded .= $this->arraysFromValidJsonToSting($key);
+            if(is_array($value))
+                $imploded .= $this->arraysFromValidJsonToSting($value);
+
+            if(is_string($value))
+                $imploded .= $value;
+            if(is_string($key))
+                $imploded .= $key;
+        }
+        return $imploded;
     }
 }
