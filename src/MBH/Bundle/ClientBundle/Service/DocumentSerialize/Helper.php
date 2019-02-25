@@ -7,7 +7,9 @@
 namespace MBH\Bundle\ClientBundle\Service\DocumentSerialize;
 
 
+use MBH\Bundle\PackageBundle\Component\PackageServiceGroupByService;
 use MBH\Bundle\PackageBundle\Document\Organization as OrganizationBase;
+use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\Tourist as TouristBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -19,6 +21,9 @@ class Helper
     private const HOTEL_ORGANIZATION_DECORATOR = \MBH\Bundle\ClientBundle\Service\DocumentSerialize\HotelOrganization::class;
     private const USER_DECORATOR = \MBH\Bundle\ClientBundle\Service\DocumentSerialize\User::class;
     private const MORTAL_DECORATOR = \MBH\Bundle\ClientBundle\Service\DocumentSerialize\Mortal::class;
+    private const CASH_DOCUMENT_DECORATOR = \MBH\Bundle\ClientBundle\Service\DocumentSerialize\CashDocument::class;
+    private const SERVICE_GROUP_DECORATOR = \MBH\Bundle\ClientBundle\Service\DocumentSerialize\ServiceGroup::class;
+    private const SERVICE_DECORATOR = \MBH\Bundle\ClientBundle\Service\DocumentSerialize\Service::class;
 
     private $container;
 
@@ -41,6 +46,12 @@ class Helper
             $classNameDecorator = self::HOTEL_DECORATOR;
         } elseif ($obj instanceof TouristBase) {
             $classNameDecorator = self::MORTAL_DECORATOR;
+        } elseif ($obj instanceof \MBH\Bundle\CashBundle\Document\CashDocument) {
+            $classNameDecorator = self::CASH_DOCUMENT_DECORATOR;
+        } elseif ($obj instanceof PackageServiceGroupByService) {
+            $classNameDecorator = self::SERVICE_GROUP_DECORATOR;
+        } elseif ($obj instanceof PackageService) {
+            $classNameDecorator = self::SERVICE_DECORATOR;
         }
 
         if (!isset($classNameDecorator)) {
@@ -84,9 +95,9 @@ class Helper
         $order = $c->get(self::ORDER_DECORATOR);
         $user = $c->get(self::USER_DECORATOR);
         $package = $c->get(self::PACKAGE_DECORATOR);
-        $cashDocument = $c->get(\MBH\Bundle\ClientBundle\Service\DocumentSerialize\CashDocument::class);
-        $serviceGroup = $c->get(\MBH\Bundle\ClientBundle\Service\DocumentSerialize\ServiceGroup::class);
-        $service = $c->get(\MBH\Bundle\ClientBundle\Service\DocumentSerialize\Service::class);
+        $cashDocument = $c->get(self::CASH_DOCUMENT_DECORATOR);
+        $serviceGroup = $c->get(self::SERVICE_GROUP_DECORATOR);
+        $service = $c->get(self::SERVICE_DECORATOR);
 
         return [
             'common' => [
