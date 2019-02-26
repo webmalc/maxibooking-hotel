@@ -30,7 +30,7 @@ class PriceCacheRepository extends DocumentRepository
             ->getQuery()
             ->execute()->toArray();
 
-        return $this->convertRawMongoData($caches);
+        return $this->convertRawMongoData($caches, $roomTypeField);
     }
 
     /**
@@ -238,7 +238,7 @@ class PriceCacheRepository extends DocumentRepository
      * @param $caches
      * @return array
      */
-    private function convertRawMongoData($caches)
+    private function convertRawMongoData($caches, $roomTypeField)
     {
         $result = [];
         foreach ($caches as $cache) {
@@ -246,10 +246,10 @@ class PriceCacheRepository extends DocumentRepository
             $cache['date'] = $cache['date']->toDateTime();
             $cache['date']->setTimezone(new \DateTimeZone(date_default_timezone_get()));
             $cache['hotel'] = (string)$cache['hotel']['$id'];
-            $cache['roomType'] = (string)$cache['roomType']['$id'];
+            $cache[$roomTypeField] = (string)$cache[$roomTypeField]['$id'];
             $cache['tariff'] = (string)$cache['tariff']['$id'];
             unset($cache['_id']);
-            $result[$cache['hotel']][$cache['roomType']][$cache['tariff']][$cache['date']->format('d.m.Y')] = $cache;
+            $result[$cache['hotel']][$cache[$roomTypeField]][$cache['tariff']][$cache['date']->format('d.m.Y')] = $cache;
         }
 
         return $result;
