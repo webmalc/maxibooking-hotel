@@ -71,13 +71,15 @@ class TemplateFormatter
         $hotel = $package->getRoomType()->getHotel();
         $organization = $doc->getOrganization() ?? $hotel->getOrganization() ?? new Organization();
 
+        $helperSerialize = $this->container->get(\MBH\Bundle\ClientBundle\Service\DocumentSerialize\Helper::class);
+
         $params = [
-            'package'              => $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Package')->newInstance($package),
-            'order'                => $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Order')->newInstance($order),
-            'hotel'                => $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Hotel')->newInstance($hotel),
-            'payer'                => $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Helper')->payerInstance($order->getPayer()),
-            'organization'         => $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\HotelOrganization')->newInstance($organization),
-            'user'                 => !is_null($user) ? $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\User')->newInstance($user) : null,
+            'package'              => $helperSerialize->entityDecoratorInstance($package),
+            'order'                => $helperSerialize->entityDecoratorInstance($order),
+            'hotel'                => $helperSerialize->entityDecoratorInstance($hotel),
+            'payer'                => $helperSerialize->payerInstance($order->getPayer()),
+            'organization'         => $helperSerialize->entityDecoratorInstance($organization),
+            'user'                 => $user !== null ? $helperSerialize->entityDecoratorInstance($user) : null,
             'arrivalTimeDefault'   => $hotel->getPackageArrivalTime(),
             'departureTimeDefault' => $hotel->getPackageDepartureTime(),
             'documentTypes'        => $this->container->get('mbh.fms_dictionaries')->getDocumentTypes(),
@@ -95,9 +97,10 @@ class TemplateFormatter
 
         return $this->container->get('knp_snappy.pdf')
             ->getOutputFromHtml(
-                $renderedTemplate, [
-                                     'orientation' => $doc->getOrientation(),
-                                 ]
+                $renderedTemplate,
+                [
+                    'orientation' => $doc->getOrientation(),
+                ]
             );
     }
 
@@ -135,7 +138,7 @@ class TemplateFormatter
             $entity =
                 $this
                     ->container
-                    ->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\HotelOrganization')
+                    ->get(\MBH\Bundle\ClientBundle\Service\DocumentSerialize\HotelOrganization::class)
                     ->newInstance($params['hotel']->getOrganization());
         } else {
             $entity = $hotel;

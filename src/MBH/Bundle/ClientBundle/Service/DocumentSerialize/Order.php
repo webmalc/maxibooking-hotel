@@ -36,14 +36,30 @@ class Order extends Common
     private $isPackageServicesInit = false;
 
     /**
+     * @return array| Package[]
+     */
+    public function getPackages(): array
+    {
+        $wrapper = [];
+
+        /** @var \MBH\Bundle\PackageBundle\Document\Package $package */
+        foreach ($this->entity->getPackages() as $package) {
+            $wrapper[] = $this->helper->entityDecoratorInstance($package);
+        }
+
+        return $wrapper;
+    }
+
+
+    /**
      * @return array
      */
     public function allCashDocuments(): array
     {
         $return = [];
-        $cashDocumentSerialize = $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\CashDocument');
+
         foreach ($this->entity->getCashDocuments() as $cashDocument) {
-            $return[] = (clone $cashDocumentSerialize)->newInstance($cashDocument);
+            $return[] = $this->helper->entityDecoratorInstance($cashDocument);
         }
 
         return $return;
@@ -55,9 +71,8 @@ class Order extends Common
     public function allServices(): array
     {
         $services = [];
-        $serviceSerialize = $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\Service');
         foreach ($this->getPackagesServices() as $ps) {
-            $services[] = (clone $serviceSerialize)->newInstance($ps);
+            $services[] = $this->helper->entityDecoratorInstance($ps);
         }
 
         return $services;
@@ -71,13 +86,12 @@ class Order extends Common
         /** @var PackageServiceGroupByService[] $packageServicesByType */
         $packageServicesByType = [];
 
-        $sGS = $this->container->get('MBH\Bundle\ClientBundle\Service\DocumentSerialize\ServiceGroup');
         foreach ($this->getPackagesServices() as $ps) {
             $service = $ps->getService();
             $groupBy = $ps->getPrice() . $service->getId();
             if (!array_key_exists($groupBy, $packageServicesByType)) {
-                $packageServicesByType[$groupBy] = (clone $sGS)
-                    ->newInstance(new PackageServiceGroupByService($service, $ps->getPrice()));
+                $packageServicesByType[$groupBy] =
+                    $this->helper->entityDecoratorInstance(new PackageServiceGroupByService($service, $ps->getPrice()));
             }
             $packageServicesByType[$groupBy]->add($ps);
         }
