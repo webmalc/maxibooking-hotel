@@ -55,9 +55,8 @@ class Helper
         }
 
         if (!isset($classNameDecorator)) {
-            $ref = new \ReflectionClass($obj);
             throw new \RuntimeException(
-                sprintf('Unknown class for factory of decorators: %s', $ref->getName())
+                sprintf('Unknown class for factory of decorators: %s', get_class($obj))
             );
         }
 
