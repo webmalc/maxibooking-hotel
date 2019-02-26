@@ -90,12 +90,21 @@ class RoomCacheRepository extends DocumentRepository
         return $result;
     }
 
+    /**
+     * @param \DateTime $begin
+     * @param \DateTime $end
+     * @param RoomType $roomType
+     * @param Tariff|null $tariff
+     * @return int
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
     public function getMinTotalRaw(\DateTime $begin, \DateTime $end, RoomType $roomType, Tariff $tariff = null)
     {
         $qb = $this->getMinTotalQB($begin, $end, $roomType, $tariff);
-        $roomCache = $qb->select('totalRooms')->hydrate(false)->getQuery()->getSingleResult();
+        $roomCache = $qb->select('totalRooms')->hydrate(false)->getQuery()->execute();
+        $minTotal = min(array_column(array_values($roomCache->toArray()), 'totalRooms'));
 
-        return $roomCache ? $roomCache['totalRooms'] : 0;
+        return $minTotal !==false ? $minTotal : 0;
     }
 
     private function getMinTotalQB(\DateTime $begin, \DateTime $end, RoomType $roomType, Tariff $tariff = null)
