@@ -20,10 +20,14 @@ export class Root {
                 const begin = this.$el.getAttribute('data-begin');
                 const end = this.$el.getAttribute('data-end');
                 const roomTypes = JSON.parse(this.$el.getAttribute('data-room-types'));
+                const accessCache = (this.$el.getAttribute('data-access-cache') === 'true');
+                const accessAsyncSearch = (this.$el.getAttribute('data-access-async-search') === 'true');
                 this.$store.commit('form/setOrderId', order);
                 this.$store.commit('form/setBegin', begin);
                 this.$store.commit('form/setEnd', end);
-                this.$store.commit('form/setRoomTypeSelections', roomTypes)
+                this.$store.commit('form/setRoomTypeSelections', roomTypes);
+                this.$store.commit('access/setCache', accessCache);
+                this.$store.commit('access/setAsyncSearch', accessAsyncSearch);
             }
         })
     }

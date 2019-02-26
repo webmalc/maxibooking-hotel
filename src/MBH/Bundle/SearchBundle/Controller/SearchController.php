@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\SearchBundle\Controller;
 
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Document\SearchResultCacheItem;
 use MBH\Bundle\SearchBundle\Form\RoomTypesType;
@@ -152,10 +153,16 @@ class SearchController extends Controller
             ];
         }
 
+        $config = $this->get('doctrine.odm.mongodb.document_manager')->getRepository(ClientConfig::class)->findOneBy([]);
+        /** @var ClientConfig $config */
+        $begin = $config->getBeginDate();
+//        $begin = new \DateTime('24.04.2019 midnight');
+        $end = (clone $begin)->modify('+7 days');
+
         return $this->render('@MBHSearch/Search/searcher.html.twig', [
             'order' => $orderId,
-            'begin' => '24.04.2019',
-            'end' => '26.04.2019',
+            'begin' => $begin,
+            'end' => $end,
             'roomTypes' => $choices
         ]);
     }

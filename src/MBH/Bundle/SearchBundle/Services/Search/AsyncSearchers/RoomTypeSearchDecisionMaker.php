@@ -35,20 +35,19 @@ class RoomTypeSearchDecisionMaker implements AsyncSearchDecisionMakerInterface
         }
         $roomTypeId = $group->getRoomTypeId();
         $hash = $conditions->getSearchHash();
+        $results = (int)$this->cache->get($this->getKey($hash, $roomTypeId));
 
-        return ((int)$this->cache->get($this->getKey($hash, $roomTypeId)) < self::ROOM_TYPE_SEARCHED_THRESHOLD);
+        return $results < self::ROOM_TYPE_SEARCHED_THRESHOLD;
     }
 
-    public function markFoundedResults(SearchConditions $conditions, QueryGroupInterface $group, bool $isFounded): void
+    public function markFoundedResults(SearchConditions $conditions, QueryGroupInterface $group): void
     {
         if (!$group instanceof QueryGroupByRoomType) {
             throw new AsyncResultReceiverException('Wrong query group in RoomType Decision maker');
         }
 
-        if ($isFounded) {
-            $key = $this->getKey($conditions->getSearchHash(), $group->getRoomTypeId());
-            $this->cache->incr($key);
-        }
+        $key = $this->getKey($conditions->getSearchHash(), $group->getRoomTypeId());
+        $this->cache->incr($key);
     }
 
     private function getKey(string $hash, string $roomTypeId): string

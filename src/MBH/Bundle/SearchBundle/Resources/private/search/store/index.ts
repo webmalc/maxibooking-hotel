@@ -4,6 +4,7 @@ import createLogger from 'vuex/dist/logger';
 import form from './modules/form';
 import search from './modules/search';
 import results from './modules/results';
+import access from './modules/access';
 
 Vue.use(Vuex);
 
@@ -20,7 +21,8 @@ function builder(initData) {
         modules: {
             results: results,
             form: form,
-            search: search
+            search: search,
+            access: access
         }
     });
 }

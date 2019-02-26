@@ -12,12 +12,6 @@
             isCached: Boolean,
             cacheItemId: String
         },
-        data: function () {
-            return {
-                invalidated: false
-
-            }
-        },
         computed: {
             icon: function () {
                 return {
@@ -35,8 +29,11 @@
                     cursor: this.invalidated ? 'default' : 'pointer'
                 }
             }
-
-
+        },
+        methods: {
+            invalidate(a,b,c) {
+                console.log('must invalidate');
+            }
         }
     }
 </script>

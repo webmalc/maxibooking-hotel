@@ -3,12 +3,13 @@
 {% set layout = "box" %}
 {% block content %}
 
-
     <div id="vue-searcher"
          data-order="{{ order }}"
-         data-begin="{{ begin }}"
-         data-end="{{ end }}"
+         data-begin="{{ begin|date('d.m.Y') }}"
+         data-end="{{ end|date('d.m.Y') }}"
          data-room-types="{{ roomTypes|json_encode(256) }}"
+         data-access-cache="{{ is_granted('ROLE_ADMIN') ? 'true' : 'false'}}"
+         data-access-async-search="{{ is_granted('ROLE_ASYNC_SEARCH') ? 'true' : 'false'}}"
     >
 
     </div>

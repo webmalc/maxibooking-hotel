@@ -88,7 +88,10 @@ class AsyncSearcherGroupedByRoomType implements AsyncSearcherInterface
                 }
 
             }
-            $this->decisionMaker->markFoundedResults($conditions, $searchQueryGroup, $founded);
+            if ($founded) {
+                $this->decisionMaker->markFoundedResults($conditions, $searchQueryGroup);
+            }
+
         }
 
         $dm = $this->conditionsRepository->getDocumentManager();

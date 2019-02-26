@@ -66,6 +66,9 @@ const mutations = {
     },
     setRoomTypeSelections(state, payload) {
         state.roomTypeSelections = payload;
+    },
+    setIsUseCache(state, payload) {
+        state.isUseCache = payload;
     }
 
 };

@@ -1,5 +1,6 @@
 security:
   role_hierarchy:
+    ROLE_ASYNC_SEARCH: ~
     ROLE_SUPER_ADMIN: [ROLE_ADMIN]
     ROLE_ADMIN:
       - ROLE_HOTEL

@@ -112,7 +112,7 @@ const actions = {
             const data = await conditionResponse.json();
             const conditionsId = data.conditionsId;
             let url = Routing.generate(state.asyncSearchUrl, {id: conditionsId, grouping: 'roomType'});
-            let requestThreshold: number = 20;
+            let requestThreshold: number = 30;
             let responseStatus: number;
             do {
                 requestThreshold--;
