@@ -3,6 +3,7 @@
 namespace MBH\Bundle\ClientBundle\Service\Dashboard;
 
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\DashboardEntry;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -44,6 +45,8 @@ abstract class AbstractDashboardSource implements \SplObserver
      */
     protected $helper;
 
+    protected $roomTypeKey;
+
     /**
      * constructor
      */
@@ -58,6 +61,7 @@ abstract class AbstractDashboardSource implements \SplObserver
         $this->validator = $validator;
         $this->translator = $translator;
         $this->helper = $helper;
+        $this->roomTypeKey = $documentManager->getRepository(ClientConfig::class)->fetchConfig()->getUseRoomTypeCategory() ? 'roomTypeCategory': 'roomType';
     }
     
     /**

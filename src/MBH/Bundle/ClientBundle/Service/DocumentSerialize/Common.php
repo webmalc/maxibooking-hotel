@@ -60,7 +60,10 @@ abstract class Common
     public function __construct(ContainerInterface $container = null)
     {
         $this->container = $container;
-        $this->helper = $this->container->get(\MBH\Bundle\ClientBundle\Service\DocumentSerialize\Helper::class);
+
+        if ($container !== null) {
+            $this->helper = $this->container->get(\MBH\Bundle\ClientBundle\Service\DocumentSerialize\Helper::class);
+        }
     }
 
     /**
