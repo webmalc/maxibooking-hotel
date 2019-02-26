@@ -44,12 +44,9 @@ class OnlineSearchAdapter
 
     public function search(SearchQuery $query): array
     {
-//        $this->factory->setWithTariffs();
-//        $old = $this->factory->search($query);
         $data = $this->searchDataAdaptive($query);
         $searchResults = $this->search->searchSync($data, 'roomTypeCategory');
 
-//        return $old;
         return  $this->adaptResults($searchResults);
     }
 
