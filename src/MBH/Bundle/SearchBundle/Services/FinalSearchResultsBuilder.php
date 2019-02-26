@@ -101,16 +101,17 @@ class FinalSearchResultsBuilder
      */
     public function getResults()
     {
-        $results = $this->results;
+        $results = $this->results ?? [];
 
         if (\count($results)) {
             $results = array_filter($results, [$this, 'filterError']);
 
-            $groupingFactory = new GroupingFactory();
-            /** @noinspection CallableParameterUseCaseInTypeContextInspection */
-            $grouping = $groupingFactory->createGrouping($this->grouping);
-            $results = $grouping->group($results);
         }
+
+        $groupingFactory = new GroupingFactory();
+        /** @noinspection CallableParameterUseCaseInTypeContextInspection */
+        $grouping = $groupingFactory->createGrouping($this->grouping);
+        $results = $grouping->group($results);
 
         if ($this->isCreateAnswer) {
 
