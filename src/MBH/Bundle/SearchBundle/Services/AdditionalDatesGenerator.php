@@ -8,6 +8,9 @@ use MBH\Bundle\SearchBundle\Services\DateSorters\SorterFactory;
 
 class AdditionalDatesGenerator
 {
+    public const DURATION_DELTA = 3;
+
+    public const REQUIRED_DURATION = 7;
 
     /**
      * @param \DateTime $begin
@@ -43,7 +46,7 @@ class AdditionalDatesGenerator
 
         foreach (new \DatePeriod((clone $begin)->modify("- ${beginRange} days"), \DateInterval::createFromDateString('1 day'), (clone $begin)->modify("+ ${beginRange} days +1 day")) as $beginDay) {
             foreach (new \DatePeriod((clone $end)->modify("- ${endRange} days"), \DateInterval::createFromDateString('1 day'), (clone $end)->modify("+ ${endRange} days +1 day")) as $endDay) {
-                if ($beginDay < $endDay) {
+                if ($beginDay < $endDay && $this->isAppropriateDuration($beginDay, $endDay)) {
                     /** @var \DateTime $beginDay */
                     /** @var \DateTime $endDay */
                     $dates[$beginDay->format('d-m-Y') . '_' . $endDay->format('d-m-Y')] = [
@@ -55,5 +58,12 @@ class AdditionalDatesGenerator
         }
 
         return $dates;
+    }
+
+    private function isAppropriateDuration(\DateTime $begin, \DateTime $end): bool
+    {
+        $currentDuration = (int) $begin->diff($end)->format('%a');
+
+        return ((self::REQUIRED_DURATION + self::DURATION_DELTA) >= $currentDuration) && ($currentDuration >= (self::REQUIRED_DURATION - self::DURATION_DELTA));
     }
 }

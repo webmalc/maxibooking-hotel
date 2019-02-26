@@ -14,7 +14,7 @@ class SearcherFactory
      * @var bool
      * temporary disable cache
      */
-    private const IS_USE_CACHE = false;
+    private const IS_USE_CACHE = true;
     /** @var Searcher */
     private $searcher;
 

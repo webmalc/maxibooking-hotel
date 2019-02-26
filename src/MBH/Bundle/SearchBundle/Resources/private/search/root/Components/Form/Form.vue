@@ -16,16 +16,16 @@
         <div class="input ">
             <i class="fa fa-calendar-plus-o " title="" data-toggle="tooltip"
                data-original-title="Дополнительные дни до даты поиска."></i>&nbsp;
-            <input type="number" v-model="additionalBegin" class="input-xxs" min="0" :max="maxAdditionalDays" disabled>
+            <input type="number" v-model="additionalBegin" class="input-xxs" min="0" :max="maxAdditionalDays" :disabled="!access.async_search">
         </div>
         <div class="input ">
             <i class="fa fa-calendar-plus-o " title="" data-toggle="tooltip"
                data-original-title="Дополнительные дни после даты поиска."></i>&nbsp;
-            <input type="number" v-model="additionalEnd" class="input-xxs" min="0" :max="maxAdditionalDays" disabled>
+            <input type="number" v-model="additionalEnd" class="input-xxs" min="0" :max="maxAdditionalDays" :disabled="!access.async_search">
         </div>
 
         <div class="input"><i class="fa fa-male" title="" data-toggle="tooltip" data-original-title="Взрослые."></i>&nbsp;
-            <input type="number" required="required" min="0"
+            <input type="number" required="required" min="1"
                    :max="maxAdults" class="input-xxs" v-model="adults">
         </div>
 
@@ -59,6 +59,13 @@
             <i class="fa fa-star" title="" data-toggle="tooltip" data-original-title="Строгое соответствие спец. предложений"></i>&nbsp;
             <CheckBox v-model="isSpecialStrict" :label-id="'isSpecialStrictLabelId'"/>
         </div>
+
+        <template v-if="access.cache">
+        <div class="input">
+            <i class="fa fa-envelope" title="" data-toggle="tooltip" data-original-title="Использование кэша для поиска"></i>&nbsp;
+            <CheckBox  v-model="isUseCache" :label-id="'isUseCache'"/>
+        </div>
+        </template>
 
         <div class="input">
             <SearchButton />
@@ -154,6 +161,20 @@
                     this.$store.commit('form/setIsSpecialStrict', Boolean(value))
                 }
             },
+            isUseCache: {
+                get() {
+                    return this.$store.state.form.isUseCache;
+                },
+                set(value) {
+                    this.$store.commit('form/setIsUseCache', Boolean(value))
+                }
+            },
+            access() {
+                return {
+                    cache: this.$store.state.access.cache,
+                    async_search: this.$store.state.access.async_search
+                }
+            }
 
         }
     }

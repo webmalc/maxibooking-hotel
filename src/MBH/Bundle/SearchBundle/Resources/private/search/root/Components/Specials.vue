@@ -19,7 +19,6 @@
             }
         },
         updated() {
-            console.log(this.$el);
             // let $specialWrapper = $holder.find('#package-new-search-special-wrapper');
             // $specialWrapper.readmore({
             //     moreLink: '<div class="more-link"><a href="#">'+$specialWrapper.attr('data-more') +' <i class="fa fa-caret-right"></i></a></div>',
