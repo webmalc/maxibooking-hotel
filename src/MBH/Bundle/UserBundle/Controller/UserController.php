@@ -133,7 +133,7 @@ class UserController extends Controller
                 $acl = $aclProvider->createAcl($objectIdentity);
             }
 
-            $securityIdentity = new UserSecurityIdentity($entity, 'MBH\Bundle\UserBundle\Document\User');
+            $securityIdentity = new UserSecurityIdentity($entity, \MBH\Bundle\UserBundle\Document\User::class);
 
             try {
                 if ($acl->isGranted([MaskBuilder::MASK_MASTER], [$securityIdentity])) {
@@ -145,7 +145,11 @@ class UserController extends Controller
         }
 
         $form = $this->createForm(UserType::class,
-            $entity, ['hotels' => $hasHotels, 'roles' => $this->container->getParameter('security.role_hierarchy.roles'), 'isNew' => false]
+            $entity, [
+                'hotels' => $hasHotels,
+                'roles'  => $this->container->getParameter('security.role_hierarchy.roles'),
+                'isNew'  => false,
+            ]
         );
 
         return [
@@ -171,9 +175,9 @@ class UserController extends Controller
         $entity->getDocumentRelation() ?: $entity->setDocumentRelation(new DocumentRelation());
 
         $form = $this->createForm(DocumentRelationType::class, $entity, [
-            'data_class' => 'MBH\Bundle\UserBundle\Document\User',
+            'data_class'  => \MBH\Bundle\UserBundle\Document\User::class,
             'citizenship' => false,
-            'birthplace' => false
+            'birthplace'  => false,
         ]);
 
         if($request->isMethod(Request::METHOD_POST)) {
@@ -270,8 +274,13 @@ class UserController extends Controller
      */
     public function updateAction(Request $request, User $entity)
     {
-        $form = $this->createForm(UserType::class,
-            $entity, ['roles' => $this->container->getParameter('security.role_hierarchy.roles'), 'isNew' => false]
+        $form = $this->createForm(
+            UserType::class,
+            $entity,
+            [
+                'roles' => $this->container->getParameter('security.role_hierarchy.roles'),
+                'isNew' => false
+            ]
         );
 
         $form->handleRequest($request);
@@ -299,8 +308,8 @@ class UserController extends Controller
 
         return [
             'entity' => $entity,
-            'form' => $form->createView(),
-            'logs' => $this->logs($entity)
+            'form'   => $form->createView(),
+            'logs'   => $this->logs($entity),
         ];
     }
 
@@ -316,7 +325,7 @@ class UserController extends Controller
                 $acl = $aclProvider->createAcl($objectIdentity);
             }
 
-            $securityIdentity = new UserSecurityIdentity($user, 'MBH\Bundle\UserBundle\Document\User');
+            $securityIdentity = new UserSecurityIdentity($user, \MBH\Bundle\UserBundle\Document\User::class);
 
             foreach ($acl->getObjectAces() as $i => $ace) {
                 if ($ace->getSecurityIdentity() == $securityIdentity) {

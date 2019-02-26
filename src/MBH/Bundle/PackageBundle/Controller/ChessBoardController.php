@@ -4,6 +4,7 @@ namespace MBH\Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\ClientBundle\Lib\FMSDictionaries;
+use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\PackageBundle\Document\BirthPlace;
 use MBH\Bundle\PackageBundle\Document\DocumentRelation;
@@ -26,7 +27,7 @@ use MBH\Bundle\PackageBundle\Form\SearchType;
 /**
  * @Route("/chessboard")
  */
-class ChessBoardController extends BaseController
+class ChessBoardController extends BaseController implements CheckHotelControllerInterface
 {
     const SIZE_CONFIGS = [
         [
