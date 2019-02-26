@@ -441,7 +441,6 @@ abstract class CrudWebTestCase extends WebTestCase
      * @param array $params
      * @param string $method
      * @return \Symfony\Component\DomCrawler\Crawler
-     * @throws \Exception
      */
     protected function clickLinkInList(string $url = null, string $filter, bool $redirect = false, array $params = [], string $method = 'GET')
     {
@@ -475,7 +474,7 @@ abstract class CrudWebTestCase extends WebTestCase
     /**
      * @param string $method
      * @param string $url
-     * @param array|null $params
+     * @param array $params
      * @return \Symfony\Component\DomCrawler\Crawler
      * @throws \Exception
      */
@@ -484,11 +483,10 @@ abstract class CrudWebTestCase extends WebTestCase
         $url = $url ?? $this->getListUrl();
         $this->client->request($method, $url, $params, [], $this->getListHeaders());
         $response = $this->client->getResponse()->getContent();
-
         if( !isset( ((array)json_decode($response))['data'] ) )
             throw new \Exception('Data key is not defined in response json. Try to override CrudWebTestTestCase\getListCrawlerNotHtmlResponse()');
 
-        $htmlData = $this->arraysFromValidJsonToSting( ((array)json_decode($response))['data'] );
+        $htmlData = $this->arraysFromValidJsonToString( ((array)json_decode($response))['data'] );
 
         /*
          * uri param is not using in this case but has been set because Crawler constructor needs it to be set anyways
@@ -523,20 +521,59 @@ abstract class CrudWebTestCase extends WebTestCase
      * @param array $array
      * @return string
      */
-    private function arraysFromValidJsonToSting(array $array) : string
+    private function arraysFromValidJsonToString(array $array) : string
     {
         $imploded = '';
-        foreach ($array as $key => $value){
-            if(is_array($key))
-                $imploded .= $this->arraysFromValidJsonToSting($key);
-            if(is_array($value))
-                $imploded .= $this->arraysFromValidJsonToSting($value);
-
-            if(is_string($value))
+        foreach ($array as $key => $value) {
+            if (is_array($key)) {
+                $imploded .= $this->arraysFromValidJsonToString($key);
+            }
+            if (is_array($value)) {
+                $imploded .= $this->arraysFromValidJsonToString($value);
+            }
+            if (is_string($value)) {
                 $imploded .= $value;
-            if(is_string($key))
+            }
+            if (is_string($key)) {
                 $imploded .= $key;
+            }
         }
+
         return $imploded;
+    }
+    /**
+     * @param string $method
+     * @param string $url
+     * @param array $params
+     * @return array
+     * @throws \Exception
+     */
+    protected function getArrayFromJsonResponse($url = null, $method = 'GET', array $params = []): array
+    {
+        $url = $url ?? $this->getListUrl();
+        $this->client->request($method, $url, $params, [], $this->getListHeaders());
+        $response = $this->client->getResponse()->getContent();
+        if( !isset( ((array)json_decode($response))['data']) )
+            throw new \Exception('Data key is not defined in response json. Try to override CrudWebTestTestCase\getListCrawlerNotHtmlResponse()');
+
+        return ((array)json_decode($response))['data'];
+    }
+
+    /**
+     * @param array $array
+     * @param mixed $needle
+     * @return int
+     */
+    protected function arrayCountNeedleRecursive(array $array, $needle) : int
+    {
+        $elements = 0;
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                $elements += $this->arrayCountNeedleRecursive($value, $needle);
+            } else {
+                $elements += substr_count($value, $needle);
+            }
+        }
+        return $elements;
     }
 }

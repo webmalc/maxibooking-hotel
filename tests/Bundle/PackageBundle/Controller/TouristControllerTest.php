@@ -3,7 +3,6 @@
 namespace Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Lib\Test\CrudWebTestCase;
-use Symfony\Component\DomCrawler\Crawler;
 
 class TouristControllerTest extends CrudWebTestCase
 {
@@ -39,7 +38,7 @@ class TouristControllerTest extends CrudWebTestCase
             ->setEditFormValues([
                 'lastName' => $this->getEditTitle(),
             ])
-            ->setListItemsCount(8);
+            ->setListItemsCount(7);
     }
     /**
      * @param string|null $title
@@ -47,11 +46,12 @@ class TouristControllerTest extends CrudWebTestCase
      */
     protected function checkSavedObject(string $title): void
     {
-        $this->assertSame(1, $this
-            ->getListCrawlerJsonResponse(null, 'POST')
-            ->filter($this->getListContainer() . 'a:contains("' . $title . '")')
-            ->count()
+        $countTitle = $this->arrayCountNeedleRecursive(
+            $this->getArrayFromJsonResponse(null, 'POST'),
+            $title
         );
+
+        $this->assertSame(2, $countTitle);
     }
 
     /**
@@ -68,8 +68,7 @@ class TouristControllerTest extends CrudWebTestCase
         string $title = null,
         string $titleEdited = null,
         string $formName = null
-    )
-    {
+    ) {
         $title = $title ?? $this->getNewTitle();
         $titleEdited = $titleEdited ?? $this->getEditTitle();
         $formName = $formName ?? $this->getFormName();
@@ -90,12 +89,13 @@ class TouristControllerTest extends CrudWebTestCase
         $this->client->submit($form);
         $this->client->followRedirect();
 
-        //check saved object
-        $this->assertSame(1, $this
-            ->getListCrawlerJsonResponse($url, 'POST')
-            ->filter($this->getListContainer() . 'a:contains("' . $titleEdited . '")')
-            ->count()
+        $countTitleEdited = $this->arrayCountNeedleRecursive(
+            $this->getArrayFromJsonResponse($url, 'POST'),
+            $titleEdited
         );
+
+        //check saved object
+        $this->assertSame(2, $countTitleEdited);
     }
 
     /**
@@ -116,13 +116,13 @@ class TouristControllerTest extends CrudWebTestCase
             [],
             'POST'
         );
-        $this->assertSame(
-            $count - 1,
-            $this
-                ->getListCrawlerJsonResponse($url, 'POST')
-                ->filter($this->getListContainer() . 'a[rel="main"]')
-                ->count()
+
+        $countRel = $this->arrayCountNeedleRecursive(
+            $this->getArrayFromJsonResponse($url, 'POST'),
+            "rel='main'"
         );
+
+        $this->assertSame($count, $countRel);
     }
 
     /**
@@ -136,13 +136,17 @@ class TouristControllerTest extends CrudWebTestCase
         $title = $title ?? $this->getNewTitle();
         $count = $count ?? $this->getListItemsCount();
 
-        $crawler = $this->getListCrawlerJsonResponse($url, 'POST');
-
-        $this->assertSame(1, $crawler->filter(
-            $this->getListContainer() . 'a:contains("' . $title . '")')
-            ->count()
+        $countTitle = $this->arrayCountNeedleRecursive(
+            $this->getArrayFromJsonResponse($url, 'POST'),
+            $title
         );
-        $this->assertSame($count, $crawler->filter($this->getListContainer() . 'a[rel="main"]')->count());
 
+        $countRel = $this->arrayCountNeedleRecursive(
+            $this->getArrayFromJsonResponse($url, 'POST'),
+            "rel='main'"
+        );
+
+        $this->assertSame(2, $countTitle);
+        $this->assertSame($count + 1, $countRel);
     }
 }

@@ -6,7 +6,7 @@ namespace Tests\Bundle\PackageBundle\Controller;
 use MBH\Bundle\BaseBundle\Lib\Test\CrudWebTestCase;
 
 
-class OrganizationControllerSecondPageTest extends  CrudWebTestCase
+class OrganizationControllerMyParamTest extends  CrudWebTestCase
 {
     public static function setUpBeforeClass()
     {
@@ -43,7 +43,7 @@ class OrganizationControllerSecondPageTest extends  CrudWebTestCase
             ->setEditFormValues([
                 'name' => $this->getEditTitle()
             ])
-            ->setListItemsCount(1);
+            ->setListItemsCount(0);
     }
     /**
      * @param string|null $title
@@ -51,11 +51,12 @@ class OrganizationControllerSecondPageTest extends  CrudWebTestCase
      */
     protected function checkSavedObject(string $title): void
     {
-        $this->assertSame(1, $this
-            ->getListCrawlerJsonResponse(null, 'GET', ['type' => 'my'])
-            ->filter($this->getListContainer() . 'a:contains("' . $title . '")')
-            ->count()
+        $countTitle = $this->arrayCountNeedleRecursive(
+            $this->getArrayFromJsonResponse(null, 'GET', ['type' => 'my']),
+            $title
         );
+
+        $this->assertSame(2, $countTitle);
     }
 
     /**
@@ -72,8 +73,7 @@ class OrganizationControllerSecondPageTest extends  CrudWebTestCase
         string $title = null,
         string $titleEdited = null,
         string $formName = null
-    )
-    {
+    ) {
         $title = $title ?? $this->getNewTitle();
         $titleEdited = $titleEdited ?? $this->getEditTitle();
         $formName = $formName ?? $this->getFormName();
@@ -118,15 +118,14 @@ class OrganizationControllerSecondPageTest extends  CrudWebTestCase
             true,
             ['type' => 'my']
         );
-        $this->assertSame(
-            $count - 1,
-            $this
-                ->getListCrawlerJsonResponse($url, 'GET', ['type' => 'my'])
-                ->filter($this->getListContainer() . 'a[rel="main"]')
-                ->count()
-        );
-    }
 
+        $countRel = $this->arrayCountNeedleRecursive(
+            $this->getArrayFromJsonResponse($url, 'GET', ['type' => 'my']),
+            "rel='main'"
+        );
+
+        $this->assertSame($count, $countRel);
+    }
 
     /**
      * @param string|null $url
@@ -139,12 +138,17 @@ class OrganizationControllerSecondPageTest extends  CrudWebTestCase
         $title = $title ?? $this->getNewTitle();
         $count = $count ?? $this->getListItemsCount();
 
-        $crawler = $this->getListCrawlerJsonResponse($url, 'GET', ['type' => 'my']);
+        $countTitle = $this->arrayCountNeedleRecursive(
+            $this->getArrayFromJsonResponse($url, 'GET', ['type' => 'my']),
+            $title
+        );
+        $countRel = $this->arrayCountNeedleRecursive(
+            $this->getArrayFromJsonResponse($url, 'GET', ['type' => 'my']),
+            "rel='main'"
+        );
 
-        $this->assertSame(1, $crawler->filter(
-            $this->getListContainer() . 'a:contains("' . $title . '")')
-            ->count());
-        $this->assertSame($count, $crawler->filter($this->getListContainer() . 'a[rel="main"]')->count());
+        $this->assertSame(2, $countTitle);
+        $this->assertSame($count + 1, $countRel);
     }
 }
 
