@@ -123,7 +123,7 @@ class OnlineSearchAdapter
             'roomTypes' => $searchQuery->roomTypes,
             'additionalBegin' => $searchQuery->range,
             'additionalEnd' => $searchQuery->range,
-            'isUseCache' => true
+            'isUseCache' => false
         ];
 
         return $data;
