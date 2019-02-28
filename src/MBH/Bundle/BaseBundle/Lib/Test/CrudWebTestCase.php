@@ -483,8 +483,10 @@ abstract class CrudWebTestCase extends WebTestCase
         $url = $url ?? $this->getListUrl();
         $this->client->request($method, $url, $params, [], $this->getListHeaders());
         $response = $this->client->getResponse()->getContent();
-        if( !isset( ((array)json_decode($response))['data'] ) )
+
+        if(!isset(((array)json_decode($response))['data'])) {
             throw new \Exception('Data key is not defined in response json. Try to override CrudWebTestTestCase\getListCrawlerNotHtmlResponse()');
+        }
 
         $htmlData = $this->arraysFromValidJsonToString( ((array)json_decode($response))['data'] );
 
@@ -553,8 +555,10 @@ abstract class CrudWebTestCase extends WebTestCase
         $url = $url ?? $this->getListUrl();
         $this->client->request($method, $url, $params, [], $this->getListHeaders());
         $response = $this->client->getResponse()->getContent();
-        if( !isset( ((array)json_decode($response))['data']) )
+
+        if(!isset(((array)json_decode($response))['data'])) {
             throw new \Exception('Data key is not defined in response json. Try to override CrudWebTestTestCase\getListCrawlerNotHtmlResponse()');
+        }
 
         return ((array)json_decode($response))['data'];
     }
