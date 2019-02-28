@@ -1,3 +1,20 @@
+interface StateInterface {
+    isDebug: boolean,
+    compares: CompareInterface[],
+    error : CompareErrorInterface,
+}
+interface CompareInterface {
+    query: object,
+    price: number,
+    hash: string
+}
+
+interface CompareErrorInterface {
+    status: boolean,
+    errorList: string []
+}
+
+
 interface SearchDataType {
     begin: string,
     end: string,

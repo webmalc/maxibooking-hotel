@@ -54,6 +54,9 @@
             isAdditionalDates() {
                 return Boolean(this.$store.state.form.additionalBegin || this.$store.state.form.additionalEnd);
             },
+            isDebug() {
+                return Boolean(this.$store.state.debug.isDebug);
+            }
         },
         watch: {
             searchStatus: function (searchStarted, searchStopped) {
@@ -73,6 +76,11 @@
         beforeMount() {
             this.sortAllPrices();
         },
+        updated() {
+            if (!this.searchStatus && this.isDebug) {
+                this.debugCheckPrices();
+            }
+        },
         methods: {
             syncSearch() {
                 this.$store.dispatch('search/syncSearch');
@@ -85,6 +93,9 @@
             },
             sortAllPrices() {
                 this.$store.commit('results/sortAllPrices');
+            },
+            debugCheckPrices() {
+                this.$store.dispatch('debug/debugCheckPrices');
             }
 
         }

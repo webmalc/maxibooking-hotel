@@ -20,12 +20,6 @@ services:
     mbh_search.room_category_to_room_type_transformer:
         class: MBH\Bundle\SearchBundle\Form\DataTransformer\RoomCategoryToRoomTypeTransformer
 
-    mbh_search.search_conditions_type:
-      class: MBH\Bundle\SearchBundle\Form\SearchConditionsType
-      arguments: ['@mbh_search.client_config_repository']
-      tags:
-      - { name: form.type, alias: MBH\Bundle\SearchBundle\Form\SearchConditionsType }
-
     mbh_search.search_condition_creator:
         class: MBH\Bundle\SearchBundle\Services\SearchConditionsCreator
         arguments: ["@form.factory"]
@@ -600,7 +594,7 @@ services:
             - '@snc_redis.results_client'
             - '@mbh_search.result_serializer'
             - '@mbh_search.results_answer_manager'
-            -
+
 #serializer
     mbh_search.serializer:
         class: Symfony\Component\Serializer\Serializer
@@ -677,6 +671,23 @@ services:
         tags:
             - {name: kernel.event_subscriber, event: invalidator.key.invalidate }
 
+#compare command
+    mbh_search.compare.command:
+        class: MBH\Bundle\SearchBundle\Command\SearchCompareCommand
+        arguments:
+            - '@mbh_search.search'
+            - '@mbh.package.search'
+            - '@mbh_search.compare_logger'
+            - '@doctrine_mongodb.odm.default_document_manager'
+            - '@mbh.package.search_simple'
+        tags:
+            - { name: console.command }
 #error result filter
     mbh_search.error_result_filter:
-        class: MBH\Bundle\SearchBundle\Services\Cache\ErrorFilters\ErrorResultFilter
+      class: MBH\Bundle\SearchBundle\Services\Cache\ErrorFilters\ErrorResultFilter
+
+    mbh_search.debug_price_checker:
+        class: MBH\Bundle\SearchBundle\Services\Search\Debug\DebugPriceChecker
+        arguments:
+            - '@mbh.package.search_simple'
+            - '@mbh_search.tariff_repository'
