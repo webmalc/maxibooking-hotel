@@ -35,7 +35,8 @@ security:
 #            http_basic: ~
 
             pattern: ^/
-            form_login:
+            simple_form:
+                authenticator: mbh.authenticator
                 always_use_default_target_path: false
                 default_target_path: /
                 use_referer: true
@@ -58,6 +59,7 @@ security:
                 path:     /
                 domain:   ~
             stateless: false
+
 
     access_control:
         - { path: ^/deploy, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }

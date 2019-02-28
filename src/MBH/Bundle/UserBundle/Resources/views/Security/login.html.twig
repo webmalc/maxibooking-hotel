@@ -27,6 +27,7 @@
                    placeholder="{{ 'security.login.password'|trans({}, 'FOSUserBundle') }}" required>
             <span class="glyphicon glyphicon-lock form-control-feedback"></span>
         </div>
+        <input type="hidden" name="re_token" id="inv_captcha">
         {% if app.getEnvironment == 'prod' %}
             <div class="form-group g-recaptcha" data-sitekey="{{ recaptcha.site }}"></div>
         {% endif %}
