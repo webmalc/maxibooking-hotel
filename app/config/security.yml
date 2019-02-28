@@ -31,12 +31,8 @@ security:
             access_denied_handler: mbh.api_access_denied_handler
 
         main:
-#           Dev test only
-#            http_basic: ~
-
             pattern: ^/
-            simple_form:
-                authenticator: mbh.authenticator
+            form_login:
                 always_use_default_target_path: false
                 default_target_path: /
                 use_referer: true

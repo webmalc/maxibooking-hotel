@@ -43,7 +43,7 @@ class InvisibleCaptcha
                 self::GOOGLE_CAPTCHA_API_URL,
                 [
                     'form_params' => [
-                        'secret' =>  $this->secretKey,
+                        'secret' => $this->secretKey,
                         'response' => $reToken
                     ]
                 ]);

@@ -86,16 +86,6 @@
             document.getElementsByTagName('body')[0].className+=' sidebar-collapse'
           }
         </script>
-        {#=====================================================================================#}
-        <script src="https://www.google.com/recaptcha/api.js?render=6LcuCJQUAAAAAD3PVGAYDBQWL-q5cuKo1YJTjybn" ></script>
-        <script>
-            grecaptcha.ready(function() {
-                grecaptcha.execute('6LcuCJQUAAAAAD3PVGAYDBQWL-q5cuKo1YJTjybn', {action: 'login'}).then(function(token) {
-                    document.getElementById('inv_captcha').value = token;
-                });
-            });
-        </script>
-        {#=====================================================================================#}
         {% block body %}{% endblock %}
 
         {% block scripts %}
