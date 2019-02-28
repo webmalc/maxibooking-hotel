@@ -184,7 +184,6 @@ class SearchController extends Controller
         $config = $this->get('doctrine.odm.mongodb.document_manager')->getRepository(ClientConfig::class)->findOneBy([]);
         /** @var ClientConfig $config */
         $begin = $config->getBeginDate();
-//        $begin = new \DateTime('24.04.2019 midnight');
         $end = (clone $begin)->modify('+7 days');
 
         return $this->render('@MBHSearch/Search/searcher.html.twig', [
@@ -193,6 +192,24 @@ class SearchController extends Controller
             'end' => $end,
             'roomTypes' => $choices
         ]);
+    }
+
+
+    /**
+     * @Route("/price-check", name="search_price_check", options={"expose"=true}, defaults={"_format":"json"})
+     * @Security("is_granted('ROLE_SEARCH')")
+     * @param Request $request
+     * @return JsonResponse
+     * @throws \Doctrine\ODM\MongoDB\LockException
+     * @throws \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @throws \MBH\Bundle\SearchBundle\Services\Search\Debug\DebugPriceCheckerException
+     */
+    public function priceCheckAction(Request $request): JsonResponse
+    {
+        $checker = $this->get('mbh_search.debug_price_checker');
+        $result = $checker->checkPrices($request);
+
+        return new  JsonResponse(['wrongPrice' => $result]);
     }
 
     /**

@@ -698,3 +698,9 @@ services:
 #error result filter
     mbh_search.error_result_filter:
       class: MBH\Bundle\SearchBundle\Services\Cache\ErrorFilters\ErrorResultFilter
+
+    mbh_search.debug_price_checker:
+        class: MBH\Bundle\SearchBundle\Services\Search\Debug\DebugPriceChecker
+        arguments:
+            - '@mbh.package.search_simple'
+            - '@mbh_search.tariff_repository'

@@ -1,5 +1,10 @@
 <template>
     <div class="search-block">
+        <div v-if="priceError" class="alert alert-danger" :key="'priceError'"><i
+                class="fa fa-exclamation-circle"></i>
+            Внимание! Возможная ошибка цены в поиске!
+        </div>
+
         <transition
                 name="animated-css"
                 enter-active-class="animated fadeIn"
@@ -9,6 +14,7 @@
                 :duration="{enter:animation.enter, leave: animation.leave}"
                 appear
         >
+
             <div v-if="state === 'new'" class="bg-gray color-palette alert" :key="state">
                 <i class="fa fa-search"></i> {{message.new}}
             </div>
@@ -72,6 +78,9 @@
                 }
 
                 return state;
+            },
+            priceError() {
+                return this.$store.state.debug.error.status;
             },
             ...mapGetters('search', {
                 status: 'getIsSearchStarted'

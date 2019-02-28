@@ -5,6 +5,7 @@ import form from './modules/form';
 import search from './modules/search';
 import results from './modules/results';
 import access from './modules/access';
+import debugStore from './modules/debug';
 
 Vue.use(Vuex);
 
@@ -22,7 +23,8 @@ function builder(initData) {
             results: results,
             form: form,
             search: search,
-            access: access
+            access: access,
+            debug: debugStore
         }
     });
 }
