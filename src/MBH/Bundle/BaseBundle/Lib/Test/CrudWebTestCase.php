@@ -356,6 +356,7 @@ abstract class CrudWebTestCase extends WebTestCase
         $this->clickLinkInList($url, ' a[data-text="Вы действительно хотите удалить запись «' . $title . '»?"]', true);
         $this->assertSame($count, $this->getListCrawler()->filter($this->getListContainer() . 'a[rel="main"]')->count());
     }
+
     /**
      * @param array|null $values
      * @param array|null $errors
@@ -484,11 +485,11 @@ abstract class CrudWebTestCase extends WebTestCase
         $this->client->request($method, $url, $params, [], $this->getListHeaders());
         $response = $this->client->getResponse()->getContent();
 
-        if(!isset(((array)json_decode($response))['data'])) {
+        if (!isset(((array)json_decode($response))['data'])) {
             throw new \Exception('Data key is not defined in response json. Try to override CrudWebTestTestCase\getListCrawlerNotHtmlResponse()');
         }
 
-        $htmlData = $this->arraysFromValidJsonToString( ((array)json_decode($response))['data'] );
+        $htmlData = $this->arraysFromValidJsonToString(((array)json_decode($response))['data']);
 
         /*
          * uri param is not using in this case but has been set because Crawler constructor needs it to be set anyways
@@ -523,7 +524,7 @@ abstract class CrudWebTestCase extends WebTestCase
      * @param array $array
      * @return string
      */
-    private function arraysFromValidJsonToString(array $array) : string
+    private function arraysFromValidJsonToString(array $array): string
     {
         $imploded = '';
         foreach ($array as $key => $value) {
@@ -543,6 +544,7 @@ abstract class CrudWebTestCase extends WebTestCase
 
         return $imploded;
     }
+
     /**
      * @param string $method
      * @param string $url
@@ -556,7 +558,7 @@ abstract class CrudWebTestCase extends WebTestCase
         $this->client->request($method, $url, $params, [], $this->getListHeaders());
         $response = $this->client->getResponse()->getContent();
 
-        if(!isset(((array)json_decode($response))['data'])) {
+        if (!isset(((array)json_decode($response))['data'])) {
             throw new \Exception('Data key is not defined in response json. Try to override CrudWebTestTestCase\getListCrawlerNotHtmlResponse()');
         }
 
@@ -568,7 +570,7 @@ abstract class CrudWebTestCase extends WebTestCase
      * @param mixed $needle
      * @return int
      */
-    protected function arrayCountNeedleRecursive(array $array, $needle) : int
+    protected function arrayCountNeedleRecursive(array $array, $needle): int
     {
         $elements = 0;
         foreach ($array as $key => $value) {

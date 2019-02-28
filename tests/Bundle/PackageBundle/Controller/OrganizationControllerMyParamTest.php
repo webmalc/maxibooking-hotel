@@ -6,7 +6,7 @@ namespace Tests\Bundle\PackageBundle\Controller;
 use MBH\Bundle\BaseBundle\Lib\Test\CrudWebTestCase;
 
 
-class OrganizationControllerMyParamTest extends  CrudWebTestCase
+class OrganizationControllerMyParamTest extends CrudWebTestCase
 {
     public static function setUpBeforeClass()
     {
@@ -45,6 +45,7 @@ class OrganizationControllerMyParamTest extends  CrudWebTestCase
             ])
             ->setListItemsCount(0);
     }
+
     /**
      * @param string|null $title
      * @throws \Exception
@@ -73,7 +74,8 @@ class OrganizationControllerMyParamTest extends  CrudWebTestCase
         string $title = null,
         string $titleEdited = null,
         string $formName = null
-    ) {
+    )
+    {
         $title = $title ?? $this->getNewTitle();
         $titleEdited = $titleEdited ?? $this->getEditTitle();
         $formName = $formName ?? $this->getFormName();

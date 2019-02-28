@@ -40,6 +40,7 @@ class TouristControllerTest extends CrudWebTestCase
             ])
             ->setListItemsCount(7);
     }
+
     /**
      * @param string|null $title
      * @throws \Exception
@@ -68,7 +69,8 @@ class TouristControllerTest extends CrudWebTestCase
         string $title = null,
         string $titleEdited = null,
         string $formName = null
-    ) {
+    )
+    {
         $title = $title ?? $this->getNewTitle();
         $titleEdited = $titleEdited ?? $this->getEditTitle();
         $formName = $formName ?? $this->getFormName();
