@@ -691,3 +691,11 @@ services:
         arguments:
             - '@mbh.package.search_simple'
             - '@mbh_search.tariff_repository'
+            - '@mbh_search.slack_notifier'
+
+
+    mbh_search.slack_notifier:
+        class: MBH\Bundle\SearchBundle\Services\Search\Debug\SlackNotifier
+        arguments:
+            - '%slackToken%'
+            - '%slackChannelId%'

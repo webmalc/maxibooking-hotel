@@ -110,7 +110,7 @@ class RoomTypesType extends AbstractType
                     $hotel = $this->hotelRepository->findOneBy(['title' => $hotelName]);
                     if (!$hotel) {
                         throw new RoomTypesTypeException(
-                            'You MUST set title field (internal name) in hotel '.$hotelName
+                            'Обязательно нужно выставить внутреннее название в  '.$hotelName
                         );
                     }
                     $hotelId = $hotel->getId();

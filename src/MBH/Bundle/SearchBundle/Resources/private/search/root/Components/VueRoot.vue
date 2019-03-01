@@ -61,6 +61,7 @@
         watch: {
             searchStatus: function (searchStarted, searchStopped) {
                 if (searchStarted) {
+                    this.debugClearErrors();
                     (this.isAdditionalDates && !this.forceSyncSearch) ? this.asyncSearch() : this.syncSearch();
                     this.specialSearch();
                 }
@@ -96,6 +97,10 @@
             },
             debugCheckPrices() {
                 this.$store.dispatch('debug/debugCheckPrices');
+            },
+            debugClearErrors() {
+                this.$store.commit('debug/clearCompares');
+                this.$store.commit('debug/clearError');
             }
 
         }

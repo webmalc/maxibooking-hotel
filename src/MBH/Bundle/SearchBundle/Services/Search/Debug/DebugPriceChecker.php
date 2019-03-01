@@ -23,15 +23,20 @@ class DebugPriceChecker
     /** @var TariffRepository */
     private $tariffRepository;
 
+    /** @var NotifierInterface */
+    private $notifier;
+
     /**
      * DebugPriceChecker constructor.
      * @param Search $legacySearch
      * @param TariffRepository $tariffRepository
+     * @param NotifierInterface $notifier
      */
-    public function __construct(Search $legacySearch, TariffRepository $tariffRepository)
+    public function __construct(Search $legacySearch, TariffRepository $tariffRepository, NotifierInterface $notifier)
     {
         $this->legacySearch = $legacySearch;
         $this->tariffRepository = $tariffRepository;
+        $this->notifier = $notifier;
     }
 
     /**
@@ -52,12 +57,13 @@ class DebugPriceChecker
         foreach ($data as $compareData) {
             $searchQuery = $this->createQuery($compareData['query']);
             $result = $this->legacySearch->search($searchQuery);
+            $searchResult = reset($result);
             try {
-                $this->comparePrice(reset($result), $compareData['price']);
+                $this->comparePrice($searchResult, $compareData['price']);
             } catch (DebugPriceCheckerException $e) {
                 $errors[] = $compareData['hash'];
+                $this->notifier->notify($this->createMessage($compareData, $searchResult, $e->getLegacyPrice()));
             }
-
         }
 
         return $errors;
@@ -98,8 +104,31 @@ class DebugPriceChecker
     private function comparePrice(SearchResult $result, $price): void
     {
         $resultPrices = $result->getPrices();
-        if ((int)array_values($resultPrices)[0] !== (int)$price) {
-            throw new DebugPriceCheckerException('');
+        $legacyPrice = (int)array_values($resultPrices)[0];
+        if ( $legacyPrice !== (int)$price) {
+            throw new DebugPriceCheckerException('Wrong price found.', 0, null, $legacyPrice);
         }
+
+    }
+
+    private function createMessage(array $originData, SearchResult $result, int $legacyPrice): string
+    {
+        $query = $originData['query'];
+        $message = sprintf(
+            'Hotel:%s Begin:%s End:%s Adults:%s Children:%s ChildrenAges:%s isUseCache:%s RoomType:%s Tariff:%s WrongPrice:%s ActualLegacyPrice:%s',
+            $result->getRoomType()->getHotel()->getName(),
+            $query['begin'],
+            $query['end'],
+            $query['adults'],
+            $query['children'],
+            implode('_',$query['childrenAges']) ?: 'Нет',
+            $query['isUseCache'] ? 'true' : 'false',
+            $result->getRoomType()->getName(),
+            $result->getTariff()->getName(),
+            $originData['price'],
+            $legacyPrice
+            );
+
+        return $message;
     }
 }

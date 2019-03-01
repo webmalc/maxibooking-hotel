@@ -140,6 +140,7 @@ GTAGS
 ctags
 env
 gtags
+/localScripts/
 
 scripts/custom/
 
