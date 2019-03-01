@@ -82,6 +82,7 @@ const actions = {
         let conditions = rootGetters['form/getSearchConditions'];
         try {
             let url = Routing.generate(state.syncSearchUrl, {grouping: 'roomType'});
+            console.log(url);
             const response = await request(url, conditions);
             if (!response.ok) {
                 const error = await response.json();

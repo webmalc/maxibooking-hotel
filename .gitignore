@@ -118,3 +118,4 @@ ctags
 env
 gtags
 /localScripts/
+/app/config/secrets.yml

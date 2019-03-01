@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\SearchBundle\Controller;
 
+use JoliCode\Slack\ClientFactory;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Document\SearchResultCacheItem;
@@ -22,6 +23,7 @@ use Symfony\Component\Form\ChoiceList\View\ChoiceView;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
@@ -161,8 +163,16 @@ class SearchController extends Controller
     public function searcherAction(Request $request): Response
     {
         $orderId = $request->get('order');
-        $roomTypeForm = $this->createForm(RoomTypesType::class)->createView();
+        try {
+            $roomTypeForm = $this->createForm(RoomTypesType::class)->createView();
+        } catch (RoomTypesTypeException $e) {
+            $flashBag = $request->getSession()->getFlashBag();
+            /** @var FlashBag $flashBag */
+            $flashBag->set('error', $e->getMessage());
+            return $this->redirectToRoute('hotel');
+        }
         $formChoices = $roomTypeForm->vars['choices'];
+
 
         $choices = [];
         foreach ($formChoices as $groupChoice) {

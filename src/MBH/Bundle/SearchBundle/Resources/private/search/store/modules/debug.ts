@@ -27,7 +27,7 @@ const mutations = {
     },
     clearError(state) {
         state.error.status = false;
-        state.errorList = [];
+        state.error.errorList.splice(0, state.error.errorList.length);
     },
 };
 
@@ -35,8 +35,6 @@ const actions = {
 
     async debugCheckPrices({state, commit}) {
         const data = state.compares;
-        commit('clearCompares');
-        commit('clearError');
         const url = Routing.generate('search_price_check');
         try {
             const response = await fetch(url, {
@@ -54,7 +52,10 @@ const actions = {
             } else {
                 let data = await response.json();
                 const errors = data['wrongPrice'];
-                commit('setErrorList', errors);
+                if (errors.length) {
+                    commit('setErrorList', errors);
+                }
+
             }
         } catch (err) {
             console.error(err.message);
