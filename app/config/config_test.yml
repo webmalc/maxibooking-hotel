@@ -8,7 +8,7 @@ framework:
     profiler:
         enabled: true
     csrf_protection:
-        enabled: false
+        enabled: true
 
 swiftmailer:
     disable_delivery: true
@@ -28,7 +28,7 @@ security:
     firewalls:
         main:
             http_basic: ~
-            form_login: false
+            form_login: true
             remember_me: false
 
 liip_functional_test:
