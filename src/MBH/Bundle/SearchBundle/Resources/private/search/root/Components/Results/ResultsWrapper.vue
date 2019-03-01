@@ -94,7 +94,7 @@
                 return `${result.roomType.name}: ${result.roomType.hotelName}`;
             },
             datedName(firstResultInArray) {
-                return `${moment(firstResultInArray.begin).format('DD MMMM YYYY')} - ${moment(firstResultInArray.end).format('DD MMMM YYYY')}`
+                return `${moment(firstResultInArray.begin).format('DD (dd) MMMM YYYY')} - ${moment(firstResultInArray.end).format('DD (dd) MMMM YYYY')}`
             },
             sortedDateResults(roomTypeId) {
                 return this.$store.getters['results/getSortedDayResults'](roomTypeId);
