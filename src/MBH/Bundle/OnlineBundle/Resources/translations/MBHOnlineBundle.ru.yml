@@ -34,6 +34,7 @@ views.api.getResultsTable.guests: Гости
 views.api.getResultsTable.price: Цена
 views.api.getResultsTable.rooms_amount: Кол-во
 views.api.getResultsTable.room_description: 'Описание номера'
+views.api.getResultsTable.tariff: тариф
 views.api.getResultsTable.room_price: 'Цена за номер'
 views.api.getResultsTable.hotel: Отель
 views.api.getResultsTable.service_type: 'Тип услуги'

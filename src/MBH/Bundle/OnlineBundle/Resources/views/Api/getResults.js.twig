@@ -117,18 +117,13 @@ jQuery(document).ready(function() {
             //     });
             // }());
 
-            // remove border
-            (function() {
-                jQuery('#mbh-results-table tbody tr:last td').css('border', '0px');
-            }());
-
             //description toggle
             (function() {
                 jQuery('.mbh-results-roomType-description-tr').hide();
                 jQuery('.mbh-results-roomType-description-link').click(function(e) {
                     e.preventDefault();
-                    jQuery(this).closest('tr').find('td').toggleClass('without-border');
-                    jQuery(this).closest('tr').siblings('.mbh-results-roomType-description-tr').toggle();
+                    jQuery(this).closest('div').toggleClass('without-border');
+                    jQuery(this).closest('div').find('.mbh-results-roomType-description-tr').toggle();
                     jQuery(this).children('i').toggleClass('fa-angle-down');
                 });
             }());
@@ -142,14 +137,14 @@ jQuery(document).ready(function() {
 
             // table prices
             (function() {
-                var show = function(tr) {
-                    var tourist = tr.find('.mbh-results-tourists-select'),
+                var show = function(row) {
+                    var tourist = row.find('.mbh-results-tourists-select'),
                         touristVal = tourist.select2('data').id,
-                        per_person = tr.find('.mbh-results-per-person');
-                    tr.find('ul.mbh-results-prices').hide();
-                    tr.find('ul.mbh-results-prices li').hide();
-                    tr.find('ul.mbh-results-prices li.' + touristVal).show();
-                    tr.find('ul.mbh-results-prices').show();
+                        per_person = row.find('.mbh-results-per-person');
+                    row.find('ul.mbh-results-prices').hide();
+                    row.find('ul.mbh-results-prices li').hide();
+                    row.find('ul.mbh-results-prices li.' + touristVal).show();
+                    row.find('ul.mbh-results-prices').show();
 
                     if (parseInt(per_person.attr('data-change'), 10)) {
                         var touriststHash = touristVal.split('_'),
@@ -159,11 +154,12 @@ jQuery(document).ready(function() {
                         per_person.html('цена за ' + totalTourists + touristsPhrase);
                     }
                 };
+
                 jQuery('.mbh-results-tourists-select').click(function() {
-                    show(jQuery(this).closest('tr'));
+                    show(jQuery(this).closest('div.row'));
                 });
                 jQuery('.mbh-results-tourists-select').each(function() {
-                    show(jQuery(this).closest('tr'));
+                    show(jQuery(this).closest('div.row'));
                 });
 
                 (function setFancyBoxOffset() {
@@ -257,24 +253,24 @@ jQuery(document).ready(function() {
                 var calc = function() {
                     var totalPackages = 0,
                         totalServices = 0,
-                        total = 0,
+                        total,
                         nextButton = jQuery('#mbh-results-next'),
                         roomCount = jQuery('select.mbh-results-packages-count:not(.hidden), input.mbh-results-packages-count[type=checkbox]:checked'),
                         servicesCount = jQuery('select.mbh-results-services-count');
                     nextButton.prop('disabled', true);
                     roomCount.each(function() {
                         if (jQuery(this).val() > 0) {
-                            var tr = jQuery(this).closest('tr'),
-                                li = tr.find('ul.mbh-results-prices li:visible');
+                            var row = jQuery(this).closest('div.row'),
+                                li = row.find('ul.mbh-results-prices li:visible');
                             if (li.length) {
                                 totalPackages += parseInt(li.attr('data-value')) * jQuery(this).val();
-                            };
+                            }
                         }
                     });
                     servicesCount.each(function() {
                         if (jQuery(this).val() > 0) {
-                            var tr = jQuery(this).closest('tr'),
-                                span = tr.find('span.mbh-results-services-prices');
+                            var row = jQuery(this).closest('div.row'),
+                                span = row.find('span.mbh-results-services-prices');
                             if (span.length) {
                                 totalServices += parseInt(span.attr('data-value')) * jQuery(this).val();
                             }
@@ -305,8 +301,7 @@ jQuery(document).ready(function() {
                         type: 'form-event',
                         purpose: 'rooms'
                     }, "*");
-                    var urlParams = getUrlVars(),
-                        roomCount = jQuery('select.mbh-results-packages-count:not(.hidden), input.mbh-results-packages-count[type=checkbox]:checked'),
+                    var roomCount = jQuery('select.mbh-results-packages-count:not(.hidden), input.mbh-results-packages-count[type=checkbox]:checked'),
                         servicesCount = jQuery('select.mbh-results-services-count');
                     requestParams.begin = jQuery('#mbh-results-duration-begin').text();
                     requestParams.end = jQuery('#mbh-results-duration-end').text();
@@ -321,7 +316,7 @@ jQuery(document).ready(function() {
                     requestParams.configId = "{{ configId }}";
                     roomCount.each(function() {
                         if (jQuery(this).val() > 0) {
-                            var tr = jQuery(this).closest('tr'),
+                            var tr = jQuery(this).closest('div.row'),
                                 pricesLi = tr.find('ul.mbh-results-prices li:visible'),
                                 roomType = tr.find('span.mbh-results-roomType'),
                                 hotel = tr.find('span.mbh-results-hotel'),
@@ -354,7 +349,7 @@ jQuery(document).ready(function() {
                     });
                     servicesCount.each(function() {
                         if (jQuery(this).val() > 0) {
-                            var tr = jQuery(this).closest('tr'),
+                            var tr = jQuery(this).closest('div.row'),
                                 id = tr.find('span.mbh-results-services-name').attr('data-id');
                             requestParams.services.push({
                                 'id': id,
@@ -362,8 +357,6 @@ jQuery(document).ready(function() {
                             });
                         }
                     });
-
-                    //jQuery('#mbh-results-table-wrapper').html('sdsd'); return 1;
 
                     waiting();
 
