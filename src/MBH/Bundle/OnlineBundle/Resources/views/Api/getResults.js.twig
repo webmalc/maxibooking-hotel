@@ -316,15 +316,15 @@ jQuery(document).ready(function() {
                     requestParams.configId = "{{ configId }}";
                     roomCount.each(function() {
                         if (jQuery(this).val() > 0) {
-                            var tr = jQuery(this).closest('div.row'),
-                                pricesLi = tr.find('ul.mbh-results-prices li:visible'),
-                                roomType = tr.find('span.mbh-results-roomType'),
-                                hotel = tr.find('span.mbh-results-hotel'),
-                                tariff = tr.find('span.mbh-results-tariff');
+                            var row = jQuery(this).closest('div.row'),
+                                pricesLi = row.find('ul.mbh-results-prices li:visible'),
+                                roomType = row.find('span.mbh-results-roomType'),
+                                hotel = row.find('span.mbh-results-hotel'),
+                                tariff = row.find('span.mbh-results-tariff');
                             for (var i = 1; i <= jQuery(this).val(); i++) {
                                 if (pricesLi.length) {
 
-                                    var tourists = tr.find('select.mbh-results-tourists-select').val().split('_')
+                                    var tourists = row.find('select.mbh-results-tourists-select').val().split('_')
 
                                     requestParams.packages.push({
                                         'price': parseInt(pricesLi.attr('data-value')),

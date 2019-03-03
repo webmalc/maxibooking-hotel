@@ -546,9 +546,6 @@ class ApiController extends Controller
      */
     public function getPaymentTypeAction(Request $request, $id = null)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
         $requestJson = json_decode($request->getContent());
         if (property_exists($requestJson, 'locale')) {
             $this->setLocale($requestJson->locale);

@@ -55,6 +55,8 @@
                     {% for result in results %}
                         <div class="row"
                              style="background-color: #f9f9f9; border-top: 2px solid #dddddd;">
+                            <span class="mbh-results-tariff"
+                                  data-id="{{ result.tariff.id }}">{{ result.tariff.fullTitle }}</span>
                             <div class="col-xs-8 mbh-left">
                                 <div id="mbh-results-image-wrapper">
                                     {% if result.roomType.mainImage is not empty %}
