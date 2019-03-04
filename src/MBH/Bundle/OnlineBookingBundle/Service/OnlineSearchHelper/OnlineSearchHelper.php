@@ -54,6 +54,7 @@ class OnlineSearchHelper
         if (!$this->isAdditionalData($formInstance)) {
             foreach ($this->dataProviders as $dataProvider) {
                 /** @var OnlineDataProviderWrapperInterface $dataProvider */
+                //** 04032019 из за нового поиска добавлен костыль внутри getResults чтоб на спец поиск не был запущен новый */
                 $dataResults = $dataProvider->getResults($formInstance);
                 if ($dataProvider->getType() === SpecialDataProvider::TYPE) {
                     //** Костылище для ограничения лимита по выводу спец */

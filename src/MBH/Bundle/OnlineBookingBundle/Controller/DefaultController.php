@@ -39,7 +39,6 @@ class DefaultController extends BaseController
         $this->onlineOptions = $container->getParameter('online_booking');
 
     }
-    /*const RECAPCHA_SECRET = '6Lcj9gcUAAAAAH_zLNfIhoNHvbMRibwDl3d3Thx9';*/
 
     /**
      * @Route("/", name="online_booking", options = { "expose" = true })

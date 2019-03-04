@@ -30,6 +30,11 @@ class OnlineDataProviderWrapper implements OnlineDataProviderWrapperInterface
     public function getResults(OnlineSearchFormData $formData): array
     {
         $clonedFormData = clone $formData;
+
+        //** TODO: Костыль для спецпредложений! */
+        if ($formData->getSpecial() && $this->getType() !== 'special') {
+            return [];
+        }
         $result = $this->dataProvider->search($clonedFormData);
         $result = $this->onlineSorter->sort($result, $clonedFormData);
 
