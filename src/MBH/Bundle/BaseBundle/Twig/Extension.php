@@ -85,7 +85,7 @@ class Extension extends \Twig_Extension
         ];
 
         return sprintf(
-            '%s&nbsp<span class=\"date-month\">%s</span>.',
+            '%s&nbsp;<span class=\"date-month\">%s</span>.',
             $date->format('d'),
             $months[$date->format('n') - 1]
         );

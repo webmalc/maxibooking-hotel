@@ -10,11 +10,10 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 class PriceCacheRepository extends DocumentRepository
 {
     /**
-     * @param int $period
      * @return array
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function findForDashboard(int $period, string $roomTypeField): array
+    public function findForDashboard(int $period, string $roomTypeField = 'roomType'): array
     {
         $begin = new \DateTime('midnight');
         $end = new \DateTime('midnight +' . $period . ' days');
@@ -260,7 +259,7 @@ class PriceCacheRepository extends DocumentRepository
      * @param $caches
      * @return array
      */
-    private function convertRawMongoData($caches, $roomTypeKey = 'RoomType')
+    private function convertRawMongoData($caches, string $roomTypeField = 'roomType'): array
     {
         $result = [];
         foreach ($caches as $cache) {
@@ -268,10 +267,10 @@ class PriceCacheRepository extends DocumentRepository
             $cache['date'] = $cache['date']->toDateTime();
             $cache['date']->setTimezone(new \DateTimeZone(date_default_timezone_get()));
             $cache['hotel'] = (string)$cache['hotel']['$id'];
-            $cache[$roomTypeKey] = (string)$cache[$roomTypeKey]['$id'];
+            $cache[$roomTypeField] = (string)$cache[$roomTypeField]['$id'];
             $cache['tariff'] = (string)$cache['tariff']['$id'];
             unset($cache['_id']);
-            $result[$cache['hotel']][$cache['roomType']][$cache['tariff']][$cache['date']->format('d.m.Y')] = $cache;
+            $result[$cache['hotel']][$cache[$roomTypeField]][$cache['tariff']][$cache['date']->format('d.m.Y')] = $cache;
         }
 
         return $result;

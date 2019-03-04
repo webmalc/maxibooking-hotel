@@ -18,7 +18,10 @@
                 "{{ package and package.purposeOfArrival ? arrivals[package.purposeOfArrival] : '' }}",
                 "{{ tourist.address }}",
                 "{% if tourist.birthday %}{{ tourist.birthday|date('d.m.Y')}}{% if tourist.age %}<br><small>{{ tourist.age }}</small>{% endif %}{% endif %}",
-                "{{ tourist.phone|default('-') }}<br><small>{% if tourist.email %}<a href='mailto:{{ tourist.email }}'>{{ tourist.email }}</a>{% endif %}</small>",
+
+                "{% if tourist.phone %}{{ tourist.phone }}{% elseif not tourist.email %}-<br>{% endif %}<small>{% if tourist.email %}<a href='mailto:{{ tourist.email }}'>{{ tourist.email }}</a>{% endif %}</small>",
+
+
                 "<div class='btn-list'>{% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': tourist, 'route': 'tourist'} %}{% endembed %}</div>"
             ]{% if loop.index != tourists|length %},{% endif %}
         {% endfor %}
