@@ -671,31 +671,22 @@ services:
         tags:
             - {name: kernel.event_subscriber, event: invalidator.key.invalidate }
 
-#compare command
-    mbh_search.compare.command:
-        class: MBH\Bundle\SearchBundle\Command\SearchCompareCommand
-        arguments:
-            - '@mbh_search.search'
-            - '@mbh.package.search'
-            - '@mbh_search.compare_logger'
-            - '@doctrine_mongodb.odm.default_document_manager'
-            - '@mbh.package.search_simple'
-        tags:
-            - { name: console.command }
 #error result filter
     mbh_search.error_result_filter:
       class: MBH\Bundle\SearchBundle\Services\Cache\ErrorFilters\ErrorResultFilter
 
-    mbh_search.debug_price_checker:
-        class: MBH\Bundle\SearchBundle\Services\Search\Debug\DebugPriceChecker
-        arguments:
-            - '@mbh.package.search_simple'
-            - '@mbh_search.tariff_repository'
-            - '@mbh_search.slack_notifier'
 
-
-    mbh_search.slack_notifier:
-        class: MBH\Bundle\SearchBundle\Services\Search\Debug\SlackNotifier
-        arguments:
-            - '%slackToken%'
-            - '%slackChannelId%'
+##Temporary service for price check in new search. Disabled.
+#    mbh_search.debug_price_checker:
+#        class: MBH\Bundle\SearchBundle\Services\Search\Debug\DebugPriceChecker
+#        arguments:
+#            - '@mbh.package.search_simple'
+#            - '@mbh_search.tariff_repository'
+#            - '@mbh_search.slack_notifier'
+#
+#
+#    mbh_search.slack_notifier:
+#        class: MBH\Bundle\SearchBundle\Services\Search\Debug\SlackNotifier
+#        arguments:
+#            - '%priceDebugSlackToken%'
+#            - '%priceDebugSlackChannelId%'
