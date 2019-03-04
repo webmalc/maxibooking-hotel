@@ -56,7 +56,7 @@ class InvisibleCaptcha
         if ($response === null) {
             return;
         }
-        if (!isset ($response['success'])) {
+        if (!isset($response['success'])) {
             return;
         }
         if (!$response['success']) {

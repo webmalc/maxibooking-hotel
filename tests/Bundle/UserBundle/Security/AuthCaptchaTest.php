@@ -18,6 +18,8 @@ class AuthCaptchaTest extends WebTestCase
 
     protected const LOGIN_FORM_URL = 'http://localhost/user/login';
 
+    protected const AFTER_LOGIN_REDIRECT = 'http://localhost/package/chessboard/';
+
     /**
      * @var string
      */
@@ -123,6 +125,7 @@ class AuthCaptchaTest extends WebTestCase
     public function setUp()
     {
         $this->client = self::makeClient();
+
         $this->createSessionAndCookie();
 
         $this
@@ -158,6 +161,21 @@ class AuthCaptchaTest extends WebTestCase
         $this->assertSame(self::LOCALHOST_URL, $this->client->followRedirect()->getUri());
     }
 
+    public function testCheckMainFirewall()
+    {
+        $this->mockCaptcha(null);
+
+        $form = $this->getForm();
+        $form->setValues($this->getValidFormData());
+        $this->client->submit($form);
+
+        $this->client->followRedirect();
+        $uri = $this->client->followRedirect()->getUri();
+
+        $this->assertStatusCode(200, $this->client);
+        $this->assertSame(self::AFTER_LOGIN_REDIRECT, $uri);
+    }
+
     public function testSendInvalidForm()
     {
         $this->mockCaptcha(new InvisibleCaptchaException());
@@ -172,7 +190,7 @@ class AuthCaptchaTest extends WebTestCase
     /**
      * @return \Symfony\Component\DomCrawler\Form
      */
-    protected function getForm()
+    private function getForm()
     {
         $crawler = $this->client->request('GET', $this->getLoginFormUrl());
         $form = $crawler->filter('form[name="loginForm"]')->form();
@@ -193,11 +211,11 @@ class AuthCaptchaTest extends WebTestCase
     protected function createSessionAndCookie()
     {
         $session = $this->client->getContainer()->get('session');
-        $firewall = 'main';
-        $userManager = static::$kernel->getContainer()->get('fos_user.user_manager');
+        $firewallContext = 'test_content';
+        $userManager = $this->client->getContainer()->get('fos_user.user_manager');
         $user = $userManager->findUserByUsername('admin');
-        $token = new AnonymousToken($user->getRoles(), 'anon.', []);
-        $session->set('_security_' . $firewall, serialize($token));
+        $token = new AnonymousToken(null, $user, ["ROLE_BASE_USER"]);
+        $session->set('_security_' . $firewallContext, serialize($token));
         $session->save();
 
         $cookie = new Cookie($session->getName(), $session->getId());

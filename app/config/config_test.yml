@@ -1,13 +1,13 @@
 imports:
-    - { resource: config_dev.yml }
+    - { resource: config.yml }
+    - { resource: config_dev_data.yml }
+    - { resource: security_test.yml }
 
 framework:
     test: ~
     session:
         storage_id: session.storage.php_bridge
     profiler:
-        enabled: true
-    csrf_protection:
         enabled: true
 
 swiftmailer:
@@ -27,9 +27,12 @@ parameters:
 security:
     firewalls:
         main:
+            context: test_content
             http_basic: ~
-            form_login: true
+            form_login: false
             remember_me: false
+            stateless: false
+
 
 liip_functional_test:
   authentication:
