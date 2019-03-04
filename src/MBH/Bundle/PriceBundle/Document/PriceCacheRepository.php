@@ -10,18 +10,15 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 class PriceCacheRepository extends DocumentRepository
 {
     /**
-     * @param int $period
      * @return array
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function findForDashboard(int $period, bool $isUseCategory = false): array
+    public function findForDashboard(int $period, string $roomTypeField = 'roomType'): array
     {
         $begin = new \DateTime('midnight');
         $end = new \DateTime('midnight +' . $period . ' days');
         $tariffs = $this->getDocumentManager()->getRepository('MBHPriceBundle:Tariff')
             ->getBaseTariffsIds();
-
-        $roomTypeField = $isUseCategory ? 'roomTypeCategory' : 'roomType';
 
         $caches =  $this->createQueryBuilder()
             ->select('hotel.id', $roomTypeField.'.id', 'tariff.id', 'date', 'price')
@@ -33,7 +30,7 @@ class PriceCacheRepository extends DocumentRepository
             ->getQuery()
             ->execute()->toArray();
 
-        return $this->convertRawMongoData($caches);
+        return $this->convertRawMongoData($caches, $roomTypeField);
     }
 
     /**
@@ -241,7 +238,7 @@ class PriceCacheRepository extends DocumentRepository
      * @param $caches
      * @return array
      */
-    private function convertRawMongoData($caches)
+    private function convertRawMongoData($caches, string $roomTypeField = 'roomType'): array
     {
         $result = [];
         foreach ($caches as $cache) {
@@ -249,10 +246,10 @@ class PriceCacheRepository extends DocumentRepository
             $cache['date'] = $cache['date']->toDateTime();
             $cache['date']->setTimezone(new \DateTimeZone(date_default_timezone_get()));
             $cache['hotel'] = (string)$cache['hotel']['$id'];
-            $cache['roomType'] = (string)$cache['roomType']['$id'];
+            $cache[$roomTypeField] = (string)$cache[$roomTypeField]['$id'];
             $cache['tariff'] = (string)$cache['tariff']['$id'];
             unset($cache['_id']);
-            $result[$cache['hotel']][$cache['roomType']][$cache['tariff']][$cache['date']->format('d.m.Y')] = $cache;
+            $result[$cache['hotel']][$cache[$roomTypeField]][$cache['tariff']][$cache['date']->format('d.m.Y')] = $cache;
         }
 
         return $result;

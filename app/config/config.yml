@@ -349,16 +349,12 @@ liip_imagine:
             filters:
               downscale:
                 max: [1980,1280]
-            post_processors:
-              jpegoptim: { strip_all: true, max: 100, progressive: true }
 
         size_500x500:
             quality: 80
             filters:
               downscale:
                 max: [500,500]
-            post_processors:
-              jpegoptim: { strip_all: true, max: 80, progressive: true }
 
         protected_scaler:
             cache: protected_cached_images

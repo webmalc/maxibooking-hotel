@@ -16,7 +16,7 @@
         <input type="text" class="mbh-calendar-input form-control input-sm" id="mbh-form-begin" name="begin" required value="{{ 'now'|date('d.m.Y') }}" readonly>
     </div>
 
-    <div class="mbh-form-row form-group" {% if formConfig.nights %}style='display: none;'{% endif %}>
+    <div class="mbh-form-row form-group"{% if formConfig.nights %} style='display: none;'{% endif %}>
         <label for="mbh-form-end"> {{ 'views.api.form.check_out_date'|trans({}, 'MBHOnlineBundle') }}</label>
         <input type="text" class="mbh-calendar-input form-control input-sm" id="mbh-form-end" name="end" required value="{{ 'now'|date_modify('+1 day')|date('d.m.Y') }}" readonly>
     </div>
@@ -40,7 +40,7 @@
             {% set choices = choices|merge(hotel.roomTypes) %}
         {% endfor %}
     {% endif %}
-    <div class="mbh-form-row form-group {{ choices|length == 1 ? 'hidden' }}">
+    <div class="mbh-form-row form-group{{ choices|length == 1 ? ' hidden' }}">
         <label for="mbh-form-roomType"> {{ 'views.api.form.room_type'|trans({}, 'MBHOnlineBundle') }}</label>
         <select id="mbh-form-roomType" class="form-control input-sm" name="roomType">
             <option></option>

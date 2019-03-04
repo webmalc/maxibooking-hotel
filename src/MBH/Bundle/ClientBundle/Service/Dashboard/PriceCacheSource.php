@@ -31,7 +31,7 @@ class PriceCacheSource extends AbstractCacheSource
     {
         $callback = function () {
             return $this->documentManager->getRepository('MBHPriceBundle:PriceCache')
-                ->findForDashboard(static::PERIOD);
+                ->findForDashboard(static::PERIOD, $this->roomTypeKey);
         };
         return $this->helper->getFilteredResult($this->documentManager, $callback);
     }

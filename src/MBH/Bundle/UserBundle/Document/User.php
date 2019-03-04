@@ -30,11 +30,29 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class User extends BaseUser implements RecipientInterface, DataOfMortalInterface, LocaleInterface
 {
+    /**
+     * Hook timestampable behavior
+     * updates createdAt, updatedAt fields
+     */
+    use TimestampableDocument;
+
+    /**
+     * Hook softdeleteable behavior
+     * deletedAt field
+     */
+    use SoftDeleteableDocument;
+
+    /**
+     * Hook blameable behavior
+     * createdBy&updatedBy fields
+     */
+    use BlameableDocument;
+
+    use AllowNotificationTypesTrait;
+
     const ROLE_DEFAULT = 'ROLE_BASE_USER';
     const TWO_FACTOR_TYPES = ['email', 'google'];
     const SYSTEM_USER = 'mb';
-
-    use AllowNotificationTypesTrait;
 
     /**
      * @var string
@@ -154,6 +172,14 @@ class User extends BaseUser implements RecipientInterface, DataOfMortalInterface
      * @var boolean
      * @Gedmo\Versioned
      * @ODM\Field(type="boolean")
+     * @Assert\Type(type="boolean")
+     */
+    protected $enabled;
+
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -200,24 +226,6 @@ class User extends BaseUser implements RecipientInterface, DataOfMortalInterface
      * @ODM\EmbedOne(targetDocument="AuthorizationToken")
      */
     protected $apiToken;
-
-    /**
-     * Hook timestampable behavior
-     * updates createdAt, updatedAt fields
-     */
-    use TimestampableDocument;
-
-    /**
-     * Hook softdeleteable behavior
-     * deletedAt field
-     */
-    use SoftDeleteableDocument;
-    
-    /**
-     * Hook blameable behavior
-     * createdBy&updatedBy fields
-     */
-    use BlameableDocument;
     
     public function __construct()
     {

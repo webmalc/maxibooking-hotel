@@ -11,6 +11,11 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 abstract class Common
 {
+    /**
+     * @var Helper
+     */
+    protected $helper;
+
     /** @var null|ContainerInterface  */
     protected $container;
 
@@ -55,6 +60,10 @@ abstract class Common
     public function __construct(ContainerInterface $container = null)
     {
         $this->container = $container;
+
+        if ($container !== null) {
+            $this->helper = $this->container->get(\MBH\Bundle\ClientBundle\Service\DocumentSerialize\Helper::class);
+        }
     }
 
     /**

@@ -50,6 +50,8 @@ class Booking extends Base implements ChannelManagerServiceInterface
      */
     const BASE_URL = 'https://supply-xml.booking.com/hotels/xml/';
 
+    const URL_RESERVATIONS = 'reservations';
+
     /**
      * Base secure API URL
      */
@@ -870,7 +872,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
      */
     public function getBookingAccountConfirmationCode(BookingConfig $config)
     {
-        $response = $this->sendPullOrdersRequest(ChannelManager::OLD_PACKAGES_PULLING_ALL_STATUS, $config, true);
+        $response = $this->checkAccess($config);
         if ($this->hasErrorNode($response)) {
             if (isset($response->fault->attributes()['code']) && in_array((int)$response->fault->attributes()['code'], [401, 403])) {
                 return (int)$response->fault->attributes()['code'];
@@ -912,15 +914,27 @@ class Booking extends Base implements ChannelManagerServiceInterface
      */
     private function sendPullOrdersRequest($pullOldStatus, $config, $isPulledAllPackages): \SimpleXMLElement
     {
-        $request = $this->templating->render(
-            'MBHChannelManagerBundle:Booking:reservations.xml.twig',
-            ['config' => $config, 'params' => $this->params, 'pullOldStatus' => $pullOldStatus]
-        );
+        $request = $this->generateRequestBody($pullOldStatus, $config);
 
-        $endpointUrl = static::BASE_SECURE_URL . ($isPulledAllPackages ? 'reservationssummary' : 'reservations');
+        $endpointUrl = static::BASE_SECURE_URL . ($isPulledAllPackages ? 'reservationssummary' : static::URL_RESERVATIONS);
 
         $sendResult = $this->sendXml($endpointUrl, $request, null, true);
 
         return $sendResult;
+    }
+
+    private function checkAccess(BookingConfig $config): \SimpleXMLElement
+    {
+        $request = $this->generateRequestBody(null, $config);
+
+        return $this->sendXml(static::BASE_SECURE_URL . static::URL_RESERVATIONS, $request, null, true);
+    }
+
+    private function generateRequestBody($pullOldStatus, BookingConfig $config): string
+    {
+        return  $this->templating->render(
+            'MBHChannelManagerBundle:Booking:reservations.xml.twig',
+            ['config' => $config, 'params' => $this->params, 'pullOldStatus' => $pullOldStatus]
+        );
     }
 }
