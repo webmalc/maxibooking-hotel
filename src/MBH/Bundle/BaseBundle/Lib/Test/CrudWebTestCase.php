@@ -394,7 +394,7 @@ abstract class CrudWebTestCase extends WebTestCase
     protected function sendInvalidForm(Crawler $crawler, string $formClass, array $errors): void
     {
         $form = $crawler->filter($formClass)->form();
-        $crawler = $this->client->submit($form);
+        $this->client->submit($form);
         $this->assertStatusCode(200, $this->client);
         $this->assertValidationErrors($errors, $this->client->getContainer());
     }
@@ -440,7 +440,7 @@ abstract class CrudWebTestCase extends WebTestCase
      * @param bool $redirect
      * @return \Symfony\Component\DomCrawler\Crawler
      */
-    protected function clickLinkInList(string $url = null, string $filter, bool $redirect = false)
+    protected function clickLinkInList(string $url = null, string $filter, bool $redirect = false, string $method = 'GET')
     {
         $crawler = $this->getListCrawler($url);
         $link = $crawler->filter($this->getListContainer() . $filter)->link();
@@ -467,5 +467,30 @@ abstract class CrudWebTestCase extends WebTestCase
             }
         }
         return true;
+    }
+
+    /**
+     * @param array $array
+     * @return string
+     */
+    protected function arraysFromValidJsonToString(array $array) : string
+    {
+        $imploded = '';
+        foreach ($array as $key => $value) {
+            if (is_array($key)) {
+                $imploded .= $this->arraysFromValidJsonToString($key);
+            }
+            if (is_array($value)) {
+                $imploded .= $this->arraysFromValidJsonToString($value);
+            }
+            if (is_string($value)) {
+                $imploded .= $value;
+            }
+            if (is_string($key)) {
+                $imploded .= $key;
+            }
+        }
+
+        return $imploded;
     }
 }
