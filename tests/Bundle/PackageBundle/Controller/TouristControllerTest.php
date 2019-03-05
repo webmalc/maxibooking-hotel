@@ -3,9 +3,12 @@
 namespace Bundle\PackageBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Lib\Test\CrudWebTestCase;
+use Symfony\Component\DomCrawler\Crawler;
 
 class TouristControllerTest extends CrudWebTestCase
 {
+
+
     public static function setUpBeforeClass()
     {
         self::baseFixtures();
@@ -40,18 +43,42 @@ class TouristControllerTest extends CrudWebTestCase
             ])
             ->setListItemsCount(7);
     }
+
     /**
-     * @param string|null $title
+     * @param string $method
+     * @param string $url
+     * @return \Symfony\Component\DomCrawler\Crawler
      * @throws \Exception
      */
-    protected function checkSavedObject(string $title): void
+    public function getListCrawler($url = null, $method = 'POST') : Crawler
     {
-        $countTitle = $this->arrayCountNeedleRecursive(
-            $this->getArrayFromJsonResponse(null, 'POST'),
-            $title
-        );
+        $url = $url ?? $this->getListUrl();
 
-        $this->assertSame(2, $countTitle);
+        $crawler = $this->client->request('GET', '/package/tourist/', [], [], $this->getListHeaders());
+
+        $token = $crawler->filter('input[id="mbhpackage_bundle_tourist_filter_form__token"]')->extract(['value'])[0];
+
+        $form = [
+            'form' => [
+                '_token' => $token,
+                'begin' => '',
+                'end' => '',
+                'citizenship' => '',
+                'search' => '',
+                'hotels' => '',
+            ]
+        ];
+
+        $this->client->request($method, $url, $form, [], []);
+        $response = $this->client->getResponse()->getContent();
+
+        if(!isset(((array)json_decode($response))['data'])) {
+            throw new \Exception('Data key is not defined in response json.');
+        }
+
+        $htmlData = $this->arraysFromValidJsonToString( ((array)json_decode($response))['data'] );
+
+        return new Crawler($htmlData, 'http://localhost');
     }
 
     /**
@@ -74,28 +101,21 @@ class TouristControllerTest extends CrudWebTestCase
         $formName = $formName ?? $this->getFormName();
         $values = $values ?? $this->getEditFormValues();
 
-        $crawler = $this->clickLinkInListWithParams(
-            $url,
-            'a:contains("' . $title . '")',
-            false,
-            [],
-            'POST'
-        );
+        $crawler = $this->clickLinkInList($url, 'a:contains("' . $title . '")', false, 'POST');
 
         $form = $crawler->filter('form[name="' . $formName . '"]')->form();
-
         $form->setValues(self::prepareFormValues($formName, $values));
 
         $this->client->submit($form);
         $this->client->followRedirect();
 
-        $countTitleEdited = $this->arrayCountNeedleRecursive(
-            $this->getArrayFromJsonResponse($url, 'POST'),
-            $titleEdited
-        );
-
         //check saved object
-        $this->assertSame(2, $countTitleEdited);
+        $this->assertSame(
+            1,
+            $this->getListCrawler()
+                ->filter($this->getListContainer() . 'a:contains("' . $titleEdited . '")')
+                ->count()
+        );
     }
 
     /**
@@ -109,44 +129,19 @@ class TouristControllerTest extends CrudWebTestCase
         $url = $url ?? $this->getListUrl();
         $count = $count ?? $this->getListItemsCount();
 
-        $this->clickLinkInListWithParams(
+        $this->clickLinkInList(
             $url,
             'a[class="btn btn-danger btn-xs delete-link"]',
             true,
-            [],
             'POST'
         );
 
-        $countRel = $this->arrayCountNeedleRecursive(
-            $this->getArrayFromJsonResponse($url, 'POST'),
-            "rel='main'"
+        $this->assertSame(
+            $count,
+            $this->getListCrawler()
+                ->filter($this->getListContainer() . 'a[rel="main"]')
+                ->count()
         );
-
-        $this->assertSame($count, $countRel);
     }
 
-    /**
-     * @param string|null $url
-     * @param string|null $title
-     * @param int|null $count
-     * @throws \Exception
-     */
-    protected function listBaseTest(string $url = null, string $title = null, int $count = null)
-    {
-        $title = $title ?? $this->getNewTitle();
-        $count = $count ?? $this->getListItemsCount();
-
-        $countTitle = $this->arrayCountNeedleRecursive(
-            $this->getArrayFromJsonResponse($url, 'POST'),
-            $title
-        );
-
-        $countRel = $this->arrayCountNeedleRecursive(
-            $this->getArrayFromJsonResponse($url, 'POST'),
-            "rel='main'"
-        );
-
-        $this->assertSame(2, $countTitle);
-        $this->assertSame($count + 1, $countRel);
-    }
 }
