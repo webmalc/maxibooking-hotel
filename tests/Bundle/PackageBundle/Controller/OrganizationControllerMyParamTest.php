@@ -4,9 +4,10 @@ namespace Tests\Bundle\PackageBundle\Controller;
 
 
 use MBH\Bundle\BaseBundle\Lib\Test\CrudWebTestCase;
+use Symfony\Component\DomCrawler\Crawler;
 
 
-class OrganizationControllerMyParamTest extends CrudWebTestCase
+class OrganizationControllerMyParamTest extends  CrudWebTestCase
 {
     public static function setUpBeforeClass()
     {
@@ -47,60 +48,26 @@ class OrganizationControllerMyParamTest extends CrudWebTestCase
     }
 
     /**
-     * @param string|null $title
+     * @param string $method
+     * @param string $url
+     * @param $params array
+     * @return \Symfony\Component\DomCrawler\Crawler
      * @throws \Exception
      */
-    protected function checkSavedObject(string $title): void
+    public function getListCrawler($url = null, $method = 'GET', $params = ['type' => 'my']) : Crawler
     {
-        $countTitle = $this->arrayCountNeedleRecursive(
-            $this->getArrayFromJsonResponse(null, 'GET', ['type' => 'my']),
-            $title
-        );
+        $url = $url ?? $this->getListUrl();
+        $this->client->request($method, $url, $params, [], $this->getListHeaders());
 
-        $this->assertSame(2, $countTitle);
-    }
+        $response = $this->client->getResponse()->getContent();
 
-    /**
-     * @param array|null $values
-     * @param string|null $url
-     * @param string|null $title
-     * @param string|null $titleEdited
-     * @param string|null $formName
-     * @throws \Exception
-     */
-    protected function editFormBaseTest(
-        array $values = null,
-        string $url = null,
-        string $title = null,
-        string $titleEdited = null,
-        string $formName = null
-    )
-    {
-        $title = $title ?? $this->getNewTitle();
-        $titleEdited = $titleEdited ?? $this->getEditTitle();
-        $formName = $formName ?? $this->getFormName();
-        $values = $values ?? $this->getEditFormValues();
+        if(!isset(((array)json_decode($response))['data'])) {
+            throw new \Exception('Data key is not defined in response json.');
+        }
 
-        $crawler = $this->clickLinkInListWithParams(
-            $url,
-            'a:contains("' . $title . '")',
-            false,
-            ['type' => 'my']
-        );
+        $htmlData = $this->arraysFromValidJsonToString( ((array)json_decode($response))['data'] );
 
-        $form = $crawler->filter('form[name="' . $formName . '"]')->form();
-
-        $form->setValues(self::prepareFormValues($formName, $values));
-
-        $this->client->submit($form);
-        $this->client->followRedirect();
-
-        //check saved object
-        $this->assertSame(1, $this
-            ->getListCrawlerJsonResponse($url, 'GET', ['type' => 'my'])
-            ->filter($this->getListContainer() . 'a:contains("' . $titleEdited . '")')
-            ->count()
-        );
+        return new Crawler($htmlData, 'http://localhost');
     }
 
     /**
@@ -114,43 +81,18 @@ class OrganizationControllerMyParamTest extends CrudWebTestCase
         $url = $url ?? $this->getListUrl();
         $count = $count ?? $this->getListItemsCount();
 
-        $this->clickLinkInListWithParams(
+        $this->clickLinkInList(
             $url,
             'a[class="btn btn-danger btn-xs delete-link"]',
-            true,
-            ['type' => 'my']
+            true
         );
 
-        $countRel = $this->arrayCountNeedleRecursive(
-            $this->getArrayFromJsonResponse($url, 'GET', ['type' => 'my']),
-            "rel='main'"
+        $this->assertSame(
+            $count,
+            $this->getListCrawler()
+                ->filter($this->getListContainer() . 'a[rel="main"]')
+                ->count()
         );
-
-        $this->assertSame($count, $countRel);
-    }
-
-    /**
-     * @param string|null $url
-     * @param string|null $title
-     * @param int|null $count
-     * @throws \Exception
-     */
-    protected function listBaseTest(string $url = null, string $title = null, int $count = null)
-    {
-        $title = $title ?? $this->getNewTitle();
-        $count = $count ?? $this->getListItemsCount();
-
-        $countTitle = $this->arrayCountNeedleRecursive(
-            $this->getArrayFromJsonResponse($url, 'GET', ['type' => 'my']),
-            $title
-        );
-        $countRel = $this->arrayCountNeedleRecursive(
-            $this->getArrayFromJsonResponse($url, 'GET', ['type' => 'my']),
-            "rel='main'"
-        );
-
-        $this->assertSame(2, $countTitle);
-        $this->assertSame($count + 1, $countRel);
     }
 }
 
