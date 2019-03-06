@@ -46,6 +46,7 @@ class PriceCacheGeneratorType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $isIndividualAdditionalPrices = 0;
+        $isSinglePersonDisabled = true;
 
         /** @var PriceCacheHolderDataGeneratorForm $generator */
         $generator = $builder->getData();
@@ -68,10 +69,19 @@ class PriceCacheGeneratorType extends AbstractType
             }
         }
 
+        if ($hotel !== null) {
+            /** @var RoomType $roomType */
+            foreach ($hotel->getRoomTypes() as $roomType) {
+                if ($roomType->getIsSinglePlacement()) {
+                    $isSinglePersonDisabled = false;
+                    break;
+                }
+            }
+        }
+
         $repo = $options['useCategories'] ? 'MBHHotelBundle:RoomTypeCategory' : 'MBHHotelBundle:RoomType';
 
         $pricePlaceHolder = 'mbhpricebundle.form.pricecachegeneratortype.change_sum_or_percent';
-
         $builder
             ->add('begin', DateType::class, array(
                 'label' => 'mbhpricebundle.form.pricecachegeneratortype.nachaloperioda',
@@ -237,6 +247,11 @@ class PriceCacheGeneratorType extends AbstractType
             ])
         ;
 
+        if ($isSinglePersonDisabled) {
+            $builder->remove('singlePriceFake');
+            $builder->remove('singlePrice');
+        }
+
         if ($isIndividualAdditionalPrices) {
             for ($i = 1; $i < $isIndividualAdditionalPrices; $i++) {
                 $builder
@@ -301,7 +316,8 @@ class PriceCacheGeneratorType extends AbstractType
         $resolver->setDefaults([
             'data_class' => PriceCacheHolderDataGeneratorForm::class,
             'useCategories' => false,
-            'constraints' => new Callback([$this, 'checkDates'])
+            'constraints' => new Callback([$this, 'checkDates']),
+            'isSinglePersonDisabled' => false
         ]);
     }
 
