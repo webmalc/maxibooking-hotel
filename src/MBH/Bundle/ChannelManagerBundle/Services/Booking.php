@@ -235,6 +235,8 @@ class Booking extends Base implements ChannelManagerServiceInterface
         $begin = $this->getDefaultBegin($begin);
         $end = $this->getDefaultEnd($begin, $end);
 
+        $this->log('start update rooms');
+
         // iterate hotels
         foreach ($this->getConfig() as $config) {
             $roomTypes = $this->getRoomTypes($config);
@@ -274,6 +276,9 @@ class Booking extends Base implements ChannelManagerServiceInterface
                     'data' => $data,
                 ]
             );
+
+            $this->log(sprintf('send request: %s', $request));
+
             $sendResult = $this->send(static::BASE_URL.'availability', $request, null, true);
 
             if ($result) {
@@ -294,6 +299,8 @@ class Booking extends Base implements ChannelManagerServiceInterface
         $result = true;
         $begin = $this->getDefaultBegin($begin);
         $end = $this->getDefaultEnd($begin, $end);
+
+        $this->log('start update prices');
 
         // iterate hotels
         foreach ($this->getConfig() as $config) {
@@ -375,6 +382,8 @@ class Booking extends Base implements ChannelManagerServiceInterface
                 ]
             );
 
+            $this->log(sprintf('send request: %s', $request));
+
             $sendResult = $this->send(static::BASE_URL.'availability', $request, null, true);
 
             if ($result) {
@@ -395,6 +404,8 @@ class Booking extends Base implements ChannelManagerServiceInterface
         $result = true;
         $begin = $this->getDefaultBegin($begin);
         $end = $this->getDefaultEnd($begin, $end);
+
+        $this->log('start update restrictions');
 
         // iterate hotels
         foreach ($this->getConfig() as $config) {
@@ -489,6 +500,9 @@ class Booking extends Base implements ChannelManagerServiceInterface
                     'end' => $end
                 ]
             );
+
+            $this->log(sprintf('send request: %s', $request));
+
             $sendResult = $this->send(static::BASE_URL.'availability', $request, null, true);
 
             if ($result) {
