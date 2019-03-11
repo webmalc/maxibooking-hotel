@@ -5,6 +5,7 @@ namespace MBH\Bundle\PriceBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
 use MBH\Bundle\PriceBundle\Document\TariffRepository;
@@ -46,7 +47,6 @@ class PriceCacheGeneratorType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $isIndividualAdditionalPrices = 0;
-        $isSinglePersonDisabled = true;
 
         /** @var PriceCacheHolderDataGeneratorForm $generator */
         $generator = $builder->getData();
@@ -65,16 +65,6 @@ class PriceCacheGeneratorType extends AbstractType
                             $isIndividualAdditionalPrices = $roomType->getAdditionalPlaces();
                         }
                     }
-                }
-            }
-        }
-
-        if ($hotel !== null) {
-            /** @var RoomType $roomType */
-            foreach ($hotel->getRoomTypes() as $roomType) {
-                if ($roomType->getIsSinglePlacement()) {
-                    $isSinglePersonDisabled = false;
-                    break;
                 }
             }
         }
@@ -247,10 +237,7 @@ class PriceCacheGeneratorType extends AbstractType
             ])
         ;
 
-        if ($isSinglePersonDisabled) {
-            $builder->remove('singlePriceFake');
-            $builder->remove('singlePrice');
-        }
+        $builder = $this->filterByIsSinglePlacement($hotel, $builder);
 
         if ($isIndividualAdditionalPrices) {
             for ($i = 1; $i < $isIndividualAdditionalPrices; $i++) {
@@ -316,8 +303,7 @@ class PriceCacheGeneratorType extends AbstractType
         $resolver->setDefaults([
             'data_class' => PriceCacheHolderDataGeneratorForm::class,
             'useCategories' => false,
-            'constraints' => new Callback([$this, 'checkDates']),
-            'isSinglePersonDisabled' => false
+            'constraints' => new Callback([$this, 'checkDates'])
         ]);
     }
 
@@ -326,4 +312,23 @@ class PriceCacheGeneratorType extends AbstractType
         return 'mbh_price_bundle_price_cache_generator';
     }
 
+    /**
+     * @param Hotel $hotel
+     * @param FormBuilderInterface $builder
+     * @return FormBuilderInterface
+     */
+    private function filterByIsSinglePlacement(Hotel $hotel, FormBuilderInterface $builder)
+    {
+        if ($hotel !== null) {
+            /** @var RoomType $roomType */
+            foreach ($hotel->getRoomTypes() as $roomType) {
+                if ($roomType->getIsSinglePlacement()) {
+                    return $builder;
+                }
+            }
+            $builder->remove('singlePriceFake');
+            $builder->remove('singlePrice');
+        }
+        return $builder;
+    }
 }

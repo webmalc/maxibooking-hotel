@@ -61,7 +61,6 @@ class PriceCacheRepository extends DocumentRepository
         if (!is_null($tariffIds)) {
             $cachesQb->field('tariff.id')->in($tariffIds);
         }
-
         $result = $this->convertRawMongoData($cachesQb->getQuery()->execute());
 
         return $result;
@@ -152,6 +151,8 @@ class PriceCacheRepository extends DocumentRepository
             $categories
         )->getQuery()->execute();
 
+        $caches = $this->filterPriceCachesByRoomTypeFlags($caches);
+
         if (!$grouped) {
             return $caches;
         }
@@ -202,6 +203,8 @@ class PriceCacheRepository extends DocumentRepository
         }
         $caches = $cachesQB->getQuery()->execute()->toArray();
 
+        $caches = $this->filterPriceCachesByRoomTypeFlags($caches);
+
         $result = [];
         $method = $categories ? 'getRoomTypeCategory' : 'getRoomType';
         /** @var PriceCache $cache */
@@ -234,7 +237,7 @@ class PriceCacheRepository extends DocumentRepository
             $qb->field('tariff.id')->in($tariffsIds);
         }
 
-        return $qb->getQuery()->getSingleResult();
+        return $this->filterPriceCachesByRoomTypeFlags($qb->getQuery()->getSingleResult());
     }
 
     /**
@@ -256,5 +259,42 @@ class PriceCacheRepository extends DocumentRepository
         }
 
         return $result;
+    }
+
+    /**
+     * @param array|object|null $caches
+     * @return array|object|null
+     */
+    private function filterPriceCachesByRoomTypeFlags($caches)
+    {
+        if ($caches == null) {
+            return null;
+        }
+
+        $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')->findAll();
+
+        $roomTypeMap = [];
+
+        foreach ($roomTypes as $roomType) {
+            $roomTypeMap[$roomType->getId()] = [
+                'isIndividualAdditionalPrices' => $roomType->getIsIndividualAdditionalPrices(),
+                'isSinglePlacement' => $roomType->getIsSinglePlacement(),
+                'isChildPrices' => $roomType->getIsChildPrices(),
+            ];
+        }
+
+        foreach ($caches as $cacheId => $cache) {
+            if (!$roomTypeMap[$cache->getRoomType()->getId()]['isIndividualAdditionalPrices']) {
+                $cache->setAdditionalPrices([]);
+            }
+            if (!$roomTypeMap[$cache->getRoomType()->getId()]['isSinglePlacement']) {
+                $cache->setSinglePrice(null);
+            }
+            if (!$roomTypeMap[$cache->getRoomType()->getId()]['isChildPrices']) {
+                $cache->setChildPrice(null);
+            }
+        }
+
+        return $caches;
     }
 }
