@@ -10,6 +10,7 @@ use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Document\PriceCache;
 use MBH\Bundle\PriceBundle\Document\Restriction;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
+use MBH\Bundle\PriceBundle\Services\PriceCacheRepositoryFilter;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -24,11 +25,17 @@ abstract class AbstractRequestDataFormatter
     protected $dm;
     protected $roomManager;
 
+    /**
+     * @var PriceCacheRepositoryFilter
+     */
+    protected $priceCacheFilter;
+
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
         $this->roomManager = $container->get('mbh.hotel.room_type_manager');
         $this->dm = $this->container->get('doctrine_mongodb')->getManager();
+        $this->priceCacheFilter = $container->get('mbh.price_cache_repository_filter');
     }
 
     /**
@@ -107,14 +114,16 @@ abstract class AbstractRequestDataFormatter
         $roomTypeSyncData = $channelManagerHelper->getRoomTypesSyncData($config);
         $tariffs = $channelManagerHelper->getTariffsSyncData($config, true);
 
-        $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
-            $begin,
-            $end,
-            $config->getHotel(),
-            $this->getRoomTypeArray($roomType),
-            [],
-            true,
-            $this->roomManager->useCategories
+        $priceCaches =  $this->priceCacheFilter->filterFetch(
+            $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
+                $begin,
+                $end,
+                $config->getHotel(),
+                $this->getRoomTypeArray($roomType),
+                [],
+                true,
+                $this->roomManager->useCategories
+            )
         );
 
         foreach ($roomTypeSyncData as $roomTypeId => $roomTypeInfo) {
@@ -192,13 +201,15 @@ abstract class AbstractRequestDataFormatter
             [],
             true
         );
-        $priceCaches = $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
-            $begin,
-            $end,
-            $config->getHotel(),
-            $this->getRoomTypeArray($roomTypes),
-            [],
-            true
+        $priceCaches = $this->priceCacheFilter->filterFetch(
+            $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
+                $begin,
+                $end,
+                $config->getHotel(),
+                $this->getRoomTypeArray($roomTypes),
+                [],
+                true
+            )
         );
 
         foreach ($roomTypesSyncData as $roomTypeId => $roomTypeInfo) {
