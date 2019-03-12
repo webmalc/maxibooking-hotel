@@ -3,6 +3,7 @@
 namespace MBH\Bundle\UserBundle\Document;
 
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use FOS\UserBundle\Model\User as BaseUser;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -11,9 +12,11 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\AllowNotificationTypesTrait;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Service\Messenger\RecipientInterface;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\AddressObjectDecomposed;
 use MBH\Bundle\PackageBundle\Document\DocumentRelation;
 use MBH\Bundle\PackageBundle\Lib\DataOfMortalInterface;
+use MBH\Bundle\PackageBundle\Lib\HotelAccessibleInterface;
 use MBH\Bundle\PackageBundle\Lib\LocaleInterface;
 use MBH\Bundle\UserBundle\Validator\Constraints as MBHValidator;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -28,7 +31,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @MongoDBUnique(fields="email", message="validator.user.email_is_busy")
  * @MongoDBUnique(fields="username", message="mbhuserbundle.document.user.takoy.login.uzhe.zaregistrirovan")
  */
-class User extends BaseUser implements RecipientInterface, DataOfMortalInterface, LocaleInterface
+class User extends BaseUser implements RecipientInterface, DataOfMortalInterface, LocaleInterface, HotelAccessibleInterface
 {
     /**
      * Hook timestampable behavior
@@ -161,6 +164,11 @@ class User extends BaseUser implements RecipientInterface, DataOfMortalInterface
     protected $groups;
 
     /**
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel")
+     */
+    protected $hotels;
+
+    /**
      * @var boolean
      * @Gedmo\Versioned
      * @ODM\Field(type="boolean")
@@ -230,6 +238,7 @@ class User extends BaseUser implements RecipientInterface, DataOfMortalInterface
     public function __construct()
     {
         parent::__construct();
+        $this->hotels = new ArrayCollection();
     }
 
     /**
@@ -676,6 +685,41 @@ class User extends BaseUser implements RecipientInterface, DataOfMortalInterface
     {
         return $this->getLastNameWithInitials();
     }
+
+    /** @return Hotel[]|void */
+    public function getAccessibleHotels(): ?iterable
+    {
+        return $this->hotels;
+    }
+
+    /**0
+     * @return mixed
+     */
+    public function getHotels()
+    {
+        return $this->hotels;
+    }
+
+//    /**
+//     * @param Hotel $hotel
+//     * @return User
+//     */
+//    public function addHotel(Hotel $hotel): User
+//    {
+//        $this->hotels->add($hotel);
+//
+//        return $this;
+//    }
+//
+//    public function removeHotel(Hotel $hotel): User
+//    {
+//        $this->hotels->removeElement($hotel);
+//
+//        return $this;
+//    }
+
+
+
 
     public function getLastNameWithInitials()
     {

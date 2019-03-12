@@ -191,7 +191,7 @@ class ClientManager
      */
     public function isDefaultClient()
     {
-        return false && $this->client === \AppKernel::DEFAULT_CLIENT || $this->kernel->getEnvironment() === 'test';
+        return $this->client === \AppKernel::DEFAULT_CLIENT || $this->kernel->getEnvironment() === 'test';
     }
 
     /**

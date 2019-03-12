@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\BaseBundle\Service;
 
+use MBH\Bundle\BaseBundle\Security\HotelVoter;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -11,6 +12,7 @@ use Symfony\Component\Security\Acl\Exception\AclNotFoundException;
 use Symfony\Component\Security\Acl\Exception\NoAceFoundException;
 use Symfony\Component\Security\Acl\Permission\MaskBuilder;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\Security\Core\Security;
 
 /**
  * HotelSelector service
@@ -22,10 +24,15 @@ class HotelSelector
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
      */
     protected $container;
+    /**
+     * @var Security
+     */
+    private $security;
 
-    public function __construct(ContainerInterface $container)
+    public function __construct(ContainerInterface $container, Security $security)
     {
         $this->container = $container;
+        $this->security = $security;
     }
 
     /**
@@ -39,36 +46,41 @@ class HotelSelector
             return true;
         }
 
-        $user ?: $user = $this->container->get('security.token_storage')->getToken()->getUser();
 
-        // Is admin?
-        $token = new UsernamePasswordToken($user, 'none', 'none', $user->getRoles());
+        return $this->security->isGranted('ROLE_ADMIN') || $this->security->isGranted(HotelVoter::ACCESS, $hotel);
 
-        if ($this->container->get('kernel')->getEnvironment() == 'prod' && $this->container->has('security.access.decision_manager')) {
-            $decision_manager = $this->container->get('security.access.decision_manager');
-        } else {
-            $decision_manager = $this->container->get('debug.security.access.decision_manager');
-        }
 
-        if ($decision_manager->decide($token, array('ROLE_ADMIN'))) {
-            return true;
-        }
-
-        // Can edit hotel?
-        $objectIdentity = ObjectIdentity::fromDomainObject($hotel);
-        $securityIdentity = new UserSecurityIdentity($user, 'MBH\Bundle\UserBundle\Document\User');
-        $aclProvider = $this->container->get('security.acl.provider');
-
-        try {
-            $acl = $aclProvider->findAcl($objectIdentity);
-        } catch (AclNotFoundException $e) {
-            return false;
-        }
-        try {
-            return $acl->isGranted([MaskBuilder::MASK_MASTER], [$securityIdentity], false);
-        } catch (NoAceFoundException $e) {
-            return false;
-        }
+//        $user ?: $user = $this->container->get('security.token_storage')->getToken()->getUser();
+//
+//
+//        // Is admin?
+//        $token = new UsernamePasswordToken($user, 'none', 'none', $user->getRoles());
+//
+//        if ($this->container->get('kernel')->getEnvironment() == 'prod' && $this->container->has('security.access.decision_manager')) {
+//            $decision_manager = $this->container->get('security.access.decision_manager');
+//        } else {
+//            $decision_manager = $this->container->get('debug.security.access.decision_manager');
+//        }
+//
+//        if ($decision_manager->decide($token, array('ROLE_ADMIN'))) {
+//            return true;
+//        }
+//
+//        // Can edit hotel?
+//        $objectIdentity = ObjectIdentity::fromDomainObject($hotel);
+//        $securityIdentity = new UserSecurityIdentity($user, 'MBH\Bundle\UserBundle\Document\User');
+//        $aclProvider = $this->container->get('security.acl.provider');
+//
+//        try {
+//            $acl = $aclProvider->findAcl($objectIdentity);
+//        } catch (AclNotFoundException $e) {
+//            return false;
+//        }
+//        try {
+//            return $acl->isGranted([MaskBuilder::MASK_MASTER], [$securityIdentity], false);
+//        } catch (NoAceFoundException $e) {
+//            return false;
+//        }
     }
 
     /**
@@ -91,7 +103,7 @@ class HotelSelector
         }
 
         // Select first hotel
-        $hotels = $hotelRepository->createQueryBuilder('s')
+        $hotels = $hotelRepository->createQueryBuilder()
             ->sort('isDefault', 'desc')
             ->getQuery()
             ->execute();

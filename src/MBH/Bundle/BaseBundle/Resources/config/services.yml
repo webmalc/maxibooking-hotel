@@ -58,7 +58,7 @@ services:
             
     mbh.hotel.selector:
         class: MBH\Bundle\BaseBundle\Service\HotelSelector
-        arguments: ['@service_container']
+        arguments: ['@service_container', '@security.helper']
 
     mbh.currency:
             class: MBH\Bundle\BaseBundle\Service\Currency
@@ -542,3 +542,8 @@ services:
     mbh.image_manager:
         class: MBH\Bundle\BaseBundle\Service\ImageManager
         arguments: ['%kernel.project_dir%']
+
+    mbh.secure.hotel_voter:
+        class: MBH\Bundle\BaseBundle\Security\HotelVoter
+        tags:
+          - { name: security.voter }
