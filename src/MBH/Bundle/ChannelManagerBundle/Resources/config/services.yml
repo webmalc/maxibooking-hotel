@@ -13,7 +13,7 @@ services:
 
     mbh.channelmanager.booking:
         class: MBH\Bundle\ChannelManagerBundle\Services\Booking
-        arguments: ['@service_container']
+        arguments: ['@service_container', '@mbh.price_cache_repository_filter']
 
     mbh.channelmanager.myallocator:
         class: MBH\Bundle\ChannelManagerBundle\Services\MyAllocator
