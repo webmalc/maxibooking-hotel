@@ -24,9 +24,9 @@ class FormConfigRepository extends DocumentRepository
     }
 
     /**
-     * @return FormConfig
+     * @return FormConfig|null|object
      */
-    public function getForMBSite()
+    public function getForMBSite(): ?FormConfig
     {
         return $this->findOneBy(['forMbSite' => true]);
     }
