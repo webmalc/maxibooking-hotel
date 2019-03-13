@@ -10,6 +10,8 @@ namespace MBH\Bundle\UserBundle\EventListener;
 
 use FOS\UserBundle\Event\GetResponseUserEvent;
 use FOS\UserBundle\FOSUserEvents;
+use MBH\Bundle\UserBundle\Lib\Exception\InvisibleCaptchaException;
+use MBH\Bundle\UserBundle\Service\ReCaptcha\InvisibleCaptcha;
 use ReCaptcha\ReCaptcha;
 use Symfony\Bundle\TwigBundle\TwigEngine;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -22,17 +24,21 @@ class ResettingSubscriber implements EventSubscriberInterface
     protected $twigEngine;
     /** @var  TranslatorInterface */
     protected $translator;
+    /** @var InvisibleCaptcha */
+    protected $captcha;
 
     /**
      * @param array $params
      * @param TwigEngine $twigEngine
      * @param TranslatorInterface $translator
+     * @param InvisibleCaptcha $captcha
      */
-    public function __construct(array $params, TwigEngine $twigEngine, TranslatorInterface $translator)
+    public function __construct(array $params, TwigEngine $twigEngine, TranslatorInterface $translator, InvisibleCaptcha $captcha)
     {
         $this->params = $params;
         $this->twigEngine = $twigEngine;
         $this->translator = $translator;
+        $this->captcha = $captcha;
     }
 
     /**
@@ -68,14 +74,27 @@ class ResettingSubscriber implements EventSubscriberInterface
         $request = $event->getRequest();
         $errors = [];
 
-        $reCaptcha = new ReCaptcha($this->params['secret']);
-        if (!$reCaptcha->verify($request->get('g-recaptcha-response'), $request->getClientIp())->isSuccess()) {
+        if (!$request->get('re_token', false)) {
             $errors[] = $this->translator->trans('resetting.error.enter_captcha', [], 'FOSUserBundle');
         }
+        try {
+            $this->captcha->validate($request->get('re_token'));
+        } catch (InvisibleCaptchaException $e) {
+            $errors[] = $this->translator->trans(
+                'resetting.error.user_not_exists',
+                ['%username%' => $request->request->get('username')],
+                'FOSUserBundle'
+            );
+        }
+
 
         if (is_null($event->getUser())) {
             $username = $request->request->get('username');
-            $errors[] = $this->translator->trans('resetting.error.user_not_exists', ['%username%' => $username], 'FOSUserBundle');
+            $errors[] = $this->translator->trans(
+                'resetting.error.user_not_exists',
+                ['%username%' => $username],
+                'FOSUserBundle'
+            );
         }
 
         if (count($errors) > 0) {

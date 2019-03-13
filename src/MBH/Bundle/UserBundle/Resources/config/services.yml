@@ -101,6 +101,7 @@ services:
             - "%mbh.recaptcha%"
             - '@templating'
             - '@translator'
+            - '@mbh.invisible_captcha'
         tags:
             - { name: kernel.event_subscriber}
     mbh.user_type:
