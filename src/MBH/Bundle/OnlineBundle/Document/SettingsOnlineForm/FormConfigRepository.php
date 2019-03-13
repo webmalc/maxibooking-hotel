@@ -1,6 +1,6 @@
 <?php
 
-namespace MBH\Bundle\OnlineBundle\Document;
+namespace MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
 

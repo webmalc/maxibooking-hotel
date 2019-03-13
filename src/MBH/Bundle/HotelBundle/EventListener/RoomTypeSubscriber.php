@@ -7,7 +7,7 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ODM\MongoDB\Event\PreUpdateEventArgs;
 use Doctrine\ODM\MongoDB\Events;
 use MBH\Bundle\HotelBundle\Document\RoomType;
-use MBH\Bundle\OnlineBundle\Document\FormConfig;
+use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
 
 /**
  * Class RoomTypeSubscriber
@@ -35,7 +35,7 @@ class RoomTypeSubscriber implements EventSubscriber
             if (isset($changeSet['isEnabled']) && $args->getNewValue('isEnabled') === false) {
                 $formConfigs = $args
                     ->getDocumentManager()
-                    ->getRepository('MBHOnlineBundle:FormConfig')
+                    ->getRepository(FormConfig::class)
                     ->findBy(['roomTypeChoices.id' => $roomType->getId()]);
                 /** @var FormConfig $formConfig */
                 foreach ($formConfigs as $formConfig) {

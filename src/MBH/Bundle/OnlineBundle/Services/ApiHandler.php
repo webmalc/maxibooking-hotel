@@ -3,7 +3,7 @@
 namespace MBH\Bundle\OnlineBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use MBH\Bundle\OnlineBundle\Document\FormConfig;
+use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
@@ -66,7 +66,7 @@ class ApiHandler
     {
         /** @var FormConfig $formConfig */
         $formConfig = $this->dm
-            ->find('MBHOnlineBundle:FormConfig', $onlineFormId);
+            ->find(FormConfig::class, $onlineFormId);
 
         if (is_null($formConfig)) {
             if (!is_null($onlineFormId)) {

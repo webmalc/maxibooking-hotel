@@ -1,10 +1,13 @@
 <?php
 
-namespace MBH\Bundle\OnlineBundle\Form;
+namespace MBH\Bundle\OnlineBundle\Form\SettingsOnlineForm;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use MBH\Bundle\BillingBundle\Lib\Model\Country;
 use MBH\Bundle\ClientBundle\Service\ClientManager;
+use MBH\Bundle\OnlineBundle\Form\DecorationTypeInterface;
+use MBH\Bundle\OnlineBundle\Form\DecorationTypeTrait;
+use MBH\Bundle\OnlineBundle\Form\PaymentTypesType;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -136,7 +139,7 @@ class FormType extends AbstractType implements DecorationTypeInterface
                 'required' => false,
                 'group' => 'form.formType.parameters',
             ]);
-        if ($clientCountry === Country::RUSSIA_TLD || $clientCountry == Country::KAZAKHSTAN_TLD) {
+        if (in_array($clientCountry, [Country::RUSSIA_TLD, Country::KAZAKHSTAN_TLD])) {
             $innLabel = $clientCountry == Country::RUSSIA_TLD ? 'form.formType.is_request_inn.label' : 'form.formType.is_request_inn.kaz.label';
             $innHelp = $clientCountry == Country::RUSSIA_TLD ? 'form.formType.is_request_inn.help' : 'form.formType.is_request_inn.kaz.help';
             $builder
@@ -215,7 +218,7 @@ class FormType extends AbstractType implements DecorationTypeInterface
     {
         $resolver->setDefaults(
             array(
-                'data_class' => 'MBH\Bundle\OnlineBundle\Document\FormConfig',
+                'data_class' => \MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig::class,
                 'user' => null
             )
         );

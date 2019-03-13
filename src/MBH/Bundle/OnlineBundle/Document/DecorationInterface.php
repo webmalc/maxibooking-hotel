@@ -7,6 +7,8 @@
 namespace MBH\Bundle\OnlineBundle\Document;
 
 
+use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
+
 interface DecorationInterface
 {
     /**

@@ -20,7 +20,7 @@ services:
             - '@doctrine.odm.mongodb.document_manager'
 
     mbh.form_type:
-        class: MBH\Bundle\OnlineBundle\Form\FormType
+        class: MBH\Bundle\OnlineBundle\Form\SettingsOnlineForm\FormType
         arguments: ['@mbh.client_manager', '%mbh.online.form%']
         tags:
             {name: form.type}

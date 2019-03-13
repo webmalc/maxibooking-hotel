@@ -4,9 +4,9 @@ namespace MBH\Bundle\OnlineBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
-use MBH\Bundle\OnlineBundle\Document\FormConfig;
+use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
 use MBH\Bundle\OnlineBundle\Form\AnalyticsForm;
-use MBH\Bundle\OnlineBundle\Form\FormType;
+use MBH\Bundle\OnlineBundle\Form\SettingsOnlineForm\FormType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -27,9 +27,9 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
      */
     public function indexAction()
     {
-        $docs = $this->dm->getRepository('MBHOnlineBundle:FormConfig')->findAll();
+        $docs = $this->dm->getRepository(FormConfig::class)->findAll();
         $siteConfig = $this->get('mbh.site_manager')->getSiteConfig();
-        $hasEnabledMBSite = !is_null($siteConfig) && $siteConfig->getIsEnabled();
+        $hasEnabledMBSite = $siteConfig !== null && $siteConfig->getIsEnabled();
 
         return [
             'docs' => $docs,
@@ -76,7 +76,7 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_ONLINE_FORM_EDIT')")
      * @Template()
-     * @ParamConverter(class="MBHOnlineBundle:FormConfig")
+     * @ParamConverter(class="MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig")
      * @param Request $request
      * @param FormConfig $entity
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
@@ -164,6 +164,6 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
      */
     public function deleteAction($id)
     {
-        return $this->deleteEntity($id, 'MBHOnlineBundle:FormConfig', 'online_form');
+        return $this->deleteEntity($id, FormConfig::class, 'online_form');
     }
 }

@@ -8,7 +8,7 @@ use MBH\Bundle\BaseBundle\Lib\Searchable;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\OnlineBundle\Document\FormConfig;
+use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
 use MBH\Bundle\PackageBundle\Document\DocumentRelation;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\OrderRepository;
@@ -309,7 +309,7 @@ class OrderManager implements Searchable
 
         if (isset($data['onlineFormId'])) {
             $onlineFormId = $data['onlineFormId'];
-            $formConfig = $this->dm->find('MBHOnlineBundle:FormConfig', $onlineFormId);
+            $formConfig = $this->dm->find(FormConfig::class, $onlineFormId);
             if (is_null($formConfig)) {
                 throw new Exception('Order creation error: form config with ID = "' . $onlineFormId . '" not found!');
             }

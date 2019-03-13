@@ -10,7 +10,7 @@ use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\ClientBundle\Service\ClientManager;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
-use MBH\Bundle\OnlineBundle\Document\FormConfig;
+use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
 use MBH\Bundle\OnlineBundle\Document\PaymentFormConfig;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
 use Symfony\Component\Form\FormError;
@@ -118,9 +118,10 @@ class SiteManager
      */
     public function fetchFormConfig()
     {
-        $formConfig = $this->dm->getRepository('MBHOnlineBundle:FormConfig')->findOneBy(['forMbSite' => true]);
-        if (is_null($formConfig)) {
-            $formConfig = (new FormConfig())
+        $formConfig = $this->dm->getRepository(FormConfig::class)->getForMBSite();
+        if ($formConfig === null) {
+            $formConfig = new FormConfig();
+            $formConfig
                 ->setForMbSite(true)
                 ->setIsFullWidth(true)
                 ->setIsHorizontal(true)

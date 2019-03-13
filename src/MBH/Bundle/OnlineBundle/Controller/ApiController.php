@@ -11,7 +11,7 @@ use MBH\Bundle\ClientBundle\Document\PaymentSystem\Stripe;
 use MBH\Bundle\ClientBundle\Exception\BadSignaturePaymentSystemException;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
-use MBH\Bundle\OnlineBundle\Document\FormConfig;
+use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
 use MBH\Bundle\OnlineBundle\Services\RenderPaymentButton;
 use MBH\Bundle\PackageBundle\Document\Order;
 
@@ -60,7 +60,7 @@ class ApiController extends Controller
     public function getFormResultsIframeAction($formId = null)
     {
         $this->setLocaleByRequest();
-        $formConfig = $this->dm->getRepository('MBHOnlineBundle:FormConfig')
+        $formConfig = $this->dm->getRepository(FormConfig::class)
             ->findOneById($formId);
 
         return [
@@ -80,7 +80,7 @@ class ApiController extends Controller
     public function getFormIframeAction($formId = null)
     {
         $this->setLocaleByRequest();
-        $formConfig = $this->dm->getRepository('MBHOnlineBundle:FormConfig')
+        $formConfig = $this->dm->getRepository(FormConfig::class)
             ->findOneById($formId);
 
         return [
@@ -155,7 +155,7 @@ class ApiController extends Controller
         $dm = $this->get('doctrine_mongodb')->getManager();
         $config = $this->container->getParameter('mbh.online.form');
         /** @var FormConfig $formConfig */
-        $formConfig = $dm->getRepository('MBHOnlineBundle:FormConfig')->findOneById($id);
+        $formConfig = $dm->getRepository(FormConfig::class)->findOneById($id);
 
         if (!$formConfig || !$formConfig->getEnabled()) {
             throw $this->createNotFoundException();
@@ -389,7 +389,7 @@ class ApiController extends Controller
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $helper = $this->get('mbh.helper');
-        $formConfig = $this->dm->getRepository('MBHOnlineBundle:FormConfig')->findOneById($id);
+        $formConfig = $this->dm->getRepository(FormConfig::class)->findOneById($id);
 
         if (!$formConfig || !$formConfig->getEnabled()) {
             throw $this->createNotFoundException();
@@ -554,7 +554,7 @@ class ApiController extends Controller
             $services = array_merge($services, $hotel->getServices(true, true));
         }
 
-        $formConfig = $this->dm->getRepository('MBHOnlineBundle:FormConfig')->findOneById($requestJson->configId);
+        $formConfig = $this->dm->getRepository(FormConfig::class)->findOneById($requestJson->configId);
 
         if (!$formConfig || !$formConfig->getEnabled()) {
             throw $this->createNotFoundException();
@@ -594,7 +594,7 @@ class ApiController extends Controller
             $this->setLocale($requestJson->locale);
         }
 
-        $formConfig = $this->dm->getRepository('MBHOnlineBundle:FormConfig')->findOneById($id);
+        $formConfig = $this->dm->getRepository(FormConfig::class)->findOneById($id);
 
         if (!$formConfig || !$formConfig->getEnabled()) {
             throw $this->createNotFoundException();
@@ -875,7 +875,7 @@ class ApiController extends Controller
      */
     public function loadResultAction($configId)
     {
-        $configForm = $this->dm->getRepository('MBHOnlineBundle:FormConfig')
+        $configForm = $this->dm->getRepository(FormConfig::class)
             ->find($configId);
 
         $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
@@ -897,7 +897,7 @@ class ApiController extends Controller
     public function getResultsAction($id = null)
     {
         $this->setLocaleByRequest();
-        $formConfig = $this->dm->getRepository('MBHOnlineBundle:FormConfig')->findOneById($id);
+        $formConfig = $this->dm->getRepository(FormConfig::class)->findOneById($id);
 
         if (!$formConfig || !$formConfig->getEnabled()) {
             throw $this->createNotFoundException();

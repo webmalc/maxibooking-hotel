@@ -1,6 +1,6 @@
 <?php
 
-namespace MBH\Bundle\OnlineBundle\Document;
+namespace MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -11,11 +11,17 @@ use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\OnlineBundle\Document\DecorationDataInterface;
+use MBH\Bundle\OnlineBundle\Document\DecorationDataTrait;
+use MBH\Bundle\OnlineBundle\Document\DecorationInterface;
+use MBH\Bundle\OnlineBundle\Document\DecorationTrait;
+use MBH\Bundle\OnlineBundle\Document\GoogleAnalyticConfig;
+use MBH\Bundle\OnlineBundle\Document\YandexAnalyticConfig;
 use MBH\Bundle\OnlineBundle\Services\SiteManager;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ODM\Document(collection="FormConfig", repositoryClass="MBH\Bundle\OnlineBundle\Document\FormConfigRepository")
+ * @ODM\Document(collection="FormConfig", repositoryClass="MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
@@ -182,13 +188,13 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
 
     /**
      * @var GoogleAnalyticConfig
-     * @ODM\EmbedOne(targetDocument="GoogleAnalyticConfig")
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\OnlineBundle\Document\GoogleAnalyticConfig")
      */
     private $googleAnalyticConfig;
 
     /**
      * @var YandexAnalyticConfig
-     * @ODM\EmbedOne(targetDocument="YandexAnalyticConfig")
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\OnlineBundle\Document\YandexAnalyticConfig")
      */
     private $yandexAnalyticConfig;
 
@@ -398,6 +404,7 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
     public function setEnabled($enabled)
     {
         $this->enabled = $enabled;
+
         return $this;
     }
 
@@ -561,7 +568,9 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
      */
     public function getResultsUrl($forResultsPage = false): ?string
     {
-        return $forResultsPage && $this->isForMbSite() ? $this->resultsUrl . SiteManager::DEFAULT_RESULTS_PAGE : $this->resultsUrl;
+        return $forResultsPage && $this->isForMbSite()
+            ? $this->resultsUrl . SiteManager::DEFAULT_RESULTS_PAGE
+            : $this->resultsUrl;
     }
 
     /**
@@ -573,7 +582,6 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
         $this->resultsUrl = $resultsUrl;
         return $this;
     }
-
 
     /**
      * @return bool

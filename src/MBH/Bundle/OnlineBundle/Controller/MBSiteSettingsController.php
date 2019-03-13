@@ -3,6 +3,7 @@
 namespace MBH\Bundle\OnlineBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
+use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
 use MBH\Bundle\OnlineBundle\Exception\MBSiteIsDisabledInClientConfigException;
 use MBH\Bundle\OnlineBundle\Exception\NotFoundConfigMBSiteException;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -35,7 +36,7 @@ class MBSiteSettingsController extends BaseController
         header(sprintf('Access-Control-Allow-Origin: %s', $siteManager->getSiteAddress()));
 
         $formConfig = $this->dm
-            ->getRepository('MBHOnlineBundle:FormConfig')
+            ->getRepository(FormConfig::class)
             ->getForMBSite();
 
         return new JsonResponse([

@@ -6,7 +6,7 @@ use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
-use MBH\Bundle\OnlineBundle\Document\FormConfig;
+use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
 use MBH\Bundle\OnlineBundle\Lib\Site\HotelDataManager;
 use MBH\Bundle\OnlineBundle\Lib\Site\RoomTypeDataManager;
 use MBH\Bundle\OnlineBundle\Services\ApiHandler;
