@@ -157,7 +157,7 @@ class ApiController extends Controller
         /** @var FormConfig $formConfig */
         $formConfig = $dm->getRepository(FormConfig::class)->findOneById($id);
 
-        if (!$formConfig || !$formConfig->getEnabled()) {
+        if (!$formConfig || !$formConfig->isEnabled()) {
             throw $this->createNotFoundException();
         }
 
@@ -194,7 +194,7 @@ class ApiController extends Controller
 
         return [
             'text'               => $text,
-            'isDisplayChildAges' => $formConfig->isIsDisplayChildrenAges(),
+            'isDisplayChildAges' => $formConfig->isDisplayChildrenAges(),
         ];
     }
 
@@ -391,7 +391,7 @@ class ApiController extends Controller
         $helper = $this->get('mbh.helper');
         $formConfig = $this->dm->getRepository(FormConfig::class)->findOneById($id);
 
-        if (!$formConfig || !$formConfig->getEnabled()) {
+        if (!$formConfig || !$formConfig->isEnabled()) {
             throw $this->createNotFoundException();
         }
 
@@ -404,7 +404,7 @@ class ApiController extends Controller
         $query->tariff = $request->get('tariff');
         $query->setSave(true);
 
-        if (!empty($request->get('children-ages')) && $query->children > 0 && $formConfig->isIsDisplayChildrenAges()) {
+        if (!empty($request->get('children-ages')) && $query->children > 0 && $formConfig->isDisplayChildrenAges()) {
             $query->setChildrenAges($request->get('children-ages'));
         }
 
@@ -556,7 +556,7 @@ class ApiController extends Controller
 
         $formConfig = $this->dm->getRepository(FormConfig::class)->findOneById($requestJson->configId);
 
-        if (!$formConfig || !$formConfig->getEnabled()) {
+        if (!$formConfig || !$formConfig->isEnabled()) {
             throw $this->createNotFoundException();
         }
 
@@ -596,7 +596,7 @@ class ApiController extends Controller
 
         $formConfig = $this->dm->getRepository(FormConfig::class)->findOneById($id);
 
-        if (!$formConfig || !$formConfig->getEnabled()) {
+        if (!$formConfig || !$formConfig->isEnabled()) {
             throw $this->createNotFoundException();
         }
 
@@ -899,7 +899,7 @@ class ApiController extends Controller
         $this->setLocaleByRequest();
         $formConfig = $this->dm->getRepository(FormConfig::class)->findOneById($id);
 
-        if (!$formConfig || !$formConfig->getEnabled()) {
+        if (!$formConfig || !$formConfig->isEnabled()) {
             throw $this->createNotFoundException();
         }
 

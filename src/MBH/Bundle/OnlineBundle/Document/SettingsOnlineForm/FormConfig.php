@@ -371,7 +371,7 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
     /**
      * @return bool
      */
-    public function isIsDisplayChildrenAges(): ?bool
+    public function isDisplayChildrenAges(): ?bool
     {
         return $this->isDisplayChildrenAges;
     }
@@ -413,7 +413,7 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
      *
      * @return boolean $enabled
      */
-    public function getEnabled()
+    public function isEnabled()
     {
         return $this->enabled;
     }
