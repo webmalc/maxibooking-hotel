@@ -278,7 +278,7 @@
                         <td rowspan="{{ package.pricesByDateByPrice|length }}" align="right">
                             {{ package.discount }}{{ package.getIsPercentDiscount ? '%' }}
                         </td>
-                        <td rowspan="{{ package.pricesByDateByPrice|length }}" align="right">{{ package.getPackagePrice(true)|number_format(2) }}</td>
+                        <td rowspan="{{ package.pricesByDateByPrice|length }}" align="right">{{ package.getPackagePrice(true) }}</td>
                     {% endif %}
 
                 </tr>
