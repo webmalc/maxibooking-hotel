@@ -27,10 +27,17 @@ class ExceptionManager
     {
         $user = $this->tokenStorage->getToken();
         $message = $this->exceptionNotifier::createMessage();
-        $messageText = "Произошла ошибка у \"" . $this->kernel->getClient()
-            . '. Пользователь: ' . (!empty($user) ? $user->getUsername() : 'без пользователя')
-            . ". \"\n Сообщение \"" . $exception->getMessage()
-            . "\".\n Стек:" . $exception->getTraceAsString();
+
+        $format = "Error. Client: \"%s\". User: \"%s\".\n Msg: \"%s\". \n Стек: %s";
+
+        $messageText = sprintf(
+            $format,
+            $this->kernel->getClient(),
+            $user !== null ? $user->getUsername() : 'NULL',
+            $exception->getMessage(),
+            $exception->getTraceAsString()
+        );
+
         $message
             ->setType('danger')
             ->setText($messageText);
