@@ -28,29 +28,6 @@ use Symfony\Component\Security\Acl\Permission\MaskBuilder;
  */
 class UserController extends Controller
 {
-    /**
-     * Lists all entities.
-     *
-     * @Route("/cmtest", name="cmtest")
-     * @Method("GET")
-     * @Security("is_granted('ROLE_BASE_USER')")
-     * @Template()
-     */
-    public function cmAction()
-    {
-        $order = $this->dm->getRepository('MBHPackageBundle:Order')->findOneBy([]);
-
-        $acms = $this->container->get('mbh.acm_service.override');
-
-        $acms->notify($order, 'booking', 'new');
-
-
-        $a = 1;
-
-        return [
-        ];
-    }
-
 
     /**
      * Lists all entities.

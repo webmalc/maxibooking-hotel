@@ -37,7 +37,10 @@ class Messenger implements \SplObserver
         /** @var NotifierMessage $message */
         /** @var Notifier $notifier */
         $message = $notifier->getMessage();
-        $messageText = $this->container->get('translator')->trans($message->getText(), $message->getTranslateParams());
+
+        $currentMessageText = is_null($message->getTextHtmlLink()) ? $message->getText() : $message->getTextHtmlLink();
+
+        $messageText = $this->container->get('translator')->trans($currentMessageText, $message->getTranslateParams());
 
         $this->send(
             $messageText,
