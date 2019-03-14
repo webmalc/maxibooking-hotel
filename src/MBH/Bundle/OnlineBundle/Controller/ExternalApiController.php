@@ -7,8 +7,8 @@ use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
-use MBH\Bundle\OnlineBundle\Lib\Site\HotelDataManager;
-use MBH\Bundle\OnlineBundle\Lib\Site\RoomTypeDataManager;
+use MBH\Bundle\OnlineBundle\Lib\Site\HotelImageDataDecorator;
+use MBH\Bundle\OnlineBundle\Lib\Site\RoomTypeImageDataDecorator;
 use MBH\Bundle\OnlineBundle\Services\ApiHandler;
 use MBH\Bundle\OnlineBundle\Services\ApiResponseCompiler;
 use MBH\Bundle\PackageBundle\Document\Order;
@@ -108,7 +108,7 @@ class ExternalApiController extends BaseController
             $responseData = [];
             /** @var RoomType $roomType */
 
-            $roomTypeDataManage = new RoomTypeDataManager(
+            $roomTypeImageDatar = new RoomTypeImageDataDecorator(
                 $this->get('vich_uploader.templating.helper.uploader_helper'),
                 $this->get('liip_imagine.cache.manager')
             );
@@ -124,8 +124,8 @@ class ExternalApiController extends BaseController
                         $roomType->setLocale($request->getLocale());
                         $this->dm->refresh($roomType);
                     }
-                    $roomTypeDataManage->setRoomType($roomType);
-                    $responseData[] = $roomTypeDataManage->getJsonSerialized($isFull);
+                    $roomTypeImageDatar->setRoomType($roomType);
+                    $responseData[] = $roomTypeImageDatar->getJsonSerialized($isFull);
                 }
             }
             $responseCompiler->setData($responseData);
@@ -241,13 +241,13 @@ class ExternalApiController extends BaseController
                     $this->dm->refresh($hotel);
                 }
 
-                $mangerHotelData = new HotelDataManager(
+                $hotelImagesData = new HotelImageDataDecorator(
                     $hotel,
                     $this->get('vich_uploader.templating.helper.uploader_helper'),
                     $this->get('liip_imagine.cache.manager')
                 );
 
-                $hotelData = $mangerHotelData->getJsonSerialized($isFull);
+                $hotelData = $hotelImagesData->getJsonSerialized($isFull);
                 if ($isFull && $hotel->getCityId()) {
                     $hotelData['city'] = $this->get('mbh.billing.api')->getCityById($hotel->getCityId())->getName();
                 }

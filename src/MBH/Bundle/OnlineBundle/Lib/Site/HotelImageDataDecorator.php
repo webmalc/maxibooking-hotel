@@ -11,7 +11,7 @@ use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 
 
-class HotelDataManager extends DataManager
+class HotelImageDataDecorator extends ImageDataDecorator
 {
     /**
      * @var Hotel

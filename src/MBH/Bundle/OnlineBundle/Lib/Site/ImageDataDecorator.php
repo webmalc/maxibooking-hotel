@@ -13,7 +13,7 @@ use MBH\Bundle\BaseBundle\Document\Image;
 use MBH\Bundle\OnlineBundle\Lib\Site\image\ImageData;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
-abstract class DataManager
+abstract class ImageDataDecorator
 {
     public const FILTER_SIZE_1980X1280 = 'size_1980x1280';
     public const FILTER_SIZE_500X500 = 'size_500x500';
