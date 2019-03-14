@@ -88,7 +88,7 @@
         <div class="title">
             <h2>
                 {{ 'mbhpackagebundle.view.documents.pdftemplates.schet'|trans }} №
-                {{ package.numberWithPrefix }}
+                {{ order.id }}
                 {{ 'mbhpackagebundle.view.documents.pdftemplates.ot'|trans }}
                 {{ 'now'|date('d.m.Y H:i') }}
             </h2>
@@ -154,7 +154,7 @@
                             <td rowspan="{{ package.pricesByDateByPrice|length }}" align="right">
                                 {{ package.discount }}{{ package.getIsPercentDiscount ? '%' }}
                             </td>
-                            <td rowspan="{{ package.pricesByDateByPrice|length }}" align="right">{{ package.getPackagePrice(true)|number_format(2) }}</td>
+                            <td rowspan="{{ package.pricesByDateByPrice|length }}" align="right">{{ package.getPackagePrice(true) }}</td>
                         {% endif %}
 
                     </tr>
