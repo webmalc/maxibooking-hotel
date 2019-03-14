@@ -164,3 +164,8 @@ services:
       arguments:
         - '@kernel'
         - '@mbh.invisible_captcha'
+
+    mbh.acm_service.override:
+        class: MBH\Bundle\UserBundle\Service\AbsCMServiceOverride
+        arguments:
+            - '@service_container'
