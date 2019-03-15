@@ -3,7 +3,6 @@
 {% if form.formTemplate is defined %}
     {% form_theme form.formTemplate '@MBHOnline/Form/Template/formTemplate.html.twig' %}
 {% endif %}
-{% set layout = "tabs" %}
 {% set active = 1 %}
 
 {% block scripts %}
@@ -16,7 +15,6 @@
 {% endblock %}
 
 {% block content %}
-    {% include '@MBHOnline/Form/tabs.html.twig' %}
     <div class="tab-content">
 
         {{ form_start(form, {'action': path('online_form_edit', {id: config.id}), 'attr': {'class': 'form-horizontal'}}) }}

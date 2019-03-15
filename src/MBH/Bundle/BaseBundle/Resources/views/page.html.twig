@@ -72,6 +72,7 @@
                 <div class="box box-default"><div class="box-body">
             {% endif %}
 
+            {% block tabsLayout %}{% endblock %}
             {% block content %}{% endblock %}
 
             {% if layout is defined and layout == 'tabs' %}
