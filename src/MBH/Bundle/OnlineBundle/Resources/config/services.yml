@@ -81,3 +81,8 @@ services:
     MBH\Bundle\OnlineBundle\Services\AvailableSocialNetworkingServices:
         arguments:
             - '%locale%'
+
+    MBH\Bundle\OnlineBundle\Form\SettingsOnlineForm\FieldsNameType:
+        arguments: ['@mbh.client_config_manager']
+        tags:
+            - {name: form.type}

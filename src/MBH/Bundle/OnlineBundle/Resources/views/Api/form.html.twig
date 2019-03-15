@@ -1,9 +1,12 @@
 {% spaceless %}
+{% set fieldsName = formConfig.fieldsName %}
+{% set hiddenIfUseAdditionlModal = formConfig.useModalForAdditionalData ? ' style="display: none;"' : '' %}
+
 {% if hotels|length %}
 <form id="mbh-form" method="get" class="well" target="_parent" action="{{ formConfig.getResultsUrl(true) }}">
     {% if hotels|length > 1 %}
-    <div class="mbh-form-row form-group">
-        <label for="mbh-form-hotel">{{ 'views.api.form.hotel'|trans({}, 'MBHOnlineBundle') }}</label>
+    <div class="mbh-form-row form-group"{{ hiddenIfUseAdditionlModal | raw }}>
+        <label for="mbh-form-hotel">{{ fieldsName.hotel is not empty ? fieldsName.hotel : 'views.api.form.hotel'|trans({}, 'MBHOnlineBundle') }}</label>
         <select name="hotel" class="form-control input-sm" id="mbh-form-hotel">
             <option></option>
             {% for hotel in hotels %}<option value="{{ hotel.id }}">{{ hotel.getFullTitleOrTitle() }}</option>{% endfor %}
@@ -12,18 +15,18 @@
     {% endif %}
 
     <div class="mbh-form-row form-group">
-        <label for="mbh-form-begin"> {{ 'views.api.form.check_in_date'|trans({}, 'MBHOnlineBundle') }}</label>
+        <label for="mbh-form-begin"> {{ fieldsName.begin is not empty ? fieldsName.begin : ('views.api.form.check_in_date.label'|trans({}, 'MBHOnlineBundle')) }}</label>
         <input type="text" class="mbh-calendar-input form-control input-sm" id="mbh-form-begin" name="begin" required value="{{ 'now'|date('d.m.Y') }}" readonly>
     </div>
 
     <div class="mbh-form-row form-group"{% if formConfig.nights %} style='display: none;'{% endif %}>
-        <label for="mbh-form-end"> {{ 'views.api.form.check_out_date'|trans({}, 'MBHOnlineBundle') }}</label>
+        <label for="mbh-form-end"> {{ fieldsName.end is not empty ? fieldsName.end : ('views.api.form.check_out_date.label'|trans({}, 'MBHOnlineBundle')) }}</label>
         <input type="text" class="mbh-calendar-input form-control input-sm" id="mbh-form-end" name="end" required value="{{ 'now'|date_modify('+1 day')|date('d.m.Y') }}" readonly>
     </div>
 
     {% if formConfig.nights %}
     <div class="mbh-form-row form-group">
-        <label for="mbh-form-nights"> {{ 'views.api.form.nights_amount'|trans({}, 'MBHOnlineBundle') }}</label>
+        <label for="mbh-form-nights"> {{ fieldsName.night is not empty ? fieldsName.night : ('views.api.form.nights_amount.label'|trans({}, 'MBHOnlineBundle')) }}</label>
         <select name="nights" class="form-control input-sm" id="mbh-form-nights" required>
         {% for i in 1..100 %}
             <option value="{{ i }}">{{ i }}</option>
@@ -40,8 +43,8 @@
             {% set choices = choices|merge(hotel.roomTypes) %}
         {% endfor %}
     {% endif %}
-    <div class="mbh-form-row form-group{{ choices|length == 1 ? ' hidden' }}">
-        <label for="mbh-form-roomType"> {{ 'views.api.form.room_type'|trans({}, 'MBHOnlineBundle') }}</label>
+    <div class="mbh-form-row form-group{{ choices|length == 1 ? ' hidden' }}"{{ hiddenIfUseAdditionlModal | raw }}>
+        <label for="mbh-form-roomType"> {{ fieldsName.roomType is not empty ? fieldsName.roomType : ('views.api.form.room_type.label'|trans({}, 'MBHOnlineBundle')) }}</label>
         <select id="mbh-form-roomType" class="form-control input-sm" name="roomType">
             <option></option>
             <option value="">- {{ 'views.api.form.room_type.choices.any'|trans({}, 'MBHOnlineBundle') }} -</option>
@@ -53,18 +56,18 @@
     {% endif %}
 
     {% if formConfig.tourists %}
-        <div id="mbh-form-adults-children-wrapper">
+        <div id="mbh-form-adults-children-wrapper"{{ hiddenIfUseAdditionlModal | raw }}>
             <div class="mbh-form-row form-group">
-                <label for="mbh-form-adults"> {{ 'views.api.form.adults'|trans({}, 'MBHOnlineBundle') }}</label>
+                <label for="mbh-form-adults"> {{ fieldsName.adults is not empty ? fieldsName.adults : ('views.api.form.adults.label'|trans({}, 'MBHOnlineBundle')) }}</label>
                 <input type="number" id="mbh-form-adults" class="form-control input-sm" name="adults"  value="1" min="1">
             </div>
 
             <div class="mbh-form-row form-group">
-                <label for="mbh-form-children"> {{ 'views.api.form.children'|trans({}, 'MBHOnlineBundle') }}</label>
+                <label for="mbh-form-children"> {{ fieldsName.children is not empty ? fieldsName.children : ('views.api.form.children.label'|trans({}, 'MBHOnlineBundle')) }}</label>
                 <input type="number" id="mbh-form-children" class="form-control input-sm" name="children" value="0" min="0">
             </div>
             <div class="mbh-form-row form-group children-ages" style="display: none;">
-                <label for="children-age-1"> {{ 'views.api.form.children_ages.label'|trans({}, 'MBHOnlineBundle') }}</label>
+                <label for="children-age-1"> {{  fieldsName.childrenAges is not empty ? fieldsName.childrenAges : ('views.api.form.children_ages.label'| trans({}, 'MBHOnlineBundle')) }}</label>
                 <select class="children-age-form form-control input-sm" id="children-age-1" name="children-ages[]">
                     {% for childAge in 0..18 %}
                         <option value="{{ childAge }}">{{ childAge }}</option>
@@ -77,8 +80,16 @@
         {% endif %}
     {% endif %}
 
+    {% if formConfig.useModalForAdditionalData %}
+        <div class="mbh-form-row form-group" id="mbh-form-additional-wrapper">
+            <span class="label-text">{{ fieldsName.guest is not empty ? fieldsName.guest : ('views.api.form.guest.label' | trans({}, 'MBHOnlineBundle') ) }}</span>
+            <span class="input-data">{{ 1 }}</span>
+            <img src="" class="person-icon" alt="person icon">
+        </div>
+    {% endif %}
+
     <div class="mbh-form-row" id="mbh-form-submit-wrapper">
-        <button type="submit" class="btn btn-primary btn-sm" id="mbh-form-submit">{% if not formConfig.forMbSite %}{{ 'views.api.form.find_room'|trans({}, 'MBHOnlineBundle') }}{% endif %}</button>
+        <button type="submit" class="btn btn-primary btn-sm" id="mbh-form-submit">{{ fieldsName.btnFind is not empty ? fieldsName.btnFind : ('views.api.form.btn_find_room.label'|trans({}, 'MBHOnlineBundle')) }}</button>
     </div>
 
     <div id="mbh-logo-link-wrapper">

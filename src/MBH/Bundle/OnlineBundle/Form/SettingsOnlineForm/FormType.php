@@ -119,13 +119,27 @@ class FormType extends AbstractType implements DecorationTypeInterface
                     'help' => 'form.formType.should_we_use_guests_amount_field_in_online_form'
                 ]
             )
-            ->add('isDisplayChildrenAges', CheckboxType::class, [
-                'label' => 'form.formType.used_children_ages.label',
-                'group' => 'form.formType.parameters',
-                'value' => true,
-                'required' => false,
-                'help' => 'form.formType.used_children_ages.help'
-            ])
+            ->add(
+                'isDisplayChildrenAges',
+                CheckboxType::class,
+                [
+                    'label'    => 'form.formType.used_children_ages.label',
+                    'group'    => 'form.formType.parameters',
+                    'value'    => true,
+                    'required' => false,
+                    'help'     => 'form.formType.used_children_ages.help',
+                ]
+            )
+            ->add(
+                'useModalForAdditionalData',
+                CheckboxType::class,
+                [
+                    'label'    => 'form.formType.modal_additional_data.label',
+                    'group'    => 'form.formType.parameters',
+                    'required' => false,
+                    'help'     => 'form.formType.modal_additional_data.help',
+                ]
+            )
             ->add('maxPackages', ChoiceType::class, [
                 'label' => 'form.formType.max_packages.label',
                 'group' => 'form.formType.parameters',

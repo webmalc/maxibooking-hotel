@@ -4,8 +4,10 @@ namespace MBH\Bundle\OnlineBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
+use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FieldsName;
 use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
 use MBH\Bundle\OnlineBundle\Form\AnalyticsForm;
+use MBH\Bundle\OnlineBundle\Form\SettingsOnlineForm\FieldsNameType;
 use MBH\Bundle\OnlineBundle\Form\SettingsOnlineForm\FormType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -113,6 +115,48 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
             'config' => $entity,
             'form' => $form->createView(),
             'logs' => $this->logs($entity),
+        ];
+    }
+
+    /**
+     * @Route("/{id}/fields_name", name="online_form_fields_name")
+     * @Method({"GET", "POST"})
+     * @Security("is_granted('ROLE_ONLINE_FORM_EDIT')")
+     * @Template()
+     * @ParamConverter(class="MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig")
+     * @param Request $request
+     * @param FormConfig $formConfig
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function fieldsNameAction(Request $request, FormConfig $formConfig)
+    {
+        $form = $this->createForm(FieldsNameType::class, $formConfig->getFieldsName(), [
+//            'user' => $this->getUser()->getUserName()
+        ]);
+
+        $form->handleRequest($request);
+//
+        if ($form->isValid()) {
+//
+            /** @var FieldsName $fieldsName */
+            $fieldsName = $form->getData();
+            $formConfig->setFieldsName($fieldsName);
+
+            $this->get('mbh.form_data_handler')
+                ->saveTranslationsFromMultipleFieldsForm($form, $request, $fieldsName->getNameNotEmptyProperties());
+
+            $this->dm->persist($formConfig);
+            $this->dm->flush();
+//
+            $this->addFlash('success', 'controller.formController.settings_saved_success');
+
+            return $this->afterSaveRedirect('online_form_fields_name', $formConfig->getId(), [], '');
+        }
+
+        return [
+            'config' => $formConfig,
+            'form' => $form->createView(),
+            'logs' => $this->logs($formConfig->getFieldsName()),
         ];
     }
 

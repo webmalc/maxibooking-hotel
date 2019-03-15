@@ -1,10 +1,12 @@
 {% extends 'MBHOnlineBundle:Form:common_for_new_and_edit.html.twig' %}
-{% set active = 3 %}
+
+{% set layout = "tabs" %}
+{% set active = 2 %}
 
 {% block content %}
     <div class="tab-content">
 
-        {{ form_start(form, {'action': path('form_analytics', {id: config.id}), 'attr': {'class': 'form-horizontal'}}) }}
+        {{ form_start(form, {'action': path('online_form_fields_name', {id: config.id}), 'attr': {'class': 'form-horizontal'}}) }}
         {{ form_widget(form) }}
         {% include 'MBHBaseBundle:Actions:new.html.twig' %}
         {{ form_end(form) }}

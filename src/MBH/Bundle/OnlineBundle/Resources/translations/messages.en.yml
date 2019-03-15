@@ -40,6 +40,8 @@ mbhonlinebundle.form.invitedtouristtype.pasport: Document
 mbhonlinebundle.form.invitedtouristtype.deystvuyet.do: 'Valid until'
 form.formType.used_children_ages.label: 'Children age'
 form.formType.used_children_ages.help: 'Show children age field on web form'
+form.formType.modal_additional_data.label: 'Minimum view'
+form.formType.modal_additional_data.help: 'In the trendy window, everything else is hidden in the modal window'
 online_invite.voting_code: 'Voting web form embeded code'
 form.formType.css_label: CSS
 form.formType.css: Layout
@@ -215,3 +217,4 @@ views.form_codeinstruction.text2: '<strong>Results form</strong> - in this form 
 views.mb_site.index.paymentSystem: 'Payment system'
 views.form_codeinstruction.text3: 'To display the search results on your website, you need to create a page and embed a form for displaying the results. You need to specify the address of this page in online engine settings.'
 views.form_codeinstruction.header: 'Online engine consists of two forms'
+views.form.index.settings.fields_name.group: 'Edit'

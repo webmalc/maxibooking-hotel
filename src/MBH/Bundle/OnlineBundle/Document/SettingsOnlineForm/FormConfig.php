@@ -199,6 +199,71 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
     private $yandexAnalyticConfig;
 
     /**
+     * @ODM\Field(type="boolean")
+     * @var bool
+     */
+    private $forMbSite = false;
+
+    /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Field(type="boolean")
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    private $useModalForAdditionalData = false;
+
+    /**
+     * @var FieldsName
+     * @ODM\EmbedOne(targetDocument="MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FieldsName")
+     */
+    private $fieldsName;
+
+    public function __construct()
+    {
+        $this->roomTypeChoices = new ArrayCollection();
+        $this->hotels = new ArrayCollection();
+        $this->googleAnalyticConfig = new GoogleAnalyticConfig();
+        $this->yandexAnalyticConfig = new YandexAnalyticConfig();
+    }
+
+    /**
+     * @return FieldsName
+     */
+    public function getFieldsName(): FieldsName
+    {
+        return $this->fieldsName ?? new FieldsName();
+    }
+
+    /**
+     * @param FieldsName $fieldsName
+     */
+    public function setFieldsName(FieldsName $fieldsName): self
+    {
+        $this->fieldsName = $fieldsName;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUseModalForAdditionalData(): bool
+    {
+        return $this->useModalForAdditionalData;
+    }
+
+    /**
+     * @param bool $useModalForAdditionalData
+     */
+    public function setUseModalForAdditionalData(bool $useModalForAdditionalData): self
+    {
+        $this->useModalForAdditionalData = $useModalForAdditionalData;
+
+        return $this;
+    }
+
+    /**
      * @return GoogleAnalyticConfig
      */
     public function getGoogleAnalyticConfig(): ?GoogleAnalyticConfig
@@ -235,12 +300,6 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
 
         return $this;
     }
-
-    /**
-     * @ODM\Field(type="boolean")
-     * @var bool
-     */
-    private $forMbSite = false;
 
     /**
      * @return bool
@@ -335,14 +394,6 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
         $this->js = $js;
 
         return $this;
-    }
-
-    public function __construct()
-    {
-        $this->roomTypeChoices = new ArrayCollection();
-        $this->hotels = new ArrayCollection();
-        $this->googleAnalyticConfig = new GoogleAnalyticConfig();
-        $this->yandexAnalyticConfig = new YandexAnalyticConfig();
     }
 
     /**

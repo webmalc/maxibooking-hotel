@@ -1,14 +1,16 @@
 views.api.form.rooms_reservation: Reservation
-views.api.form.hotel: Hotel
-views.api.form.check_in_date: Check-in
-views.api.form.check_out_date: Check-out
-views.api.form.nights_amount: Nights
-views.api.form.room_type: 'Room type'
+views.api.form.hotel.label: Hotel
+views.api.form.check_in_date.label: Check-in
+views.api.form.check_out_date.label: Check-out
+views.api.form.nights_amount.label: Nights
+views.api.form.room_type.label: 'Room type'
 views.api.form.room_type.choices.any: Any
-views.api.form.adults: Adults
-views.api.form.children: Children
-views.api.form.find_room: 'Find room'
+views.api.form.adults.label: Adults
+views.api.form.children.label: Children
+views.api.form.guest.label: Guest
+views.api.form.btn_find_room.label: 'Find room'
 views.api.form.find_room.shot: Find
+views.api.form.children_ages.label: 'Children age'
 views.api.form.online_reservation_system: 'online booking system'
 views.api.getPaymentType.dates: 'Date:'
 views.api.getPaymentType.days_and_nights: 'Days/nights:'
@@ -71,6 +73,7 @@ views.api.tariffs.base_tariff: '(basic rate)'
 views.api.tariffs.tariffs_and_special_offers: 'Rates and special offers'
 views.form.index.settings_in_quotes: Settings
 views.form.index.settings: Settings
+views.form.index.settings.fields_name: 'Rename fields'
 views.form.index.site_embed_code: 'Embed code'
 views.form.index.settings_required: 'Please fill all the required settings'
 views.form.index.site_embed_form_code: 'Embed code for a website'
@@ -88,7 +91,6 @@ views.form.index.new: New
 views.form.layout.online_polls: Ratings
 views.form.layout.invite: 'Visa invitation'
 online_form.notification: 'New reservations from the web form'
-views.api.form.children_ages.label: 'Children age'
 views.api.getResultsTable.room_cache_count: Available
 views.api.getPaymentType.payment_systems.label: 'Payment System'
 views.api.getUserForm.patronymic: 'Middle Name'
