@@ -73,9 +73,9 @@ class PriceCacheRepoFilterTest extends UnitTestCase
         $this->dm->flush();
         $filteredPriceCacheFalseFlags = $this->getCleanPriceCache($filteredPriceCacheFalseFlags->getId(), false);
 
-        $this->assertSame(false, isset($filteredPriceCacheFalseFlags['singlePrice']));
-        $this->assertSame(false, isset($filteredPriceCacheFalseFlags['childPrice']));
-        $this->assertSame([], $filteredPriceCacheFalseFlags['additionalPrices']);
+        $this->assertArrayNotHasKey('singlePrice', $filteredPriceCacheFalseFlags);
+        $this->assertArrayNotHasKey('childPrice', $filteredPriceCacheFalseFlags);
+        $this->assertEmpty($filteredPriceCacheFalseFlags['additionalPrices']);
     }
 
     protected function getCleanPriceCache($priceCacheId, bool $hydrate)
