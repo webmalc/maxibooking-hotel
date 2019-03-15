@@ -1,7 +1,6 @@
 {% set locale = app.request.locale %}
 <!doctype html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     <title>Maxibooking</title>
@@ -42,12 +41,6 @@
         {% endif %}
 
     {% endblock %}
-</head>
-
-<body style="background-color: transparent;">
-    <div id="mbh-form-wrapper" style="overflow: hidden; height: auto">
-        <a href="https://maxi-booking.{{ locale == 'en' ? 'com' : 'ru' }}/" style="background-color: white; padding: 10px;">{{ 'views.api.get_form_iframe.online_booking_system'|trans}}</a>
-    </div>
     {% if formConfig %}
         {% if formConfig.css %}
             <style>
@@ -55,13 +48,20 @@
             </style>
         {% endif %}
         {% if formConfig.js %}
-        <script>
-            window.addEventListener('load', function () {
-                {{ formConfig.js|raw }}
-            });
-        </script>
+            <script>
+                window.addEventListener('load', function () {
+                    (function() {
+                        {{ formConfig.js|raw }}
+                    })();
+                });
+            </script>
         {% endif %}
     {% endif %}
+</head>
+<body>
+    <div id="mbh-form-wrapper">
+        <a class="preload-link-maxibooking" href="https://maxi-booking.{{ locale == 'en' ? 'com' : 'ru' }}/">{{ 'views.api.get_form_iframe.online_booking_system'|trans}}</a>
+    </div>
     <script src="//code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
     <script src="//code.jquery.com/ui/1.11.1/jquery-ui.min.js" integrity="sha256-4JY5MVcEmAVSuS6q4h9mrwCm6KNx91f3awsSQgwu0qc=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="{{ url('online_form_get', {id: formId, locale: locale}) }}"></script>
