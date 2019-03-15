@@ -4,6 +4,7 @@ namespace MBH\Bundle\PriceBundle\Services;
 
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\PriceCache;
 
 /**
@@ -19,41 +20,39 @@ class PriceCacheRepositoryFilter
     private $dm;
 
     /**
-     * @var array
-     */
-    private $roomTypeMap;
-
-    /**
      * @param DocumentManager $dm
      */
     public function __construct(DocumentManager $dm)
     {
         $this->dm = $dm;
-
-        $this->roomTypeMap = $this->getRoomTypeMap();
     }
 
-
     /**
+     * decorates src/MBH/Bundle/PriceBundle/Document/PriceCacheRepository/getWithMinPrice()
+     *
      * @param PriceCache $cache
      * @return PriceCache|null
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function filterGetWithMinPrice(PriceCache $cache)// getWithMinPrice
+    public function filterGetWithMinPrice(PriceCache $cache)
     {
-        return $this->filterPriceCache($cache, $this->roomTypeMap);
+        return $this->filterPriceCache($cache, $this->getRoomTypeMap());
     }
 
-
     /**
+     * decorates src/MBH/Bundle/PriceBundle/Document/PriceCacheRepository/fetch()
+     * decorates src/MBH/Bundle/PriceBundle/Document/PriceCacheRepository/fetchWithCancelDate()
+     *
      * @param array $result
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function filterFetch(array $result) //fetch, fetchWithCancelDate
+    public function filterFetch(array $result)
     {
         foreach ($result as $roomTypeId => $roomTypeArr) {
             foreach ($roomTypeArr as $tariffId => $tariffArr) {
                 foreach ($tariffArr as $date => $cache) {
-                    $result[$roomTypeId][$tariffId][$date] = $this->filterPriceCache($cache, $this->roomTypeMap);
+                    $result[$roomTypeId][$tariffId][$date] = $this->filterPriceCache($cache, $this->getRoomTypeMap());
                 }
             }
         }
@@ -87,18 +86,25 @@ class PriceCacheRepositoryFilter
 
     /**
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     private function getRoomTypeMap(): array
     {
-        $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')->findAll();
+        $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
+            ->createQueryBuilder()
+            ->select(['_id', 'isIndividualAdditionalPrices', 'isSinglePlacement', 'isChildPrices'])
+            ->hydrate(false)
+            ->getQuery()
+            ->execute()->toArray();
 
         $roomTypeMap = [];
 
+        /** @var RoomType $roomType */
         foreach ($roomTypes as $roomType) {
-            $roomTypeMap[$roomType->getId()] = [
-                'isIndividualAdditionalPrices' => $roomType->getIsIndividualAdditionalPrices(),
-                'isSinglePlacement' => $roomType->getIsSinglePlacement(),
-                'isChildPrices' => $roomType->getIsChildPrices(),
+            $roomTypeMap[(string)$roomType['_id']] = [
+                'isIndividualAdditionalPrices' => $roomType['isIndividualAdditionalPrices'],
+                'isSinglePlacement' => $roomType['isSinglePlacement'],
+                'isChildPrices' => $roomType['isChildPrices'],
             ];
         }
 
