@@ -65,14 +65,12 @@ $(document).ready(function () {
       language    : mbh.datatablesOptions.language,
       pageLength  : mbh.datatablesOptions.pageLength
     });
-
-    $('#myTab a').click(function() {
-        $(this).tab('show');
-    });
     $("ul.nav-tabs > li > a").on("shown.bs.tab", function() {
         window.location.hash = $(this).attr("href").substr(1);
-        $(window).scrollTop(0);
     });
     $('.nav-tabs a[href="' + window.location.hash + '"]').tab('show');
-
+    $('.are-you-sure').on("submit", function() {
+        var form = $(this);
+        form.attr('action', form.attr('action') + window.location.hash);
+    });
 });
