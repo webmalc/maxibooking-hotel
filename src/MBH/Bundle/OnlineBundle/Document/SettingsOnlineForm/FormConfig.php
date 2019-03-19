@@ -219,6 +219,15 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
      */
     private $fieldsName;
 
+    /**
+     * @var bool
+     * @Gedmo\Versioned
+     * @ODM\Field(type="boolean")
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    private $iconLogoLink = false;
+
     public function __construct()
     {
         $this->roomTypeChoices = new ArrayCollection();
@@ -652,4 +661,23 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
 
         return $this;
     }
+
+    /**
+     * @return bool
+     */
+    public function isIconLogoLink(): bool
+    {
+        return $this->iconLogoLink;
+    }
+
+    /**
+     * @param bool $iconLogoLink
+     */
+    public function setIconLogoLink(bool $iconLogoLink): self
+    {
+        $this->iconLogoLink = $iconLogoLink;
+
+        return $this;
+    }
+
 }

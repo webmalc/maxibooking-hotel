@@ -140,6 +140,16 @@ class FormType extends AbstractType implements DecorationTypeInterface
                     'help'     => 'form.formType.modal_additional_data.help',
                 ]
             )
+            ->add(
+                'iconLogoLink',
+                CheckboxType::class,
+                [
+                    'label'    => 'form.formType.icon_logo_link.label',
+                    'group'    => 'form.formType.parameters',
+                    'required' => false,
+                    'help'     => 'form.formType.icon_logo_link.help',
+                ]
+            )
             ->add('maxPackages', ChoiceType::class, [
                 'label' => 'form.formType.max_packages.label',
                 'group' => 'form.formType.parameters',

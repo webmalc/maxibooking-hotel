@@ -82,9 +82,9 @@
 
     {% if formConfig.useModalForAdditionalData %}
         <div class="mbh-form-row form-group" id="mbh-form-additional-wrapper">
-            <span class="label-text">{{ fieldsName.guest is not empty ? fieldsName.guest : ('views.api.form.guest.label' | trans({}, 'MBHOnlineBundle') ) }}</span>
-            <span class="input-data">{{ 1 }}</span>
-            <img src="" class="person-icon" alt="person icon">
+            <span class="additional-label">{{ fieldsName.guest is not empty ? fieldsName.guest : ('views.api.form.guest.label' | trans({}, 'MBHOnlineBundle') ) }}</span>
+            <span class="additional-input">{{ 1 }}</span>
+            <img src="{{ absolute_url(asset('bundles/mbhonline/images/icon-person.svg')) }}" class="additional-person-icon" alt="person icon">
         </div>
     {% endif %}
 
@@ -93,10 +93,16 @@
     </div>
 
     <div id="mbh-logo-link-wrapper">
-        <a id="mbh-logo-link" href="https://maxi-booking.com/" target="_blank">{{ 'views.api.form.online_reservation_system'|trans({}, 'MBHOnlineBundle') }}</a>
+        <a id="mbh-logo-link" href="https://maxi-booking.com/" target="_blank">
+            {% if formConfig.iconLogoLink %}
+                <img src="{{ absolute_url(asset('bundles/mbhonline/images/icon-mb.svg')) }}" alt="logo maxibooking">
+            {% else %}
+                {{ 'views.api.form.online_reservation_system'|trans({}, 'MBHOnlineBundle') }}
+            {% endif %}
+        </a>
     </div>
 
-    <div id="mbh-actions-wrapper"></div>
+    <div id="mbh-actions-wrapper">{# maybe remove this? #}</div>
 
     <input type="hidden" id="mbh-form-locale" name="locale" value="{{ app.request.locale }}">
 </form>
