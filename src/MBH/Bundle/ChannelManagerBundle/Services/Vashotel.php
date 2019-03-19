@@ -12,6 +12,7 @@ use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PriceBundle\Document\ServiceCategory;
+use MBH\Bundle\PriceBundle\Services\PriceCacheRepositoryFilter;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService as Base;
 use MBH\Bundle\HotelBundle\Document\RoomType;
@@ -114,9 +115,15 @@ class Vashotel extends Base implements ChannelManagerServiceInterface
      */
     const PUSH_TEMPLATE = 'MBHChannelManagerBundle:Vashotel:push.xml.twig';
 
-    public function __construct(ContainerInterface $container)
+    /**
+     * @var PriceCacheRepositoryFilter
+     */
+    protected $priceCacheFilter;
+
+    public function __construct(ContainerInterface $container, PriceCacheRepositoryFilter $filter)
     {
         parent::__construct($container);
+        $this->priceCacheFilter = $filter;
     }
 
     /**
@@ -916,15 +923,19 @@ class Vashotel extends Base implements ChannelManagerServiceInterface
             $roomTypes = $this->getRoomTypes($config);
             $configTariffs = $this->getTariffs($config, true);
             $priceCachesCallback = function () use ($begin, $end, $config, $filterRoomType) {
-                return $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
-                    $begin,
-                    $end,
-                    $config->getHotel(),
-                    $this->getRoomTypeArray($filterRoomType),
-                    [],
-                    true,
-                    $this->roomManager->useCategories
+                $filtered = $this->priceCacheFilter->filterFetch(
+                    $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
+                        $begin,
+                        $end,
+                        $config->getHotel(),
+                        $this->getRoomTypeArray($filterRoomType),
+                        [],
+                        true,
+                        $this->roomManager->useCategories
+                    )
                 );
+                return $filtered;
+
             };
             $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
 
