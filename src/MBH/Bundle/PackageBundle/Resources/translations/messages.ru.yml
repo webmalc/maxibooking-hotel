@@ -316,7 +316,7 @@ controller.analyticsController.services_amount: 'Количество услуг
 controller.analyticsController.proceeds: Выручка
 controller.analyticsController.percentage: Процент
 controller.analyticsController.package_trips_amount: 'Количество путевок'
-controller.analyticsController.sale_date: 'Даты продажи'
+controller.analyticsController.sale_date: 'Дата'
 controller.analyticsController.series_total_name: Итог
 controller.orderController.cash_register_paper_deleted_success: 'Кассовый документ успешно удален'
 controller.orderController.add_cash_register_paper: 'Добавить кассовый документ'

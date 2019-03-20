@@ -10,6 +10,7 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackageService;
+use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\Service;
 use MBH\Bundle\UserBundle\Document\User;
 use Ob\HighchartsBundle\Highcharts\Highchart;
@@ -158,20 +159,22 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
      * @Method("GET")
      * @Security("is_granted('ROLE_ANALYTICS')")
      * @Template("MBHPackageBundle:Analytics:response.html.twig")
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function hotelOccupancyAction()
     {
         $data = $newData = $total = [];
 
-        foreach ($this->getPackages() as $package) {
-            $id = $package->getRoomType()->getId();
+        /**@var $roomCache RoomCache  */
+        foreach ($this->getRoomCaches() as $roomCache) {
+            $id = $roomCache->getRoomType()->getId();
 
             if (!isset($total[$id])) {
-                $total[$id] = count($package->getRoomType()->getRooms());
+                $total[$id] = $roomCache->getTotalRooms();
             }
 
-            $day = $package->getCreatedAt()->format('d.m.Y');
-            $month = $package->getCreatedAt()->format('m.Y');
+            $day = $roomCache->getDate()->format('d.m.Y');
+            $month = $roomCache->getDate()->format('m.Y');
 
             if (!isset($data[$id][$day])) {
                 $data[$id][$day] = 0;
@@ -179,21 +182,15 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
             if (!isset($data[$id][$month])) {
                 $data[$id][$month] = 0;
             }
-            $data[$id][$day]++;
-            $data[$id][$month]++;
-        }
 
-        foreach ($data as $id => $values) {
-            if (!isset($total[$id])) {
-                continue;
-            }
-            foreach ($values as $dataId => $value) {
-                $newData[$id][$dataId] = round($value / $total[$id], 2) * 100;
-            }
+            $occupiedRooms = $roomCache->getTotalRooms() - $roomCache->getLeftRooms();
+
+            $data[$id][$day] = round($occupiedRooms / $roomCache->getTotalRooms(), 2) * 100;
+            $data[$id][$month] = round($occupiedRooms / $roomCache->getTotalRooms(), 2) * 100;
         }
 
         $chart = $this->getChart($this->get('translator')->trans('controller.analyticsController.percentage'));
-        $chart->series($this->getSeries($newData, 'getRoomTypes', true));
+        $chart->series($this->getSeries($data, 'getRoomTypes', true));
 
         return $this->getResponse($chart);
     }
@@ -711,5 +708,20 @@ class AnalyticsController extends Controller implements CheckHotelControllerInte
             ->sort('begin', 'asc');
 
         return $qb->getQuery()->execute();
+    }
+
+    /**
+     * @return Cursor|mixed
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    private function getRoomCaches()
+    {
+        $roomTypesIds = $this->getRoomTypes(true);
+
+        $period = $this->getInterval();
+
+        return $this->dm
+            ->getRepository('MBHPriceBundle:RoomCache')
+            ->getByRoomTypesAndPeriod($roomTypesIds, $period);
     }
 }
