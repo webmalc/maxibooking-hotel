@@ -51,12 +51,7 @@ class PriceCacheRepoFilterTest extends UnitTestCase
     public function testFilterTrueFlags()
     {
         $priceCache = $this->newPriceCache(true, 1000, 1000, [1, 1], true);
-
-        $filter = $this->container->get('mbh.price_cache_repository_filter');
-        $filteredPriceCacheFalseFlags = $filter->filterGetWithMinPrice($priceCache);
-        $this->dm->persist($filteredPriceCacheFalseFlags);
-        $this->dm->flush();
-        $filteredPriceCacheFalseFlags = $this->getCleanPriceCache($filteredPriceCacheFalseFlags->getId(), false);
+        $filteredPriceCacheFalseFlags = $this->getNewCleanFilteredPriceCache($priceCache);
 
         $this->assertSame(1000, (int)$filteredPriceCacheFalseFlags['singlePrice']);
         $this->assertSame(1000, (int)$filteredPriceCacheFalseFlags['childPrice']);
@@ -66,16 +61,21 @@ class PriceCacheRepoFilterTest extends UnitTestCase
     public function testFilterFalseFlags()
     {
         $priceCache = $this->newPriceCache(false, 1000, 1000, [1, 1], true);
-
-        $filter = $this->container->get('mbh.price_cache_repository_filter');
-        $filteredPriceCacheFalseFlags = $filter->filterGetWithMinPrice($priceCache);
-        $this->dm->persist($filteredPriceCacheFalseFlags);
-        $this->dm->flush();
-        $filteredPriceCacheFalseFlags = $this->getCleanPriceCache($filteredPriceCacheFalseFlags->getId(), false);
+        $filteredPriceCacheFalseFlags = $this->getNewCleanFilteredPriceCache($priceCache);
 
         $this->assertArrayNotHasKey('singlePrice', $filteredPriceCacheFalseFlags);
         $this->assertArrayNotHasKey('childPrice', $filteredPriceCacheFalseFlags);
         $this->assertEmpty($filteredPriceCacheFalseFlags['additionalPrices']);
+    }
+
+    protected function getNewCleanFilteredPriceCache($priceCache)
+    {
+        $filter = $this->container->get('mbh.price_cache_repository_filter');
+        $filteredPriceCacheFalseFlags = $filter->filterGetWithMinPrice($priceCache);
+        $this->dm->persist($filteredPriceCacheFalseFlags);
+        $this->dm->flush();
+
+        return $this->getCleanPriceCache($filteredPriceCacheFalseFlags->getId(), false);
     }
 
     protected function getCleanPriceCache($priceCacheId, bool $hydrate)
