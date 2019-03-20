@@ -36,23 +36,16 @@
     {% endif %}
 
     {% if formConfig.roomTypes %}
-    {% set choices = formConfig.roomTypeChoices %}
-    {% if choices is empty %}
-        {% set choices = [] %}
-        {% for hotel in hotels %}
-            {% set choices = choices|merge(hotel.roomTypes) %}
-        {% endfor %}
-    {% endif %}
-    <div class="mbh-form-row form-group{{ choices|length == 1 ? ' hidden' }}"{{ hiddenIfUseAdditionlModal | raw }}>
-        <label for="mbh-form-roomType"> {{ fieldsName.roomType is not empty ? fieldsName.roomType : ('views.api.form.room_type.label'|trans({}, 'MBHOnlineBundle')) }}</label>
-        <select id="mbh-form-roomType" class="form-control input-sm" name="roomType">
-            <option></option>
-            <option value="">- {{ 'views.api.form.room_type.choices.any'|trans({}, 'MBHOnlineBundle') }} -</option>
-            {% for roomType in choices %}
-                <option value="{{ roomType.id }}" {{ choices|length == 1 ? 'selected' }}>{{ roomType.localeTitle(app.request.locale) }}</option>
-            {% endfor %}
-        </select>
-    </div>
+        <div class="mbh-form-row form-group{{ choices|length == 1 ? ' hidden' }}"{{ hiddenIfUseAdditionlModal | raw }}>
+            <label for="mbh-form-roomType"> {{ fieldsName.roomType is not empty ? fieldsName.roomType : ('views.api.form.room_type.label'|trans({}, 'MBHOnlineBundle')) }}</label>
+            <select id="mbh-form-roomType" class="form-control input-sm" name="roomType">
+                <option></option>
+                <option value="">- {{ 'views.api.form.room_type.choices.any'|trans({}, 'MBHOnlineBundle') }} -</option>
+                {% for roomType in choices %}
+                    <option value="{{ roomType.id }}" {{ choices|length == 1 ? 'selected' }}>{{ roomType.localeTitle(app.request.locale) }}</option>
+                {% endfor %}
+            </select>
+        </div>
     {% endif %}
 
     {% if formConfig.tourists %}

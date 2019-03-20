@@ -12,6 +12,7 @@ use MBH\Bundle\ClientBundle\Exception\BadSignaturePaymentSystemException;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
+use MBH\Bundle\OnlineBundle\Services\DataForOnlineForm;
 use MBH\Bundle\OnlineBundle\Services\RenderPaymentButton;
 use MBH\Bundle\PackageBundle\Document\Order;
 
@@ -161,33 +162,18 @@ class ApiController extends Controller
             throw $this->createNotFoundException();
         }
 
-        $hotelsQb = $dm->getRepository('MBHHotelBundle:Hotel')
-            ->createQueryBuilder()
-            ->sort('fullTitle', 'asc');
-
-        $configHotelsIds = $this->get('mbh.helper')->toIds($formConfig->getHotels());
-
-        $hotels = [];
-        /** @var Hotel $hotel */
-        foreach ($hotelsQb->getQuery()->execute() as $hotel) {
-            if ($configHotelsIds && !in_array($hotel->getId(), $configHotelsIds)) {
-                continue;
-            }
-
-            foreach ($hotel->getTariffs() as $tariff) {
-                if ($tariff->getIsOnline()) {
-                    $hotels[] = $hotel;
-                    break;
-                }
-            }
-        }
+        /** @var DataForOnlineForm $helperDataForm */
+        $helperDataForm = $this->get(DataForOnlineForm::class)
+            ->setFormConfig($formConfig);
 
         $twig = $this->get('twig');
         $context = [
-            'config' => $config,
+            'config'     => $config,
             'formConfig' => $formConfig,
-            'hotels' => $hotels,
+            'hotels'     => $helperDataForm->getHotels(),
+            'choices'    => $helperDataForm->getRoomTypes(),
         ];
+
         $text = $formConfig->getFormTemplate()
             ? $twig->createTemplate($formConfig->getFormTemplate())->render($context)
             : $twig->render('MBHOnlineBundle:Api:form.html.twig', $context);

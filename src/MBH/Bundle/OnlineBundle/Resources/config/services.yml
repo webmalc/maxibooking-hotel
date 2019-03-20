@@ -86,3 +86,8 @@ services:
         arguments: ['@mbh.client_config_manager']
         tags:
             - {name: form.type}
+
+    MBH\Bundle\OnlineBundle\Services\DataForOnlineForm:
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@mbh.helper'
