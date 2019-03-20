@@ -748,6 +748,26 @@ class ApiController extends Controller
             $tr = $this->get('translator');
             $message = $notifier::createMessage();
             $hotel = $order->getFirstHotel();
+
+            $packageId = null;
+            $desc = null;
+
+            foreach ($order->getPackages() as $package) {
+                $roomType = $package->getRoomType()->getFullTitle();
+                $dateBegin = $package->getBegin()->format('d.m.y');
+                $dateEnd = $package->getEnd()->format('d.m.y');
+                $packageId = $package->getId();
+
+                $desc .= " - $roomType, $dateBegin-$dateEnd";
+            }
+
+            $textHtmlLink = $this->container->get('router')->generate('package_order_edit', [
+                'id' => $order->getId(),
+                'packageId' => $packageId
+            ]);
+
+            $html = '<a href='. $textHtmlLink .'>'. $order->getId() .'</a>';
+
             $message
                 ->setText($tr->trans('mailer.online.backend.text', ['%orderID%' => $order->getId()]))
                 ->setTranslateParams(['%orderID%' => $order->getId()])
@@ -760,7 +780,8 @@ class ApiController extends Controller
                 ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
                 ->setAutohide(false)
                 ->setEnd(new \DateTime('+1 minute'))
-                ->setMessageType(NotificationType::ONLINE_ORDER_TYPE);
+                ->setMessageType(NotificationType::ONLINE_ORDER_TYPE)
+                ->setTextHtmlLink($tr->trans('mailer.online.backend.text', ['%orderID%' => $html]) . $desc );
             $notifier
                 ->setMessage($message)
                 ->notify();
