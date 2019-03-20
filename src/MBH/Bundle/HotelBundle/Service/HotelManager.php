@@ -33,11 +33,6 @@ class HotelManager
      */
     protected $container;
 
-    /**
-     * @var DocumentManager
-     */
-    protected $dm;
-
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
@@ -81,7 +76,9 @@ class HotelManager
             }
         }
 
-        $hotelMainTariff = $this->dm
+        $dm = $this->container->get('doctrine_mongodb')->getManager();
+
+        $hotelMainTariff = $dm
             ->getRepository('MBHPriceBundle:Tariff')
             ->findOneBy(['isDefault' => true, 'hotel.id' => $hotel->getId()]);
 
@@ -90,19 +87,19 @@ class HotelManager
         }
 
         foreach ($hotel->getServices() as $service) {
-            $this->dm->remove($service);
+            $dm->remove($service);
         }
-        $this->dm->flush();
+        $dm->flush();
 
         foreach ($hotel->getServicesCategories() as $serviceCategory) {
-            $this->dm->remove($serviceCategory);
+            $dm->remove($serviceCategory);
         }
 
         $siteConfig = $this->container->get('mbh.site_manager')->getSiteConfig();
         if (!is_null($siteConfig)) {
             $siteConfig->getHotels()->remove($hotel);
         }
-        $this->dm->flush();
+        $dm->flush();
 
         return [];
     }
@@ -127,7 +124,10 @@ class HotelManager
         $this->container
             ->get('mbh.site_manager')
             ->createOrUpdateForHotel($hotel);
-        $this->container->get('doctrine.odm.mongodb.document_manager')->persist($hotel);
+
+        $dm = $this->container->get('doctrine_mongodb')->getManager();
+
+        $dm->persist($hotel);
 
         $this->container
             ->get('mbh.client_config_manager')
