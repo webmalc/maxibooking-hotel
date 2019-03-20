@@ -23,7 +23,7 @@ mailer.online.user.prepend: 'Hello, %guest%!<br><br>You’ve successfully booked
 mailer.online.user.append: 'We hope your visit will be pleasant and staying in our hotel will be comfortable. <br>Thank you for choosing our hotel!'
 mailer.online.user.signature: 'Best regards,<br>«%hotel%» reservation service.'
 mailer.online.backend.subject: 'New online booking submission'
-mailer.online.backend.text: 'New order #%orderID% from your website'
+mailer.online.backend.text: 'New order #%orderID% from your website.'
 mailer.online.backend.prepend: 'Hello, %guest%!<br><br>You have successfully booked a room at our hotel. We will contact you as soon as possible to confirm the order and clarify accommodation details.'
 mailer.online.backend.append: 'Greetings, %guest%!<br><br>You have successfully reserved a room in our hotel.'
 mailer.online.backend.signature: 'Best regards,<br>«%hotel%» reservation service.'
