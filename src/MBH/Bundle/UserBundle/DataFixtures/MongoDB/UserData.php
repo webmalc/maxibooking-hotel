@@ -4,6 +4,7 @@ namespace MBH\Bundle\UserBundle\DataFixtures\MongoDB;
 
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\UserBundle\Document\AuthorizationToken;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -13,6 +14,7 @@ use Doctrine\Common\DataFixtures\AbstractFixture;
 class UserData extends AbstractFixture implements OrderedFixtureInterface, ContainerAwareInterface
 {
     public const USER_MANAGER = 'manager';
+    public const USER_L_MANAGER = 'lmanager';
     public const USER_ADMIN = 'admin';
 
     const SANDBOX_USERNAME = 'demo';
@@ -30,9 +32,17 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
         'user-manager' => [
             'username' => self::USER_MANAGER,
             'email' => 'manager@example.com',
-            'role' => 'ROLE_USER',
+            'role' => 'ROLE_BASE_USER',
             'group' => 'group-medium_manager',
             'password' => self::USER_MANAGER,
+        ],
+        'user-lmanager' => [
+            'username' => self::USER_L_MANAGER,
+            'email' => 'manager@example.com',
+            'role' => 'ROLE_BASE_USER',
+            'group' => 'group-junior_manager',
+            'password' => self::USER_L_MANAGER,
+            'hotels' => true
         ],
         'user-demo' => [
             'username' => self::SANDBOX_USERNAME,
@@ -83,6 +93,11 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
                     ->setPlainPassword($password)
                     ->setEnabled(true)
                     ->setLocked(false);
+
+                if ($userData['hotels'] ?? false) {
+                    $hotels = $manager->getRepository(Hotel::class)->findAll();
+                    $user->setHotels($hotels);
+                }
 
                 if (isset($userData['group'])) {
                     $user->addGroup($this->getReference($userData['group']));

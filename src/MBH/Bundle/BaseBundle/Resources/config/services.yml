@@ -547,3 +547,8 @@ services:
         class: MBH\Bundle\BaseBundle\Security\HotelVoter
         tags:
           - { name: security.voter }
+
+    mbh.secure.package_voter:
+        class: MBH\Bundle\BaseBundle\Security\PackageVoter
+        tags:
+            - { name: security.voter }

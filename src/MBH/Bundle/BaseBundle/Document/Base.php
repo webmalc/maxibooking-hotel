@@ -100,7 +100,7 @@ class Base
             $this->createdAt = null;
         }
         if (property_exists($this, 'updatedAt')) {
-            $this->updatedAt = null;;
+            $this->updatedAt = null;
         }
         if (method_exists($this, 'createdBy')) {
             $this->createdBy = null;

@@ -16,6 +16,8 @@ use MBH\Bundle\BaseBundle\Service\Messenger\RecipientInterface;
 use MBH\Bundle\OnlineBundle\Document\FormConfig;
 use MBH\Bundle\PackageBundle\Document\Partials\DeleteReasonTrait;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
+use MBH\Bundle\UserBundle\Lib\OwnerInterface;
+use MBH\Bundle\UserBundle\Lib\OwnerTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -24,7 +26,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks
  */
-class Order extends Base
+class Order extends Base implements OwnerInterface
 {
     const OFFLINE_STATUS = 'offline';
     const ONLINE_STATUS = 'online';
@@ -52,6 +54,8 @@ class Order extends Base
      * Delete Reason Trait
      */
     use DeleteReasonTrait;
+
+    use OwnerTrait;
 
     /**
      * @var int
@@ -1033,6 +1037,7 @@ class Order extends Base
             self::ONLINE_STATUS
         ];
     }
+
 
     /**
      * @return array

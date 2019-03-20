@@ -34,7 +34,7 @@ class UserController extends Controller
      *
      * @Route("/", name="user")
      * @Method("GET")
-     * @Security("is_granted('ROLE_USER_VIEW_FA')")
+     * @Security("is_granted('ROLE_USER_VIEW')")
      * @Template()
      */
     public function indexAction()

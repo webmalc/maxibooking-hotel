@@ -67,12 +67,12 @@ class GroupsData extends AbstractFixture implements OrderedFixtureInterface, Con
             'title' => $translator->trans('restaurantbundle.controller.little_manager'),
             'roles' => [
                 'ROLE_TOURIST', 'ROLE_ORGANIZATION', 'ROLE_CITY',
-                'ROLE_SEARCH', 'ROLE_PACKAGE_VIEW', 'ROLE_PACKAGE_VIEW_ALL', 'ROLE_PACKAGE_NEW',
+                'ROLE_SEARCH', 'ROLE_PACKAGE_VIEW', 'ROLE_PACKAGE_NEW',
                 'ROLE_ORDER_EDIT', 'ROLE_PACKAGE_EDIT', 'ROLE_ORDER_PAYER', 'ROLE_PACKAGE_GUESTS',
                 'ROLE_PACKAGE_SERVICES', 'ROLE_PACKAGE_ACCOMMODATION', 'ROLE_ORDER_DOCUMENTS',
                 'ROLE_ORDER_CASH_DOCUMENTS', 'ROLE_ORDER_AUTO_CONFIRMATION',
                 'ROLE_PRICE_CACHE_VIEW', 'ROLE_RESTRICTION_VIEW', 'ROLE_ROOM_CACHE_VIEW', 'ROLE_SERVICE_VIEW',
-                'ROLE_PROMOTION_ADD', 'ROLE_DISCOUNT_ADD'
+                'ROLE_PROMOTION_ADD', 'ROLE_DISCOUNT_ADD', 'ROLE_HOTEL_VIEW'
 
             ]
         ],

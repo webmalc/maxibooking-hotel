@@ -692,7 +692,7 @@ class User extends BaseUser implements RecipientInterface, DataOfMortalInterface
         return $this->hotels;
     }
 
-    /**0
+    /**
      * @return mixed
      */
     public function getHotels()
@@ -700,23 +700,30 @@ class User extends BaseUser implements RecipientInterface, DataOfMortalInterface
         return $this->hotels;
     }
 
-//    /**
-//     * @param Hotel $hotel
-//     * @return User
-//     */
-//    public function addHotel(Hotel $hotel): User
-//    {
-//        $this->hotels->add($hotel);
-//
-//        return $this;
-//    }
-//
-//    public function removeHotel(Hotel $hotel): User
-//    {
-//        $this->hotels->removeElement($hotel);
-//
-//        return $this;
-//    }
+    public function setHotels($hotels)
+    {
+        $this->hotels = $hotels;
+
+        return $this;
+    }
+
+    /**
+     * @param Hotel $hotel
+     * @return User
+     */
+    public function addHotel(Hotel $hotel): User
+    {
+        $this->hotels->add($hotel);
+
+        return $this;
+    }
+
+    public function removeHotel(Hotel $hotel): User
+    {
+        $this->hotels->removeElement($hotel);
+
+        return $this;
+    }
 
 
 

@@ -145,7 +145,7 @@ services:
 
     mbh.acl_document_owner_maker:
         class: MBH\Bundle\PackageBundle\Lib\AclOwnerMaker
-        arguments: [false, '@doctrine.odm.mongodb.document_manager']
+        arguments: ['@doctrine.odm.mongodb.document_manager']
 
     mbh_bundle_package.services.package_accommodation_manipulator:
         class: MBH\Bundle\PackageBundle\Services\PackageAccommodationManipulator
