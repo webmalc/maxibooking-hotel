@@ -241,11 +241,7 @@ class ApiController extends Controller
         $dm = $this->get('doctrine_mongodb')->getManager();
         $clientConfig = $this->clientConfig;
         $logger = $this->get('mbh.online.logger');
-        $logText = '\MBH\Bundle\OnlineBundle\Controller::checkOrderAction. Get request from IP'.$request->getClientIp(
-            ).'. Post data: '.implode(
-                '; ',
-                $_POST
-            ).' . Keys: '.implode('; ', array_keys($_POST));
+        $logText = $this->generateLogText($request);
 
         if (!$clientConfig) {
             $logger->info('FAIL. '.$logText.' .Not found config');
@@ -349,6 +345,34 @@ class ApiController extends Controller
         $logger->info('OK. '.$logText);
 
         return $holder->getIndividualSuccessResponse($this) ?? new Response($holder->getText());
+    }
+
+    private function generateLogText(Request $request): string
+    {
+        $text = [];
+        $text[] = sprintf(
+            '\MBH\Bundle\OnlineBundle\Controller::checkOrderAction. Get request from IP %s.',
+            $request->getClientIp()
+        );
+
+        $generateText = function (string $method, array $array): string {
+            return sprintf(
+                '%s data: %s. Keys: %s',
+                $method,
+                implode('; ',$array),
+                implode('; ', array_keys($array))
+            );
+        };
+
+        if ($request->query->count() > 0) {
+            $text[] = $generateText('Get', $request->query->getIterator()->getArrayCopy());
+        };
+
+        if ($request->request->count() > 0) {
+            $text[] = $generateText('Post', $request->request->getIterator()->getArrayCopy());
+        }
+
+        return implode(';', $text);
     }
 
     /**

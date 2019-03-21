@@ -3,9 +3,14 @@
 {% trans_default_domain 'FOSUserBundle' %}
 
 {% block content %}
-    {% if app.getEnvironment == 'prod' %}
-        {#<script src='https://www.google.com/recaptcha/api.js'></script>#}
-    {% endif %}
+    <script src="https://www.google.com/recaptcha/api.js?render=6LcuCJQUAAAAAD3PVGAYDBQWL-q5cuKo1YJTjybn" ></script>
+    <script>
+        grecaptcha.ready(function() {
+            grecaptcha.execute('6LcuCJQUAAAAAD3PVGAYDBQWL-q5cuKo1YJTjybn', {action: 'login'}).then(function(token) {
+                document.getElementById('inv_captcha').value = token;
+            });
+        });
+    </script>
 
     <form name="loginForm" action="{{ path("fos_user_security_check") }}" class="form login-form" role="form"
           method="post" accept-charset="UTF-8">
@@ -27,9 +32,8 @@
                    placeholder="{{ 'security.login.password'|trans({}, 'FOSUserBundle') }}" required>
             <span class="glyphicon glyphicon-lock form-control-feedback"></span>
         </div>
-        {% if app.getEnvironment == 'prod' %}
-            <div class="form-group g-recaptcha" data-sitekey="{{ recaptcha.site }}"></div>
-        {% endif %}
+        <input type="hidden" name="re_token" id="inv_captcha">
+
 
         <div class="row alignment-for-little-screen">
             <div class="col-xs-6">

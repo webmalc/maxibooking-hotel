@@ -60,7 +60,7 @@ class Helper
             );
         }
 
-        return $this->container->get($classNameDecorator)->newInstance($obj);
+        return clone $this->container->get($classNameDecorator)->newInstance($obj);
     }
 
     /**

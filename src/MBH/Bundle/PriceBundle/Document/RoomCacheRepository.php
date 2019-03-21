@@ -260,4 +260,26 @@ class RoomCacheRepository extends DocumentRepository
 
         return $result;
     }
+
+    /**
+     * @param array $roomTypes
+     * @param \DatePeriod $period
+     * @return mixed|Cursor
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function getByRoomTypesAndPeriod(array $roomTypes, \DatePeriod $period)
+    {
+        $begin = $period->getStartDate();
+        $end = $period->getEndDate();
+
+        $qb = $this->createQueryBuilder();
+
+        if (!empty($roomTypes)) {
+            $qb->field('roomType.id')->in($roomTypes);
+        }
+
+        $qb->field('date')->range($begin, $end);
+
+        return $qb->getQuery()->execute();
+    }
 }

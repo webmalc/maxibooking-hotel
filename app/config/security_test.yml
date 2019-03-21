@@ -1,4 +1,6 @@
 security:
+    acl:
+        provider: mongodb_acl_provider
 
     encoders:
         FOS\UserBundle\Model\UserInterface: sha512
@@ -28,8 +30,30 @@ security:
             stateless: true
             access_denied_handler: mbh.api_access_denied_handler
 
+        test_login_form: #AuthCaptchaTest special
+            pattern: ^.*/login.*
+            context: test_content
+            form_login:
+                always_use_default_target_path: false
+                default_target_path: /
+                use_referer: true
+                provider: fos_userbundle
+                csrf_token_generator: security.csrf.token_manager
+                login_path:  /user/login
+                check_path:  /user/login_check
+                require_previous_session: true
+                remember_me: true
+            logout:
+                path: /user/logout
+                target: /
+            anonymous: true
+            remember_me: false
+            stateless: false
+            http-basic: ~
+
         main:
             pattern: ^/
+            context: test_content
             form_login:
                 always_use_default_target_path: false
                 default_target_path: /
@@ -43,7 +67,7 @@ security:
             simple_preauth:
                 authenticator: mbh.api_key_authenticator
                 provider: api_key_user_provider
-            logout:       
+            logout:
                 path:   /user/logout
                 target: /
             anonymous:    true
@@ -53,6 +77,8 @@ security:
                 path:     /
                 domain:   ~
             stateless: false
+
+
 
 
     access_control:
@@ -66,6 +92,8 @@ security:
         - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/media/cache/resolve, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/user/login$, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
-        - { path: ^/_wdt, roles: 'IS_AUTHENTICATED_ANONYMOUSLY' } 
+        - { path: ^/user/login_check$, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+        - { path: ^/_wdt, roles: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/_profiler, roles: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/, role: ROLE_BASE_USER }
+#        - { path: ^/, role: 'IS_AUTHENTICATED_FULLY' }

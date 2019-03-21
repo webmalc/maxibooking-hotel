@@ -40,6 +40,16 @@ class Extension extends \Twig_Extension
     private $twigData;
     private $isTwigDataInit = false;
 
+    /**
+     * @var array
+     */
+    private $months = [];
+
+    /**
+     * @var bool
+     */
+    private $isInitMonths = false;
+
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
@@ -69,26 +79,41 @@ class Extension extends \Twig_Extension
             return $date->format('d.m.y');
         }
 
-        $months = [
-            $this->translator->trans('twig.extension.jan', []),
-            $this->translator->trans('twig.extension.feb', []),
-            $this->translator->trans('twig.extension.march', []),
-            $this->translator->trans('twig.extension.april', []),
-            $this->translator->trans('twig.extension.may', []),
-            $this->translator->trans('twig.extension.june', []),
-            $this->translator->trans('twig.extension.july', []),
-            $this->translator->trans('twig.extension.august', []),
-            $this->translator->trans('twig.extension.september', []),
-            $this->translator->trans('twig.extension.october', []),
-            $this->translator->trans('twig.extension.november', []),
-            $this->translator->trans('twig.extension.december', [])
-        ];
+        $this->initMonths();
+
+        $text = sprintf(
+            '%s&nbsp;<span class=\'date-month\'>%s</span>.',
+            $date->format('d'),
+            $this->months[$date->format('n') - 1]
+        );
 
         return sprintf(
-            '%s&nbsp;<span class=\"date-month\">%s</span>.',
+            '%s&nbsp;<span class=\'date-month\'>%s</span>.',
             $date->format('d'),
-            $months[$date->format('n') - 1]
+            $this->months[$date->format('n') - 1]
         );
+    }
+
+    private function initMonths(): void
+    {
+        if (!$this->isInitMonths) {
+            $this->months = [
+                $this->translator->trans('twig.extension.jan', []),
+                $this->translator->trans('twig.extension.feb', []),
+                $this->translator->trans('twig.extension.march', []),
+                $this->translator->trans('twig.extension.april', []),
+                $this->translator->trans('twig.extension.may', []),
+                $this->translator->trans('twig.extension.june', []),
+                $this->translator->trans('twig.extension.july', []),
+                $this->translator->trans('twig.extension.august', []),
+                $this->translator->trans('twig.extension.september', []),
+                $this->translator->trans('twig.extension.october', []),
+                $this->translator->trans('twig.extension.november', []),
+                $this->translator->trans('twig.extension.december', [])
+            ];
+
+            $this->isInitMonths = true;
+        }
     }
 
     public function md5($value)
