@@ -1,28 +1,132 @@
-function searchFormActions() {
-    var begin = jQuery('#mbh-form-begin'),
-        end = jQuery('#mbh-form-end'),
-        nights = jQuery('#mbh-form-nights'),
-        adults = jQuery('#mbh-form-adults'),
-        children = jQuery('#mbh-form-children'),
-        button = jQuery('#mbh-form-submit'),
-        locale = jQuery('#mbh-form-locale'),
-        last = null,
-        options = {
+function SearchForm() {
+    this.query = (function() {
+        var vars = [],
+            tempChildrenAges = [],
+            hash,
+            hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+
+        vars['children-ages'] = [];
+
+        for (var i = 0; i < hashes.length; i++) {
+            hash = hashes[i].split('=');
+            if (/children-ages/.test(hash[0])) {
+                tempChildrenAges.push(hash[1])
+            } else {
+                vars.push(hash[0]);
+                vars[hash[0]] = hash[1];
+            }
+
+        }
+
+        if (parseInt(vars['children']) > 0) {
+            vars['children-ages'] = tempChildrenAges;
+        }
+
+        return vars;
+    })();
+
+    this.adults = jQuery('#mbh-form-adults');
+    this.children = jQuery('#mbh-form-children');
+
+    this.begin = jQuery('#mbh-form-begin');
+    this.end = jQuery('#mbh-form-end');
+    this.nights = jQuery('#mbh-form-nights');
+    this.button = jQuery('#mbh-form-submit');
+    this.locale = jQuery('#mbh-form-locale');
+    this.roomType = jQuery('#mbh-form-roomType');
+    this.last = null;
+    this.options = {
             minDate: 0
         };
 
-    var processMessage = function(e) {
-        if (e.data.type !== 'mbh') {
-            return;
+    this.additionalFormDataInit();
+}
+
+SearchForm.prototype.additionalFormWriteAmountGuest = function(adults, children) {
+    if (adults === undefined) {
+        return;
+    }
+    children = children || 0;
+
+    this.additionalFormStepper.html(parseInt(adults) + parseInt(children));
+};
+
+SearchForm.prototype.additionalFormDataInit = function () {
+
+    this.additionalFormWrapper = jQuery('#mbh-form-additional-wrapper');
+    this.additionalFormUseIt = this.additionalFormWrapper.length > 0 ? {} : null;
+
+    this.additionalFormStepper = this.additionalFormWrapper.find('.additional-input');
+
+    this.additionalFormWriteAmountGuest(this.query.adults, this.query.children);
+
+    var dataForForm = (function(query) {
+
+        return {
+            adults: query.adults,
+            children: query.children,
+            roomType: query.roomType,
+            'children-ages': query['children-ages']
         }
-        if (e.data.date && last) {
-            last.val(e.data.date).trigger('change');
-            window.parent.postMessage({
-                type: 'mbh',
-                action: 'hideCalendar'
-            }, "*");
-        }
-    };
+
+    })(this.query);
+
+    window.parent.postMessage({
+        type: 'mbh',
+        target: 'additionalFromDataForParentForm',
+        form: dataForForm
+    }, "*");
+
+};
+
+SearchForm.prototype.setValue = function(field, val) {
+    if (val && field.length) {
+        field.val(val);
+    }
+};
+
+SearchForm.prototype.additionalDataSetValueFromIframe = function (e) {
+    if (this.additionalFormUseIt === null) {
+        return;
+    }
+
+    if (e.data.name !== 'additionalFromDataForIframe' || e.data.form === {}) {
+        return;
+    }
+
+    this.additionalFormUseIt = e.data.form;
+
+    this.additionalFormWriteAmountGuest(this.additionalFormUseIt.adults, this.additionalFormUseIt.children);
+
+    this.setValue(this.adults, this.additionalFormUseIt.adults);
+    this.setValue(this.children, this.additionalFormUseIt.children);
+    this.roomType.val(this.additionalFormUseIt.roomType);
+
+    this.setChildAgeForms(this.additionalFormUseIt.children,this.additionalFormUseIt);
+};
+
+SearchForm.prototype.processMessage = function(e) {
+    if (e.data.type !== 'mbh') {
+        return;
+    }
+
+    this.additionalDataSetValueFromIframe(e);
+
+    if (e.data.date && this.last) {
+        this.last.val(e.data.date).trigger('change');
+        window.parent.postMessage({
+            type: 'mbh',
+            action: 'hideCalendar'
+        }, "*");
+    }
+};
+
+SearchForm.prototype.addEventListeners = function (self) {
+    if (window.addEventListener) {
+        window.addEventListener("message", function (e) {self.processMessage(e);}, false);
+    } else {
+        window.attachEvent("onmessage", function (e) {self.processMessage(e);});
+    }
 
     var $mbhForm = $("#mbh-form");
     $mbhForm.on('submit', function(e) {
@@ -32,6 +136,142 @@ function searchFormActions() {
         }, "*");
         window.sessionStorage.setItem('MBHSearchData',$(this).serialize());
     });
+};
+
+SearchForm.prototype.searchFormActions  = function () {
+    var self = this;
+
+    this.viewChange();
+    this.addEventListeners(this);
+
+    if (!this.begin.val() || !this.end.val()) {
+        this.button.prop('disabled', true);
+    }
+    // nights
+    if (this.nights.length) {
+        jQuery('#mbh-form-nights, #mbh-form-begin').change(function() {
+
+            var beginDate = jQuery.datepicker.parseDate('dd.mm.yy', self.begin.val());
+            if (!beginDate) {
+                return;
+            }
+            var endDate = beginDate;
+            endDate.setDate(endDate.getDate() + parseInt(self.nights.val(), 10));
+            self.end.val(jQuery.datepicker.formatDate( "dd.mm.yy", endDate));
+        });
+
+    }
+
+    this.setValue(this.begin, this.query.begin);
+    this.setValue(this.end, this.query.end);
+    this.setValue(this.adults, this.query.adults);
+    this.setValue(this.children, this.query.children);
+    this.setValue(this.nights, this.query.nights);
+
+    this.roomType.val(this.query.roomType);
+    jQuery('#mbh-form-hotel').val(this.query.hotel);
+
+    this.begin.change(function() {
+        var beginDate = jQuery.datepicker.parseDate('dd.mm.yy', self.begin.val()),
+            endDate = jQuery.datepicker.parseDate('dd.mm.yy', self.end.val());
+
+        if (!beginDate) {
+            return false;
+        }
+
+        if (endDate < beginDate) {
+            self.end.val(null);
+        }
+    });
+
+    this.end.change(function() {
+        var beginDate = jQuery.datepicker.parseDate('dd.mm.yy', self.begin.val()),
+            endDate = jQuery.datepicker.parseDate('dd.mm.yy', self.end.val());
+
+        if (!endDate) {
+            return false;
+        }
+
+        if (beginDate > endDate) {
+            self.begin.val(null);
+        }
+    });
+
+    if (this.adults.length) {
+        this.adults.change(function() {
+            var val = parseInt(self.adults.val());
+            if (isNaN(val)) {
+                self.adults.val(1);
+            } else {
+                self.adults.val(val);
+            }
+        });
+    }
+    if (this.children.length) {
+        this.children.bind('keyup mouseup change', function() {
+            var val = parseInt(self.children.val());
+            if (isNaN(val)) {
+                self.children.val(0);
+            } else {
+                self.setChildAgeForms(val);
+                self.children.val(val);
+            }
+        });
+    }
+
+    jQuery('#mbh-form-begin, #mbh-form-end').change(function() {
+        if (self.begin.val() && self.end.val()) {
+            self.button.prop('disabled', false);
+        } else {
+            self.button.prop('disabled', true);
+        }
+    });
+
+    this.setChildAgeForms(this.children.val(), this.query);
+};
+
+SearchForm.prototype.setChildAgeForms = function(childrenCount, query) {
+
+    var $childAgesBlock = jQuery('.children-ages');
+
+    if (!isDisplayChildAges) {
+        $childAgesBlock.hide();
+
+        return;
+    }
+
+    var childrenAges = (query !== undefined ? query['children-ages'] : false) || [];
+
+    if (childrenCount > 0) {
+        $childAgesBlock.show();
+    } else if ($childAgesBlock) {
+        $childAgesBlock.hide();
+        $childAgesBlock.find('select').val(0);
+    }
+    var selectFormCount = $childAgesBlock.find('select').size();
+    var difference = childrenCount - selectFormCount;
+    if (difference > 0) {
+        for (var i = selectFormCount; i < childrenCount; i++) {
+            var $childrenAgeForm = jQuery('#children-age-1').clone(),
+                selectFormName = 'children-age-' + (i + 1);
+            $childrenAgeForm.attr('id', selectFormName);
+            $childAgesBlock.append($childrenAgeForm);
+        }
+    } else if (difference < 0) {
+        while (childrenCount != selectFormCount && $childAgesBlock.find('select').size() > 1) {
+            $childAgesBlock.find('select').last().remove();
+            selectFormCount--;
+        }
+    }
+
+    if (childrenAges.length !== 0) {
+        $childAgesBlock.find('select').each(function(index, select) {
+            jQuery(select).val(childrenAges[index]);
+        });
+    }
+};
+
+SearchForm.prototype.viewChange = function() {
 
     var resizeHandler = function () {
         var formHeight = document.getElementById('mbh-form-wrapper').clientHeight;
@@ -41,15 +281,17 @@ function searchFormActions() {
             formHeight: formHeight
         }, '*')
     };
-    setInterval(function() {
+
+    window.addEventListener('resize', resizeHandler);
+
+    var resizeIntervalId = setInterval(function() {
         resizeHandler();
     }, 300);
 
-    if (window.addEventListener) {
-        window.addEventListener("message", processMessage, false);
-    } else {
-        window.attachEvent("onmessage", processMessage);
-    }
+    setTimeout(function() {
+        clearInterval(resizeIntervalId);
+    }, 3000);
+
 
     var needChangePaddingLeft = (function() {
         var need = false;
@@ -79,12 +321,12 @@ function searchFormActions() {
         })();
     };
 
-    var showCalendar = function() {
+    var showIFrame = function(event) {
         var el = jQuery(this);
         last = el;
         window.parent.postMessage({
             type: 'mbh',
-            action: 'showCalendar',
+            action: (event.data !== undefined && event.data.action !== undefined) ? event.data.action : 'showCalendar',
             top: el.offset().top + el.outerHeight(),
             left: paddingLeft(el.offset().left),
             date: el.val()
@@ -97,8 +339,9 @@ function searchFormActions() {
         }
     };
 
-    begin.on('focus', showCalendar);
-    end.on('focus', showCalendar);
+    this.begin.on('focus', showIFrame);
+    this.end.on('focus', showIFrame);
+    this.additionalFormWrapper.on('click', {action: 'showAdditionalForm'}, showIFrame);
     jQuery('html').click(function(e) {
         if (!jQuery(e.target).hasClass('mbh-calendar-input')) {
             window.parent.postMessage({
@@ -107,161 +350,4 @@ function searchFormActions() {
             }, "*");
         }
     });
-
-    var currentLocale = locale.val();
-
-    var setValue = function(field, val) {
-        if (val && field.length) {
-            field.val(val);
-        }
-    };
-
-    var query = (function() {
-        var vars = [],
-            tempChildrenAges = [],
-            hash,
-            hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-
-        vars['children-ages'] = [];
-
-        for (var i = 0; i < hashes.length; i++) {
-            hash = hashes[i].split('=');
-            if (/children-ages/.test(hash[0])) {
-                tempChildrenAges.push(hash[1])
-            } else {
-                vars.push(hash[0]);
-                vars[hash[0]] = hash[1];
-            }
-
-        }
-
-        if (parseInt(vars['children']) > 0) {
-            vars['children-ages'] = tempChildrenAges;
-        }
-
-        return vars;
-    })();
-
-    if (!begin.val() || !end.val()) {
-        button.prop('disabled', true);
-    }
-    // nights
-    if (nights.length) {
-        jQuery('#mbh-form-nights, #mbh-form-begin').change(function() {
-
-            var beginDate = jQuery.datepicker.parseDate('dd.mm.yy', begin.val());
-            if (!beginDate) {
-                return;
-            }
-            var endDate = beginDate;
-            endDate.setDate(endDate.getDate() + parseInt(nights.val(), 10));
-            end.val(jQuery.datepicker.formatDate( "dd.mm.yy", endDate));
-        });
-
-    }
-
-    setValue(begin, query.begin);
-    setValue(end, query.end);
-    setValue(jQuery('#mbh-form-roomType'), query.roomType);
-    setValue(jQuery('#mbh-form-hotel'), query.hotel);
-    setValue(adults, query.adults);
-    setValue(children, query.children);
-    setValue(nights, query.nights);
-
-    begin.change(function() {
-        var beginDate = jQuery.datepicker.parseDate('dd.mm.yy', begin.val()),
-            endDate = jQuery.datepicker.parseDate('dd.mm.yy', end.val());
-
-        if (!beginDate) {
-            return false;
-        }
-
-        if (endDate < beginDate) {
-            end.val(null);
-        }
-    });
-
-    end.change(function() {
-        var beginDate = jQuery.datepicker.parseDate('dd.mm.yy', begin.val()),
-            endDate = jQuery.datepicker.parseDate('dd.mm.yy', end.val());
-
-        if (!endDate) {
-            return false;
-        }
-
-        if (beginDate > endDate) {
-            begin.val(null);
-        }
-    });
-
-    if (adults.length) {
-        adults.change(function() {
-            var val = parseInt(adults.val());
-            if (isNaN(val)) {
-                adults.val(1);
-            } else {
-                adults.val(val);
-            }
-        });
-    }
-    if (children.length) {
-        children.bind('keyup mouseup change', function() {
-            var val = parseInt(children.val());
-            if (isNaN(val)) {
-                children.val(0);
-            } else {
-                setChildAgeForms(val);
-                children.val(val);
-            }
-        });
-    }
-
-    jQuery('#mbh-form-begin, #mbh-form-end').change(function() {
-        if (begin.val() && end.val()) {
-            button.prop('disabled', false);
-        } else {
-            button.prop('disabled', true);
-        }
-    });
-
-    setChildAgeForms(children.val(), query);
-}
-
-function setChildAgeForms(childrenCount, query) {
-    var $childAgesBlock = jQuery('.children-ages');
-
-    if (isDisplayChildAges) {
-        var childrenAges = (query !== undefined ? query['children-ages'] : false) || [];
-
-        if (childrenCount > 0) {
-            $childAgesBlock.show();
-        } else if ($childAgesBlock) {
-            $childAgesBlock.hide();
-            $childAgesBlock.find('select').val(0);
-        }
-        var selectFormCount = $childAgesBlock.find('select').size();
-        var difference = childrenCount - selectFormCount;
-        if (difference > 0) {
-            for (var i = selectFormCount; i < childrenCount; i++) {
-                var $childrenAgeForm = jQuery('#children-age-1').clone(),
-                    selectFormName = 'children-age-' + (i + 1);
-                $childrenAgeForm.attr('id', selectFormName);
-                $childAgesBlock.append($childrenAgeForm);
-            }
-        } else if (difference < 0) {
-            while (childrenCount != selectFormCount && $childAgesBlock.find('select').size() > 1) {
-                $childAgesBlock.find('select').last().remove();
-                selectFormCount--;
-            }
-        }
-
-        if (childrenAges.length !== 0) {
-            $childAgesBlock.find('select').each(function(index, select) {
-                jQuery(select).val(childrenAges[index]);
-            });
-        }
-        
-    } else {
-        $childAgesBlock.hide();
-    }
-}
+};

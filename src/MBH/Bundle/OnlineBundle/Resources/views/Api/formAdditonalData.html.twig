@@ -1,0 +1,149 @@
+{% set fieldsName = formConfig.fieldsName %}
+<!doctype html>
+<html lang="{{ app.request.locale }}">
+<head>
+    <meta charset="utf-8">
+    <title>Maxibooking</title>
+    <script>
+        var isDisplayChildAges = {{ formConfig.displayChildrenAges ? 'true' : 'false' }};
+    </script>
+    {% javascripts filter='?uglifyjs2'
+        '@MBHBaseBundle/Resources/public/js/first/010-nativ-func.js'
+        '@MBHOnlineBundle/Resources/public/js/online/additional-form/additional-form.js'
+    %}
+        <script async type="text/javascript" src="{{ absolute_url(asset_url) }}"></script>
+    {% endjavascripts %}
+    {% if formConfig and formConfig.theme %}
+        <link rel="stylesheet" href="{{ formConfig.theme }}">
+    {% endif %}
+    {% if formConfig and formConfig.cssLibraries is defined and formConfig.cssLibraries is iterable %}
+        {% for link in formConfig.cssLibraries %}
+            <link rel="stylesheet" href="{{ link }}">
+        {% endfor %}
+    {% endif %}
+    <style>
+        body {
+            margin: 0;
+            background: #fff;
+        }
+        .mbh-form-row {
+            display: flex;
+            align-items: baseline;
+            margin-bottom: 12px;
+            margin-left: 23px;
+        }
+
+        .mbh-form-row:first-child {
+            margin-top: 23px;
+        }
+
+        .mbh-form-row .title {
+            margin-right: 20px;
+            width: 83px;
+            height: 100%;
+            vertical-align: middle;
+        }
+
+        .stepper {
+            width: 100px;
+            display: flex;
+            align-items: baseline;
+        }
+
+        #mbh-form-roomType {
+            width: 100px;
+            height: 32px;
+            background: #fff;
+            border: 1px solid #0099FF;
+        }
+
+        .btn-stepper {
+            width: 32px;
+            height: 32px;
+
+            background: #FFFFFF;
+
+            border: 1px solid #0099FF;
+            box-sizing: border-box;
+        }
+
+        .btn-stepper:disabled {
+            border: 1px solid #A0A0A0;
+        }
+
+        .stepper-value {
+            width: 36px;
+            text-align: center;
+        }
+
+        .children-ages-wrapper {
+            display: none;
+            margin-left: 23px;
+        }
+
+        .holder-children-ages {
+            margin-top: 9px;
+        }
+
+        .select-children-age {
+            width: 100px;
+            height: 32px;
+            margin-right: 4px;
+            margin-bottom: 4px;
+
+            background: #fff;
+            border: 1px solid #0099FF;
+        }
+
+    </style>
+</head>
+<body>
+    <article id="mbh-form-additional-data-wrapper">
+        {% if formConfig.roomTypes and choices|length != 1 %}
+            <section class="mbh-form-row room-type">
+                <label for="mbh-form-roomType" class="title"> {{ fieldsName.roomType is not empty ? fieldsName.roomType : ('views.api.form.room_type.label'|trans({}, 'MBHOnlineBundle')) }}</label>
+                <select id="mbh-form-roomType" class="form-control input-sm" name="roomType" data-form="room-type">
+                    <option value="">- {{ 'views.api.form.room_type.choices.any'|trans({}, 'MBHOnlineBundle') }} -</option>
+                    {% for roomType in choices %}
+                        <option value="{{ roomType.id }}">{{ roomType.localeTitle(app.request.locale) }}</option>
+                    {% endfor %}
+                </select>
+            </section>
+        {% endif %}
+        <section class="mbh-form-row adults">
+            <div class="title">
+                <span>Взрослые</span>
+            </div>
+            <div class="stepper">
+                <button type="button" class="btn btn-stepper btn-subtract subtract"><span>-</span></button>
+                <span class="stepper-value" data-form="adults">1</span>
+                <button type="button" class="btn btn-stepper btn-add add"><span>+</span></button>
+            </div>
+        </section>
+        <section class="mbh-form-row children">
+            <div class="title">
+                <span>Дети</span>
+            </div>
+            <div class="stepper">
+                <button type="button" class="btn btn-stepper btn-subtract subtract"><span>-</span></button>
+                <span class="stepper-value" data-form="children">0</span>
+                <button type="button" class="btn btn-stepper btn-add add"><span>+</span></button>
+            </div>
+        </section>
+        <section class="children-ages-wrapper">
+            <div class="title">
+                <span>Возраст детей (0-17), полных лет</span>
+            </div>
+            <div class="holder-children-ages">
+                <template id="template-select-children-age">
+                    <select class="select-children-age" name="age" data-children-age-index="0" data-form="children-age">
+                        {% for childAge in 0..17 %}
+                            <option value="{{ childAge }}">{{ childAge }}</option>
+                        {% endfor %}
+                    </select>
+                </template>
+            </div>
+        </section>
+    </article>
+</body>
+</html>

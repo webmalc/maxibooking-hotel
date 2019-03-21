@@ -52,6 +52,33 @@ class ApiController extends Controller
     }
 
     /**
+     * @Route("/form/iframe/additional_data/{formId}", name="online_form_additional_data")
+     * @Method("GET")
+     * @Cache(expires="tomorrow", public=true)
+     * @Template()
+     */
+    public function formAdditonalDataAction(Request $request, $formId)
+    {
+        $this->setLocaleByRequest();
+
+        $formConfig = $this->dm->getRepository(FormConfig::class)->findOneById($formId);
+
+        if ($formConfig === null || !$formConfig->isEnabled()) {
+            throw $this->createNotFoundException();
+        }
+
+        /** @var DataForOnlineForm $helperDataForm */
+        $helperDataForm = $this->get(DataForOnlineForm::class)
+            ->setFormConfig($formConfig)
+            ->setRequest($request);
+
+        return [
+            'formConfig' => $formConfig,
+            'choices'    => $helperDataForm->getRoomTypes(),
+        ];
+    }
+
+    /**
      * Online form results iframe
      * @Route("/form/results/iframe/{formId}", name="online_form_results_iframe", defaults={"formId"=null})
      * @Method("GET")

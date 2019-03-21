@@ -1,8 +1,10 @@
 /*global window, jQuery, document, isMobileDevice */
 var isDisplayChildAges = {{ isDisplayChildAges ? 'true' : 'false' }};
-jQuery(document).ready(function() {
+window.addEventListener('load', function() {
     var wrapper = jQuery('#mbh-form-wrapper');
     wrapper.html("{{ text|escape('js') }}");
 
-    searchFormActions();
+    var formAction = new SearchForm();
+
+    formAction.searchFormActions();
 });
