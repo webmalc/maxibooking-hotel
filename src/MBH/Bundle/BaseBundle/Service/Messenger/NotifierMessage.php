@@ -107,6 +107,28 @@ class NotifierMessage
     /** @var null string */
     private $slackChannelUrl = null;
 
+    /** @var string|null */
+    private $textHtmlLink = null;
+
+    /**
+     * @return string|null
+     */
+    public function getTextHtmlLink(): ?string
+    {
+        return $this->textHtmlLink;
+    }
+
+    /**
+     * @param string|null $textHtmlLink
+     * @return NotifierMessage
+     */
+    public function setTextHtmlLink(?string $textHtmlLink)
+    {
+        $this->textHtmlLink = $textHtmlLink;
+
+        return $this;
+    }
+
     /**
      * @return null
      */

@@ -818,16 +818,33 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
 
             $packageNumbers = [];
             $hotel = null;
+            $desc = null;
+            $packageId = null;
 
             foreach ($order->getPackages() as $package) {
                 if ($package->getDeletedAt() && $type != 'delete') {
                     continue;
                 }
                 $packageNumbers[] = $package->getNumberWithPrefix();
+
+                $roomType = $package->getRoomType()->getFullTitle();
+                $dateBegin = $package->getBegin()->format('d.m.y');
+                $dateEnd = $package->getEnd()->format('d.m.y');
+                $packageId = $package->getId();
+
+                $desc .= " - $roomType, $dateBegin-$dateEnd";
+
                 if (!$hotel) {
                     $hotel = $package->getRoomType()->getHotel();
                 }
             }
+
+            $textHtmlLink = $this->container->get('router')->generate('package_order_edit', [
+                'id' => $order->getId(),
+                'packageId' => $packageId
+            ]);
+
+            $html = '<a href='. $textHtmlLink .'>'. $order->getId() .'</a>';
 
             $message
                 ->setText($tr->trans($text, ['%order%' => $order->getId(), '%packages%' => implode(', ', $packageNumbers)], 'MBHChannelManagerBundle'))
@@ -842,7 +859,13 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                 ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
                 ->setEnd(new \DateTime('+10 minute'))
                 ->setMessageType(NotificationType::CHANNEL_MANAGER_TYPE)
-            ;
+                ->setTextHtmlLink(
+                    $tr->trans(
+                        $text,
+                        ['%order%' => $html, '%packages%' => implode(', ', $packageNumbers) . $desc],
+                        'MBHChannelManagerBundle'
+                    )
+                );
 
             $notifier->setMessage($message)->notify();
         } catch (\Exception $e) {
