@@ -71,8 +71,8 @@ OnLoadFormLoad.prototype.createIframeWithAdditionalForm = function() {
     additionalFormFrame.style.zIndex = '1000';
     additionalFormFrame.style.position = 'absolute';
     additionalFormFrame.style.top = '0px';
-    additionalFormFrame.setAttribute('scrolling', "no");
-    // additionalFormFrame.setAttribute('frameborder', 0);
+    additionalFormFrame.scrolling = "no";
+    additionalFormFrame.setAttribute('frameborder', 0);
     additionalFormFrame.setAttribute('width', 274);
     additionalFormFrame.setAttribute('height', 'auto');
     additionalFormFrame.setAttribute('src', config.form_additional_data_url);
@@ -189,7 +189,7 @@ OnLoadFormLoad.prototype.resizeIframeHeight = function (event) {
     }
 
     if (event.data.action === 'additionalFormIFrameResize') {
-        this.formAdditionalData.height = event.data.formHeight + 5;
+        this.formAdditionalData.height = event.data.formHeight + 3;
     }
 };
 

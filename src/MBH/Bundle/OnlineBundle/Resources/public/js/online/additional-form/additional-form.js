@@ -1,10 +1,13 @@
-function AdditionalForm() {
+function AdditionalForm(isDisplayChildAges) {
+    this.isDisplayChildAges = isDisplayChildAges;
+
     this._PM_TARGET_PARENT_FORM = 'additionalFromDataForParentForm';
     this._PM_INPUT_DATA_FOR_PARENT = 'additionalFromDataForIframe';
     this._PM_RESIZE_IFRAME = 'additionalFormIFrameResize';
 
     this.wrapper = document.querySelector('#mbh-form-additional-data-wrapper');
 
+    this.body = document.querySelector('body');
     this.lastIframeHeight = 0;
 }
 
@@ -46,15 +49,15 @@ AdditionalForm.prototype.eventHandler = function (self) {
 };
 
 AdditionalForm.prototype.iframeResize = function () {
-    var formHeight = this.wrapper.clientHeight + 33;
+    this.currentFormHeight = this.body.clientHeight;
 
-    if (this.lastIframeHeight !== formHeight) {
-        this.lastIframeHeight = formHeight;
+    if (this.lastIframeHeight !== this.currentFormHeight) {
+        this.lastIframeHeight = this.currentFormHeight;
 
         window.parent.postMessage({
             type: 'mbh',
             action: this._PM_RESIZE_IFRAME,
-            formHeight: formHeight
+            formHeight: this.currentFormHeight
         }, '*')
     }
 };
@@ -89,7 +92,9 @@ AdditionalForm.prototype.childrenCheckStepperValue = function () {
         this.childrenAges.style.display = 'none';
     } else {
         this.childrenBtnSubtract.disabled = false;
-        this.childrenAges.style.display = 'block';
+        if (this.isDisplayChildAges) {
+            this.childrenAges.style.display = 'block';
+        }
     }
 };
 
@@ -128,6 +133,10 @@ AdditionalForm.prototype.childrenAgeRemoveSection = function (index) {
 };
 
 AdditionalForm.prototype.childrenAgeAddSelection = function (index, age) {
+    if (!this.isDisplayChildAges) {
+        return;
+    }
+
     if ('content' in document.createElement('template')) {
 
         // Instantiate the table with the existing HTML tbody and the row with the template
@@ -223,6 +232,6 @@ AdditionalForm.prototype.exec = function() {
 };
 
 window.addEventListener('load', function(ev) {
-    var additionalForm = new AdditionalForm();
+    var additionalForm = new AdditionalForm(mbh_isDisplayChildAges);
     additionalForm.exec();
 });

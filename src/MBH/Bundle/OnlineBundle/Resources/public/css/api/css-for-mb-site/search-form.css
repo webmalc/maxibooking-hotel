@@ -1,0 +1,136 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700&subset=cyrillic');
+
+body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    justify-content: center;
+
+    background: rgba(40, 40, 40, 0.75);
+    height: 120px;
+}
+
+#mbh-form-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    padding: 35px 0 10px;
+
+    max-width: 832px;
+}
+
+#mbh-form-wrapper form {
+    display: flex;
+    justify-content: center;
+    width: 762px;
+
+    flex-wrap: wrap;
+}
+
+#mbh-form-wrapper .mbh-form-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    background: #ffffff;
+
+    font-style: normal;
+    font-weight: normal;
+    line-height: 16px;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    color: #282828;
+    max-width: 180px;
+
+    width: 100%;
+
+    height: 40px;
+}
+
+#mbh-form-wrapper form > :nth-child(2):after,
+#mbh-form-wrapper form > :nth-child(3):after {
+    content: "";
+    width: 20px;
+    height: 20px;
+    background-image: url('/bundles/mbhonline/images/icon-calendar.svg');
+    background-repeat: no-repeat;
+    background-position: right;
+    margin-right: 10px;
+    margin-top: -1px;
+}
+
+#mbh-form-wrapper #mbh-form-submit {
+    justify-content: center;
+    background: #0099FF;
+    color: #FFFFFF;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+#mbh-form-wrapper form > :nth-child(n+3):not(#mbh-form-submit-wrapper):not(#mbh-logo-link-wrapper) {
+    margin: 0 7px;
+}
+
+#mbh-form-wrapper form > :nth-child(2) {
+    margin: unset;
+    margin-right: 7px;
+}
+#mbh-form-wrapper #mbh-form-submit-wrapper {
+    padding: unset;
+    margin: unset;
+    margin-left: 7px;
+}
+
+#mbh-form-wrapper .mbh-form-row > label {
+    border-right: 1px solid #A0A0A0;
+    height: 16px;
+    width: 63px;
+    text-align: center;
+}
+
+#mbh-form-wrapper .additional-input,
+#mbh-form-wrapper .mbh-calendar-input {
+    border: none;
+    text-align: center;
+    padding: 0;
+    width: 87px;
+}
+
+#mbh-form-wrapper #mbh-form-additional-wrapper:after {
+    margin-right: 10px;
+    content: "";
+    width: 20px;
+    height: 20px;
+    background-image: url('/bundles/mbhonline/images/icon-person.svg');
+    background-repeat: no-repeat;
+    background-position: right;
+}
+
+#mbh-form-wrapper #mbh-form-additional-wrapper .additional-input {
+    background: #fff;
+    border: none;
+    text-align: center;
+    padding: 0;
+    width: 72px;
+}
+
+/*#mbh-form-wrapper #mbh-form-additional-wrapper .additional-person-icon {*/
+    /*margin-right: 10px;*/
+/*}*/
+
+#mbh-form-wrapper #mbh-actions-wrapper {
+    display: none;
+    visibility: hidden;
+}
+#mbh-form-wrapper #mbh-logo-link-wrapper {
+    margin: 10px 0 0 0;
+    width: 100%;
+    text-align: left;
+}
+
+#mbh-form-wrapper #mbh-logo-link-wrapper .svg-mb-logo {
+    fill: #fff;
+}

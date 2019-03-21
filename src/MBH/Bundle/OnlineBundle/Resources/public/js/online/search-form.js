@@ -48,7 +48,7 @@ SearchForm.prototype.additionalFormWriteAmountGuest = function(adults, children)
     }
     children = children || 0;
 
-    this.additionalFormStepper.html(parseInt(adults) + parseInt(children));
+    this.additionalFormStepper.val(parseInt(adults) + parseInt(children));
 };
 
 SearchForm.prototype.additionalFormDataInit = function () {
@@ -342,12 +342,35 @@ SearchForm.prototype.viewChange = function() {
     this.begin.on('focus', showIFrame);
     this.end.on('focus', showIFrame);
     this.additionalFormWrapper.on('click', {action: 'showAdditionalForm'}, showIFrame);
+
+    var eTarget;
     jQuery('html').click(function(e) {
-        if (!jQuery(e.target).hasClass('mbh-calendar-input')) {
+        eTarget = jQuery(e.target);
+        if (!eTarget.hasClass('mbh-calendar-input')) {
             window.parent.postMessage({
                 type: 'mbh',
                 action: 'hideCalendar'
             }, "*");
         }
+
+        if (!eTarget.hasClass('additional-input')) {
+            window.parent.postMessage({
+                type: 'mbh',
+                action: 'hideAdditionalForm'
+            }, "*");
+        }
     });
 };
+
+function changeColorMBLogo() {
+    var label = document.querySelector('label[for="mbh-form-begin"]');
+    if (!label) {
+        return;
+    }
+    var color = getComputedStyle(label).color;
+
+    if (!color) {
+        return;
+    }
+    document.documentElement.style.setProperty('--background-mb-logo', color);
+}

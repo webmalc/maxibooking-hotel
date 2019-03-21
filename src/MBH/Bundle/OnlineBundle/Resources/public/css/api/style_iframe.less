@@ -1,15 +1,25 @@
+:root {
+  --background-mb-logo: #000;
+}
+
 body {
   background: transparent;
 }
 #mbh-form {
   width: 230px;
+
+  label {
+    font-size: 12px;
+    display: block;
+    margin: 0;
+    padding: 0;
+  }
+
+  .svg-mb-logo {
+    fill: var(--background-mb-logo);
+  }
 }
-#mbh-form label {
-  font-size: 12px;
-  display: block;
-  margin: 0;
-  padding: 0;
-}
+
 .mbh-form-row {
   margin-bottom: 8px;
 }

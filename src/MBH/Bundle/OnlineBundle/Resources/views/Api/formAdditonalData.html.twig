@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <title>Maxibooking</title>
     <script>
-        var isDisplayChildAges = {{ formConfig.displayChildrenAges ? 'true' : 'false' }};
+        var mbh_isDisplayChildAges = {{ formConfig.displayChildrenAges ? 'true' : 'false' }};
     </script>
     {% javascripts filter='?uglifyjs2'
         '@MBHBaseBundle/Resources/public/js/first/010-nativ-func.js'
@@ -100,7 +100,7 @@
 <body>
     <article id="mbh-form-additional-data-wrapper">
         {% if formConfig.roomTypes and choices|length != 1 %}
-            <section class="mbh-form-row room-type">
+            <section class="form-group mbh-form-row room-type">
                 <label for="mbh-form-roomType" class="title"> {{ fieldsName.roomType is not empty ? fieldsName.roomType : ('views.api.form.room_type.label'|trans({}, 'MBHOnlineBundle')) }}</label>
                 <select id="mbh-form-roomType" class="form-control input-sm" name="roomType" data-form="room-type">
                     <option value="">- {{ 'views.api.form.room_type.choices.any'|trans({}, 'MBHOnlineBundle') }} -</option>
@@ -110,33 +110,33 @@
                 </select>
             </section>
         {% endif %}
-        <section class="mbh-form-row adults">
+        <section class="form-group mbh-form-row adults">
             <div class="title">
                 <span>Взрослые</span>
             </div>
             <div class="stepper">
-                <button type="button" class="btn btn-stepper btn-subtract subtract"><span>-</span></button>
+                <button type="button" class="btn btn-default btn-default mbh-btn-stepper btn-subtract subtract"><span>-</span></button>
                 <span class="stepper-value" data-form="adults">1</span>
-                <button type="button" class="btn btn-stepper btn-add add"><span>+</span></button>
+                <button type="button" class="btn btn-default mbh-btn-stepper btn-add add"><span>+</span></button>
             </div>
         </section>
-        <section class="mbh-form-row children">
+        <section class="form-group mbh-form-row children">
             <div class="title">
                 <span>Дети</span>
             </div>
             <div class="stepper">
-                <button type="button" class="btn btn-stepper btn-subtract subtract"><span>-</span></button>
+                <button type="button" class="btn btn-default mbh-btn-stepper btn-subtract subtract"><span>-</span></button>
                 <span class="stepper-value" data-form="children">0</span>
-                <button type="button" class="btn btn-stepper btn-add add"><span>+</span></button>
+                <button type="button" class="btn btn-default mbh-btn-stepper btn-add add"><span>+</span></button>
             </div>
         </section>
-        <section class="children-ages-wrapper">
+        <section class="form-group children-ages-wrapper">
             <div class="title">
                 <span>Возраст детей (0-17), полных лет</span>
             </div>
             <div class="holder-children-ages">
                 <template id="template-select-children-age">
-                    <select class="select-children-age" name="age" data-children-age-index="0" data-form="children-age">
+                    <select class="form-control input-sm select-children-age" name="age" data-children-age-index="0" data-form="children-age">
                         {% for childAge in 0..17 %}
                             <option value="{{ childAge }}">{{ childAge }}</option>
                         {% endfor %}
