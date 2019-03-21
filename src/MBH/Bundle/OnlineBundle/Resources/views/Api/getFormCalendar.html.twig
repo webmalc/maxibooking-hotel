@@ -11,19 +11,20 @@
             margin: 0px;
         }
     </style>
+    <script defer src="//code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+    <script defer src="//code.jquery.com/ui/1.11.1/jquery-ui.min.js" integrity="sha256-4JY5MVcEmAVSuS6q4h9mrwCm6KNx91f3awsSQgwu0qc=" crossorigin="anonymous"></script>
+    <script defer src="{{ asset('bundles/bazingajstranslation/js/translator.min.js') }}"></script>
+    <script defer src="/js/translations/front_messages/ru.js"></script>
+    {% javascripts filter='uglifyjs2'
+        '@MBHOnlineBundle/Resources/public/js/online/online-calendar.js'
+    %}
+        <script defer type="text/javascript" src="{{ absolute_url(asset_url) }}"></script>
+    {% endjavascripts %}
 </head>
 
 <body>
-    {#<div id="mbh-calendar-close" style="text-align: right; color: maroon; cursor: pointer;">x</div>#}
     <div id="mbh-calendar-locale"></div>
     <div id="mbh-calendar-datepicker"></div>
-    {#<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>#}
-    <script src="//code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
-    {#<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>#}
-    <script src="//code.jquery.com/ui/1.11.1/jquery-ui.min.js" integrity="sha256-4JY5MVcEmAVSuS6q4h9mrwCm6KNx91f3awsSQgwu0qc=" crossorigin="anonymous"></script>
-    <script src="{{ asset('bundles/bazingajstranslation/js/translator.min.js') }}"></script>
-    <script src="/js/translations/front_messages/ru.js"></script>
-    <script src="{{ asset('/bundles/mbhonline/js/online/online-calendar.js') }}"></script>
 </body>
 
 </html>

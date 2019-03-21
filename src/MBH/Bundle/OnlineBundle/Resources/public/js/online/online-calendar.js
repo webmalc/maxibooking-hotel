@@ -1,5 +1,5 @@
 /*global window, $, document */
-$(document).ready(function () {
+window.addEventListener('load', function () {
     'use strict';
     // var locale = jQuery('#mbh-calendar-locale');
     // var currentLocale = locale.val();

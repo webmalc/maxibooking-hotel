@@ -4,13 +4,16 @@
 <head>
     <meta charset="utf-8">
     <title>Maxibooking</title>
+    <script defer src="//code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+    <script defer src="//code.jquery.com/ui/1.11.1/jquery-ui.min.js" integrity="sha256-4JY5MVcEmAVSuS6q4h9mrwCm6KNx91f3awsSQgwu0qc=" crossorigin="anonymous"></script>
     {#<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/smoothness/jquery-ui.css" />#}
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" />
-    {% javascripts filter='uglifyjs2'
+    <link rel="preload" as="style" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" />
+    <noscript><link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" /></noscript>
+    {% javascripts filter='?uglifyjs2'
         '@MBHBaseBundle/Resources/public/js/first/010-nativ-func.js'
         '@MBHOnlineBundle/Resources/public/js/online/search-form.js'
     %}
-        <script type="text/javascript" src="{{ absolute_url(asset_url) }}"></script>
+        <script async type="text/javascript" src="{{ absolute_url(asset_url) }}"></script>
     {% endjavascripts %}
     {% set isYandexAnalyticEnabled = formConfig and formConfig.yandexAnalyticConfig and formConfig.yandexAnalyticConfig.isEnabled == true %}
     {% if isYandexAnalyticEnabled %}
@@ -57,14 +60,12 @@
             </script>
         {% endif %}
     {% endif %}
+    <script defer id="script-for-insert-form" type="text/javascript" src="{{ url('online_form_get', {id: formId, locale: locale}) }}"></script>
 </head>
 <body>
     <div id="mbh-form-wrapper">
         <a class="preload-link-maxibooking" href="https://maxi-booking.{{ locale == 'en' ? 'com' : 'ru' }}/">{{ 'views.api.get_form_iframe.online_booking_system'|trans}}</a>
     </div>
-    <script src="//code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
-    <script src="//code.jquery.com/ui/1.11.1/jquery-ui.min.js" integrity="sha256-4JY5MVcEmAVSuS6q4h9mrwCm6KNx91f3awsSQgwu0qc=" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="{{ url('online_form_get', {id: formId, locale: locale}) }}"></script>
 </body>
 
 </html>
