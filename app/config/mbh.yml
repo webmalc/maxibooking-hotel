@@ -1,9 +1,9 @@
 parameters:
     support:
-        email: 'support@maxi-booking.ru'
+        email: 'support@maxi-booking.com'
         russian_support_phone: '8(800) 200-78-30'
-        clients_support_email_ru: 'welcome@maxi-booking.ru'
-        clients_support_email_com: 'welcome@maxi-booking.com'
+        clients_support_email_ru: 'support@maxi-booking.com'
+        clients_support_email_com: 'support@maxi-booking.com'
         support_main_email:
           ru: 'support@maxi-booking.ru'
           en: 'support@maxi-booking.com'
