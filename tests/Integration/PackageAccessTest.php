@@ -1,7 +1,7 @@
 <?php
 
 
-namespace MBH\Integration;
+namespace Tests\Integration;
 
 
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;

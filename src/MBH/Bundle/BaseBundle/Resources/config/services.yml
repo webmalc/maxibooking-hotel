@@ -552,3 +552,7 @@ services:
         class: MBH\Bundle\BaseBundle\Security\PackageVoter
         tags:
             - { name: security.voter }
+
+    mbh.service.acl_migratory:
+        class: MBH\Bundle\BaseBundle\Service\AclMigrate\AclMigratory
+        arguments: ['@doctrine.odm.mongodb.document_manager']
