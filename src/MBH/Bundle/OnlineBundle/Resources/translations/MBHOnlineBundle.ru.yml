@@ -73,7 +73,7 @@ views.api.notification.dates: Даты
 views.api.notification.room_type: 'Тип номера'
 views.api.notification.client: 'Клиент:'
 views.api.notification.phone: 'Телефон:'
-views.api.make_payment_for_order_id: 'Оплатить %total%. Номера заказа: %order_id%'
+views.api.make_payment_for_order_id: 'Оплатить %total%.'
 views.api.tariffs.base_tariff: '(базовый тариф)'
 views.api.tariffs.tariffs_and_special_offers: 'Тарифы и спецпредложения'
 views.form.index.list: Список

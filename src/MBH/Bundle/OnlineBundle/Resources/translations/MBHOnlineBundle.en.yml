@@ -66,7 +66,7 @@ views.api.notification.dates: Date
 views.api.notification.room_type: 'Room type'
 views.api.notification.client: 'Client:'
 views.api.notification.phone: 'Phone Number'
-views.api.make_payment_for_order_id: 'Total payment: %total%. Booking number: %order_id%'
+views.api.make_payment_for_order_id: 'Total payment: %total%.'
 views.api.tariffs.base_tariff: '(basic rate)'
 views.api.tariffs.tariffs_and_special_offers: 'Rates and special offers'
 views.form.index.settings_in_quotes: Settings

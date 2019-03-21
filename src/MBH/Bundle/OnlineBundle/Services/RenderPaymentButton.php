@@ -108,7 +108,7 @@ class RenderPaymentButton
                         'currency'   => strtoupper($this->getClientConfig()->getCurrency()),
                         'buttonText' => $this->getTranslator()->trans(
                             'views.api.make_payment_for_order_id',
-                            ['%total%' => number_format($total, 2), '%order_id%' => $order->getId()],
+                            ['%total%' => number_format($total, 2)],
                             'MBHOnlineBundle'
                         ),
                         'disabledScript' => $disabledScript,
