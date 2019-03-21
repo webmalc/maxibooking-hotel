@@ -131,13 +131,13 @@ class FormType extends AbstractType implements DecorationTypeInterface
                 ]
             )
             ->add(
-                'useModalForAdditionalData',
+                'useAdditionalForm',
                 CheckboxType::class,
                 [
-                    'label'    => 'form.formType.modal_additional_data.label',
+                    'label'    => 'form.formType.additional_form.label',
                     'group'    => 'form.formType.parameters',
                     'required' => false,
-                    'help'     => 'form.formType.modal_additional_data.help',
+                    'help'     => 'form.formType.additional_form.help',
                 ]
             )
             ->add(

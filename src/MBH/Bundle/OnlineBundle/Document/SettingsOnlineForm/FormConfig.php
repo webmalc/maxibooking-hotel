@@ -211,7 +211,7 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
-    private $useModalForAdditionalData = false;
+    private $useAdditionalForm = false;
 
     /**
      * @var FieldsName
@@ -257,17 +257,17 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
     /**
      * @return bool
      */
-    public function isUseModalForAdditionalData(): bool
+    public function isUseAdditionalForm(): bool
     {
-        return $this->useModalForAdditionalData;
+        return $this->useAdditionalForm;
     }
 
     /**
-     * @param bool $useModalForAdditionalData
+     * @param bool $useAdditionalForm
      */
-    public function setUseModalForAdditionalData(bool $useModalForAdditionalData): self
+    public function setUseAdditionalForm(bool $useAdditionalForm): self
     {
-        $this->useModalForAdditionalData = $useModalForAdditionalData;
+        $this->useAdditionalForm = $useAdditionalForm;
 
         return $this;
     }

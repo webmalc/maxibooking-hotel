@@ -1,11 +1,11 @@
 {% spaceless %}
 {% set fieldsName = formConfig.fieldsName %}
-{% set hiddenIfUseAdditionlModal = formConfig.useModalForAdditionalData ? ' style="display: none;"' : '' %}
+{% set hiddenIfUseAdditionlForm = formConfig.useAdditionalForm ? ' style="display: none;"' : '' %}
 
 {% if hotels|length %}
 <form id="mbh-form" method="get" class="well" target="_parent" action="{{ formConfig.getResultsUrl(true) }}">
     {% if hotels|length > 1 %}
-    <div class="mbh-form-row form-group"{{ hiddenIfUseAdditionlModal | raw }}>
+    <div class="mbh-form-row form-group"{{ hiddenIfUseAdditionlForm | raw }}>
         <label for="mbh-form-hotel">{{ fieldsName.hotel is not empty ? fieldsName.hotel : 'views.api.form.hotel'|trans({}, 'MBHOnlineBundle') }}</label>
         <select name="hotel" class="form-control input-sm" id="mbh-form-hotel">
             <option></option>
@@ -36,7 +36,7 @@
     {% endif %}
 
     {% if formConfig.roomTypes %}
-        <div class="mbh-form-row form-group{{ choices|length == 1 ? ' hidden' }}"{{ hiddenIfUseAdditionlModal | raw }}>
+        <div class="mbh-form-row form-group{{ choices|length == 1 ? ' hidden' }}"{{ hiddenIfUseAdditionlForm | raw }}>
             <label for="mbh-form-roomType"> {{ fieldsName.roomType is not empty ? fieldsName.roomType : ('views.api.form.room_type.label'|trans({}, 'MBHOnlineBundle')) }}</label>
             <select id="mbh-form-roomType" class="form-control input-sm" name="roomType">
                 <option></option>
@@ -49,7 +49,7 @@
     {% endif %}
 
     {% if formConfig.tourists %}
-        <div id="mbh-form-adults-children-wrapper"{{ hiddenIfUseAdditionlModal | raw }}>
+        <div id="mbh-form-adults-children-wrapper"{{ hiddenIfUseAdditionlForm | raw }}>
             <div class="mbh-form-row form-group">
                 <label for="mbh-form-adults"> {{ fieldsName.adults is not empty ? fieldsName.adults : ('views.api.form.adults.label'|trans({}, 'MBHOnlineBundle')) }}</label>
                 <input type="number" id="mbh-form-adults" class="form-control input-sm" name="adults"  value="1" min="1">
@@ -73,7 +73,7 @@
         {% endif %}
     {% endif %}
 
-    {% if formConfig.useModalForAdditionalData %}
+    {% if formConfig.useAdditionalForm %}
         <div class="mbh-form-row form-group" id="mbh-form-additional-wrapper">
             <span class="additional-label">{{ fieldsName.guest is not empty ? fieldsName.guest : ('views.api.form.guest.label' | trans({}, 'MBHOnlineBundle') ) }}</span>
             <span class="additional-input">{{ 1 }}</span>
