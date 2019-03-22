@@ -87,7 +87,9 @@ services:
         tags:
             - {name: form.type}
 
-    MBH\Bundle\OnlineBundle\Services\DataForOnlineForm:
+    MBH\Bundle\OnlineBundle\Services\DataForSearchForm:
         arguments:
             - '@doctrine.odm.mongodb.document_manager'
             - '@mbh.helper'
+            - '@router'
+            - '@request_stack'

@@ -12,7 +12,7 @@ use MBH\Bundle\ClientBundle\Exception\BadSignaturePaymentSystemException;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
-use MBH\Bundle\OnlineBundle\Services\DataForOnlineForm;
+use MBH\Bundle\OnlineBundle\Services\DataForSearchForm;
 use MBH\Bundle\OnlineBundle\Services\RenderPaymentButton;
 use MBH\Bundle\PackageBundle\Document\Order;
 
@@ -28,7 +28,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Translation\Translator;
 
@@ -67,10 +66,8 @@ class ApiController extends Controller
             throw $this->createNotFoundException();
         }
 
-        /** @var DataForOnlineForm $helperDataForm */
-        $helperDataForm = $this->get(DataForOnlineForm::class)
-            ->setFormConfig($formConfig)
-            ->setRequest($request);
+        /** @var DataForSearchForm $helperDataForm */
+        $helperDataForm = $this->get(DataForSearchForm::class)->setFormConfig($formConfig);
 
         return [
             'formConfig' => $formConfig,
@@ -189,16 +186,15 @@ class ApiController extends Controller
             throw $this->createNotFoundException();
         }
 
-        /** @var DataForOnlineForm $helperDataForm */
-        $helperDataForm = $this->get(DataForOnlineForm::class)
-            ->setFormConfig($formConfig);
+        /** @var DataForSearchForm $dataForSearchForm */
+        $dataForSearchForm = $this->get(DataForSearchForm::class)->setFormConfig($formConfig);
 
         $twig = $this->get('twig');
         $context = [
             'config'     => $config,
             'formConfig' => $formConfig,
-            'hotels'     => $helperDataForm->getHotels(),
-            'choices'    => $helperDataForm->getRoomTypes(),
+            'hotels'     => $dataForSearchForm->getHotels(),
+            'choices'    => $dataForSearchForm->getRoomTypes(),
         ];
 
         $text = $formConfig->getFormTemplate()
@@ -871,7 +867,7 @@ class ApiController extends Controller
                 $cash ? ['total' => (float)$request->total] : null
             );
         } catch (\Exception $e) {
-            if ($this->container->get('kernel')->getEnvironment() == 'dev') {
+            if ($this->container->get('kernel')->getEnvironment() === \AppKernel::ENV_DEV) {
                 dump($e->getMessage());
             };
 

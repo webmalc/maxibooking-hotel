@@ -12,8 +12,11 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class DataForOnlineForm
+class DataForSearchForm
 {
     /**
      * @var DocumentManager
@@ -40,25 +43,22 @@ class DataForOnlineForm
      */
     private $hotels;
 
-    public function __construct(DocumentManager $dm, Helper $helper)
+    /**
+     * @var Router
+     */
+    private $router;
+
+    public function __construct(DocumentManager $dm, Helper $helper, Router $router, RequestStack $request)
     {
         $this->dm = $dm;
         $this->helper = $helper;
+        $this->router = $router;
+        $this->request = $request->getCurrentRequest();
     }
 
     public function setFormConfig(FormConfig $formConfig): self
     {
         $this->formConfig = $formConfig;
-
-        return $this;
-    }
-
-    /**
-     * @param Request $request
-     */
-    public function setRequest(Request $request): self
-    {
-        $this->request = $request;
 
         return $this;
     }
@@ -115,6 +115,42 @@ class DataForOnlineForm
         $this->filterRoomTypeIfIssetHotelInRequest($choices);
 
         return $choices;
+    }
+
+    public function getUrlSearchIframe(): string
+    {
+        return $this->generateUrl(FormConfig::ROUTER_NAME_SEARCH_IFRAME);
+    }
+
+    public function getUrlCalendarIframe(): string
+    {
+        return $this->generateUrl(FormConfig::ROUTER_NAME_CALENDAR_IFRAME);
+    }
+
+    public function getUrlAdditionalIframe(): string
+    {
+        return $this->generateUrl(FormConfig::ROUTER_NAME_ADDITIONAL_IFRAME);
+    }
+
+    public function getAllUrlIframe(): array
+    {
+        return [
+            'search'         => $this->getUrlSearchIframe(),
+            'calendar'       => $this->getUrlCalendarIframe(),
+            'additionalForm' => $this->getUrlAdditionalIframe(),
+        ];
+    }
+
+    private function generateUrl(string $routerName): string
+    {
+        return $this->router->generate(
+            $routerName,
+            [
+                'formConfigId' => $this->formConfig->getId(),
+                'locale'       => $this->request->getLocale(),
+            ],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
     }
 
     private function filterRoomTypeIfIssetHotelInRequest(array &$chooseRoomType): void
