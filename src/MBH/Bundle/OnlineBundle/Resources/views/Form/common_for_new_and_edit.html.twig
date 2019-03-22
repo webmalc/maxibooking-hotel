@@ -18,21 +18,28 @@
 {% endblock %}
 
 {% block tabsLayout %}
-    {% set menu = [
-        {'route': 'online_form_edit', 'title': '<i class="fa fa-cog"></i> '~'views.form.index.settings'|trans({}, 'MBHOnlineBundle')},
-        {'route': 'online_form_fields_name', 'title': '<i class="fa fa-cog"></i> '~'views.form.index.settings.fields_name'|trans({}, 'MBHOnlineBundle')},
-        {'route': 'form_analytics', 'title': '<i class="fa fa-bar-chart"></i> '~'views.form.analytics'|trans({}, 'MBHOnlineBundle')},
-        {'route': 'form_code', 'title': '<i class="fa fa-code"></i> '~'views.form.index.site_embed_code'|trans({}, 'MBHOnlineBundle')}
-    ] %}
+    {% if isNewForm is defined and isNewForm == true %}
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#online-form-config" data-toggle="tab"><i class="fa fa-cog"> </i> {{ 'views.form.index.settings'|trans({}, 'MBHOnlineBundle') }}</a></li>
+            <li class="disabled"><a href="#" data-toggle="tooltip" title='{{ 'views.form.index.settings_required'|trans({}, 'MBHOnlineBundle') }}'><i class="fa fa-code"> </i> {{ 'views.form.index.site_embed_code'|trans({}, 'MBHOnlineBundle') }}</a></li>
+        </ul>
+    {% else %}
+        {% set menu = [
+            {'route': 'online_form_edit', 'title': '<i class="fa fa-cog"></i> '~'views.form.index.settings'|trans({}, 'MBHOnlineBundle')},
+            {'route': 'online_form_fields_name', 'title': '<i class="fa fa-cog"></i> '~'views.form.index.settings.fields_name'|trans({}, 'MBHOnlineBundle')},
+            {'route': 'form_analytics', 'title': '<i class="fa fa-bar-chart"></i> '~'views.form.analytics'|trans({}, 'MBHOnlineBundle')},
+            {'route': 'form_code', 'title': '<i class="fa fa-code"></i> '~'views.form.index.site_embed_code'|trans({}, 'MBHOnlineBundle')}
+        ] %}
+        <ul class="nav nav-tabs" role="tablist">
+            {% for item in menu %}
+                <li {% if loop.index == active %}class="active"{% endif %}>
+                    <a {% if loop.index == active %}role="tab" data-toggle="tab"
+                       {% else %}href="{{ path(item.route, {'id' : config.id}) }}"{% endif %}>
+                        {{ item.title|raw }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
 
-    <ul class="nav nav-tabs" role="tablist">
-        {% for item in menu %}
-            <li {% if loop.index == active %}class="active"{% endif %}>
-                <a {% if loop.index == active %}role="tab" data-toggle="tab"
-                   {% else %}href="{{ path(item.route, {'id' : config.id}) }}"{% endif %}>
-                    {{ item.title|raw }}
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
+    {% endif %}
 {% endblock %}

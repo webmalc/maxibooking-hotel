@@ -2,6 +2,8 @@
 
 {% set small_title = 'views.form.index.new'|trans({}, 'MBHOnlineBundle') %}
 
+{% set isNewForm = true %}
+
 {% block scripts %}
     {{ parent() }}
     {% include 'MBHOnlineBundle::assetic_for_form_js.html.twig' %}
@@ -12,11 +14,6 @@
 {% endblock %}
 
 {% block content %}
-    <ul class="nav nav-tabs">
-        <li class="active"><a href="#online-form-config" data-toggle="tab"><i class="fa fa-cog"> </i> {{ 'views.form.index.settings'|trans({}, 'MBHOnlineBundle') }}</a></li>
-        <li class="disabled"><a href="#" data-toggle="tooltip" title='{{ 'views.form.index.settings_required'|trans({}, 'MBHOnlineBundle') }}'><i class="fa fa-code"> </i> {{ 'views.form.index.site_embed_code'|trans({}, 'MBHOnlineBundle') }}</a></li>
-    </ul>
-
     <div class="tab-content">
         <div class="tab-pane in active" id="online-form-config">
 
