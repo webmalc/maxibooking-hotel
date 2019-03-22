@@ -11,7 +11,7 @@
     <noscript><link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" /></noscript>
     {% javascripts filter='?uglifyjs2'
         '@MBHBaseBundle/Resources/public/js/first/010-nativ-func.js'
-        '@MBHOnlineBundle/Resources/public/js/online/search-form.js'
+        '@MBHOnlineBundle/Resources/public/js/api/search-form/search-form.js'
     %}
         <script async type="text/javascript" src="{{ absolute_url(asset_url) }}"></script>
     {% endjavascripts %}
@@ -20,7 +20,35 @@
     {% endif %}
     {% if formConfig and formConfig.theme %}
         <link rel="stylesheet" href="{{ formConfig.theme }}">
+
+        {% block styles %}
+            {% stylesheets filter='cssrewrite, uglifycss'
+                '@MBHOnlineBundle/Resources/public/css/api/search-form/default-form.less'
+            %}
+                <link rel="stylesheet" href="{{ absolute_url(asset_url) }}"/>
+            {% endstylesheets %}
+
+            {% if formConfig.isHorizontal %}
+                {% stylesheets filter='cssrewrite, uglifycss'
+                    '@MBHOnlineBundle/Resources/public/css/api/search-form/default-form-horizontal.less'
+                %}
+                    <link rel="stylesheet" href="{{ absolute_url(asset_url) }}"/>
+                {% endstylesheets %}
+            {% endif %}
+
+        {% endblock %}
+
     {% endif %}
+
+    {#{% block styles %}#}
+        {#{% stylesheets filter='cssrewrite, uglifycss'#}
+            {#'@MBHOnlineBundle/Resources/public/css/api/css-for-mb-site/search-form.css'#}
+        {#%}#}
+            {#<link rel="stylesheet" href="{{ absolute_url(asset_url) }}"/>#}
+        {#{% endstylesheets %}#}
+    {#{% endblock %}#}
+
+
     {% if formConfig and formConfig.cssLibraries is defined and formConfig.cssLibraries is iterable %}
         {% for link in formConfig.cssLibraries %}
             <link rel="stylesheet" href="{{ link }}">
@@ -28,22 +56,6 @@
     {% endif %}
     {#{% include '@MBHOnline/Api/siteStyles.html.twig' %}#}
 
-    {% block styles %}
-        {% stylesheets filter='cssrewrite, uglifycss'
-            '@MBHOnlineBundle/Resources/public/css/api/style_iframe.less'
-        %}
-            <link rel="stylesheet" href="{{ absolute_url(asset_url) }}"/>
-        {% endstylesheets %}
-
-        {% if formConfig.isHorizontal %}
-            {% stylesheets filter='cssrewrite, uglifycss'
-                '@MBHOnlineBundle/Resources/public/css/api/form_if_horizontal.less'
-            %}
-                <link rel="stylesheet" href="{{ absolute_url(asset_url) }}"/>
-            {% endstylesheets %}
-        {% endif %}
-
-    {% endblock %}
     {% if formConfig %}
         {% if formConfig.css %}
             <style>

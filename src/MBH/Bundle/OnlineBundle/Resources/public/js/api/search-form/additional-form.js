@@ -232,6 +232,6 @@ AdditionalForm.prototype.exec = function() {
 };
 
 window.addEventListener('load', function(ev) {
-    var additionalForm = new AdditionalForm(mbh_isDisplayChildAges);
+    var additionalForm = new AdditionalForm(isDisplayChildAges);
     additionalForm.exec();
 });
