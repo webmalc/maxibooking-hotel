@@ -119,7 +119,7 @@ class DataForSearchForm
 
     public function getUrlSearchIframe(): string
     {
-        return $this->generateUrl(FormConfig::ROUTER_NAME_SEARCH_IFRAME);
+        return $this->generateUrl(FormConfig::ROUTER_NAME_SEARCH_IFRAME, $this->addParametersHotel());
     }
 
     public function getUrlCalendarIframe(): string
@@ -129,7 +129,7 @@ class DataForSearchForm
 
     public function getUrlAdditionalIframe(): string
     {
-        return $this->generateUrl(FormConfig::ROUTER_NAME_ADDITIONAL_IFRAME);
+        return $this->generateUrl(FormConfig::ROUTER_NAME_ADDITIONAL_IFRAME, $this->addParametersHotel());
     }
 
     public function getAllUrlIframe(): array
@@ -141,14 +141,31 @@ class DataForSearchForm
         ];
     }
 
-    private function generateUrl(string $routerName): string
+    private function addParametersHotel(array $parameters = []): array
     {
+        $hotelId = $this->request->get('hotel');
+
+        if (!empty($hotelId)) {
+            $parameters['hotel'] = $hotelId;
+        }
+
+        return $parameters;
+    }
+
+    private function generateUrl(string $routerName, array $parameters = []): string
+    {
+
+
         return $this->router->generate(
             $routerName,
-            [
-                'formConfigId' => $this->formConfig->getId(),
-                'locale'       => $this->request->getLocale(),
-            ],
+            array_merge(
+                [
+                    'formConfigId' => $this->formConfig->getId(),
+                    'locale'       => $this->request->getLocale(),
+                ],
+                $parameters
+            )
+            ,
             UrlGeneratorInterface::ABSOLUTE_URL
         );
     }

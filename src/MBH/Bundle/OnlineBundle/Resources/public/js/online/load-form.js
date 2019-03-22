@@ -80,11 +80,5 @@ PreOnLoadFormLoad.prototype.exec = function (locale) {
     this.createIframeWithForm(locale);
 };
 
-PreOnLoadFormLoad.prototype.hideWaitingSpinner = function (_this) {
-    this.spinner.className = '';
-    this.spinner.innerHTML = '';
-    _this.hidden = false;
-};
-
 var preOnLoadFormLoad = new PreOnLoadFormLoad();
 preOnLoadFormLoad.exec();

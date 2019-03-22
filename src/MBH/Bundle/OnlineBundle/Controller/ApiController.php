@@ -12,7 +12,6 @@ use MBH\Bundle\ClientBundle\Exception\BadSignaturePaymentSystemException;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
-use MBH\Bundle\OnlineBundle\Services\DataForSearchForm;
 use MBH\Bundle\OnlineBundle\Services\RenderPaymentButton;
 use MBH\Bundle\PackageBundle\Document\Order;
 
@@ -26,7 +25,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -37,46 +35,6 @@ use Symfony\Component\Translation\Translator;
  */
 class ApiController extends Controller
 {
-    /**
-     * Online form iframe calendar
-     * @Route("/form/iframe/calendar", name=MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig::ROUTER_NAME_CALENDAR_IFRAME)
-     * @Method("GET")
-     * @Cache(expires="tomorrow", public=true)
-     */
-    public function getCalendarIframeAction()
-    {
-        $this->setLocaleByRequest();
-
-        return $this->render('@MBHOnline/Api/search-form/calendar-iframe.html.twig');
-    }
-
-    /**
-     * @Route("/form/iframe/additional_data/{formConfigId}", name=MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig::ROUTER_NAME_ADDITIONAL_IFRAME)
-     * @Method("GET")
-     * @Cache(expires="tomorrow", public=true)
-     */
-    public function getAdditonalFormIframeAction($formConfigId)
-    {
-        $this->setLocaleByRequest();
-
-        $formConfig = $this->dm->getRepository(FormConfig::class)->findOneById($formConfigId);
-
-        if ($formConfig === null || !$formConfig->isEnabled()) {
-            throw $this->createNotFoundException();
-        }
-
-        /** @var DataForSearchForm $helperDataForm */
-        $helperDataForm = $this->get(DataForSearchForm::class)->setFormConfig($formConfig);
-
-        return $this->render(
-            '@MBHOnline/Api/search-form/additional-form-iframe.html.twig',
-            [
-                'formConfig' => $formConfig,
-                'choices'    => $helperDataForm->getRoomTypes(),
-            ]
-        );
-    }
-
     /**
      * Online form results iframe
      * @Route("/form/results/iframe/{formConfigId}", name="online_form_results_iframe")
@@ -95,53 +53,6 @@ class ApiController extends Controller
             'formConfig' => $formConfig,
             'siteConfig' => $this->get('mbh.site_manager')->getSiteConfig(),
         ];
-    }
-
-    /**
-     * Online form iframe
-     * @Route("/form/iframe/{formConfigId}", name=FormConfig::ROUTER_NAME_SEARCH_IFRAME)
-     * @Method("GET")
-     * @Cache(expires="tomorrow", public=true)
-     */
-    public function searchIframeAction(Request $request, $formConfigId = null)
-    {
-        $this->setLocaleByRequest();
-        $formConfig = $this->dm->getRepository(FormConfig::class)
-            ->findOneById($formConfigId);
-
-        if ($request->get('redirect')) {
-            $unparsedUrl = function (string $rawUrl): string {
-                $parsedUrl = parse_url($rawUrl);
-                $scheme   = isset($parsedUrl['scheme']) ? $parsedUrl['scheme'] . '://' : '';
-                $host     = isset($parsedUrl['host']) ? $parsedUrl['host'] : '';
-                $port     = isset($parsedUrl['port']) ? ':' . $parsedUrl['port'] : '';
-
-                return $scheme.$host.$port;
-            };
-
-            return new RedirectResponse(
-                $this->generateUrl(
-                    FormConfig::ROUTER_NAME_LOAD_ALL_IFRAME,
-                    [
-                        'formConfigId' => $formConfig->getId(),
-                        'redirectKey'  => sha1($formConfig->getCreatedAt()->getTimestamp())
-                    ]
-                ),
-                302,
-                [
-                    'Access-Control-Allow-Origin' => $unparsedUrl($formConfig->getResultsUrl())
-                ]
-            );
-        }
-
-        return $this->render(
-            '@MBHOnline/Api/search-form/search-iframe.html.twig',
-            [
-                'formId'     => $formConfig->getId(),
-                'formConfig' => $formConfig,
-                'siteConfig' => $this->get('mbh.site_manager')->getSiteConfig(),
-            ]
-        );
     }
 
     /**
@@ -192,50 +103,6 @@ class ApiController extends Controller
         return [
             'packages' => $qb->getQuery()->execute(),
         ];
-    }
-
-    /**
-     * Online form js
-     * @Route("/form/{formConfigId}", name="online_form_get", defaults={"_format"="js", "id"=null})
-     * @Method("GET")
-     * @Cache(expires="tomorrow", public=true)
-     */
-    public function searchInsertHtmlFormAction($formConfigId = null)
-    {
-        $this->setLocaleByRequest();
-
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-        $config = $this->container->getParameter('mbh.online.form');
-        /** @var FormConfig $formConfig */
-        $formConfig = $dm->getRepository(FormConfig::class)->findOneById($formConfigId);
-
-        if (!$formConfig || !$formConfig->isEnabled()) {
-            throw $this->createNotFoundException();
-        }
-
-        /** @var DataForSearchForm $dataForSearchForm */
-        $dataForSearchForm = $this->get(DataForSearchForm::class)->setFormConfig($formConfig);
-
-        $twig = $this->get('twig');
-        $context = [
-            'config'     => $config,
-            'formConfig' => $formConfig,
-            'hotels'     => $dataForSearchForm->getHotels(),
-            'choices'    => $dataForSearchForm->getRoomTypes(),
-        ];
-
-        $text = $formConfig->getFormTemplate()
-            ? $twig->createTemplate($formConfig->getFormTemplate())->render($context)
-            : $twig->render('@MBHOnline/Api/search-form/search-html-form.html.twig', $context);
-
-        return $this->render(
-            '@MBHOnline/Api/search-form/search-insert-html-form.js.twig',
-            [
-                'text'               => $text,
-                'isDisplayChildAges' => $formConfig->isDisplayChildrenAges(),
-            ]
-        );
     }
 
     /**
@@ -626,9 +493,6 @@ class ApiController extends Controller
      */
     public function getPaymentTypeAction(Request $request, $id = null)
     {
-        /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $dm = $this->get('doctrine_mongodb')->getManager();
-
         $requestJson = json_decode($request->getContent());
         if (property_exists($requestJson, 'locale')) {
             $this->setLocale($requestJson->locale);
@@ -906,38 +770,6 @@ class ApiController extends Controller
         }
 
         return $order;
-    }
-
-    /**
-     * @Route("/file/{formConfigId}/load-search-form", name=FormConfig::ROUTER_NAME_LOAD_ALL_IFRAME, defaults={"_format"="js"})
-     * @Cache(expires="tomorrow", public=true)
-     */
-    public function loadSearchFormAction(Request $request, $formConfigId)
-    {
-        /** @var FormConfig $formConfig */
-        $formConfig = $this->dm->getRepository(FormConfig::class)
-            ->find($formConfigId);
-
-        if ($formConfig === null || !$formConfig->isEnabled()) {
-            throw $this->createNotFoundException();
-        }
-
-        $dataForSearchForm = $this->get(DataForSearchForm::class)->setFormConfig($formConfig);
-        $response = new Response();
-
-        $redirectKey = $request->get('redirectKey') ?? null;
-        if ($redirectKey !== null && $redirectKey === sha1($formConfig->getCreatedAt()->getTimestamp())) {
-            $response->headers->set('Access-Control-Allow-Origin', '*');
-        }
-
-        return $this->render(
-            '@MBHOnline/Api/search-form/script-for-load-all-iframe.js.twig',
-            [
-                'formConfig' => $formConfig,
-                'urls'       => $dataForSearchForm->getAllUrlIframe(),
-            ],
-            $response
-        );
     }
 
     /**

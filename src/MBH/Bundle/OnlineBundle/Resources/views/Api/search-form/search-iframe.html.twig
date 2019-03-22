@@ -72,7 +72,7 @@
             </script>
         {% endif %}
     {% endif %}
-    <script defer id="script-for-insert-form" type="text/javascript" src="{{ url('online_form_get', {id: formId, locale: locale}) }}"></script>
+    <script defer id="script-for-insert-form" type="text/javascript" src="{{ url('online_form_get', {formConfigId: formConfig.id, locale: locale}) }}"></script>
 </head>
 <body>
     <div id="mbh-form-wrapper">
