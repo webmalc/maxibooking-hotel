@@ -29,8 +29,8 @@ class FieldsNameType extends FormWithMultiLangFields
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => FieldsName::class,
-            'translation_domain' => 'MBHOnlineBundle'
+            'data_class'         => FieldsName::class,
+            'translation_domain' => 'MBHOnlineBundle',
         ]);
     }
 

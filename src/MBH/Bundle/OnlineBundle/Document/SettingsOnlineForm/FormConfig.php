@@ -30,6 +30,11 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
     use DecorationTrait;
     use DecorationDataTrait;
 
+    public const ROUTER_NAME_SEARCH_IFRAME = 'online_form_iframe';
+    public const ROUTER_NAME_CALENDAR_IFRAME = 'online_form_calendar';
+    public const ROUTER_NAME_ADDITIONAL_IFRAME = 'online_form_additional_form_iframe';
+    public const ROUTER_NAME_LOAD_ALL_IFRAME = 'online_form_load_all_iframe_for_search';
+
     const paymentTypesList = [
         "in_hotel",
         "in_office",
