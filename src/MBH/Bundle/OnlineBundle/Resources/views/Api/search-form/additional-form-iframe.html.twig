@@ -13,24 +13,17 @@
     %}
         <script async type="text/javascript" src="{{ absolute_url(asset_url) }}"></script>
     {% endjavascripts %}
-    {#{% if formConfig.theme %}#}
-        {#<link rel="stylesheet" href="{{ formConfig.theme }}">#}
-        {#{% block styles %}#}
-            {#{% stylesheets filter='cssrewrite, uglifycss'#}
-                {#'@MBHOnlineBundle/Resources/public/css/api/additional-form/default.less'#}
-            {#%}#}
-                {#<link rel="stylesheet" href="{{ absolute_url(asset_url) }}"/>#}
-            {#{% endstylesheets %}#}
-        {#{% endblock %}#}
-    {#{% endif %}#}
+    {% if formConfig.theme %}
+        <link rel="stylesheet" href="{{ formConfig.theme }}">
+        {% block styles %}
+            {% stylesheets filter='cssrewrite, uglifycss'
+                '@MBHOnlineBundle/Resources/public/css/api/search-form/default-additional-form.less'
+            %}
+                <link rel="stylesheet" href="{{ absolute_url(asset_url) }}"/>
+            {% endstylesheets %}
+        {% endblock %}
+    {% endif %}
 
-    {% block styles %}
-        {% stylesheets filter='cssrewrite, uglifycss'
-            '@MBHOnlineBundle/Resources/public/css/api/search-form/css-for-mb-site/additional-form.css'
-        %}
-            <link rel="stylesheet" href="{{ absolute_url(asset_url) }}"/>
-        {% endstylesheets %}
-    {% endblock %}
     {% if formConfig.cssLibraries is defined and formConfig.cssLibraries is iterable %}
         {% for link in formConfig.cssLibraries %}
             <link rel="stylesheet" href="{{ link }}">

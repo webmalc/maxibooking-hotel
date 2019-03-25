@@ -1,3 +1,6 @@
+parameters:
+    log_file.mb_site: !php/const:MBH\Bundle\OnlineBundle\Command\MBSiteStyleOnlineFormUpdateCommand::FILE_LOG_NAME
+
 services:
     mbh.online.logger:
         class:     Symfony\Bridge\Monolog\Logger
@@ -93,3 +96,15 @@ services:
             - '@mbh.helper'
             - '@router'
             - '@request_stack'
+
+    mbh.mb_site.logger:
+        class:     Symfony\Bridge\Monolog\Logger
+        arguments: [app]
+        calls:
+            - [pushHandler, ['@mbh.mb_site.logger_handler']]
+
+    mbh.mb_site.logger_handler:
+        class:     Monolog\Handler\StreamHandler
+        arguments:
+            - "%kernel.logs_dir%/%kernel.environment%.%log_file.mb_site%"
+            - 200

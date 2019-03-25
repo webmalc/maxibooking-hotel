@@ -40,15 +40,6 @@
 
     {% endif %}
 
-    {#{% block styles %}#}
-        {#{% stylesheets filter='cssrewrite, uglifycss'#}
-            {#'@MBHOnlineBundle/Resources/public/css/api/css-for-mb-site/search-form.css'#}
-        {#%}#}
-            {#<link rel="stylesheet" href="{{ absolute_url(asset_url) }}"/>#}
-        {#{% endstylesheets %}#}
-    {#{% endblock %}#}
-
-
     {% if formConfig.cssLibraries is defined and formConfig.cssLibraries is iterable %}
         {% for link in formConfig.cssLibraries %}
             <link rel="stylesheet" href="{{ link }}">
