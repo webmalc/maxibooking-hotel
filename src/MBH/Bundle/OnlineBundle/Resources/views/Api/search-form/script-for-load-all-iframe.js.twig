@@ -1,9 +1,3 @@
-var config = {
-    calendar_url       : '{{ urls.calendar }}',
-    form_additional_url: '{{ urls.additionalForm }}',
-    form_url           : '{{ urls.search }}'
-};
-
 var isMobileDevice = (function() {
     var isMobile = /Mobi/.test(navigator.userAgent);
     if (isMobile) {
@@ -31,12 +25,35 @@ function addLoadEvent(func) {
 function OnLoadFormLoad() {
     this.formWrapper = null;
     this.spinner = null;
-    this.formCalendar = null;
-    this.formAdditionalData = null;
-    this.formIframe = null;
-    this.iframeWidth = typeof(frameWidth) !== 'undefined' ? frameWidth : 300;
-    this.iframeHeight = typeof(frameHeight) !== 'undefined' ? frameHeight : 400;
+    this.calendarIframe = null;
+    this.additionalFormIframe = null;
+    this.searchIframe = null;
     this.itIsFirstLoad = true;
+
+    this.yaCounterId = '{{ metric.yaCounterId }}';
+    this.googleCounterId = '{{ metric.googleCounterId }}';
+
+    this.useAdditonalForm = {{ formConfig.useAdditionalForm ? 'true' : 'false' }};
+
+    this.urlIframe = {
+        calendar      : '{{ urls.calendar }}',
+        additionalForm: '{{ urls.additionalForm }}',
+        search        : '{{ urls.search }}'
+    };
+    this.sizeIframe = {
+        search        : {
+            width : '{{ size.search.width }}',
+            height: '{{ size.search.height }}'
+        },
+        calendar      : {
+            width : '{{ size.calendar.width }}',
+            height: '{{ size.calendar.height }}'
+        },
+        additionalForm: {
+            width : '{{ size.additionalForm.width }}',
+            height: '{{ size.additionalForm.height }}'
+        }
+    };
 }
 
 OnLoadFormLoad.prototype.createIframeWithCalendar = function() {
@@ -48,9 +65,9 @@ OnLoadFormLoad.prototype.createIframeWithCalendar = function() {
     calendarFrame.style.top = '0px';
     calendarFrame.setAttribute('scrolling', "no");
     calendarFrame.setAttribute('frameborder', 0);
-    calendarFrame.setAttribute('width', 310);
-    calendarFrame.setAttribute('height', 270);
-    calendarFrame.setAttribute('src', config.calendar_url);
+    calendarFrame.setAttribute('width', this.sizeIframe.calendar.width);
+    calendarFrame.setAttribute('height', this.sizeIframe.calendar.height);
+    calendarFrame.setAttribute('src', this.urlIframe.calendar);
     calendarFrame.setAttribute('title', 'Support frame with calendar for search form.');
 
     document.body.appendChild(calendarFrame);
@@ -59,8 +76,7 @@ OnLoadFormLoad.prototype.createIframeWithCalendar = function() {
 };
 
 OnLoadFormLoad.prototype.createIframeWithAdditionalForm = function() {
-
-    if (config.form_additional_url === undefined) {
+    if (!this.useAdditonalForm) {
         return null;
     }
 
@@ -72,9 +88,9 @@ OnLoadFormLoad.prototype.createIframeWithAdditionalForm = function() {
     additionalFormFrame.style.top = '0px';
     additionalFormFrame.scrolling = "no";
     additionalFormFrame.setAttribute('frameborder', 0);
-    additionalFormFrame.setAttribute('width', 274);
-    additionalFormFrame.setAttribute('height', 'auto');
-    additionalFormFrame.setAttribute('src', config.form_additional_url);
+    additionalFormFrame.setAttribute('width', this.sizeIframe.additionalForm.width);
+    additionalFormFrame.setAttribute('height', this.sizeIframe.additionalForm.height);
+    additionalFormFrame.setAttribute('src', this.urlIframe.additionalForm);
     additionalFormFrame.setAttribute('title', 'Support frame with additional data for search form.');
 
     document.body.appendChild(additionalFormFrame);
@@ -95,7 +111,7 @@ OnLoadFormLoad.prototype.waitingSpinner =  function() {
 };
 
 OnLoadFormLoad.prototype.getCoords = function () {
-    var box = this.formIframe.getBoundingClientRect();
+    var box = this.searchIframe.getBoundingClientRect();
 
     var body = document.body;
     var docEl = document.documentElement;
@@ -113,28 +129,28 @@ OnLoadFormLoad.prototype.getCoords = function () {
 };
 
 OnLoadFormLoad.prototype.hideIframe = function (element) {
-    if (element === undefined) {
-        this.formCalendar.style.display = 'none';
-        this.formAdditionalData.style.display = 'none';
-    } else {
-        element.style.display = 'none';
+    if (element === null) {
+        return;
     }
+
+    element.style.display = 'none';
 };
 
 OnLoadFormLoad.prototype.processMessage = function (e) {
     if (e.data.type !== 'mbh') {
         return;
     }
+
     var target = null;
     if (e.data.target === 'form') {
-        target = this.formIframe;
+        target = this.searchIframe;
     }
     if (e.data.target === 'calendar') {
-        target = this.formCalendar;
+        target = this.calendarIframe;
     }
 
     if (e.data.target === 'additionalFromDataForParentForm') {
-        target = this.formAdditionalData;
+        target = this.additionalFormIframe;
     }
 
     if (target) {
@@ -143,24 +159,24 @@ OnLoadFormLoad.prototype.processMessage = function (e) {
         return;
     }
     if (e.data.action === 'showCalendar') {
-        this.showIframe(e, this.formCalendar);
+        this.showIframe(e, this.calendarIframe);
 
         return;
     }
 
     if (e.data.action === 'showAdditionalForm') {
-        this.showIframe(e, this.formAdditionalData);
+        this.showIframe(e, this.additionalFormIframe);
 
         return;
     }
     if (e.data.action === 'hideCalendar') {
-        this.hideIframe(this.formCalendar);
+        this.hideIframe(this.calendarIframe);
 
         return;
     }
 
     if (e.data.action === 'hideAdditionalForm') {
-        this.hideIframe(this.formAdditionalData);
+        this.hideIframe(this.additionalFormIframe);
     }
 };
 
@@ -175,8 +191,8 @@ OnLoadFormLoad.prototype.showIframe = function (event, element) {
 
 OnLoadFormLoad.prototype.resizeIframeWidth = function () {
     var width = window.outerWidth;
-    if (this.formIframe && width) {
-        this.formIframe.width = width < this.iframeWidth ? width : this.iframeWidth;
+    if (this.searchIframe && width) {
+        this.searchIframe.width = width < this.sizeIframe.search.width ? width : this.sizeIframe.search.width;
     }
 };
 OnLoadFormLoad.prototype.resizeIframeHeight = function (event) {
@@ -184,41 +200,22 @@ OnLoadFormLoad.prototype.resizeIframeHeight = function (event) {
         return;
     }
     if (event.data.action === 'formResize') {
-        this.formIframe.height = event.data.formHeight + 5;
+        this.searchIframe.height = event.data.formHeight + 5;
     }
 
     if (event.data.action === 'additionalFormIFrameResize') {
-        this.formAdditionalData.height = event.data.formHeight + 3;
+        this.additionalFormIframe.height = event.data.formHeight + 3;
     }
 };
 
 OnLoadFormLoad.prototype.createIframeWithForm = function (locale) {
-    var urlIndex = window.location.href.indexOf('?');
-    var url;
-    if (urlIndex !== -1) {
-        url = window.location.href.slice(urlIndex);
-    } else {
-        url = '?url=' + window.location.pathname;
-    }
-    if (config.form_url.indexOf('?') > -1) {
-        url = url.replace('?', '&');
-    }
-
-    var fullUrl = config.form_url + url;
-
-    if (locale !== undefined) {
-        fullUrl = fullUrl.replace(/(\?|&)locale=\w*/, '$1locale=' + locale);
-    }
-
-    console.log(fullUrl);
-
-    this.formIframe = document.createElement('iframe');
-    this.formIframe.id = 'mbh-form-iframe';
-    this.formIframe.scrolling = 'no';
-    this.formIframe.frameBorder = '0';
-    this.formIframe.src = config.form_url;
-    this.formIframe.hidden = true;
-    this.formIframe.title = 'Frame with search form.';
+    this.searchIframe = document.createElement('iframe');
+    this.searchIframe.id = 'mbh-form-iframe';
+    this.searchIframe.scrolling = 'no';
+    this.searchIframe.frameBorder = '0';
+    this.searchIframe.src = this.urlIframe.search;
+    this.searchIframe.hidden = true;
+    this.searchIframe.title = 'Frame with search form.';
 };
 
 OnLoadFormLoad.prototype.exec = function (locale) {
@@ -234,26 +231,28 @@ OnLoadFormLoad.prototype.exec = function (locale) {
     this.spinner = this.waitingSpinner();
 
     this.createIframeWithForm(locale);
-    this.formWrapper.appendChild(this.formIframe);
+    this.formWrapper.appendChild(this.searchIframe);
 
-    this.formIframe.addEventListener('load', function() {
+    this.searchIframe.addEventListener('load', function() {
         self.hideWaitingSpinner(this);
     }, {once: true});
 
     if (this.itIsFirstLoad) {
 
-        {#this.metric();#}
+        this.metric(this);
 
-        this.formCalendar = this.createIframeWithCalendar();
+        this.calendarIframe = this.createIframeWithCalendar();
 
-        this.formAdditionalData = this.createIframeWithAdditionalForm();
+        this.additionalFormIframe = this.createIframeWithAdditionalForm();
 
         document.addEventListener("click", function(ev) {
-            self.hideIframe();
+            self.hideIframe(self.calendarIframe);
+            self.hideIframe(self.additionalFormIframe);
         });
         document.addEventListener("keyup", function (e) {
             if (e.keyCode === 27) {
-                self.hideIframe();
+                self.hideIframe(self.calendarIframe);
+                self.hideIframe(self.additionalFormIframe);
             }
         });
 
@@ -272,68 +271,70 @@ OnLoadFormLoad.prototype.exec = function (locale) {
     this.itIsFirstLoad = false;
 };
 
-{#OnLoadFormLoad.prototype.metric = function () {#}
-    {#var useYaMetrics = typeof yaCounterId !== 'undefined';#}
-    {#if (useYaMetrics) {#}
-        {#var yaCounterObjName = 'yaCounter' + yaCounterId;#}
+OnLoadFormLoad.prototype.metric = function (self) {
+    var useYaMetrics = this.yaCounterId !== '';
+    if (useYaMetrics) {
+        var yaCounterObjName = 'yaCounter' + this.yaCounterId;
         {#<!-- Yandex.Metrika counter -->#}
-        {#(function (d, w, c) {#}
-            {#(w[c] = w[c] || []).push(function () {#}
-                {#try {#}
-                    {#w[yaCounterObjName] = new Ya.Metrika({#}
-                        {#id: yaCounterId,#}
-                        {#clickmap: true,#}
-                        {#trackLinks: true,#}
-                        {#accurateTrackBounce: true,#}
-                        {#webvisor: true#}
-                    {#});#}
-                {#} catch (e) {#}
-                {#}#}
-            {#});#}
+        (function (d, w, c) {
+            (w[c] = w[c] || []).push(function () {
+                try {
+                    w[yaCounterObjName] = new Ya.Metrika({
+                        id: self.yaCounterId,
+                        clickmap: true,
+                        trackLinks: true,
+                        accurateTrackBounce: true,
+                        webvisor: true
+                    });
+                } catch (e) {
+                }
+            });
 
-            {#var n = d.getElementsByTagName("script")[0],#}
-                {#s = d.createElement("script"),#}
-                {#f = function () {#}
-                    {#n.parentNode.insertBefore(s, n);#}
-                {#};#}
-            {#s.type = "text/javascript";#}
-            {#s.async = true;#}
-            {#s.src = "https://mc.yandex.ru/metrika/watch.js";#}
+            var n = d.getElementsByTagName("script")[0],
+                s = d.createElement("script"),
+                f = function () {
+                    n.parentNode.insertBefore(s, n);
+                };
+            s.type = "text/javascript";
+            s.async = true;
+            s.src = "https://mc.yandex.ru/metrika/watch.js";
 
-            {#if (w.opera == "[object Opera]") {#}
-                {#d.addEventListener("DOMContentLoaded", f, false);#}
-            {#} else {#}
-                {#f();#}
-            {#}#}
-        {#})(document, window, "yandex_metrika_callbacks");#}
+            if (w.opera == "[object Opera]") {
+                d.addEventListener("DOMContentLoaded", f, false);
+            } else {
+                f();
+            }
+        })(document, window, "yandex_metrika_callbacks");
         {#<!-- /Yandex.Metrika counter -->#}
-    {#}#}
+    }
 
-    {#var useGoogleMetrics = typeof googleCounterId !== 'undefined';#}
-    {#if (useGoogleMetrics) {#}
-        {#(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){#}
-            {#(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),#}
-            {#m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)#}
-        {#})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');#}
+    var useGoogleMetrics = this.googleCounterId !== '';
+    if (useGoogleMetrics) {
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-        {#ga('create', googleCounterId, 'auto');#}
-        {#ga('send', 'pageview');#}
-    {#}#}
+        ga('create', this.googleCounterId, 'auto');
+        ga('send', 'pageview');
+    }
 
-    {#var processMetricMessage = function (e) {#}
-        {#if (e.data.type === 'form-event') {#}
-            {#var purposeType = e.data.purpose;#}
-            {#if (useYaMetrics) {#}
-                {#window[yaCounterObjName].reachGoal(purposeType);#}
-            {#}#}
-            {#if (useGoogleMetrics) {#}
-                {#ga('send', 'event', purposeType, 'click');#}
-            {#}#}
-        {#}#}
-    {#};#}
+    if (useYaMetrics || useGoogleMetrics) {
+        var processMetricMessage = function (e) {
+            if (e.data.type === 'form-event') {
+                var purposeType = e.data.purpose;
+                if (useYaMetrics) {
+                    window[yaCounterObjName].reachGoal(purposeType);
+                }
+                if (useGoogleMetrics) {
+                    ga('send', 'event', purposeType, 'click');
+                }
+            }
+        };
 
-    {#window.addEventListener("message", processMetricMessage, false);#}
-{#};#}
+        window.addEventListener("message", processMetricMessage, false);
+    }
+};
 
 OnLoadFormLoad.prototype.hideWaitingSpinner = function (_this) {
     this.spinner.className = '';
@@ -342,5 +343,5 @@ OnLoadFormLoad.prototype.hideWaitingSpinner = function (_this) {
 };
 
 var onLoadFormLoad = new OnLoadFormLoad();
-
+{#onLoadFormLoad.exec();#}
 addLoadEvent(onLoadFormLoad.exec());

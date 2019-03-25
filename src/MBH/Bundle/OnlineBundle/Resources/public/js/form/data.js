@@ -14,5 +14,9 @@ var elements = [
   {
     elementId: 'mbh_bundle_onlinebundle_form_type_additionalFormJs',
     type: 'javascript'
+  },
+  {
+    elementId: 'mbh_bundle_onlinebundle_form_type_calendarCss',
+    type: 'css'
   }
 ];

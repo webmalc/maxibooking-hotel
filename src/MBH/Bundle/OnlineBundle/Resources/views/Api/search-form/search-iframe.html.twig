@@ -9,7 +9,7 @@
     {#<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/smoothness/jquery-ui.css" />#}
     <link rel="preload" as="style" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" />
     <noscript><link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" /></noscript>
-    {% javascripts filter='?uglifyjs2'
+    {% javascripts filter='uglifyjs2'
         '@MBHBaseBundle/Resources/public/js/first/010-nativ-func.js'
         '@MBHOnlineBundle/Resources/public/js/api/search-form/search-form.js'
     %}
@@ -18,7 +18,7 @@
     {% set isYandexAnalyticEnabled = formConfig and formConfig.yandexAnalyticConfig and formConfig.yandexAnalyticConfig.isEnabled == true %}
     {% if isYandexAnalyticEnabled %}
     {% endif %}
-    {% if formConfig and formConfig.theme %}
+    {% if formConfig.theme %}
         <link rel="stylesheet" href="{{ formConfig.theme }}">
 
         {% block styles %}
@@ -49,28 +49,26 @@
     {#{% endblock %}#}
 
 
-    {% if formConfig and formConfig.cssLibraries is defined and formConfig.cssLibraries is iterable %}
+    {% if formConfig.cssLibraries is defined and formConfig.cssLibraries is iterable %}
         {% for link in formConfig.cssLibraries %}
             <link rel="stylesheet" href="{{ link }}">
         {% endfor %}
     {% endif %}
     {#{% include '@MBHOnline/Api/siteStyles.html.twig' %}#}
 
-    {% if formConfig %}
-        {% if formConfig.css %}
-            <style>
-                {{ formConfig.css|raw }}
-            </style>
-        {% endif %}
-        {% if formConfig.js %}
-            <script>
-                window.addEventListener('load', function () {
-                    (function() {
-                        {{ formConfig.js|raw }}
-                    })();
-                });
-            </script>
-        {% endif %}
+    {% if formConfig.css %}
+        <style>
+            {{ formConfig.css|raw }}
+        </style>
+    {% endif %}
+    {% if formConfig.js %}
+        <script>
+            window.addEventListener('load', function () {
+                (function() {
+                    {{ formConfig.js|raw }}
+                })();
+            });
+        </script>
     {% endif %}
     <script defer id="script-for-insert-form" type="text/javascript" src="{{ url('online_form_get', {formConfigId: formConfig.id, locale: locale}) }}"></script>
 </head>

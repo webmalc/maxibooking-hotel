@@ -7,6 +7,7 @@ namespace MBH\Bundle\OnlineBundle\Lib\Site;
 
 
 use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
+use MBH\Bundle\OnlineBundle\Services\DataForSearchForm;
 
 class FormConfigDecoratorForMBSite implements \JsonSerializable
 {
@@ -16,23 +17,29 @@ class FormConfigDecoratorForMBSite implements \JsonSerializable
     private $formConfig;
 
     /**
+     * @var DataForSearchForm
+     */
+    private $dataSearchForm;
+
+    /**
      * FormConfigDecoratorForMBSite constructor.
      * @param FormConfig $formConfig
      */
-    public function __construct(FormConfig $formConfig)
+    public function __construct(FormConfig $formConfig, DataForSearchForm $dataForSearchForm)
     {
         $this->formConfig = $formConfig;
+        $this->dataSearchForm = $dataForSearchForm->setFormConfig($formConfig);
     }
 
     public function jsonSerialize()
     {
-        return [
-            'id' => $this->formConfig->getId(),
-            'width' => $this->formConfig->isFullWidth()
-                ? '100%'
-                : $this->formConfig->getFrameWidth(). 'px',
-            'height' => $this->formConfig->getFrameHeight() . 'px',
+        $config = [
+            'id'               => $this->formConfig->getId(),
+            'loadAllIframeUrl' => $this->dataSearchForm->getUrlForScriptLoadAllIframe(),
         ];
+
+
+        return $config;
     }
 
 

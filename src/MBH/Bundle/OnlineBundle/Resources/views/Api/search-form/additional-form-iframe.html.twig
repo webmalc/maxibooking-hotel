@@ -13,7 +13,7 @@
     %}
         <script async type="text/javascript" src="{{ absolute_url(asset_url) }}"></script>
     {% endjavascripts %}
-    {#{% if formConfig and formConfig.theme %}#}
+    {#{% if formConfig.theme %}#}
         {#<link rel="stylesheet" href="{{ formConfig.theme }}">#}
         {#{% block styles %}#}
             {#{% stylesheets filter='cssrewrite, uglifycss'#}
@@ -31,12 +31,15 @@
             <link rel="stylesheet" href="{{ absolute_url(asset_url) }}"/>
         {% endstylesheets %}
     {% endblock %}
-
-
-    {% if formConfig and formConfig.cssLibraries is defined and formConfig.cssLibraries is iterable %}
+    {% if formConfig.cssLibraries is defined and formConfig.cssLibraries is iterable %}
         {% for link in formConfig.cssLibraries %}
             <link rel="stylesheet" href="{{ link }}">
         {% endfor %}
+    {% endif %}
+    {% if formConfig.additionalFormCss %}
+        <style>
+            {{ formConfig.additionalFormCss | raw }}
+        </style>
     {% endif %}
 </head>
 <body>

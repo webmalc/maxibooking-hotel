@@ -7,6 +7,7 @@ use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
 use MBH\Bundle\OnlineBundle\Exception\MBSiteIsDisabledInClientConfigException;
 use MBH\Bundle\OnlineBundle\Exception\NotFoundConfigMBSiteException;
 use MBH\Bundle\OnlineBundle\Lib\Site\FormConfigDecoratorForMBSite;
+use MBH\Bundle\OnlineBundle\Services\DataForSearchForm;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -42,7 +43,7 @@ class MBSiteSettingsController extends BaseController
 
         return new JsonResponse([
             'hotelsIds'            => $this->helper->toIds($siteConfig->getHotels()),
-            'formConfig'           => new FormConfigDecoratorForMBSite($formConfig),
+            'formConfig'           => new FormConfigDecoratorForMBSite($formConfig, $this->get(DataForSearchForm::class)),
             'keyWords'             => $siteConfig->getKeyWords(),
             'personalDataPolicies' => $siteConfig->getPersonalDataPolicies(),
             'contract'             => $siteConfig->getContract(),

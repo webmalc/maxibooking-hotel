@@ -117,6 +117,55 @@ class DataForSearchForm
         return $choices;
     }
 
+    public function getConfigForLoadAllIframe(): array
+    {
+        return [
+            'urls'       => [
+                'search'         => $this->getUrlSearchIframe(),
+                'calendar'       => $this->getUrlCalendarIframe(),
+                'additionalForm' => $this->getUrlAdditionalIframe(),
+            ],
+            'size' => [
+                'search' => [
+                    'width' => $this->formConfig->getFrameWidth(),
+                    'height' => $this->formConfig->getFrameHeight()
+                ],
+                'calendar' => [
+                    'width' => $this->formConfig->getCalendarFrameWidth(),
+                    'height' => $this->formConfig->getCalendarFrameHeight()
+                ],
+                'additionalForm' => [
+                    'width' => $this->formConfig->getAdditionalFormFrameWidth(),
+                    'height' => $this->formConfig->getAdditionalFormFrameHeight()
+                ]
+            ],
+            'metric' => [
+                'yaCounterId' => $this->getYandexCounterId(),
+                'googleCounterId' => $this->getGoogleCounterId()
+            ]
+        ];
+    }
+
+    private function getYandexCounterId(): string
+    {
+        $configYandex = $this->formConfig->getYandexAnalyticConfig();
+        if ($configYandex !== null && $configYandex->getIsEnabled()) {
+            return $configYandex->getId();
+        }
+
+        return '';
+    }
+
+    private function getGoogleCounterId(): string
+    {
+        $configGoogle = $this->formConfig->getGoogleAnalyticConfig();
+        if ($configGoogle !== null && $configGoogle->getIsEnabled()) {
+            return $configGoogle->getId();
+        }
+
+        return '';
+    }
+
     public function getUrlSearchIframe(): string
     {
         return $this->generateUrl(FormConfig::ROUTER_NAME_SEARCH_IFRAME, $this->addParametersHotel());
@@ -127,18 +176,18 @@ class DataForSearchForm
         return $this->generateUrl(FormConfig::ROUTER_NAME_CALENDAR_IFRAME);
     }
 
-    public function getUrlAdditionalIframe(): string
+    public function getUrlForScriptLoadAllIframe(): string
     {
-        return $this->generateUrl(FormConfig::ROUTER_NAME_ADDITIONAL_IFRAME, $this->addParametersHotel());
+        return $this->generateUrl(FormConfig::ROUTER_NAME_LOAD_ALL_IFRAME, [], false);
     }
 
-    public function getAllUrlIframe(): array
+    public function getUrlAdditionalIframe(): ?string
     {
-        return [
-            'search'         => $this->getUrlSearchIframe(),
-            'calendar'       => $this->getUrlCalendarIframe(),
-            'additionalForm' => $this->getUrlAdditionalIframe(),
-        ];
+        if ($this->formConfig->isUseAdditionalForm()) {
+            return $this->generateUrl(FormConfig::ROUTER_NAME_ADDITIONAL_IFRAME, $this->addParametersHotel());
+        }
+
+        return null;
     }
 
     private function addParametersHotel(array $parameters = []): array
@@ -152,17 +201,20 @@ class DataForSearchForm
         return $parameters;
     }
 
-    private function generateUrl(string $routerName, array $parameters = []): string
+    private function generateUrl(string $routerName, array $parameters = [], bool $useLocale = true): string
     {
+        $defaultParameters = [
+            'formConfigId' => $this->formConfig->getId(),
+        ];
 
+        if ($useLocale) {
+            $defaultParameters['locale'] = $this->request->getLocale();
+        }
 
         return $this->router->generate(
             $routerName,
             array_merge(
-                [
-                    'formConfigId' => $this->formConfig->getId(),
-                    'locale'       => $this->request->getLocale(),
-                ],
+                $defaultParameters,
                 $parameters
             )
             ,

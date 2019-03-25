@@ -30,7 +30,7 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
     use DecorationTrait;
     use DecorationDataTrait;
 
-    public const ROUTER_NAME_SEARCH_IFRAME = 'online_form_iframe';
+    public const ROUTER_NAME_SEARCH_IFRAME = 'online_form_search_iframe';
     public const ROUTER_NAME_CALENDAR_IFRAME = 'online_form_calendar';
     public const ROUTER_NAME_ADDITIONAL_IFRAME = 'online_form_additional_form_iframe';
     public const ROUTER_NAME_LOAD_ALL_IFRAME = 'online_form_load_all_iframe_for_search';
@@ -232,6 +232,59 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
      * @Assert\Type(type="boolean")
      */
     private $iconLogoLink = false;
+
+    /**
+     * @var string | null
+     * @Gedmo\Versioned
+     * @ODM\Field(type="string")
+     */
+    private $additionalFormCss;
+
+    /**
+     * @var string | null
+     * @Gedmo\Versioned
+     * @ODM\Field(type="string")
+     */
+    private $additionalFormJs;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\Field(type="string")
+     * @Assert\NotNull()
+     */
+    private $additionalFormFrameWidth = '270px';
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\Field(type="string")
+     * @Assert\NotNull()
+     */
+    private $additionalFormFrameHeight = 'auto';
+
+    /**
+     * @var string | null
+     * @Gedmo\Versioned
+     * @ODM\Field(type="string")
+     */
+    private $calendarCss;
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\Field(type="string")
+     * @Assert\NotNull()
+     */
+    private $calendarFrameWidth = '310px';
+
+    /**
+     * @var string
+     * @Gedmo\Versioned
+     * @ODM\Field(type="string")
+     * @Assert\NotNull()
+     */
+    private $calendarFrameHeight = '270px';
 
     public function __construct()
     {
@@ -681,6 +734,132 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
     public function setIconLogoLink(bool $iconLogoLink): self
     {
         $this->iconLogoLink = $iconLogoLink;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAdditionalFormCss(): ?string
+    {
+        return $this->additionalFormCss;
+    }
+
+    /**
+     * @param string|null $additionalFormCss
+     */
+    public function setAdditionalFormCss(?string $additionalFormCss): self
+    {
+        $this->additionalFormCss = $additionalFormCss;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getAdditionalFormJs(): ?string
+    {
+        return $this->additionalFormJs;
+    }
+
+    /**
+     * @param string|null $additionalFormJs
+     */
+    public function setAdditionalFormJs(?string $additionalFormJs): self
+    {
+        $this->additionalFormJs = $additionalFormJs;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAdditionalFormFrameWidth(): string
+    {
+        return $this->additionalFormFrameWidth;
+    }
+
+    /**
+     * @param string $additionalFormFrameWidth
+     */
+    public function setAdditionalFormFrameWidth(string $additionalFormFrameWidth): self
+    {
+        $this->additionalFormFrameWidth = $additionalFormFrameWidth;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAdditionalFormFrameHeight(): string
+    {
+        return $this->additionalFormFrameHeight;
+    }
+
+    /**
+     * @param string $additionalFormFrameHeight
+     */
+    public function setAdditionalFormFrameHeight(string $additionalFormFrameHeight): self
+    {
+        $this->additionalFormFrameHeight = $additionalFormFrameHeight;
+
+        return $this;
+    }
+
+    /**
+     * @return string | null
+     */
+    public function getCalendarCss(): ?string
+    {
+        return $this->calendarCss;
+    }
+
+    /**
+     * @param string $calendarCss
+     */
+    public function setCalendarCss(?string $calendarCss): self
+    {
+        $this->calendarCss = $calendarCss;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCalendarFrameWidth(): string
+    {
+        return $this->calendarFrameWidth;
+    }
+
+    /**
+     * @param string $calendarFrameWidth
+     */
+    public function setCalendarFrameWidth(string $calendarFrameWidth): self
+    {
+        $this->calendarFrameWidth = $calendarFrameWidth;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCalendarFrameHeight(): string
+    {
+        return $this->calendarFrameHeight;
+    }
+
+    /**
+     * @param string $calendarFrameHeight
+     */
+    public function setCalendarFrameHeight(string $calendarFrameHeight): self
+    {
+        $this->calendarFrameHeight = $calendarFrameHeight;
 
         return $this;
     }

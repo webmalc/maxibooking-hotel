@@ -1,6 +1,5 @@
 <!doctype html>
 <html lang="{{ app.request.locale }}">
-
 <head>
     <meta charset="utf-8">
     <title>Maxibooking</title>
@@ -20,6 +19,11 @@
     %}
         <script defer type="text/javascript" src="{{ absolute_url(asset_url) }}"></script>
     {% endjavascripts %}
+    {% if formConfig.calendarCss %}
+        <style>
+            {{ formConfig.calendarCss |raw }}
+        </style>
+    {% endif %}
 </head>
 
 <body>

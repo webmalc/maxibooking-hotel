@@ -42,7 +42,7 @@ PreOnLoadFormLoad.prototype.createIframeWithForm = function (locale) {
 
     function redirect(self) {
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', fullUrl + '&redirect=1');
+        xhr.open('GET', fullUrl);
 
         xhr.send();
 
@@ -60,7 +60,6 @@ PreOnLoadFormLoad.prototype.createIframeWithForm = function (locale) {
 
                 self.formWrapper.appendChild(script);
             }
-
         };
     }
 

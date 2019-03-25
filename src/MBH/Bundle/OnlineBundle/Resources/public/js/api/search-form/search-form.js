@@ -290,7 +290,7 @@ SearchForm.prototype.viewChange = function() {
 
     setTimeout(function() {
         clearInterval(resizeIntervalId);
-    }, 3000);
+    }, 1500);
 
 
     var needChangePaddingLeft = (function() {
@@ -321,9 +321,11 @@ SearchForm.prototype.viewChange = function() {
         })();
     };
 
+    var self = this;
+
     var showIFrame = function(event) {
         var el = jQuery(this);
-        last = el;
+        self.last = el;
         window.parent.postMessage({
             type: 'mbh',
             action: (event.data !== undefined && event.data.action !== undefined) ? event.data.action : 'showCalendar',

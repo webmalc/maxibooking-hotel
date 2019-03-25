@@ -197,23 +197,27 @@ class FormType extends AbstractType implements DecorationTypeInterface
             ->add($this->cssLibraries($builder))
             ->add($this->theme($builder));
 
-        $builder->add(
-                'paymentTypes',
-                PaymentTypesType::class,
-                [
-                    'group' => 'form.formType.payment',
-                    'label' => 'form.formType.payment_type',
-                    'help' => 'form.formType.reservation_payment_types_with_online_form'
-                ]
-            )
-            ->add('js',
-                TextareaType::class,
-                [
-                    'group' => 'form.formType.js_group',
-                    'label' => 'form.formType.js_label',
-                    'required' => false,
-                    'attr' => ['rows' => 10]
-                ]);
+        $builder
+        ->add(
+            'paymentTypes',
+            PaymentTypesType::class,
+            [
+                'group' => 'form.formType.payment',
+                'label' => 'form.formType.payment_type',
+                'help'  => 'form.formType.reservation_payment_types_with_online_form',
+            ]
+        )
+        ->add(
+            'js',
+            TextareaType::class,
+            [
+                'group'    => 'form.formType.js_group',
+                'label'    => 'form.formType.js_label',
+                'required' => false,
+                'attr'     => ['rows' => 10],
+            ]
+        );
+
         if ($options['user'] === User::SYSTEM_USER) {
             $builder->add(
                 'formTemplate',
@@ -227,6 +231,78 @@ class FormType extends AbstractType implements DecorationTypeInterface
                 ]
             );
         }
+
+        $builder
+            ->add(
+                'additionalFormFrameWidth',
+                TextType::class, [
+                    'label'    => 'form.formType.additional_form.decor.width.label',
+                    'group'    => 'form.formType.additional_form.decor.group',
+                    'help'     => 'form.formType.additional_form.decor.width.help',
+                    'required' => false,
+                ]
+            )->add(
+                'additionalFormFrameHeight',
+                TextType::class, [
+                    'label'    => 'form.formType.additional_form.decor.height.label',
+                    'group'    => 'form.formType.additional_form.decor.group',
+                    'help'     => 'form.formType.additional_form.decor.height.help',
+                    'required' => false,
+                ]
+            )
+            ->add(
+                'additionalFormCss',
+                TextareaType::class,
+                [
+                    'group'    => 'form.formType.additional_form.decor.group',
+                    'label'    => 'form.formType.additional_form.decor.css.label',
+                    'required' => false,
+                    'help'     => 'form.formType.additional_form.decor.css.help',
+                    'attr'     => ['rows' => 15],
+                ]
+            )
+            ->add(
+                'additionalFormJs',
+                TextareaType::class,
+                [
+                    'group'    => 'form.formType.additional_form.decor.group',
+                    'label'    => 'form.formType.additional_form.decor.js.label',
+                    'required' => false,
+                    'help'     => 'form.formType.additional_form.decor.js.help',
+                    'attr'     => ['rows' => 15],
+                ]
+            );
+
+        $builder
+            ->add(
+                'calendarFrameWidth',
+                TextType::class, [
+                    'label'    => 'form.formType.calendar.decor.width.label',
+                    'group'    => 'form.formType.calendar.decor.group',
+                    'help'     => 'form.formType.calendar.decor.width.help',
+                    'required' => false,
+                ]
+            )
+            ->add(
+                'calendarFrameHeight',
+                TextType::class, [
+                    'label'    => 'form.formType.calendar.decor.height.label',
+                    'group'    => 'form.formType.calendar.decor.group',
+                    'help'     => 'form.formType.calendar.decor.height.help',
+                    'required' => false,
+                ]
+            )
+            ->add(
+                'calendarCss',
+                TextareaType::class,
+                [
+                    'group'    => 'form.formType.calendar.decor.group',
+                    'label'    => 'form.formType.calendar.decor.css.label',
+                    'required' => false,
+                    'help'     => 'form.formType.calendar.decor.css.help',
+                    'attr'     => ['rows' => 15],
+                ]
+            );
     }
 
     public function finishView(FormView $view, FormInterface $form, array $options)
@@ -237,14 +313,13 @@ class FormType extends AbstractType implements DecorationTypeInterface
         }
     }
 
-
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(
-            array(
+            [
                 'data_class' => \MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig::class,
-                'user' => null
-            )
+                'user'       => null,
+            ]
         );
     }
 
