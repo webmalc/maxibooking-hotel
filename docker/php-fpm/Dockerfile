@@ -10,7 +10,7 @@ RUN apt-get update \
     bash /tmp/nodesource_setup.sh && \
     apt-get -y install nodejs build-essential && npm install -g bower && npm install -g uglifycss && npm install -g uglify-js && npm install -g less && \
     php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
-    php composer-setup.php --install-dir=/usr/local/bin && mv /usr/local/bin/composer.phar /usr/local/bin/composer && \
+    php composer-setup.php --install-dir=/usr/local/bin --version=1.6.5 && mv /usr/local/bin/composer.phar /usr/local/bin/composer && \
     php -r "unlink('composer-setup.php');" && \
     wget "https://phar.phpunit.de/phpunit-6.5.phar" && chmod +x phpunit-6.5.phar && mv phpunit-6.5.phar /usr/local/bin/phpunit  && \
     php -r "copy('https://downloads.wkhtmltopdf.org/0.12/0.12.4/wkhtmltox-0.12.4_linux-generic-amd64.tar.xz', 'wkhtmltopdf.tar');" && \
