@@ -12,6 +12,7 @@ use Symfony\Component\Security\Acl\Exception\AclNotFoundException;
 use Symfony\Component\Security\Acl\Exception\NoAceFoundException;
 use Symfony\Component\Security\Acl\Permission\MaskBuilder;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\Security\Core\Exception\AuthenticationCredentialsNotFoundException;
 use Symfony\Component\Security\Core\Security;
 
 /**
@@ -42,49 +43,41 @@ class HotelSelector
      */
     public function checkPermissions(Hotel $hotel, User $user = null)
     {
-        if (!$user && !$this->container->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            return true;
-        }
+        if (!$this->isUserAuthenticated()) {
+            if ($user) {
+                $token = new UsernamePasswordToken($user, 'none', 'main', $user->getRoles());
+                if ($this->container->get('kernel')->getEnvironment() === 'prod' && $this->container->has('security.access.decision_manager')) {
+                    $decision_manager = $this->container->get('security.access.decision_manager');
+                } else {
+                    $decision_manager = $this->container->get('debug.security.access.decision_manager');
+                }
 
+                return $decision_manager->decide($token, [HotelVoter::ACCESS, 'ROLE_ADMIN'], $hotel);
+            }
+
+            return true;
+
+        }
 
         return $this->security->isGranted('ROLE_ADMIN') || $this->security->isGranted(HotelVoter::ACCESS, $hotel);
 
+    }
 
-//        $user ?: $user = $this->container->get('security.token_storage')->getToken()->getUser();
-//
-//
-//        // Is admin?
-//        $token = new UsernamePasswordToken($user, 'none', 'none', $user->getRoles());
-//
-//        if ($this->container->get('kernel')->getEnvironment() == 'prod' && $this->container->has('security.access.decision_manager')) {
-//            $decision_manager = $this->container->get('security.access.decision_manager');
-//        } else {
-//            $decision_manager = $this->container->get('debug.security.access.decision_manager');
-//        }
-//
-//        if ($decision_manager->decide($token, array('ROLE_ADMIN'))) {
-//            return true;
-//        }
-//
-//        // Can edit hotel?
-//        $objectIdentity = ObjectIdentity::fromDomainObject($hotel);
-//        $securityIdentity = new UserSecurityIdentity($user, 'MBH\Bundle\UserBundle\Document\User');
-//        $aclProvider = $this->container->get('security.acl.provider');
-//
-//        try {
-//            $acl = $aclProvider->findAcl($objectIdentity);
-//        } catch (AclNotFoundException $e) {
-//            return false;
-//        }
-//        try {
-//            return $acl->isGranted([MaskBuilder::MASK_MASTER], [$securityIdentity], false);
-//        } catch (NoAceFoundException $e) {
-//            return false;
-//        }
+    private function isUserAuthenticated(): bool
+    {
+        try {
+            return $this->security->isGranted('IS_AUTHENTICATED_REMEMBERED');
+        } catch (AuthenticationCredentialsNotFoundException $e) {
+            return PHP_SAPI !== 'cli';
+        }
+
     }
 
     /**
      * @return null|\MBH\Bundle\HotelBundle\Document\Hotel
+     * @throws \Doctrine\ODM\MongoDB\LockException
+     * @throws \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getSelected()
     {
@@ -111,6 +104,7 @@ class HotelSelector
         foreach ($hotels as $hotel) {
             if ($hotel && $this->checkPermissions($hotel)) {
                 $session->set('selected_hotel_id', (string)$hotel->getId());
+
                 return $hotel;
             }
         }

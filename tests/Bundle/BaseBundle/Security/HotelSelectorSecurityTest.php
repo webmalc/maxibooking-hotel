@@ -11,6 +11,10 @@ use Symfony\Component\BrowserKit\Client;
 
 class HotelSelectorSecurityTest extends WebTestCase
 {
+    public function setUp()
+    {
+        self::baseFixtures();
+    }
 
 
     /** @dataProvider dataProvider */

@@ -92,6 +92,8 @@ class VotersTest extends WebTestCase
 
     public function dataHotelProvider()
     {
+        parent::baseFixtures();
+
         $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
         foreach ([UserData::USER_MANAGER, UserData::USER_L_MANAGER] as $userName) {
             $user = $dm->getRepository(User::class)->findOneBy(['username' => $userName]);
