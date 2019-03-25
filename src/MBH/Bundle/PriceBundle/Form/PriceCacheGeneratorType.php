@@ -5,6 +5,7 @@ namespace MBH\Bundle\PriceBundle\Form;
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
 use MBH\Bundle\PriceBundle\Document\TariffRepository;
@@ -71,7 +72,6 @@ class PriceCacheGeneratorType extends AbstractType
         $repo = $options['useCategories'] ? 'MBHHotelBundle:RoomTypeCategory' : 'MBHHotelBundle:RoomType';
 
         $pricePlaceHolder = 'mbhpricebundle.form.pricecachegeneratortype.change_sum_or_percent';
-
         $builder
             ->add('begin', DateType::class, array(
                 'label' => 'mbhpricebundle.form.pricecachegeneratortype.nachaloperioda',
@@ -237,6 +237,8 @@ class PriceCacheGeneratorType extends AbstractType
             ])
         ;
 
+        $builder = $this->filterByIsSinglePlacement($hotel, $builder);
+
         if ($isIndividualAdditionalPrices) {
             for ($i = 1; $i < $isIndividualAdditionalPrices; $i++) {
                 $builder
@@ -310,4 +312,23 @@ class PriceCacheGeneratorType extends AbstractType
         return 'mbh_price_bundle_price_cache_generator';
     }
 
+    /**
+     * @param Hotel $hotel
+     * @param FormBuilderInterface $builder
+     * @return FormBuilderInterface
+     */
+    private function filterByIsSinglePlacement(Hotel $hotel, FormBuilderInterface $builder)
+    {
+        if ($hotel !== null) {
+            /** @var RoomType $roomType */
+            foreach ($hotel->getRoomTypes() as $roomType) {
+                if ($roomType->getIsSinglePlacement()) {
+                    return $builder;
+                }
+            }
+            $builder->remove('singlePriceFake');
+            $builder->remove('singlePrice');
+        }
+        return $builder;
+    }
 }

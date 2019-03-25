@@ -139,15 +139,19 @@ class HundredOneHotels extends Base
             //$roomTypes array[roomId => [roomId('syncId'), roomType('doc')]]
             $roomTypes = $this->getRoomTypes($config, true);
             //$priceCaches array [roomTypeId][tariffId][date => PriceCache]
-            $priceCachesCallback = function () use ($begin, $end, $config, $roomType) {
-                return $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
-                    $begin,
-                    $end,
-                    $config->getHotel(),
-                    $this->getRoomTypeArray($roomType),
-                    [],
-                    true
+            $priceCacheFilter = $this->container->get('mbh.price_cache_repository_filter');
+            $priceCachesCallback = function () use ($begin, $end, $config, $roomType, $priceCacheFilter) {
+                $filtered = $priceCacheFilter->filterFetch(
+                    $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
+                        $begin,
+                        $end,
+                        $config->getHotel(),
+                        $this->getRoomTypeArray($roomType),
+                        [],
+                        true
+                    )
                 );
+                return $filtered;
             };
             $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
 
@@ -242,16 +246,19 @@ class HundredOneHotels extends Base
                 [],
                 true
             );
-
-            $priceCachesCallback = function () use ($begin, $end, $config, $roomType) {
-                return $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
-                    $begin,
-                    $end,
-                    $config->getHotel(),
-                    $roomType ? [$roomType->getId()] : [],
-                    [],
-                    true
+            $priceCacheFilter = $this->container->get('mbh.price_cache_repository_filter');
+            $priceCachesCallback = function () use ($begin, $end, $config, $roomType, $priceCacheFilter) {
+                $filtered = $priceCacheFilter->filterFetch(
+                    $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
+                        $begin,
+                        $end,
+                        $config->getHotel(),
+                        $roomType ? [$roomType->getId()] : [],
+                        [],
+                        true
+                    )
                 );
+                return $filtered;
             };
             $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
 
