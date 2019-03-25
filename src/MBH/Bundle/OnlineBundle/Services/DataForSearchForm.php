@@ -127,7 +127,7 @@ class DataForSearchForm
             ],
             'size' => [
                 'search' => [
-                    'width' => $this->formConfig->getFrameWidth(),
+                    'width' => $this->formConfig->isFullWidth() ? '100%' : $this->formConfig->getFrameWidth(),
                     'height' => $this->formConfig->getFrameHeight()
                 ],
                 'calendar' => [

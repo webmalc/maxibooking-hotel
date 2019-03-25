@@ -37,16 +37,16 @@ class ApiController extends Controller
 {
     /**
      * Online form results iframe
-     * @Route("/form/results/iframe/{formConfigId}", name="online_form_results_iframe")
+     * @Route("/form/results/iframe/{formId}", name="online_form_results_iframe")
      * @Method("GET")
      * @Cache(expires="tomorrow", public=true)
      * @Template()
      */
-    public function getFormResultsIframeAction($formConfigId = null)
+    public function getFormResultsIframeAction($formId = null)
     {
         $this->setLocaleByRequest();
         $formConfig = $this->dm->getRepository(FormConfig::class)
-            ->findOneById($formConfigId);
+            ->findOneById($formId);
 
         return [
             'formId'     => $formConfig->getId(),

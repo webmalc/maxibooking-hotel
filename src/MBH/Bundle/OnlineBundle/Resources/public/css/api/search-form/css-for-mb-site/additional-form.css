@@ -1,94 +1,76 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700&subset=cyrillic');
-
 body {
-    font-family: 'Roboto', sans-serif;
-
-    font-style: normal;
-    font-weight: normal;
-    line-height: 16px;
-    font-size: 12px;
-    letter-spacing: 0.05em;
-    color: #282828;
-
-    margin: 0;
-    background: #fff;
-
-    border-color: rgb(170, 170, 170);
-    border-style: solid;
-    border-width: 1px;
+  font-family: 'Roboto', sans-serif;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 16px;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  color: #282828;
+  border-color: #aaaaaa;
+  border-style: solid;
+  border-width: 1px;
+  margin: 0;
+  background: #fff;
 }
-.mbh-form-row {
-    display: flex;
-    align-items: baseline;
-    margin-bottom: 12px;
-    margin-left: 23px;
+body .mbh-form-row {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 12px;
+  margin-left: 23px;
 }
-
-.mbh-form-row:first-child {
-    margin-top: 23px;
+body .mbh-form-row:first-child {
+  margin-top: 23px;
 }
-
-.mbh-form-row .title {
-    margin-right: 20px;
-    width: 83px;
-    height: 100%;
-    vertical-align: middle;
+body .mbh-form-row .title {
+  margin-right: 20px;
+  width: 83px;
+  height: 100%;
+  vertical-align: middle;
 }
-
-section.room-type .title,
-section.adults .title,
-section.children .title {
-    text-transform: uppercase;
+body section.room-type .title,
+body section.adults .title,
+body section.children .title {
+  text-transform: uppercase;
 }
-
-.stepper {
-    width: 100px;
-    display: flex;
-    align-items: baseline;
+body .stepper {
+  width: 100px;
+  display: flex;
+  align-items: baseline;
 }
-
-#mbh-form-roomType {
-    width: 100px;
-    height: 32px;
-    background: #fff;
-    border: 1px solid #0099FF;
+body #mbh-form-roomType {
+  width: 100px;
+  height: 32px;
+  background: #fff;
+  border: 1px solid #0099FF;
 }
-
-.mbh-btn-stepper {
-    width: 32px;
-    height: 32px;
-
-    background: #FFFFFF;
-
-    border: 1px solid #0099FF;
-    box-sizing: border-box;
+body .mbh-btn-stepper {
+  width: 32px;
+  height: 32px;
+  background: #FFFFFF;
+  border: 1px solid #0099FF;
+  box-sizing: border-box;
 }
-
-.mbh-btn-stepper:disabled {
-    border: 1px solid #A0A0A0;
+body .mbh-btn-stepper:disabled {
+  border: 1px solid #A0A0A0;
 }
-
-.stepper-value {
-    width: 36px;
-    text-align: center;
+body .stepper-value {
+  width: 36px;
+  text-align: center;
 }
-
-.children-ages-wrapper {
-    display: none;
-    margin-left: 23px;
-    margin-bottom: 20px;
+body .children-ages-wrapper {
+  display: none;
+  margin-left: 23px;
+  margin-bottom: 20px;
 }
-
-.holder-children-ages {
-    margin-top: 9px;
+body .holder-children-ages {
+  margin-top: 9px;
 }
-
-.select-children-age {
-    width: 100px;
-    height: 32px;
-    margin-right: 4px;
-    margin-bottom: 4px;
-
-    background: #fff;
-    border: 1px solid #0099FF;
+body .select-children-age {
+  width: 100px;
+  height: 32px;
+  margin-right: 4px;
+  margin-bottom: 4px;
+  background: #fff;
+  border: 1px solid #0099FF;
 }

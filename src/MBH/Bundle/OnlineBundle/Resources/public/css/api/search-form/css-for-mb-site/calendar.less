@@ -1,0 +1,29 @@
+@import "common-style.mixin";
+.importFont();
+body {
+
+  .commonStyleFont();
+  .iframeBorderStyle();
+
+  margin: 0;
+  background: #fff;
+
+  #mbh-calendar-datepicker {
+    .ui-corner-all {
+      border-bottom-right-radius: unset;
+      border-bottom-left-radius: unset;
+      border-top-right-radius: unset;
+      border-top-left-radius: unset;
+
+    }
+
+    .ui-datepicker-month {
+      text-transform: uppercase;
+    }
+
+    .ui-widget-content {
+      border: 1px solid #fff;
+      color: unset;
+    }
+  }
+}

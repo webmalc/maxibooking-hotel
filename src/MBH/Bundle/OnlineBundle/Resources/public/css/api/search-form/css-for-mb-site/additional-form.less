@@ -1,0 +1,85 @@
+@import "common-style.mixin";
+.importFont();
+body {
+    .commonStyleFont();
+    .iframeBorderStyle();
+
+    margin: 0;
+    background: #fff;
+
+    .mbh-form-row {
+        display: flex;
+        align-items: baseline;
+        margin-bottom: 12px;
+        margin-left: 23px;
+    }
+
+    .mbh-form-row:first-child {
+        margin-top: 23px;
+    }
+
+    .mbh-form-row .title {
+        margin-right: 20px;
+        width: 83px;
+        height: 100%;
+        vertical-align: middle;
+    }
+
+    section.room-type .title,
+    section.adults .title,
+    section.children .title {
+        text-transform: uppercase;
+    }
+
+    .stepper {
+        width: 100px;
+        display: flex;
+        align-items: baseline;
+    }
+
+    #mbh-form-roomType {
+        width: 100px;
+        height: 32px;
+        background: #fff;
+        border: 1px solid #0099FF;
+    }
+
+    .mbh-btn-stepper {
+        width: 32px;
+        height: 32px;
+
+        background: #FFFFFF;
+
+        border: 1px solid #0099FF;
+        box-sizing: border-box;
+    }
+
+    .mbh-btn-stepper:disabled {
+        border: 1px solid #A0A0A0;
+    }
+
+    .stepper-value {
+        width: 36px;
+        text-align: center;
+    }
+
+    .children-ages-wrapper {
+        display: none;
+        margin-left: 23px;
+        margin-bottom: 20px;
+    }
+
+    .holder-children-ages {
+        margin-top: 9px;
+    }
+
+    .select-children-age {
+        width: 100px;
+        height: 32px;
+        margin-right: 4px;
+        margin-bottom: 4px;
+
+        background: #fff;
+        border: 1px solid #0099FF;
+    }
+}

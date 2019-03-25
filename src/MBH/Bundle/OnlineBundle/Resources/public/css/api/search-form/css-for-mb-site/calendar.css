@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700&subset=cyrillic');
+body {
+  font-family: 'Roboto', sans-serif;
+  font-style: normal;
+  font-weight: normal;
+  line-height: 16px;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  color: #282828;
+  border-color: #aaaaaa;
+  border-style: solid;
+  border-width: 1px;
+  margin: 0;
+  background: #fff;
+}
+body #mbh-calendar-datepicker .ui-corner-all {
+  border-bottom-right-radius: unset;
+  border-bottom-left-radius: unset;
+  border-top-right-radius: unset;
+  border-top-left-radius: unset;
+}
+body #mbh-calendar-datepicker .ui-datepicker-month {
+  text-transform: uppercase;
+}
+body #mbh-calendar-datepicker .ui-widget-content {
+  border: 1px solid #fff;
+  color: unset;
+}

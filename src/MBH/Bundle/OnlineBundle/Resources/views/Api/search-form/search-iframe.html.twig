@@ -63,7 +63,7 @@
     {% endif %}
     <script defer id="script-for-insert-form" type="text/javascript" src="{{ url('online_form_get', {formConfigId: formConfig.id, locale: locale}) }}"></script>
 </head>
-<body>
+<body id="mbh-body-search-iframe">
     <div id="mbh-form-wrapper">
         <a class="preload-link-maxibooking" href="https://maxi-booking.{{ locale == 'en' ? 'com' : 'ru' }}/">{{ 'views.api.get_form_iframe.online_booking_system'|trans}}</a>
     </div>

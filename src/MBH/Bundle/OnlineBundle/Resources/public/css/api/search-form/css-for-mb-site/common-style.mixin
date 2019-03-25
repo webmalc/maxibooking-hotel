@@ -1,0 +1,20 @@
+.importFont () {
+  @import (css) url('https://fonts.googleapis.com/css?family=Roboto:400,500,700&subset=cyrillic');
+}
+
+.commonStyleFont() {
+  font-family: 'Roboto', sans-serif;
+
+  font-style: normal;
+  font-weight: normal;
+  line-height: 16px;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  color: #282828;
+}
+
+.iframeBorderStyle() {
+  border-color: rgb(170, 170, 170);
+  border-style: solid;
+  border-width: 1px;
+}
