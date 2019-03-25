@@ -70,6 +70,9 @@ class OnlineSearchAdapter
     {
         $oldResults = [];
         foreach ($newResults['results'] as $currentResults) {
+            if (\count($currentResults)) {
+                $currentResults = $this->sortResultByPrice($currentResults);
+            }
             foreach ($currentResults as $currentResult) {
                 $searchResult = new SearchResult();
                 $searchResult->setBegin(new \DateTime($currentResult['begin']));
@@ -124,5 +127,17 @@ class OnlineSearchAdapter
         ];
 
         return $data;
+    }
+
+    private function sortResultByPrice(array $results): array
+    {
+        usort(
+            $results,
+            function ($resultA, $resultB) {
+                return (int)$resultA['prices'][0]['total'] <=> (int)$resultB['prices'][0]['total'];
+            }
+        );
+
+        return $results;
     }
 }
