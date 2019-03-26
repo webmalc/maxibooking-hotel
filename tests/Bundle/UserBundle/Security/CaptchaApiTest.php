@@ -67,6 +67,6 @@ class CaptchaApiTest extends UnitTestCase
         $this->assertArrayHasKey('success', $response);
         $this->assertEquals($response['success'], false);
         $this->assertArrayHasKey('error-codes', $response);
-        $this->assertEquals($response['error-codes'][0], 'timeout-or-duplicate');
+        $this->assertContains($response['error-codes'][0], ['invalid-input-secret', 'timeout-or-duplicate']);
     }
 }
