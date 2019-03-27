@@ -119,7 +119,7 @@ class Airbnb extends AbstractChannelManagerService
                         . '. URL:' . $room->getSyncUrl()
                         . '. Response: '
                         . $result->getData();
-                    $this->log($logErrorMessage);
+                    $this->log($logErrorMessage, 'error');
                     $isSuccess = false;
                 }
             }
