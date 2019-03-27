@@ -758,7 +758,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                 ->setCategory('notification')
                 ->setAutohide(false)
                 ->setEnd(new \DateTime('+10 minute'))
-                ->setMessageType(NotificationType::CHANNEL_MANAGER_TYPE)
+                ->setMessageType(NotificationType::CHANNEL_MANAGER_ERROR_TYPE)
             ;
 
             return $notifier->setMessage($message)->notify();
@@ -793,7 +793,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                 ->setCategory('notification')
                 ->setAutohide(false)
                 ->setEnd(new \DateTime('+10 minute'))
-                ->setMessageType(NotificationType::CHANNEL_MANAGER_TYPE)
+                ->setMessageType(NotificationType::CHANNEL_MANAGER_ERROR_TYPE)
             ;
 
             $notifier->setMessage($message)->notify();

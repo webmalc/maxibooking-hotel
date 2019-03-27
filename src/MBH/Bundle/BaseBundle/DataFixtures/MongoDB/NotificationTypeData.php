@@ -59,6 +59,7 @@ class NotificationTypeData extends AbstractFixture implements OrderedFixtureInte
     {
         return [
             NotificationType::CHANNEL_MANAGER_TYPE,
+            NotificationType::CHANNEL_MANAGER_ERROR_TYPE,
             NotificationType::UNPAID_TYPE,
             NotificationType::TASK_TYPE,
             NotificationType::CHANNEL_MANAGER_CONFIGURATION_TYPE
