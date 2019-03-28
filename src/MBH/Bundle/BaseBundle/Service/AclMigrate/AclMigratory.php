@@ -64,6 +64,7 @@ class AclMigratory
 
 
         $oids = $oidCollection->find(['type' => $documentName]);
+        $oidsIds = [];
         if ($oids->count(true)) {
             foreach ($oids as $oid) {
                 $oidsIds[] = $oid['_id'];
