@@ -117,3 +117,8 @@ services:
   mbh.tariff_manager:
       class: MBH\Bundle\PriceBundle\Services\TariffManager
       arguments: ['@doctrine.odm.mongodb.document_manager', '@mbh.helper']
+
+  mbh.price_cache_repository_filter:
+      class: MBH\Bundle\PriceBundle\Services\PriceCacheRepositoryFilter
+      arguments:
+          - '@doctrine.odm.mongodb.document_manager'

@@ -10,6 +10,7 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
+use MBH\Bundle\PriceBundle\Services\PriceCacheRepositoryFilter;
 use MyAllocator\phpsdk\src\Api\ARIUpdate;
 use MyAllocator\phpsdk\src\Api\AssociateUserToPMS;
 use MyAllocator\phpsdk\src\Api\BookingList;
@@ -48,12 +49,18 @@ class MyAllocator extends Base
      */
     private $tomorrow = null;
 
+    /**
+     * @var PriceCacheRepositoryFilter
+     */
+    protected $priceCacheFilter;
+
     public function __construct(ContainerInterface $container)
     {
         parent::__construct($container);
         $this->params = $container->getParameter('mbh.channelmanager.services')['myallocator'];
         $this->today = new \DateTime('midnight');
         $this->tomorrow = new \DateTime('midnight +1 day');
+        $this->priceCacheFilter = $container->get('mbh.price_cache_repository_filter');
     }
 
     /**
@@ -321,15 +328,18 @@ class MyAllocator extends Base
             $roomTypes = $this->getRoomTypes($config);
             $tariffs = $this->getTariffs($config);
             $priceCachesCallback = function () use ($begin, $end, $config, $roomType) {
-                return $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
-                    $begin,
-                    $end,
-                    $config->getHotel(),
-                    $this->getRoomTypeArray($roomType),
-                    [],
-                    true,
-                    $this->roomManager->useCategories
+                $filtered = $this->priceCacheFilter->filterFetch(
+                    $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
+                        $begin,
+                        $end,
+                        $config->getHotel(),
+                        $this->getRoomTypeArray($roomType),
+                        [],
+                        true,
+                        $this->roomManager->useCategories
+                    )
                 );
+                return $filtered;
             };
             $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
 
