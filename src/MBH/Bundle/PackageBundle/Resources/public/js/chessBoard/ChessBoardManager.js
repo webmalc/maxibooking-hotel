@@ -48,6 +48,7 @@ var ChessBoardManager = /** @class */ (function () {
             _this.updateTable();
             $('#package-modal-continue-button').hide();
             $('#packageModalConfirmButton').show();
+            $(".findGuest").val([]).trigger("change");
         });
         var $confirmationModal = $('#entity-delete-confirmation');
         $confirmationModal.on('hidden.bs.modal', function () {
