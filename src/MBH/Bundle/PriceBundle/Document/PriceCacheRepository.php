@@ -58,7 +58,6 @@ class PriceCacheRepository extends DocumentRepository
         if (!is_null($tariffIds)) {
             $cachesQb->field('tariff.id')->in($tariffIds);
         }
-
         $result = $this->convertRawMongoData($cachesQb->getQuery()->execute());
 
         return $result;
@@ -230,7 +229,6 @@ class PriceCacheRepository extends DocumentRepository
         if (!is_null($tariffsIds)) {
             $qb->field('tariff.id')->in($tariffsIds);
         }
-
         return $qb->getQuery()->getSingleResult();
     }
 

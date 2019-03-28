@@ -498,7 +498,6 @@ class PriceCacheControllerTest extends WebTestCase
         $data = [
             'price'                   => 0,
             'isPersonPrice'           => 1,
-            'singlePrice'             => 0,
             'additionalPrice'         => 0,
             'additionalChildrenPrice' => 0,
         ];

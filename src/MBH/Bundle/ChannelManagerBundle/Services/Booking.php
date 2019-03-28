@@ -19,6 +19,7 @@ use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PriceBundle\Document\PriceCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use MBH\Bundle\PriceBundle\Services\PriceCacheRepositoryFilter;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -88,10 +89,16 @@ class Booking extends Base implements ChannelManagerServiceInterface
      */
     private $params;
 
-    public function __construct(ContainerInterface $container)
+    /**
+     * @var PriceCacheRepositoryFilter
+     */
+    private $priceCacheFilter;
+
+    public function __construct(ContainerInterface $container, PriceCacheRepositoryFilter $priceCacheFilter)
     {
         parent::__construct($container);
         $this->params = $container->getParameter('mbh.channelmanager.services')['booking'];
+        $this->priceCacheFilter = $priceCacheFilter;
     }
 
     // /**
@@ -309,15 +316,18 @@ class Booking extends Base implements ChannelManagerServiceInterface
             $tariffs = $this->getTariffs($config, true);
             $serviceTariffs = $this->pullTariffs($config);
             $priceCachesCallback = function () use ($begin, $end, $config, $roomType) {
-                return $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
-                    $begin,
-                    $end,
-                    $config->getHotel(),
-                    $this->getRoomTypeArray($roomType),
-                    [],
-                    true,
-                    $this->roomManager->useCategories
+                $filtered = $this->priceCacheFilter->filterFetch(
+                    $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
+                        $begin,
+                        $end,
+                        $config->getHotel(),
+                        $this->getRoomTypeArray($roomType),
+                        [],
+                        true,
+                        $this->roomManager->useCategories
+                    )
                 );
+                return $filtered;
             };
             $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
 
@@ -421,14 +431,17 @@ class Booking extends Base implements ChannelManagerServiceInterface
                 true
             );
             $priceCachesCallback = function () use ($begin, $end, $config, $roomType) {
-                return $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
-                    $begin,
-                    $end,
-                    $config->getHotel(),
-                    $roomType ? [$roomType->getId()] : [],
-                    [],
-                    true
+                $filtered = $this->priceCacheFilter->filterFetch(
+                    $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
+                        $begin,
+                        $end,
+                        $config->getHotel(),
+                        $roomType ? [$roomType->getId()] : [],
+                        [],
+                        true
+                    )
                 );
+                return $filtered;
             };
             $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
 
