@@ -268,14 +268,25 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
      * @Method("GET")
      * @Security("is_granted('ROLE_ROOM_CACHE_EDIT')")
      * @Template()
+     * @param Request $request
+     * @return array
      */
-    public function generatorAction()
+    public function generatorAction(Request $request)
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
+
+        $formData = ['begin' => null, 'end' => null];
+        if ($request->query->get('begin') && $request->query->get('end')) {
+            $formData = [
+                'begin' => $request->query->get('begin'),
+                'end' => $request->query->get('end'),
+            ];
+        }
 
         $form = $this->createForm(RoomCacheGeneratorType::class, [], [
             'weekdays' => $this->container->getParameter('mbh.weekdays'),
             'hotel' => $hotel,
+            'preRedirectFormData' => $formData,
         ]);
 
         return [
@@ -313,8 +324,13 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
                 $this->get('mbh.channelmanager')->updateRoomsInBackground($data['begin'], $data['end']);
                 $this->get('mbh.cache')->clear('room_cache');
 
+                $paramsArray = [
+                    'begin' => $request->get($form->getName())['begin'],
+                    'end' => $request->get($form->getName())['end'],
+                ];
+
                 return $this->isSavedRequest() ?
-                    $this->redirectToRoute('room_cache_generator') :
+                    $this->redirectToRoute('room_cache_generator', $paramsArray) :
                     $this->redirectToRoute('room_cache_overview');
             } else {
                 $this->addFlash('error', $error);

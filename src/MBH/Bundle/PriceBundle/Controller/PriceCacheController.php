@@ -329,6 +329,10 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
      * @Method("GET")
      * @Security("is_granted('ROLE_PRICE_CACHE_EDIT')")
      * @Template()
+     * @param Request $request
+     * @return array
+     * @throws \Doctrine\ODM\MongoDB\LockException
+     * @throws \Doctrine\ODM\MongoDB\Mapping\MappingException
      */
     public function generatorAction(Request $request)
     {
@@ -346,8 +350,17 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
         }
         $generator->setHotel($this->hotel);
 
+        $formData = ['begin' => null, 'end' => null];
+        if ($request->query->get('begin') && $request->query->get('end')) {
+            $formData = [
+                'begin' => $request->query->get('begin'),
+                'end' => $request->query->get('end'),
+            ];
+        }
+
         $form = $this->createForm(PriceCacheGeneratorType::class, $generator, [
             'useCategories' => $this->manager->useCategories,
+            'preRedirectFormData' => $formData,
         ]);
 
         return [
@@ -395,8 +408,14 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
 
             $resultUpdate->addFlashBag($request, true);
 
+
+            $paramsArray = [
+                'begin' => $request->get($form->getName())['begin'],
+                'end' => $request->get($form->getName())['end'],
+            ];
+
             return $this->isSavedRequest() ?
-                $this->redirectToRoute('price_cache_generator') :
+                $this->redirectToRoute('price_cache_generator', $paramsArray) :
                 $this->redirectToRoute('price_cache_overview');
         }
 

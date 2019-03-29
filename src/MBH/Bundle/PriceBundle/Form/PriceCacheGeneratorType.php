@@ -9,6 +9,7 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
 use MBH\Bundle\PriceBundle\Document\TariffRepository;
+use MBH\Bundle\PriceBundle\Form\Partial\PreRedirectParams;
 use MBH\Bundle\PriceBundle\Lib\PriceCacheHolderDataGeneratorForm;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -29,6 +30,9 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  */
 class PriceCacheGeneratorType extends AbstractType
 {
+
+    use PreRedirectParams;
+
     /**
      * @var TranslatorInterface
      */
@@ -78,7 +82,7 @@ class PriceCacheGeneratorType extends AbstractType
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
                 'group' => 'mbhpricebundle.form.pricecachegeneratortype.settings',
-                'data' => new \DateTime('midnight'),
+                'data' => $this->getBeginDate($options),
                 'required' => true,
                 'attr' => [
                     'class' => 'datepicker begin-datepicker',
@@ -90,6 +94,7 @@ class PriceCacheGeneratorType extends AbstractType
                 'label' => 'mbhpricebundle.form.pricecachegeneratortype.konetsperioda',
                 'widget' => 'single_text',
                 'format' => 'dd.MM.yyyy',
+                'data' => $this->getEndDate($options),
                 'group' => 'mbhpricebundle.form.pricecachegeneratortype.settings',
                 'required' => true,
                 'attr' => [
@@ -303,7 +308,8 @@ class PriceCacheGeneratorType extends AbstractType
         $resolver->setDefaults([
             'data_class' => PriceCacheHolderDataGeneratorForm::class,
             'useCategories' => false,
-            'constraints' => new Callback([$this, 'checkDates'])
+            'constraints' => new Callback([$this, 'checkDates']),
+            'preRedirectFormData' => ['begin' => null, 'end' => null]
         ]);
     }
 

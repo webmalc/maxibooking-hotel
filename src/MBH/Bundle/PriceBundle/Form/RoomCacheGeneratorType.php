@@ -4,6 +4,7 @@ namespace MBH\Bundle\PriceBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\PriceBundle\Form\Partial\PreRedirectParams;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -18,6 +19,9 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class RoomCacheGeneratorType extends AbstractType
 {
+
+    use PreRedirectParams;
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -25,7 +29,7 @@ class RoomCacheGeneratorType extends AbstractType
                     'label' => 'mbhpricebundle.form.roomcachegeneratortype.nachaloperioda',
                     'widget' => 'single_text',
                     'format' => 'dd.MM.yyyy',
-                    'data' => new \DateTime('midnight'),
+                    'data' => $this->getBeginDate($options),
                     'required' => true,
                     'attr' => array('class' => 'datepicker begin-datepicker', 'data-date-format' => 'dd.mm.yyyy'),
                     'constraints' => [new NotBlank(), new Date()],
@@ -34,6 +38,7 @@ class RoomCacheGeneratorType extends AbstractType
                     'label' => 'mbhpricebundle.form.roomcachegeneratortype.konetsperioda',
                     'widget' => 'single_text',
                     'format' => 'dd.MM.yyyy',
+                    'data' => $this->getEndDate($options),
                     'required' => true,
                     'attr' => array('class' => 'datepicker end-datepicker', 'data-date-format' => 'dd.mm.yyyy'),
                     'constraints' => [new NotBlank(), new Date()],
@@ -103,7 +108,8 @@ class RoomCacheGeneratorType extends AbstractType
         $resolver->setDefaults([
             'weekdays' => [],
             'hotel' => null,
-            'constraints' => new Callback([$this, 'checkDates'])
+            'constraints' => new Callback([$this, 'checkDates']),
+            'preRedirectFormData' => ['begin' => null, 'end' => null]
         ]);
     }
 
