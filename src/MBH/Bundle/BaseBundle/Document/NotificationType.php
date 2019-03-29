@@ -38,6 +38,7 @@ class NotificationType extends Base
     public const OWNER_STUFF = 'stuff';
     public const OWNER_CLIENT = 'client';
     public const OWNER_ALL = 'all';
+    public const OWNER_ERROR = 'error';
 
     /**
      * Hook timestampable behavior
@@ -137,7 +138,8 @@ class NotificationType extends Base
         return [
             self::OWNER_ALL,
             self::OWNER_CLIENT,
-            self::OWNER_STUFF
+            self::OWNER_STUFF,
+            self::OWNER_ERROR,
         ];
     }
 

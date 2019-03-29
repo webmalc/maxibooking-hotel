@@ -28,6 +28,16 @@ class NotificationTypeRepository extends DocumentRepository
         );
     }
 
+    public function getErrorType()
+    {
+        return $this->createResults(
+            [
+//                NotificationType::OWNER_ALL,
+                NotificationType::OWNER_ERROR,
+            ]
+        );
+    }
+
     private function createResults(array $owners)
     {
         return $this

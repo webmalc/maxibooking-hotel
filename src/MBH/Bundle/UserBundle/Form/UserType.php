@@ -124,6 +124,7 @@ class UserType extends AbstractType
                                 [
                                     NotificationType::OWNER_STUFF,
                                     NotificationType::OWNER_ALL,
+                                    NotificationType::OWNER_ERROR
                                 ]
                             );
                     },

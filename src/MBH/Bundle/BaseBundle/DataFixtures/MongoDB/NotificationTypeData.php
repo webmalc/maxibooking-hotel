@@ -17,6 +17,7 @@ class NotificationTypeData extends AbstractFixture implements OrderedFixtureInte
             NotificationType::OWNER_ALL => self::getAllOwnerTypes(),
             NotificationType::OWNER_STUFF => self::getStuffOwnerTypes(),
             NotificationType::OWNER_CLIENT => self::getClientOwnerTypes(),
+            NotificationType::OWNER_ERROR => self::getErrorOwnerTypes(),
         ];
 
         foreach ($data as $owner => $types) {
@@ -45,13 +46,20 @@ class NotificationTypeData extends AbstractFixture implements OrderedFixtureInte
         }
     }
 
+    public static function getErrorOwnerTypes()
+    {
+        return [
+            NotificationType::CHANNEL_MANAGER_ERROR_TYPE,
+            NotificationType::ERROR,
+        ];
+    }
+
     public static function getAllOwnerTypes(): array
     {
         return [
             NotificationType::ONLINE_ORDER_TYPE,
             NotificationType::ONLINE_PAYMENT_CONFIRM_TYPE,
             NotificationType::ARRIVAL_TYPE,
-            NotificationType::ERROR
         ];
     }
 
@@ -59,7 +67,6 @@ class NotificationTypeData extends AbstractFixture implements OrderedFixtureInte
     {
         return [
             NotificationType::CHANNEL_MANAGER_TYPE,
-            NotificationType::CHANNEL_MANAGER_ERROR_TYPE,
             NotificationType::UNPAID_TYPE,
             NotificationType::TASK_TYPE,
             NotificationType::CHANNEL_MANAGER_CONFIGURATION_TYPE
