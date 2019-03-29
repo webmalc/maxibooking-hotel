@@ -32,7 +32,6 @@ class NotificationTypeRepository extends DocumentRepository
     {
         return $this->createResults(
             [
-//                NotificationType::OWNER_ALL,
                 NotificationType::OWNER_ERROR,
             ]
         );

@@ -257,8 +257,8 @@ class Mailer implements \SplObserver, MailerInterface
         }
 
         if (!count($recipients)) {
-            if (in_array($messageType, NotificationTypeData::getStuffOwnerTypes())) {
-                $recipients = [$this->dm->getRepository('MBHUserBundle:User')->findOneBy(['username' => 'admin'])];
+            if (in_array($messageType, NotificationTypeData::getStuffOwnerTypes()) || in_array($messageType, NotificationTypeData::getErrorOwnerTypes())) {
+                $recipients = [$this->dm->getRepository('MBHUserBundle:User')->findOneBy(['username' => 'mb'])];
             } else {
                 $error = 'Failed to send email. There is not a single recipient.';
                 $this->logger->alert($error);

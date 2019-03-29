@@ -22,7 +22,6 @@ class CMErrorNotificationTypeMigrationCommand extends ContainerAwareCommand
             ->setDescription('Add channel_manager_error notification type, then run mbh:notification:types:migrate');
     }
 
-
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $dm = $this->getContainer()->get('doctrine_mongodb.odm.default_document_manager');
@@ -33,13 +32,19 @@ class CMErrorNotificationTypeMigrationCommand extends ContainerAwareCommand
             $notificationType = new NotificationType();
             $notificationType
                 ->setType('channel_manager_error')
-                ->setOwner('stuff')
+                ->setOwner('error')
                 ->setIsEnabled(true);
             $dm->persist($notificationType);
-            $dm->flush();
-
-            $notificationTypesMigrationCommand = $this->getApplication()->find('mbh:notification:types:migrate');
-            $notificationTypesMigrationCommand->run(new ArrayInput([]), $output);
         }
+
+        /** @var NotificationType $errorType */
+        $errorType = $notificationTypeRepo->findOneBy(['type' => 'error']);
+
+        if ($errorType) {
+            $errorType->setOwner('error');
+            $dm->persist($errorType);
+        }
+
+        $dm->flush();
     }
 }

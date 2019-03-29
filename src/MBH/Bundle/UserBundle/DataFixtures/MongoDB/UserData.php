@@ -15,6 +15,8 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
     public const USER_MANAGER = 'manager';
     public const USER_ADMIN = 'admin';
 
+    public const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
+
     const SANDBOX_USERNAME = 'demo';
     const SANDBOX_USER_TOKEN = 'some_token_for_sandbox_user';
     //TODO: Вернуть на 'mb'
@@ -46,7 +48,7 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
             'role' => 'ROLE_SUPER_ADMIN'
         ]
     ];
-
+//
     /**
      * @var ContainerInterface
      */
@@ -87,7 +89,14 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
                 if (isset($userData['group'])) {
                     $user->addGroup($this->getReference($userData['group']));
                 }
-                $user->setAllowNotificationTypes($notificationTypes);
+
+                if (in_array(self::ROLE_SUPER_ADMIN, $user->getRoles())) {
+                    $withErrorTypes = $manager->getRepository('MBHBaseBundle:NotificationType')->getErrorType()->toArray();
+                    $withErrorsNotificationTypes = array_merge($notificationTypes, $withErrorTypes);
+                    $user->setAllowNotificationTypes($withErrorsNotificationTypes);
+                } else {
+                    $user->setAllowNotificationTypes($notificationTypes);
+                }
 
                 if ($userData['username'] === self::SANDBOX_USERNAME) {
                     $apiToken = (new AuthorizationToken())
