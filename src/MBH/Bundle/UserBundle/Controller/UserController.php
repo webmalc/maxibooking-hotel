@@ -64,9 +64,6 @@ class UserController extends Controller
 
         $allowNotificationTypes = $this->dm->getRepository('MBHBaseBundle:NotificationType')->getStuffType();
 
-//        $q = $this->dm->getRepository('MBHBaseBundle:NotificationType')->getErrorType()->toArray();
-        $q = [];
-
         $entity->setAllowNotificationTypes($allowNotificationTypes->toArray());
         $form = $this->createForm(UserType::class,
             $entity, ['roles' => $this->container->getParameter('security.role_hierarchy.roles')]
