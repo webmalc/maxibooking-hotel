@@ -50,7 +50,7 @@ class RestrictionGeneratorType extends AbstractType
                 'group' => 'mbhpricebundle.form.restrictiongeneratortype.setting',
                 'multiple' => true,
                 'choices' => $options['weekdays'],
-                'help' => 'mbhpricebundle.form.restrictiongeneratortype.dni.nedeli.dlya.kotorykh.budet.proizvedena.generatsiya.nalichiya.mest',
+                'help' => 'mbhpricebundle.form.restrictiongeneratortype.dni.nedeli.dlya.kotorykh.budet.proizvedena.generatsiya.tsen',
                 'attr' => array('placeholder' => 'mbhpricebundle.form.restrictiongeneratortype.vse.dni.nedeli'),
             ])
             ->add('roomTypes', DocumentType::class, [
