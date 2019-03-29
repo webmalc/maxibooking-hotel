@@ -275,13 +275,10 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
     {
         $hotel = $this->get('mbh.hotel.selector')->getSelected();
 
-        $formData = ['begin' => null, 'end' => null];
-        if ($request->query->get('begin') && $request->query->get('end')) {
-            $formData = [
-                'begin' => $request->query->get('begin'),
-                'end' => $request->query->get('end'),
-            ];
-        }
+        $formData = [
+            'begin' => $request->query->get('begin'),
+            'end' => $request->query->get('end'),
+        ];
 
         $form = $this->createForm(RoomCacheGeneratorType::class, [], [
             'weekdays' => $this->container->getParameter('mbh.weekdays'),

@@ -350,13 +350,10 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
         }
         $generator->setHotel($this->hotel);
 
-        $formData = ['begin' => null, 'end' => null];
-        if ($request->query->get('begin') && $request->query->get('end')) {
-            $formData = [
-                'begin' => $request->query->get('begin'),
-                'end' => $request->query->get('end'),
-            ];
-        }
+        $formData = [
+            'begin' => $request->query->get('begin', null),
+            'end' => $request->query->get('end', null),
+        ];
 
         $form = $this->createForm(PriceCacheGeneratorType::class, $generator, [
             'useCategories' => $this->manager->useCategories,
