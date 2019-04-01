@@ -33,7 +33,7 @@ class PriceCacheSinglePriceMigrationCommand extends ContainerAwareCommand
         $updatedIds = [];
         /** @var RoomType $roomType */
         foreach ($allRoomTypes as $roomType) {
-            $roomType->setIsSinglePlacement(false);
+            $roomType->setIsSinglePlacement(true);
             $dm->persist($roomType);
             $updatedIds[] = $roomType->getId();
         }
