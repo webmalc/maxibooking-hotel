@@ -16,18 +16,21 @@ class PriceCacheSinglePriceMigrationCommand extends ContainerAwareCommand
     {
         $this
             ->setName('mbh:price_cache:single_price:migration')
-            ->setDescription('Add isSinglePrice option to all RoomTypes');
-
-        $this->addOption(
-            'singlePlacement',
-            null,
-            InputOption::VALUE_REQUIRED,
-            '$roomType->setIsSinglePlacement() value'
-        );
+            ->setDescription('Add isSinglePrice option to all RoomTypes')
+            ->addOption(
+                'singlePlacement',
+                null,
+                InputOption::VALUE_REQUIRED,
+                '$roomType->setIsSinglePlacement() value'
+            );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if (!$input->getOption('singlePlacement')) {
+            throw new \Exception('singlePlacement value required');
+        }
+
         $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
 
         $roomTypeRepository = $dm->getRepository('MBHHotelBundle:RoomType');
