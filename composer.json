@@ -67,7 +67,7 @@
     "stripe/stripe-php": "^5.7",
     "symfony/workflow": "3.4.*@stable",
     "sentry/sentry": "^1.8",
-    "nelmio/api-doc-bundle": "3.0.0",
+    "nelmio/api-doc-bundle": "^3.0",
     "symfony/polyfill-php71": "^1.7",
     "symfony/polyfill-php72": "^1.7",
     "snc/redis-bundle": "^2.1",

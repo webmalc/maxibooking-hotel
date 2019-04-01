@@ -368,3 +368,25 @@ bazinga_js_translation:
     active_domains:
             - front_messages
 
+
+nelmio_api_doc:
+    documentation:
+        schemes: [http]
+        info:
+            title: Maxibooking Hotel
+            description: MBH Api
+            version: 0.0.1
+        securityDefenitions:
+            Api:
+                type: apiKey
+                desrcription: 'Value: Api {jwt}'
+                name: Authorization
+                in: header
+        security:
+            - Api: []
+
+    areas:
+        path_patterns:
+          - ^/api(?!/doc$)
+#        host_patterns:
+#          - ^api\.
