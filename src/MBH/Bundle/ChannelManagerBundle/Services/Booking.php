@@ -359,11 +359,13 @@ class Booking extends Base implements ChannelManagerServiceInterface
                             /** @var PriceCache $info */
                             $info = $priceCaches[$roomTypeId][$syncPricesTariffId][$day->format('d.m.Y')];
                             $calculator = $this->container->get('mbh.calculation');
+                            $price1 = null;
+                            if ($info->getSinglePrice() && (!($bookingRoom instanceOf BookingRoom) || $bookingRoom->getRoomType()->getIsSinglePlacement())) {
+                                $price1 = $this->currencyConvertFromRub($config, $calculator->getPriceWithTariffPromotionDiscount($info->getSinglePrice(), $info->getTariff()));
+                            }
                             $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
                                 'price' => $this->currencyConvertFromRub($config, $calculator->getPriceWithTariffPromotionDiscount($info->getPrice(), $info->getTariff())),
-                                'price1' => $info->getSinglePrice() && (!($bookingRoom instanceOf BookingRoom) || $bookingRoom->isUploadSinglePrices())
-                                    ? $this->currencyConvertFromRub($config, $calculator->getPriceWithTariffPromotionDiscount($info->getSinglePrice(), $info->getTariff()))
-                                    : null,
+                                'price1' => $price1,
                                 'closed' => false
                             ];
                         } else {
