@@ -105,13 +105,7 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
                     $user->addGroup($this->getReference($userData['group']));
                 }
 
-                if (in_array(self::ROLE_SUPER_ADMIN, $user->getRoles())) {
-                    $withErrorTypes = $manager->getRepository('MBHBaseBundle:NotificationType')->getErrorType()->toArray();
-                    $withErrorsNotificationTypes = array_merge($notificationTypes, $withErrorTypes);
-                    $user->setAllowNotificationTypes($withErrorsNotificationTypes);
-                } else {
-                    $user->setAllowNotificationTypes($notificationTypes);
-                }
+                $user->setAllowNotificationTypes($notificationTypes);
 
                 if ($userData['username'] === self::SANDBOX_USERNAME) {
                     $apiToken = (new AuthorizationToken())
