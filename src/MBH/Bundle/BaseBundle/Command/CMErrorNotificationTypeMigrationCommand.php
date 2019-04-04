@@ -28,23 +28,31 @@ class CMErrorNotificationTypeMigrationCommand extends ContainerAwareCommand
 
         $notificationTypeRepo = $dm->getRepository('MBHBaseBundle:NotificationType');
 
-        if (!count($notificationTypeRepo->findBy(['type' => 'channel_manager_error']))) {
+        $message = '';
+        if (!count($notificationTypeRepo->findBy(['type' => NotificationType::CHANNEL_MANAGER_ERROR_TYPE]))) {
             $notificationType = new NotificationType();
             $notificationType
-                ->setType('channel_manager_error')
-                ->setOwner('error')
+                ->setType(NotificationType::CHANNEL_MANAGER_ERROR_TYPE)
+                ->setOwner(NotificationType::OWNER_ERROR)
                 ->setIsEnabled(true);
             $dm->persist($notificationType);
+            $message .= 'Added notification type channel manager error.';
+        } else {
+            $message .= 'Notification type already exists.';
         }
 
-        /** @var NotificationType $errorType */
-        $errorType = $notificationTypeRepo->findOneBy(['type' => 'error']);
+        /** @var NotificationType $errorNotificationType */
+        $errorNotificationType = $notificationTypeRepo->findOneBy(['type' => NotificationType::ERROR]);
 
-        if ($errorType) {
-            $errorType->setOwner('error');
-            $dm->persist($errorType);
+        if ($errorNotificationType) {
+            $errorNotificationType->setOwner(NotificationType::OWNER_ERROR);
+            $dm->persist($errorNotificationType);
+            $message .= ' Error notification type set owner done.';
         }
 
         $dm->flush();
+
+        $output->writeln($message);
+
     }
 }
