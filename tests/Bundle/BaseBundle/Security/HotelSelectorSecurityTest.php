@@ -6,16 +6,16 @@ namespace Tests\Bundle\BaseBundle\Security;
 
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\UserBundle\DataFixtures\MongoDB\UserData;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\BrowserKit\Client;
 
 class HotelSelectorSecurityTest extends WebTestCase
 {
-    public function setUp()
+    public static function setUpBeforeClass()
     {
         self::baseFixtures();
     }
-
 
     /** @dataProvider dataProvider */
     public function testHotelNoAccess(array $data)
@@ -75,9 +75,9 @@ class HotelSelectorSecurityTest extends WebTestCase
         $dm->flush($user);
     }
 
-    private function createRequest(Client $client): string
+    private function createRequest(Client $client, string $url = '/'): string
     {
-        $client->request('GET', '/');
+        $client->request('GET', $url);
         $url = '';
         while ($client->getResponse()->getStatusCode() === 302) {
             $url = $client->followRedirect()->getUri();
@@ -108,5 +108,44 @@ class HotelSelectorSecurityTest extends WebTestCase
                 'data' => $dataInstance,
             ];
         }
+    }
+
+    public function getDataForTestWithApi(): iterable
+    {
+        yield 'with key user:demo' => [
+            [
+                'key'       => UserData::SANDBOX_USER_TOKEN,
+                'url'       => '/package/chessboard/',
+                'resultUrl' => '/package/chessboard/',
+            ],
+        ];
+        yield 'with key user:manger, not access' => [
+            [
+                'key'       => UserData::USER_MANAGER_API_KEY,
+                'url'       => '/package/chessboard/',
+                'resultUrl' => '/management/hotel/notfound',
+            ],
+        ];
+        yield 'with key user:manager' => [
+            [
+                'key'       => UserData::USER_MANAGER_API_KEY,
+                'url'       => '/management/hotel/notfound',
+                'resultUrl' => '/management/hotel/notfound',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider getDataForTestWithApi
+     */
+    public function testHotelAccessWithApiKey(array $data)
+    {
+        $this->client = self::makeClient(false);
+
+        $this->client->followRedirects();
+
+        $crawler = $this->getListCrawler($data['url'] . '?apiKey=' . $data['key']);
+
+        $this->assertEquals($data['resultUrl'], parse_url($crawler->getUri())['path']);
     }
 }
