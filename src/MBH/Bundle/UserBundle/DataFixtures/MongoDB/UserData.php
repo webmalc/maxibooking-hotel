@@ -19,6 +19,8 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
 
     public const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
 
+    public const USER_MANAGER_API_KEY = 'very_strong_key';
+
     const SANDBOX_USERNAME = 'demo';
     const SANDBOX_USER_TOKEN = 'some_token_for_sandbox_user';
     //TODO: Вернуть на 'mb'
@@ -111,6 +113,13 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
                     $apiToken = (new AuthorizationToken())
                         ->setExpiredAt(new \DateTime('+ 1 day'))
                         ->setToken(self::SANDBOX_USER_TOKEN);
+                    $user->setApiToken($apiToken);
+                }
+
+                if ($userData['username'] === self::USER_MANAGER) {
+                    $apiToken = (new AuthorizationToken())
+                        ->setExpiredAt(new \DateTime('+ 1 day'))
+                        ->setToken(self::USER_MANAGER_API_KEY);
                     $user->setApiToken($apiToken);
                 }
 
