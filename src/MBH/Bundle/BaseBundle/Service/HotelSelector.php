@@ -43,26 +43,34 @@ class HotelSelector
      */
     public function checkPermissions(Hotel $hotel, User $user = null)
     {
-        if (!$user && !$this->container->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+        if (!$this->isUserAuthenticated()) {
+            if ($user) {
+                $token = new UsernamePasswordToken($user, 'none', 'main', $user->getRoles());
+                if ($this->container->get('kernel')->getEnvironment() === 'prod' && $this->container->has('security.access.decision_manager')) {
+                    $decision_manager = $this->container->get('security.access.decision_manager');
+                } else {
+                    $decision_manager = $this->container->get('debug.security.access.decision_manager');
+                }
+
+                return $decision_manager->decide($token, [HotelVoter::ACCESS, 'ROLE_ADMIN'], $hotel);
+            }
+
             return true;
         }
 
-        $user ?: $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        return $this->security->isGranted('ROLE_ADMIN')
+            || $this->security->isGranted(HotelVoter::ACCESS, $hotel)
+            || $this->security->isGranted('ROLE_ACCESS_WITH_TOKEN');
+    }
 
-        // Is admin?
-        $token = new UsernamePasswordToken($user, 'none', 'none', $user->getRoles());
-
-        if ($this->container->get('kernel')->getEnvironment() === 'prod' && $this->container->has('security.access.decision_manager')) {
-            $decision_manager = $this->container->get('security.access.decision_manager');
-        } else {
-            $decision_manager = $this->container->get('debug.security.access.decision_manager');
+    private function isUserAuthenticated(): bool
+    {
+        try {
+            return $this->security->isGranted('IS_AUTHENTICATED_REMEMBERED');
+        } catch (AuthenticationCredentialsNotFoundException $e) {
+            return PHP_SAPI !== 'cli';
         }
 
-        if ($decision_manager->decide($token, array('ROLE_ADMIN'))) {
-            return true;
-        }
-
-        return $this->security->isGranted('ROLE_ADMIN') || $this->security->isGranted(HotelVoter::ACCESS, $hotel);
     }
 
     /**
