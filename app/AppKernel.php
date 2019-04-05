@@ -3,6 +3,8 @@
 use Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle;
 use Knp\Bundle\GaufretteBundle\KnpGaufretteBundle;
 use MBH\Bundle\BillingBundle\MBHBillingBundle;
+use Ob\HighchartsBundle\Highcharts\Highchart;
+use Ob\HighchartsBundle\ObHighchartsBundle;
 use Oneup\FlysystemBundle\OneupFlysystemBundle;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
@@ -42,9 +44,7 @@ class AppKernel extends Kernel
             new FOS\UserBundle\FOSUserBundle(),
             new FOS\JsRoutingBundle\FOSJsRoutingBundle(),
             new Knp\Bundle\MenuBundle\KnpMenuBundle(),
-            new Ob\HighchartsBundle\ObHighchartsBundle(),
             new Knp\Bundle\SnappyBundle\KnpSnappyBundle(),
-            new Dinhkhanh\MongoDBAclBundle\MongoDBAclBundle(),
             new Liip\ImagineBundle\LiipImagineBundle(),
             new JMS\DiExtraBundle\JMSDiExtraBundle(),
             new JMS\AopBundle\JMSAopBundle(),
@@ -60,6 +60,7 @@ class AppKernel extends Kernel
             new KnpGaufretteBundle(),
             new OneupFlysystemBundle(),
             new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
+            new ObHighchartsBundle(),
 
 
             //Project bundles,

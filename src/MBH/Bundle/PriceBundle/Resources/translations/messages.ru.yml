@@ -1,7 +1,7 @@
 mbhpricebundle.form.restrictiongeneratortype.nachalo.perioda: 'Начало периода'
 mbhpricebundle.form.restrictiongeneratortype.konets.perioda: 'Конец периода'
 mbhpricebundle.form.restrictiongeneratortype.dni.nedeli: 'Дни недели'
-mbhpricebundle.form.restrictiongeneratortype.dni.nedeli.dlya.kotorykh.budet.proizvedena.generatsiya.nalichiya.mest: 'Дни недели для которых будет произведена генерация наличия мест'
+mbhpricebundle.form.restrictiongeneratortype.dni.nedeli.dlya.kotorykh.budet.proizvedena.generatsiya.tsen: 'Дни недели для которых будет произведена генерация цен'
 mbhpricebundle.form.restrictiongeneratortype.vse.dni.nedeli: 'Все дни недели'
 mbhpricebundle.form.restrictiongeneratortype.tipy.nomerov: 'Типы номеров'
 mbhpricebundle.form.restrictiongeneratortype.setting: Настройки

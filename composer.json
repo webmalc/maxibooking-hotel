@@ -3,11 +3,11 @@
   "license": "MIT",
   "type": "project",
   "description": "The \"Symfony Standard Edition\" distribution",
-  "minimum-stability": "stable",
+  "prefer-stable": true,
   "autoload": {
     "psr-4": {
-      "": "src/",
-      "Tests\\": "tests/"
+      "Tests\\": "tests/",
+      "": "src/"
     },
     "classmap": [
       "app/AppKernel.php",
@@ -16,8 +16,8 @@
   },
   "require": {
     "php": ">=7.1.0",
-    "alcaeus/mongo-php-adapter": "1.*@stable",
-    "symfony/symfony": "3.3.*@stable",
+    "alcaeus/mongo-php-adapter": "^1.1.5",
+    "symfony/symfony": "^3.4",
     "twig/twig": "*@stable",
     "twig/extensions": "*@stable",
     "symfony/assetic-bundle": "*@stable",
@@ -28,19 +28,18 @@
     "symfony/monolog-bundle": "@stable",
     "sensio/distribution-bundle": "@stable",
     "symfony/polyfill-apcu": "^1.0",
-    "sensio/framework-extra-bundle": "*@stable",
+    "sensio/framework-extra-bundle": "<4",
     "incenteev/composer-parameter-handler": "^2.0@stable",
-    "doctrine/mongodb": "*@dev",
-    "doctrine/mongodb-odm": "*@dev",
-    "doctrine/mongodb-odm-bundle": "*@dev",
+    "doctrine/mongodb": "^1.6.1",
+    "doctrine/mongodb-odm": "^1.2.3",
+    "doctrine/mongodb-odm-bundle": "^3.4.2",
     "gedmo/doctrine-extensions": "2.*@stable",
-    "stof/doctrine-extensions-bundle": "dev-master",
+    "stof/doctrine-extensions-bundle": "^1.3.0",
     "friendsofsymfony/user-bundle": "*@stable",
     "friendsofsymfony/jsrouting-bundle": "*@stable",
     "knplabs/knp-menu": "*@stable",
     "knplabs/knp-menu-bundle": "*@stable",
     "jms/security-extra-bundle": "*@stable",
-    "ob/highcharts-bundle": "*@stable",
     "knplabs/knp-snappy-bundle": "*@stable",
     "liip/imagine-bundle": "1.9.1",
     "jms/di-extra-bundle": "*@stable",
@@ -52,7 +51,6 @@
     "leaseweb/memcache-bundle": "^2.1",
     "sonata-project/google-authenticator": "^1.0",
     "google/recaptcha": "^1.1",
-    "dinhkhanh/mongodb-acl-bundle": "dev-master",
     "guzzlehttp/guzzle": "^6.2",
     "php-amqplib/rabbitmq-bundle": "^1.13",
     "phobetor/rabbitmq-supervisor-bundle": "^1.5",
@@ -61,7 +59,6 @@
     "vich/uploader-bundle": "^1.4",
     "theofidry/psysh-bundle": "3.0.0",
     "mongodb/mongodb": "^1.1",
-    "symfony/dotenv": "^4.0",
     "maennchen/zipstream-php": "^0.5.1",
     "aws/aws-sdk-php": "^3.48",
     "oneup/flysystem-bundle": "@stable",
@@ -71,9 +68,13 @@
     "symfony/workflow": "3.4.*@stable",
     "sentry/sentry": "^1.8",
     "nelmio/api-doc-bundle": "3.0.0",
+    "symfony/polyfill-php71": "^1.7",
+    "symfony/polyfill-php72": "^1.7",
+    "snc/redis-bundle": "^2.1",
     "eluceo/ical": "^0.14.0",
     "johngrogg/ics-parser": "^2.1",
-    "facebook/webdriver": "^1.6"
+    "facebook/webdriver": "^1.6",
+    "ob/highcharts-bundle": "^1.6"
   },
   "require-dev": {
     "sensio/generator-bundle": "^3.0",
@@ -119,12 +120,7 @@
       "dev-master": "3.1-dev"
     }
   },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/webmalc/MongoDBAclBundle"
-    }
-  ],
+  "repositories": [],
   "provide": {
     "ext-mongo": "*"
   }

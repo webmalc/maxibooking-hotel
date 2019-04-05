@@ -11,6 +11,7 @@ use MBH\Bundle\BaseBundle\Lib\Test\Traits\HotelIdTestTrait;
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\BaseBundle\Menu\Builder;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\UserBundle\DataFixtures\MongoDB\UserData;
 use MBH\Bundle\UserBundle\Document\User;
 
 class WelcomeControllerTest extends WebTestCase
@@ -47,7 +48,7 @@ class WelcomeControllerTest extends WebTestCase
     /**
      * @var string
      */
-    private const USER_MANAGER = 'manager';
+    private const USER_MANAGER = UserData::USER_L_MANAGER;
 
     /**
      * @var string
@@ -173,7 +174,8 @@ class WelcomeControllerTest extends WebTestCase
 
     public function testSecurity()
     {
-        $this->attachManagerToTheHotel();
+        //** TODO: Remove it, cause User have hotels access in model now. */
+        /*$this->attachManagerToTheHotel();*/
 
         $crawlerAdmin = $this->getListCrawler(self::URL_PACKAGE_ORGANIZATIONS_LIST);
 

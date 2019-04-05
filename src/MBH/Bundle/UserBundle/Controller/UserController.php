@@ -96,8 +96,6 @@ class UserController extends Controller
             $this->dm->persist($entity);
             $this->dm->flush();
 
-            $this->updateAcl($entity, $form);
-
             $this->addFlash('success', 'controller.profileController.record_saved_success');
 
             return $this->afterSaveRedirect('user', $entity->getId());
@@ -125,28 +123,28 @@ class UserController extends Controller
         $hasHotels = [];
         $hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
         foreach ($hotels as $hotel) {
-            $aclProvider = $this->get('security.acl.provider');
-            $objectIdentity = ObjectIdentity::fromDomainObject($hotel);
-            try {
-                $acl = $aclProvider->findAcl($objectIdentity);
-            } catch (AclNotFoundException $e) {
-                $acl = $aclProvider->createAcl($objectIdentity);
-            }
-
-            $securityIdentity = new UserSecurityIdentity($entity, \MBH\Bundle\UserBundle\Document\User::class);
-
-            try {
-                if ($acl->isGranted([MaskBuilder::MASK_MASTER], [$securityIdentity])) {
-                    $hasHotels[] = $hotel;
-                }
-            } catch (NoAceFoundException $e) {
-
-            }
+//            $aclProvider = $this->get('security.acl.provider');
+//            $objectIdentity = ObjectIdentity::fromDomainObject($hotel);
+//            try {
+//                $acl = $aclProvider->findAcl($objectIdentity);
+//            } catch (AclNotFoundException $e) {
+//                $acl = $aclProvider->createAcl($objectIdentity);
+//            }
+//
+//            $securityIdentity = new UserSecurityIdentity($entity, \MBH\Bundle\UserBundle\Document\User::class);
+//
+//            try {
+//                if ($acl->isGranted([MaskBuilder::MASK_MASTER], [$securityIdentity])) {
+//                    $hasHotels[] = $hotel;
+//                }
+//            } catch (NoAceFoundException $e) {
+//
+//            }
+            $hasHotels[] = $hotel;
         }
 
         $form = $this->createForm(UserType::class,
             $entity, [
-                'hotels' => $hasHotels,
                 'roles'  => $this->container->getParameter('security.role_hierarchy.roles'),
                 'isNew'  => false,
             ]
@@ -297,9 +295,6 @@ class UserController extends Controller
                 $this->get('session')->set('_locale', $entity->getLocale());
             }
             $this->container->get('fos_user.user_manager')->updateUser($entity);
-
-            //update ACL
-            $this->updateAcl($entity, $form);
 
             $this->addFlash('success', 'controller.profileController.record_edited_success');
 

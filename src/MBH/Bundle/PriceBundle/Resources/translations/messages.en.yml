@@ -292,7 +292,7 @@ mbhpricebundle.form.tariffinheritancetype.nasledovatʹlikvotynomerovotroditelʹs
 mbhpricebundle.form.restrictiongeneratortype.nachalo.perioda: 'Starting Date'
 mbhpricebundle.form.restrictiongeneratortype.konets.perioda: 'End Date'
 mbhpricebundle.form.restrictiongeneratortype.dni.nedeli: 'Days of the week'
-mbhpricebundle.form.restrictiongeneratortype.dni.nedeli.dlya.kotorykh.budet.proizvedena.generatsiya.nalichiya.mest: 'Specific days of the week for which the new data is to apply. Unless specified it will be applied to all days within the selected period'
+mbhpricebundle.form.restrictiongeneratortype.dni.nedeli.dlya.kotorykh.budet.proizvedena.generatsiya.tsen: 'Specific days of the week for which the new data is to apply. Unless specified it will be applied to all days within the selected period'
 mbhpricebundle.form.restrictiongeneratortype.vse.dni.nedeli: 'All days of the week'
 mbhpricebundle.form.restrictiongeneratortype.tipy.nomerov: 'Room types'
 mbhpricebundle.form.restrictiongeneratortype.setting: Settings
