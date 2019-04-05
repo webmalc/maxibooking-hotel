@@ -119,13 +119,13 @@ class HotelSelectorSecurityTest extends WebTestCase
                 'resultUrl' => '/package/chessboard/',
             ],
         ];
-        yield 'with key user:manger, not access' => [
-            [
-                'key'       => UserData::USER_MANAGER_API_KEY,
-                'url'       => '/package/chessboard/',
-                'resultUrl' => '/management/hotel/notfound',
-            ],
-        ];
+//        yield 'with key user:manger, not access' => [
+//            [
+//                'key'       => UserData::USER_MANAGER_API_KEY,
+//                'url'       => '/package/chessboard/',
+//                'resultUrl' => '/management/hotel/notfound',
+//            ],
+//        ];
         yield 'with key user:manager' => [
             [
                 'key'       => UserData::USER_MANAGER_API_KEY,
