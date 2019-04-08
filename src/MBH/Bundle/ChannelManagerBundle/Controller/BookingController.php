@@ -195,8 +195,7 @@ class BookingController extends Controller implements CheckHotelControllerInterf
                 if (!empty($roomData[BookingRoomsType::ROOM_TYPE_FIELD_PREFIX])) {
                     $room = (new BookingRoom())
                         ->setRoomType($roomData[BookingRoomsType::ROOM_TYPE_FIELD_PREFIX])
-                        ->setRoomId($roomId)
-                        ->setUploadSinglePrices($roomData[BookingRoomsType::SINGLE_PRICES_FIELD_PREFIX]);
+                        ->setRoomId($roomId);
                     $config->addRoom($room);
                 }
             }
