@@ -553,7 +553,7 @@ class ChannelManager
         foreach ($collection as $item) {
             $normalizedItem = [];
             if ($item instanceof BookingRoom) {
-                $normalizedItem['uploadSinglePrices'] = $item->isUploadSinglePrices();
+                $normalizedItem['uploadSinglePrices'] = $item->getRoomType()->getIsSinglePlacement();
             } elseif ($item instanceof AirbnbRoom) {
                 $normalizedItem['syncUrl'] = $item->getSyncUrl();
             }

@@ -41,7 +41,7 @@ class BookingRoomsType extends AbstractType
                     'group' => $groupName,
                     'label' => 'booking_rooms_type.single_prices.label',
                     'required' => false,
-                    'data' => $bookingRoom instanceOf BookingRoom ? $bookingRoom->isUploadSinglePrices() : true,
+                    'data' => $bookingRoom instanceOf BookingRoom ? $bookingRoom->getRoomType()->getIsSinglePlacement() : true,
                     'help' => 'booking_rooms_type.single_prices.help'
                 ])
                 ->add(self::ROOM_TYPE_FIELD_PREFIX . $roomId, DocumentType::class, [
