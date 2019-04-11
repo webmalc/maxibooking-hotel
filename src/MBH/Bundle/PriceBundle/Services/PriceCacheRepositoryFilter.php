@@ -36,10 +36,6 @@ class PriceCacheRepositoryFilter
      */
     public function filterGetWithMinPrice(?PriceCache $cache)
     {
-        if ($cache === null) {
-            return null;
-        }
-
         return $this->filterPriceCache($cache, $this->getRoomTypeMap());
     }
 
@@ -53,10 +49,6 @@ class PriceCacheRepositoryFilter
      */
     public function filterFetch(?array $result)
     {
-        if ($result === null) {
-            return null;
-        }
-
         foreach ($result as $roomTypeId => $roomTypeArr) {
             foreach ($roomTypeArr as $tariffId => $tariffArr) {
                 foreach ($tariffArr as $date => $cache) {
@@ -73,7 +65,7 @@ class PriceCacheRepositoryFilter
      * @param array $roomTypeMap
      * @return PriceCache|null
      */
-    private function filterPriceCache(PriceCache $cache, array $roomTypeMap)
+    private function filterPriceCache(?PriceCache $cache, array $roomTypeMap)
     {
         if (($cache == null) || ($roomTypeMap == [])) {
             return $cache;
