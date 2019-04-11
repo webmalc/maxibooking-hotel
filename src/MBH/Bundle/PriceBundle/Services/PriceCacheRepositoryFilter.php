@@ -30,11 +30,11 @@ class PriceCacheRepositoryFilter
     /**
      * decorates src/MBH/Bundle/PriceBundle/Document/PriceCacheRepository/getWithMinPrice()
      *
-     * @param PriceCache $cache
+     * @param PriceCache|null $cache
      * @return PriceCache|null
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function filterGetWithMinPrice(PriceCache $cache)
+    public function filterGetWithMinPrice(?PriceCache $cache)
     {
         return $this->filterPriceCache($cache, $this->getRoomTypeMap());
     }
@@ -43,11 +43,11 @@ class PriceCacheRepositoryFilter
      * decorates src/MBH/Bundle/PriceBundle/Document/PriceCacheRepository/fetch()
      * decorates src/MBH/Bundle/PriceBundle/Document/PriceCacheRepository/fetchWithCancelDate()
      *
-     * @param array $result
-     * @return array
+     * @param array|null $result
+     * @return array|null
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function filterFetch(array $result)
+    public function filterFetch(?array $result)
     {
         foreach ($result as $roomTypeId => $roomTypeArr) {
             foreach ($roomTypeArr as $tariffId => $tariffArr) {
@@ -65,7 +65,7 @@ class PriceCacheRepositoryFilter
      * @param array $roomTypeMap
      * @return PriceCache|null
      */
-    private function filterPriceCache(PriceCache $cache, array $roomTypeMap)
+    private function filterPriceCache(?PriceCache $cache, array $roomTypeMap)
     {
         if (($cache == null) || ($roomTypeMap == [])) {
             return $cache;
