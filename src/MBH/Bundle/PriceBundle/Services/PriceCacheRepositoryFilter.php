@@ -30,12 +30,16 @@ class PriceCacheRepositoryFilter
     /**
      * decorates src/MBH/Bundle/PriceBundle/Document/PriceCacheRepository/getWithMinPrice()
      *
-     * @param PriceCache $cache
+     * @param PriceCache|null $cache
      * @return PriceCache|null
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function filterGetWithMinPrice(PriceCache $cache)
+    public function filterGetWithMinPrice(?PriceCache $cache)
     {
+        if ($cache === null) {
+            return null;
+        }
+
         return $this->filterPriceCache($cache, $this->getRoomTypeMap());
     }
 
@@ -43,12 +47,16 @@ class PriceCacheRepositoryFilter
      * decorates src/MBH/Bundle/PriceBundle/Document/PriceCacheRepository/fetch()
      * decorates src/MBH/Bundle/PriceBundle/Document/PriceCacheRepository/fetchWithCancelDate()
      *
-     * @param array $result
-     * @return array
+     * @param array|null $result
+     * @return array|null
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function filterFetch(array $result)
+    public function filterFetch(?array $result)
     {
+        if ($result === null) {
+            return null;
+        }
+
         foreach ($result as $roomTypeId => $roomTypeArr) {
             foreach ($roomTypeArr as $tariffId => $tariffArr) {
                 foreach ($tariffArr as $date => $cache) {
