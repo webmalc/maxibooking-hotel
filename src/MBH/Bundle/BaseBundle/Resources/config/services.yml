@@ -548,6 +548,12 @@ services:
         tags:
           - { name: security.voter }
 
+    mbh.secure.api_key_voter:
+        class: MBH\Bundle\BaseBundle\Security\ApiKeyVoter
+        arguments: ['@security.role_hierarchy']
+        tags:
+            - { name: security.voter }
+
     mbh.secure.package_voter:
         class: MBH\Bundle\BaseBundle\Security\PackageVoter
         tags:

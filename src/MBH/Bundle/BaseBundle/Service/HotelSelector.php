@@ -59,8 +59,7 @@ class HotelSelector
         }
 
         return $this->security->isGranted('ROLE_ADMIN')
-            || $this->security->isGranted(HotelVoter::ACCESS, $hotel)
-            || $this->security->isGranted('ROLE_ACCESS_WITH_TOKEN');
+            || $this->security->isGranted(HotelVoter::ACCESS, $hotel);
     }
 
     private function isUserAuthenticated(): bool

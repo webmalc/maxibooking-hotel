@@ -25,6 +25,10 @@ parameters:
             max_duration: 21
             min_duration: 3
 security:
+    access_decision_manager:
+        strategy: unanimous
+        allow_if_all_abstain: false
+
     firewalls:
         main:
             context: test_content

@@ -20,18 +20,6 @@ class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface
 
     public function authenticateToken(TokenInterface $token, UserProviderInterface $userProvider, $providerKey)
     {
-        $user = $token->getUser();
-        $apiKey = $token->getCredentials();
-
-        if ($user instanceof User) {
-            return new PreAuthenticatedToken(
-                $user,
-                $apiKey,
-                $providerKey,
-                $this->getRolesForAuthenticatedByToken($user)
-            );
-        }
-
         if (!$userProvider instanceof ApiKeyUserProvider) {
             throw new \InvalidArgumentException(
                 sprintf(
@@ -41,52 +29,16 @@ class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface
             );
         }
 
-        $username = $userProvider->getUsernameForApiKey($apiKey);
 
-        if (!$username) {
-            throw new CustomUserMessageAuthenticationException(
-                //TODO: Может быть другую ошибку
-                sprintf('API Key "%s" does not exist.', $apiKey)
-            );
-        }
-
-        $user = $userProvider->loadUserByUsername($username);
+        $apiKey = $token->getCredentials();
+        $user = $userProvider->loadUserByUsername($apiKey);
 
         return new PreAuthenticatedToken(
             $user,
             $apiKey,
             $providerKey,
-            $this->getRolesForAuthenticatedByToken($user)
+            $user->getRoles()
         );
-    }
-
-    /**
-     * @param User $user
-     * @return array
-     */
-    private function getRolesForAuthenticatedByToken(User $user)
-    {
-        $userRoles = [];
-
-        foreach ($user->getRoles() as $role) {
-            if ($role === 'ROLE_SUPER_ADMIN') {
-                foreach ($this->roles[$role] as $superAdminRoles) {
-                    if (isset($this->roles[$superAdminRoles])) {
-                        $userRoles = array_merge($userRoles, $this->roles[$superAdminRoles]);
-                    } else {
-                        $userRoles[] = $superAdminRoles;
-                    }
-                }
-            } elseif ($role === 'ROLE_ADMIN') {
-                $userRoles = array_merge($this->roles[$role], $userRoles);
-            } else {
-                $userRoles[] = $role;
-            }
-        }
-        $userRoles[] = 'ROLE_PAYMENTS';
-        $userRoles[] = 'ROLE_ACCESS_WITH_TOKEN';
-
-        return array_diff($userRoles, ['ROLE_USER', 'ROLE_GROUP', 'ROLE_PERSONAL_ACCOUNT']);
     }
 
     public function supportsToken(TokenInterface $token, $providerKey)
