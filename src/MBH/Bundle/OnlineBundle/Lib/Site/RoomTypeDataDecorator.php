@@ -8,7 +8,7 @@ namespace MBH\Bundle\OnlineBundle\Lib\Site;
 
 use MBH\Bundle\HotelBundle\Document\RoomType;
 
-class RoomTypeImageDataDecorator extends ImageDataDecorator
+class RoomTypeDataDecorator extends ImageDataDecorator
 {
     /**
      * @var RoomType

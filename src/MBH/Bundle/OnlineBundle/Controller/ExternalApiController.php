@@ -7,8 +7,8 @@ use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
-use MBH\Bundle\OnlineBundle\Lib\Site\HotelImageDataDecorator;
-use MBH\Bundle\OnlineBundle\Lib\Site\RoomTypeImageDataDecorator;
+use MBH\Bundle\OnlineBundle\Lib\Site\HotelDataDecorator;
+use MBH\Bundle\OnlineBundle\Lib\Site\RoomTypeDataDecorator;
 use MBH\Bundle\OnlineBundle\Services\ApiHandler;
 use MBH\Bundle\OnlineBundle\Services\ApiResponseCompiler;
 use MBH\Bundle\PackageBundle\Document\Order;
@@ -108,7 +108,7 @@ class ExternalApiController extends BaseController
             $responseData = [];
             /** @var RoomType $roomType */
 
-            $roomTypeImageDatar = new RoomTypeImageDataDecorator(
+            $roomTypeImageDatar = new RoomTypeDataDecorator(
                 $this->get('vich_uploader.templating.helper.uploader_helper'),
                 $this->get('liip_imagine.cache.manager')
             );
@@ -241,7 +241,7 @@ class ExternalApiController extends BaseController
                     $this->dm->refresh($hotel);
                 }
 
-                $hotelImagesData = new HotelImageDataDecorator(
+                $hotelImagesData = new HotelDataDecorator(
                     $hotel,
                     $this->get('vich_uploader.templating.helper.uploader_helper'),
                     $this->get('liip_imagine.cache.manager')
