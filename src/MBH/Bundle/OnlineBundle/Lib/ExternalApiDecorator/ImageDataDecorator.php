@@ -4,13 +4,13 @@
  * Date: 18.01.19
  */
 
-namespace MBH\Bundle\OnlineBundle\Lib\Site;
+namespace MBH\Bundle\OnlineBundle\Lib\ExternalApiDecorator;
 
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use MBH\Bundle\BaseBundle\Document\Image;
-use MBH\Bundle\OnlineBundle\Lib\Site\image\ImageData;
+use MBH\Bundle\OnlineBundle\Lib\image\ImageData;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
 abstract class ImageDataDecorator
@@ -33,10 +33,10 @@ abstract class ImageDataDecorator
 
     /**
      * DataManager constructor.
-     * @param UploaderHelper|null $uploaderHelper
-     * @param CacheManager|null $cacheManager
+     * @param UploaderHelper $uploaderHelper
+     * @param CacheManager $cacheManager
      */
-    public function __construct(?UploaderHelper $uploaderHelper, ?CacheManager $cacheManager)
+    public function __construct(UploaderHelper $uploaderHelper, CacheManager $cacheManager)
     {
         $this->uploaderHelper = $uploaderHelper;
         $this->cacheManager = $cacheManager;

@@ -4,7 +4,7 @@
  * Date: 18.01.19
  */
 
-namespace MBH\Bundle\OnlineBundle\Lib\Site\image;
+namespace MBH\Bundle\OnlineBundle\Lib\image;
 
 
 class ImageData implements \JsonSerializable

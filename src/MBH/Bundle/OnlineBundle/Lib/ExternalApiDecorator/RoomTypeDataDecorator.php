@@ -4,7 +4,7 @@
  * Date: 18.01.19
  */
 
-namespace MBH\Bundle\OnlineBundle\Lib\Site;
+namespace MBH\Bundle\OnlineBundle\Lib\ExternalApiDecorator;
 
 use MBH\Bundle\HotelBundle\Document\RoomType;
 

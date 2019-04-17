@@ -4,8 +4,12 @@
  * Date: 18.01.19
  */
 
-namespace MBH\Bundle\OnlineBundle\Lib\Site;
+namespace MBH\Bundle\OnlineBundle\Lib\ExternalApiDecorator;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\BillingBundle\Service\BillingApi;
+use MBH\Bundle\HotelBundle\Document\Facility;
+use MBH\Bundle\HotelBundle\Document\FacilityRepository;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
@@ -24,7 +28,7 @@ class HotelDataDecorator extends ImageDataDecorator
      * @param UploaderHelper $uploaderHelper
      * @param CacheManager $cacheManager
      */
-    public function __construct(Hotel $hotel, ?UploaderHelper $uploaderHelper, ?CacheManager $cacheManager)
+    public function __construct(Hotel $hotel, UploaderHelper $uploaderHelper, CacheManager $cacheManager)
     {
         $this->hotel = $hotel;
 
