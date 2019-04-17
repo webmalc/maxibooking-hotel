@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\SearchBundle\Controller;
 
-use JoliCode\Slack\ClientFactory;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Document\SearchResultCacheItem;
@@ -24,7 +23,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
-use Symfony\Component\HttpFoundation\Session\Session;
 
 /**
  * Class SearchController
@@ -49,6 +47,12 @@ class SearchController extends Controller
      */
     public function syncSearchAction(Request $request, ?string $grouping = null): Response
     {
+        //** Костыль для азовского добавить доступ к апи через fetch */
+        $method = $request->getMethod();
+        if ($method === 'OPTIONS') {
+            return $this->optionsResponse();
+        }
+
         $data = json_decode($request->getContent(), true);
         $search = $this->get('mbh_search.search');
         try {
@@ -60,6 +64,8 @@ class SearchController extends Controller
         } catch (SearchConditionException|SearchQueryGeneratorException|GroupingFactoryException $e) {
             $answer = new JsonResponse(['error' => $e->getMessage()], 400);
         }
+        $answer->headers->set('Access-Control-Allow-Origin', '*');
+        $answer->headers->set('Access-Control-Allow-Headers','*');
 
         return $answer;
     }
@@ -101,6 +107,12 @@ class SearchController extends Controller
      */
     public function asyncSearchAction(Request $request): JsonResponse
     {
+        //** Костыль для азовского добавить доступ к апи через fetch */
+        $method = $request->getMethod();
+        if ($method === 'OPTIONS') {
+            return $this->optionsResponse();
+        }
+
         $data = json_decode($request->getContent(), true);
         $search = $this->get('mbh_search.search');
         try {
@@ -113,18 +125,29 @@ class SearchController extends Controller
             $answer = new JsonResponse(['error' => $e->getMessage()], 400);
         }
 
+        $answer->headers->set('Access-Control-Allow-Origin', '*');
+        $answer->headers->set('Access-Control-Allow-Headers','*');
+
+
         return $answer;
     }
 
     /**
      * @Route("/async/results/{id}/{grouping}" , name="search_async_results",  options={"expose"=true}, defaults={"grouping" = null})
+     * @param Request $request
      * @param SearchConditions $conditions
      * @param null|string $grouping
      * @return JsonResponse
      * @throws GroupingFactoryException
      */
-    public function getAsyncResultsAction(SearchConditions $conditions, ?string $grouping = null): JsonResponse
+    public function getAsyncResultsAction(Request $request, SearchConditions $conditions, ?string $grouping = null): JsonResponse
     {
+        //** Костыль для азовского добавить доступ к апи через fetch */
+        $method = $request->getMethod();
+        if ($method === 'OPTIONS') {
+            return $this->optionsResponse();
+        }
+
         $receiver = $this->get('mbh_search.async_result_store');
         try {
             $json = $receiver->receive($conditions, $grouping, true, true);
@@ -132,6 +155,9 @@ class SearchController extends Controller
         } catch (AsyncResultReceiverException $exception) {
             $answer = new JsonResponse(['results' => [], 'message' => $exception->getMessage()], 204);
         }
+
+        $answer->headers->set('Access-Control-Allow-Origin', '*');
+        $answer->headers->set('Access-Control-Allow-Headers','*');
 
         return $answer;
     }
@@ -253,4 +279,16 @@ class SearchController extends Controller
         return new JsonResponse($result);
     }
 
+
+    /** Костыль для азовского. Надо заменить на
+     *  https://github.com/nelmio/NelmioCorsBundle
+     *
+     */
+
+    private function optionsResponse()
+    {
+        $corsHeaders = ['Access-Control-Allow-Origin' => '*', 'Access-Control-Allow-Headers' => '*'];
+
+        return new JsonResponse(null, 200, $corsHeaders);
+    }
 }

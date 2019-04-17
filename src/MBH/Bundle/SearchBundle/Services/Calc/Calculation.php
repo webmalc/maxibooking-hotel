@@ -80,7 +80,8 @@ class Calculation
                     'children' => $combination['children'],
                     'total' => $combinationPrices['total'],
                     'prices' => $combinationPrices['prices'],
-                    'packagePrices' => $combinationPrices['packagePrices']
+                    'packagePrices' => $combinationPrices['packagePrices'],
+                    'discount' => $combinationPrices['discount']
                 ];
             } catch (CalculationAdditionalPriceException $e) {
                 continue;
@@ -161,6 +162,7 @@ class Calculation
             'total' => round($total, $this->priceRoundSign),
             'prices' => $dayPrices,
             'packagePrices' => $packagePrices,
+            'discount' => $rawPromotion->getDiscount()
         ];
     }
 

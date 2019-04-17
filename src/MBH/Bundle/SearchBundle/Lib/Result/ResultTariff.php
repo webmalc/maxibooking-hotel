@@ -15,6 +15,9 @@ class ResultTariff
     /** @var string */
     private $name = '';
 
+    /** @var string */
+    private $fullName = '';
+
     /**
      * @return string
      */
@@ -53,12 +56,34 @@ class ResultTariff
         return $this;
     }
 
+    /**
+     * @return string
+     */
+    public function getFullName(): string
+    {
+        return $this->fullName;
+    }
+
+    /**
+     * @param string $fullName
+     * @return ResultTariff
+     */
+    public function setFullName(string $fullName): ResultTariff
+    {
+        $this->fullName = $fullName;
+
+        return $this;
+    }
+
+
+
     public static function createInstance(Tariff $tariff): ResultTariff
     {
         $resultTariff = new self();
         $resultTariff
             ->setId($tariff->getId())
             ->setName($tariff->getName())
+            ->setFullName($tariff->getFullTitle())
         ;
 
         return $resultTariff;

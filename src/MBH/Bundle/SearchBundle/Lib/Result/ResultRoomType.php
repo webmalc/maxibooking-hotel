@@ -26,6 +26,10 @@ class ResultRoomType
     /** @var int */
     private $priority = 100;
 
+    private $mainImage;
+
+    private $images;
+
     /**
      * @return string
      */
@@ -137,6 +141,47 @@ class ResultRoomType
         $this->priority = $priority;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getMainImage()
+    {
+        return $this->mainImage;
+    }
+
+    /**
+     * @param mixed $mainImage
+     * @return ResultRoomType
+     */
+    public function setMainImage($mainImage)
+    {
+        $this->mainImage = $mainImage;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getImages()
+    {
+        return $this->images;
+    }
+
+    /**
+     * @param mixed $images
+     * @return ResultRoomType
+     */
+    public function setImages($images)
+    {
+        $this->images = $images;
+
+        return $this;
+    }
+
+
+
+
     public static function createInstance(RoomType $roomType): ResultRoomType
     {
         $resultRoomType = new self();
@@ -149,7 +194,10 @@ class ResultRoomType
             ->setName($roomType->getName())
             ->setCategoryName($categoryName)
             ->setCategoryId($categoryId)
-            ->setHotelName($hotel->getName());
+            ->setHotelName($hotel->getName())
+            ->setMainImage($roomType->getMainImage())
+            ->setImages($roomType->getImages())
+        ;
 
         if ($hotel->getIsDefault()) {
             $resultRoomType->setPriority(10);

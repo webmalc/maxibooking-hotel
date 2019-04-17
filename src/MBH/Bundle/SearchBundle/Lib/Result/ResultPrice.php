@@ -18,6 +18,9 @@ class ResultPrice
     /** @var ResultDayPrice[] */
     private $dayPrices = [];
 
+    /** @var int */
+    private $discount;
+
     /**
      * @return int
      */
@@ -103,8 +106,29 @@ class ResultPrice
         return $this;
     }
 
+    /**
+     * @return int
+     */
+    public function getDiscount(): ?int
+    {
+        return $this->discount;
+    }
 
-    public static function createInstance(int $searchAdults, int $searchChildren, int $total, array $dayPrices = []): ResultPrice
+    /**
+     * @param int $discount
+     * @return ResultPrice
+     */
+    public function setDiscount(?int $discount): ResultPrice
+    {
+        $this->discount = $discount;
+
+        return $this;
+    }
+
+
+
+
+    public static function createInstance(int $searchAdults, int $searchChildren, int $total, array $dayPrices = [], ?int $discount = null): ResultPrice
     {
         $resultPrice = new self();
         $resultPrice
@@ -112,6 +136,7 @@ class ResultPrice
             ->setSearchChildren($searchChildren)
             ->setTotal($total)
             ->setDayPrices($dayPrices)
+            ->setDiscount($discount)
         ;
 
         return $resultPrice;

@@ -1,0 +1,25 @@
+{#<link href="{{ asset('build/azovskyResults.css') }}" rel="stylesheet"/>#}
+{#<script src="{{ asset('build/azovskyResults.js') }}"></script>#}
+(function () {
+    var head  = document.getElementsByTagName('head')[0];
+    var cssId = 'mb-results-css';
+    var jsId = 'mb-results-js';
+    if (!document.getElementById(cssId))
+    {
+        var link  = document.createElement('link');
+        link.id   = cssId;
+        link.rel  = 'stylesheet';
+        link.type = 'text/css';
+        link.href = '{{ absolute_url(asset('build/azovskyResults.css')) }}';
+        link.media = 'all';
+        head.appendChild(link);
+    }
+
+    if (!document.getElementById(jsId))
+    {
+        var script  = document.createElement('script');
+        script.id   = jsId;
+        script.src = '{{ absolute_url(asset('build/azovskyResults.js')) }}';
+        head.appendChild(script);
+    }
+})();

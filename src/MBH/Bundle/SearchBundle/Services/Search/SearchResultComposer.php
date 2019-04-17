@@ -12,6 +12,7 @@ use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Lib\Data\RoomCacheFetchQuery;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\CalculationException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException;
+use MBH\Bundle\SearchBundle\Lib\Result\ResultHotel;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultRoom;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultConditions;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultDayPrice;
@@ -128,7 +129,10 @@ class SearchResultComposer
             $resultPrice = ResultPrice::createInstance(
                 $adults,
                 $children ?? 0,
-                $currentPrice['total']);
+                $currentPrice['total'],
+                [],
+                $currentPrice['discount'] ?? null
+            );
             $packagePrices = $currentPrice['packagePrices'];
             foreach ($packagePrices as $packagePrice) {
                 /** @var PackagePrice $packagePrice */

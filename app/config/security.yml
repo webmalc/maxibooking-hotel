@@ -45,4 +45,5 @@ security:
         - { path: ^/online_booking, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/_wdt, roles: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/_profiler, roles: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+        - { path: ^/search, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/, role: ROLE_BASE_USER }
