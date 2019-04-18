@@ -8,8 +8,12 @@
         grecaptcha.ready(function() {
             grecaptcha.execute('6LcuCJQUAAAAAD3PVGAYDBQWL-q5cuKo1YJTjybn', {action: 'login'}).then(function(token) {
                 document.getElementById('inv_captcha').value = token;
+                $('button[name=_submit]').attr("disabled", false);
             });
         });
+        setTimeout(() => {
+            $('button[name=_submit]').attr("disabled", false);
+        }, 5000);
     </script>
 
     <form name="loginForm" action="{{ path("fos_user_security_check") }}" class="form login-form" role="form"
