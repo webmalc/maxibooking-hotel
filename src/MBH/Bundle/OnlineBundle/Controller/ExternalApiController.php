@@ -504,7 +504,7 @@ class ExternalApiController extends BaseController
         $onlineFormId = $queryData->get('onlineFormId');
         /** @var FormConfig $formConfig */
         $formConfig = $requestHandler->getFormConfig($onlineFormId, $responseCompiler);
-        if (!is_null($formConfig)) {
+        if ($formConfig !== null) {
             $this->addAccessControlAllowOriginHeaders([$formConfig->getResultsUrl()]);
         }
 

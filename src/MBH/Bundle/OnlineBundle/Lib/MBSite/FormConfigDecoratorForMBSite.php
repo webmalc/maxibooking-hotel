@@ -3,7 +3,7 @@
  * Date: 19.03.19
  */
 
-namespace MBH\Bundle\OnlineBundle\Lib\Site;
+namespace MBH\Bundle\OnlineBundle\Lib\MBSite;
 
 
 use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
@@ -34,8 +34,8 @@ class FormConfigDecoratorForMBSite implements \JsonSerializable
     public function jsonSerialize()
     {
         $config = [
-            'id'               => $this->formConfig->getId(),
-            'loadAllIframeUrl' => $this->dataSearchForm->getUrlForScriptLoadAllIframe(),
+            'id'                     => $this->formConfig->getId(),
+            'loadAllSearchIframeUrl' => $this->dataSearchForm->getUrlForScriptLoadAllIframe(),
         ];
 
 
