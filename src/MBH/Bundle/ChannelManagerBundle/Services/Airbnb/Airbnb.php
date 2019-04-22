@@ -98,7 +98,7 @@ class Airbnb extends AbstractChannelManagerService
                     $events = $iCalResponse->cal['VEVENT'];
 
                     foreach ($events as $event) {
-                        if ($event['SUMMARY'] === self::CLOSED_PERIOD_SUMMARY) {
+                        if (stripos($event['SUMMARY'], self::CLOSED_PERIOD_SUMMARY) !== false) {
                             continue;
                         }
                         $orderInfo = $this->container
