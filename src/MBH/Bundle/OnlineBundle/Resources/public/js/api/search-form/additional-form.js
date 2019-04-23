@@ -27,7 +27,7 @@ AdditionalForm.prototype.eventHandler = function (self) {
             case 'children-age':
                 dataForm['children'] = property.length;
                 dataForm['children-ages'] = [];
-                if (dataForm['children'] > 0) {
+                if (self.isDisplayChildAges && dataForm['children'] > 0) {
                     property.forEach(function(value, index) {
                         dataForm['children-ages'].push(value.value);
                     })
@@ -133,10 +133,6 @@ AdditionalForm.prototype.childrenAgeRemoveSection = function (index) {
 };
 
 AdditionalForm.prototype.childrenAgeAddSelection = function (index, age) {
-    if (!this.isDisplayChildAges) {
-        return;
-    }
-
     if ('content' in document.createElement('template')) {
 
         // Instantiate the table with the existing HTML tbody and the row with the template

@@ -1,4 +1,6 @@
-function SearchForm() {
+function SearchForm(widthIframeWithDatepiker) {
+    this.widthIframeWithDatepiker = parseInt(widthIframeWithDatepiker.replace('px', '')) || 310;
+
     this.query = (function() {
         var vars = [],
             tempChildrenAges = [],
@@ -141,7 +143,7 @@ SearchForm.prototype.addEventListeners = function (self) {
 SearchForm.prototype.searchFormActions  = function () {
     var self = this;
 
-    this.viewChange();
+    this.viewChange(this);
     this.addEventListeners(this);
 
     if (!this.begin.val() || !this.end.val()) {
@@ -248,7 +250,7 @@ SearchForm.prototype.setChildAgeForms = function(childrenCount, query) {
         $childAgesBlock.hide();
         $childAgesBlock.find('select').val(0);
     }
-    var selectFormCount = $childAgesBlock.find('select').size();
+    var selectFormCount = $childAgesBlock.find('select').length;
     var difference = childrenCount - selectFormCount;
     if (difference > 0) {
         for (var i = selectFormCount; i < childrenCount; i++) {
@@ -258,7 +260,7 @@ SearchForm.prototype.setChildAgeForms = function(childrenCount, query) {
             $childAgesBlock.append($childrenAgeForm);
         }
     } else if (difference < 0) {
-        while (childrenCount != selectFormCount && $childAgesBlock.find('select').size() > 1) {
+        while (childrenCount != selectFormCount && $childAgesBlock.find('select').length > 1) {
             $childAgesBlock.find('select').last().remove();
             selectFormCount--;
         }
@@ -271,7 +273,7 @@ SearchForm.prototype.setChildAgeForms = function(childrenCount, query) {
     }
 };
 
-SearchForm.prototype.viewChange = function() {
+SearchForm.prototype.viewChange = function(self) {
 
     var resizeHandler = function () {
         var formHeight = document.getElementById('mbh-form-wrapper').clientHeight;
@@ -306,22 +308,16 @@ SearchForm.prototype.viewChange = function() {
     })();
 
     var paddingLeft = function(left) {
-        var widthDatePicker = 310;
+        if (needChangePaddingLeft()) {
+            var halfWidthScreen = window.screen.width / 2;
 
-        return (function() {
-            if (needChangePaddingLeft()) {
-                var halfWidthScreen = window.screen.width / 2;
-
-                if (halfWidthScreen - widthDatePicker < 30 ) {
-                    return halfWidthScreen - (widthDatePicker / 2 );
-                }
+            if (halfWidthScreen - self.widthIframeWithDatepiker < 30 ) {
+                return halfWidthScreen - (self.widthIframeWithDatepiker / 2 );
             }
+        }
 
-            return left;
-        })();
+        return left;
     };
-
-    var self = this;
 
     var showIFrame = function(event) {
         var el = jQuery(this);
