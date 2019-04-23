@@ -68,6 +68,37 @@ class PriceCacheRepoFilterTest extends UnitTestCase
         $this->assertEmpty($filteredPriceCacheFalseFlags['additionalPrices']);
     }
 
+    public function testSoftDeleted()
+    {
+        /** @var PriceCache $priceCache */
+        $priceCache = $this->generateSoftDeletedIssuePriceCache();
+
+        $filteredPriceCache = $this->filterGetWithMinPrice($priceCache);
+
+        $this->assertInstanceOf(PriceCache::class, $filteredPriceCache);
+        $this->assertEquals(null, $filteredPriceCache->getSinglePrice());
+    }
+
+    protected function generateSoftDeletedIssuePriceCache()
+    {
+        $roomType = $this->newRoomType(true);
+
+        $pc = new PriceCache();
+        $pc->setRoomType($roomType);
+        $pc->setSinglePrice(1000);
+        $pc->setChildPrice(1000);
+        $pc->setAdditionalPrices([1, 1]);
+        $this->dm->persist($pc);
+        $this->dm->flush();
+
+        $priceCache = $this->getCleanPriceCache($pc->getId(), true);
+
+        $this->dm->remove($roomType);
+        $this->dm->flush();
+
+        return $priceCache;
+    }
+
     protected function getNewCleanFilteredPriceCache($priceCache)
     {
         $filter = $this->container->get('mbh.price_cache_repository_filter');
@@ -113,5 +144,73 @@ class PriceCacheRepoFilterTest extends UnitTestCase
         $this->dm->flush();
 
         return $newRoomType;
+    }
+
+    /* overriding priceCacheFilter methods to imitate soft_deleted roomType error */
+
+
+    private function getRoomTypeMap(): array
+    {
+        $isSoftDeletable = true;
+        if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+            $this->dm->getFilterCollection()->disable('softdeleteable');
+            $isSoftDeletable = !$isSoftDeletable;
+        }
+
+        $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
+            ->createQueryBuilder()
+            ->select(['_id', 'isIndividualAdditionalPrices', 'isSinglePlacement', 'isChildPrices'])
+            ->hydrate(false)
+            ->getQuery()
+            ->execute()
+            ->toArray();
+
+        if (!$isSoftDeletable) {
+            $this->dm->getFilterCollection()->enable('softdeleteable');
+        }
+
+        $roomTypeMap = [];
+
+        foreach ($roomTypes as $roomTypeId => $roomType) {
+            $delRoomType = $roomType;
+            unset($delRoomType['isSinglePlacement']);
+            unset ($roomTypes[$roomTypeId]);
+            $roomTypes[$roomTypeId] = $delRoomType;
+        }
+
+        /** @var RoomType $roomType */
+        foreach ($roomTypes as $roomType) {
+            $roomTypeMap[(string)$roomType['_id']] = [
+                'isIndividualAdditionalPrices' => $roomType['isIndividualAdditionalPrices'],
+                'isSinglePlacement' => $roomType['isSinglePlacement'] ?? false,
+                'isChildPrices' => $roomType['isChildPrices'],
+            ];
+        }
+
+        return $roomTypeMap;
+    }
+
+    private function filterPriceCache(?PriceCache $cache, array $roomTypeMap)
+    {
+        if (($cache == null) || ($roomTypeMap == [])) {
+            return $cache;
+        }
+
+        if (!$roomTypeMap[$cache->getRoomType()->getId()]['isIndividualAdditionalPrices']) {
+            $cache->setAdditionalPrices([]);
+        }
+        if (!$roomTypeMap[$cache->getRoomType()->getId()]['isSinglePlacement']) {
+            $cache->setSinglePrice(null);
+        }
+        if (!$roomTypeMap[$cache->getRoomType()->getId()]['isChildPrices']) {
+            $cache->setChildPrice(null);
+        }
+
+        return $cache;
+    }
+
+    private function filterGetWithMinPrice(?PriceCache $cache)
+    {
+        return $this->filterPriceCache($cache, $this->getRoomTypeMap());
     }
 }
