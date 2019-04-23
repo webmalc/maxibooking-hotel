@@ -53,7 +53,8 @@ class WelcomeControllerTest extends WebTestCase
     /**
      * @var string
      */
-    private const ACTUAL_AMOUNT_ITEMS_FOR_MANAGER_WITHOUT_MB_SITE = 8;
+    private const ACTUAL_AMOUNT_ITEMS_FOR_MANAGER_WITHOUT_MB_SITE = 9;
+    /*TODO: check medium_manager does not have role ROLE_HOTEL_VIEW , that junior_manager has*/
 
     private const FILTER_FOR_COUNT_ITEMS_MENU = '.sidebar-accordion li:not(.dropdown) a';
 
