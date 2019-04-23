@@ -2,8 +2,11 @@
 
 namespace MBH\Bundle\UserBundle\Security;
 
+use DateTime;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Exception;
 use MBH\Bundle\UserBundle\Document\User;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -11,6 +14,9 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class ApiKeyUserProvider implements UserProviderInterface
 {
+
+    public const ROLE_ACCESS_WITH_TOKEN = 'ROLE_ACCESS_WITH_TOKEN';
+
     private $dm;
 
     public function __construct(DocumentManager $dm) {
@@ -18,44 +24,33 @@ class ApiKeyUserProvider implements UserProviderInterface
     }
 
     /**
-     * @param $apiKey
-     * @return string
-     */
-    public function getUsernameForApiKey($apiKey)
-    {
-        $user = $this->dm->getRepository('MBHUserBundle:User')->findOneBy(['apiToken.token' => $apiKey]);
-        if ($user === null) {
-            throw new UsernameNotFoundException('User by token ' . $apiKey . 'not found!');
-        }
-
-        $expiredDate = $user->getApiToken()->getExpiredAt();
-
-        if ($expiredDate < new \DateTime()) {
-            throw new UsernameNotFoundException('Api token for user ' . $user->getUsername() . ' expired!');
-        }
-
-        return $user->getUsername();
-    }
-
-    /**
-     * Loads the user for the given username.
+     * Loads the user for the given apiKey.
      *
      * This method must throw UsernameNotFoundException if the user is not
      * found.
      *
-     * @param string $username The username
-     *
+     * @param $apiKey
      * @return UserInterface
      *
-     * @throws UsernameNotFoundException if the user is not found
+     * @throws Exception
      */
-    public function loadUserByUsername($username)
+    public function loadUserByUsername($apiKey)
     {
-        $user = $this->dm->getRepository('MBHUserBundle:User')->findOneBy(['username' => $username]);
+        $user = $this->dm->getRepository('MBHUserBundle:User')->findOneBy(['apiToken.token' => $apiKey]);
 
         if ($user === null) {
-            throw new UsernameNotFoundException('User with name ' . $username . ' not found!');
+            throw new UsernameNotFoundException('User with appropriate apiKey not found!');
         }
+        /** @var  User $user */
+        if ($apiToken = $user->getApiToken()) {
+            $expiredDate = $apiToken->getExpiredAt();
+            if ($expiredDate < new DateTime()) {
+                throw new AuthenticationException('Api token for user ' . $user->getUsername() . ' expired!');
+            }
+
+        }
+
+        $user->addRole(self::ROLE_ACCESS_WITH_TOKEN);
 
         return $user;
     }
