@@ -114,7 +114,7 @@ class PriceCacheRepositoryFilter
         foreach ($roomTypes as $roomType) {
             $roomTypeMap[(string)$roomType['_id']] = [
                 'isIndividualAdditionalPrices' => $roomType['isIndividualAdditionalPrices'],
-                'isSinglePlacement' => $roomType['isSinglePlacement'],
+                'isSinglePlacement' => $roomType['isSinglePlacement'] ?? false,
                 'isChildPrices' => $roomType['isChildPrices'],
             ];
         }
