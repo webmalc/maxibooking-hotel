@@ -17,20 +17,13 @@ class PriceCacheSinglePriceMigrationCommand extends ContainerAwareCommand
     {
         $this
             ->setName('mbh:price_cache:single_price:migration')
-            ->setDescription('Add isSinglePrice option to all RoomTypes')
-            ->addOption(
-                'singlePlacement',
-                null,
-                InputOption::VALUE_REQUIRED,
-                '$roomType->setIsSinglePlacement() value'
-            );
+            ->setDescription('Add isSinglePrice option to all RoomTypes');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if (!$input->getOption('singlePlacement')) {
-            throw new \Exception('singlePlacement value required');
-        }
+        $this->getContainer()->get('doctrine.odm.mongodb.document_manager')
+            ->getFilterCollection()->disable('softdeleteable');
 
         $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
         $booking = $this->getContainer()->get('mbh.channelmanager.booking');
@@ -55,10 +48,13 @@ class PriceCacheSinglePriceMigrationCommand extends ContainerAwareCommand
 
         /** @var RoomType $roomType */
         foreach ($allRoomTypes as $roomType) {
-            $roomType->setIsSinglePlacement($input->getOption('singlePlacement'));
+            $roomType->setIsSinglePlacement(false);
             $dm->persist($roomType);
             $updatedIds[] = $roomType->getId();
         }
         $dm->flush();
+
+        $this->getContainer()->get('doctrine.odm.mongodb.document_manager')
+            ->getFilterCollection()->enable('softdeleteable');
     }
 }
