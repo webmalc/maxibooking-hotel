@@ -32,7 +32,8 @@ class HotelSelectorSecurityTest extends WebTestCase
                 'PHP_AUTH_PW'   => $credentials['password'],
             ]
         );
-        $url = $this->createRequest($client);
+        $client->followRedirects();
+        $url = $client->request('GET', '/')->getUri();
 
         $this->assertEquals($data['url'], parse_url($url)['path']);
 
@@ -54,6 +55,22 @@ class HotelSelectorSecurityTest extends WebTestCase
             'password' => 'manager'
         ];
 
+
+        $url = $this->clientRequest($credentials);
+        $this->assertEquals('/management/hotel/notfound', parse_url($url)['path']);
+
+        $user->addHotel($hotel);
+        $dm->flush($user);
+
+        $url = $this->clientRequest($credentials);
+        $this->assertEquals('/package/', parse_url($url)['path']);
+
+        $user->removeHotel($hotel);
+        $dm->flush($user);
+    }
+
+    private function clientRequest(array $credentials): string
+    {
         $client = self::createClient(
             [],
             [
@@ -61,29 +78,9 @@ class HotelSelectorSecurityTest extends WebTestCase
                 'PHP_AUTH_PW'   => $credentials['password'],
             ]
         );
-        $url = $this->createRequest($client);
-        $this->assertEquals('/management/hotel/notfound', parse_url($url)['path']);
+        $client->followRedirects();
 
-        $user->addHotel($hotel);
-        $dm->flush($user);
-
-        $client = $this->makeClient($credentials);
-        $url = $this->createRequest($client);
-        $this->assertEquals('/package/', parse_url($url)['path']);
-
-        $user->removeHotel($hotel);
-        $dm->flush($user);
-    }
-
-    private function createRequest(Client $client, string $url = '/'): string
-    {
-        $client->request('GET', $url);
-        $url = '';
-        while ($client->getResponse()->getStatusCode() === 302) {
-            $url = $client->followRedirect()->getUri();
-        }
-
-        return $url;
+        return $client->request('GET', '/')->getUri();
     }
 
     public function dataProvider()
@@ -110,13 +107,55 @@ class HotelSelectorSecurityTest extends WebTestCase
         }
     }
 
+    /**
+     * @dataProvider getDataForTestWithApi
+     */
+    public function testHotelAccessWithApiKey(array $data)
+    {
+        $this->client = $this->makeClient();
+
+        $this->client->followRedirects();
+
+        $crawler = $this->getListCrawler($data['url'] . '?apiKey=' . $data['key']);
+        if ($data['resultUrl'] === false) {
+            self::assertStatusCode(403, $this->client);
+        } else {
+            $this->assertEquals($data['resultUrl'], parse_url($crawler->getUri())['path']);
+        }
+
+    }
+
     public function getDataForTestWithApi(): iterable
     {
+        yield 'with key user:demo user restriction' => [
+            [
+                'key'       => UserData::SANDBOX_USER_TOKEN,
+                'url'       => '/management/user/',
+                'resultUrl' => false,
+            ],
+        ];
+
+        yield 'with key user:demo group restriction' => [
+            [
+                'key'       => UserData::SANDBOX_USER_TOKEN,
+                'url'       => '/management/group/',
+                'resultUrl' => false,
+            ],
+        ];
+
         yield 'with key user:demo' => [
             [
                 'key'       => UserData::SANDBOX_USER_TOKEN,
                 'url'       => '/package/chessboard/',
                 'resultUrl' => '/package/chessboard/',
+            ],
+        ];
+
+        yield 'with key user:demo profile' => [
+            [
+                'key'       => UserData::SANDBOX_USER_TOKEN,
+                'url'       => '/user/profile',
+                'resultUrl' => '/user/payment',
             ],
         ];
 
@@ -129,26 +168,5 @@ class HotelSelectorSecurityTest extends WebTestCase
         ];
     }
 
-    /**
-     * @dataProvider getDataForTestWithApi
-     */
-    public function testHotelAccessWithApiKey(array $data)
-    {
-        $this->client = self::makeClient(false);
 
-        $this->client->followRedirects();
-
-        $crawler = $this->getListCrawler($data['url'] . '?apiKey=' . $data['key']);
-
-        if ($data['url'] === '/package/' && ($data['resultUrl'] !== parse_url($crawler->getUri())['path'])) {
-            /**
-             * этот тест сейчас не проходит, т.к. тут src/MBH/Bundle/BaseBundle/Service/HotelSelector.php
-             * в return использован костыль, в виде проверки роли 'ROLE_ACCESS_WITH_TOKEN'
-             */
-            return;
-        }
-
-
-        $this->assertEquals($data['resultUrl'], parse_url($crawler->getUri())['path']);
-    }
 }

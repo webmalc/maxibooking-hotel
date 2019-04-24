@@ -19,6 +19,7 @@ use MBH\Bundle\PackageBundle\Lib\DataOfMortalInterface;
 use MBH\Bundle\PackageBundle\Lib\HotelAccessibleInterface;
 use MBH\Bundle\PackageBundle\Lib\LocaleInterface;
 use MBH\Bundle\UserBundle\Validator\Constraints as MBHValidator;
+use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
