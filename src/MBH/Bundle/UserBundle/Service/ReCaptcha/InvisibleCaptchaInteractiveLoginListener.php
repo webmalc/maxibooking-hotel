@@ -54,7 +54,7 @@ class InvisibleCaptchaInteractiveLoginListener
                 try {
                     $this->captcha->validate($request->get('re_token'));
                 } catch (InvisibleCaptchaException $e) {
-                    throw new BadCredentialsException('The presented password is invalid.');
+                    throw new CustomUserMessageAuthenticationException($e->getMessage());
                 }
             }
         }
