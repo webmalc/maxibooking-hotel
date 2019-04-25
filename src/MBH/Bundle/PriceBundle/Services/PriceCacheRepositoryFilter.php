@@ -91,9 +91,15 @@ class PriceCacheRepositoryFilter
     private function getRoomTypeMap(): array
     {
         $isSoftDeletable = true;
+        $isDisableable = true;
+
         if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
             $this->dm->getFilterCollection()->disable('softdeleteable');
             $isSoftDeletable = !$isSoftDeletable;
+        }
+        if ($this->dm->getFilterCollection()->isEnabled('disableable')) {
+            $this->dm->getFilterCollection()->disable('disableable');
+            $isDisableable = !$isDisableable;
         }
 
         $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
@@ -106,6 +112,9 @@ class PriceCacheRepositoryFilter
 
         if (!$isSoftDeletable) {
             $this->dm->getFilterCollection()->enable('softdeleteable');
+        }
+        if (!$isDisableable) {
+            $this->dm->getFilterCollection()->enable('disableable');
         }
 
         $roomTypeMap = [];
