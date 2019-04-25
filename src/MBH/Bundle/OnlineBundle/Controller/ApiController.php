@@ -831,10 +831,13 @@ class ApiController extends Controller
      * @param StdClass $request
      * @param boolean $cash
      * @return Order|boolean
-     *
      */
     private function createPackages($request, $cash = false)
     {
+        if (!$this->container->get('mbh.online_payment_form.validator')->isValid($request)) {
+            return false;
+        }
+
         $packageData = $servicesData = [];
         foreach ($request->packages as $info) {
             $packageData[] = [

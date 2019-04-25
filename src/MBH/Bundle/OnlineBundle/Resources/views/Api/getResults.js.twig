@@ -461,6 +461,25 @@ jQuery(document).ready(function() {
                                 })
                             }());
 
+                            // validate user form email
+                            (function () {
+                                var validateEmail = function () {
+                                    var emailInput = $('#mbh-user-form-email');
+                                    var nextButton = $('#mbh-user-form-next');
+                                    if (emailInput.val() && !emailInput.val().match('^[a-z0-9._%+-]+@[a-z0-9._%+-]+\\.\\w{2,4}$')) {
+                                        nextButton.prop('disabled', true);
+                                        emailInput.css('border', '1px solid red');
+                                    } else {
+                                        nextButton.prop('disabled', false);
+                                        emailInput.css('border', '');
+                                    }
+                                }
+                                validateEmail();
+                                $('#mbh-user-form-email').bind('propertychange change keyup input paste blur', function () {
+                                    validateEmail();
+                                })
+                            }());
+
                             // user form next button
                             jQuery('#mbh-user-form-next').click(function() {
                                 window.parent.postMessage({
