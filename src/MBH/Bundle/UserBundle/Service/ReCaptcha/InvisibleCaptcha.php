@@ -5,7 +5,7 @@ namespace MBH\Bundle\UserBundle\Service\ReCaptcha;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\GuzzleException;
 use MBH\Bundle\UserBundle\Lib\Exception\InvisibleCaptchaException;
-use Symfony\Component\Translation\DataCollectorTranslator;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class InvisibleCaptcha
 {
@@ -22,15 +22,15 @@ class InvisibleCaptcha
     private $secretKey;
 
     /**
-     * @var DataCollectorTranslator
+     * @var TranslatorInterface
      */
     private $tr;
 
     /**
      * @param string $secretKey
-     * @param DataCollectorTranslator $translator
+     * @param TranslatorInterface $translator
      */
-    public function __construct(string $secretKey, DataCollectorTranslator $translator)
+    public function __construct(string $secretKey, TranslatorInterface $translator)
     {
         $this->client = new GuzzleClient();
         $this->secretKey = $secretKey;
