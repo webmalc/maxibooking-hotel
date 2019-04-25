@@ -195,8 +195,7 @@ class ResultRoomType
             ->setCategoryName($categoryName)
             ->setCategoryId($categoryId)
             ->setHotelName($hotel->getName())
-            ->setMainImage($roomType->getMainImage())
-            ->setImages($roomType->getImages())
+
         ;
 
         if ($hotel->getIsDefault()) {

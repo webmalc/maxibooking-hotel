@@ -4,6 +4,7 @@
 namespace MBH\Bundle\SearchBundle\Services\Search;
 
 
+use Liip\ImagineBundle\Templating\Helper\FilterHelper;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
@@ -13,6 +14,7 @@ use MBH\Bundle\SearchBundle\Lib\Data\RoomCacheFetchQuery;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\CalculationException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultHotel;
+use MBH\Bundle\SearchBundle\Lib\Result\ResultImage;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultRoom;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultConditions;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultDayPrice;
@@ -28,7 +30,10 @@ use MBH\Bundle\SearchBundle\Services\Data\RoomCacheFetcher;
 use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher;
 use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminer;
 use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminerEvent;
+use Symfony\Bridge\Twig\Extension\HttpFoundationExtension;
+use Symfony\Component\Asset\Packages;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Routing\Router;
 
 
 class SearchResultComposer
@@ -58,6 +63,12 @@ class SearchResultComposer
     /** @var EventDispatcherInterface  */
     private $dispatcher;
 
+    private $filterHelper;
+
+    private $packages;
+
+    private $router;
+
     /**
      * SearchResultComposer constructor.
      * @param RoomTypeManager $roomManager
@@ -76,7 +87,11 @@ class SearchResultComposer
         SharedDataFetcher $sharedDataFetcher,
         AccommodationRoomSearcher $roomSearcher,
         OccupancyDeterminer $determiner,
-        EventDispatcherInterface $dispatcher)
+        EventDispatcherInterface $dispatcher,
+        FilterHelper $filterHelper,
+        Packages $packages,
+        HttpFoundationExtension $router
+)
     {
         $this->roomManager = $roomManager;
         $this->calculation = $calculation;
@@ -86,6 +101,10 @@ class SearchResultComposer
         $this->accommodationRoomSearcher = $roomSearcher;
         $this->determiner = $determiner;
         $this->dispatcher = $dispatcher;
+        $this->filterHelper = $filterHelper;
+        $this->packages = $packages;
+        $this->router = $router;
+
     }
 
 
@@ -109,6 +128,22 @@ class SearchResultComposer
         }
 
         $resultRoomType = ResultRoomType::createInstance($roomType);
+
+        $images = $roomType->getImages();
+        $resultImages = [];
+        if (\count($images)) {
+            foreach ($images as $image) {
+                $resultImage = new ResultImage();
+                $resultImage->setIsMain($image->getIsMain());
+                $resultImage->setSrc($this->router->generateAbsoluteUrl($this->packages->getUrl($image->getPath())));
+                $resultImage->setThumb($this->filterHelper->filter($image->getPath(), 'thumb_275x210'));
+                $resultImages[] = $resultImage;
+            }
+        }
+
+        $resultRoomType->setImages($resultImages);
+
+
         $resultTariff = ResultTariff::createInstance($tariff);
 
 

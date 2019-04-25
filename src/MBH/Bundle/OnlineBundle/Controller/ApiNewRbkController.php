@@ -6,6 +6,7 @@
 
 namespace MBH\Bundle\OnlineBundle\Controller;
 
+use MBH\Bundle\ClientBundle\Service\PaymentSystem\NewRbkInvoiceCreate;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
@@ -29,7 +30,7 @@ class ApiNewRbkController extends Controller
      */
     public function generateInvoiceAction(Request $request)
     {
-        $invoice = new \MBH\Bundle\ClientBundle\Service\PaymentSystem\NewRbkInvoiceCreate($this->container);
+        $invoice = new NewRbkInvoiceCreate($this->container);
 
         $data = $invoice->getDataFromInvoice($request);
 

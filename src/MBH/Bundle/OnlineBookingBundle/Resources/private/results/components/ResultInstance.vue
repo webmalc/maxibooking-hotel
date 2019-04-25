@@ -4,38 +4,17 @@
             <div class="oneblockinrdm room-type-row ">
                 <div class="leftrdm">
                     <div class="imghotel"
-                         style="background:url('https://az.maxibooking.ru/media/cache/thumb_275x210/upload/roomTypes/1488550036899.jpeg')no-repeat;background-size:cover;">
+                         @click.self="showLightbox(mainImageIndex)"
+                         :style="{
+                            'background-image': `url(${mainImage.thumb})`,
+                            'background-repeat': 'no-repeat',
+                            'background-size': 'cover'
+
+                         }">
                         <div class="inghotelline">
-
-                            <a style="display: none;"
-                               class="fancybox"
-                               href="https://az.maxibooking.ru/upload/roomTypes/1488550077786.jpeg"
-                               rel="cat1">
-                                <img src="https://az.maxibooking.ru/media/cache/thumb_275x210/upload/roomTypes/1488550077786.jpeg"
-                                     alt="">
-                            </a>
-
-                            <a style="" class="fancybox"
-                               href="https://az.maxibooking.ru/upload/roomTypes/1488550081817.jpeg"
-                               rel="cat1"> <img
-                                    src="https://az.maxibooking.ru/media/cache/thumb_275x210/upload/roomTypes/1488550081817.jpeg"
-                                    alt="">
-                            </a>
-
-                            <a style="" class="fancybox"
-                               href="https://az.maxibooking.ru/upload/roomTypes/1488550084387.jpeg"
-                               rel="cat1"> <img
-                                    src="https://az.maxibooking.ru/media/cache/thumb_275x210/upload/roomTypes/1488550084387.jpeg"
-                                    alt="">
-                            </a>
-
-                            <a style="" class="fancybox"
-                               href="https://az.maxibooking.ru/upload/roomTypes/1488550088871.jpeg"
-                               rel="cat1"> <img
-                                    src="https://az.maxibooking.ru/media/cache/thumb_275x210/upload/roomTypes/1488550088871.jpeg"
-                                    alt="">
-                            </a>
-
+                            <template v-for="(image, key) in images">
+                                <img v-if="!image.isMain"  style="margin: 4px;"  :src="image.thumb" @click.prevent="showLightbox(key)" :key="key">
+                            </template>
                         </div>
                     </div>
                 </div>
@@ -120,30 +99,32 @@
                 </div>
                 <div class="righttblrdm">
                     <div class="spros">Пользуется спросом!</div>
-                    <a href="javascript:void(0)" class="btn-booking-reservation">
+                    <router-link :to="{name: 'order'}" class="btn-booking-reservation" @click.native="saveOrderData">
                         <p class="btmone btmonenotspec">Отправить заявку</p>
-                    </a>
-                    <a href="javascript:void(0)" class="btn-booking"><p class="btmtwo">Купить онлайн</p></a>
+                    </router-link>
+                    <router-link :to="{name: 'order'}" class="btn-booking"><p class="btmtwo">Купить онлайн</p></router-link>
                 </div>
                 <div class="clear"></div>
             </div>
         </section>
-
-
+        <LightBox :images="images" :showLightBox="false" ref="lightbox"></LightBox>
     </div>
 </template>
 
-<script>
+<script lang="ts">
     import moment from 'moment';
+    import LightBox from 'vue-image-lightbox';
 
     moment.locale('ru');
     export default {
         name: "ResultInstance",
         props: ['roomType', 'data'],
+        components: {
+            LightBox,
+        },
         data() {
             return {
                 picked: 0,
-                url: 'https://az.maxibooking.ru'
             }
         },
         computed: {
@@ -174,19 +155,26 @@
                 return Math.round(price);
             },
             mainImage() {
-                return `${this.url}/${this.roomType.mainImage.webPath}`;
-            },
-            images() {
                 let images;
-                let paths = [];
                 if (Array.isArray(this.roomType.images)) {
-                    images = this.roomType.images.filter(image => !image.isMain)
-                }
-                if (images.length) {
-                    images.forEach(image => paths.push(`${this.url}/${image.webPath}`))
+                    images = this.roomType.images.filter(image => image.isMain)
                 }
 
-                return paths;
+                let mainImage =  images.shift();
+                if (!mainImage) {
+                    mainImage = {
+                        src: '',
+                        thumb: ''
+                    }
+                }
+                return mainImage;
+
+            },
+            images() {
+                return this.roomType.images;
+            },
+            mainImageindex() {
+                return this.images.findIndex(image => image.isMain);
             }
         },
         methods: {
@@ -201,6 +189,12 @@
                     'tariff-row': true,
                     alerting: this.picked === index
                 }
+            },
+            showLightbox(index = 0) {
+                this.$refs.lightbox.showImage(index);
+            },
+            saveOrderData() {
+                this.$store.commit('order/selectOrder', this.selectedResult);
             }
         }
 
@@ -210,6 +204,7 @@
 
 <style>
     @import '~pretty-checkbox/dist/pretty-checkbox.min.css';
+    @import '~vue-image-lightbox/dist/vue-image-lightbox.min.css';
 </style>
 <style scoped>
     .s_results p {

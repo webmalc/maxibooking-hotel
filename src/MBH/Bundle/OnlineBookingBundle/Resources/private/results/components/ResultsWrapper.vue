@@ -1,33 +1,44 @@
 <template>
     <div id="online-booking-search">
-        <p class="restitle">Курортная сеть "Азовский": варианты размещения в выбранные объекты</p>
-        <div class="infoIncludeN"> Что входит в стоимость путевки:
-            <a href="https://azovsky.ru/azovsky/azovskiy-putevka/" target="_blank">Азовский</a>,
-            <a href="http://azovsky.ru/azovland/azovland-putevka/" style="" target="_blank">АзовЛенд</a>
-        </div>
+        <template v-if="searchStatus && !isResultsFounded">
+            Идет поиск, пожалуйста подождите...
+        </template>
+
+        <template v-if="!searchStatus && !isResultsFounded">
+            Поиск закончен, результатов нет и не будет. Приходите завтра.
+        </template>
+
+        <template v-if="isSearchError">
+            Произошла непредвиденная ошибка. Звоните пишите. {{errorMessage}}
+        </template>
+
+
+
+        <template v-if="isResultsFounded">
+            <p class="restitle">Курортная сеть "Азовский": варианты размещения в выбранные объекты</p>
+            <div class="infoIncludeN"> Что входит в стоимость путевки:
+                <a href="https://azovsky.ru/azovsky/azovskiy-putevka/" target="_blank">Азовский</a>,
+                <a href="http://azovsky.ru/azovland/azovland-putevka/" style="" target="_blank">АзовЛенд</a>
+            </div>
+        </template>
 
         <Results v-for="(result, key) in prioritySortedResults" :key="`result${key}`" :result="result"/>
         <SpecialInstance v-for="(special, key) in specials" :key="`special${key}`" :special="special"/>
 
-        <div class="infoIncludeN">Что входит в стоимость путевки:
-            <a href="https://azovsky.ru/azovsky/azovskiy-putevka/" target="_blank">Азовский</a>,
-            <a href="http://azovsky.ru/azovland/azovland-putevka/" target="_blank">АзовЛенд</a>
-        </div>
 
-        <div class="addDates">
-            <a id="addDatesLink"
-               href="index.html?search_form[hotel]=&amp;search_form[begin]=08.07.2019&amp;search_form[end]=15.07.2019&amp;search_form[adults]=1&amp;search_form[children]=2&amp;search_form[children_age][1]=3&amp;search_form[children_age][2]=12&amp;submit=Узнат#">Посмотреть
-                еще варианты
-            </a>
-        </div>
+        <template v-if="isResultsFounded">
+            <div class="infoIncludeN">Что входит в стоимость путевки:
+                <a href="https://azovsky.ru/azovsky/azovskiy-putevka/" target="_blank">Азовский</a>,
+                <a href="http://azovsky.ru/azovland/azovland-putevka/" target="_blank">АзовЛенд</a>
+            </div>
 
-        <div id="online-booking-additional" style="display: none"></div>
-        <p><br></p>
-        <p>
-            <a href="https://maxi-booking.ru/" target="_blank">Бронирование предоставляется системой
-                Maxibooking</a>
-        </p>
-
+            <div id="online-booking-additional" style="display: none"></div>
+            <p><br></p>
+            <p>
+                <a href="https://maxi-booking.ru/" target="_blank">Бронирование предоставляется системой
+                    Maxibooking</a>
+            </p>
+        </template>
     </div>
 
 </template>
@@ -58,8 +69,17 @@
             searchStatus() {
                 return this.$store.getters['search/getIsSearchStarted'];
             },
+            isResultsFounded() {
+                return this.$store.getters['results/isResults'];
+            },
             isAdditionalDates() {
                 return Boolean(this.$store.state.form.additionalBegin || this.$store.state.form.additionalEnd);
+            },
+            isSearchError() {
+                return this.$store.state.search.error;
+            },
+            errorMessage() {
+                return this.$store.state.search.errorMessage;
             }
         },
         watch: {

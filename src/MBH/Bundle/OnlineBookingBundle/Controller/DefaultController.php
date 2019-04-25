@@ -4,6 +4,7 @@ namespace MBH\Bundle\OnlineBookingBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\BaseBundle\Lib\Exception;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBookingBundle\Form\ReservationType;
 use MBH\Bundle\OnlineBookingBundle\Form\SearchFormType;
@@ -184,6 +185,51 @@ class DefaultController extends BaseController
     }
 
     /**
+     * @param $formData
+     * @return array
+     * Метод сделан как DRY для использования в переходном цикле от формы к апи.
+     * Второе исползование в AzovskyController
+     */
+    public static function prepareOnlineData($formData): array
+    {
+
+        $packages = [
+            [
+                'begin' => Helper::getDateFromString($formData['begin']),
+                'end' => Helper::getDateFromString($formData['end']),
+                'adults' => $formData['adults'],
+                'children' => $formData['children'],
+                'roomType' => $formData['roomType'],
+                'tariff' => $formData['tariff'],
+                'childrenAges' => $formData['childrenAges'],
+                'accommodation' => false,
+                'isOnline' => true,
+                'special' => $formData['special'],
+                'savedQueryId' => $formData['savedQueryId']
+            ],
+        ];
+        $tourist = [
+            'firstName' => $formData['firstName'],
+            'lastName' => $formData['lastName'],
+            'email' => $formData['email'],
+            'phone' => $formData['phone'],
+            'birthday' => null,
+        ];
+        $data = [
+            'packages' => $packages,
+            'tourist' => $tourist,
+            'status' => 'online',
+            'confirmed' => false,
+            'special' => $formData['special'],
+
+        ];
+
+        return $data;
+    }
+
+
+
+    /**
      * @Route("/sign", name="online_booking_sign")
      */
     public function signAction(Request $request)
@@ -204,39 +250,11 @@ class DefaultController extends BaseController
             $form->setData($request->get('form'));
         }
         if ($isSubmit && $form->isValid()) {
-            $helper = $this->get('mbh.helper');
             $orderManger = $this->get('mbh.order_manager');
             $formData = $form->getData();
-            $packages = [
-                [
-                    'begin' => $helper->getDateFromString($formData['begin']),
-                    'end' => $helper->getDateFromString($formData['end']),
-                    'adults' => $formData['adults'],
-                    'children' => $formData['children'],
-                    'roomType' => $formData['roomType'],
-                    'tariff' => $formData['tariff'],
-                    'childrenAges' => $formData['childrenAges'],
-                    'accommodation' => false,
-                    'isOnline' => true,
-                    'special' => $formData['special'],
-                    'savedQueryId' => $formData['savedQueryId']
-                ],
-            ];
-            $tourist = [
-                'firstName' => $formData['firstName'],
-                'lastName' => $formData['lastName'],
-                'email' => $formData['email'],
-                'phone' => $formData['phone'],
-                'birthday' => null,
-            ];
-            $data = [
-                'packages' => $packages,
-                'tourist' => $tourist,
-                'status' => 'online',
-                'confirmed' => false,
-                'special' => $formData['special'],
 
-            ];
+            $data = self::prepareOnlineData($formData);
+
             //--> Если по телефону - сюда
             if ($reservation) {
                 $data['total'] = $formData['total']??0;
@@ -246,7 +264,7 @@ class DefaultController extends BaseController
             }
             //Price online pay
             $paymentType = PaymentType::PAYMENT_TYPE_LIST[$formData['paymentType']];
-            //OnlinePayment  - оплаченая цена (формируется взависимости от выбора. Искать в форме)
+            //OnlinePayment  - оплаченная цена (формируется взависимости от выбора. Искать в форме)
             $onlinePaymentSum = (int)$formData['total'] / 100 * $paymentType['value'];
             $cash = ['total' => $onlinePaymentSum];
             $data['onlinePaymentType'] = 'online_full';

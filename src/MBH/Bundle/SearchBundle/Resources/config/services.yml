@@ -220,6 +220,9 @@ services:
             - '@mbh_search.accommodation_room_searcher'
             - '@mbh_search.occupancy_determiner'
             - '@event_dispatcher'
+            - '@liip_imagine.templating.filter_helper'
+            - '@assets.packages'
+            - '@twig.extension.httpfoundation'
 
 # async receive results
     mbh_search.asycn_search:

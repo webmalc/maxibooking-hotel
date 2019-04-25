@@ -8,6 +8,7 @@ Encore
     .addEntry('search', __dirname + '/src/MBH/Bundle/SearchBundle/Resources/private/search/index.ts')
     .addEntry('azovskyResults', __dirname + '/src/MBH/Bundle/OnlineBookingBundle/Resources/private/results/index.ts')
     .enableSassLoader()
+    .enableLessLoader()
     .enableSourceMaps(!Encore.isProduction())
     .cleanupOutputBeforeBuild()
     .enableBuildNotifications()
@@ -25,6 +26,7 @@ Encore
     )
     .addPlugin(new VueLoaderPlugin())
     .enableBuildNotifications(false)
+
 ;
 
 let config = Encore.getWebpackConfig();

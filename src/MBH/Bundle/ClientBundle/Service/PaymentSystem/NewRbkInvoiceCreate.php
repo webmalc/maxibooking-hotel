@@ -63,7 +63,7 @@ class NewRbkInvoiceCreate
     /**
      * @var null | PaymentFormConfig
      */
-    private $paymentForm = null;
+    private $paymentForm;
 
     public function __construct(ContainerInterface $container)
     {
@@ -84,6 +84,20 @@ class NewRbkInvoiceCreate
     public function getDataFromInvoice(Request $request):NewRbkCreateInvoiceResponse
     {
         $this->parseRequest($request);
+
+        return $this->getInvoiceData();
+
+    }
+
+    public function getDataFromInvoceInside($total, $packageId)
+    {
+        $this->populateProperties($total, $packageId);
+
+        return $this->getInvoiceData();
+    }
+
+    private function getInvoiceData()
+    {
         $this->cashDocument = $this->generateCashDocuments();
 
         return $this->sendQuery();
@@ -153,15 +167,26 @@ class NewRbkInvoiceCreate
      */
     private function parseRequest(Request $request): void
     {
-        $this->total = $request->get('total');
+        $total = $request->get('total');
+        $packageId = $request->get('packageId');
+        $paymentFormId = $request->get('paymentFormId');
+        $this->populateProperties($total, $packageId, $paymentFormId);
 
-        if (!empty($request->get('paymentFormId'))) {
-            $this->paymentForm = $this->dm->getRepository('MBHOnlineBundle:PaymentFormConfig')
-                ->find($request->get('paymentFormId'));
+    }
+
+    private function populateProperties($total, $packageId, $paymentFormId = '')
+    {
+        $this->total = $total;
+        if (!empty($paymentFormId)) {
+            $this->paymentForm = $this->dm
+                ->getRepository('MBHOnlineBundle:PaymentFormConfig')
+                ->find($paymentFormId);
         }
 
-        $this->package = $this->dm->getRepository('MBHPackageBundle:Package')
-            ->find($request->get('packageId'));
+        $this->package = $this->dm
+            ->getRepository('MBHPackageBundle:Package')
+            ->find($packageId);
+
         $this->order = $this->package->getOrder();
     }
 

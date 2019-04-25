@@ -589,6 +589,7 @@ class OrderManager
         }
 
         //inject SearchQuery
+        //В новом поиске нужно либо делать из SearchConditions - SearchQuery
         if (isset($data['savedQueryId']) && (null !== $data['savedQueryId'])) {
             $searchQuery = $this->dm->find('MBHPackageBundle:SearchQuery', $data['savedQueryId']);
             $package->addSearchQuery($searchQuery);

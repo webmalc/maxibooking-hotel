@@ -46,3 +46,7 @@ services:
     mbh.new_rbk_create_invoice.logger_handler:
         class:     Monolog\Handler\StreamHandler
         arguments: ["%kernel.logs_dir%/%kernel.environment%.paymentSystem_newRbk.log", 200]
+
+    mbh.new_rbk_invoice_create:
+        class: MBH\Bundle\ClientBundle\Service\PaymentSystem\NewRbkInvoiceCreate
+        arguments: ['@service_container']

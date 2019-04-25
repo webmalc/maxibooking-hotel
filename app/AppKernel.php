@@ -1,6 +1,7 @@
 <?php
 
 use MBH\Bundle\SearchBundle\MBHSearchBundle;
+use Nelmio\CorsBundle\NelmioCorsBundle;
 use Snc\RedisBundle\SncRedisBundle;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
@@ -36,6 +37,7 @@ class AppKernel extends Kernel
             new Phobetor\RabbitMqSupervisorBundle\RabbitMqSupervisorBundle(),
             new Vich\UploaderBundle\VichUploaderBundle(),
             new SncRedisBundle(),
+            new NelmioCorsBundle(),
 
             //Project bundles,
             new MBH\Bundle\BaseBundle\MBHBaseBundle(),

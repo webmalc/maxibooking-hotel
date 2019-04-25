@@ -162,7 +162,8 @@ class Calculation
             'total' => round($total, $this->priceRoundSign),
             'prices' => $dayPrices,
             'packagePrices' => $packagePrices,
-            'discount' => $rawPromotion->getDiscount()
+            'discount' => $promotion ? $promotion->getDiscount() : null,
+
         ];
     }
 

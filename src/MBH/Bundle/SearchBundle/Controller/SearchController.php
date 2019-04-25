@@ -47,12 +47,6 @@ class SearchController extends Controller
      */
     public function syncSearchAction(Request $request, ?string $grouping = null): Response
     {
-        //** Костыль для азовского добавить доступ к апи через fetch */
-        $method = $request->getMethod();
-        if ($method === 'OPTIONS') {
-            return $this->optionsResponse();
-        }
-
         $data = json_decode($request->getContent(), true);
         $search = $this->get('mbh_search.search');
         try {
@@ -64,8 +58,6 @@ class SearchController extends Controller
         } catch (SearchConditionException|SearchQueryGeneratorException|GroupingFactoryException $e) {
             $answer = new JsonResponse(['error' => $e->getMessage()], 400);
         }
-        $answer->headers->set('Access-Control-Allow-Origin', '*');
-        $answer->headers->set('Access-Control-Allow-Headers','*');
 
         return $answer;
     }
@@ -107,12 +99,6 @@ class SearchController extends Controller
      */
     public function asyncSearchAction(Request $request): JsonResponse
     {
-        //** Костыль для азовского добавить доступ к апи через fetch */
-        $method = $request->getMethod();
-        if ($method === 'OPTIONS') {
-            return $this->optionsResponse();
-        }
-
         $data = json_decode($request->getContent(), true);
         $search = $this->get('mbh_search.search');
         try {
@@ -124,10 +110,6 @@ class SearchController extends Controller
         } catch (SearchConditionException|SearchQueryGeneratorException $e) {
             $answer = new JsonResponse(['error' => $e->getMessage()], 400);
         }
-
-        $answer->headers->set('Access-Control-Allow-Origin', '*');
-        $answer->headers->set('Access-Control-Allow-Headers','*');
-
 
         return $answer;
     }
@@ -142,12 +124,6 @@ class SearchController extends Controller
      */
     public function getAsyncResultsAction(Request $request, SearchConditions $conditions, ?string $grouping = null): JsonResponse
     {
-        //** Костыль для азовского добавить доступ к апи через fetch */
-        $method = $request->getMethod();
-        if ($method === 'OPTIONS') {
-            return $this->optionsResponse();
-        }
-
         $receiver = $this->get('mbh_search.async_result_store');
         try {
             $json = $receiver->receive($conditions, $grouping, true, true);
@@ -155,9 +131,6 @@ class SearchController extends Controller
         } catch (AsyncResultReceiverException $exception) {
             $answer = new JsonResponse(['results' => [], 'message' => $exception->getMessage()], 204);
         }
-
-        $answer->headers->set('Access-Control-Allow-Origin', '*');
-        $answer->headers->set('Access-Control-Allow-Headers','*');
 
         return $answer;
     }
@@ -279,16 +252,4 @@ class SearchController extends Controller
         return new JsonResponse($result);
     }
 
-
-    /** Костыль для азовского. Надо заменить на
-     *  https://github.com/nelmio/NelmioCorsBundle
-     *
-     */
-
-    private function optionsResponse()
-    {
-        $corsHeaders = ['Access-Control-Allow-Origin' => '*', 'Access-Control-Allow-Headers' => '*'];
-
-        return new JsonResponse(null, 200, $corsHeaders);
-    }
 }
