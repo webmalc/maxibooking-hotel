@@ -227,7 +227,16 @@ services:
         calls:
             - [pushHandler, ['@mbh.cache.logger_handler']]
 
+    mbh.cm_mailer.logger_handler:
+        public: false
+        class: Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.cm_mailer.log", '%mail_log_level%']
 
+    mbh.cm_mailer.logger:
+        class: Symfony\Bridge\Monolog\Logger
+        arguments: ['cm_mailer']
+        calls:
+            - [pushHandler, ['@mbh.cm_mailer.logger_handler']]
 
     mbh.cache.logger_handler:
         class:     Monolog\Handler\StreamHandler

@@ -128,6 +128,7 @@ class OrderSubscriber implements EventSubscriber
         $this->translator = $this->container->get('translator');
         $dm = $args->getDocumentManager();
         $uow = $dm->getUnitOfWork();
+        $cm_logger = $this->container->get('mbh.cm_mailer.logger');
 
         $entities = array_merge(
             $uow->getScheduledDocumentUpdates()
@@ -170,6 +171,7 @@ class OrderSubscriber implements EventSubscriber
                                 ->setSignature('mailer.online.user.signature')
                                 ->setMessageType(NotificationType::CONFIRM_ORDER_TYPE)
                             ;
+                            $cm_logger->debug('Starting to notify from '. __FUNCTION__ .'');
                             $notifier
                                 ->setMessage($message)
                                 ->notify()

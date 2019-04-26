@@ -63,6 +63,11 @@ class Mailer implements \SplObserver, MailerInterface
     protected $translator;
 
     /**
+     * @var Logger
+     */
+    protected $cm_logger;
+
+    /**
      * Mailer constructor.
      * @param ContainerInterface $container
      */
@@ -78,6 +83,7 @@ class Mailer implements \SplObserver, MailerInterface
         $this->permissions = $this->container->get('mbh.hotel.selector');
         $this->logger = $this->container->get('mbh.mailer.logger');
         $this->translator = $this->container->get('translator');
+        $this->cm_logger = $this->container->get('mbh.cm_mailer.logger');
     }
 
     /**
@@ -104,6 +110,15 @@ class Mailer implements \SplObserver, MailerInterface
         if ($this->isMessageDuplicated($message)) {
             return;
         }
+
+        $recipients = '';
+        /** @var RecipientInterface $recipient */
+        foreach ($message->getRecipients() as $recipient) {
+            $recipients .= $recipient->getEmail().' ';
+        }
+        $this->cm_logger->debug(
+            'In ' . __FUNCTION__ . '. Trying to send email to following recipients: '. $recipients .'' . PHP_EOL
+        );
 
         if ($message->getEmail()) {
             $this->send(
@@ -144,6 +159,14 @@ class Mailer implements \SplObserver, MailerInterface
                 $data['category'] ?? null,
                 $data['hotel'] ?? null,
                 $data['messageType'] ?? null
+            );
+            $recipientsStr = '';
+            /** @var RecipientInterface $recipient */
+            foreach ($recipients as $recipient) {
+                $recipientsStr .= $recipient->getEmail().' ';
+            }
+            $this->cm_logger->debug(
+                'In ' . __FUNCTION__ . '. Trying to send email to following recipients: ' . $recipientsStr . '' . PHP_EOL
             );
         } elseif (!$this->canISentToClient($data['messageType'])) {
             $this->logger->alert("There is no recipient client according mailer restrictions");
@@ -260,7 +283,7 @@ class Mailer implements \SplObserver, MailerInterface
             if (in_array($messageType, NotificationTypeData::getStuffOwnerTypes()) || in_array($messageType, NotificationTypeData::getErrorOwnerTypes())) {
                 $recipients = [$this->dm->getRepository('MBHUserBundle:User')->findOneBy(['username' => 'mb'])];
             } else {
-                $error = 'Failed to send email. There is not a single recipient.';
+                $error = 'Failed to send email. There is not a single recipient. Message type: '. $messageType .' ';
                 $this->logger->alert($error);
             }
         }
