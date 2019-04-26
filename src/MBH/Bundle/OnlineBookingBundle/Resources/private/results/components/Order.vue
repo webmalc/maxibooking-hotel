@@ -7,7 +7,7 @@
 
             <h3>Персональная информация</h3>
 
-            <div class="error_pay" style="display:block;">Внимание! Оплачивая туристические услуги, Вы соглашаетесь с
+            <div v-if="isOnline" class="error_pay" style="display:block;">Внимание! Оплачивая туристические услуги, Вы соглашаетесь с
                 условиями публичного <a href="https://yadi.sk/i/bNDRgure3TZhSq" target="_blank">договора-оферты.</a></div>
 
             <div id="form" class="ss">
@@ -40,47 +40,21 @@
                     >
                 </div>
 
-                <div class="form-group">
-                    <div class="checkbox">
-                        <label for="form_accept" class="required">
-                            <input type="checkbox" id="form_accept"
-                                   name="form[accept]"
-                                   required="required"
-                                   v-model="order.accept"
-                            > Я согласен на
-                        обработку моих персональных данных.
-                        </label>
-                    </div>
-                </div>
 
-                <div class="form-group">
-                    <div class="checkbox">
-                        <label for="form_offerta" class="required">
-                            <input type="checkbox" id="form_offerta"
-                                   name="form[offerta]"
-                                   required="required"
-                                   v-model="order.offerta"
-                            > Принимаю условия
-                        <a href="https://yadi.sk/i/bNDRgure3TZhSq" target="_blank">договора-оферты.</a>
-                        </label>
-                    </div>
+                <div class="personal">
+                <p-check class="p-default p-fill order" color="success" v-model="order.accept">
+                    Я согласен на обработку моих персональных данных.
+                </p-check>
+
+                <p-check v-if="isOnline" class="p-default p-fill order" color="success" v-model="order.offerta">
+                    Принимаю условия <a href="https://yadi.sk/i/bNDRgure3TZhSq" target="_blank">договора-оферты.</a>
+                </p-check>
                 </div>
 
 
-                <div class="form-group">
+                <div v-if="isOnline" class="form-group">
                     <label class="control-label" for="form_cash">Сумма к оплате согласно тарифа</label>
                     <input type="text" id="form_cash" name="form[cash]" disabled="disabled" class="form-control" v-model="formPrice">
-                </div>
-
-                <input type="hidden" id="form_adults" name="form[adults]" value="1">
-                <input type="hidden" id="form_children"
-                       name="form[children]"
-                       value="0"
-                >
-
-
-                <div class="form-group">
-                    <div id="form_childrenAges" hidden="hidden" data-prototype="<div class=&quot;form-group&quot;><label class=&quot;control-label required&quot; for=&quot;form_childrenAges___name__&quot;>__name__label__</label><input type=&quot;text&quot; id=&quot;form_childrenAges___name__&quot; name=&quot;form[childrenAges][__name__]&quot; required=&quot;required&quot; class=&quot;form-control&quot; /></div>"></div>
                 </div>
 
             </div>
@@ -89,8 +63,7 @@
             <div><p class="reqinfo">* - поля обязательные к заполнению</p></div>
             <div class="submit">
                 <button @click.prevent="createOrder" type="submit" name="submit" :class="classes['button']" :disabled="isButtonDisabled">
-                    <span>Отправить заявку</span>
-                    <span>Забронировать</span>
+                    <span>{{isOnline ? 'Забронировать' : 'Отправить заявку'}}</span>
                 </button>
             </div>
 
@@ -186,6 +159,9 @@
             }
         },
         computed: {
+            isOnline() {
+                return this.type === 'online'
+            },
             orderData() {
                 return this.$store.state.order.currentOrder;
             },
@@ -211,7 +187,7 @@
                 return this.nights + 1;
             },
             isButtonDisabled() {
-                return !this.order.accept || !this.order.offerta || this.$store.state.order.status !== 'new' || !this.isFormValidated
+                return !this.order.accept || (!this.order.offerta && this.type === 'online') || this.$store.state.order.status !== 'new' || !this.isFormValidated
             },
             isFormValidated() {
                 const requiredFields = Boolean(this.order.firstName)
@@ -278,13 +254,19 @@
                 this.$refs.orderLightBox.showImage(0);
             },
             createOrder() {
-                this.$store.dispatch('order/createOrder', this.order);
+                this.$store.dispatch('order/createOrder', {personalData: this.order, type: this.type});
             }
 
         },
         watch: {
-            orderResult(newResult, oldResult) {
-                this.$router.push({name: 'onlinePayment'})
+            orderResult({type}) {
+                let route;
+                if (type === 'online') {
+                    route = 'onlinePayment';
+                } else {
+                    route = 'reserveResult';
+                }
+                this.$router.push({name: route});
             }
         }
 
@@ -297,5 +279,13 @@
 </style>
 
 <style scoped>
-
+    .order {
+        color: #9b9b9b;
+        font-size: 14px;
+        text-transform: none;
+        margin: 5px;
+    }
+    .personal {
+        margin-bottom: 20px;
+    }
 </style>

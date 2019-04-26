@@ -1,16 +1,17 @@
 <template>
     <div id="online-booking-search">
-        <template v-if="searchStatus && !isResultsFounded">
+        <p v-if="searchStatus && !isResultsFounded">
             Идет поиск, пожалуйста подождите...
-        </template>
+        </p>
 
-        <template v-if="!searchStatus && !isResultsFounded">
-            Поиск закончен, результатов нет и не будет. Приходите завтра.
-        </template>
+        <p v-if="!searchStatus && !isResultsFounded">
+            Поиск закончен, однако по заданным датам все уже раскуплено. Пожалуйста попробуйте другие даты или позвоните
+            нам, а наши прекрасные менеджеры для Вас что то обязательно подберут.
+        </p>
 
-        <template v-if="isSearchError">
-            Произошла непредвиденная ошибка. Звоните пишите. {{errorMessage}}
-        </template>
+        <p v-if="isSearchError">
+            Произошла непредвиденная ошибка. Позвоните нам пожалуйста. {{errorMessage}}
+        </p>
 
 
 
@@ -22,7 +23,19 @@
             </div>
         </template>
 
+
+        <transition-group
+                tag="div"
+                name="result-list"
+                enter-active-class="animated fadeIn"
+                :duration="{enter:800}"
+                appear
+                style="display: inline;"
+        >
         <Results v-for="(result, key) in prioritySortedResults" :key="`result${key}`" :result="result"/>
+        </transition-group>
+
+
         <SpecialInstance v-for="(special, key) in specials" :key="`special${key}`" :special="special"/>
 
 
@@ -112,5 +125,8 @@
 </script>
 
 <style scoped>
-
+    @import "~animate.css";
+    .result-list-move {
+        transition: transform 1s;
+    }
 </style>

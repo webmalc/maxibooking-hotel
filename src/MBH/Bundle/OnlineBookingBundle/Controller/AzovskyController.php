@@ -20,6 +20,11 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class AzovskyController extends Controller
 {
+
+    private const ONLINE = 'online';
+
+    private const RESERVE = 'reserve';
+
     /**
      * @return Response
      * @Route("/results", name="az_results")
@@ -86,7 +91,8 @@ class AzovskyController extends Controller
             'status' => 'success',
             'orderId' => $order->getId(),
             'total' => $total,
-            'invoice' => $invoiceData
+            'invoice' => $invoiceData,
+            'type' => self::ONLINE
 
         ];
 
@@ -96,10 +102,16 @@ class AzovskyController extends Controller
     /**
      * @param Request $request
      * @Route("/create-reservation", name="az_create_reservation", options={"expose" = true})
+     * @return JsonResponse
      */
     public function createReservationAction(Request $request)
     {
+        $result = [
+            'status' => 'success',
+            'type' => self::RESERVE,
+        ];
 
+        return $this->json($result);
     }
 
     /**

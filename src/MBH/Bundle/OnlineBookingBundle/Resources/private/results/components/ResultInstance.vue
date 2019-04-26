@@ -11,6 +11,9 @@
                             'background-size': 'cover'
 
                          }">
+                        <span v-if="additionalDates" class="special-strip">
+                            Другие даты
+                        </span>
                         <div class="inghotelline">
                             <template v-for="(image, key) in images">
                                 <img v-if="!image.isMain"  style="margin: 4px;"  :src="image.thumb" @click.prevent="showLightbox(key)" :key="key">
@@ -99,10 +102,13 @@
                 </div>
                 <div class="righttblrdm">
                     <div class="spros">Пользуется спросом!</div>
-                    <router-link :to="{name: 'order'}" class="btn-booking-reservation" @click.native="saveOrderData">
+                    <router-link :to="{name: 'order', params: {type: 'reserve'}}" class="btn-booking-reservation" @click.native="saveOrderData">
                         <p class="btmone btmonenotspec">Отправить заявку</p>
                     </router-link>
-                    <router-link :to="{name: 'order'}" class="btn-booking"><p class="btmtwo">Купить онлайн</p></router-link>
+
+                    <router-link :to="{name: 'order', params: {type: 'online'}}" class="btn-booking" @click.native="saveOrderData">
+                        <p class="btmtwo">Купить онлайн</p>
+                    </router-link>
                 </div>
                 <div class="clear"></div>
             </div>
@@ -142,6 +148,15 @@
             },
             end() {
                 return moment(this.data[0].end);
+            },
+            searchBegin() {
+                return moment(this.data[0].resultConditions.begin);
+            },
+            searchEnd() {
+                return moment(this.data[0].resultConditions.end);
+            },
+            additionalDates() {
+                return this.begin.diff(this.searchBegin) || this.end.diff(this.searchEnd);
             },
             selectedResult() {
                 return this.data[this.picked];

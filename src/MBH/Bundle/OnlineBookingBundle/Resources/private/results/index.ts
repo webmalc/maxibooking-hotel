@@ -11,7 +11,14 @@ Vue.config.devtools = true;
 Vue.use(VueRouter);
 Vue.use(PrettyCheckbox);
 Vue.use(VueLazyLoad);
-const router = new VueRouter({routes});
+const router = new VueRouter({
+    routes,
+    scrollBehavior(to, from, savedPisition) {
+        return {
+            x: 0, y: 0
+        }
+    }
+});
 
 new Vue({
     el: '#azovsky-mb-results',

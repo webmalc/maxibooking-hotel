@@ -159,7 +159,7 @@ const debug = {
 
 
 const state = {
-    currentOrder: {},
+    currentOrder: debug,
     status: 'new',
     orderNum: null,
     orderResult : {},
@@ -197,13 +197,19 @@ const request = (url: string, body: object = {}) => {
 };
 
 
+const routes = {
+    online: 'az_create_order',
+    reserve: 'az_create_reservation'
+};
+
 const actions = {
-    async createOrder({commit, getters}, personalData) {
+    async createOrder({commit, getters}, {personalData, type}) {
         commit('setInProcess');
+        const routeName = routes[type];
         let orderData = getters.getOrderData;
         let data = {...orderData, ...personalData};
         try {
-            let url = Routing.generate('az_create_order', {}, true);
+            let url = Routing.generate(routeName, {}, true);
             const response = await request(url, data);
             if (!response.ok) {
                 const error = await response.json();
@@ -221,9 +227,6 @@ const actions = {
             commit('setError');
             console.log(err.message);
         }
-
-    },
-    createReservation() {
 
     }
 };

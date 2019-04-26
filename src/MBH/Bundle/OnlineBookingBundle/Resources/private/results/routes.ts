@@ -1,6 +1,7 @@
 import ResultsWrapper from './components/ResultsWrapper.vue';
 import Order from './components/Order.vue';
-import OnlinePayment from './components/OnlinePayment.vue'
+import OnlinePayment from './components/OnlinePayment.vue';
+import ReserveResult from './components/ReserveResult.vue';
 
 const routes = [
     {
@@ -9,14 +10,20 @@ const routes = [
         component: ResultsWrapper
     },
     {
-        path: '/order',
+        path: '/order/:type',
         name: 'order',
-        component: Order
+        component: Order,
+        props: true
     },
     {
         path: '/online-payment',
         name: 'onlinePayment',
         component: OnlinePayment
+    },
+    {
+        path: '/reserveResult',
+        name: 'reserveResult',
+        component: ReserveResult
     }
 ];
 
