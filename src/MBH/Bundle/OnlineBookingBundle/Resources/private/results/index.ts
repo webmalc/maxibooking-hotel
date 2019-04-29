@@ -13,12 +13,14 @@ Vue.use(PrettyCheckbox);
 Vue.use(VueLazyLoad);
 const router = new VueRouter({
     routes,
-    scrollBehavior(to, from, savedPisition) {
+    scrollBehavior(to, from, savedPosition) {
         return {
             x: 0, y: 0
         }
     }
 });
+
+require('../../public/css/ssearch.less');
 
 new Vue({
     el: '#azovsky-mb-results',

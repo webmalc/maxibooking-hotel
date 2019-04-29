@@ -71,8 +71,6 @@
                         </tr>
                         </thead>
                         <tbody class="tariff-container">
-                        <i class="fa fa-spinner fa-pulse fa-3x fa-fw tariff-spinner"></i>
-                        <span class="sr-only">Loading...</span>
                         <tr
                                 :class="tariffClass(key)"
                                 v-for="(result, key) in data"
@@ -102,13 +100,15 @@
                 </div>
                 <div class="righttblrdm">
                     <div class="spros">Пользуется спросом!</div>
-                    <router-link :to="{name: 'order', params: {type: 'reserve'}}" class="btn-booking-reservation" @click.native="saveOrderData">
-                        <p class="btmone btmonenotspec">Отправить заявку</p>
-                    </router-link>
 
-                    <router-link :to="{name: 'order', params: {type: 'online'}}" class="btn-booking" @click.native="saveOrderData">
+                    <div class="btn-booking-reservation" @click="saveOrderData('reserve')">
+                        <p class="btmone btmonenotspec">Отправить заявку</p>
+                    </div>
+
+                    <div class="btn-booking" @click="saveOrderData('online')">
                         <p class="btmtwo">Купить онлайн</p>
-                    </router-link>
+                    </div>
+
                 </div>
                 <div class="clear"></div>
             </div>
@@ -208,8 +208,9 @@
             showLightbox(index = 0) {
                 this.$refs.lightbox.showImage(index);
             },
-            saveOrderData() {
+            saveOrderData(type) {
                 this.$store.commit('order/selectOrder', this.selectedResult);
+                this.$router.push({name: 'order', params: {type}});
             }
         }
 
