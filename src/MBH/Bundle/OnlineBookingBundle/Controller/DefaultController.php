@@ -485,8 +485,6 @@ class DefaultController extends BaseController
      */
     private function sendNotifications(Order $order)
     {
-
-
         try {
             //backend
             $notifier = $this->container->get('mbh.notifier');
@@ -500,12 +498,6 @@ class DefaultController extends BaseController
                 ->setType('info')
                 ->setCategory('notification')
                 ->setOrder($order)
-//                ->setAdditionalData(
-//                    [
-//                        'arrivalTime' => $arrival,
-//                        'departureTime' => $departure,
-//                    ]
-//                )
                 ->setHotel($hotel)
                 ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
                 ->setAutohide(false)

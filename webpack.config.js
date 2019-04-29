@@ -1,6 +1,8 @@
 var Encore = require('@symfony/webpack-encore');
 webpack = require("webpack");
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+
 var fs = require('fs');
 Encore
     .setOutputPath('web/build')
@@ -38,6 +40,14 @@ if(!Encore.isProduction()) {
         }
         console.log("fakewebpack.config.js written");
     });
+}
+
+/*https://github.com/symfony/webpack-encore/issues/139#issuecomment-323585179*/
+if (Encore.isProduction()) {
+    config.plugins = config.plugins.filter(
+        plugin => !(plugin instanceof webpack.optimize.UglifyJsPlugin)
+    );
+    config.plugins.push(new UglifyJsPlugin());
 }
 
 

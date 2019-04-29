@@ -159,7 +159,7 @@ const debug = {
 
 
 const state = {
-    currentOrder: debug,
+    currentOrder: {},
     status: 'new',
     orderNum: null,
     orderResult : {},
@@ -243,11 +243,12 @@ const getters = {
             end: moment(order.end).format('DD.MM.YYYY'),
             adults: order.resultConditions.adults,
             children: order.resultConditions.children,
-            childrenAges: order.resultConditions.chilrenAges,
+            childrenAges: order.resultConditions.childrenAges,
             roomType: order.resultRoomType.id,
             tariff: order.resultTariff.id,
             /*savedQueryId: order.resultConditions.id,*/
-            paymentType: 'hundred'
+            paymentType: 'hundred',
+            total: order.prices[0].total,
 
         };
     }

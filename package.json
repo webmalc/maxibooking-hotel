@@ -35,6 +35,7 @@
     "scss": "^0.2.4",
     "style-loader": "^0.23.1",
     "typescript": "^3.0.1",
+    "uglifyjs-webpack-plugin": "^1.0.0-beta",
     "v-calendar": "^0.9.7",
     "vue-datepicker-ui": "^0.1.2",
     "vue-datetime": "^1.0.0-beta.10",

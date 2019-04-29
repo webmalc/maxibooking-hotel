@@ -140,3 +140,26 @@ services:
         class: MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineResultInstance
         shared: false
         arguments: ['@doctrine_mongodb.odm.document_manager', '%online_left_rooms%']
+
+
+    mbh.online_booking_notificator:
+        class: MBH\Bundle\OnlineBookingBundle\Service\OnlineBookingNotificator
+        arguments:
+            - '@mbh.online.booking_logger'
+            - '@mbh.notifier'
+            - '@mbh.notifier.mailer'
+            - '@translator.default'
+            - '%mailer_user_arrival_links%'
+            - '%online_reservation_manager_email%'
+            - '@doctrine_mongodb.odm.default_document_manager'
+
+    mbh.online.booking_logger_handler:
+        class: Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.online-booking.log", 200]
+        public: false
+
+    mbh.online.booking_logger:
+        class: Monolog\Logger
+        arguments: ['online-booking']
+        calls:
+            - [pushHandler, ['@mbh.online.booking_logger_handler']]

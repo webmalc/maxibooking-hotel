@@ -6,6 +6,7 @@ namespace MBH\Bundle\OnlineBookingBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\ClientBundle\Service\PaymentSystem\NewRbkInvoiceCreate;
+use MBH\Bundle\OnlineBookingBundle\Form\ReservationType;
 use MBH\Bundle\OnlineBookingBundle\Form\SignType;
 use MBH\Bundle\PriceBundle\Lib\PaymentType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -37,6 +38,8 @@ class AzovskyController extends Controller
     /**
      * @param Request $request
      * @Route("/create-order", name="az_create_order", options={"expose" = true})
+     * @return JsonResponse
+     * @throws \Exception
      */
     public function createOrderAction(Request $request)
     {
@@ -48,9 +51,10 @@ class AzovskyController extends Controller
             foreach ($form->getErrors(true) as $error) {
                 $errors[] = [
                     'path' => $error->getCause()->getPropertyPath(),
-                    'message' => $error->getCause()->getMessage()
+                    'message' => $error->getCause()->getMessage(),
                 ];
             }
+
             return new JsonResponse(
                 [
                     'status' => 'error',
@@ -74,7 +78,7 @@ class AzovskyController extends Controller
             return new JsonResponse(
                 [
                     'status' => 'error',
-                    'message' => 'Exception in order manager'
+                    'message' => 'Exception in order manager',
                 ]
 
             );
@@ -92,9 +96,18 @@ class AzovskyController extends Controller
             'orderId' => $order->getId(),
             'total' => $total,
             'invoice' => $invoiceData,
-            'type' => self::ONLINE
+            'type' => self::ONLINE,
 
         ];
+
+        $notificator = $this->container->get('mbh.online_booking_notificator');
+
+        try {
+            $notificator->newOrderNotify($order);
+        } catch (Exception $e) {
+            $logger = $this->container->get('mbh.online.booking_logger');
+            $logger->error('Error when try to send notification with order. '.$e->getMessage(), [$order]);
+        }
 
         return $this->json($result);
     }
@@ -106,10 +119,44 @@ class AzovskyController extends Controller
      */
     public function createReservationAction(Request $request)
     {
+
+        $rawData = json_decode($request->getContent(), true);
+        foreach (['paymentType', 'patronymic', 'offerta'] as $uselessField) {
+            if (isset($rawData[$uselessField])) {
+                unset($rawData[$uselessField]);
+            }
+        }
+
+        $errorResult = [
+            'status' => 'error',
+            'type' => self::RESERVE,
+
+        ];
+
+        $form = $this->createForm(ReservationType::class);
+        $form->submit($rawData);
+        if (!$form->isValid()) {
+            return $this->json($errorResult);
+        }
+
+        $formData = $form->getData();
+        $data = DefaultController::prepareOnlineData($formData);
+        $data['total'] = $formData['total'] ?? 'error';
+
+        $notificator = $this->container->get('mbh.online_booking_notificator');
+        try {
+            $notificator->reservationNotify($data);
+        } catch (\Exception $e) {
+            $logger = $this->container->get('mbh.online.booking_logger');
+            $logger->error('Error when try to send notification when reserve. '.$e->getMessage(), [$data]);
+            return $this->json($errorResult);
+        }
+
         $result = [
             'status' => 'success',
             'type' => self::RESERVE,
         ];
+
 
         return $this->json($result);
     }

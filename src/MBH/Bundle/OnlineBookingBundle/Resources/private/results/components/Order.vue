@@ -1,6 +1,6 @@
 <template>
     <div v-if="isError">
-        Внутренняя ошибка в системе.
+        Произошла непредвиденная ошибка в системе. Пожалуйста, позвоните нам.
     </div>
     <div v-else>
         <div id="sign-page" class="col-md-8">
