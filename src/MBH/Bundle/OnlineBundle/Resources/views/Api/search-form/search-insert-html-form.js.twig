@@ -1,10 +1,11 @@
 /*global window, jQuery, document, isMobileDevice */
 var isDisplayChildAges = {{ isDisplayChildAges ? 'true' : 'false' }};
 window.addEventListener('load', function() {
-    var wrapper = jQuery('#mbh-form-wrapper');
-    wrapper.html("{{ text|escape('js') }}");
+    {#var wrapper = jQuery('#mbh-form-wrapper');#}
+    {#wrapper.html("{{ text|escape('js') }}");#}
+    document.querySelector('#mbh-form-wrapper').innerHTML = "{{ text|escape('js') }}";
 
-    var formAction = new SearchForm();
+    var formAction = new SearchForm('{{ formConfig.calendarFrameWidth }}');
 
     changeColorMBLogo();
 

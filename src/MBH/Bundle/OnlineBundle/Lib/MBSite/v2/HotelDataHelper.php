@@ -6,15 +6,12 @@
 namespace MBH\Bundle\OnlineBundle\Lib\MBSite\v2;
 
 
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
-use MBH\Bundle\HotelBundle\Document\FacilityRepository;
 use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\OnlineBundle\Lib\MBSite\ImageDataDecorator;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
-class HotelDataDecorator extends ImageDataDecorator
+class HotelDataHelper extends MbSiteData
 {
     /**
      * @var Hotel
@@ -45,18 +42,17 @@ class HotelDataDecorator extends ImageDataDecorator
         parent::__construct($uploaderHelper, $cacheManager);
     }
 
-
     /**
      * @param bool $isFull
      * @return array
      */
-    public function getData(): array
+    public function getPreparedData(): array
     {
         $data = [
             'id'          => $this->hotel->getId(),
             'title'       => $this->hotel->getFullTitle() ?? $this->hotel->getInternationalTitle(),
             'isDefault'   => $this->hotel->getIsDefault(),
-            'description' => $this->hotel->getDescription(),
+            'description' => $this->stripTags($this->hotel->getDescription()),
         ];
 
         $photosData = $this->getImagesData($this->hotel->getImages()->toArray(), true);

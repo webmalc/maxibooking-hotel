@@ -231,6 +231,7 @@ class SearchFormController extends Controller
             '@MBHOnline/Api/search-form/search-insert-html-form.js.twig',
             [
                 'text'               => $text,
+                'formConfig'         => $formConfig,
                 'isDisplayChildAges' => $formConfig->isDisplayChildrenAges(),
             ]
         );

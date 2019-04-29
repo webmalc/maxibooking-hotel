@@ -1,25 +1,24 @@
 <?php
 /**
- * Created by PhpStorm.
- * Date: 18.01.19
+ * Date: 24.04.19
  */
 
-namespace MBH\Bundle\OnlineBundle\Lib\MBSite;
+namespace MBH\Bundle\OnlineBundle\Lib\MBSite\v2;
 
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use MBH\Bundle\BaseBundle\Document\Image;
 use MBH\Bundle\OnlineBundle\Lib\image\ImageData;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
-abstract class ImageDataDecorator
+abstract class MbSiteData
 {
     public const FILTER_SIZE_1980X1280 = 'size_1980x1280';
     public const FILTER_SIZE_500X500 = 'size_500x500';
     public const FILTER_THUMB_155x155 = 'thumb_155x155';
     public const FILTER_SCALER = 'scaler';
 
+    abstract public function getPreparedData(): array;
 
     /**
      * @var UploaderHelper|null
@@ -45,6 +44,17 @@ abstract class ImageDataDecorator
     protected function generateUrl(Image $image, $filter = self::FILTER_SIZE_1980X1280): string
     {
         return $this->cacheManager->getBrowserPath($this->uploaderHelper->asset($image,'imageFile'), $filter);
+    }
+
+    /**
+     * @param string $rawDesc
+     * @return string|null
+     */
+    protected function stripTags(?string $rawDesc): ?string
+    {
+        $desc = strip_tags($rawDesc);
+
+        return !empty($desc) ? $desc : null;
     }
 
     /**

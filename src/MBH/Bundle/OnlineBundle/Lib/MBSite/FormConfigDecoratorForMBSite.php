@@ -34,10 +34,9 @@ class FormConfigDecoratorForMBSite implements \JsonSerializable
     public function jsonSerialize()
     {
         $config = [
-            'id'                     => $this->formConfig->getId(),
-            'loadAllSearchIframeUrl' => $this->dataSearchForm->getUrlForScriptLoadAllIframe(),
+            'id'              => $this->formConfig->getId(),
+            'urlSearchScript' => $this->dataSearchForm->getUrlForScriptLoadAllIframe(),
         ];
-
 
         return $config;
     }

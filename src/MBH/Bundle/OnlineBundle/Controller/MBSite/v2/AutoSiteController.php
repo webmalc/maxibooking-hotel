@@ -8,9 +8,9 @@ use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
 use MBH\Bundle\OnlineBundle\Exception\MBSiteIsDisabledInClientConfigException;
 use MBH\Bundle\OnlineBundle\Exception\NotFoundConfigMBSiteException;
-use MBH\Bundle\OnlineBundle\Lib\MBSite\v2\RoomTypeDataDecorator;
+use MBH\Bundle\OnlineBundle\Lib\MBSite\v2\RoomTypeDataHelper;
 use MBH\Bundle\OnlineBundle\Lib\MBSite\FormConfigDecoratorForMBSite;
-use MBH\Bundle\OnlineBundle\Lib\MBSite\v2\HotelDataDecorator;
+use MBH\Bundle\OnlineBundle\Lib\MBSite\v2\HotelDataHelper;
 use MBH\Bundle\OnlineBundle\Services\DataForSearchForm;
 use MBH\Bundle\OnlineBundle\Services\SiteManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -125,7 +125,7 @@ class AutoSiteController extends BaseController
                 $this->dm->refresh($hotel);
             }
 
-            $hotelDataDecorator = new HotelDataDecorator(
+            $hotelDataDecorator = new HotelDataHelper(
                 $hotel,
                 $this->get('mbh.billing.api'),
                 $queryData->get('locale'),
@@ -133,7 +133,7 @@ class AutoSiteController extends BaseController
                 $this->get('liip_imagine.cache.manager')
             );
 
-            $hotelData = $hotelDataDecorator->getData();
+            $hotelData = $hotelDataDecorator->getPreparedData();
             $responseData[] = $hotelData;
         }
 
@@ -192,7 +192,7 @@ class AutoSiteController extends BaseController
             ->execute();
 
 
-        $roomTypeImageDatar = new RoomTypeDataDecorator(
+        $roomTypeImageDatar = new RoomTypeDataHelper(
             $this->get('vich_uploader.templating.helper.uploader_helper'),
             $this->get('liip_imagine.cache.manager')
         );
@@ -207,7 +207,7 @@ class AutoSiteController extends BaseController
 
             $roomTypeImageDatar->setRoomType($roomType);
             $responseData['amount']++;
-            $responseData['list'][] = $roomTypeImageDatar->getJsonSerialized(true);
+            $responseData['list'][] = $roomTypeImageDatar->getPreparedData();
         }
         $responseCompiler->setData($responseData);
 

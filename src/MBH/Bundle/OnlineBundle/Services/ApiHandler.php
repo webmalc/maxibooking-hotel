@@ -62,15 +62,21 @@ class ApiHandler
      * @param ApiResponseCompiler $responseCompiler
      * @return FormConfig|string
      */
-    public function getFormConfig($onlineFormId, ApiResponseCompiler &$responseCompiler)
+    public function getFormConfig(?string $onlineFormId, ApiResponseCompiler $responseCompiler)
     {
         /** @var FormConfig $formConfig */
         $formConfig = $this->dm
             ->find(FormConfig::class, $onlineFormId);
 
-        if (is_null($formConfig)) {
-            if (!is_null($onlineFormId)) {
-                $responseCompiler->addErrorMessage(ApiResponseCompiler::FORM_CONFIG_NOT_EXISTS, 'onlineFormId');
+        if ($formConfig === null) {
+            if (!empty($onlineFormId)) {
+                $responseCompiler->addErrorMessage(
+                    ApiResponseCompiler::FORM_CONFIG_NOT_EXISTS,
+                    'onlineFormId',
+                    ['formId' => $onlineFormId]
+                );
+            } else {
+                $responseCompiler->addErrorMessage('empty formId');
             }
         } else {
             if (!$formConfig->getIsEnabled()) {
@@ -87,7 +93,7 @@ class ApiHandler
      * @param FormConfig|null $formConfig
      * @return array
      */
-    public function getFilteredRoomTypeIds($roomTypeIds, ApiResponseCompiler &$responseCompiler, ?FormConfig $formConfig)
+    public function getFilteredRoomTypeIds($roomTypeIds, ApiResponseCompiler $responseCompiler, ?FormConfig $formConfig)
     {
         $filteredRoomTypeIds = [];
         if (!is_null($roomTypeIds)) {
@@ -121,7 +127,7 @@ class ApiHandler
      * @param FormConfig|null $formConfig
      * @return array
      */
-    public function getFilteredHotels($hotelIds, ApiResponseCompiler &$responseCompiler, ?FormConfig $formConfig)
+    public function getFilteredHotels($hotelIds, ApiResponseCompiler $responseCompiler, ?FormConfig $formConfig)
     {
         $filteredHotels = [];
         foreach ($hotelIds as $hotelId) {
@@ -134,7 +140,9 @@ class ApiHandler
             } elseif (!is_null($formConfig) && !$formConfig->getHotels()->contains($hotel)) {
                 $responseCompiler->addErrorMessage($responseCompiler::FORM_CONFIG_NOT_CONTAINS_SPECIFIED_HOTEL,
                     'hotelIds',
-                    ['%hotelId%' => $hotelId]
+                    [
+                        '%hotelId%' => $hotelId
+                    ]
                 );
             } else {
                 $filteredHotels[] = $hotel;
@@ -155,7 +163,13 @@ class ApiHandler
         foreach ($fieldNames as $fieldName) {
             $fieldData = $queryData->get($fieldName);
             if (!is_array($fieldData) && !is_null($fieldData)) {
-                $responseCompiler->addErrorMessage($responseCompiler::FIELD_MUST_BE_TYPE_OF_ARRAY, $fieldName);
+                $responseCompiler->addErrorMessage(
+                    $responseCompiler::FIELD_MUST_BE_TYPE_OF_ARRAY,
+                    $fieldName,
+                    [
+                        '%field%' => $fieldName
+                    ]
+                );
             }
         }
 
