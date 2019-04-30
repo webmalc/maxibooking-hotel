@@ -8,6 +8,7 @@ use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
 use MBH\Bundle\ChannelManagerBundle\Services\Expedia\Expedia;
+use Monolog\Logger;
 use Symfony\Bridge\Twig\TwigEngine;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface as BaseInterface;
@@ -101,6 +102,9 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
      */
     protected $errors = [];
 
+    /** @var Logger */
+    private $cmLogger;
+
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
@@ -112,6 +116,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         $this->logger::setTimezone(new \DateTimeZone('UTC'));
         $this->currency = $container->get('mbh.currency');
         $this->roomManager = $container->get('mbh.hotel.room_type_manager');
+        $this->cmLogger = $this->container->get('mbh.cm_mailer.logger');
     }
 
     /**
@@ -761,6 +766,8 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                 ->setMessageType(NotificationType::CHANNEL_MANAGER_ERROR_TYPE)
             ;
 
+            $this->cmLogger->debug('Starting to notify from '. __FUNCTION__ .'');
+
             return $notifier->setMessage($message)->notify();
         } catch (\Exception $e) {
             $this->logger->addAlert('Error notification Error ChannelManager'.$e->getMessage());
@@ -795,6 +802,8 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                 ->setEnd(new \DateTime('+10 minute'))
                 ->setMessageType(NotificationType::CHANNEL_MANAGER_ERROR_TYPE)
             ;
+
+            $this->cmLogger->debug('Starting to notify from '. __FUNCTION__ .'');
 
             $notifier->setMessage($message)->notify();
         } catch (\Exception $e) {
@@ -866,6 +875,8 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
                         'MBHChannelManagerBundle'
                     )
                 );
+
+            $this->cmLogger->debug('Starting to notify from '. __FUNCTION__ .'');
 
             $notifier->setMessage($message)->notify();
         } catch (\Exception $e) {

@@ -47,12 +47,13 @@ class HotelSelector
             if ($user) {
                 $token = new UsernamePasswordToken($user, 'none', 'main', $user->getRoles());
                 if ($this->container->get('kernel')->getEnvironment() === 'prod' && $this->container->has('security.access.decision_manager')) {
-                    $decision_manager = $this->container->get('security.access.decision_manager');
+                    $decisionManager = $this->container->get('security.access.decision_manager');
                 } else {
-                    $decision_manager = $this->container->get('debug.security.access.decision_manager');
+                    $decisionManager = $this->container->get('debug.security.access.decision_manager');
                 }
 
-                return $decision_manager->decide($token, [HotelVoter::ACCESS, 'ROLE_ADMIN'], $hotel);
+                return $decisionManager->decide($token, [HotelVoter::ACCESS], $hotel)
+                    || $decisionManager->decide($token, ['ROLE_ADMIN']);
             }
 
             return true;
