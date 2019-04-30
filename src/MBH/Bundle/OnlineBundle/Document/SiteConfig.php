@@ -41,8 +41,8 @@ class SiteConfig extends Base
             'mainlight' => '#d4f1ff'
         ],
         'blue02' => [
-            'main' => '#1faaeb',
-            'mainlight' => '#d4f1ff'
+            'main' => '#0099FF',
+            'mainlight' => '#C3EBFF'
         ],
         'brown' => [
             'main' => '#53230d',

@@ -77,7 +77,7 @@ class AutoSiteController extends BaseController
                 'currency'             => $this->clientConfig->getCurrency(),
                 'languages'            => $this->clientConfig->getLanguages(),
                 'defaultLang'          => $this->getParameter('locale'),
-                'colorTheme'           => $siteConfig->getColorTheme(),
+                'colorTheme'           => $siteConfig->getThemeColors(),
                 'paymentFormUrl'       => $this->generateUrl(
                     'online_payment_form_load_js',
                     ['configId' => $siteConfig->getPaymentFormId()]

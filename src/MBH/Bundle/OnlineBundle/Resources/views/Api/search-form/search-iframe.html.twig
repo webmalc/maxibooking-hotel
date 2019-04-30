@@ -4,12 +4,17 @@
 <head>
     <meta charset="utf-8">
     <title>Maxibooking</title>
-    <script defer src="//code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
-    <script defer src="//code.jquery.com/ui/1.11.1/jquery-ui.min.js" integrity="sha256-4JY5MVcEmAVSuS6q4h9mrwCm6KNx91f3awsSQgwu0qc=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.4.0.min.js"
+            integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg="
+            crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"
+            integrity="sha256-eGE6blurk5sHj+rmkfsGYeKyZx3M4bG+ZlFyA7Kns7E="
+            crossorigin="anonymous"></script>
+{#    <script defer src="//code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>#}
+{#    <script defer src="//code.jquery.com/ui/1.11.1/jquery-ui.min.js" integrity="sha256-4JY5MVcEmAVSuS6q4h9mrwCm6KNx91f3awsSQgwu0qc=" crossorigin="anonymous"></script>#}
     {#<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/smoothness/jquery-ui.css" />#}
-    <link rel="preload" as="style" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" />
-    <noscript><link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" /></noscript>
-    {% javascripts filter='uglifyjs2'
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css" />
+    {% javascripts filter='?uglifyjs2'
         '@MBHBaseBundle/Resources/public/js/first/010-nativ-func.js'
         '@MBHOnlineBundle/Resources/public/js/api/search-form/search-form.js'
     %}
@@ -59,6 +64,11 @@
                     {{ formConfig.js|raw }}
                 })();
             });
+        </script>
+    {% endif %}
+    {% if formConfig.forMbSite %}
+        <script>
+            document.documentElement.style.setProperty('--main', '{{ siteConfig.getThemeColors().main }}');
         </script>
     {% endif %}
     <script defer id="script-for-insert-form" type="text/javascript" src="{{ url('online_form_get', {formConfigId: formConfig.id, locale: locale}) }}"></script>
