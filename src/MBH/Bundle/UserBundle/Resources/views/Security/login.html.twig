@@ -8,8 +8,12 @@
         grecaptcha.ready(function() {
             grecaptcha.execute('6LcuCJQUAAAAAD3PVGAYDBQWL-q5cuKo1YJTjybn', {action: 'login'}).then(function(token) {
                 document.getElementById('inv_captcha').value = token;
+                $('button[name=_submit]').attr("disabled", false);
             });
         });
+        setTimeout(() => {
+            $('button[name=_submit]').attr("disabled", false);
+        }, 5000);
     </script>
 
     <form name="loginForm" action="{{ path("fos_user_security_check") }}" class="form login-form" role="form"
@@ -45,7 +49,7 @@
                 </div>
             </div><!-- /.col -->
             <div class="col-xs-6">
-                <button type="submit" name="_submit" class="btn btn-primary btn-block btn-flat">
+                <button type="submit" name="_submit" class="btn btn-primary btn-block btn-flat" disabled>
                     <i class="fa fa-sign-in"></i> {{ 'security.login.submit'|trans({}, 'FOSUserBundle') }}
                 </button>
             </div><!-- /.col -->

@@ -200,3 +200,4 @@ view.payment_result_page.title.fail: 'Произошла ошибка при о�
 view.payment_result_page.title.succcess: 'Оплата прошла успешно!'
 view.payment_result_page.button.text.fail: 'Попробовать еще раз'
 view.payment_result_page.button.text.success: 'ОК'
+captcha.error: 'Ошибка капчи, попробуйте еще раз'

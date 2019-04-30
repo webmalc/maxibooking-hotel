@@ -151,6 +151,7 @@ services:
       class: MBH\Bundle\UserBundle\Service\ReCaptcha\InvisibleCaptcha
       arguments:
         - '%captcha_secret%'
+        - '@translator'
 
     mbh.billing.interactive_login_listener:
       class: MBH\Bundle\UserBundle\Service\Billing\InteractiveLoginListener

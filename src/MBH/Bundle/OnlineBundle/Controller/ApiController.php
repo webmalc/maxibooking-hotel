@@ -735,10 +735,10 @@ class ApiController extends Controller
      * @param StdClass $request
      * @param boolean $cash
      * @return Order|boolean
-     *
      */
     private function createPackages($request, $cash = false)
     {
+
         $packageData = $servicesData = [];
         foreach ($request->packages as $info) {
             $packageData[] = [

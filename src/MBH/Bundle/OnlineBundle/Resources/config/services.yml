@@ -108,3 +108,5 @@ services:
         arguments:
             - "%kernel.logs_dir%/%kernel.environment%.%log_file.mb_site%"
             - 200
+    mbh.online_payment_form.validator:
+        class: MBH\Bundle\OnlineBundle\Services\OnlineFormValidator
