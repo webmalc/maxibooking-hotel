@@ -37,6 +37,7 @@ class PriceCacheSinglePriceMigrationCommand extends ContainerAwareCommand
         $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
         $booking = $this->getContainer()->get('mbh.channelmanager.booking');
 
+        $count = 0;
         /** @var BookingConfig $config */
         foreach ($booking->getConfig() as $config) {
             $roomTypes = $config->getRooms();
@@ -45,23 +46,27 @@ class PriceCacheSinglePriceMigrationCommand extends ContainerAwareCommand
                 $roomType = $roomTypeInfo->getRoomType();
                 $roomType->setIsSinglePlacement($roomTypeInfo->isUploadSinglePrices());
                 $dm->persist($roomType);
+                $count++;
             }
         }
         $dm->flush();
+        $output->writeln(sprintf('Updated %s roomTypes', $count));
 
         $allRoomTypes = $dm->getRepository('MBHHotelBundle:RoomType')->findBy(['isSinglePlacement' => null]);
         if (!count($allRoomTypes)) {
-            $output->writeln('Updated from Booking');
+            $output->writeln('All roomTypes updated. Update ended');
             return;
         }
 
+        $updatedIds = [];
         /** @var RoomType $roomType */
         foreach ($allRoomTypes as $roomType) {
-            $roomType->setIsSinglePlacement(false);
+            $roomType->setIsSinglePlacement(true);
             $dm->persist($roomType);
             $updatedIds[] = $roomType->getId();
         }
         $dm->flush();
+        $output->writeln('Updated %s', implode("\n", $updatedIds));
 
         if (!$dm->getFilterCollection()->isEnabled('softdeleteable')) {
             $dm->getFilterCollection()->enable('softdeleteable');
