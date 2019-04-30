@@ -24,6 +24,8 @@ class PriceCacheSinglePriceMigrationCommand extends ContainerAwareCommand
     {
         $this->getContainer()->get('doctrine.odm.mongodb.document_manager')
             ->getFilterCollection()->disable('softdeleteable');
+        $this->getContainer()->get('doctrine.odm.mongodb.document_manager')
+            ->getFilterCollection()->disable('disableable');
 
         $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
         $booking = $this->getContainer()->get('mbh.channelmanager.booking');
@@ -56,5 +58,7 @@ class PriceCacheSinglePriceMigrationCommand extends ContainerAwareCommand
 
         $this->getContainer()->get('doctrine.odm.mongodb.document_manager')
             ->getFilterCollection()->enable('softdeleteable');
+        $this->getContainer()->get('doctrine.odm.mongodb.document_manager')
+            ->getFilterCollection()->enable('disableable');
     }
 }
