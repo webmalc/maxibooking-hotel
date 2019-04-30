@@ -23,10 +23,16 @@ class PriceCacheSinglePriceMigrationCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->getContainer()->get('doctrine.odm.mongodb.document_manager')
-            ->getFilterCollection()->disable('softdeleteable');
-        $this->getContainer()->get('doctrine.odm.mongodb.document_manager')
-            ->getFilterCollection()->disable('disableable');
+        $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
+
+
+        if ($dm->getFilterCollection()->isEnabled('softdeleteable')) {
+            $dm->getFilterCollection()->disable('softdeleteable');
+        }
+
+        if ($dm->getFilterCollection()->isEnabled('disableable')) {
+            $dm->getFilterCollection()->disable('disableable');
+        }
 
         $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
         $booking = $this->getContainer()->get('mbh.channelmanager.booking');
@@ -57,9 +63,12 @@ class PriceCacheSinglePriceMigrationCommand extends ContainerAwareCommand
         }
         $dm->flush();
 
-        $this->getContainer()->get('doctrine.odm.mongodb.document_manager')
-            ->getFilterCollection()->enable('softdeleteable');
-        $this->getContainer()->get('doctrine.odm.mongodb.document_manager')
-            ->getFilterCollection()->enable('disableable');
+        if (!$dm->getFilterCollection()->isEnabled('softdeleteable')) {
+            $dm->getFilterCollection()->enable('softdeleteable');
+        }
+
+        if (!$dm->getFilterCollection()->isEnabled('disableable')) {
+            $dm->getFilterCollection()->enable('disableable');
+        }
     }
 }
