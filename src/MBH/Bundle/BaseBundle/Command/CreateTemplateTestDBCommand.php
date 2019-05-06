@@ -33,24 +33,26 @@ class CreateTemplateTestDBCommand extends ContainerAwareCommand
 //            self::MB_CLIENT_TEST_USER
 //        );
 
-        $this->runCommand('doctrine:mongodb:schema:drop');
+        $env = $input->getOption('env');
 
-        $this->runCommand('doctrine:mongodb:fixtures:load --append');
+        $this->runCommand('doctrine:mongodb:schema:drop', $env);
+
+        $this->runCommand('doctrine:mongodb:fixtures:load --append', $env);
 
         $paramsString = '--collections=LogEntry';
-        $this->runCommand('mbh:drop_collection_command', $paramsString);
+        $this->runCommand('mbh:drop_collection_command', $env, $paramsString);
     }
 
     /**
      * @param string $command
-     * @param null $paramsString
-     * @throws \Symfony\Component\Process\Exception\RuntimeException
+     * @param string $env
+     * @param string $paramsString
      */
-    private function runCommand(string $command, $paramsString = null): void
+    private function runCommand(string $command, $env = 'dev', $paramsString = null): void
     {
         $rootDir = $this->getContainer()->get('kernel')->getRootDir();
         $process = new Process(
-            'nohup php '.$rootDir.'/../bin/console '.$command.' --env=dev '.($paramsString ?? ''),
+            'nohup php '.$rootDir.'/../bin/console '.$command.' --env='. $env .' '.($paramsString ?? ''),
             null,
             [\AppKernel::CLIENT_VARIABLE => self::CLIENT_NAME_FOR_CREATION_OF_TEMPLATE_TEST_DB]
         );

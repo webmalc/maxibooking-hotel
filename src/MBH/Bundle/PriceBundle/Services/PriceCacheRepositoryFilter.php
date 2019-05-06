@@ -30,11 +30,11 @@ class PriceCacheRepositoryFilter
     /**
      * decorates src/MBH/Bundle/PriceBundle/Document/PriceCacheRepository/getWithMinPrice()
      *
-     * @param PriceCache $cache
+     * @param PriceCache|null $cache
      * @return PriceCache|null
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function filterGetWithMinPrice(PriceCache $cache)
+    public function filterGetWithMinPrice(?PriceCache $cache)
     {
         return $this->filterPriceCache($cache, $this->getRoomTypeMap());
     }
@@ -43,11 +43,11 @@ class PriceCacheRepositoryFilter
      * decorates src/MBH/Bundle/PriceBundle/Document/PriceCacheRepository/fetch()
      * decorates src/MBH/Bundle/PriceBundle/Document/PriceCacheRepository/fetchWithCancelDate()
      *
-     * @param array $result
-     * @return array
+     * @param array|null $result
+     * @return array|null
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function filterFetch(array $result)
+    public function filterFetch(?array $result)
     {
         foreach ($result as $roomTypeId => $roomTypeArr) {
             foreach ($roomTypeArr as $tariffId => $tariffArr) {
@@ -65,7 +65,7 @@ class PriceCacheRepositoryFilter
      * @param array $roomTypeMap
      * @return PriceCache|null
      */
-    private function filterPriceCache(PriceCache $cache, array $roomTypeMap)
+    private function filterPriceCache(?PriceCache $cache, array $roomTypeMap)
     {
         if (($cache == null) || ($roomTypeMap == [])) {
             return $cache;
@@ -90,12 +90,32 @@ class PriceCacheRepositoryFilter
      */
     private function getRoomTypeMap(): array
     {
+        $isSoftDeletable = true;
+        $isDisableable = true;
+
+        if ($this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
+            $this->dm->getFilterCollection()->disable('softdeleteable');
+            $isSoftDeletable = !$isSoftDeletable;
+        }
+        if ($this->dm->getFilterCollection()->isEnabled('disableable')) {
+            $this->dm->getFilterCollection()->disable('disableable');
+            $isDisableable = !$isDisableable;
+        }
+
         $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')
             ->createQueryBuilder()
             ->select(['_id', 'isIndividualAdditionalPrices', 'isSinglePlacement', 'isChildPrices'])
             ->hydrate(false)
             ->getQuery()
-            ->execute()->toArray();
+            ->execute()
+            ->toArray();
+
+        if (!$isSoftDeletable) {
+            $this->dm->getFilterCollection()->enable('softdeleteable');
+        }
+        if (!$isDisableable) {
+            $this->dm->getFilterCollection()->enable('disableable');
+        }
 
         $roomTypeMap = [];
 
@@ -103,7 +123,7 @@ class PriceCacheRepositoryFilter
         foreach ($roomTypes as $roomType) {
             $roomTypeMap[(string)$roomType['_id']] = [
                 'isIndividualAdditionalPrices' => $roomType['isIndividualAdditionalPrices'],
-                'isSinglePlacement' => $roomType['isSinglePlacement'],
+                'isSinglePlacement' => $roomType['isSinglePlacement'] ?? false,
                 'isChildPrices' => $roomType['isChildPrices'],
             ];
         }

@@ -227,7 +227,16 @@ services:
         calls:
             - [pushHandler, ['@mbh.cache.logger_handler']]
 
+    mbh.cm_mailer.logger_handler:
+        public: false
+        class: Monolog\Handler\StreamHandler
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.cm_mailer.log", '%mail_log_level%']
 
+    mbh.cm_mailer.logger:
+        class: Symfony\Bridge\Monolog\Logger
+        arguments: ['cm_mailer']
+        calls:
+            - [pushHandler, ['@mbh.cm_mailer.logger_handler']]
 
     mbh.cache.logger_handler:
         class:     Monolog\Handler\StreamHandler
@@ -547,6 +556,12 @@ services:
         class: MBH\Bundle\BaseBundle\Security\HotelVoter
         tags:
           - { name: security.voter }
+
+    mbh.secure.api_key_voter:
+        class: MBH\Bundle\BaseBundle\Security\ApiKeyVoter
+        arguments: ['@security.role_hierarchy']
+        tags:
+            - { name: security.voter }
 
     mbh.secure.package_voter:
         class: MBH\Bundle\BaseBundle\Security\PackageVoter

@@ -10,7 +10,7 @@ namespace Tests\Bundle\UserBundle\Controller;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
-use MBH\Bundle\UserBundle\Document\AuthorizationToken;
+use MBH\Bundle\UserBundle\DataFixtures\MongoDB\UserData;
 use MBH\Bundle\UserBundle\Document\User;
 
 
@@ -212,8 +212,6 @@ class ProfileControllerTest extends WebTestCase
 
     public function testAuthenticationWithInvalidToken()
     {
-        $this->setApiToken();
-
         $this->client = self::createClient([], []);
 
         $this->client->request('GET', self::CHANGE_PASSWORD_URL_USER_PROFILE . '?apiKey=InvalidToken');
@@ -226,29 +224,14 @@ class ProfileControllerTest extends WebTestCase
 
     public function testChangePassWithToken()
     {
-        $this->setApiToken();
-
         $this->client = self::createClient([], []);
 
-        $this->client->request('GET', self::CHANGE_PASSWORD_URL_USER_PROFILE . '?apiKey=' . self::API_TOKEN);
+        $this->client->request('GET', self::CHANGE_PASSWORD_URL_USER_PROFILE . '?apiKey=' . UserData::USER_MANAGER_API_KEY);
 
         $this->assertStatusCode(
             302,
             $this->client
         );
-    }
-
-    private function setApiToken(): void
-    {
-        /** @var User $user */
-        $user = $this->dm->getRepository('MBHUserBundle:User')
-            ->findOneBy([])
-            ->setApiToken(
-                (new AuthorizationToken())
-                    ->setExpiredAt(new \DateTime('+1 day'))
-                    ->setToken(self::API_TOKEN)
-            );
-        $this->dm->flush();
     }
 
     private function getDocumentManager()

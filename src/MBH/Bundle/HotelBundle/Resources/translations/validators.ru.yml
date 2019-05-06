@@ -40,7 +40,7 @@ validator.document.roomType.internationalTitle.only_english: 'Междунаро
 validator.document.roomType.hotel_in_not_select: 'Не выбран отель'
 validator.document.contact_info.phone_number.to_short: 'Слишком короткий номер телефона'
 validator.document.contact_info.phone_number.too_long: 'Номер телефона должен содержать не более 50 символов'
-validator.document.contact_info.email.to_short: 'Слишком коротки адрес электронной почты'
+validator.document.contact_info.email.to_short: 'Слишком короткий адрес электронной почты'
 validator.document.contact_info.email.too_long: 'Слишком длинный адрес электронной почты'
 validator.document.task.title_no_selected: 'Не выбрана задача'
 validator.document.task.taskType_no_selected: 'Не выбран тип задачи'

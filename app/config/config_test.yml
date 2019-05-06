@@ -14,6 +14,7 @@ swiftmailer:
     disable_delivery: true
 
 parameters:
+    mb_user_pwd: 'mb_user_pwd'
     mbh.environment: "prod" #это для обхода проверки \MBH\Bundle\BaseBundle\EventListener\OnController::onKernelController
     mbh_cache:
         is_enabled: true
@@ -25,6 +26,10 @@ parameters:
             max_duration: 21
             min_duration: 3
 security:
+    access_decision_manager:
+        strategy: unanimous
+        allow_if_all_abstain: false
+
     firewalls:
         main:
             context: test_content

@@ -69,6 +69,7 @@ class MailerNotifierTest extends WebTestCase
 
         $this->assertEquals(count($systemRecipients) * 2, $this->mailLogger->countMessages());
         $this->assertInstanceOf(Notifier::class, $notifierResponse);
+        $this->assertNotEquals(0, $this->mailLogger->countMessages());
     }
 
     public function testSendErrorType()
@@ -82,6 +83,30 @@ class MailerNotifierTest extends WebTestCase
 
         $this->assertEquals(count($systemRecipients) * 2, $this->mailLogger->countMessages());
         $this->assertInstanceOf(Notifier::class, $notifierResponse);
+        $this->assertNotEquals(0, $this->mailLogger->countMessages());
+    }
+
+    public function testSendMainErrorType()
+    {
+        $message = $this->getMessage('error','danger', NotificationType::ERROR);
+
+        $notifierResponse = $this->notifier->setMessage($message)->notify();
+
+        $systemRecipients = $this->mailer
+            ->getSystemRecipients(null, $message->getHotel(), NotificationType::ERROR);
+
+        $this->assertEquals(count($systemRecipients) * 2, $this->mailLogger->countMessages());
+        $this->assertInstanceOf(Notifier::class, $notifierResponse);
+        $this->assertNotEquals(0, $this->mailLogger->countMessages());
+    }
+
+    public function testPermissions()
+    {
+        $hotel = $this->getMyHotel()[0];
+        $wDenied = $this->mailer->getSystemRecipients(null, $hotel, NotificationType::CHANNEL_MANAGER_TYPE);
+        $woDenied = $this->mailer->getSystemRecipients(null, null, NotificationType::CHANNEL_MANAGER_TYPE);
+
+        $this->assertEquals(count($wDenied) + 1, count($woDenied));
     }
 
     protected function getRandomOrder() : Order

@@ -52,15 +52,15 @@ class HotelSelector
                     $decision_manager = $this->container->get('debug.security.access.decision_manager');
                 }
 
-                return $decision_manager->decide($token, [HotelVoter::ACCESS, 'ROLE_ADMIN'], $hotel);
+                return $decision_manager->decide($token, [HotelVoter::ACCESS], $hotel)
+                    || $decision_manager->decide($token, ['ROLE_ADMIN']);
             }
 
             return true;
-
         }
 
-        return $this->security->isGranted('ROLE_ADMIN') || $this->security->isGranted(HotelVoter::ACCESS, $hotel);
-
+        return $this->security->isGranted('ROLE_ADMIN')
+            || $this->security->isGranted(HotelVoter::ACCESS, $hotel);
     }
 
     private function isUserAuthenticated(): bool

@@ -1,8 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * Date: 11.06.18
- */
 
 namespace MBH\Bundle\OnlineBundle\Controller;
 
@@ -16,6 +12,7 @@ use MBH\Bundle\ClientBundle\Service\PaymentSystem\Sberbank\Helper;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -32,6 +29,7 @@ class ApiExtraController extends Controller
      * @param Request $request
      * @Route("/newrbk_generate_invoice", name="online_form_api_newrbk_generate_invoice")
      * @Method("POST")
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
     public function generateInvoiceAction(Request $request)
     {
@@ -46,13 +44,21 @@ class ApiExtraController extends Controller
      *
      * @Route("/tinkoff/generate_link/{id}", name="online_form_api_tinkoff_generate_link")
      * @param CashDocument $cashDocument
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse | array
+     * @Template("@MBHOnline/paymentSystemError.html.twig")
+     * @throws \Exception
      */
     public function generateLinkTinkoff(CashDocument $cashDocument)
     {
         $tinkoff = $this->clientConfig->getTinkoff();
-
+        $logger = $this->container->get('mbh.payment_tinkoff.logger');
         if ($tinkoff === null) {
-            throw new \Exception('not setup Tinkoff');
+            $logger->addError('Tinkoff is not set up');
+            return [
+                'message' => $this->get('translator')->trans(
+                    'controller.apiController.reservation_error_occured_refresh_page_and_try_again'
+                )
+            ];
         }
 
         $init = new InitRequest($this->container);
@@ -63,7 +69,7 @@ class ApiExtraController extends Controller
         /** @var InitResponse $response */
         $response = InitResponse::parseResponse($client->post($tinkoff::URL_API . '/Init', ['json' => $init]));
 
-        $logger = $this->container->get('mbh.payment_tinkoff.logger');
+
         $dataForLogger = ' Data response: ' . var_export($response, true);
         $dataForLogger .= '. Data init: ' . json_encode($init, JSON_UNESCAPED_UNICODE);
 
@@ -71,7 +77,12 @@ class ApiExtraController extends Controller
             $msg = 'at response from tinkoff: ';
 
             $logger->addError($msg . $dataForLogger);
-            throw new \Exception('Error ' . $msg . $response->getDetails() ?? 'error in json or empty body');
+
+            return [
+                'message' => $this->get('translator')->trans(
+                    'controller.apiController.reservation_error_occured_refresh_page_and_try_again'
+                )
+            ];
         }
 
         $logger->addInfo('Ok.' . $dataForLogger);
@@ -83,13 +94,21 @@ class ApiExtraController extends Controller
      * @Route("/sberbank/generate_link/{id}", name="online_form_api_sberbank_generate_link")
      * @param Request $request
      * @param CashDocument $cashDocument
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse | array
+     * @Template("@MBHOnline/paymentSystemError.html.twig")
+     * @throws \Exception
      */
     public function generateLinkSberbank(Request $request, CashDocument $cashDocument)
     {
         $sberbank = $this->clientConfig->getSberbank();
-
+        $logger = $this->container->get('mbh.payment_sberbank.logger');
         if ($sberbank === null) {
-            throw new \Exception('not setup Sberbank');
+            $logger->addError('Sberbank is not set up');
+            return [
+                'message' => $this->get('translator')->trans(
+                    'controller.apiController.reservation_error_occured_refresh_page_and_try_again'
+                )
+            ];
         }
 
         $sbrfHelper = new Helper($this->container, $this->clientConfig);
@@ -100,7 +119,6 @@ class ApiExtraController extends Controller
         /** @var RegisterResponse $response */
         $response = $sbrfHelper->request($register, $sberbank->isEnvTest());
 
-        $logger = $this->container->get('mbh.payment_sberbank.logger');
         $dataForLogger = ' Data response: ' . var_export($response, true);
         $dataForLogger .= '. Data init: ' . json_encode($register, JSON_UNESCAPED_UNICODE);
 
@@ -108,7 +126,12 @@ class ApiExtraController extends Controller
             $msg = 'at response from sberbank: ';
 
             $logger->addError($msg . $dataForLogger);
-            throw new \Exception('Error ' . $msg . $response->getErrorMessage() ?? 'error in json or empty body');
+
+             return [
+                 'message' => $this->get('translator')->trans(
+                     'controller.apiController.reservation_error_occured_refresh_page_and_try_again'
+                 )
+             ];
         }
 
         $logger->addInfo('Ok.' . $dataForLogger);
