@@ -66,7 +66,7 @@ class PriceCacheSinglePriceMigrationCommand extends ContainerAwareCommand
             $updatedIds[] = $roomType->getId();
         }
         $dm->flush();
-        $output->writeln('Updated %s', implode("\n", $updatedIds));
+        $output->writeln('Updated %s', implode(' ', $updatedIds));
 
         if (!$dm->getFilterCollection()->isEnabled('softdeleteable')) {
             $dm->getFilterCollection()->enable('softdeleteable');
