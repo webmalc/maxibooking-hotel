@@ -67,9 +67,11 @@
         </script>
     {% endif %}
     {% if formConfig.forMbSite %}
-        <script>
-            document.documentElement.style.setProperty('--main', '{{ siteConfig.getThemeColors().main }}');
-        </script>
+        <style>
+            #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-form-submit {
+                background: {{ siteConfig.getThemeColors().main }};
+            }
+        </style>
     {% endif %}
     <script defer id="script-for-insert-form" type="text/javascript" src="{{ url('online_form_get', {formConfigId: formConfig.id, locale: locale}) }}"></script>
 </head>

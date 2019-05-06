@@ -1,7 +1,4 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700&subset=cyrillic');
-:root {
-  --main: #0099FF;
-}
 #mbh-body-search-iframe {
   margin: 0;
   font-family: 'Roboto', sans-serif;
@@ -108,7 +105,6 @@
 }
 #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-form-submit {
   justify-content: center;
-  background: var(--main);
   color: #FFFFFF;
   width: 100%;
   height: 100%;
