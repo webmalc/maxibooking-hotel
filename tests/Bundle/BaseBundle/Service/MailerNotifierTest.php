@@ -100,6 +100,15 @@ class MailerNotifierTest extends WebTestCase
         $this->assertNotEquals(0, $this->mailLogger->countMessages());
     }
 
+    public function testPermissions()
+    {
+        $hotel = $this->getMyHotel()[0];
+        $wDenied = $this->mailer->getSystemRecipients(null, $hotel, NotificationType::CHANNEL_MANAGER_TYPE);
+        $woDenied = $this->mailer->getSystemRecipients(null, null, NotificationType::CHANNEL_MANAGER_TYPE);
+
+        $this->assertEquals(count($wDenied) + 1, count($woDenied));
+    }
+
     protected function getRandomOrder() : Order
     {
         $orderRepo = $this->container
