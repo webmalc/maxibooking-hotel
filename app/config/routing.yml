@@ -101,3 +101,6 @@ _bazinga_jstranslation:
 NelmioApiDocBundle:
     resource: "@NelmioApiDocBundle/Resources/config/routing/swaggerui.xml"
     prefix: /api/doc
+
+jwt_api_login_check:
+    path: /api/login_check

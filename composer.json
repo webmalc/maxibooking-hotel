@@ -75,14 +75,16 @@
     "johngrogg/ics-parser": "^2.1",
     "facebook/webdriver": "^1.6",
     "ob/highcharts-bundle": "^1.6",
-    "php-amqplib/php-amqplib": "2.7"
+    "php-amqplib/php-amqplib": "2.7",
+    "lexik/jwt-authentication-bundle": "^2.6"
   },
   "require-dev": {
     "sensio/generator-bundle": "^3.0",
     "symfony/phpunit-bridge": "*@stable",
 
     "liip/functional-test-bundle": "*@stable",
-    "phpunit/phpunit": "^6.2"
+    "phpunit/phpunit": "^6.2",
+    "ext-json": "*"
   },
   "scripts": {
     "symfony-scripts": [

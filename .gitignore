@@ -71,6 +71,8 @@ phpunit.xml
 docker/nginx/cert/*
 !docker/nginx/cert/.gitkeep
 
+app/config/jwt/*
+!app/config/jwt/.gitkeep
 
 #Eclipse
 tmp/

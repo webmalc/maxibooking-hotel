@@ -385,8 +385,13 @@ nelmio_api_doc:
         security:
             - Api: []
 
-    areas:
+    routes:
         path_patterns:
           - ^/api(?!/doc$)
-#        host_patterns:
-#          - ^api\.
+
+
+lexik_jwt_authentication:
+  secret_key:       '%kernel.project_dir%/app/config/jwt/private.pem'
+  public_key:       '%kernel.project_dir%/app/config/jwt/public.pem'
+  pass_phrase:      '%jwt_authentication_pass_phrase%'
+  token_ttl:        3600

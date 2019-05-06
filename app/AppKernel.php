@@ -2,6 +2,7 @@
 
 use Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle;
 use Knp\Bundle\GaufretteBundle\KnpGaufretteBundle;
+use Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle;
 use MBH\Bundle\BillingBundle\MBHBillingBundle;
 use Ob\HighchartsBundle\Highcharts\Highchart;
 use Ob\HighchartsBundle\ObHighchartsBundle;
@@ -9,15 +10,19 @@ use Oneup\FlysystemBundle\OneupFlysystemBundle;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
 
+/**
+ * Class AppKernel
+ */
 class AppKernel extends Kernel
 {
+    /** @var string  */
     public const ENV_DEV = 'dev';
     /** @var string */
-    const CLIENT_VARIABLE = 'MB_CLIENT';
+    public const CLIENT_VARIABLE = 'MB_CLIENT';
     /** @var string */
-    const CLIENTS_CONFIG_FOLDER = '/app/config/clients';
+    public const CLIENTS_CONFIG_FOLDER = '/app/config/clients';
     /** @var string */
-    const DEFAULT_CLIENT = 'maxibooking';
+    public const DEFAULT_CLIENT = 'maxibooking';
 
     /** @var  string */
     protected $client;
@@ -61,6 +66,7 @@ class AppKernel extends Kernel
             new OneupFlysystemBundle(),
             new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
             new ObHighchartsBundle(),
+            new LexikJWTAuthenticationBundle(),
 
 
             //Project bundles,
@@ -78,12 +84,9 @@ class AppKernel extends Kernel
             new MBH\Bundle\WarehouseBundle\MBHWarehouseBundle(),
             new MBH\Bundle\RestaurantBundle\MBHRestaurantBundle(),
             new MBHBillingBundle(),
-
-
-
         );
 
-        if (in_array($this->getEnvironment(), array(self::ENV_DEV, 'test'))) {
+        if (in_array($this->getEnvironment(), array(self::ENV_DEV, 'test'), true)) {
             $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
             $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
             $bundles[] = new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
@@ -118,7 +121,7 @@ class AppKernel extends Kernel
     /**
      * @return bool
      */
-    public function isDefaultClient()
+    public function isDefaultClient(): bool
     {
         return $this->client === self::DEFAULT_CLIENT;
     }
@@ -126,7 +129,7 @@ class AppKernel extends Kernel
     /**
      * @return bool
      */
-    public function isDevEnv()
+    public function isDevEnv(): bool
     {
         return $this->getEnvironment() === self::ENV_DEV;
     }

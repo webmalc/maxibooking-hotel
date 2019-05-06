@@ -32,6 +32,24 @@ security:
             stateless: true
             access_denied_handler: mbh.api_access_denied_handler
 
+
+        jwt_api_login:
+            pattern: ^/api/login
+            stateless: true
+            anonymous: true
+            json_login:
+                check_path:               /api/login_check
+                success_handler:          lexik_jwt_authentication.handler.authentication_success
+                failure_handler:          lexik_jwt_authentication.handler.authentication_failure
+
+        jwt_api:
+            pattern: ^/api
+            stateless: true
+            guard:
+                authenticators:
+                    - lexik_jwt_authentication.jwt_token_authenticator
+
+
         main:
             pattern: ^/
             form_login:
@@ -60,6 +78,8 @@ security:
 
 
     access_control:
+        - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/deploy, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/base/alias/invalidate, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
         - { path: ^/management/channelmanager/package/notifications, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
