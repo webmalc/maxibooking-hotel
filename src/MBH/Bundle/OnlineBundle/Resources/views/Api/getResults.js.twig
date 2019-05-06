@@ -508,7 +508,7 @@ jQuery(document).ready(function() {
                                             span = tr.find('span.mbh-results-services-prices');
                                         if (span.length) {
                                             totalServices += parseInt(span.attr('data-value')) * jQuery(this).val();
-                                        };
+                                        }
                                     }
                                 });
                                 var total = parseInt(requestParams.total.replace(/,/g, ''));
@@ -567,8 +567,8 @@ jQuery(document).ready(function() {
                                                 }
                                                 if (type.length && (type.val() === 'online_half' || type.val() === 'by_receipt_half')) {
                                                     sumPackages = Math.round(totalPackages / 2);
-                                                    sum = parseInt(totalPackages, 10) + parseInt(totalServices, 10);
-                                                    sumHidden = parseInt(sumPackages, 10) + parseInt(totalServices, 10);
+                                                    sum = total / 2;
+                                                    sumHidden = total / 2;
                                                 }
                                                 totalWrapper.html(sum);
                                                 totalHidden.html(sumHidden);
