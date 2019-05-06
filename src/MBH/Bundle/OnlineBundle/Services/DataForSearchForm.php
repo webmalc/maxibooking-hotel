@@ -168,7 +168,7 @@ class DataForSearchForm
 
     public function getUrlSearchIframe(): string
     {
-        return $this->generateUrl(FormConfig::ROUTER_NAME_SEARCH_IFRAME, $this->addParametersHotel());
+        return $this->generateUrl(FormConfig::ROUTER_NAME_SEARCH_IFRAME, $this->addParamsFromRequest());
     }
 
     public function getUrlCalendarIframe(): string
@@ -188,6 +188,10 @@ class DataForSearchForm
         }
 
         return null;
+    }
+
+    private function addParamsFromRequest() {
+        return  $this->request->query->all();
     }
 
     private function addParametersHotel(array $parameters = []): array

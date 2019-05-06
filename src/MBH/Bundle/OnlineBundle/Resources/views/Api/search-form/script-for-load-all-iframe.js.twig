@@ -208,17 +208,72 @@ OnLoadFormLoad.prototype.resizeIframeHeight = function (event) {
     }
 };
 
-OnLoadFormLoad.prototype.createIframeWithForm = function (locale) {
+OnLoadFormLoad.prototype.fillObject = function (object, data) {
+    temp = data.split('=');
+    if (temp[0].indexOf('children-ages') !== -1) {
+        if (object['children-ages'] === undefined) {
+            object['children-ages'] = [];
+        }
+        object['children-ages'].push(temp[1]);
+    } else {
+        object[temp[0]] = temp[1]
+    }
+}
+
+
+OnLoadFormLoad.prototype.changeUrl = function (self, oldUrl) {
+    var indexChart = oldUrl.indexOf('?');
+
+    if (indexChart === -1) {
+        return oldUrl + window.location.search;
+    }
+
+    var params = {},
+        oldParams = {};
+
+    window.location.search.replace('?', '').split('&').forEach(function(value) { self.fillObject(params, value); })
+
+    oldUrl.slice(indexChart + 1).split('&').forEach(function(value) { self.fillObject(oldParams, value); })
+
+    var key;
+    for (key in oldParams) {
+        if (params[key] === undefined) {
+            params[key] = oldParams[key];
+        }
+    }
+
+    var temp = [];
+
+    for (key in params) {
+        if (typeof params[key] === 'string') {
+            temp.push(`${key}=${params[key]}`);
+        } else {
+            params[key].forEach( function (value) {
+                temp.push(`${key}=${value}`);
+            });
+        }
+    }
+
+    return oldUrl.substring(0, indexChart) + '?' + temp.join('&');
+}
+
+OnLoadFormLoad.prototype.createIframeWithForm = function () {
+    var url = this.urlIframe.search;
+
+    if (window.location.search !== '') {
+        url = this.changeUrl(this, url);
+    }
+
     this.searchIframe = document.createElement('iframe');
     this.searchIframe.id = 'mbh-form-iframe';
     this.searchIframe.scrolling = 'no';
     this.searchIframe.frameBorder = '0';
-    this.searchIframe.src = this.urlIframe.search;
+    this.searchIframe.src = url;
     this.searchIframe.hidden = true;
     this.searchIframe.title = 'Frame with search form.';
 };
 
-OnLoadFormLoad.prototype.exec = function (locale) {
+OnLoadFormLoad.prototype.exec = function () {
     this.formWrapper = document.getElementById('mbh-form-wrapper');
     if (!this.formWrapper) {
         return;
@@ -230,7 +285,7 @@ OnLoadFormLoad.prototype.exec = function (locale) {
 
     this.spinner = this.waitingSpinner();
 
-    this.createIframeWithForm(locale);
+    this.createIframeWithForm();
     this.formWrapper.appendChild(this.searchIframe);
 
     this.searchIframe.addEventListener('load', function() {
@@ -343,5 +398,4 @@ OnLoadFormLoad.prototype.hideWaitingSpinner = function (_this) {
 };
 
 var onLoadFormLoad = new OnLoadFormLoad();
-{#onLoadFormLoad.exec();#}
 addLoadEvent(onLoadFormLoad.exec());

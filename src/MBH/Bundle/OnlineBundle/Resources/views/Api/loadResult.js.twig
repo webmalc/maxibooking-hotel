@@ -112,6 +112,9 @@ function onLoadResultsLoad() {
         }
         if (e.data.action === 'resize') {
             resultsIframe = document.getElementById('mbh-results-iframe');
+            if (resultsIframe === null) {
+                return;
+            }
             resultsIframe.style.height = e.data.height > 300 ? e.data.height + 'px' : '300px';
         }
     };
@@ -134,7 +137,7 @@ function onLoadResultsLoad() {
         window.attachEvent("onmessage", processMetricMessage);
     }
     window.onscroll = function () {
-        if (resultsIframe.contentWindow) {
+        if (resultsIframe !== null && resultsIframe.contentWindow) {
             var frameTopOffset = resultsIframe.getBoundingClientRect().top;
             resultsIframe.contentWindow.postMessage({type: 'onScroll', frameTopOffset: frameTopOffset}, '*')
         }
