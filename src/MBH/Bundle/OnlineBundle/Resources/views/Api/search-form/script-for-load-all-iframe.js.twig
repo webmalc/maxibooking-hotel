@@ -246,10 +246,10 @@ OnLoadFormLoad.prototype.changeUrl = function (self, oldUrl) {
 
     for (key in params) {
         if (typeof params[key] === 'string') {
-            temp.push(`${key}=${params[key]}`);
+            temp.push(key + '=' + params[key]);
         } else {
             params[key].forEach( function (value) {
-                temp.push(`${key}=${value}`);
+                temp.push(key + '=' + value);
             });
         }
     }

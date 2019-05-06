@@ -19,7 +19,7 @@ AdditionalForm.prototype.eventHandler = function (self) {
     var dataForm = {};
 
     ['adults', 'children-age', 'room-type'].forEach(function(name) {
-        property = self.wrapper.querySelectorAll(`[data-form="${name}"]`);
+        property = self.wrapper.querySelectorAll('[data-form="' + name + '"]');
         switch (name) {
             case 'adults':
                 dataForm[name] = property[0] ? parseInt(property[0].innerHTML) : 1;
@@ -77,7 +77,7 @@ AdditionalForm.prototype.wrapperAddListener = function (self) {
 };
 
 AdditionalForm.prototype.selectedOption = function (selectElement, value) {
-    var selectedOption = selectElement.querySelector(`option[value="${value}"]`);
+    var selectedOption = selectElement.querySelector('option[value="' + value + '"]');
     if (selectedOption === null) {
         return;
     }
@@ -129,7 +129,7 @@ AdditionalForm.prototype.childrenSectionInit = function () {
 };
 
 AdditionalForm.prototype.childrenAgeRemoveSection = function (index) {
-    this.childrenAgesHolder.querySelector(`[data-children-age-index="${index}"]`).remove();
+    this.childrenAgesHolder.querySelector('[data-children-age-index="' + index + '"]').remove();
 };
 
 AdditionalForm.prototype.childrenAgeAddSelection = function (index, age) {
