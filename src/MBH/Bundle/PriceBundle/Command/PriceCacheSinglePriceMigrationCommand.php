@@ -22,14 +22,25 @@ class PriceCacheSinglePriceMigrationCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->getContainer()->get('doctrine.odm.mongodb.document_manager')
-            ->getFilterCollection()->disable('softdeleteable');
-        $this->getContainer()->get('doctrine.odm.mongodb.document_manager')
-            ->getFilterCollection()->disable('disableable');
+        $softDisablable = false;
+        $enablable = false;
+        if ($this->getContainer()->get('doctrine.odm.mongodb.document_manager')
+            ->getFilterCollection()->isEnabled('softdeleteable')) {
+            $this->getContainer()->get('doctrine.odm.mongodb.document_manager')
+                ->getFilterCollection()->disable('softdeleteable');
+            $softDisablable = !$softDisablable;
+        }
+        if ($this->getContainer()->get('doctrine.odm.mongodb.document_manager')
+            ->getFilterCollection()->isEnabled('disableable')) {
+            $this->getContainer()->get('doctrine.odm.mongodb.document_manager')
+                ->getFilterCollection()->disable('disableable');
+            $enablable = !$enablable;
+        }
 
         $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
         $booking = $this->getContainer()->get('mbh.channelmanager.booking');
 
+        $i = 0;
         /** @var BookingConfig $config */
         foreach ($booking->getConfig() as $config) {
             $roomTypes = $config->getRooms();
@@ -38,27 +49,36 @@ class PriceCacheSinglePriceMigrationCommand extends ContainerAwareCommand
                 $roomType = $roomTypeInfo->getRoomType();
                 $roomType->setIsSinglePlacement($roomTypeInfo->isUploadSinglePrices());
                 $dm->persist($roomType);
+                $i++;
             }
         }
         $dm->flush();
+        $output->writeln('Updated '.$i.' roomTypes from Booking config');
 
         $allRoomTypes = $dm->getRepository('MBHHotelBundle:RoomType')->findBy(['isSinglePlacement' => null]);
         if (!count($allRoomTypes)) {
-            $output->writeln('Updated from Booking');
+            $output->writeln('Already updated. Nothing more to update.');
             return;
         }
-
+        $j = 0;
         /** @var RoomType $roomType */
         foreach ($allRoomTypes as $roomType) {
-            $roomType->setIsSinglePlacement(false);
+            $roomType->setIsSinglePlacement(true);
             $dm->persist($roomType);
             $updatedIds[] = $roomType->getId();
+            $j++;
         }
         $dm->flush();
 
-        $this->getContainer()->get('doctrine.odm.mongodb.document_manager')
-            ->getFilterCollection()->enable('softdeleteable');
-        $this->getContainer()->get('doctrine.odm.mongodb.document_manager')
-            ->getFilterCollection()->enable('disableable');
+        $output->writeln('Updated '.$j.' more roomTypes, with default true isSinglePlacement');
+
+        if ($softDisablable) {
+            $this->getContainer()->get('doctrine.odm.mongodb.document_manager')
+                ->getFilterCollection()->enable('softdeleteable');
+        }
+        if ($enablable) {
+            $this->getContainer()->get('doctrine.odm.mongodb.document_manager')
+                ->getFilterCollection()->enable('disableable');
+        }
     }
 }
