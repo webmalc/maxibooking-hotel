@@ -530,8 +530,8 @@ class ApiController extends Controller
         $requestJson = json_decode($request->getContent());
 
         //Create packages
-        $isWithCashCashDocument = $requestJson->paymentType != 'in_hotel'
-            || (substr($requestJson->paymentType, 0, strlen('by_receipt')) === 'by_receipt');
+        $isWithCashCashDocument = $requestJson->paymentType !== FormConfig::PAYMENT_TYPE_IN_HOTEL
+            || (substr($requestJson->paymentType, 0, strlen('by_receipt')) === FormConfig::PAYMENT_TYPE_BY_RECEIPT);
         $order = $this->createPackages($requestJson, $isWithCashCashDocument);
 
         if (empty($order)) {
@@ -566,9 +566,19 @@ class ApiController extends Controller
         $message .= $translator->trans('controller.apiController.your_order_number').$order->getId().'. ';
         $message .= $packageStr.': '.implode(', ', $packages).'.';
 
-        if ($requestJson->paymentType == 'in_hotel' || !$this->clientConfig || !$this->clientConfig->getPaymentSystems()) {
+        if ($requestJson->paymentType === FormConfig::PAYMENT_TYPE_IN_HOTEL
+            || !$this->clientConfig || !$this->clientConfig->getPaymentSystems()
+        ) {
             $form = false;
-        } elseif (in_array($requestJson->paymentType, ['by_receipt_full', 'by_receipt_half', 'by_receipt_first_day'])) {
+        } elseif (in_array(
+            $requestJson->paymentType,
+            [
+                FormConfig::PAYMENT_TYPE_BY_RECEIPT_FULL,
+                FormConfig::PAYMENT_TYPE_BY_RECEIPT_HALF,
+                FormConfig::PAYMENT_TYPE_BY_RECEIPT_FIRST_DAY
+            ]
+        ))
+        {
             $form = $this->container->get('twig')->render('@MBHClient/PaymentSystem/invoice.html.twig', [
                 'packageId' => current($packages)->getId(),
             ]);

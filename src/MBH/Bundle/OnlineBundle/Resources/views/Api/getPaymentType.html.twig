@@ -36,31 +36,31 @@
                                value="{{ paymentType }}"
                                id="{{ paymentType }}_radio" required>
                         <label for="{{ paymentType }}_radio" class="mbh-payment-type-label">{{ ('payment_types.' ~ paymentType)|trans }}</label>
-                        {% if paymentType == 'in_hotel'%}
+                        {% if paymentType == constant('MBH\\Bundle\\OnlineBundle\\Document\\SettingsOnlineForm\\FormConfig::PAYMENT_TYPE_IN_HOTEL')%}
                             <div class="mbh-payment-type-row-total">{{ request.total }} {{ currency().text|trans }}</div>
                             <p> {{ 'views.api.getPaymentType.payment_fine'|trans({}, 'MBHOnlineBundle') }}</p>
                         {% endif %}
-                        {% if paymentType == 'by_receipt_full' %}
+                        {% if paymentType == constant('MBH\\Bundle\\OnlineBundle\\Document\\SettingsOnlineForm\\FormConfig::PAYMENT_TYPE_BY_RECEIPT_FULL') %}
                             <div class="mbh-payment-type-row-total">{{ request.total }} {{ currency().text|trans }}</div>
                             <p> {{ 'views.api.getPaymentType.reservation_guarantee_whole_sum'|trans({}, 'MBHOnlineBundle') }}</p>
                         {% endif %}
-                        {% if paymentType == 'by_receipt_first_day' %}
+                        {% if paymentType == constant('MBH\\Bundle\\OnlineBundle\\Document\\SettingsOnlineForm\\FormConfig::PAYMENT_TYPE_BY_RECEIPT_FIRST_DAY') %}
                             <div class="mbh-payment-type-row-total">{{ (request.total|replace({',': ''})/request.nights)|round|number_format() }} {{ currency().text|trans }}</div>
                             <p> {{ 'views.api.getPaymentType.reservation_guarantee_first_night'|trans({}, 'MBHOnlineBundle') }}</p>
                         {% endif %}
-                        {% if paymentType == 'by_receipt_half' %}
+                        {% if paymentType == constant('MBH\\Bundle\\OnlineBundle\\Document\\SettingsOnlineForm\\FormConfig::PAYMENT_TYPE_BY_RECEIPT_HALF') %}
                             <div class="mbh-payment-type-row-total">{{ (request.total|replace({',': ''})/2)|round|number_format() }} {{ currency().text|trans }}</div>
                             <p> {{ 'views.api.getPaymentType.reservation_guarantee_half'|trans({}, 'MBHOnlineBundle') }}</p>
                         {% endif %}
-                        {% if paymentType == 'online_full' %}
+                        {% if paymentType == constant('MBH\\Bundle\\OnlineBundle\\Document\\SettingsOnlineForm\\FormConfig::PAYMENT_TYPE_ONLINE_FULL') %}
                             <div class="mbh-payment-type-row-total">{{ request.total }} {{ currency().text|trans }}</div>
                             <p> {{ 'views.api.getPaymentType.reservation_guarantee_whole_sum'|trans({}, 'MBHOnlineBundle') }}</p>
                         {% endif %}
-                        {% if paymentType == 'online_first_day' %}
+                        {% if paymentType == constant('MBH\\Bundle\\OnlineBundle\\Document\\SettingsOnlineForm\\FormConfig::PAYMENT_TYPE_ONLINE_FIRST_DAY') %}
                             <div class="mbh-payment-type-row-total">{{ (request.total|replace({',': ''})/request.nights)|round|number_format() }} {{ currency().text|trans }}</div>
                             <p> {{ 'views.api.getPaymentType.reservation_guarantee_first_night'|trans({}, 'MBHOnlineBundle') }}</p>
                         {% endif %}
-                        {% if paymentType == 'online_half' %}
+                        {% if paymentType == constant('MBH\\Bundle\\OnlineBundle\\Document\\SettingsOnlineForm\\FormConfig::PAYMENT_TYPE_ONLINE_HALF') %}
                             <div class="mbh-payment-type-row-total">{{ (request.total|replace({',': ''})/2)|round|number_format() }} {{ currency().text|trans }}</div>
                             <p> {{ 'views.api.getPaymentType.reservation_guarantee_half'|trans({}, 'MBHOnlineBundle') }}</p>
                         {% endif %}

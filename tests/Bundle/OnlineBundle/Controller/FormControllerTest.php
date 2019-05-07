@@ -30,7 +30,7 @@ class FormControllerTest extends \MBH\Bundle\BaseBundle\Lib\Test\CrudWebTestCase
         $this
             ->setNewFormValues([
                 'resultsUrl'   => 'http://google.com',
-                'paymentTypes' => ['by_receipt_full'],
+                'paymentTypes' => [\MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig::PAYMENT_TYPE_BY_RECEIPT_FULL],
                 'frameWidth'   => 100500,
             ])
             ->setEditFormValues(['frameWidth' => 200500])

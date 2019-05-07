@@ -273,7 +273,7 @@ class Order extends Base implements OwnerInterface
 
     public static function getOnlinePaymentTypesList()
     {
-        return FormConfig::paymentTypesList;
+        return FormConfig::PAYMENT_TYPES_LIST;
     }
 
     /**

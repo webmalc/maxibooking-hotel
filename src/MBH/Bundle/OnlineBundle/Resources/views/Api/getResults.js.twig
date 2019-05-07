@@ -542,7 +542,11 @@ jQuery(document).ready(function() {
                                             window.location.reload();
                                         });
 
-                                        var onlinePaymentTypes = ['online_full', 'online_half', 'online_first_day'];
+                                        var onlinePaymentTypes = [
+                                            '{{ constant('MBH\\Bundle\\OnlineBundle\\Document\\SettingsOnlineForm\\FormConfig::PAYMENT_TYPE_ONLINE_FULL') }}',
+                                            '{{ constant('MBH\\Bundle\\OnlineBundle\\Document\\SettingsOnlineForm\\FormConfig::PAYMENT_TYPE_ONLINE_HALF') }}',
+                                            '{{ constant('MBH\\Bundle\\OnlineBundle\\Document\\SettingsOnlineForm\\FormConfig::PAYMENT_TYPE_ONLINE_FIRST_DAY') }}'
+                                        ];
                                         // user payment form validate & calc total
                                         (function() {
                                             var validate = function() {
@@ -560,12 +564,18 @@ jQuery(document).ready(function() {
                                                     sum = total,
                                                     sumHidden = total,
                                                     sumPackages = totalPackages;
-                                                if (type.length && (type.val() === 'online_first_day' || type.val() === 'by_receipt_first_day')) {
+                                                if (type.length
+                                                    && (type.val() === '{{ constant('MBH\\Bundle\\OnlineBundle\\Document\\SettingsOnlineForm\\FormConfig::PAYMENT_TYPE_ONLINE_FIRST_DAY') }}'
+                                                        || type.val() === {{ constant('MBH\\Bundle\\OnlineBundle\\Document\\SettingsOnlineForm\\FormConfig::PAYMENT_TYPE_BY_RECEIPT_FIRST_DAY') }})
+                                                ) {
                                                     sumPackages = Math.round(totalPackages / requestParams.nights);
                                                     sum = parseInt(totalPackages, 10) + parseInt(totalServices, 10);
                                                     sumHidden = parseInt(sumPackages, 10) + parseInt(totalServices, 10);
                                                 }
-                                                if (type.length && (type.val() === 'online_half' || type.val() === 'by_receipt_half')) {
+                                                if (type.length
+                                                    && (type.val() === '{{ constant('MBH\\Bundle\\OnlineBundle\\Document\\SettingsOnlineForm\\FormConfig::PAYMENT_TYPE_ONLINE_HALF') }}'
+                                                        || type.val() === '{{ constant('MBH\\Bundle\\OnlineBundle\\Document\\SettingsOnlineForm\\FormConfig::PAYMENT_TYPE_BY_RECEIPT_FULL') }}')
+                                                ) {
                                                     sumPackages = Math.round(totalPackages / 2);
                                                     sum = parseInt(totalPackages, 10) + parseInt(totalServices, 10);
                                                     sumHidden = parseInt(sumPackages, 10) + parseInt(totalServices, 10);

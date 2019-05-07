@@ -35,16 +35,26 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
     public const ROUTER_NAME_ADDITIONAL_IFRAME = 'online_form_additional_form_iframe';
     public const ROUTER_NAME_LOAD_ALL_IFRAME = 'online_form_load_all_iframe_for_search';
 
-    const paymentTypesList = [
-        "in_hotel",
-        "in_office",
-        "by_receipt",
-        "online_full",
-        "online_first_day",
-        "online_half",
-        "by_receipt_full",
-        "by_receipt_first_day",
-        "by_receipt_half"
+    public const PAYMENT_TYPE_IN_HOTEL = 'in_hotel';
+    public const PAYMENT_TYPE_IN_OFFICE = 'in_office';
+    public const PAYMENT_TYPE_ONLINE_FULL = 'online_full';
+    public const PAYMENT_TYPE_ONLINE_FIRST_DAY = 'online_first_day';
+    public const PAYMENT_TYPE_ONLINE_HALF = 'online_half';
+    public const PAYMENT_TYPE_BY_RECEIPT = 'by_receipt';
+    public const PAYMENT_TYPE_BY_RECEIPT_FULL = 'by_receipt_full';
+    public const PAYMENT_TYPE_BY_RECEIPT_FIRST_DAY = 'by_receipt_first_day';
+    public const PAYMENT_TYPE_BY_RECEIPT_HALF = 'by_receipt_half';
+
+    public const PAYMENT_TYPES_LIST = [
+        self::PAYMENT_TYPE_IN_HOTEL,
+        self::PAYMENT_TYPE_IN_OFFICE,
+        self::PAYMENT_TYPE_BY_RECEIPT,
+        self::PAYMENT_TYPE_ONLINE_FULL,
+        self::PAYMENT_TYPE_ONLINE_FIRST_DAY,
+        self::PAYMENT_TYPE_ONLINE_HALF,
+        self::PAYMENT_TYPE_BY_RECEIPT_FULL,
+        self::PAYMENT_TYPE_BY_RECEIPT_FIRST_DAY,
+        self::PAYMENT_TYPE_BY_RECEIPT_HALF
     ];
 
     /**
@@ -510,7 +520,7 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
      */
     public static function getPaymentTypesList()
     {
-        return self::paymentTypesList;
+        return self::PAYMENT_TYPES_LIST;
     }
 
     /**
@@ -601,7 +611,14 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
     public function getPaymentTypes($online = true)
     {
         if (!$online) {
-            $this->paymentTypes = array_diff($this->paymentTypes, ["online_full", "online_first_day", "online_half"]);
+            $this->paymentTypes = array_diff(
+                $this->paymentTypes,
+                [
+                    self::PAYMENT_TYPE_ONLINE_FULL,
+                    self::PAYMENT_TYPE_ONLINE_FIRST_DAY,
+                    self::PAYMENT_TYPE_ONLINE_HALF
+                ]
+            );
         }
 
         return $this->paymentTypes;
