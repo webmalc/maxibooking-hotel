@@ -125,32 +125,7 @@ class SiteManager
      */
     public function fetchFormConfig()
     {
-        $formConfig = $this->dm->getRepository(FormConfig::class)->getForMBSite();
-        if ($formConfig === null) {
-            $formConfig = new FormConfig();
-            $formConfig
-                ->setForMbSite(true)
-                ->setIsFullWidth(true)
-                ->setIsHorizontal(true)
-                ->setResultsUrl(self::DEFAULT_RESULTS_PAGE);
-
-            $formConfig
-                ->setUseAdditionalForm(true)
-                ->setIconLogoLink(true)
-                ->setAdditionalFormFrameWidth('270px')
-                ->setAdditionalFormFrameHeight('auto')
-                ->setCalendarFrameHeight('230px')
-                ->setCalendarFrameWidth('235px');
-
-            $formConfig
-                ->setCss($this->styleHolder->getStyleSearchForm())
-                ->setCalendarCss($this->styleHolder->getStyleCalendar())
-                ->setAdditionalFormCss($this->styleHolder->getStyleAdditionalForm());
-
-            $this->dm->persist($formConfig);
-        }
-
-        return $formConfig;
+        return $this->dm->getRepository(FormConfig::class)->getForMBSite();
     }
 
     public function fetchPaymentFormConfig(): PaymentFormConfig

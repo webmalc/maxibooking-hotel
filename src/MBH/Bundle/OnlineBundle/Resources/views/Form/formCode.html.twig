@@ -27,20 +27,23 @@
             {% set useGoogleAnalytic = config.googleAnalyticConfig.isEnabled and config.googleAnalyticConfig.id %}
             <div class="panel-body">
                 {% set code1  = '<div id="mbh-form-wrapper"><a href="https://maxi-booking.com/">' ~ 'views.api.form.online_reservation_system'|trans({}, 'MBHOnlineBundle') ~ '</a></div>' %}
-                {% set code2  = '<script>var mbhForm = {form_url: "' ~ url('online_form_iframe', {formId: config.id})
-                    ~ '", calendar_url: "' ~ url('online_form_calendar') ~ '"}; var frameWidth = "'
-                    ~ (config.fullWidth ? '100%' : config.frameWidth) ~ '"; var frameHeight = "' ~ config.frameHeight
-                    ~ (useYaMetrtics ? ('"; var yaCounterId = "' ~ config.yandexAnalyticConfig.id))
-                    ~ (useGoogleAnalytic ? ('"; var googleCounterId = "' ~ config.googleAnalyticConfig.id))
-                    ~ '"</script>' %}
-                {% set code3  = '<script src="' ~ absolute_url('/bundles/mbhonline/js/online/load-form.js') ~'"></script>' %}
+                {#{% set code2  = '<script>var mbhForm = {form_url: "' ~ url('online_form_iframe', {formId: config.id})#}
+                    {#~ '", calendar_url: "' ~ url('online_form_calendar') ~ '"}; var frameWidth = "'#}
+                    {#~ (config.fullWidth ? '100%' : config.frameWidth) ~ '"; var frameHeight = "' ~ config.frameHeight#}
+                    {#~ (useYaMetrtics ? ('"; var yaCounterId = "' ~ config.yandexAnalyticConfig.id))#}
+                    {#~ (useGoogleAnalytic ? ('"; var googleCounterId = "' ~ config.googleAnalyticConfig.id))#}
+                    {#~ '"</script>' %}#}
+                {#{% set code3  = '<script src="' ~ absolute_url('/bundles/mbhonline/js/online/load-form.js') ~'"></script>' %}#}
+                {% set code4 %}
+                    <script src="{{ url(constant('MBH\\Bundle\\OnlineBundle\\Document\\SettingsOnlineForm\\FormConfig::ROUTER_NAME_LOAD_ALL_IFRAME'), {formConfigId: config.id}) }}"></script>
+                {% endset %}
                 <div class="row spacer-bottom">
                     <div class="col-md-3"><small>{{ 'views.form.index.to_form_place'|trans({}, 'MBHOnlineBundle') }}</small></div>
                     <div class="col-md-9"><span class="text-success">{{ code1 }}</span></div>
                 </div>
                 <div class="row">
                     <div class="col-md-3"><small>{{ 'views.form.index.before_closing_tag'|trans({}, 'MBHOnlineBundle') }}&lt;/body&gt;:</small></div>
-                    <div class="col-md-9"><span class="text-success">{{ code2 }}{{ code3 }}</span></div>
+                    <div class="col-md-9"><span class="text-success">{{ code4 | escape }}</span></div>
                 </div>
             </div>
         </div>

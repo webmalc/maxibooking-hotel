@@ -19,44 +19,47 @@ class SiteConfig extends Base
     public const DOMAIN = '.maaaxi.com';
     public const FAKE_DOMAIN_FOR_DEV = 'fakeDomain';
 
+    public const NAME_COLOR_THEME_BLACK01 = 'black01';
+    public const NAME_COLOR_THEME_BLUE02 = 'blue02';
+
     const COLORS_BY_THEMES = [
-        'autumn' => [
+        'autumn'                      => [
             'main' => '#832736',
             'mainlight' => '#faebd8'
         ],
-        'black01' => [
+        self::NAME_COLOR_THEME_BLACK01 => [
             'main' => '#1e1e1e',
             'mainlight' => '#ebebeb'
         ],
-        'black02' => [
+        'black02'                     => [
             'main' => '#1e1e1e',
             'mainlight' => '#ebebeb'
         ],
-        'blue' => [
+        'blue'                        => [
             'main' => '#2b426b',
             'mainlight' => '#cde5fd'
         ],
-        'blue01' => [
+        'blue01'                      => [
             'main' => '#1faaeb',
             'mainlight' => '#d4f1ff'
         ],
-        'blue02' => [
+        self::NAME_COLOR_THEME_BLUE02 => [
             'main' => '#0099FF',
             'mainlight' => '#C3EBFF'
         ],
-        'brown' => [
+        'brown'                       => [
             'main' => '#53230d',
             'mainlight' => '#faf3d7'
         ],
-        'fuksia' => [
+        'fuksia'                      => [
             'main' => '#753d62',
             'mainlight' => '#fbe5e8'
         ],
-        'green' => [
+        'green'                       => [
             'main' => '#37562d',
             'mainlight' => '#e1f4c6'
         ],
-        'sea' => [
+        'sea'                         => [
             'main' => '#018788',
             'mainlight' => '#d8f5fb'
         ]
@@ -111,7 +114,7 @@ class SiteConfig extends Base
      * @var string
      * @ODM\Field(type="string")
      */
-    private $colorTheme = 'black01';
+    private $colorTheme = self::NAME_COLOR_THEME_BLUE02;
 
     /**
      * @var null|string

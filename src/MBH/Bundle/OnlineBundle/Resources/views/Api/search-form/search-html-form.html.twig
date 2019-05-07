@@ -14,12 +14,12 @@
     </div>
     {% endif %}
 
-    <div class="mbh-form-row form-group">
+    <div class="mbh-form-row form-group" id="mbh-form-begin-wrapper">
         <label for="mbh-form-begin"> {{ fieldsName.begin is not empty ? fieldsName.begin : ('views.api.form.check_in_date.label'|trans({}, 'MBHOnlineBundle')) }}</label>
         <input type="text" class="mbh-calendar-input form-control input-sm" id="mbh-form-begin" name="begin" required value="{{ 'now'|date('d.m.Y') }}" readonly>
     </div>
 
-    <div class="mbh-form-row form-group"{% if formConfig.nights %} style='display: none;'{% endif %}>
+    <div class="mbh-form-row form-group" id="mbh-form-end-wrapper"{% if formConfig.nights %} style='display: none;'{% endif %}>
         <label for="mbh-form-end"> {{ fieldsName.end is not empty ? fieldsName.end : ('views.api.form.check_out_date.label'|trans({}, 'MBHOnlineBundle')) }}</label>
         <input type="text" class="mbh-calendar-input form-control input-sm" id="mbh-form-end" name="end" required value="{{ 'now'|date_modify('+1 day')|date('d.m.Y') }}" readonly>
     </div>

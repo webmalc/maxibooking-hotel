@@ -54,8 +54,8 @@
 
             flex-wrap: wrap;
 
-            & :nth-child(2):after,
-            & :nth-child(3):after {
+            #mbh-form-begin-wrapper::after,
+            #mbh-form-end-wrapper::after {
                 content: "";
                 width: 20px;
                 height: 20px;
@@ -67,18 +67,17 @@
             }
 
             @media (min-width: @size-screen-max-width-mobile) {
-                & :nth-child(n+3):not(#mbh-form-submit-wrapper):not(#mbh-logo-link-wrapper) {
-                    margin: 0 @ident-row;
+                #mbh-form-begin-wrapper {
+                    margin-right: @ident-row;
                 }
 
-                & :nth-child(2) {
-                    margin: unset;
-                    margin-right: @ident-row;
+                #mbh-form-additional-wrapper,
+                #mbh-form-end-wrapper {
+                    margin: 0 @ident-row;
                 }
 
                 #mbh-form-submit-wrapper {
                     padding: unset;
-                    margin: unset;
                     margin-left: @ident-row;
                 }
             }
