@@ -748,6 +748,9 @@ class ApiController extends Controller
      */
     private function createPackages($request, $cash = false)
     {
+        if (!$this->container->get('mbh.online_payment_form.validator')->isValid($request)) {
+            return false;
+        }
 
         $packageData = $servicesData = [];
         foreach ($request->packages as $info) {
