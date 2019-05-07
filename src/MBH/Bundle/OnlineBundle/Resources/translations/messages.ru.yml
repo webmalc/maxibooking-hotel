@@ -25,6 +25,24 @@ form.formType.used_children_ages.label: 'Возраста детей'
 form.formType.used_children_ages.help: 'Показывать ли в онлайн форме поля возрастов детей'
 form.formType.additional_form.label: 'Минимальный вид'
 form.formType.additional_form.help: 'В форме остаётся дата все остальное скрывается в модальном окне'
+form.formType.icon_logo_link.label: 'Использовать иконку MB'
+form.formType.icon_logo_link.help: 'В форме поиска ссылка на maxibooking ввиде иконки'
+form.formType.additional_form.decor.group: 'Оформление дополнительной формы (используется при "минимальном виде")'
+form.formType.additional_form.decor.width.label: Ширина
+form.formType.additional_form.decor.width.help: 'Ширина фрейма'
+form.formType.additional_form.decor.height.label: Высота
+form.formType.additional_form.decor.height.help: 'Высота фрейма'
+form.formType.additional_form.decor.css.label: CSS
+form.formType.additional_form.decor.css.help: 'Дополнительные css-стили для формы'
+form.formType.additional_form.decor.js.label: JavaScritp
+form.formType.additional_form.decor.js.help: 'Дополнительные js-code для формы'
+form.formType.calendar.decor.group: 'Оформление календаря'
+form.formType.calendar.decor.width.label: Ширина
+form.formType.calendar.decor.width.help: 'Ширина фрейма'
+form.formType.calendar.decor.height.label: Высота
+form.formType.calendar.decor.height.help: 'Высота фрейма'
+form.formType.calendar.decor.css.label: CSS
+form.formType.calendar.decor.css.help: 'Дополнительные css-стили для календаря'
 form.formType.should_we_use_check_in_date_or_check_in_and_check_out_date: 'Использовать ли поле дату заезда и количестов ночей или дату заезда/выезда?'
 form.formType.payment: Оплата
 form.formType.max_packages.help: 'Максимальное количество броней доступных для бронирования за раз'

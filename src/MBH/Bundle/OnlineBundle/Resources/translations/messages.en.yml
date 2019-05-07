@@ -42,6 +42,24 @@ form.formType.used_children_ages.label: 'Children age'
 form.formType.used_children_ages.help: 'Show children age field on web form'
 form.formType.additional_form.label: 'Minimum view'
 form.formType.additional_form.help: 'In the trendy window, everything else is hidden in the modal window'
+form.formType.icon_logo_link.label: 'Use MB icon'
+form.formType.icon_logo_link.help: 'Link in the form of a search for Maxibooking'
+form.formType.additional_form.decor.group: 'Registration of an additional form (used with the "minimum view")'
+form.formType.additional_form.decor.width.label: Width
+form.formType.additional_form.decor.width.help: 'Frame width'
+form.formType.additional_form.decor.height.label: Height
+form.formType.additional_form.decor.height.help: 'Frame height'
+form.formType.additional_form.decor.css.label: CSS
+form.formType.additional_form.decor.css.help: 'Additional css-styles for the form'
+form.formType.additional_form.decor.js.label: JavaScritp
+form.formType.additional_form.decor.js.help: 'Additional js-code for the form'
+form.formType.calendar.decor.group: 'Calendar design'
+form.formType.calendar.decor.width.label: Width
+form.formType.calendar.decor.width.help: 'Frame width'
+form.formType.calendar.decor.height.label: Height
+form.formType.calendar.decor.height.help: 'Frame height'
+form.formType.calendar.decor.css.label: CSS
+form.formType.calendar.decor.css.help: 'Additional css styles for the calendar'
 online_invite.voting_code: 'Voting web form embeded code'
 form.formType.css_label: CSS
 form.formType.css: Layout
