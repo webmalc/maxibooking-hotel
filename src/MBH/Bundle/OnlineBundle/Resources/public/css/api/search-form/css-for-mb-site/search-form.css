@@ -102,6 +102,8 @@
   height: 16px;
   width: 63px;
   text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-form-submit {
   justify-content: center;
@@ -109,6 +111,8 @@
   width: 100%;
   height: 100%;
   border: none;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-form-additional-wrapper::after {
   margin-right: 10px;
