@@ -163,7 +163,7 @@ trait DecorationTrait
      * @param string $css
      * @return static
      */
-    public function setCss(string $css = null): self
+    public function setCss(?string $css = null): self
     {
         $this->css = $css;
         return $this;

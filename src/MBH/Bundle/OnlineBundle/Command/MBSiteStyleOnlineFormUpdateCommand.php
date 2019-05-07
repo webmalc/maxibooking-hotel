@@ -7,6 +7,7 @@ namespace MBH\Bundle\OnlineBundle\Command;
 
 
 use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
+use MBH\Bundle\OnlineBundle\Services\MBSiteStyleFormHolder;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -25,25 +26,11 @@ class MBSiteStyleOnlineFormUpdateCommand extends ContainerAwareCommand
 
     public const MSG_NO_OPTIONS = 'You must specify the min one frame.';
     public const MSG_NO_FOUND_CONFIG = 'Not found form online config for mb site.';
-    public const MSG_NO_FOUND_FILE = 'File "%s" not found in "%s".';
-    public const MSG_NO_CONTENT = 'Can not read file "%s".';
     public const MSG_ERROR_SEE_LOG = 'Error. See log file.';
     public const MSG_UPDATE_OK = 'Update with arguments: %s.';
 
-    private const FILE_PREFIX = '/../src/MBH/Bundle/OnlineBundle/Resources/public/css/api/search-form/css-for-mb-site/';
-
-    private const FILE_STYLE_SEARCH_IFRAME = 'search-form.css';
-    private const FILE_STYLE_CALENDAR_IFRAME = 'calendar.css';
-    private const FILE_STYLE_ADDITIONAL_IFRAME = 'additional-form.css';
-    private const FILE_STYLE_RESULT_FORM = '';
-
     private const TYPE_LOG_INFO = 'info';
     private const TYPE_LOG_ERROR = 'error';
-
-    /**
-     * @var string
-     */
-    private $rootDir;
 
     protected function configure()
     {
@@ -85,6 +72,7 @@ class MBSiteStyleOnlineFormUpdateCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
+        $styleHolder = $this->getContainer()->get(MBSiteStyleFormHolder::class);
 
         /** @var FormConfig $formConfig */
         $formConfig = $dm->getRepository(FormConfig::class)->getForMBSite();
@@ -100,7 +88,7 @@ class MBSiteStyleOnlineFormUpdateCommand extends ContainerAwareCommand
         $updateAll = $input->getOption(self::OPT_NAME_ALL_IFRAME);
 
         if ($updateAll || $input->getOption(self::OPT_NAME_SEARCH_IFRAME)) {
-            $content = $this->getFileContent(self::FILE_STYLE_SEARCH_IFRAME);
+            $content = $styleHolder->getStyleSearchForm();
             if ($content === null) {
                 $output->writeln(self::MSG_ERROR_SEE_LOG);
 
@@ -112,7 +100,7 @@ class MBSiteStyleOnlineFormUpdateCommand extends ContainerAwareCommand
         }
 
         if ($updateAll || $input->getOption(self::OPT_NAME_CALENDAR_IFRAME)) {
-            $content = $this->getFileContent(self::FILE_STYLE_CALENDAR_IFRAME);
+            $content = $styleHolder->getStyleCalendar();
             if ($content === null) {
                 $output->writeln(self::MSG_ERROR_SEE_LOG);
 
@@ -124,7 +112,7 @@ class MBSiteStyleOnlineFormUpdateCommand extends ContainerAwareCommand
         }
 
         if ($updateAll || $input->getOption(self::OPT_NAME_ADDITIONAL_IFRAME)) {
-            $content = $this->getFileContent(self::FILE_STYLE_ADDITIONAL_IFRAME);
+            $content = $styleHolder->getStyleAdditionalForm();
             if ($content === null) {
                 $output->writeln(self::MSG_ERROR_SEE_LOG);
 
@@ -152,40 +140,11 @@ class MBSiteStyleOnlineFormUpdateCommand extends ContainerAwareCommand
         return 0;
     }
 
-    private function getRootDir(): string
-    {
-        if ($this->rootDir === null) {
-            $this->rootDir = $this->getContainer()->get('kernel')->getRootDir();
-        }
-
-        return $this->rootDir;
-    }
-
-    private function getFileContent(string $file): ?string
-    {
-        $prefix = $this->getRootDir() . self::FILE_PREFIX;
-        $pathToFile = $prefix . $file;
-
-        if (!file_exists($pathToFile)) {
-            $this->logger(sprintf(self::MSG_NO_FOUND_FILE, $file, $prefix), self::TYPE_LOG_ERROR);
-
-            return null;
-        }
-
-        $content = file_get_contents($pathToFile);
-
-        if ($content === false) {
-            $this->logger(sprintf(self::MSG_NO_CONTENT, $pathToFile), self::TYPE_LOG_ERROR);
-
-            return null;
-        }
-
-        return $content;
-    }
-
     private function logger(string $msg, string $type = self::TYPE_LOG_INFO): void
     {
         $logger = $this->getContainer()->get('mbh.mb_site.logger');
+
+        $msg = 'UPDATE CMD.' . $msg;
 
         switch ($type) {
             case self::TYPE_LOG_INFO:
@@ -198,5 +157,4 @@ class MBSiteStyleOnlineFormUpdateCommand extends ContainerAwareCommand
                 $logger->addNotice($msg);
         }
     }
-
 }

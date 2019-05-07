@@ -50,13 +50,19 @@ class SiteManager
     private $billingApi;
     private $clientManager;
 
+    /**
+     * @var MBSiteStyleFormHolder
+     */
+    private $styleHolder;
+
     public function __construct(
         DocumentManager $dm, 
         DocumentFieldsManager $documentFieldsManager, 
         TranslatorInterface $translator,
         WarningsCompiler $warningsCompiler,
         BillingApi $billingApi,
-        ClientManager $clientManager
+        ClientManager $clientManager,
+        MBSiteStyleFormHolder $styleHolder
     ) {
         $this->dm = $dm;
         $this->documentFieldsManager = $documentFieldsManager;
@@ -64,6 +70,7 @@ class SiteManager
         $this->warningsCompiler = $warningsCompiler;
         $this->billingApi = $billingApi;
         $this->clientManager = $clientManager;
+        $this->styleHolder = $styleHolder;
     }
 
     /**
@@ -125,8 +132,20 @@ class SiteManager
                 ->setForMbSite(true)
                 ->setIsFullWidth(true)
                 ->setIsHorizontal(true)
-                ->setTheme(FormConfig::THEMES[self::DEFAULT_BOOTSTRAP_THEME])
                 ->setResultsUrl(self::DEFAULT_RESULTS_PAGE);
+
+            $formConfig
+                ->setUseAdditionalForm(true)
+                ->setIconLogoLink(true)
+                ->setAdditionalFormFrameWidth('270px')
+                ->setAdditionalFormFrameHeight('auto')
+                ->setCalendarFrameHeight('230px')
+                ->setCalendarFrameWidth('235px');
+
+            $formConfig
+                ->setCss($this->styleHolder->getStyleSearchForm())
+                ->setCalendarCss($this->styleHolder->getStyleCalendar())
+                ->setAdditionalFormCss($this->styleHolder->getStyleAdditionalForm());
 
             $this->dm->persist($formConfig);
         }
