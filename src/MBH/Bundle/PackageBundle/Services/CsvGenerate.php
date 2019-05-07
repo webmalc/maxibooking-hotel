@@ -79,6 +79,12 @@ class CsvGenerate
                         $dataCsv[] = $entity->getCalculatedPayment();
                     } elseif ($method == 'getRest') {
                         $dataCsv[] = round($entity->getPrice() - $entity->getCalculatedPayment(), 2);
+                    } elseif ($method === 'getMainTourist') {
+                        if ($entity->getOrder()->getOrganization()) {
+                            $dataCsv[] = $entity->getOrder()->getOrganization()->getName();
+                        } else {
+                            $dataCsv[] = $entity->$method();
+                        }
                     } else {
 
                         $call = $entity->$method();
