@@ -1,4 +1,5 @@
 <?php
+
 namespace MBH\Bundle\PackageBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -56,13 +57,13 @@ class CsvGenerate
         $title = [];
         foreach (self::DATA as $key => $item) {
             if (!empty($formData[$key])) {
-
                 $title[] = $translator->trans($item['title']);
             }
         }
 
         $rows[] = implode(self::DELIMITER, $title);
         $dataCsv = [];
+
         /** @var Package $entity */
         foreach ($entities as $entity) {
             foreach (self::DATA as $key => $item) {
@@ -71,26 +72,46 @@ class CsvGenerate
 
                     $method = $item['method'];
 
-                    if ($method == 'countPersons') {
-                        $dataCsv[] = $entity->getAdults() + $entity->getChildren();
-                    }  elseif ($method == 'getPaids') {
-                        $dataCsv[] = $entity->getCalculatedPayment();
-                    } elseif ($method == 'getRest') {
-                        $dataCsv[] = round($entity->getPrice() - $entity->getCalculatedPayment(), 2);
-                    } elseif ($method === 'getServicesPrice') {
-                        $dataCsv[] = $entity->getServicesPrice() ? $entity->getServicesPrice() : 0;
-                    } elseif ($method === 'getNote') {
-                        $dataCsv[] = $entity->getNote() ? str_replace(["\r", "\n"], '',$entity->getNote()) : '';
-                    } else {
-                        $call = $entity->$method();
+                    switch ($method) {
+                        case 'countPersons':
+                            $dataCsv[] = $entity->getAdults() + $entity->getChildren();
+                            break;
 
-                        if ($call instanceof \DateTime) {
-                            $dataCsv[] = $entity->$method()->format('d.m.Y');
-                        } else {
-                            $method == 'getStatus' ? $dataCsv[] = $translator->trans('manager.' . $entity->$method()) : $dataCsv[] = $entity->$method();
-                        }
+                        case 'getPaids':
+                            $dataCsv[] = $entity->getCalculatedPayment();
+                            break;
+
+                        case 'getRest':
+                            $dataCsv[] = round($entity->getPrice() - $entity->getCalculatedPayment(), 2);
+                            break;
+
+                        case 'getServicesPrice':
+                            $dataCsv[] = $entity->getServicesPrice() ? $entity->getServicesPrice() : 0;
+                            break;
+
+                        case 'getNote':
+                            $dataCsv[] = $entity->getNote()
+                                ? str_replace(["\r", "\n"], '', $entity->getNote())
+                                : '';
+                            break;
+
+                        case 'getMainTourist':
+                            if ($entity->getOrder()->getOrganization()) {
+                                $dataCsv[] = $entity->getOrder()->getOrganization()->getName();
+                            } else {
+                                $dataCsv[] = $entity->$method();
+                            }
+                            break;
+
+                        default:
+                            $call = $entity->$method();
+                            if ($call instanceof \DateTime) {
+                                $dataCsv[] = $entity->$method()->format('d.m.Y');
+                            } else {
+                                $method == 'getStatus' ? $dataCsv[] = $translator
+                                    ->trans('manager.' . $entity->$method()) : $dataCsv[] = $entity->$method();
+                            }
                     }
-
                 }
             }
 
