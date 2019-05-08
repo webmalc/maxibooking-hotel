@@ -8,6 +8,7 @@ use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PackageBundle\Services\Search\Search;
 use MBH\Bundle\PriceBundle\Document\TariffRepository;
+use Symfony\Component\Debug\Exception\FatalThrowableError;
 use Symfony\Component\HttpFoundation\Request;
 
 /**

@@ -4,6 +4,7 @@
 namespace MBH\Bundle\SearchBundle\Services\Search;
 
 
+use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
@@ -276,5 +277,15 @@ class SearchResultComposer
         }
 
         return $min;
+    }
+
+    public function insertVirtualRoom(Room $room, Result $result)
+    {
+        $resultRoom = new ResultRoom();
+        $resultRoom
+            ->setId($room->getId())
+            ->setName($room->getName())
+        ;
+        $result->setVirtualRoom($resultRoom);
     }
 }

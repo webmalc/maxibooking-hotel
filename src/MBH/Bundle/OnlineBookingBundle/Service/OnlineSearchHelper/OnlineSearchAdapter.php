@@ -14,6 +14,7 @@ use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use MBH\Bundle\SearchBundle\Lib\Result\ResultRoom;
 use MBH\Bundle\SearchBundle\Services\Search\Search;
 
 class OnlineSearchAdapter
@@ -82,7 +83,7 @@ class OnlineSearchAdapter
                 $searchResult->setAdults($adults);
                 $searchResult->setChildren($children);
                 $searchResult->setRoomType($this->dm->find(RoomType::class, $currentResult['resultRoomType']['id']));
-                $searchResult->setVirtualRoom($this->dm->find(Room::class, $currentResult['virtualRoom']['id']));
+                $searchResult->setVirtualRoom($this->adaptVirtualRoom($currentResult));
                 $tariff = $this->dm->find(Tariff::class, $currentResult['resultTariff']['id']);
                 $searchResult->setTariff($tariff);
                 $newResultPrices = reset($currentResult['prices']);
@@ -110,6 +111,21 @@ class OnlineSearchAdapter
 
         return $oldResults;
     }
+
+    private function adaptVirtualRoom($currentResult)
+    {
+        $currentVirtualRoomId = $currentResult['virtualRoom']['id'];
+        if ($currentVirtualRoomId !== ResultRoom::FAKE_VIRTUAL_ROOM_ID) {
+            return $this->dm->find(Room::class, $currentVirtualRoomId);
+        }
+
+        $room = new Room();
+        $room->setId(ResultRoom::FAKE_VIRTUAL_ROOM_ID)->setTitle($currentResult['virtualRoom']['name'] ?? 'errorName');
+
+        return $room;
+
+    }
+
 
     private function searchDataAdaptive(SearchQuery $searchQuery): array
     {

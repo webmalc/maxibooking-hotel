@@ -188,16 +188,23 @@ class SearchLimitChecker
     /**
      * @param Result $result
      * @param SearchQuery $searchQuery
+     * @return Room
      * @throws WindowsCheckLimitException
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
      */
-    public function checkWindows(Result $result, SearchQuery $searchQuery): void
+    public function checkWindows(Result $result, SearchQuery $searchQuery): Room
     {
         if ($this->clientConfig->getSearchWindows()) {
+
+
             //** TODO: Уточнить если форс */
             if($searchQuery->isForceBooking() || $result->getBegin() <= new \DateTime('midnight')) {
-                return;
+                $room = new Room();
+                $room->setId(ResultRoom::FAKE_VIRTUAL_ROOM_ID)->setTitle('Faked VirtualRoom becase force booking or arrival data');
+
+                return $room;
+
             }
 
             $roomTypeId = $result->getResultRoomType()->getId();
@@ -314,12 +321,9 @@ class SearchLimitChecker
             $firstRawRoom = $collection->current();
             $room = new Room();
             $this->dm->getHydratorFactory()->hydrate($room, (array)$firstRawRoom);
-            $resultRoom = new ResultRoom();
-            $resultRoom
-                ->setId($room->getId())
-                ->setName($room->getName())
-            ;
-            $result->setVirtualRoom($resultRoom);
+            //** TODO: Посмотреть на предмет рефакторинга */
+
+            return $room;
         }
     }
 

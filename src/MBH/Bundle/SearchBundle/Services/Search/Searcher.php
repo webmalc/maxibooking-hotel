@@ -80,7 +80,8 @@ class Searcher implements SearcherInterface
             $this->searchLimitChecker->checkRoomTypePopulationLimit($searchQuery);
 
             $result = $this->resultComposer->composeResult($searchQuery);
-            $this->searchLimitChecker->checkWindows($result, $searchQuery);
+            $virtualRoom = $this->searchLimitChecker->checkWindows($result, $searchQuery);
+            $this->resultComposer->insertVirtualRoom($virtualRoom, $result);
         } catch (SearchException $e) {
             $result = Result::createErrorResult($searchQuery, $e);
         }
