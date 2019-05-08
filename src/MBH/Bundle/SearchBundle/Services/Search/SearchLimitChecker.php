@@ -195,6 +195,9 @@ class SearchLimitChecker
     {
         if ($this->clientConfig->getSearchWindows()) {
             //** TODO: Уточнить если форс */
+            //** TODO: посмотреть как сделано в азовском и перенести сюда проверку окон и добавление результата
+            // смотреть в resultcomposer
+            // */
             if($result->getResultConditions()->isForceBooking() || $result->getBegin() <= new \DateTime('midnight')) {
                 return;
             }
