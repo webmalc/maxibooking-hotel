@@ -227,7 +227,7 @@ class ExternalApiController extends BaseController
 
         try {
             $organizationData = $qb->field('hotels.id')->in([(string)$queryData->get('hotelId')])
-                ->select('name', 'inn', 'countryTld', 'index', 'cityId', 'street', 'house', 'phone', 'email', 'hotels')
+                ->select('name', 'inn', 'countryTld', 'index', 'cityId', 'street', 'house', 'phone', 'email')
                 ->exclude('_id')
                 ->hydrate(false)
                 ->getQuery()
@@ -244,25 +244,27 @@ class ExternalApiController extends BaseController
                 try {
                     $organizationData[0]['city'] = $billingApi->getCityById($organizationData[0]['cityId'])->getName();
                     $organizationData[0]['country'] = $billingApi->getCountryByTld($organizationData[0]['countryTld'])->getName();
-                } catch (\InvalidArgumentException $e) {
-                    //cityID is set but not found in billing
-                    $notifier = $this->get('mbh.notifier');
-                    $message = $notifier::createMessage();
-                    $message
-                        ->setText('notifier.online.city_not_found.message')
-                        ->setFrom('online')
-                        ->setSubject('notifier.online.city_not_found.message')
-                        ->setType('danger')
-                        ->setCategory('notification')
-                        ->setHotel($organizationData[0]['hotels'][0])
-                        ->setAutohide(false)
-                        ->setMessageType(NotificationType::ERROR);
-                    //send to backend
-                    try {
-                        $notifier->setMessage($message)->notify();
-                    } catch (\Throwable $e) {
+                } catch (\Throwable $e) {
+                    if ($e instanceof \RuntimeException || $e instanceof \InvalidArgumentException) {
+                        //cityID is set but not found in billing
+                        $notifier = $this->get('mbh.notifier');
+                        $message = $notifier::createMessage();
+                        $message
+                            ->setText('notifier.online.city_not_found.message')
+                            ->setFrom('online')
+                            ->setSubject('notifier.online.city_not_found.message')
+                            ->setType('danger')
+                            ->setCategory('notification')
+                            ->setAutohide(false)
+                            ->setMessageType(NotificationType::ERROR);
+                        //send to backend
+                        try {
+                            $notifier->setMessage($message)->notify();
+                        } catch (\Throwable $e) {
+                        }
+                    } else {
+                        throw $e;
                     }
-
                 }
                 unset($organizationData[0]['cityId']);
                 unset($organizationData[0]['countryTld']);
@@ -337,27 +339,29 @@ class ExternalApiController extends BaseController
                 if ($isFull && $hotel->getCityId()) {
                     try {
                         $hotelData['city'] = $this->get('mbh.billing.api')->getCityById($hotel->getCityId())->getName();
-                    } catch (\InvalidArgumentException $e) {
-                        //cityID is set but not found in billing
-                        $notifier = $this->get('mbh.notifier');
-                        $message = $notifier::createMessage();
-                        $message
-                            ->setText('notifier.online.city_not_found.message')
-                            ->setFrom('online')
-                            ->setSubject('notifier.online.city_not_found.message')
-                            ->setType('danger')
-                            ->setCategory('notification')
-                            ->setHotel($hotel)
-                            ->setAutohide(false)
-                            ->setMessageType(NotificationType::ERROR);
-                        //send to backend
-                        try {
-                            $notifier->setMessage($message)->notify();
-                        } catch (\Throwable $e) {
+                    } catch (\Throwable $e) {
+                        if ($e instanceof \RuntimeException || $e instanceof \InvalidArgumentException) {
+                            //cityID is set but not found in billing
+                            $notifier = $this->get('mbh.notifier');
+                            $message = $notifier::createMessage();
+                            $message
+                                ->setText('notifier.online.city_not_found.message')
+                                ->setFrom('online')
+                                ->setSubject('notifier.online.city_not_found.message')
+                                ->setType('danger')
+                                ->setCategory('notification')
+                                ->setHotel($hotel)
+                                ->setAutohide(false)
+                                ->setMessageType(NotificationType::ERROR);
+                            //send to backend
+                            try {
+                                $notifier->setMessage($message)->notify();
+                            } catch (\Throwable $e) {
+                            }
+                        } else {
+                            throw $e;
                         }
-
                     }
-
                 }
                 $responseData[] = $hotelData;
             }
