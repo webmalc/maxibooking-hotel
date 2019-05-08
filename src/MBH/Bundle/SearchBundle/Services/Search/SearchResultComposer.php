@@ -5,6 +5,7 @@ namespace MBH\Bundle\SearchBundle\Services\Search;
 
 
 use Liip\ImagineBundle\Templating\Helper\FilterHelper;
+use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
@@ -13,7 +14,6 @@ use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Lib\Data\RoomCacheFetchQuery;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\CalculationException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException;
-use MBH\Bundle\SearchBundle\Lib\Result\ResultHotel;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultImage;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultRoom;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultConditions;
@@ -33,7 +33,6 @@ use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDet
 use Symfony\Bridge\Twig\Extension\HttpFoundationExtension;
 use Symfony\Component\Asset\Packages;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\Routing\Router;
 
 
 class SearchResultComposer
@@ -315,5 +314,15 @@ class SearchResultComposer
         }
 
         return $min;
+    }
+
+    public function insertVirtualRoom(Room $room, Result $result)
+    {
+        $resultRoom = new ResultRoom();
+        $resultRoom
+            ->setId($room->getId())
+            ->setName($room->getName())
+        ;
+        $result->setVirtualRoom($resultRoom);
     }
 }

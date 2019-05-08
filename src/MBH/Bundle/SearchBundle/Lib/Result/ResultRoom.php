@@ -6,6 +6,9 @@ namespace MBH\Bundle\SearchBundle\Lib\Result;
 
 class ResultRoom
 {
+
+    public const FAKE_VIRTUAL_ROOM_ID = 'fakeId';
+
     /** @var string */
     private $id;
 
