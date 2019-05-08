@@ -8,7 +8,7 @@ use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\AsyncResultReceiverException;
 use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupByRoomType;
 use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupInterface;
-use Predis\Client;
+use Predis\Client as RedisCache;
 
 class RoomTypeSearchDecisionMaker implements AsyncSearchDecisionMakerInterface
 {
@@ -16,14 +16,14 @@ class RoomTypeSearchDecisionMaker implements AsyncSearchDecisionMakerInterface
     /** @var int  */
     public const ROOM_TYPE_SEARCHED_THRESHOLD = 2;
 
-    /** @var Client */
+    /** @var RedisCache */
     private $cache;
 
     /**
      * RoomTypeSearchDecisionMaker constructor.
-     * @param Client $cache
+     * @param RedisCache $cache
      */
-    public function __construct(Client $cache)
+    public function __construct(RedisCache $cache)
     {
         $this->cache = $cache;
     }

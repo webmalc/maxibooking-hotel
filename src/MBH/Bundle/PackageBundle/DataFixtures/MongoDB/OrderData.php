@@ -5,7 +5,6 @@ namespace MBH\Bundle\PackageBundle\DataFixtures\MongoDB;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use MBH\Bundle\BaseBundle\Lib\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
-use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
@@ -35,7 +34,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'regDayAgo' => 1,
             'beginAfter' => 0,
             'length' => 3,
-            'owner' => UserData::USER_MANAGER
+            'owner' => UserData::USER_MANAGER,
             'accommodation' => 10
         ],
         [
@@ -47,7 +46,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'regDayAgo' => 1,
             'beginAfter' => 2,
             'length' => 2,
-            'owner' => UserData::USER_MANAGER
+            'owner' => UserData::USER_MANAGER,
             'accommodation' => 9
         ],
         [
@@ -59,7 +58,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'regDayAgo' => 2,
             'beginAfter' => 1,
             'length' => 5,
-            'owner' => UserData::USER_L_MANAGER
+            'owner' => UserData::USER_L_MANAGER,
             'accommodation' => 8
         ],
         [
@@ -71,7 +70,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'regDayAgo'  => 2,
             'beginAfter' => 10,
             'length'     => 6,
-            'owner' => UserData::USER_MANAGER
+            'owner' => UserData::USER_MANAGER,
             'accommodation' => 7
         ],
         [
@@ -94,7 +93,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'regDayAgo' => 5,
             'beginAfter' => 0,
             'length' => 3,
-            'owner' => UserData::USER_ADMIN
+            'owner' => UserData::USER_ADMIN,
             'accommodation' => 6
         ],
         [
@@ -107,7 +106,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'beginAfter' => 0,
             'length' => 3,
             'cancelledAgo' => 6,
-            'owner' => UserData::USER_L_MANAGER
+            'owner' => UserData::USER_L_MANAGER,
             'accommodation' => 5
         ],
         [
@@ -119,7 +118,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'regDayAgo' => 5,
             'beginAfter' => 0,
             'length' => 3,
-            'owner' => UserData::USER_ADMIN
+            'owner' => UserData::USER_ADMIN,
             'accommodation' => 4
         ],
         [
@@ -131,7 +130,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'regDayAgo' => 6,
             'beginAfter' => 0,
             'length' => 3,
-            'owner' => UserData::USER_ADMIN
+            'owner' => UserData::USER_ADMIN,
             'accommodation' => 3
         ],
         [
@@ -143,7 +142,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'regDayAgo' => 6,
             'beginAfter' => 0,
             'length' => 3,
-            'owner' => UserData::USER_L_MANAGER
+            'owner' => UserData::USER_L_MANAGER,
             'accommodation' => 2
         ],
         [
@@ -155,7 +154,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'regDayAgo' => 6,
             'beginAfter' => 0,
             'length' => 6,
-            'owner' => UserData::USER_ADMIN
+            'owner' => UserData::USER_ADMIN,
             'accommodation' => 1
         ],
         [
@@ -168,7 +167,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'beginAfter' => 7,
             'length' => 6,
             'cancelledAgo' => 7,
-            'owner' => UserData::USER_MANAGER
+            'owner' => UserData::USER_MANAGER,
         ],
         [
             'number' => 11,
@@ -179,7 +178,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'regDayAgo' => 7,
             'beginAfter' => 0,
             'length' => 6,
-            'owner' => UserData::USER_ADMIN
+            'owner' => UserData::USER_ADMIN,
 
         ],
         [

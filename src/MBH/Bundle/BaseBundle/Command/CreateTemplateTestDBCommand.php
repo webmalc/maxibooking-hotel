@@ -3,6 +3,7 @@
 namespace MBH\Bundle\BaseBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -37,14 +38,14 @@ class CreateTemplateTestDBCommand extends ContainerAwareCommand
         $env = $input->getOption('env');
 
         $output->writeln('Dropping mongodb schema.');
-        $this->runCommand('doctrine:mongodb:schema:drop', $env);
+        $this->runCommand('doctrine:mongodb:schema:drop', $output, $env);
         $output->writeln('Mongodb Schema was dropped.');
 
         $output->writeln('Start loading fixtures.');
-        $this->runCommand('doctrine:mongodb:fixtures:load --append', $env);
+        $this->runCommand('doctrine:mongodb:fixtures:load --append', $output,  $env);
 
         $paramsString = '--collections=LogEntry';
-        $this->runCommand('mbh:drop_collection_command', $env, $paramsString);
+        $this->runCommand('mbh:drop_collection_command', $output, $env, $paramsString);
     }
 
     /**
@@ -52,16 +53,19 @@ class CreateTemplateTestDBCommand extends ContainerAwareCommand
      * @param string $env
      * @param string $paramsString
      */
-    private function runCommand(string $command, $env = 'dev', $paramsString = null, OutputInterface $output = null): void
+    private function runCommand(string $command, OutputInterface $output, $env = 'dev', $paramsString = null): void
     {
+
         $rootDir = $this->getContainer()->get('kernel')->getRootDir();
+
         $process = new Process(
-            'nohup php '.$rootDir.'/../bin/console '.$command.' --env='. $env .' '.($paramsString ?? ''),
+            'php '.$rootDir.'/../bin/console '.$command.' --env='. $env .' '.($paramsString ?? ''),
             null,
             [\AppKernel::CLIENT_VARIABLE => self::CLIENT_NAME_FOR_CREATION_OF_TEMPLATE_TEST_DB]
         );
+
         try {
-            $process->mustRun(function ($type, $buffer) use($output) {
+            $process->mustRun(static function ($type, $buffer) use($output) {
                 if ($output) {
                     if (Process::ERR === $type) {
                         $output->writeln("ERR>>> $buffer");

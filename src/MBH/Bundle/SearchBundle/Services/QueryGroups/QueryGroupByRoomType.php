@@ -20,7 +20,7 @@ class QueryGroupByRoomType implements QueryGroupInterface, AsyncQueryGroupInterf
 
     public function unsetConditions(): void
     {
-        array_map(function (SearchQuery $query) {
+        array_map(static function (SearchQuery $query) {
             $query->unsetConditions();
         }, $this->searchQueries);
     }
