@@ -17,7 +17,7 @@
   "require": {
     "php": ">=7.1.0",
     "alcaeus/mongo-php-adapter": "^1.1.5",
-    "symfony/symfony": "3.3.*@stable",
+    "symfony/symfony": "^3.4",
     "twig/twig": "*@stable",
     "twig/extensions": "*@stable",
     "symfony/assetic-bundle": "*@stable",
@@ -40,7 +40,6 @@
     "knplabs/knp-menu": "*@stable",
     "knplabs/knp-menu-bundle": "*@stable",
     "jms/security-extra-bundle": "*@stable",
-    "ob/highcharts-bundle": "*@stable",
     "knplabs/knp-snappy-bundle": "*@stable",
     "liip/imagine-bundle": "1.9.1",
     "jms/di-extra-bundle": "*@stable",
@@ -52,7 +51,6 @@
     "leaseweb/memcache-bundle": "^2.1",
     "sonata-project/google-authenticator": "^1.0",
     "google/recaptcha": "^1.1",
-    "dinhkhanh/mongodb-acl-bundle": "dev-master",
     "guzzlehttp/guzzle": "^6.2",
     "php-amqplib/rabbitmq-bundle": "^1.13",
     "phobetor/rabbitmq-supervisor-bundle": "^1.5",
@@ -61,7 +59,6 @@
     "vich/uploader-bundle": "^1.4",
     "theofidry/psysh-bundle": "3.0.0",
     "mongodb/mongodb": "^1.1",
-    "symfony/dotenv": "^4.0",
     "maennchen/zipstream-php": "^0.5.1",
     "aws/aws-sdk-php": "^3.48",
     "oneup/flysystem-bundle": "@stable",
@@ -74,10 +71,11 @@
     "symfony/polyfill-php71": "^1.7",
     "symfony/polyfill-php72": "^1.7",
     "snc/redis-bundle": "^2.1",
-    "symfony/serializer": "3.3.18",
     "eluceo/ical": "^0.14.0",
     "johngrogg/ics-parser": "^2.1",
-    "facebook/webdriver": "^1.6"
+    "facebook/webdriver": "^1.6",
+    "ob/highcharts-bundle": "^1.6",
+    "php-amqplib/php-amqplib": "2.7"
   },
   "require-dev": {
     "sensio/generator-bundle": "^3.0",
@@ -123,12 +121,7 @@
       "dev-master": "3.1-dev"
     }
   },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/webmalc/MongoDBAclBundle"
-    }
-  ],
+  "repositories": [],
   "provide": {
     "ext-mongo": "*"
   }

@@ -433,6 +433,7 @@ var updateTaskCounter = function() {
     });
 };
 
+//** Disable My_total 11.04.2019
 var delay = 1000 * 60 * 5; //5 minutes
 // setInterval(function() {
 //     updateTaskCounter();

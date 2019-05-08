@@ -1,19 +1,20 @@
 <?php
 
-namespace MBH\Bundle\UserBundle\Service\ReCaptcha;
+namespace MBH\Bundle\UserBundle\Service\Billing;
 
-use MBH\Bundle\BillingBundle\Lib\Model\ClientAuth;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\ClientBundle\Service\ClientManager;
-use \ReCaptcha\ReCaptcha;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Security\Core\Authentication\Token\PreAuthenticatedToken;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 use Symfony\Component\Translation\TranslatorInterface;
 
+/**
+ * Class InteractiveLoginListener
+ * @package MBH\Bundle\UserBundle\Service\Billing
+ */
 class InteractiveLoginListener
 {
     /** @var array */
@@ -35,6 +36,7 @@ class InteractiveLoginListener
      * @param BillingApi $billingApi
      * @param TranslatorInterface $translator
      * @param $supportInfo
+     * @param KernelInterface $kernel
      */
     public function __construct(
         array $params,
@@ -44,7 +46,7 @@ class InteractiveLoginListener
         TranslatorInterface $translator,
         $supportInfo,
         KernelInterface $kernel
-        )
+    )
     {
         $this->params = $params;
         $this->clientManager = $clientManager;
@@ -58,23 +60,16 @@ class InteractiveLoginListener
     /**
      * Listen for successful login events
      * @param \Symfony\Component\Security\Http\Event\InteractiveLoginEvent $event
+     * @throws \Exception
      */
     public function onSecurityInteractiveLogin(InteractiveLoginEvent $event)
     {
-        $request = $event->getRequest();
-
-        $reCaptcha = new ReCaptcha($this->params['secret']);
         $isAuthorizedByToken = $event->getAuthenticationToken() instanceof PreAuthenticatedToken;
         $this->session->set(ClientManager::IS_AUTHORIZED_BY_TOKEN, $isAuthorizedByToken);
 
         if ($event->getAuthenticationToken() instanceof UsernamePasswordToken) {
-            if ($this->kernel->getEnvironment() == 'prod'){
-//                if (!$reCaptcha->verify($request->get('g-recaptcha-response'), $request->getClientIp())->isSuccess()) {
-//                    throw new BadCredentialsException('Captcha is invalid');
-//                }
-            }
-
             if (!$this->clientManager->isDefaultClient()) {
+
                 $client = $this->clientManager->getClient();
 
                 if ($client->getStatus() === 'not_confirmed') {

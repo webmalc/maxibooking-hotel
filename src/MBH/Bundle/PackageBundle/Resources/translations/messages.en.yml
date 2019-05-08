@@ -157,7 +157,7 @@ form.touristType.email: Email
 form.touristType.placeholder_email: mail@example.com
 form.touristType.note: Note
 controller.analyticsController.package_trips_amount: 'Number of bookings'
-controller.analyticsController.sale_date: 'Purchase date'
+controller.analyticsController.sale_date: 'Date'
 controller.orderController.cash_register_paper_deleted_success: 'Document successfully deleted'
 controller.orderController.add_cash_register_paper: 'Add Transaction receipt'
 controller.orderController.cash_register_paper_added_success: 'Document successfully added'

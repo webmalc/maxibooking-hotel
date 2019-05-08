@@ -1,14 +1,12 @@
 imports:
     - { resource: parameters.yml }
     - { resource: workflow.yml }
-    - { resource: security.yml }
     - { resource: version.yml }
     - { resource: mbh.yml }
     - { resource: secrets.yml }
     - { resource: roles.yml }
     - { resource: mbh_restaurant_ctypes.xml }
     - { resource: rabbitmq.yml }
-    - { resource: secrets.yml }
 
 framework:
     assets:
@@ -207,22 +205,6 @@ knp_snappy:
         enabled:    true
         binary:     /usr/local/bin/h
         options:    []
-
-# IamPersistentMongoDBAclBundle Configuration
-dinhkhanh_mongo_db_acl:
-    acl_provider:
-        default_database: "%mongodb_database%"
-
-doctrine_cache:
-    acl_cache:
-        id: 'doctrine_cache.providers.acl_apc_provider'
-    providers:
-        acl_apc_provider:
-            namespace: "%mongodb_database%_"
-            type: 'apc'
-
-
-
 
 # GravatarBundle
 ornicar_gravatar:

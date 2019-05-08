@@ -10,6 +10,8 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\PriceBundle\Document\Promotion;
+use MBH\Bundle\UserBundle\Lib\OwnerInterface;
+use MBH\Bundle\UserBundle\Lib\OwnerTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
@@ -35,13 +37,13 @@ use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
  * @ODM\Index(name="search_rt_del_end_begin", keys={"roomType"="asc", "deletedAt"="asc", "end"="asc", "begin"="asc"})
  * @ODM\Index(name="search_del_end_begin", keys={"deletedAt"="asc", "end"="asc", "begin"="asc"})
  */
-class Package extends Base implements \JsonSerializable
+class Package extends Base implements \JsonSerializable, OwnerInterface
 {
     use TimestampableDocument;
     use SoftDeleteableDocument;
     use BlameableDocument;
     use DeleteReasonTrait;
-
+    use OwnerTrait;
 
     const ROOM_STATUS_OPEN = 'open';
     const ROOM_STATUS_WAIT = 'wait'; //Не заехал

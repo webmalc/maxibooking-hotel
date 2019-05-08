@@ -1,6 +1,8 @@
 security:
-    acl:
-        provider: mongodb_acl_provider
+
+    access_decision_manager:
+        strategy: unanimous
+        allow_if_all_abstain: false
 
     encoders:
         FOS\UserBundle\Model\UserInterface: sha512
@@ -31,9 +33,6 @@ security:
             access_denied_handler: mbh.api_access_denied_handler
 
         main:
-#           Dev test only
-#            http_basic: ~
-
             pattern: ^/
             form_login:
                 always_use_default_target_path: false
@@ -58,6 +57,7 @@ security:
                 path:     /
                 domain:   ~
             stateless: false
+
 
     access_control:
         - { path: ^/deploy, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }

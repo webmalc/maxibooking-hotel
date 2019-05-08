@@ -49,7 +49,8 @@ class IntegrationTest extends \Twig_Test_IntegrationTestCase
         $condition = null,
         $templates = null,
         $exception = null,
-        $outputs = null
+        $outputs = null,
+        $deprecation = ''
     )
     {
         $this->assertTrue(true);

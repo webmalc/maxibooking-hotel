@@ -110,7 +110,7 @@ class AirbnbPackageInfo extends AbstractPackageInfo
         $phone = $payerContacts['PHONE'] ?? null;
         $email = $payerContacts['EMAIL'] ?? null;
 
-        $rawPayerNameData = explode(' ', $this->packageData['SUMMARY']);
+        $rawPayerNameData = explode(' ', trim($this->packageData['SUMMARY']));
         $payerName = $rawPayerNameData[0];
         //** TODO: HotFix when description has one word. */
         $payerSurname = $rawPayerNameData[1] ?? $payerName;

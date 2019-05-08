@@ -29,6 +29,38 @@ trait RoomTypeTrait
     protected $isIndividualAdditionalPrices = false;
 
     /**
+     * @var boolean
+     * @Gedmo\Versioned
+     * @ODM\Field(type="boolean")
+     * @Assert\NotNull()
+     * @Assert\Type(type="boolean")
+     */
+    protected $isSinglePlacement = false;
+
+    /**
+     * Set isSinglePlacement
+     *
+     * @param boolean $isSinglePlacement
+     * @return self
+     */
+    public function setIsSinglePlacement($isSinglePlacement)
+    {
+        $this->isSinglePlacement = $isSinglePlacement;
+
+        return $this;
+    }
+
+    /**
+     * Get $isSinglePlacement
+     *
+     * @return boolean $isSinglePlacement
+     */
+    public function getIsSinglePlacement()
+    {
+        return $this->isSinglePlacement;
+    }
+
+    /**
      * Set isChildPrices
      *
      * @param boolean $isChildPrices
@@ -37,6 +69,7 @@ trait RoomTypeTrait
     public function setIsChildPrices($isChildPrices)
     {
         $this->isChildPrices = $isChildPrices;
+
         return $this;
     }
 
@@ -59,6 +92,7 @@ trait RoomTypeTrait
     public function setIsIndividualAdditionalPrices($isIndividualAdditionalPrices)
     {
         $this->isIndividualAdditionalPrices = $isIndividualAdditionalPrices;
+
         return $this;
     }
 

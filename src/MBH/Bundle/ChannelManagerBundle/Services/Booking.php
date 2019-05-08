@@ -19,6 +19,7 @@ use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PriceBundle\Document\PriceCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use MBH\Bundle\PriceBundle\Services\PriceCacheRepositoryFilter;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -88,10 +89,16 @@ class Booking extends Base implements ChannelManagerServiceInterface
      */
     private $params;
 
-    public function __construct(ContainerInterface $container)
+    /**
+     * @var PriceCacheRepositoryFilter
+     */
+    private $priceCacheFilter;
+
+    public function __construct(ContainerInterface $container, PriceCacheRepositoryFilter $priceCacheFilter)
     {
         parent::__construct($container);
         $this->params = $container->getParameter('mbh.channelmanager.services')['booking'];
+        $this->priceCacheFilter = $priceCacheFilter;
     }
 
     // /**
@@ -235,6 +242,8 @@ class Booking extends Base implements ChannelManagerServiceInterface
         $begin = $this->getDefaultBegin($begin);
         $end = $this->getDefaultEnd($begin, $end);
 
+        $this->log('start update rooms');
+
         // iterate hotels
         foreach ($this->getConfig() as $config) {
             $roomTypes = $this->getRoomTypes($config);
@@ -274,6 +283,9 @@ class Booking extends Base implements ChannelManagerServiceInterface
                     'data' => $data,
                 ]
             );
+
+            $this->log(sprintf('send request: %s', $request));
+
             $sendResult = $this->send(static::BASE_URL.'availability', $request, null, true);
 
             if ($result) {
@@ -295,6 +307,8 @@ class Booking extends Base implements ChannelManagerServiceInterface
         $begin = $this->getDefaultBegin($begin);
         $end = $this->getDefaultEnd($begin, $end);
 
+        $this->log('start update prices');
+
         // iterate hotels
         foreach ($this->getConfig() as $config) {
             /** @var BookingConfig $config */
@@ -302,15 +316,18 @@ class Booking extends Base implements ChannelManagerServiceInterface
             $tariffs = $this->getTariffs($config, true);
             $serviceTariffs = $this->pullTariffs($config);
             $priceCachesCallback = function () use ($begin, $end, $config, $roomType) {
-                return $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
-                    $begin,
-                    $end,
-                    $config->getHotel(),
-                    $this->getRoomTypeArray($roomType),
-                    [],
-                    true,
-                    $this->roomManager->useCategories
+                $filtered = $this->priceCacheFilter->filterFetch(
+                    $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
+                        $begin,
+                        $end,
+                        $config->getHotel(),
+                        $this->getRoomTypeArray($roomType),
+                        [],
+                        true,
+                        $this->roomManager->useCategories
+                    )
                 );
+                return $filtered;
             };
             $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
 
@@ -342,11 +359,13 @@ class Booking extends Base implements ChannelManagerServiceInterface
                             /** @var PriceCache $info */
                             $info = $priceCaches[$roomTypeId][$syncPricesTariffId][$day->format('d.m.Y')];
                             $calculator = $this->container->get('mbh.calculation');
+                            $price1 = null;
+                            if ($info->getSinglePrice() && (!($bookingRoom instanceOf BookingRoom) || $bookingRoom->getRoomType()->getIsSinglePlacement())) {
+                                $price1 = $this->currencyConvertFromRub($config, $calculator->getPriceWithTariffPromotionDiscount($info->getSinglePrice(), $info->getTariff()));
+                            }
                             $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
                                 'price' => $this->currencyConvertFromRub($config, $calculator->getPriceWithTariffPromotionDiscount($info->getPrice(), $info->getTariff())),
-                                'price1' => $info->getSinglePrice() && (!($bookingRoom instanceOf BookingRoom) || $bookingRoom->isUploadSinglePrices())
-                                    ? $this->currencyConvertFromRub($config, $calculator->getPriceWithTariffPromotionDiscount($info->getSinglePrice(), $info->getTariff()))
-                                    : null,
+                                'price1' => $price1,
                                 'closed' => false
                             ];
                         } else {
@@ -375,6 +394,8 @@ class Booking extends Base implements ChannelManagerServiceInterface
                 ]
             );
 
+            $this->log(sprintf('send request: %s', $request));
+
             $sendResult = $this->send(static::BASE_URL.'availability', $request, null, true);
 
             if ($result) {
@@ -396,6 +417,8 @@ class Booking extends Base implements ChannelManagerServiceInterface
         $begin = $this->getDefaultBegin($begin);
         $end = $this->getDefaultEnd($begin, $end);
 
+        $this->log('start update restrictions');
+
         // iterate hotels
         foreach ($this->getConfig() as $config) {
             $roomTypes = $this->getRoomTypes($config);
@@ -410,14 +433,17 @@ class Booking extends Base implements ChannelManagerServiceInterface
                 true
             );
             $priceCachesCallback = function () use ($begin, $end, $config, $roomType) {
-                return $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
-                    $begin,
-                    $end,
-                    $config->getHotel(),
-                    $roomType ? [$roomType->getId()] : [],
-                    [],
-                    true
+                $filtered = $this->priceCacheFilter->filterFetch(
+                    $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
+                        $begin,
+                        $end,
+                        $config->getHotel(),
+                        $roomType ? [$roomType->getId()] : [],
+                        [],
+                        true
+                    )
                 );
+                return $filtered;
             };
             $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
 
@@ -489,6 +515,9 @@ class Booking extends Base implements ChannelManagerServiceInterface
                     'end' => $end
                 ]
             );
+
+            $this->log(sprintf('send request: %s', $request));
+
             $sendResult = $this->send(static::BASE_URL.'availability', $request, null, true);
 
             if ($result) {

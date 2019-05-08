@@ -241,11 +241,7 @@ class ApiController extends Controller
         $dm = $this->get('doctrine_mongodb')->getManager();
         $clientConfig = $this->clientConfig;
         $logger = $this->get('mbh.online.logger');
-        $logText = '\MBH\Bundle\OnlineBundle\Controller::checkOrderAction. Get request from IP'.$request->getClientIp(
-            ).'. Post data: '.implode(
-                '; ',
-                $_POST
-            ).' . Keys: '.implode('; ', array_keys($_POST));
+        $logText = $this->generateLogText($request);
 
         if (!$clientConfig) {
             $logger->info('FAIL. '.$logText.' .Not found config');
@@ -349,6 +345,34 @@ class ApiController extends Controller
         $logger->info('OK. '.$logText);
 
         return $holder->getIndividualSuccessResponse($this) ?? new Response($holder->getText());
+    }
+
+    private function generateLogText(Request $request): string
+    {
+        $text = [];
+        $text[] = sprintf(
+            '\MBH\Bundle\OnlineBundle\Controller::checkOrderAction. Get request from IP %s.',
+            $request->getClientIp()
+        );
+
+        $generateText = function (string $method, array $array): string {
+            return sprintf(
+                '%s data: %s. Keys: %s',
+                $method,
+                implode('; ',$array),
+                implode('; ', array_keys($array))
+            );
+        };
+
+        if ($request->query->count() > 0) {
+            $text[] = $generateText('Get', $request->query->getIterator()->getArrayCopy());
+        };
+
+        if ($request->request->count() > 0) {
+            $text[] = $generateText('Post', $request->request->getIterator()->getArrayCopy());
+        }
+
+        return implode(';', $text);
     }
 
     /**
@@ -724,6 +748,26 @@ class ApiController extends Controller
             $tr = $this->get('translator');
             $message = $notifier::createMessage();
             $hotel = $order->getFirstHotel();
+
+            $packageId = null;
+            $desc = null;
+
+            foreach ($order->getPackages() as $package) {
+                $roomType = $package->getRoomType()->getFullTitle();
+                $dateBegin = $package->getBegin()->format('d.m.y');
+                $dateEnd = $package->getEnd()->format('d.m.y');
+                $packageId = $package->getId();
+
+                $desc .= " - $roomType, $dateBegin-$dateEnd";
+            }
+
+            $textHtmlLink = $this->container->get('router')->generate('package_order_edit', [
+                'id' => $order->getId(),
+                'packageId' => $packageId
+            ]);
+
+            $html = '<a href='. $textHtmlLink .'>'. $order->getId() .'</a>';
+
             $message
                 ->setText($tr->trans('mailer.online.backend.text', ['%orderID%' => $order->getId()]))
                 ->setTranslateParams(['%orderID%' => $order->getId()])
@@ -736,7 +780,8 @@ class ApiController extends Controller
                 ->setTemplate('MBHBaseBundle:Mailer:order.html.twig')
                 ->setAutohide(false)
                 ->setEnd(new \DateTime('+1 minute'))
-                ->setMessageType(NotificationType::ONLINE_ORDER_TYPE);
+                ->setMessageType(NotificationType::ONLINE_ORDER_TYPE)
+                ->setTextHtmlLink($tr->trans('mailer.online.backend.text', ['%orderID%' => $html]) . $desc );
             $notifier
                 ->setMessage($message)
                 ->notify();
@@ -786,10 +831,13 @@ class ApiController extends Controller
      * @param StdClass $request
      * @param boolean $cash
      * @return Order|boolean
-     *
      */
     private function createPackages($request, $cash = false)
     {
+        if (!$this->container->get('mbh.online_payment_form.validator')->isValid($request)) {
+            return false;
+        }
+
         $packageData = $servicesData = [];
         foreach ($request->packages as $info) {
             $packageData[] = [

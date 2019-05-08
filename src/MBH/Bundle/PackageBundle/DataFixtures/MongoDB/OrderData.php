@@ -13,6 +13,8 @@ use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use MBH\Bundle\UserBundle\DataFixtures\MongoDB\UserData;
+use MBH\Bundle\UserBundle\Document\User;
 
 /**
  * Class OrderData
@@ -33,6 +35,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'regDayAgo' => 1,
             'beginAfter' => 0,
             'length' => 3,
+            'owner' => UserData::USER_MANAGER
             'accommodation' => 10
         ],
         [
@@ -44,6 +47,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'regDayAgo' => 1,
             'beginAfter' => 2,
             'length' => 2,
+            'owner' => UserData::USER_MANAGER
             'accommodation' => 9
         ],
         [
@@ -55,6 +59,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'regDayAgo' => 2,
             'beginAfter' => 1,
             'length' => 5,
+            'owner' => UserData::USER_L_MANAGER
             'accommodation' => 8
         ],
         [
@@ -65,7 +70,8 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'paid'       => self::ORDER_DATA_4_PAID,
             'regDayAgo'  => 2,
             'beginAfter' => 10,
-            'length' => 6,
+            'length'     => 6,
+            'owner' => UserData::USER_MANAGER
             'accommodation' => 7
         ],
         [
@@ -88,6 +94,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'regDayAgo' => 5,
             'beginAfter' => 0,
             'length' => 3,
+            'owner' => UserData::USER_ADMIN
             'accommodation' => 6
         ],
         [
@@ -100,6 +107,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'beginAfter' => 0,
             'length' => 3,
             'cancelledAgo' => 6,
+            'owner' => UserData::USER_L_MANAGER
             'accommodation' => 5
         ],
         [
@@ -111,6 +119,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'regDayAgo' => 5,
             'beginAfter' => 0,
             'length' => 3,
+            'owner' => UserData::USER_ADMIN
             'accommodation' => 4
         ],
         [
@@ -122,6 +131,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'regDayAgo' => 6,
             'beginAfter' => 0,
             'length' => 3,
+            'owner' => UserData::USER_ADMIN
             'accommodation' => 3
         ],
         [
@@ -133,6 +143,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'regDayAgo' => 6,
             'beginAfter' => 0,
             'length' => 3,
+            'owner' => UserData::USER_L_MANAGER
             'accommodation' => 2
         ],
         [
@@ -144,6 +155,7 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'regDayAgo' => 6,
             'beginAfter' => 0,
             'length' => 6,
+            'owner' => UserData::USER_ADMIN
             'accommodation' => 1
         ],
         [
@@ -155,7 +167,8 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'regDayAgo' => 7,
             'beginAfter' => 7,
             'length' => 6,
-            'cancelledAgo' => 7
+            'cancelledAgo' => 7,
+            'owner' => UserData::USER_MANAGER
         ],
         [
             'number' => 11,
@@ -165,7 +178,9 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'paid' => 0,
             'regDayAgo' => 7,
             'beginAfter' => 0,
-            'length' => 6
+            'length' => 6,
+            'owner' => UserData::USER_ADMIN
+
         ],
         [
             'number' => 12,
@@ -175,7 +190,9 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'paid' => 7000,
             'regDayAgo' => 9,
             'beginAfter' => 8,
-            'length' => 10
+            'length' => 10,
+            'status' => 'online',
+            'owner' => UserData::USER_MANAGER
         ],
         [
             'number' => 13,
@@ -185,7 +202,8 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'paid' => 7000,
             'regDayAgo' => 9,
             'beginAfter' => 8,
-            'length' => 10
+            'length' => 10,
+            'owner' => UserData::USER_L_MANAGER
         ],
         [
             'number' => 14,
@@ -195,7 +213,8 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'paid' => 6000,
             'regDayAgo' => 9,
             'beginAfter' => 4,
-            'length' => 7
+            'length' => 7,
+            'owner' => UserData::USER_ADMIN
         ],
         [
             'number' => 15,
@@ -205,7 +224,8 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             'paid' => 14000,
             'regDayAgo' => 11,
             'beginAfter' => 4,
-            'length' => 7
+            'length' => 7,
+            'owner' => UserData::USER_ADMIN
         ],
     ];
 
@@ -234,15 +254,20 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             $tourist = $this->getReference($touristKeys[array_rand($touristKeys, 1)]);
         }
 
+        $owner = $this->getOwner($data['owner'] ?? null);
         $order = (new Order())
             ->setPrice($data['price'])
             ->setPaid($data['paid'])
-            ->setStatus(isset($data['status']) ? $data['status'] : 'offline')
+            ->setStatus($data['status'] ?? 'offline')
             ->setTotalOverwrite($data['price'])
 //            ->setSource($this->getReference('Booking.com'))
             ->setMainTourist($tourist)
-            ->setCreatedBy($this->getReference('user-admin'))
+            ->setCreatedBy($owner)
             ->setCreatedAt((new \DateTime())->modify('-' . $data['regDayAgo'] . 'days'));
+        if ($owner) {
+            $order->setOwner($owner);
+
+        }
         $order->checkPaid();
 
         $this->setReference('order' . $data['number'], $order);
@@ -261,8 +286,11 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
         $tariff = $this->getReference('main-tariff/0');
         /** @var RoomType $roomType */
         $roomType = $this->getReference('roomtype-double/0');
+
+
         $roomAccommodations = $roomType->getRooms()->toArray();
         foreach (self::DATA as $packageData) {
+            $owner = $this->getOwner($packageData['owner'] ?? null);
             $order = $this->persistOrder($manager, $packageData);
             $beginDate = new \DateTime('midnight +' . $packageData['beginAfter'] . 'days');
             $endDate = (clone  $beginDate)->modify('+' . $packageData['length'] . 'days');
@@ -280,8 +308,11 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
                 ->setRoomType($roomType)
                 ->setBegin($beginDate)
                 ->setCreatedAt($dateOfCreation)
-                ->setCreatedBy($this->getReference('user-admin'))
+                ->setCreatedBy($owner)
                 ->setEnd($endDate);
+            if ($owner) {
+                $package->setOwner($owner);
+            }
 
             if (isset($packageData['cancelledAgo'])) {
                 $cancellationDate = (new \DateTime())->modify('-' . $packageData['cancelledAgo'] . 'days');
@@ -326,6 +357,16 @@ class OrderData extends AbstractFixture implements OrderedFixtureInterface
             $manager->persist($package);
             $manager->flush();
         }
+    }
+
+    private function getOwner($name): ?User
+    {
+        if (null !== $name) {
+            /** @noinspection PhpIncompatibleReturnTypeInspection */
+            return $this->getReference("user-${name}");
+        }
+
+        return null;
     }
 
     /**

@@ -216,9 +216,9 @@
                 <td style="width: 50px">{{ 'mbhpackagebundle.view.documents.pdftemplates.confirmation.vydan'|trans }} </td>
                 <td class="area">
                     <div>
-                        
-                        {% if documentRelation and documentRelation.authority is defined %}
-                            {{ documentRelation.authority }}
+
+                        {% if documentRelation and documentRelation.authorityOrganId is defined %}
+                            {{ get_authority_organ(documentRelation.authorityOrganId).name }}
                             {% if documentRelation and documentRelation.issued %},
                              {{ documentRelation.issued|date('d.m.Y') }}
                              {% endif %}
@@ -278,7 +278,7 @@
                         <td rowspan="{{ package.pricesByDateByPrice|length }}" align="right">
                             {{ package.discount }}{{ package.getIsPercentDiscount ? '%' }}
                         </td>
-                        <td rowspan="{{ package.pricesByDateByPrice|length }}" align="right">{{ package.getPackagePrice(true)|number_format(2) }}</td>
+                        <td rowspan="{{ package.pricesByDateByPrice|length }}" align="right">{{ package.getPackagePrice(true) }}</td>
                     {% endif %}
 
                 </tr>

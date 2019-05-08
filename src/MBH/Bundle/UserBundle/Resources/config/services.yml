@@ -88,11 +88,6 @@ services:
               tags:
                 - { name: kernel.event_listener, event: kernel.request, method: onCoreRequest, priority: "-1"}
 
-    mbh.recaptcha.interactive_login_listener:
-      class: MBH\Bundle\UserBundle\Service\ReCaptcha\InteractiveLoginListener
-      tags:
-        - { name: kernel.event_listener, event: security.interactive_login, method: onSecurityInteractiveLogin, priority: "-1"}
-      arguments: ["%mbh.recaptcha%", '@mbh.client_manager', '@session', '@mbh.billing.api', '@translator', '%support%', '@kernel']
 
     mbh.user.locale.listener:
       class: MBH\Bundle\UserBundle\EventListener\UserLocalListener
@@ -106,6 +101,7 @@ services:
             - "%mbh.recaptcha%"
             - '@templating'
             - '@translator'
+            - '@mbh.invisible_captcha'
         tags:
             - { name: kernel.event_subscriber}
     mbh.user_type:
@@ -150,3 +146,23 @@ services:
 
     mbh.api_access_denied_handler:
         class: MBH\Bundle\UserBundle\Security\ApiAccessDeniedHandler
+
+    mbh.invisible_captcha:
+      class: MBH\Bundle\UserBundle\Service\ReCaptcha\InvisibleCaptcha
+      arguments:
+        - '%captcha_secret%'
+        - '@translator'
+
+    mbh.billing.interactive_login_listener:
+      class: MBH\Bundle\UserBundle\Service\Billing\InteractiveLoginListener
+      tags:
+        - { name: kernel.event_listener, event: security.interactive_login, method: onSecurityInteractiveLogin, priority: "-1"}
+      arguments: ["%mbh.recaptcha%", '@mbh.client_manager', '@session', '@mbh.billing.api', '@translator', '%support%', '@kernel']
+
+    mbh.recaptcha.interactive_login_listener:
+      class: MBH\Bundle\UserBundle\Service\ReCaptcha\InvisibleCaptchaInteractiveLoginListener
+      tags:
+        - { name: kernel.event_listener, event: security.interactive_login, method: onSecurityInteractiveLogin, priority: "-1"}
+      arguments:
+        - '@kernel'
+        - '@mbh.invisible_captcha'

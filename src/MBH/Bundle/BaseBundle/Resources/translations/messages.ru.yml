@@ -550,7 +550,8 @@ notifier.config.label.cash_confirm: 'Оплата документа'
 notifier.config.label.arrival: Прибытие
 notifier.config.label.feedback: Оценка
 notifier.config.label.online_order: 'Бронь Онлайн'
-notifier.config.label.channel_manager_order: 'Channel Manager'
+notifier.config.label.channel_manager_order: 'Брони Channel Manager'
+notifier.config.label.channel_manager_error: 'Ошибки Channel Manager'
 notifier.config.label.online_payment_confirm: 'Онлайн оплата'
 notifier.config.label.confirm_order: Подтверждение
 notifier.config.label.unpaid: Неоплата
@@ -564,6 +565,7 @@ notifier.config.title.arrival: 'Уведомление о прибытии'
 notifier.config.title.feedback: 'Письмо с просьбой об оценке'
 notifier.config.title.online: 'Уведомление о брони из онлайн формы'
 notifier.config.title.channel_manager_order: 'Уведомление брони от ChannelManager'
+notifier.config.title.channel_manager_error: 'Уведомление об ошибке ChannelManager'
 notifier.config.title.online_payment_confirm: 'Подтверждение онлайн оплаты'
 notifier.config.title.confirm_order: 'Подтверждение заказа'
 notifier.config.title.unpaid: 'Уведомление о заказе без оплаты'

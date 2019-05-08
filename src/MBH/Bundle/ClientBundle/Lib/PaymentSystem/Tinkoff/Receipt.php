@@ -88,26 +88,12 @@ class Receipt implements \JsonSerializable
 
             $item = new Item();
             $item->setName(sprintf($name, $package->getRoomType()->getName(), $package->getNumberWithPrefix()));
-            $item->setPrice($package->getPackagePrice(true) * 100);
+            $item->setPrice($cashDocument->getTotal() * 100);
             $item->setQuantity(1);
-            $item->setAmount($package->getPackagePrice(true) * 100);
+            $item->setAmount($cashDocument->getTotal() * 100);
             $item->setTax($tax);
 
             $this->addItems($item);
-
-            /** @var PackageService $service */
-            foreach ($package->getServices() as $service) {
-                $quantity = $service->getAmount() * $service->getNights() * $service->getPersons();
-
-                $item = new Item();
-                $item->setName($trans->trans('payment.receipt.item_description.service') . $service->getService()->getName());
-                $item->setPrice($service->getPrice() * 100);
-                $item->setQuantity($quantity);
-                $item->setAmount($quantity * $item->getPrice());
-                $item->setTax($tax);
-
-                $this->addItems($item);
-            }
         }
 
         return $this;

@@ -24,9 +24,6 @@ use MBH\Bundle\PackageBundle\Document\SearchQuery;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
-use Symfony\Component\Security\Acl\Domain\UserSecurityIdentity;
-use Symfony\Component\Security\Acl\Permission\MaskBuilder;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 
 /**
@@ -350,16 +347,16 @@ class OrderManager implements Searchable
                 $order->setConfirmed(true);
             }
 
+            if ($user) {
+                $order->setOwner($user);
+                //** TODO: Remove comments after migration */
+//                $aclProvider = $this->container->get('security.acl.provider');
+//                $acl = $aclProvider->createAcl(ObjectIdentity::fromDomainObject($order));
+//                $acl->insertObjectAce(UserSecurityIdentity::fromAccount($user), MaskBuilder::MASK_MASTER);
+//                $aclProvider->updateAcl($acl);
+            }
             $this->dm->persist($order);
             $this->dm->flush();
-
-            //Acl
-            if ($user) {
-                $aclProvider = $this->container->get('security.acl.provider');
-                $acl = $aclProvider->createAcl(ObjectIdentity::fromDomainObject($order));
-                $acl->insertObjectAce(UserSecurityIdentity::fromAccount($user), MaskBuilder::MASK_MASTER);
-                $aclProvider->updateAcl($acl);
-            }
         }
 
         // create cash document
@@ -526,8 +523,9 @@ class OrderManager implements Searchable
         if ($user
             && $this->container->get('security.token_storage')->getToken()
             && !$this->container->get('mbh.hotel.selector')->checkPermissions($results[0]->getRoomType()->getHotel())) {
-            throw new PackageCreationException($order, 'Acl error: permissions denied');
+            throw new PackageCreationException($order, 'Voter error: hotel access denied!');
         }
+
 
         //create package
         $package = new Package();
@@ -554,6 +552,14 @@ class OrderManager implements Searchable
             ->setPrices($results[0]->getPackagePricesForCombination($results[0]->getAdults(), $results[0]->getChildren()))
             ->setIsForceBooking($results[0]->getForceBooking());
 
+        //Acl
+        if ($user) {
+            $package->setOwner($user);
+//            $aclProvider = $this->container->get('security.acl.provider');
+//            $acl = $aclProvider->createAcl(ObjectIdentity::fromDomainObject($package));
+//            $acl->insertObjectAce(UserSecurityIdentity::fromAccount($user), MaskBuilder::MASK_MASTER);
+//            $aclProvider->updateAcl($acl);
+        }
 
 
         //set isCheckIn
@@ -653,13 +659,6 @@ class OrderManager implements Searchable
             $this->dm->flush();
         }
 
-        //Acl
-        if ($user) {
-            $aclProvider = $this->container->get('security.acl.provider');
-            $acl = $aclProvider->createAcl(ObjectIdentity::fromDomainObject($package));
-            $acl->insertObjectAce(UserSecurityIdentity::fromAccount($user), MaskBuilder::MASK_MASTER);
-            $aclProvider->updateAcl($acl);
-        }
 
         //Add cash docs
         if (!empty($data['paid'])) {
@@ -835,13 +834,16 @@ class OrderManager implements Searchable
 
             case 'created-by':
                 $data['createdBy'] = $user->getUsername();
+                $data['ownerId'] = $user->getId();
                 break;
             default:
         }
 
         //List user package only
+        //** TODO: updated in 3.4 version with no acl by owner.id */
         if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_PACKAGE_VIEW_ALL')) {
-            $data['createdBy'] = $user->getUsername();
+            $data['createdBy'] = $user->getId();
+            $data['ownerId'] = $user->getId();
         }
 
         /** @var PackageRepository $packageRepository */

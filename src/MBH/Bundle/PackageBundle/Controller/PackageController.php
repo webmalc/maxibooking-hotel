@@ -111,9 +111,15 @@ class PackageController extends Controller implements CheckHotelControllerInterf
                 'dates' => 'createdAt'
             ], $data));
         //created_by count
+        /**change to owner!! Delete comment after migrate */
+//        $count['created_by'] = $repository->fetch(array_merge([
+//                'createdBy' => $this->getUser()->getUsername()
+//            ], $data));
         $count['created_by'] = $repository->fetch(array_merge([
-                'createdBy' => $this->getUser()->getUsername()
+                'createdBy' => $this->getUser()->getUsername(),
+                'ownerId' => $this->getUser()->getId()
             ], $data));
+
         //checkIn count
         $count['not_check_in'] = $repository->fetch(array_merge([
                 'checkIn' => false,

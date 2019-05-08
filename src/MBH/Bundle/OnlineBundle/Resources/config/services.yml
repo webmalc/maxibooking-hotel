@@ -81,3 +81,5 @@ services:
     MBH\Bundle\OnlineBundle\Services\AvailableSocialNetworkingServices:
         arguments:
             - '%locale%'
+    mbh.online_payment_form.validator:
+        class: MBH\Bundle\OnlineBundle\Services\OnlineFormValidator

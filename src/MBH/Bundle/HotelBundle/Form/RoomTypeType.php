@@ -163,6 +163,13 @@ class RoomTypeType extends FormWithMultiLangFields
                     'value' => true,
                     'required' => false,
                     'help' => 'form.roomTypeType.isIndividualAdditionalPricesDesc'
+                ])
+                ->add('isSinglePlacement', CheckboxType::class, [
+                    'label' => 'form.roomTypeType.isSinglePlacement',
+                    'group' => 'form.roomTypeType.prices',
+                    'value' => true,
+                    'required' => false,
+                    'help' => 'form.roomTypeType.isSinglePlacementDesc'
                 ]);
         }
 

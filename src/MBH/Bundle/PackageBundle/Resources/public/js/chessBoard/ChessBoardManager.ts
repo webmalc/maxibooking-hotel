@@ -92,6 +92,7 @@ class ChessBoardManager {
             this.updateTable();
             $('#package-modal-continue-button').hide();
             $('#packageModalConfirmButton').show();
+            $(".findGuest").val([]).trigger("change");
         });
 
         const $confirmationModal = $('#entity-delete-confirmation');

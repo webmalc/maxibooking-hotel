@@ -155,7 +155,7 @@ class PackageSubscriber implements EventSubscriber
         );
 
         foreach ($docs as $doc) {
-            if ($doc instanceof PackageService) {
+            if ($doc instanceof PackageService && !$doc->getDeletedAt()) {
                 try {
                     $package = $doc->getPackage();
 

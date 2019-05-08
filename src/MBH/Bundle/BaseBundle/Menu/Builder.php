@@ -277,6 +277,11 @@ class Builder
      */
     public function filterMenu(ItemInterface $menu)
     {
+
+//        $accessMap = $this->container->get('security.access.decision_manager');
+//        $request = $this->container->get('request_stack')->getCurrentRequest();
+
+
         if ($menu->getUri() == $this->getTitleUrl()) {
             $menu->setCurrent(true);
             $this->isCurrent = true;

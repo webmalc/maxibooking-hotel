@@ -390,6 +390,12 @@ class PriceCache extends Base
      */
     public function getSinglePrice(): ?float
     {
+        if ($this->getRoomType() !== null) {
+            if (!$this->getRoomType()->getIsSinglePlacement()) {
+                return null;
+            }
+        }
+
         return $this->singlePrice;
     }
 
@@ -417,18 +423,24 @@ class PriceCache extends Base
     }
 
     /**
-     * @return int
+     * @return float|null $childPrice
      */
-    public function getChildPrice()
+    public function getChildPrice() :?float
     {
+        if ($this->getRoomType() !== null) {
+            if (!$this->getRoomType()->getIsChildPrices()) {
+                return null;
+            }
+        }
+
         return $this->childPrice;
     }
 
     /**
-     * @param int $childPrice
-     * @return PriceCache
+     * @param float|null $childPrice
+     * @return self
      */
-    public function setChildPrice($childPrice)
+    public function setChildPrice(?float $childPrice)
     {
         $this->childPrice = $childPrice;
 
@@ -440,6 +452,12 @@ class PriceCache extends Base
      */
     public function getAdditionalPrices(): array
     {
+        if ($this->getRoomType() !== null) {
+            if (!$this->getRoomType()->getIsIndividualAdditionalPrices()) {
+                return [];
+            }
+        }
+
         return $this->additionalPrices;
     }
 
@@ -459,6 +477,12 @@ class PriceCache extends Base
      */
     public function getAdditionalChildrenPrices(): array
     {
+        if ($this->getRoomType() !== null) {
+            if (!$this->getRoomType()->getIsIndividualAdditionalPrices()) {
+                return [];
+            }
+        }
+
         return $this->additionalChildrenPrices;
     }
 

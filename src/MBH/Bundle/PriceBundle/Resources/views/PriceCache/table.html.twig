@@ -36,11 +36,15 @@
                 {% set categories = {'price': 'price.views.priceCache.table.prices'|trans({},'MBHPriceBundle')} %}
 
                 {% if roomType.isHostel is empty %}
-                    {% set categories = categories|merge({'price': 'price.views.priceCache.table.prices'|trans({},'MBHPriceBundle'), 'isPersonPrice': 'price.views.priceCache.table.isPersonPrice'|trans({},'MBHPriceBundle'), 'singlePrice': 'price.views.priceCache.table.singlePrice'|trans({},'MBHPriceBundle')}) %}
+                    {% set categories = categories|merge({'price': 'price.views.priceCache.table.prices'|trans({},'MBHPriceBundle'), 'isPersonPrice': 'price.views.priceCache.table.isPersonPrice'|trans({},'MBHPriceBundle') }) %}
                 {% endif %}
 
                 {% if roomType.isChildPrices %}
                     {% set categories = categories|merge({'childPrice': 'mbhpricebundle.view.pricecache.table.price_for_children_main_place'|trans}) %}
+                {% endif %}
+
+                {% if roomType.isSinglePlacement %}
+                    {% set categories = categories|merge({'singlePrice': 'price.views.priceCache.table.singlePrice'|trans({},'MBHPriceBundle')}) %}
                 {% endif %}
 
                 {% if roomType.additionalPlaces > 0 %}
