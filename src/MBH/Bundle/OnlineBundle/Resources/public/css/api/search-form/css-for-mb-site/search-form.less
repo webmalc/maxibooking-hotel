@@ -96,21 +96,20 @@
                 background: #ffffff;
 
                 @media (min-width: @size-screen-max-width-mobile) {
-                    max-width: @row-width-desktop;
+                    width: @row-width-desktop;
                 }
 
                 &#mbh-form-additional-wrapper,
                 &#mbh-form-submit-wrapper {
                     @media (min-width: @size-screen-max-width-mobile){
-                        max-width: @row-width-tablet;
+                        width: @row-width-tablet;
                     }
                     @media (min-width: @size-screen-mid-width-tablet){
-                        max-width: @row-width-desktop;
+                        width: @row-width-desktop;
                     }
                 }
 
-                max-width: @row-width-mobile;
-                width: 100%;
+                width: @row-width-mobile;
                 height: 40px;
 
                 & > label {

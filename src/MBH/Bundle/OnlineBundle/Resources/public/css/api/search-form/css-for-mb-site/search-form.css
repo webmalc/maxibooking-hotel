@@ -75,25 +75,24 @@
   justify-content: space-between;
   align-items: center;
   background: #ffffff;
-  max-width: 240px;
-  width: 100%;
+  width: 240px;
   height: 40px;
 }
 @media (min-width: 732px) {
   #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-row {
-    max-width: 180px;
+    width: 180px;
   }
 }
 @media (min-width: 732px) {
   #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-row#mbh-form-additional-wrapper,
   #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-row#mbh-form-submit-wrapper {
-    max-width: 130px;
+    width: 130px;
   }
 }
 @media (min-width: 832px) {
   #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-row#mbh-form-additional-wrapper,
   #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-row#mbh-form-submit-wrapper {
-    max-width: 180px;
+    width: 180px;
   }
 }
 #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-row > label {
