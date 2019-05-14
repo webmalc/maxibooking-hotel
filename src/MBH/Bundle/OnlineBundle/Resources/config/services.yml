@@ -21,6 +21,7 @@ services:
         class: MBH\Bundle\OnlineBundle\Services\ApiHandler
         arguments:
             - '@doctrine.odm.mongodb.document_manager'
+            - '@MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigRepository'
 
     mbh.form_type:
         class: MBH\Bundle\OnlineBundle\Form\SettingsOnlineForm\FormType
@@ -57,7 +58,7 @@ services:
             - '@mbh.warnings_compiler'
             - '@mbh.billing.api'
             - '@mbh.client_manager'
-            - '@MBH\Bundle\OnlineBundle\Services\MBSiteStyleFormHolder'
+            - '@MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigRepository'
 
     MBH\Bundle\OnlineBundle\Services\RenderPaymentButton:
         arguments:
@@ -117,3 +118,21 @@ services:
 
     mbh.online_payment_form.validator:
         class: MBH\Bundle\OnlineBundle\Services\OnlineFormValidator
+
+    MBH\Bundle\OnlineBundle\Services\MBSiteFormConfigDataService:
+        arguments:
+            - '@MBH\Bundle\OnlineBundle\Services\MBSiteStyleFormHolder'
+            - '@doctrine.odm.mongodb.document_manager'
+            - '%locale%'
+
+    MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigRepository:
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@MBH\Bundle\OnlineBundle\Services\MBSiteFormConfigDataService'
+            - '@mbh.client_config_manager'
+
+    MBH\Bundle\OnlineBundle\Services\ParamConverter\FormConfigConverter:
+        arguments:
+            - '@MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigRepository'
+        tags:
+            - {name: request.param_converter, converter: form_config_converter}

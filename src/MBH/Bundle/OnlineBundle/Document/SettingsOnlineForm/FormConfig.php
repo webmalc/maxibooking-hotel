@@ -21,7 +21,7 @@ use MBH\Bundle\OnlineBundle\Services\SiteManager;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ODM\Document(collection="FormConfig", repositoryClass="MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigRepository")
+ * @ODM\Document(collection="FormConfig")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
@@ -300,8 +300,6 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
     {
         $this->roomTypeChoices = new ArrayCollection();
         $this->hotels = new ArrayCollection();
-        $this->googleAnalyticConfig = new GoogleAnalyticConfig();
-        $this->yandexAnalyticConfig = new YandexAnalyticConfig();
     }
 
     /**

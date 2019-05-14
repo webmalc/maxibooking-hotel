@@ -12,6 +12,7 @@ use MBH\Bundle\ClientBundle\Exception\BadSignaturePaymentSystemException;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
+use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigRepository;
 use MBH\Bundle\OnlineBundle\Services\RenderPaymentButton;
 use MBH\Bundle\PackageBundle\Document\Order;
 
@@ -40,13 +41,12 @@ class ApiController extends Controller
      * @Route("/form/results/iframe/{formId}", name="online_form_results_iframe")
      * @Method("GET")
      * @Cache(expires="tomorrow", public=true)
+     * @ParamConverter(converter="form_config_converter", options={"formConfigId": "formId"})
      * @Template()
      */
-    public function getFormResultsIframeAction($formId = null)
+    public function getFormResultsIframeAction(FormConfig $formConfig)
     {
         $this->setLocaleByRequest();
-        $formConfig = $this->dm->getRepository(FormConfig::class)
-            ->findOneById($formId);
 
         return [
             'formId'     => $formConfig->getId(),
@@ -286,9 +286,10 @@ class ApiController extends Controller
      * Results table
      * @Route("/results/table/{id}", name="online_form_results_table", options={"expose"=true}, defaults={"id"=null})
      * @Method("GET")
+     * @ParamConverter(converter="form_config_converter", options={"formConfigId": "id"})
      * @Template()
      */
-    public function getResultsTableAction(Request $request, $id = null)
+    public function getResultsTableAction(Request $request, FormConfig $formConfig)
     {
         $this->setLocaleByRequest();
 
@@ -296,11 +297,6 @@ class ApiController extends Controller
         $dm = $this->get('doctrine_mongodb')->getManager();
 
         $helper = $this->get('mbh.helper');
-        $formConfig = $this->dm->getRepository(FormConfig::class)->findOneById($id);
-
-        if (!$formConfig || !$formConfig->isEnabled()) {
-            throw $this->createNotFoundException();
-        }
 
         $query = new SearchQuery();
         $query->isOnline = true;
@@ -461,9 +457,9 @@ class ApiController extends Controller
             $services = array_merge($services, $hotel->getServices(true, true));
         }
 
-        $formConfig = $this->dm->getRepository(FormConfig::class)->findOneById($requestJson->configId);
+        $formConfig = $this->get(FormConfigRepository::class)->findOneById($requestJson->configId);
 
-        if (!$formConfig || !$formConfig->isEnabled()) {
+        if ($formConfig === null || !$formConfig->isEnabled()) {
             throw $this->createNotFoundException();
         }
 
@@ -488,20 +484,15 @@ class ApiController extends Controller
     /**
      * Payment type form
      * @Route("/results/payment/type/{id}", name="online_form_payment_type", options={"expose"=true})
+     * @ParamConverter(converter="form_config_converter", options={"formConfigId": "id"})
      * @Method("POST")
      * @Template()
      */
-    public function getPaymentTypeAction(Request $request, $id = null)
+    public function getPaymentTypeAction(Request $request, FormConfig $formConfig)
     {
         $requestJson = json_decode($request->getContent());
         if (property_exists($requestJson, 'locale')) {
             $this->setLocale($requestJson->locale);
-        }
-
-        $formConfig = $this->dm->getRepository(FormConfig::class)->findOneById($id);
-
-        if (!$formConfig || !$formConfig->isEnabled()) {
-            throw $this->createNotFoundException();
         }
 
         return [
@@ -598,7 +589,7 @@ class ApiController extends Controller
     }
 
     /**
-     * @Route("/payment/generate_invoice/{id}", name="generate_invoice")
+     * @Route("/payment/generate-invoice/{id}", name="generate_invoice")
      * @param Package $package
      * @return Response
      * @throws Exception
@@ -809,18 +800,12 @@ class ApiController extends Controller
     /**
      * @Route("/file/{configId}/load-result", name="online_form_load_result_file", defaults={"_format"="js"})
      * @Cache(expires="tomorrow", public=true)
+     * @ParamConverter(converter="form_config_converter", options={"formConfigId": "configId"})
      * @Template()
      */
-    public function loadResultAction($configId)
+    public function loadResultAction(FormConfig $formConfig)
     {
-        $formConfig = $this->dm->getRepository(FormConfig::class)
-            ->find($configId);
-
-        if ($formConfig === null || !$formConfig->isEnabled()) {
-            throw $this->createNotFoundException();
-        }
-
-        $clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+        $clientConfig = $this->clientConfig;
 
         return [
             'config'         => $formConfig,
@@ -833,22 +818,18 @@ class ApiController extends Controller
      * Results js
      * @Route("/results/{id}", name="online_form_results", defaults={"_format"="js"})
      * @Method("GET")
+     * @ParamConverter(converter="form_config_converter", options={"formConfigId": "id"})
      * @Template()
      */
-    public function getResultsAction($id = null)
+    public function getResultsAction(FormConfig $formConfig)
     {
         $this->setLocaleByRequest();
-        $formConfig = $this->dm->getRepository(FormConfig::class)->findOneById($id);
 
-        if (!$formConfig || !$formConfig->isEnabled()) {
-            throw $this->createNotFoundException();
-        }
-
-        $id ? $params = ['id' => $id] : $params = [];
+        $params = ['id' => $formConfig->getId()];
 
         return [
             'styles' => $this->get('templating')->render('MBHOnlineBundle:Api:results.css.twig'),
-            'configId' => $id,
+            'configId' => $formConfig->getId(),
             'urls' => [
                 'table' => $this->generateUrl(
                     'online_form_results_table',

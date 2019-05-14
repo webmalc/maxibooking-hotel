@@ -6,6 +6,7 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FieldsName;
 use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
+use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigRepository;
 use MBH\Bundle\OnlineBundle\Form\AnalyticsForm;
 use MBH\Bundle\OnlineBundle\Form\SettingsOnlineForm\FieldsNameType;
 use MBH\Bundle\OnlineBundle\Form\SettingsOnlineForm\FormType;
@@ -29,7 +30,7 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
      */
     public function indexAction()
     {
-        $docs = $this->dm->getRepository(FormConfig::class)->findAll();
+        $docs = $this->get(FormConfigRepository::class)->findAll();
         $siteConfig = $this->get('mbh.site_manager')->getSiteConfig();
         $hasEnabledMBSite = $siteConfig !== null && $siteConfig->getIsEnabled();
 
@@ -78,18 +79,14 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_ONLINE_FORM_EDIT')")
      * @Template()
-     * @ParamConverter(class="MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig")
+     * @ParamConverter(converter="form_config_converter", options={"formConfigId": "id"})
      * @param Request $request
-     * @param FormConfig $entity
+     * @param FormConfig $formConfig
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function editAction(Request $request, FormConfig $entity)
+    public function editAction(Request $request, FormConfig $formConfig)
     {
-        $oldConfigWidth = $entity->getFrameWidth();
-        $oldConfigHeight = $entity->getFrameHeight();
-        $onFullWidth = $entity->isFullWidth();
-
-        $form = $this->createForm(FormType::class, $entity, [
+        $form = $this->createForm(FormType::class, $formConfig, [
             'user' => $this->getUser()->getUserName()
         ]);
 
@@ -97,33 +94,27 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
 
         if ($form->isValid()) {
 
-            $this->dm->persist($entity);
+            $this->dm->persist($formConfig);
             $this->dm->flush();
 
             $this->addFlash('success', 'controller.formController.settings_saved_success');
 
-            if ($entity->getFrameHeight() != $oldConfigHeight
-                || $entity->getFrameWidth() !== $oldConfigWidth
-                || $onFullWidth != $entity->isFullWidth()) {
-                $this->addFlash('warning', 'controller.formController.frame_sizes_changed');
-            }
-
-            return $this->afterSaveRedirect('online_form', $entity->getId());
+            return $this->afterSaveRedirect('online_form', $formConfig->getId());
         }
 
         return [
-            'config' => $entity,
+            'config' => $formConfig,
             'form' => $form->createView(),
-            'logs' => $this->logs($entity),
+            'logs' => $this->logs($formConfig),
         ];
     }
 
     /**
-     * @Route("/{id}/fields_name", name="online_form_fields_name")
+     * @Route("/{id}/fields-name", name="online_form_fields_name")
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_ONLINE_FORM_EDIT')")
      * @Template()
-     * @ParamConverter(class="MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig")
+     * @ParamConverter(converter="form_config_converter", options={"formConfigId": "id"})
      * @param Request $request
      * @param FormConfig $formConfig
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
@@ -131,13 +122,11 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
     public function fieldsNameAction(Request $request, FormConfig $formConfig)
     {
         $form = $this->createForm(FieldsNameType::class, $formConfig->getFieldsName(), [
-//            'user' => $this->getUser()->getUserName()
         ]);
 
         $form->handleRequest($request);
-//
+
         if ($form->isValid()) {
-//
             /** @var FieldsName $fieldsName */
             $fieldsName = $form->getData();
             $formConfig->setFieldsName($fieldsName);
@@ -161,28 +150,30 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
     }
 
     /**
-     * @Route("/{id}/form_code", name="form_code")
+     * @Route("/{id}/form-code", name="form_code")
      * @Template()
-     * @param FormConfig $config
+     * @ParamConverter(converter="form_config_converter", options={"formConfigId": "id"})
+     * @param FormConfig $formConfig
      * @return array
      */
-    public function formCodeAction(FormConfig $config)
+    public function formCodeAction(FormConfig $formConfig)
     {
         return [
-            'config' => $config
+            'config' => $formConfig
         ];
     }
 
     /**
      * @Template()
      * @Route("/{id}/analytics", name="form_analytics")
-     * @param FormConfig $config
+     * @ParamConverter(converter="form_config_converter", options={"formConfigId": "id"})
+     * @param FormConfig $formConfig
      * @param Request $request
      * @return array
      */
-    public function analyticsAction(FormConfig $config, Request $request)
+    public function analyticsAction(FormConfig $formConfig, Request $request)
     {
-        $form = $this->createForm(AnalyticsForm::class, $config);
+        $form = $this->createForm(AnalyticsForm::class, $formConfig);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -191,9 +182,9 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
         }
 
         return [
-            'config' => $config,
+            'config' => $formConfig,
             'form' => $form->createView(),
-            'logs' => $this->logs($config),
+            'logs' => $this->logs($formConfig),
         ];
     }
 

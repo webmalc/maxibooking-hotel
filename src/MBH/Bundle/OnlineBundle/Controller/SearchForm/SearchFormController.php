@@ -8,10 +8,12 @@ namespace MBH\Bundle\OnlineBundle\Controller\SearchForm;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
+use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigRepository;
 use MBH\Bundle\OnlineBundle\Services\DataForSearchForm;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,7 +30,7 @@ class SearchFormController extends Controller
     /**
      * Old Online form iframe, for old clients
      *
-     * @Route("/form/iframe/{formId}", name="online_form_iframe", defaults={"formId"=null})
+     * @Route("/form/iframe/{formId}", name="online_form_iframe")
      * @Method("GET")
      * @Cache(expires="tomorrow", public=true)
      */
@@ -42,8 +44,7 @@ class SearchFormController extends Controller
             }
         }
 
-        $formConfig = $this->dm->getRepository(FormConfig::class)
-            ->findOneById($formId);
+        $formConfig = $this->get(FormConfigRepository::class)->findOneById($formId);
 
         if (!$formConfig || !$formConfig->isEnabled()) {
             throw $this->createNotFoundException();
@@ -81,17 +82,10 @@ class SearchFormController extends Controller
     /**
      * @Route("/file/{formConfigId}/load-search-form", name=FormConfig::ROUTER_NAME_LOAD_ALL_IFRAME, defaults={"_format"="js"})
      * @Cache(expires="tomorrow", public=true)
+     * @ParamConverter(converter="form_config_converter")
      */
-    public function loadAllScriptForSearchAction(Request $request, $formConfigId)
+    public function loadAllScriptForSearchAction(Request $request, FormConfig $formConfig)
     {
-        /** @var FormConfig $formConfig */
-        $formConfig = $this->dm->getRepository(FormConfig::class)
-            ->find($formConfigId);
-
-        if ($formConfig === null || !$formConfig->isEnabled()) {
-            throw $this->createNotFoundException();
-        }
-
         $this->setLocaleByRequest();
 
         $response = new Response();
@@ -120,15 +114,10 @@ class SearchFormController extends Controller
      * @Route("/form/iframe/calendar/{formConfigId}", name=MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig::ROUTER_NAME_CALENDAR_IFRAME)
      * @Method("GET")
      * @Cache(expires="tomorrow", public=true)
+     * @ParamConverter(converter="form_config_converter")
      */
-    public function calendarIframeAction($formConfigId)
+    public function calendarIframeAction(FormConfig $formConfig)
     {
-        $formConfig = $this->dm->getRepository(FormConfig::class)->findOneById($formConfigId);
-
-        if ($formConfig === null || !$formConfig->isEnabled()) {
-            throw $this->createNotFoundException();
-        }
-
         $this->setLocaleByRequest();
 
         return $this->render(
@@ -143,16 +132,15 @@ class SearchFormController extends Controller
      * @Route("/form/iframe/additional_form/{formConfigId}", name=MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig::ROUTER_NAME_ADDITIONAL_IFRAME)
      * @Method("GET")
      * @Cache(expires="tomorrow", public=true)
+     * @ParamConverter(converter="form_config_converter")
      */
-    public function additonalFormIframeAction($formConfigId)
+    public function additonalFormIframeAction(FormConfig $formConfig)
     {
-        $this->setLocaleByRequest();
-
-        $formConfig = $this->dm->getRepository(FormConfig::class)->findOneById($formConfigId);
-
-        if ($formConfig === null || !$formConfig->isEnabled() || !$formConfig->isUseAdditionalForm()) {
+        if (!$formConfig->isUseAdditionalForm()) {
             throw $this->createNotFoundException();
         }
+
+        $this->setLocaleByRequest();
 
         /** @var DataForSearchForm $helperDataForm */
         $helperDataForm = $this->get(DataForSearchForm::class)->setFormConfig($formConfig);
@@ -171,16 +159,11 @@ class SearchFormController extends Controller
      * @Route("/form/search_iframe/{formConfigId}", name=FormConfig::ROUTER_NAME_SEARCH_IFRAME)
      * @Method("GET")
      * @Cache(expires="tomorrow", public=true)
+     * @ParamConverter(converter="form_config_converter")
+     * @param FormConfig $formConfig
      */
-    public function searchIframeAction($formConfigId)
+    public function searchIframeAction(FormConfig $formConfig)
     {
-        $formConfig = $this->dm->getRepository(FormConfig::class)
-            ->findOneById($formConfigId);
-
-        if (!$formConfig || !$formConfig->isEnabled()) {
-            throw $this->createNotFoundException();
-        }
-
         $this->setLocaleByRequest();
 
         return $this->render(
@@ -197,20 +180,15 @@ class SearchFormController extends Controller
      * @Route("/form/{formConfigId}", name="online_form_get", defaults={"_format"="js"})
      * @Method("GET")
      * @Cache(expires="tomorrow", public=true)
+     * @ParamConverter(converter="form_config_converter")
      */
-    public function searchInsertHtmlFormAction($formConfigId)
+    public function searchInsertHtmlFormAction(FormConfig $formConfig)
     {
         $this->setLocaleByRequest();
 
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
         $dm = $this->get('doctrine_mongodb')->getManager();
         $config = $this->container->getParameter('mbh.online.form');
-        /** @var FormConfig $formConfig */
-        $formConfig = $dm->getRepository(FormConfig::class)->findOneById($formConfigId);
-
-        if (!$formConfig || !$formConfig->isEnabled()) {
-            throw $this->createNotFoundException();
-        }
 
         /** @var DataForSearchForm $dataForSearchForm */
         $dataForSearchForm = $this->get(DataForSearchForm::class)->setFormConfig($formConfig);

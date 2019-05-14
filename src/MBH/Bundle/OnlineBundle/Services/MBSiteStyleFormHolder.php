@@ -31,12 +31,12 @@ class MBSiteStyleFormHolder
     /**
      * @var string
      */
-    private $rootDir;
+    private $prefixDir;
 
     public function __construct(Logger $logger, string $rootDir)
     {
         $this->logger = $logger;
-        $this->rootDir = $rootDir;
+        $this->prefixDir = $rootDir . self::FILE_PREFIX;
     }
 
     public function getStyleSearchForm(): ?string
@@ -54,18 +54,24 @@ class MBSiteStyleFormHolder
         return $this->getFileContent(self::FILE_STYLE_ADDITIONAL_IFRAME);
     }
 
-    private function getRootDir(): string
+    private function getPrefixDir(): string
     {
-        return $this->rootDir;
+        return $this->prefixDir;
     }
 
     private function getFileContent(string $file): ?string
     {
-        $prefix = $this->getRootDir() . self::FILE_PREFIX;
-        $pathToFile = $prefix . $file;
+        $pathToFile = $this->getPrefixDir() . $file;
 
         if (!file_exists($pathToFile)) {
-            $this->logger(sprintf(self::MSG_NO_FOUND_FILE, $file, $prefix), self::TYPE_LOG_ERROR);
+            $this->logger(
+                sprintf(
+                    self::MSG_NO_FOUND_FILE,
+                    $file,
+                    $this->getPrefixDir()
+                ),
+                self::TYPE_LOG_ERROR
+            );
 
             return null;
         }

@@ -4,7 +4,7 @@ namespace MBH\Bundle\OnlineBundle\Controller\MBSite\v2;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
+use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigRepository;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
 use MBH\Bundle\OnlineBundle\Exception\MBSiteIsDisabledInClientConfigException;
 use MBH\Bundle\OnlineBundle\Exception\NotFoundConfigMBSiteException;
@@ -16,19 +16,8 @@ use MBH\Bundle\OnlineBundle\Services\SiteManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Document\RoomType;
-//use MBH\Bundle\OnlineBundle\Lib\MBSite\RoomTypeDataDecorator;
-use MBH\Bundle\OnlineBundle\Services\ApiHandler;
-use MBH\Bundle\OnlineBundle\Services\ApiResponseCompiler;
-use MBH\Bundle\PackageBundle\Document\Order;
-use MBH\Bundle\PackageBundle\Document\SearchQuery;
-use MBH\Bundle\PackageBundle\Lib\SearchResult;
-use MBH\Bundle\PriceBundle\Document\Service;
-use MBH\Bundle\PriceBundle\Document\Tariff;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpFoundation\ParameterBag;
-use Symfony\Component\HttpFoundation\Response;
 use Swagger\Annotations as SWG;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 
@@ -56,11 +45,19 @@ class AutoSiteController extends BaseController
     {
         $siteConfig = $this->checkSiteMangerAndInitDataAndGetSiteConfig();
 
-        $formConfig = $this->dm
-            ->getRepository(FormConfig::class)
-            ->getForMBSite();
-
         $responseCompiler = $this->get('mbh.api_response_compiler');
+
+        $formConfig = $this->get(FormConfigRepository::class)->getForMBSite();
+
+        if ($formConfig === null) {
+            $responseCompiler->addErrorMessage(
+                'Not found form config for MBSite.'
+            );
+        }
+
+        if (!$responseCompiler->isSuccessful()) {
+            return $responseCompiler->getResponse();
+        }
 
         $responseCompiler->setData(
             [
@@ -166,8 +163,6 @@ class AutoSiteController extends BaseController
 
         $formConfig = $requestHandler->getFormConfig($queryData->get('onlineFormId'), $responseCompiler);
 
-//        $requestHandler->checkIsArrayFields($queryData, ['hotelId'], $responseCompiler);
-
         if (!$responseCompiler->isSuccessful()) {
             return $responseCompiler->getResponse();
         }
@@ -234,13 +229,6 @@ class AutoSiteController extends BaseController
         $responseCompiler = $this->get('mbh.api_response_compiler');
         $requestHandler = $this->get('mbh.api_handler');
         $queryData = $request->query;
-
-//        $responseCompiler = $requestHandler->checkMandatoryFields($queryData, ['hotelId', 'onlineFormId'], $responseCompiler);
-//        if (!$responseCompiler->isSuccessful()) {
-//            return $responseCompiler->getResponse();
-//        }
-
-//        $this->getFormConfigAndAddOriginHeader($queryData, $requestHandler, $responseCompiler);
 
         $hotel = $this->dm->find('MBHHotelBundle:Hotel', $queryData->get('hotelId'));
         $onlineTariffs = $this->dm

@@ -1,16 +1,15 @@
 <?php
 /**
- * Created by PhpStorm.
- * Date: 21.11.18
+ * Date: 14.05.19
  */
 
-namespace MBH\Bundle\OnlineBundle\Exception;
+namespace MBH\Bundle\OnlineBundle\Exception\FormConfig;
 
 
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Throwable;
 
-class MBSiteException extends \RuntimeException implements HttpExceptionInterface
+class FormConfigException extends \RuntimeException implements HttpExceptionInterface
 {
     /**
      * @var integer

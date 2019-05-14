@@ -2,32 +2,95 @@
 
 namespace MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
+use MBH\Bundle\ClientBundle\Service\ClientConfigManager;
+use MBH\Bundle\OnlineBundle\Services\MBSiteFormConfigDataService;
 
 /**
  * Class RoomRepository
  */
-class FormConfigRepository extends DocumentRepository
+//class FormConfigRepository extends DocumentRepository
+class FormConfigRepository
 {
     /**
-     * @param null $id
-     * @return array|FormConfig|null|object
+     * @var DocumentRepository
      */
-    public function findOneById($id = null)
+    private $repo;
+
+    /**
+     * @var MBSiteFormConfigDataService
+     */
+    private $configData;
+
+    /**
+     * @var ClientConfig
+     */
+    private $clientConfig;
+
+    public function __construct(
+        DocumentManager $documentManager,
+        MBSiteFormConfigDataService $configSite,
+        ClientConfigManager $clientConfigManager
+    )
     {
-        $qb = $this->createQueryBuilder();
+        $this->repo = $documentManager->getRepository(FormConfig::class);
+        $this->configData = $configSite;
+        $this->clientConfig = $clientConfigManager->fetchConfig();
+    }
+
+    public function findOneById($id = null): ?FormConfig
+    {
+        $qb = $this->repo->createQueryBuilder();
         if ($id) {
             $qb->field('id')->equals($id);
         }
 
-        return $qb->getQuery()->getSingleResult();
+        $formConfig = $qb->getQuery()->getSingleResult();
+
+        $formConfig = $this->checkAndInjectConfig($formConfig);
+
+        return $formConfig;
+    }
+
+    public function getForMBSite(bool $styleIsNeed = true): ?FormConfig
+    {
+        $formConfig = $this->repo->findOneBy(['forMbSite' => true]);
+        $formConfig = $this->checkAndInjectConfig($formConfig, $styleIsNeed);
+
+        return $formConfig;
     }
 
     /**
-     * @return FormConfig|null|object
+     * @return FormConfig[]
      */
-    public function getForMBSite(): ?FormConfig
+    public function findAll(): array
     {
-        return $this->findOneBy(['forMbSite' => true]);
+        $formConfigHolder = [];
+
+        foreach ($this->repo->findAll() as $formConfig) {
+            $formConfig = $this->checkAndInjectConfig($formConfig);
+            if ($formConfig !== null) {
+                $formConfigHolder[] = $formConfig;
+            }
+        }
+
+        return $formConfigHolder;
+    }
+
+    private function checkAndInjectConfig(?FormConfig $formConfig, bool $styleIsNeed = true): ?FormConfig
+    {
+        if ($formConfig === null || !$formConfig->isForMbSite()) {
+            return $formConfig;
+        }
+
+        if (!$this->clientConfig->isMBSiteEnabled()) {
+            return null;
+        }
+
+        $this->configData->changeConfig($formConfig, $styleIsNeed);
+
+        return $formConfig;
     }
 }

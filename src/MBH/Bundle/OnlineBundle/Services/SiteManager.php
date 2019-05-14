@@ -12,6 +12,7 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
 use MBH\Bundle\OnlineBundle\Document\PaymentFormConfig;
+use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigRepository;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
@@ -51,9 +52,9 @@ class SiteManager
     private $clientManager;
 
     /**
-     * @var MBSiteStyleFormHolder
+     * @var FormConfigRepository
      */
-    private $styleHolder;
+    private $formConfigRepo;
 
     public function __construct(
         DocumentManager $dm, 
@@ -62,7 +63,7 @@ class SiteManager
         WarningsCompiler $warningsCompiler,
         BillingApi $billingApi,
         ClientManager $clientManager,
-        MBSiteStyleFormHolder $styleHolder
+        FormConfigRepository $formConfigRepository
     ) {
         $this->dm = $dm;
         $this->documentFieldsManager = $documentFieldsManager;
@@ -70,7 +71,7 @@ class SiteManager
         $this->warningsCompiler = $warningsCompiler;
         $this->billingApi = $billingApi;
         $this->clientManager = $clientManager;
-        $this->styleHolder = $styleHolder;
+        $this->formConfigRepo = $formConfigRepository;
     }
 
     /**
@@ -123,9 +124,9 @@ class SiteManager
     /**
      * @return FormConfig
      */
-    public function fetchFormConfig()
+    public function fetchFormConfig(bool $styleIsNeed = true)
     {
-        return $this->dm->getRepository(FormConfig::class)->getForMBSite();
+        return $this->formConfigRepo->getForMBSite($styleIsNeed);
     }
 
     public function fetchPaymentFormConfig(): PaymentFormConfig
@@ -209,7 +210,7 @@ class SiteManager
         $paymentForm->setHotels($config->getHotels()->toArray());
         $this->dm->persist($paymentForm);
 
-        $this->updateSiteFormConfig($config, $this->fetchFormConfig());
+        $this->updateSiteFormConfig($config, $this->fetchFormConfig(false));
 
 
         return $config;
@@ -292,7 +293,11 @@ class SiteManager
 
         $roomTypes = [];
         foreach ($config->getHotels() as $hotel) {
-            $roomTypes = array_merge($roomTypes, $hotel->getRoomTypes()->toArray());
+            $roomTypes[] = $hotel->getRoomTypes()->toArray();
+        }
+
+        if ($roomTypes !== []) {
+            $roomTypes = array_merge(...$roomTypes);
         }
 
         $formConfig
@@ -300,7 +305,7 @@ class SiteManager
             ->setHotels($config->getHotels()->toArray())
             ->setRoomTypeChoices($roomTypes);
 
-        if (!is_null($paymentTypes)) {
+        if ($paymentTypes !== null) {
             $formConfig->setPaymentTypes($paymentTypes);
         }
 
