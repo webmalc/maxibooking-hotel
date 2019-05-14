@@ -8,7 +8,7 @@ namespace MBH\Bundle\OnlineBundle\Controller\SearchForm;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
-use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigRepository;
+use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigManager;
 use MBH\Bundle\OnlineBundle\Services\DataForSearchForm;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -44,7 +44,7 @@ class SearchFormController extends Controller
             }
         }
 
-        $formConfig = $this->get(FormConfigRepository::class)->findOneById($formId);
+        $formConfig = $this->get(FormConfigManager::class)->findOneById($formId);
 
         if (!$formConfig || !$formConfig->isEnabled()) {
             throw $this->createNotFoundException();

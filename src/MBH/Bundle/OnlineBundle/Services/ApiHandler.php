@@ -4,7 +4,7 @@ namespace MBH\Bundle\OnlineBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
-use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigRepository;
+use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigManager;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
@@ -17,11 +17,11 @@ class ApiHandler
     private $dm;
 
     /**
-     * @var FormConfigRepository
+     * @var FormConfigManager
      */
     private $formConfigRepo;
 
-    public function __construct(DocumentManager $dm, FormConfigRepository $formConfigRepo)
+    public function __construct(DocumentManager $dm, FormConfigManager $formConfigRepo)
     {
         $this->dm = $dm;
         $this->formConfigRepo = $formConfigRepo;

@@ -6,7 +6,7 @@
 namespace MBH\Bundle\OnlineBundle\Services\ParamConverter;
 
 
-use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigRepository;
+use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigManager;
 use MBH\Bundle\OnlineBundle\Exception\FormConfig\NotFoundFormConfigException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
@@ -18,15 +18,15 @@ class FormConfigConverter implements ParamConverterInterface
     private const NAME_FOR_VARIABLE = 'formConfig';
 
     /**
-     * @var FormConfigRepository
+     * @var FormConfigManager
      */
     private $formConfigRepo;
 
     /**
      * FormConfigConverter constructor.
-     * @param FormConfigRepository $formConfigRepo
+     * @param FormConfigManager $formConfigRepo
      */
-    public function __construct(FormConfigRepository $formConfigRepo)
+    public function __construct(FormConfigManager $formConfigRepo)
     {
         $this->formConfigRepo = $formConfigRepo;
     }

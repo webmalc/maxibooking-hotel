@@ -6,7 +6,7 @@ use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\HotelBundle\Controller\CheckHotelControllerInterface;
 use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FieldsName;
 use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
-use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigRepository;
+use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigManager;
 use MBH\Bundle\OnlineBundle\Form\AnalyticsForm;
 use MBH\Bundle\OnlineBundle\Form\SettingsOnlineForm\FieldsNameType;
 use MBH\Bundle\OnlineBundle\Form\SettingsOnlineForm\FormType;
@@ -30,7 +30,7 @@ class FormController extends Controller  implements CheckHotelControllerInterfac
      */
     public function indexAction()
     {
-        $docs = $this->get(FormConfigRepository::class)->findAll();
+        $docs = $this->get(FormConfigManager::class)->findAll();
         $siteConfig = $this->get('mbh.site_manager')->getSiteConfig();
         $hasEnabledMBSite = $siteConfig !== null && $siteConfig->getIsEnabled();
 

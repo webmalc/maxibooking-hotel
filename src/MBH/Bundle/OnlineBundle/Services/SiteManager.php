@@ -10,9 +10,10 @@ use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\ClientBundle\Service\ClientManager;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FieldsName;
 use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
 use MBH\Bundle\OnlineBundle\Document\PaymentFormConfig;
-use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigRepository;
+use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigManager;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
@@ -52,7 +53,7 @@ class SiteManager
     private $clientManager;
 
     /**
-     * @var FormConfigRepository
+     * @var FormConfigManager
      */
     private $formConfigRepo;
 
@@ -63,7 +64,7 @@ class SiteManager
         WarningsCompiler $warningsCompiler,
         BillingApi $billingApi,
         ClientManager $clientManager,
-        FormConfigRepository $formConfigRepository
+        FormConfigManager $formConfigRepository
     ) {
         $this->dm = $dm;
         $this->documentFieldsManager = $documentFieldsManager;

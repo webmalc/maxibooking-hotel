@@ -8,11 +8,7 @@ use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Service\ClientConfigManager;
 use MBH\Bundle\OnlineBundle\Services\MBSiteFormConfigDataService;
 
-/**
- * Class RoomRepository
- */
-//class FormConfigRepository extends DocumentRepository
-class FormConfigRepository
+class FormConfigManager
 {
     /**
      * @var DocumentRepository

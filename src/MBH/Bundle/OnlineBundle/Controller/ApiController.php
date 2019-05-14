@@ -12,7 +12,7 @@ use MBH\Bundle\ClientBundle\Exception\BadSignaturePaymentSystemException;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
-use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigRepository;
+use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigManager;
 use MBH\Bundle\OnlineBundle\Services\RenderPaymentButton;
 use MBH\Bundle\PackageBundle\Document\Order;
 
@@ -457,7 +457,7 @@ class ApiController extends Controller
             $services = array_merge($services, $hotel->getServices(true, true));
         }
 
-        $formConfig = $this->get(FormConfigRepository::class)->findOneById($requestJson->configId);
+        $formConfig = $this->get(FormConfigManager::class)->findOneById($requestJson->configId);
 
         if ($formConfig === null || !$formConfig->isEnabled()) {
             throw $this->createNotFoundException();

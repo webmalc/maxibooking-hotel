@@ -4,7 +4,7 @@ namespace MBH\Bundle\OnlineBundle\Controller\MBSite\v2;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigRepository;
+use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigManager;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
 use MBH\Bundle\OnlineBundle\Exception\MBSiteIsDisabledInClientConfigException;
 use MBH\Bundle\OnlineBundle\Exception\NotFoundConfigMBSiteException;
@@ -47,7 +47,7 @@ class AutoSiteController extends BaseController
 
         $responseCompiler = $this->get('mbh.api_response_compiler');
 
-        $formConfig = $this->get(FormConfigRepository::class)->getForMBSite();
+        $formConfig = $this->get(FormConfigManager::class)->getForMBSite();
 
         if ($formConfig === null) {
             $responseCompiler->addErrorMessage(
