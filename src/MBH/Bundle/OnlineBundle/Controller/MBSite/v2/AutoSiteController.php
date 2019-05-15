@@ -13,6 +13,7 @@ use MBH\Bundle\OnlineBundle\Services\MBSite\v2\CollectHotelData;
 use MBH\Bundle\OnlineBundle\Lib\MBSite\FormConfigDecoratorForMBSite;
 use MBH\Bundle\OnlineBundle\Services\DataForSearchForm;
 use MBH\Bundle\OnlineBundle\Services\SiteManager;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -79,9 +80,38 @@ class AutoSiteController extends BaseController
                     'online_payment_form_load_js',
                     ['configId' => $siteConfig->getPaymentFormId()]
                 ),
-                'socialNetworks'       => $siteConfig->getSocialNetworkingServices()->getValues(),
                 'paymentSystems'       => $this->clientConfig->getPaymentSystems(),
                 'usePaymentForm'       => $siteConfig->isUsePaymentForm(),
+            ]
+        );
+
+        return $responseCompiler->getResponse();
+    }
+
+    /**
+     * @Route("/additional-content/{hotelId}", name="api_mb_site_v2_additional_contant")
+     * @SWG\Get(
+     *     path="/management/online/api/v2/additional-content",
+     *     produces={"application/json"},
+     *     @SWG\Response(response="200", description="Return link for social networking services, aggregator serveces"),
+     * )
+     * @return JsonResponse
+     * @ParamConverter("hotel", options={"id":"hotelId"}, class="MBH\Bundle\HotelBundle\Document\Hotel")
+     */
+    public function additionalContentAction(Hotel $hotel)
+    {
+        $siteConfig = $this->checkSiteMangerAndInitDataAndGetSiteConfig();
+        $siteContent = $siteConfig->getContentForHotel($hotel);
+
+        $this->setLocaleByRequest();
+
+        $responseCompiler = $this->get('mbh.api_response_compiler');
+
+        $responseCompiler->setData(
+            [
+                'useBanner'          => $siteContent->isUseBanner(),
+                'socialServices'     => $siteContent->getSocialNetworkingServices()->getValues(),
+                'aggregatorServices' => $siteContent->getAggregatorServices()->getValues(),
             ]
         );
 

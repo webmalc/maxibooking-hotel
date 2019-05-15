@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/payment_form")
+ * @Route("/payment-form")
  */
 class PaymentFormController extends Controller
 {
@@ -106,7 +106,7 @@ class PaymentFormController extends Controller
     }
 
     /**
-     * @Route("/{id}/form_code", name="payment_form_code")
+     * @Route("/{id}/form-code", name="payment_form_code")
      * @Template()
      * @param PaymentFormConfig $config
      * @return array

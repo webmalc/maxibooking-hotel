@@ -7,20 +7,29 @@
 namespace MBH\Bundle\OnlineBundle\Services;
 
 
-use MBH\Bundle\OnlineBundle\Document\SiteConfig;
-use MBH\Bundle\OnlineBundle\Lib\SocialNetworking\HolderSNSs;
-use MBH\Bundle\OnlineBundle\Document\SocialNetworkingService;
+use MBH\Bundle\OnlineBundle\Document\SiteContent;
+use MBH\Bundle\OnlineBundle\Document\SocialLink\AggregatorService;
+use MBH\Bundle\OnlineBundle\Lib\SocialNetworking\HolderSocialLinks;
+use MBH\Bundle\OnlineBundle\Document\SocialLink\SocialService;
 
 class AvailableSocialNetworkingServices
 {
-    private const NAMES = [
+    private const SOCIAL_NAMES = [
+        'facebook'      => 'Facebook',
+        'instagram'     => 'Instagram',
+        'linkedin'      => 'LinkedIn',
+        'twitter'       => 'Twitter',
+        'youtube'       => 'Youtube',
+        'google-plus'   => 'Google+',
+        'vk'            => 'VK',
+        'odnoklassniki' => 'Одноклассники',
+    ];
+
+    private const AGGREGATOR_NAMES = [
+        'airbnb'      => 'Airbnb',
+        'booking'     => 'Booking.com',
         'facebook'    => 'Facebook',
-        'instagram'   => 'Instagram',
-        'linkedin'    => 'LinkedIn',
-        'twitter'     => 'Twitter',
-        'youtube'     => 'Youtube',
-        'google-plus' => 'Google+',
-        'vk'          => 'VK',
+        'tripadvisor' => 'TripAdvisor',
     ];
 
     /**
@@ -37,32 +46,48 @@ class AvailableSocialNetworkingServices
         $this->locale = $locale;
     }
 
-    public function get(): array
+    public function createHolder(SiteContent $content): HolderSocialLinks
     {
-        $temp = self::NAMES;
+        $holder = new HolderSocialLinks($content->getHotel());
 
-        if ($this->locale === 'en') {
-            unset($temp['vk']);
+        /** @var SocialService[] $usedSNSs */
+        $usedSNSs = $content->getSocialNetworkingServices()->toArray();
+
+        foreach ($this->getSocialServices() as $key => $name) {
+            if (isset($usedSNSs[$key])) {
+                $holder->getSocialServices()->set($key, $usedSNSs[$key]);
+            } else {
+                $holder->getSocialServices()->set($key, new SocialService($key, $name, null));
+            }
         }
 
-        return $temp;
-    }
+        $usedAggregatorServices = $content->getAggregatorServices()->toArray();
 
-    public function createHolder(SiteConfig $siteConfig): HolderSNSs
-    {
-        $holder = new HolderSNSs();
-
-        /** @var SocialNetworkingService[] $usedSNSs */
-        $usedSNSs = $siteConfig->getSocialNetworkingServices()->toArray();
-
-        foreach ($this->get() as $key => $name) {
-            if (isset($usedSNSs[$key])) {
-                $holder->getSnss()->set($key, $usedSNSs[$key]);
+        foreach ($this->getAggregatorServices() as $key => $name) {
+            if (isset($usedAggregatorServices[$key])) {
+                $holder->getAggregatorServices()->set($key, $usedAggregatorServices[$key]);
             } else {
-                $holder->getSnss()->set($key, new SocialNetworkingService($key, $name, null));
+                $holder->getAggregatorServices()->set($key, new AggregatorService($key, $name, null));
             }
         }
 
         return $holder;
+    }
+
+    private function getAggregatorServices(): array
+    {
+        return self::AGGREGATOR_NAMES;
+    }
+
+    private function getSocialServices(): array
+    {
+        $temp = self::SOCIAL_NAMES;
+
+        if ($this->locale === 'en') {
+            unset($temp['vk']);
+            unset($temp['odnoklassniki']);
+        }
+
+        return $temp;
     }
 }

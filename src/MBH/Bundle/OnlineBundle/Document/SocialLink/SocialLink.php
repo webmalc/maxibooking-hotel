@@ -1,42 +1,37 @@
 <?php
 /**
- * Created by PhpStorm.
- * Date: 22.11.18
+ * Date: 15.05.19
  */
 
-namespace MBH\Bundle\OnlineBundle\Document;
+namespace MBH\Bundle\OnlineBundle\Document\SocialLink;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 /**
- * Class SocialNetworkingService
- * @package MBH\Bundle\OnlineBundle\Lib\SocialNetworking
- *
  * @ODM\EmbeddedDocument()
  */
-class SocialNetworkingService implements \JsonSerializable
+abstract class SocialLink implements \JsonSerializable
 {
     /**
      * @var null|string
      * @ODM\Field(type="string")
      * @ODM\Index()
      */
-    private $key;
+    protected $key;
 
     /**
      * @var null|string
      * @ODM\Field(type="string")
      */
-    private $name;
+    protected $name;
 
     /**
      * @var null|string
      * @ODM\Field(type="string")
      */
-    private $url;
+    protected $url;
 
     /**
-     * SocialNetworkingService constructor.
      * @param null|string $key
      * @param null|string $name
      * @param null|string $url
@@ -104,6 +99,4 @@ class SocialNetworkingService implements \JsonSerializable
             'url'  => $this->getUrl(),
         ];
     }
-
-
 }

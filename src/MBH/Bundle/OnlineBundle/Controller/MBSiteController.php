@@ -10,9 +10,10 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
 use MBH\Bundle\OnlineBundle\Form\SiteForm;
 use MBH\Bundle\OnlineBundle\Form\SitePersonalDataPoliciesType;
-use MBH\Bundle\OnlineBundle\Form\SocialNetworking\SiteSocialNetworkingServicesType;
+use MBH\Bundle\OnlineBundle\Form\SocialNetworking\ManySocialNetworkingServicesType;
+use MBH\Bundle\OnlineBundle\Form\SocialNetworking\OneSocialNetworkingServiceType;
 use MBH\Bundle\OnlineBundle\Exception\NotFoundConfigMBSiteException;
-use MBH\Bundle\OnlineBundle\Lib\SocialNetworking\HolderSNSs;
+use MBH\Bundle\OnlineBundle\Lib\SocialNetworking\HolderSocialLinks;
 use MBH\Bundle\OnlineBundle\Services\AvailableSocialNetworkingServices;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -21,7 +22,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/mb_site")
+ * @Route("/mb-site")
  * Class MBSiteController
  * @package MBH\Bundle\OnlineBundle\Controller
  */
@@ -116,7 +117,7 @@ class MBSiteController extends BaseController
     }
 
     /**
-     * @Route("/personal_data_policies", name="site_hotel_personal_data_policies")
+     * @Route("/personal-data-policies", name="site_hotel_personal_data_policies")
      * @param Request $request
      * @return array
      * @Template()
@@ -146,7 +147,7 @@ class MBSiteController extends BaseController
     }
 
     /**
-     * @Route("/hotel_settings/{id}", name="site_hotel_settings")
+     * @Route("/hotel-settings/{id}", name="site_hotel_settings")
      * @Template()
      * @param Hotel $hotel
      * @return array
@@ -176,7 +177,7 @@ class MBSiteController extends BaseController
     }
 
     /**
-     * @Route("/payment_system", name="site_hotel_payment_systems")
+     * @Route("/payment-system", name="site_hotel_payment_systems")
      * @Template()
      * @Security("is_granted('ROLE_MB_SITE')")
      */
@@ -234,7 +235,7 @@ class MBSiteController extends BaseController
     }
 
     /**
-     * @Route("/payment_system/remove/{paymentSystemName}", name="site_hotel_remove_payment_system")
+     * @Route("/payment-system/remove/{paymentSystemName}", name="site_hotel_remove_payment_system")
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      * @Security("is_granted('ROLE_MB_SITE')")
@@ -248,7 +249,7 @@ class MBSiteController extends BaseController
     }
 
     /**
-     * @Route("/social_networking_services", name="site_config_social_networking_services")
+     * @Route("/social-networking-services", name="site_config_social_networking_services")
      * @Security("is_granted('ROLE_MB_SITE')")
      * @Template()
      */
@@ -261,19 +262,26 @@ class MBSiteController extends BaseController
             throw new NotFoundConfigMBSiteException();
         }
 
-        $holder = $this->get(AvailableSocialNetworkingServices::class)->createHolder($siteConfig);
+        $holders = [];
+        foreach ($siteConfig->getContents() as $content) {
+            $holders[] = $this->get(AvailableSocialNetworkingServices::class)->createHolder($content);
+        }
 
-        $form = $this->createForm(SiteSocialNetworkingServicesType::class, $holder);
+        $form = $this->createForm(ManySocialNetworkingServicesType::class, $holders);
 
         $form->handleRequest($request);
 
         if ($form->isValid() && $form->isSubmitted()) {
-            /** @var HolderSNSs $data */
-            $data = $form->getData();
-            $data->deleteEmptyUrl();
-            $siteConfig->setSocialNetworkingServices($data->getSnss());
+            /** @var HolderSocialLinks[] $holderData */
+            $holderData = $form->getData();
+            foreach ($holderData as $holderSNSs) {
+                $holderSNSs->deleteEmptyUrl();
+                $content = $siteConfig->getContentForHotel($holderSNSs->getHotel());
+                $content->setSocialNetworkingServices($holderSNSs->getSocialServices());
+                $content->setAggregatorServices($holderSNSs->getAggregatorServices());
 
-            $this->dm->flush($siteConfig);
+                $this->dm->flush($content);
+            }
 
             $this->addFlash('success', 'mb_site_controller.site_config_saved');
         }

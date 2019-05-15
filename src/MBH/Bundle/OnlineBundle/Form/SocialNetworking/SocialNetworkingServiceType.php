@@ -7,7 +7,7 @@
 namespace MBH\Bundle\OnlineBundle\Form\SocialNetworking;
 
 
-use MBH\Bundle\OnlineBundle\Document\SocialNetworkingService;
+use MBH\Bundle\OnlineBundle\Document\SocialLink\SocialLink;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -24,7 +24,7 @@ class SocialNetworkingServiceType extends AbstractType
         $formModifier = function (FormEvent $event, string $eventName) {
             $builder = $event->getForm();
 
-            /** @var SocialNetworkingService $sns */
+            /** @var SocialLink $sns */
             $sns = $event->getData();
 
             $builder
@@ -59,7 +59,7 @@ class SocialNetworkingServiceType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => SocialNetworkingService::class,
+            'data_class' => SocialLink::class,
         ]);
     }
 }

@@ -9,7 +9,7 @@ namespace Tests\Bundle\OnlineBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
-use MBH\Bundle\OnlineBundle\Form\SocialNetworking\SiteSocialNetworkingServicesType;
+use MBH\Bundle\OnlineBundle\Form\SocialNetworking\OneSocialNetworkingServiceType;
 use MBH\Bundle\UserBundle\DataFixtures\MongoDB\UserData;
 
 class MBSiteControllerTest extends WebTestCase
@@ -88,7 +88,7 @@ class MBSiteControllerTest extends WebTestCase
     {
         $nameService = 'twitter';
         $this->client = self::makeClient(true);
-        $blockPrefix = (new SiteSocialNetworkingServicesType())->getBlockPrefix();
+        $blockPrefix = (new OneSocialNetworkingServiceType())->getBlockPrefix();
 
         $crawler = $this->getListCrawler($this->getUrlForSocialNetworkingServices());
 

@@ -7,18 +7,31 @@
 namespace MBH\Bundle\OnlineBundle\Form\SocialNetworking;
 
 
-use MBH\Bundle\OnlineBundle\Lib\SocialNetworking\HolderSNSs;
+use MBH\Bundle\OnlineBundle\Lib\SocialNetworking\HolderSocialLinks;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class SiteSocialNetworkingServicesType extends AbstractType
+class OneSocialNetworkingServiceType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add(
-            'snss',
+            'socialServices',
+            CollectionType::class,
+            [
+                'entry_type' => SocialNetworkingServiceType::class,
+                'label' => false,
+                'group' => 'no-group',
+                'entry_options' => [
+                    'group' => 'no-group',
+                ]
+            ]
+        );
+
+        $builder->add(
+            'aggregatorServices',
             CollectionType::class,
             [
                 'entry_type' => SocialNetworkingServiceType::class,
@@ -35,7 +48,7 @@ class SiteSocialNetworkingServicesType extends AbstractType
     {
         $resolver->setDefaults(
             [
-                'data_class' => HolderSNSs::class
+                'data_class' => HolderSocialLinks::class,
             ]
         );
     }

@@ -99,7 +99,7 @@ class SiteManager
     public function getHotelsSettingsInfo(SiteConfig $config = null)
     {
         $settingsInfo = [];
-        if (!is_null($config) && $config->getIsEnabled()) {
+        if ($config !== null && $config->getIsEnabled()) {
             foreach ($config->getHotels() as $hotel) {
                 $numberOfWarnings = $this->getNumberOfWarnings($hotel);
                 foreach ($hotel->getRoomTypes() as $roomType) {

@@ -10,11 +10,30 @@
 
     <div class="tab-content">
     {{ form_start(form, { 'attr':{'class':'form-horizontal'}}) }}
-    <dl>
-        {% for sns in form.snss %}
-            <dd>{{ form_widget(sns) }}</dd>
+        {% for one in form.many %}
+            <div class="box box-default box-solid">
+
+                <div class="box-header with-border">
+                    <h3 class="box-title">{{ one.vars.data.hotel.fullTitle }}</h3>
+                </div>
+                <div class="box-body">
+                    <div>
+                        <dl>
+                            {% for socialService in one.socialServices %}
+                                <dd>{{ form_widget(socialService) }}</dd>
+                            {% endfor %}
+                        </dl>
+                    </div>
+                    <div>
+                        <dl>
+                            {% for aggregatorService in one.aggregatorServices %}
+                                <dd>{{ form_widget(aggregatorService) }}</dd>
+                            {% endfor %}
+                        </dl>
+                    </div>
+                </div>
+            </div>
         {% endfor %}
-    </dl>
 
     {% include 'MBHBaseBundle:Actions:new.html.twig' %}
     {{ form_end(form) }}

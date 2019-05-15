@@ -129,11 +129,10 @@ class SiteConfig extends Base
     private $usePaymentForm = true;
 
     /**
-     * @ODM\EmbedMany(targetDocument="MBH\Bundle\OnlineBundle\Document\SocialNetworkingService", strategy="set")
-     * strategy="set" для хранения как ассоциативный массив
-     * @var ArrayCollection|SocialNetworkingService[]
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\OnlineBundle\Document\SiteContent")
+     * @var array|ArrayCollection|SiteContent[]
      */
-    private $socialNetworkingServices;
+    private $content;
 
     public function __construct()
     {
@@ -243,6 +242,7 @@ class SiteConfig extends Base
     public function addHotel(Hotel $hotel)
     {
         $this->hotels->add($hotel);
+        $this->addContent($hotel);
 
         return $this;
     }
@@ -341,18 +341,37 @@ class SiteConfig extends Base
     }
 
     /**
-     * @return \Doctrine\ODM\MongoDB\PersistentCollection|SocialNetworkingService[]
+     * @return array|ArrayCollection|SiteContent[]
      */
-    public function getSocialNetworkingServices(): \Doctrine\ODM\MongoDB\PersistentCollection
+    public function getContents(bool $forAll = false)
     {
-        return $this->socialNetworkingServices;
+        return $forAll
+            ? $this->content
+            : $this->content->filter(function (SiteContent $content) {
+                return $this->hotels->contains($content->getHotel());
+            });
+    }
+
+    public function getContentForHotel(Hotel $hotel): SiteContent
+    {
+        return $this->content->filter(function (SiteContent $content) use ($hotel) {
+            return $content->getHotel() === $hotel;
+        })
+            ->first();
     }
 
     /**
-     * @param ArrayCollection|SocialNetworkingService[] $socialNetworkingServices
+     * @param array|ArrayCollection|SiteContent[] $content
      */
-    public function setSocialNetworkingServices(ArrayCollection $socialNetworkingServices): void
+    public function setContent($content): self
     {
-        $this->socialNetworkingServices = $socialNetworkingServices;
+        $this->content = $content;
+
+        return $this;
+    }
+
+    private function addContent(Hotel $hotel): void
+    {
+        $this->content->add((new SiteContent())->setHotel($hotel));
     }
 }
