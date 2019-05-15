@@ -54,7 +54,6 @@ class FormConfigConverter implements ParamConverterInterface
 
     public function supports(ParamConverter $configuration)
     {
-        return true;
+        return $configuration->getConverter() === 'form_config_converter';
     }
-
 }
