@@ -9,6 +9,7 @@ Encore
     .setPublicPath('/build')
     .addEntry('search', __dirname + '/src/MBH/Bundle/SearchBundle/Resources/private/search/index.ts')
     .addEntry('azovskyResults', __dirname + '/src/MBH/Bundle/OnlineBookingBundle/Resources/private/results/index.ts')
+    .addEntry('azovskySpecials', __dirname + '/src/MBH/Bundle/OnlineBookingBundle/Resources/private/specials/index.ts')
     .enableSassLoader()
     .enableLessLoader()
     .enableSourceMaps(!Encore.isProduction())

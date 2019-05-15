@@ -71,8 +71,9 @@ class DefaultController extends BaseController
         $payOnlineUrl = $this->getParameter('online_booking')['payonlineurl'];
         $form->handleRequest($request);
 
+        $formView = $form->createView();
         return [
-            'form' => $form->createView(),
+            'form' => $formView,
             'requestSearchUrl' => $requestSearchUrl,
             'payOnlineUrl' => $payOnlineUrl,
             'restrictions' => json_encode($this->dm->getRepository('MBHPriceBundle:Restriction')->fetchInOut()),

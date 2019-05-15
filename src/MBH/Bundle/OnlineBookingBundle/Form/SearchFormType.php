@@ -9,6 +9,8 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Form\Extension\InvertChoiceType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PriceBundle\Document\SpecialRepository;
+use MBH\Bundle\PriceBundle\Lib\SpecialFilter;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -57,7 +59,7 @@ class SearchFormType extends AbstractType
                         'class' => 'dropdown',
 
                     ],
-                    'query_builder' => function (DocumentRepository $documentRepository) {
+                    'query_builder' => static function (DocumentRepository $documentRepository) {
                         return $documentRepository->createQueryBuilder()
                             ->field('_id')->in(['56fbd22174eb5383728b4567', '5705190e74eb53461c8b4916'])
                             ->sort('fullTitle', 'DESC');
@@ -164,6 +166,18 @@ class SearchFormType extends AbstractType
                 [
                     'class' => 'MBHPriceBundle:Special',
                     'required' => false,
+                    'query_builder' => static function (DocumentRepository $documentRepository) {
+                        $specialsFilter = new SpecialFilter();
+                        $specialsFilter->setRemain(1);
+                        $begin = new \DateTime('now midnight');
+                        $specialsFilter->setBegin($begin);
+                        /** @var SpecialRepository $documentRepository */
+                        $qb = $documentRepository->getFilteredQueryBuilder($specialsFilter);
+                        $qb->addAnd($qb->expr()->field('begin')->gt(new \DateTime("midnight")));
+                        $qb->field('prices')->exists(true);
+
+                        return $qb;
+                    },
                 ]
             )
             ->add(

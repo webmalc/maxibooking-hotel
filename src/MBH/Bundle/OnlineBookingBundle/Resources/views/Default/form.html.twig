@@ -10,15 +10,6 @@
     </div>
 </div>
 
-
-{#<div class="form-group">#}
-    {#{{ form_label(form.roomType) }}#}
-    {#<div class="input-group">#}
-        {#{{ form_widget(form.roomType) }}#}
-    {#</div>#}
-{#</div>#}
-
-
 <div class="booking-date clearfix">
     <div class="col-md-12 col-sm-12 col-xs-12">
         {{ form_label(form.begin) }}
@@ -53,6 +44,24 @@
 </div>
 <div class="clear"></div>
 
+
+{#<div class="col-md-12 col-sm-12 col-xs-12 check">#}
+{#    <label>#}
+{#        <input class="date-check" type="checkbox" name="">#}
+{#        <span class="date-check-custom"></span>#}
+{#        <div class="wrap-contcheck">#}
+{#        <span class="check-lab">#}
+{#                Гибкие даты#}
+{#         <a class="tooltip-span">#}
+{#                 ?<span class="tooltip-text">Данная опция позволяет найти дополнительные варианты, если на искомые даты уже все раскуплено.</span>#}
+{#        </a>#}
+{#        </span>#}
+{#        </div>#}
+{#    </label>#}
+{#</div>#}
+
+
+
 <div class="booking-submit">
     <input type="submit" name="submit" value="Узнать цены">
 </div>
@@ -63,9 +72,19 @@
 {{ form_end(form, {render_rest: false}) }}
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/css/bootstrap-select.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker3.min.css">
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.11.2/css/bootstrap-select.min.css">
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker3.min.css">
 <link rel="stylesheet" href="{{ absolute_url(asset('bundles/mbhonlinebooking/css/easydropdown.css')) }}">
+
+
+{#<script#}
+{#        src="https://code.jquery.com/jquery-3.4.1.min.js"#}
+{#        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="#}
+{#        crossorigin="anonymous">#}
+
+{#</script>#}
 
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment-with-locales.min.js"></script>
@@ -79,7 +98,7 @@
 {#Стиль подключен в азовском#}
 <script src="{{ absolute_url(asset('bundles/fosjsrouting/js/router.js', null, true)) }}"></script>
 <script src="{{ absolute_url(asset('js/fos_js_routes.js', null, true)) }}"></script>
-<script src="{{ absolute_url(asset('bundles/mbhonlinebooking/js/jquery.easydropdown.js'))}}"></script>
+<script src="{{ absolute_url(asset('bundles/mbhonlinebooking/js/jquery.easydropdown.js')) }}"></script>
 <script src="{{ absolute_url(asset('bundles/mbhonlinebooking/js/form.js')) }}"></script>
 
 <script>

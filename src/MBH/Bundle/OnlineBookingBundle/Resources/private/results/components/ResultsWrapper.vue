@@ -72,7 +72,6 @@
             }
         },
         mounted() {
-            console.log('mounted');
             this.$store.commit('search/startSearch');
         },
         computed: {

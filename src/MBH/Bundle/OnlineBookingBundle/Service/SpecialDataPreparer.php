@@ -85,8 +85,8 @@ class SpecialDataPreparer
             $begin = $specialEntity['dates']['begin'];
             $end = $specialEntity['dates']['end'];
             $special = $specialEntity['special'];
-            $results['month_' . $begin->format('m')][] = $special->getId();
-            $results['month_' . $end->format('m')][] = $special->getId();
+            $results['month_'.$begin->format('m')][] = $special->getId();
+            $results['month_'.$end->format('m')][] = $special->getId();
 
         }
         $data['byMonth'] = $results;
@@ -103,7 +103,8 @@ class SpecialDataPreparer
     {
         $result = [];
         foreach ($specials as $special) {
-            if (!($special instanceof Special) || !count($special->getRoomTypes()) || $special->isRecalculation() || !$special->getRemain() || !empty($special->getError())) {
+            if (!($special instanceof Special) || !count($special->getRoomTypes()) || $special->isRecalculation(
+                ) || !$special->getRemain() || !empty($special->getError())) {
                 continue;
             }
             if (count($special->getPrices())) {
@@ -153,11 +154,11 @@ class SpecialDataPreparer
             'discount' => $special->getDiscount(),
             'isPercent' => $special->isIsPercent(),
             'prices' => $specialPrice->getPrices(),
-            'default_price' => $special->getDefaultPrice()?:$this->determineDefaultPrice($specialPrice->getPrices()),
+            'default_price' => $special->getDefaultPrice() ?: $this->determineDefaultPrice($specialPrice->getPrices()),
             'specialId' => $special->getId(),
             'roomTypeId' => $roomType->getId(),
             'roomCategoryId' => $roomType->getCategory()->getId(),
-            'hotelLink' => $this->onlineOptions['hotels_links'][$hotelId]??null
+            'hotelLink' => $this->onlineOptions['hotels_links'][$hotelId] ?? null,
         ];
 
         return $result;
@@ -174,7 +175,7 @@ class SpecialDataPreparer
      * @param array|null $prices
      * @return null|string
      */
-    private function determineDefaultPrice(array $prices = null): ?string
+    public function determineDefaultPrice(array $prices = null): ?string
     {
         $result = '';
         if (is_array($prices)) {
@@ -226,7 +227,7 @@ class SpecialDataPreparer
      */
     private function uniqueByMonthFilter(array $data): array
     {
-        if (!$data['byMonth']??false) {
+        if (!$data['byMonth'] ?? false) {
             return $data;
         }
         foreach ($data['byMonth'] as $byMonthKey => $value) {
@@ -239,9 +240,9 @@ class SpecialDataPreparer
 
     private function getImage(RoomType $roomType): array
     {
-        $roomImage = $roomType->getMainImage()??$roomType->getImages()->first()??null;
-        $hotelImage = $roomType->getHotel()->getImages()->first()??null;
-        $mainImage = $roomImage??$hotelImage;
+        $roomImage = $roomType->getMainImage() ?? $roomType->getImages()->first() ?? null;
+        $hotelImage = $roomType->getHotel()->getImages()->first() ?? null;
+        $mainImage = $roomImage ?? $hotelImage;
         if ($mainImage instanceof Image || $mainImage instanceof RoomTypeImage) {
             $result[] = $mainImage->getPath();
         } else {

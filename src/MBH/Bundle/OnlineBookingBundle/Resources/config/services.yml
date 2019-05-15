@@ -163,3 +163,12 @@ services:
         arguments: ['online-booking']
         calls:
             - [pushHandler, ['@mbh.online.booking_logger_handler']]
+
+    mbh.online_booking.azovsky_converter:
+        class: MBH\Bundle\OnlineBookingBundle\Service\SpecialAzovskyConverter
+        arguments:
+            - '@mbh.online.special_data_preparer'
+            - '%online_booking%'
+            - '@assets.packages'
+            - '@twig.extension.httpfoundation'
+            - '@liip_imagine.templating.filter_helper'

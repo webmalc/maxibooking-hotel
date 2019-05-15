@@ -8,6 +8,7 @@ use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\ClientBundle\Service\PaymentSystem\NewRbkInvoiceCreate;
 use MBH\Bundle\OnlineBookingBundle\Form\ReservationType;
 use MBH\Bundle\OnlineBookingBundle\Form\SignType;
+use MBH\Bundle\OnlineBookingBundle\Lib\Exceptions\SpecialConverterException;
 use MBH\Bundle\PriceBundle\Lib\PaymentType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -26,14 +27,61 @@ class AzovskyController extends Controller
 
     private const RESERVE = 'reserve';
 
+
     /**
      * @return Response
      * @Route("/results", name="az_results")
      */
     public function azovskyResultsAction(): Response
     {
-        return $this->render('@MBHOnlineBooking/Azovsky/results.js.twig');
+        return $this->render('@MBHOnlineBooking/Azovsky/results.js.twig', [
+            'fileName' => 'azovskyResults'
+        ]);
     }
+
+    /**
+     * @return Response
+     * @Route("/specials", name="az_specials")
+     */
+    public function azovskySpecialsAction(): Response
+    {
+        return $this->render('@MBHOnlineBooking/Azovsky/results.js.twig', [
+            'fileName' => 'azovskySpecials'
+        ]);
+    }
+
+    /**
+     * @return Response
+     * @Route("/specials/search", name="az_specials_search", options={"expose":true})
+     */
+    public function azovskySpecialsSearchAction(): Response
+    {
+        $specials = $this->container->get('mbh.online.special_data_preparer')->getSpecials()->toArray(false);
+
+        $converter = $this->container->get('mbh.online_booking.azovsky_converter');
+        try {
+            $results = $converter->convert($specials);
+            $filters = $converter->getFiltersFromResults($results);
+            $result = [
+                'status' => 'success',
+                'message' => sprintf('Founded %d messages', count($specials)),
+                'data' => [
+                    'results' => $results,
+                    'filters' => $filters
+                ]
+            ];
+
+        } catch (SpecialConverterException $e) {
+            $result = [
+                'status' => 'error',
+                'message' => $e->getMessage(),
+                'data' => ''
+            ];
+        }
+
+        return $this->json($result, 200, [], ['json_encode_options' => JSON_UNESCAPED_UNICODE]);
+    }
+
 
     /**
      * @param Request $request

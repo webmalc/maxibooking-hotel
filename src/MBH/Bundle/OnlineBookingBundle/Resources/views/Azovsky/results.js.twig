@@ -1,25 +1,24 @@
-{#<link href="{{ asset('build/azovskyResults.css') }}" rel="stylesheet"/>#}
-{#<script src="{{ asset('build/azovskyResults.js') }}"></script>#}
 (function () {
     var head  = document.getElementsByTagName('head')[0];
-    var cssId = 'mb-results-css';
-    var jsId = 'mb-results-js';
-    if (!document.getElementById(cssId))
+    var mbCssId = {{ ( "'%s%s'"| format('mb-results-css', fileName)) | raw }} ;
+    var mbJsId = {{ ( "'%s%s'"| format('mb-results-js', fileName)) | raw }};
+
+    if (!document.getElementById(mbCssId))
     {
         var link  = document.createElement('link');
-        link.id   = cssId;
+        link.id   = mbCssId;
         link.rel  = 'stylesheet';
         link.type = 'text/css';
-        link.href = '{{ absolute_url(asset('build/azovskyResults.css')) }}';
+        link.href = '{{ absolute_url(asset("build/%s.css"|format(fileName))) | raw }}';
         link.media = 'all';
         head.appendChild(link);
     }
 
-    if (!document.getElementById(jsId))
+    if (!document.getElementById(mbJsId))
     {
         var script  = document.createElement('script');
-        script.id   = jsId;
-        script.src = '{{ absolute_url(asset('build/azovskyResults.js')) }}';
+        script.id   = mbJsId;
+        script.src = '{{ absolute_url(asset("build/%s.js"|format(fileName))) | raw }}';
         head.appendChild(script);
     }
 })();
