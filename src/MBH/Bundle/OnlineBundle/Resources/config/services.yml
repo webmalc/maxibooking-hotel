@@ -136,3 +136,9 @@ services:
             - '@MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigManager'
         tags:
             - {name: request.param_converter, converter: form_config_converter}
+
+    MBH\Bundle\OnlineBundle\Services\MBSite\v2\:
+        resource: '%kernel.root_dir%/../src/MBH/Bundle/OnlineBundle/Services/MBSite/v2/*'
+        arguments:
+            - '@vich_uploader.templating.helper.uploader_helper'
+            - '@liip_imagine.cache.manager'

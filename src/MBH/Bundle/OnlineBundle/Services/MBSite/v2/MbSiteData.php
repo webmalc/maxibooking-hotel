@@ -3,7 +3,7 @@
  * Date: 24.04.19
  */
 
-namespace MBH\Bundle\OnlineBundle\Lib\MBSite\v2;
+namespace MBH\Bundle\OnlineBundle\Services\MBSite\v2;
 
 
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;

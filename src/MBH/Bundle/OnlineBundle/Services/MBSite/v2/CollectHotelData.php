@@ -3,7 +3,7 @@
  * Date: 17.04.19
  */
 
-namespace MBH\Bundle\OnlineBundle\Lib\MBSite\v2;
+namespace MBH\Bundle\OnlineBundle\Services\MBSite\v2;
 
 
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
@@ -11,7 +11,7 @@ use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Vich\UploaderBundle\Templating\Helper\UploaderHelper;
 
-class HotelDataHelper extends MbSiteData
+class CollectHotelData extends MbSiteData
 {
     /**
      * @var Hotel
@@ -28,18 +28,34 @@ class HotelDataHelper extends MbSiteData
      */
     private $locale;
 
-    public function __construct(
-        Hotel $hotel,
-        BillingApi $billingApi,
-        string $locale,
-        UploaderHelper $uploaderHelper,
-        CacheManager $cacheManager
-    ) {
+    /**
+     * @param Hotel $hotel
+     */
+    public function setHotel(Hotel $hotel): self
+    {
         $this->hotel = $hotel;
+
+        return $this;
+    }
+
+    /**
+     * @param BillingApi $billingApi
+     */
+    public function setBillingApi(BillingApi $billingApi): self
+    {
         $this->billingApi = $billingApi;
+
+        return $this;
+    }
+
+    /**
+     * @param string $locale
+     */
+    public function setLocale(string $locale): self
+    {
         $this->locale = $locale;
 
-        parent::__construct($uploaderHelper, $cacheManager);
+        return $this;
     }
 
     /**
@@ -83,7 +99,6 @@ class HotelDataHelper extends MbSiteData
 
         return $data;
     }
-
 
     private function compileContactInfo(array &$data): void
     {

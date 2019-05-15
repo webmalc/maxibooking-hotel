@@ -4,11 +4,11 @@
  * Date: 18.01.19
  */
 
-namespace MBH\Bundle\OnlineBundle\Lib\MBSite\v2;
+namespace MBH\Bundle\OnlineBundle\Services\MBSite\v2;
 
 use MBH\Bundle\HotelBundle\Document\RoomType;
 
-class RoomTypeDataHelper extends MbSiteData
+class CollectRoomTypeData extends MbSiteData
 {
     /**
      * @var RoomType
