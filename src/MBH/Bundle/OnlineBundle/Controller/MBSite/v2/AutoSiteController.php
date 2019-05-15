@@ -8,9 +8,9 @@ use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigManager;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
 use MBH\Bundle\OnlineBundle\Exception\MBSiteIsDisabledInClientConfigException;
 use MBH\Bundle\OnlineBundle\Exception\NotFoundConfigMBSiteException;
-use MBH\Bundle\OnlineBundle\Lib\MBSite\v2\RoomTypeDataHelper;
+use MBH\Bundle\OnlineBundle\Services\MBSite\v2\CollectRoomTypeData;
+use MBH\Bundle\OnlineBundle\Services\MBSite\v2\CollectHotelData;
 use MBH\Bundle\OnlineBundle\Lib\MBSite\FormConfigDecoratorForMBSite;
-use MBH\Bundle\OnlineBundle\Lib\MBSite\v2\HotelDataHelper;
 use MBH\Bundle\OnlineBundle\Services\DataForSearchForm;
 use MBH\Bundle\OnlineBundle\Services\SiteManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -115,6 +115,12 @@ class AutoSiteController extends BaseController
 
         $responseData = [];
 
+        /** @var CollectHotelData $collectHotelData */
+        $collectHotelData = $this->get(CollectHotelData::class);
+        $collectHotelData
+            ->setBillingApi($this->get('mbh.billing.api'))
+            ->setLocale($queryData->get('locale'));
+
         /** @var Hotel $hotel */
         foreach ($formConfig->getHotels() as $hotel) {
             if ($request->get('locale')) {
@@ -122,15 +128,8 @@ class AutoSiteController extends BaseController
                 $this->dm->refresh($hotel);
             }
 
-            $hotelDataDecorator = new HotelDataHelper(
-                $hotel,
-                $this->get('mbh.billing.api'),
-                $queryData->get('locale'),
-                $this->get('vich_uploader.templating.helper.uploader_helper'),
-                $this->get('liip_imagine.cache.manager')
-            );
-
-            $hotelData = $hotelDataDecorator->getPreparedData();
+            $collectHotelData->setHotel($hotel);
+            $hotelData = $collectHotelData->getPreparedData();
             $responseData[] = $hotelData;
         }
 
@@ -186,12 +185,8 @@ class AutoSiteController extends BaseController
             ->getQuery()
             ->execute();
 
-
-        $roomTypeImageDatar = new RoomTypeDataHelper(
-            $this->get('vich_uploader.templating.helper.uploader_helper'),
-            $this->get('liip_imagine.cache.manager')
-        );
-
+        /** @var CollectRoomTypeData $roomTypeImageData */
+        $roomTypeImageData = $this->get(CollectRoomTypeData::class);
 
         $responseData['amount'] = 0;
         $responseData['list'] = [];
@@ -200,9 +195,9 @@ class AutoSiteController extends BaseController
             $roomType->setLocale($request->getLocale());
             $this->dm->refresh($roomType);
 
-            $roomTypeImageDatar->setRoomType($roomType);
+            $roomTypeImageData->setRoomType($roomType);
             $responseData['amount']++;
-            $responseData['list'][] = $roomTypeImageDatar->getPreparedData();
+            $responseData['list'][] = $roomTypeImageData->getPreparedData();
         }
         $responseCompiler->setData($responseData);
 
