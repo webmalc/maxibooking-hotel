@@ -21,12 +21,12 @@ class OneSocialNetworkingServiceType extends AbstractType
             'socialServices',
             CollectionType::class,
             [
-                'entry_type' => SocialNetworkingServiceType::class,
-                'label' => false,
-                'group' => 'no-group',
+                'entry_type'    => SocialNetworkingServiceType::class,
+                'label'         => false,
+                'group'         => 'no-group',
                 'entry_options' => [
                     'group' => 'no-group',
-                ]
+                ],
             ]
         );
 
@@ -34,12 +34,12 @@ class OneSocialNetworkingServiceType extends AbstractType
             'aggregatorServices',
             CollectionType::class,
             [
-                'entry_type' => SocialNetworkingServiceType::class,
-                'label' => false,
-                'group' => 'no-group',
+                'entry_type'    => SocialNetworkingServiceType::class,
+                'label'         => false,
+                'group'         => 'no-group',
                 'entry_options' => [
                     'group' => 'no-group',
-                ]
+                ],
             ]
         );
     }

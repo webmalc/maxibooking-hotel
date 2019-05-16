@@ -1,7 +1,7 @@
 {% extends "MBHOnlineBundle:MBSite:layout.html.twig" %}
 
 {% set title_url = path('site_settings') %}
-{% set small_title = 'site_form.social_networking.label'|trans %}
+{% set small_title = 'site_form.content.label'|trans %}
 
 {% set active = hotelsSettings|length + 4 %}
 
@@ -12,12 +12,12 @@
     {{ form_start(form, { 'attr':{'class':'form-horizontal'}}) }}
         {% for one in form.many %}
             <div class="box box-default box-solid">
-
                 <div class="box-header with-border">
                     <h3 class="box-title">{{ one.vars.data.hotel.fullTitle }}</h3>
                 </div>
                 <div class="box-body">
                     <div>
+                        <div>{{ 'site_form.content.social_service' | trans }}</div>
                         <dl>
                             {% for socialService in one.socialServices %}
                                 <dd>{{ form_widget(socialService) }}</dd>
@@ -25,6 +25,7 @@
                         </dl>
                     </div>
                     <div>
+                        <div>{{ 'site_form.content.aggregator_service' | trans }}</div>
                         <dl>
                             {% for aggregatorService in one.aggregatorServices %}
                                 <dd>{{ form_widget(aggregatorService) }}</dd>

@@ -4,16 +4,15 @@ namespace MBH\Bundle\OnlineBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\HotelRepository;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
+use MBH\Bundle\OnlineBundle\Form\MBSite\ContentUseBannerType;
 use MBH\Bundle\OnlineBundle\Services\SiteManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
@@ -108,45 +107,78 @@ class SiteForm extends AbstractType
             ]);
 
         $builder
-            ->add('keyWords', CollectionType::class, [
-                'label' => 'site_form.key_words.label',
-                'required' => false,
-                'entry_type' => TextType::class,
-                'allow_add' => true,
-                'allow_delete' => true,
-            ])
-            ->add('paymentTypes', PaymentTypesType::class, [
-                'mapped' => false,
-                'help' => 'form.formType.reservation_payment_types_with_online_form',
-                'constraints' => [new NotBlank()]
-            ])
+            ->add(
+                'keyWords',
+                CollectionType::class,
+                [
+                    'label' => 'site_form.key_words.label',
+                    'required' => false,
+                    'entry_type' => TextType::class,
+                    'allow_add' => true,
+                    'allow_delete' => true,
+                ]
+            )
+            ->add(
+                'paymentTypes',
+                PaymentTypesType::class,
+                [
+                    'mapped' => false,
+                    'help' => 'form.formType.reservation_payment_types_with_online_form',
+                    'constraints' => [new NotBlank()]
+                ]
+            )
             /**
              * для select2 в colorTheme используется margin-bottom
              * src/MBH/Bundle/OnlineBundle/Resources/public/css/mb-site/mb-site.css
              * вместо help
              */
-            ->add('colorTheme', ChoiceType::class, [
-                'label' => 'site_config.color_theme.colors.label',
-                'choices' => array_keys(SiteConfig::COLORS_BY_THEMES),
-                'choice_label' => function(string $theme) {
-                    return 'site_config.color_theme.colors.' . $theme;
-                }
-            ])
-            ->add('hotels', DocumentType::class, [
-                'label' => 'site_form.hotels.label',
-                'class' => Hotel::class,
-                'multiple' => true,
-                'required' => true,
-                'help' => 'site_form.hotels.help',
-                'query_builder' => function(HotelRepository $hotelRepository) {
-                    return $hotelRepository->getQBWithAvailable();
-                },
-                'constraints' => [new Callback(function (Collection $data, ExecutionContextInterface $context) {
-                    if ($data->isEmpty()) {
-                        $context->addViolation('validator.site_form.hotels_collection_is_empty');
+            ->add(
+                'colorTheme',
+                ChoiceType::class,
+                [
+                    'label' => 'site_config.color_theme.colors.label',
+                    'choices' => array_keys(SiteConfig::COLORS_BY_THEMES),
+                    'choice_label' => function(string $theme) {
+                        return 'site_config.color_theme.colors.' . $theme;
                     }
-                })]
-            ]);
+                ]
+            )
+            ->add(
+                'hotels',
+                DocumentType::class,
+                [
+                    'label'         => 'site_form.hotels.label',
+                    'class'         => Hotel::class,
+                    'multiple'      => true,
+                    'required'      => true,
+                    'help'          => 'site_form.hotels.help',
+                    'query_builder' => function (HotelRepository $hotelRepository) {
+                        return $hotelRepository->getQBWithAvailable();
+                    },
+                    'constraints'   =>
+                        [
+                            new Callback(
+                                function (Collection $data, ExecutionContextInterface $context) {
+                                    if ($data->isEmpty()) {
+                                        $context->addViolation('validator.site_form.hotels_collection_is_empty');
+                                    }
+                                }
+                            ),
+                        ],
+                ]
+            );
+
+        $builder
+            ->add(
+                'contents',
+                CollectionType::class,
+                [
+                    'entry_type'    => ContentUseBannerType::class,
+                    'entry_options' => [
+                        'label' => false,
+                    ],
+                ]
+            );
 
         $builder->add(
             'usePaymentForm',

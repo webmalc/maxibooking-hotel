@@ -70,9 +70,9 @@ class SiteContent extends Base
     /**
      * @param bool $useBanner
      */
-    public function setUseBanner(): self
+    public function setUseBanner(bool $useBanner): self
     {
-        $this->useBanner = true;
+        $this->useBanner = $useBanner;
 
         return $this;
     }

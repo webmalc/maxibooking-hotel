@@ -363,7 +363,7 @@ class SiteConfig extends Base
     /**
      * @param array|ArrayCollection|SiteContent[] $content
      */
-    public function setContent($content): self
+    public function setContents($content): self
     {
         $this->content = $content;
 
