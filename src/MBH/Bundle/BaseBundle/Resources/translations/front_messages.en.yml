@@ -191,6 +191,8 @@ chessboard_manager.package_tooltip.package_end: 'Check-out date'
 chessboard_manager.package_tooltip.is_checkin: 'Checked in'
 chessboard_manager.package_tooltip.is_checkout: 'Checked out'
 020-forms.on_moderation: 'being moderated'
+#020-forms.not_found: 'id: is not found'
+020-forms.not_found: 'id: %id% is not found'
 020-forms.restrict_daterangepicker: 'The viewing period can not exceed 365 daysbi'
 guides.next_button.title: Next
 guides.skip_button.title: Skip
