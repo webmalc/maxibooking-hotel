@@ -47,5 +47,9 @@ class DeleteReasonSubscriber implements EventSubscriber
         foreach ($defaultReasons as $defaultReason) {
             $defaultReason->setIsDefault(false);
         }
+
+        $dm = $args->getDocumentManager();
+        $meta = $dm->getClassMetadata(DeleteReason::class);
+        $dm->getUnitOfWork()->computeChangeSet($meta, $defaultReasons);
     }
 }

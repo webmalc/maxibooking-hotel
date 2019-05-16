@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\EventListener;
 
 use Doctrine\Common\EventSubscriber;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\PreUpdateEventArgs;
 use MBH\Bundle\BillingBundle\Service\BillingApi;
@@ -39,7 +40,7 @@ class OrganizationSubscriber implements EventSubscriber
         $organization = $args->getDocument();
         if ($organization instanceof Organization) {
             if ($args->hasChangedField('cityId')) {
-                $this->updateHotelAddressData($organization);
+                $this->updateHotelAddressData($organization, $args->getDocumentManager());
             }
         }
     }
@@ -52,18 +53,22 @@ class OrganizationSubscriber implements EventSubscriber
         $organization = $args->getDocument();
         if ($organization instanceof Organization) {
             if (!empty($organization->getCityId())) {
-                $this->updateHotelAddressData($organization);
+                $this->updateHotelAddressData($organization, $args->getDocumentManager());
             }
         }
     }
 
     /**
      * @param Organization $organization
+     * @param DocumentManager $dm
      */
-    private function updateHotelAddressData(Organization $organization)
+    private function updateHotelAddressData(Organization $organization, DocumentManager $dm)
     {
         $city = $this->billingApi->getCityById($organization->getCityId());
         $organization->setRegionId($city->getRegion());
         $organization->setCountryTld($city->getCountry());
+
+        $meta = $dm->getClassMetadata(Organization::class);
+        $dm->getUnitOfWork()->computeChangeSet($meta, $organization);
     }
 }
