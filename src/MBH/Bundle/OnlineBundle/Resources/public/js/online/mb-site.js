@@ -10,6 +10,9 @@ $(document).ready(function () {
     $('#add-key-word-button').click(function () {
         var prototype = $(this).data('prototype');
         var keyNumber = parseInt($keyWordsList.find('li').last().data('number')) + 1;
+        if (isNaN(keyNumber)) {
+            keyNumber = 1
+        }
         var newField = prototype.replace(/__name__/g, keyNumber);
         $keyWordsList.append('<li data-number="' + keyNumber + '">' + newField + '</li>');
         initRemoveButtons();
