@@ -81,6 +81,7 @@
 <script lang="ts">
     import SpecItem from './SpecItem.vue';
     import moment from 'moment';
+    declare const Routing: any;
 
     moment.locale('ru');
 
@@ -215,9 +216,9 @@
         },
         methods: {
             async getSpecials() {
-                // TODO: не забыть заменить
+                // TODO: не забыть поменять
                 // const url = Routing.generate('az_specials_search', {}, true);
-                const url = 'http://localhost:9090/app_dev.php/online_booking/azovsky/specials/search';
+                const url = 'https://az.maxibooking.ru/online_booking/azovsky/specials/search';
                 try {
                     const response = await fetch(url);
                     if (!response.ok) {
@@ -265,7 +266,7 @@
             setDefaultFiltersValue() {
                 this.$set(this.selectedFilters, 'hotel', 'all');
                 this.$set(this.selectedFilters, 'roomType', 'all');
-                this.$set(this.selectedFilters, 'month', 9);
+                this.$set(this.selectedFilters, 'month', 5);
             },
             showMore() {
                 this.selectedFilters.page++;
