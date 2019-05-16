@@ -77,29 +77,7 @@
                     </div>
                 </div>
 
-
-                <!--                <div class="spec-sort-wrap">-->
-                <!--                    <div class="row row-no-indent spec-sort">-->
-                <!--                        <div class="col-md-6 col-md-offset-6">-->
-                <!--                            <div class="spec-sort-wrap">-->
-                <!--                                <span class="sortby">Сортировать по:</span>-->
-                <!--                                <div :class="['curspoint', 'mr20', sorting.currentSorting === 'price' ? 'sort-active' : 'sort-selector' ]"-->
-                <!--                                     @click="togglePriceSorting()">-->
-                <!--                                    <p>Цене</p> <img :src="priceArrow">-->
-                <!--                                </div>-->
-                <!--                                <div :class="['curspoint', 'sort-selector', sorting.currentSorting === 'date' ? 'sort-active' : 'sort-selector']"-->
-                <!--                                     @click="toggleDateSorting()">-->
-                <!--                                    <p>Дате</p> <img :src="dateArrow">-->
-                <!--                                </div>-->
-                <!--                            </div>-->
-                <!--                        </div>-->
-                <!--                    </div>-->
-
-                <!--                </div>-->
-
-
             </div>
-
         </transition>
 
         <div v-if="status === 'new'">Идет поиск</div>
@@ -195,6 +173,7 @@
             filteredSpecs() {
                 const month = this.selectedFilters.month;
                 const hotel = this.selectedFilters.hotel;
+                const roomType = this.selectedFilters.roomType;
                 return this.specials.filter(spec => {
                     const monthFiltered = (
                         moment(spec.dates.begin, 'DD.MM.YY').format('MM') == month ||
@@ -202,13 +181,15 @@
                         month === 0
                     );
                     const hotelFiltered = spec.hotel.id === hotel || hotel === 'all';
+                    const categoryFiltered = spec.roomType.categoryId === roomType || roomType === 'all';
 
-                    return monthFiltered && hotelFiltered && this.roomTypeFilteredSpecs;
+                    return monthFiltered && hotelFiltered && categoryFiltered;
 
                 })
             },
             roomTypeFilteredSpecs(){
                 const roomType = this.selectedFilters.roomType;
+
                 return this.specials.filter(spec => {
                     return spec.roomType.categoryId === roomType || roomType === 'all';
                 })
@@ -265,7 +246,6 @@
                 return this.filteredSpecs.length <= this.selectedFilters.viewAmount * this.selectedFilters.page;
             },
             getMonthFilters() {
-                console.log('startFilter');
                 return this.filters.month.filter(month => {
                     const filterMonth = month.value;
                     const currentMonthFilter = filterMonth >= parseInt(moment().format('M'));
@@ -285,10 +265,17 @@
         watch: {
             'selectedFilters.hotel'() {
                 this.selectedFilters.roomType = 'all';
-                this.selectedFilters.month = 0;
+                // this.selectedFilters.month = 0;
             },
             'selectedFilters.roomType'() {
-                this.selectedFilters.month = 0;
+                const currentMonth = this.selectedFilters.month;
+                const isMonthExistsForRoomType = (this.getMonthFilters.filter(month => {
+                    return month.value === currentMonth;
+                })).length;
+
+                if (!isMonthExistsForRoomType) {
+                    this.selectedFilters.month = 0;
+                }
             }
 
         },
