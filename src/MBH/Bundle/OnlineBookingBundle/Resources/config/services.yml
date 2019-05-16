@@ -172,3 +172,4 @@ services:
             - '@assets.packages'
             - '@twig.extension.httpfoundation'
             - '@liip_imagine.templating.filter_helper'
+            - '@doctrine.odm.mongodb.document_manager'

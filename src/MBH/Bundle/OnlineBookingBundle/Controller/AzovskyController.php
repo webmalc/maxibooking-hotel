@@ -53,6 +53,7 @@ class AzovskyController extends Controller
     /**
      * @return Response
      * @Route("/specials/search", name="az_specials_search", options={"expose":true})
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function azovskySpecialsSearchAction(): Response
     {
@@ -62,12 +63,14 @@ class AzovskyController extends Controller
         try {
             $results = $converter->convert($specials);
             $filters = $converter->getFiltersFromResults($results);
+            $categories = $converter->getCategories(array_column($filters['hotels'], 'value'));
             $result = [
                 'status' => 'success',
                 'message' => sprintf('Founded %d messages', count($specials)),
                 'data' => [
                     'results' => $results,
-                    'filters' => $filters
+                    'filters' => $filters,
+                    'categories' => $categories
                 ]
             ];
 

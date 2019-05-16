@@ -21,7 +21,7 @@
         </div>
     </div>
 
-    <div class="spec-info"><a class="hotel_link" href="/azovland/"><p class="hotel">{{hotel.name}}</p></a> <a
+    <div class="spec-info"><a class="hotel_link" :href="data.hotelLink.url"><p class="hotel">{{hotel.name}}</p></a> <a
             class="room_link" href="https://azovsky.ru/azovland/tipi-nomerov/semeinie-nomera/" target="_blank"><p
             class="room">{{roomType.categoryName}}</p></a>
         <p class="food"><img src="https://azovsky.ru/images/specnew/spoon.png" alt=""> <a

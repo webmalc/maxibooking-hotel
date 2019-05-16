@@ -4,10 +4,12 @@
 namespace MBH\Bundle\OnlineBookingBundle\Service;
 
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Liip\ImagineBundle\Templating\Helper\FilterHelper;
 use MBH\Bundle\BaseBundle\Document\Image;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\HotelBundle\Document\RoomTypeImage;
 use MBH\Bundle\OnlineBookingBundle\Lib\Exceptions\SpecialConverterException;
 use MBH\Bundle\PriceBundle\Document\Promotion;
@@ -40,6 +42,10 @@ class SpecialAzovskyConverter
      * @var FilterHelper
      */
     private $imageHelper;
+    /**
+     * @var DocumentManager
+     */
+    private $dm;
 
     /**
      * SpecialAzovskyConverter constructor.
@@ -48,19 +54,22 @@ class SpecialAzovskyConverter
      * @param Packages $packages
      * @param HttpFoundationExtension $extension
      * @param FilterHelper $imageHelper
+     * @param DocumentManager $dm
      */
     public function __construct(
         SpecialDataPreparer $preparer,
         array $onlineOptions,
         Packages $packages,
         HttpFoundationExtension $extension,
-        FilterHelper $imageHelper
+        FilterHelper $imageHelper,
+        DocumentManager $dm
     ) {
         $this->preparer = $preparer;
         $this->onlineOptions = $onlineOptions;
         $this->packages = $packages;
         $this->extension = $extension;
         $this->imageHelper = $imageHelper;
+        $this->dm = $dm;
     }
 
     /**
@@ -101,7 +110,7 @@ class SpecialAzovskyConverter
                     'name' => $special->getName(),
                     'discount' => $special->getDiscount(),
                 ],
-                'hotelLink' => $this->onlineOptions[$hotel->getId()] ?? null,
+                'hotelLink' => $this->onlineOptions['hotels_links'][$hotel->getId()] ?? null,
 
             ];
             $result[] = $instance;
@@ -124,12 +133,35 @@ class SpecialAzovskyConverter
             'hotels' => $this->createHotelFilter(array_column($results, 'hotel')),
             'roomType' => $this->createRoomCategoryFilter(array_column($results, 'roomType')),
             'month' => $this->createMonthFilters(array_column($results, 'dates')),
-
-
         ];
 
         return $filters;
 
+    }
+
+    /**
+     * @param string[] $hotels
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function getCategories(array $hotelsId)
+    {
+
+        $categories = $this->dm
+            ->createQueryBuilder(RoomTypeCategory::class)
+            ->select('hotel')
+            ->hydrate(false)
+            ->field('hotel.id')->in($hotelsId)
+            ->getQuery()->execute()->toArray();
+
+        $result = [];
+        foreach ($categories as $categoryId => $category) {
+            $result[] = [
+                'categoryId' => $categoryId,
+                'hotelId' => (string)$category['hotel']['$id'],
+            ];
+        }
+
+        return $result;
     }
 
     private function createHotelFilter(array $array)
@@ -168,11 +200,9 @@ class SpecialAzovskyConverter
     }
 
 
-
-
     private function createMonthFilters(array $dates)
     {
-
+        return [];
     }
 
     /**
@@ -253,7 +283,7 @@ class SpecialAzovskyConverter
             'name' => $roomType->getName(),
             'image' => $this->getImage($roomType),
             'categoryName' => $category->getFullTitle(),
-            'categoryId' => $category->getId()
+            'categoryId' => $category->getId(),
         ];
     }
 

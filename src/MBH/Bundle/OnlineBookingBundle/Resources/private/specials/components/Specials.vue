@@ -1,56 +1,104 @@
 <template>
     <div class="maxi" itemprop="articleBody">
         <transition name="fade">
-        <div v-if="status !== 'new'" class="selectblock">
+            <div v-if="status !== 'new'" class="selectblock">
 
-            <div class="row row-no-indent">
-                <div class="col-md-3 az-filter-hotel">
-                    <select class="azselect azselect-right" name="object" v-model="selectedFilters.hotel">
-                        <option v-for="hotelFilter in filters.hotels" :value="hotelFilter.value"
-                                :key="hotelFilter.value">
-                            {{ hotelFilter.text }}
-                        </option>
-                    </select></div>
-                <div class="col-md-4 az-filter-room-type">
-                    <select class="azselect azselect-right" name="room" v-model="selectedFilters.roomType">
-                        <option v-for="roomTypeFilter in filters.roomType" :value="roomTypeFilter.value"
-                                :key="roomTypeFilter.value">
-                            {{ roomTypeFilter.text }}
-                        </option>
-                    </select></div>
-                <div class="col-md-2 az-filter-month">
-                    <select class="azselect azselect-right" name="room" v-model="selectedFilters.month">
-                        <option v-for="monthFilter in filters.month" :value="monthFilter.value"
-                                :key="monthFilter.value">
-                            {{ monthFilter.text }}
-                        </option>
-                    </select></div>
+                <div class="row row-no-indent">
+                    <div class="col-md-4 az-filter-hotel">
+                        <select class="azselect azselect-right" name="object" v-model="selectedFilters.hotel">
+                            <option v-for="hotelFilter in filters.hotels" :value="hotelFilter.value"
+                                    :key="hotelFilter.value">
+                                {{ hotelFilter.text }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 az-filter-room-type">
+                        <select class="azselect azselect-right" name="room" v-model="selectedFilters.roomType">
+                            <option v-for="roomTypeFilter in filters.roomType" :value="roomTypeFilter.value"
+                                    :key="roomTypeFilter.value"
+                                    :disabled="checkRoomTypeDisabled(roomTypeFilter.value)"
+                            >
+                                {{ roomTypeFilter.text }}
 
-                <div class="col-md-3 az-filter-amount">
-                    <select class="azselect azselect-right" name="room" v-model="selectedFilters.viewAmount">
-                        <option v-for="amountFilter in filters.viewAmount" :value="amountFilter.value"
-                                :key="amountFilter.value">
-                            {{ amountFilter.text }}
-                        </option>
-                    </select></div>
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 az-filter-month">
+                        <select class="azselect azselect-right" name="room" v-model="selectedFilters.month">
+                            <option v-for="monthFilter in getMonthFilters" :value="monthFilter.value"
+                                    :key="monthFilter.value"
+                            >
+                                {{ monthFilter.text }}
+                            </option>
+                        </select>
+                    </div>
+                    <!--                <div class="col-md- az-filter-amount">-->
+                    <!--                    <select class="azselect azselect-right" name="room" v-model="selectedFilters.viewAmount">-->
+                    <!--                        <option v-for="amountFilter in filters.viewAmount" :value="amountFilter.value"-->
+                    <!--                                :key="amountFilter.value">-->
+                    <!--                            {{ amountFilter.text }}-->
+                    <!--                        </option>-->
+                    <!--                    </select>-->
+                    <!--                </div>-->
 
-            </div>
-            <div class="row row-no-indent spec-sort">
-                <div class="col-md-6 col-md-offset-6">
-                    <div class="spec-sort-wrap">
-                        <span class="sortby">Сортировать по:</span>
-                        <div :class="['curspoint', 'mr20', sorting.currentSorting === 'price' ? 'sort-active' : 'sort-selector' ]"
-                             @click="togglePriceSorting()">
-                            <p>Цене</p> <img :src="priceArrow">
-                        </div>
-                        <div :class="['curspoint', 'sort-selector', sorting.currentSorting === 'date' ? 'sort-active' : 'sort-selector']"
-                             @click="toggleDateSorting()">
-                            <p>Дате</p> <img :src="dateArrow">
+
+                </div>
+
+                <div class="row row-no-indent spec-sort">
+                    <div class="col-md-12">
+                        <div class="spec-sort-wrap">
+
+                            <div class="spec-sort-cont"><span class="sortby">Сортировать по:</span>
+
+                                <div :class="['curspoint', 'mr20', sorting.currentSorting === 'price' ? 'sort-active' : 'sort-selector' ]"
+                                     @click="togglePriceSorting()">
+                                    <p>Цене</p> <img :src="priceArrow">
+                                </div>
+
+                                <div :class="['curspoint', 'sort-selector', sorting.currentSorting === 'date' ? 'sort-active' : 'sort-selector']"
+                                     @click="toggleDateSorting()">
+                                    <p>Дате</p> <img :src="dateArrow">
+                                </div>
+
+                            </div>
+
+                            <div :class="['spec-pokaz-cont']"><span class="sortby">Показать:</span>
+                                <a v-for="(amountFilter, key) in filters.viewAmount"
+                                   href="#"
+                                   :class="['pokazlink', {mr10: true}, amountActive(amountFilter.value)]"
+                                   :key="`amount${key}`"
+                                   @click.prevent="toggleShowAmount(amountFilter.value)"
+                                >
+                                    {{amountFilter.text}}
+                                </a>
+                            </div>
+
                         </div>
                     </div>
                 </div>
+
+
+                <!--                <div class="spec-sort-wrap">-->
+                <!--                    <div class="row row-no-indent spec-sort">-->
+                <!--                        <div class="col-md-6 col-md-offset-6">-->
+                <!--                            <div class="spec-sort-wrap">-->
+                <!--                                <span class="sortby">Сортировать по:</span>-->
+                <!--                                <div :class="['curspoint', 'mr20', sorting.currentSorting === 'price' ? 'sort-active' : 'sort-selector' ]"-->
+                <!--                                     @click="togglePriceSorting()">-->
+                <!--                                    <p>Цене</p> <img :src="priceArrow">-->
+                <!--                                </div>-->
+                <!--                                <div :class="['curspoint', 'sort-selector', sorting.currentSorting === 'date' ? 'sort-active' : 'sort-selector']"-->
+                <!--                                     @click="toggleDateSorting()">-->
+                <!--                                    <p>Дате</p> <img :src="dateArrow">-->
+                <!--                                </div>-->
+                <!--                            </div>-->
+                <!--                        </div>-->
+                <!--                    </div>-->
+
+                <!--                </div>-->
+
+
             </div>
-        </div>
 
         </transition>
 
@@ -64,10 +112,11 @@
                     appear
                     style="display: inline;"
             >
-            <SpecItem :class="{'last-spec' : key === sortedSpecs.length - 1}" v-for="(data, key) in sortedSpecs" :key="`${data.special.id}${data.roomType.id}`"
-                      :data="data">
+                <SpecItem :class="{'last-spec' : key === sortedSpecs.length - 1}" v-for="(data, key) in sortedSpecs"
+                          :key="`${data.special.id}${data.roomType.id}`"
+                          :data="data">
 
-            </SpecItem>
+                </SpecItem>
             </transition-group>
         </div>
         <div id="az-show-more" v-if="!isAllDisplayed">
@@ -81,6 +130,7 @@
 <script lang="ts">
     import SpecItem from './SpecItem.vue';
     import moment from 'moment';
+
     declare const Routing: any;
 
     moment.locale('ru');
@@ -111,8 +161,8 @@
                         {text: 'Все типы номеров', value: 'all'}
                     ],
                     viewAmount: [
-                        {text: 'Показать 20', value: 20},
-                        {text: 'Показать 40', value: 40},
+                        {text: '20', value: 20},
+                        {text: '40', value: 40},
                     ]
                 },
                 sorting: {
@@ -126,7 +176,8 @@
                     month: '',
                     viewAmount: 20,
                     page: 1
-                }
+                },
+                categories: []
             }
         },
         created() {
@@ -134,21 +185,16 @@
                 const data = await this.getSpecials();
                 this.specials = data.data.results;
                 const filters = data.data.filters;
+                const categories = data.data.categories;
                 this.fillFilters(filters);
+                this.fillCategories(categories);
                 this.setDefaultFiltersValue()
             })();
-        },
-        beforeUpdate() {
-            console.log('before update');
-        },
-        updated() {
-            console.log('updated');
         },
         computed: {
             filteredSpecs() {
                 const month = this.selectedFilters.month;
                 const hotel = this.selectedFilters.hotel;
-                const roomType = this.selectedFilters.roomType;
                 return this.specials.filter(spec => {
                     const monthFiltered = (
                         moment(spec.dates.begin, 'DD.MM.YY').format('MM') == month ||
@@ -156,10 +202,15 @@
                         month === 0
                     );
                     const hotelFiltered = spec.hotel.id === hotel || hotel === 'all';
-                    const categoryFiltered = spec.roomType.categoryId === roomType || roomType === 'all';
 
-                    return monthFiltered && hotelFiltered && categoryFiltered;
+                    return monthFiltered && hotelFiltered && this.roomTypeFilteredSpecs;
 
+                })
+            },
+            roomTypeFilteredSpecs(){
+                const roomType = this.selectedFilters.roomType;
+                return this.specials.filter(spec => {
+                    return spec.roomType.categoryId === roomType || roomType === 'all';
                 })
             },
             sortedSpecs() {
@@ -212,13 +263,39 @@
             },
             isAllDisplayed() {
                 return this.filteredSpecs.length <= this.selectedFilters.viewAmount * this.selectedFilters.page;
+            },
+            getMonthFilters() {
+                console.log('startFilter');
+                return this.filters.month.filter(month => {
+                    const filterMonth = month.value;
+                    const currentMonthFilter = filterMonth >= parseInt(moment().format('M'));
+
+                    const selectedRoomTypeMonthFilter = (this.roomTypeFilteredSpecs.filter(spec => {
+
+                        return parseInt(moment(spec.dates.begin, 'DD.MM.YY').format('M')) == filterMonth
+                            || parseInt(moment(spec.dates.end, 'DD.MM.YY').format('M')) == filterMonth
+                            || filterMonth === 0;
+
+                    })).length;
+
+                    return (currentMonthFilter && selectedRoomTypeMonthFilter)  || filterMonth === 0;
+                });
             }
+        },
+        watch: {
+            'selectedFilters.hotel'() {
+                this.selectedFilters.roomType = 'all';
+                this.selectedFilters.month = 0;
+            },
+            'selectedFilters.roomType'() {
+                this.selectedFilters.month = 0;
+            }
+
         },
         methods: {
             async getSpecials() {
                 // TODO: не забыть поменять
-                // const url = Routing.generate('az_specials_search', {}, true);
-                const url = 'https://az.maxibooking.ru/online_booking/azovsky/specials/search';
+                const url = Routing.generate('az_specials_search', {}, true);
                 try {
                     const response = await fetch(url);
                     if (!response.ok) {
@@ -232,7 +309,7 @@
                     }
                 } catch (err) {
                     this.status = 'error';
-                    console.log(err);
+                    console.error(err);
                 }
             },
             togglePriceSorting() {
@@ -249,6 +326,9 @@
                 }
                 this.$set(this.sorting, 'currentSorting', 'date');
             },
+            toggleShowAmount(amount) {
+                this.selectedFilters.viewAmount = amount;
+            },
             fillFilters(filters) {
                 const hotels = filters['hotels'];
                 const roomType = filters['roomType'];
@@ -263,13 +343,41 @@
                 // this.filters.month.push(filter);
                 // })
             },
+            fillCategories(categories) {
+                this.categories = categories;
+            },
             setDefaultFiltersValue() {
                 this.$set(this.selectedFilters, 'hotel', 'all');
                 this.$set(this.selectedFilters, 'roomType', 'all');
-                this.$set(this.selectedFilters, 'month', 5);
+
+                //TODO: хорошо бы переделать как будет время
+                const currentMonth = moment().format('M');
+                const month = Math.min(Math.max(5, parseInt(currentMonth)), 9);
+                this.$set(this.selectedFilters, 'month', month);
             },
             showMore() {
                 this.selectedFilters.page++;
+            },
+            checkRoomTypeDisabled(categoryId) {
+                const currentHotel = this.selectedFilters.hotel;
+                if (currentHotel === 'all' || categoryId === 'all') {
+                    return false;
+                }
+                let category = this.categories.find(category => {
+                    return category.categoryId === categoryId;
+                });
+
+                if (category) {
+                    return category.hotelId !== currentHotel;
+                }
+
+                return true;
+            },
+            amountActive(amount) {
+                return {
+                    amountActive: amount === this.selectedFilters.viewAmount,
+                    amountLink: true
+                }
             }
         }
     }
@@ -285,6 +393,7 @@
     .sort-active {
         opacity: 1;
     }
+
     .last-spec {
         border-bottom: 1px solid #969696 !important;
         padding-bottom: 15px;
@@ -293,11 +402,94 @@
     .fade-enter-active, .fade-leave-active {
         transition: opacity .5s;
     }
+
     .fade-enter, .fade-leave-to {
         opacity: 0;
     }
+
     .spec-list-move {
         transition: transform 1s;
+    }
+
+    .azselect option:disabled {
+        opacity: 0.5;
+        display: none;
+    }
+
+    .amountLink {
+        opacity: 0.5;
+    }
+
+    .amountActive {
+        font-weight: bold;
+        opacity: 1;
+    }
+
+
+    .spec-sort {
+        text-align: right;
+        margin-top: 20px;
+    }
+
+    .spec-sort .sortby {
+        display: inline-block;
+        margin-right: 10px;
+    }
+
+    .spec-sort .curspoint {
+        cursor: pointer;
+        display: inline-block;
+    }
+
+    .spec-sort .curspoint.mr20 {
+        margin-right: 20px;
+    }
+
+    .spec-sort .curspoint p {
+        margin: 0;
+        padding: 0 10px 0 0;
+        float: left;
+    }
+
+    .spec-sort .curspoint img {
+        float: left;
+        margin-top: 7px;
+        margin-bottom: 0;
+    }
+
+    .spec-sort .curspoint:hover {
+        color: #233e5e;
+    }
+
+    .spec-sort .spec-sort-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+    }
+
+    .spec-sort .spec-sort-cont {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        margin-right: 40px;
+    }
+
+    .spec-sort .spec-pokaz-cont {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+    }
+
+    .spec-sort .spec-pokaz-cont .pokazlink {
+        text-decoration: underline;
+    }
+
+    .spec-sort .spec-pokaz-cont .pokazlink:hover {
+        text-decoration: none;
+    }
+
+    .spec-sort .spec-pokaz-cont .pokazlink.mr10 {
+        margin-right: 10px;
     }
 
 </style>
