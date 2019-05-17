@@ -4,6 +4,7 @@ namespace MBH\Bundle\ClientBundle\Service\DocumentSerialize;
 
 
 use MBH\Bundle\PackageBundle\Document\Tourist as TouristBase;
+use MBH\Bundle\PackageBundle\Lib\AddressInterface;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\DataOfMortalInterface;
 use MBH\Bundle\PackageBundle\Lib\DocumentRelationOfMortalInterface;
