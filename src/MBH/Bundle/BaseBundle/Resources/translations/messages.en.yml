@@ -638,6 +638,8 @@ mbh.weekdays.mon: Monday
 mbh.weekdays.sun: Sunday
 currency.kzt.small: tiyin
 currency.kzt.text: KZT
+currency.idr.text: Rp
+currency.idr.small: cen.
 mbh.package.arrivals.humanitarian: Humanitarian
 mbh.mailer.subject.text: 'Messages from MaxiBooking'
 mbh.services.calcTypes.per_stay: 'One-time charge per reservation'
