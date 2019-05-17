@@ -9,7 +9,7 @@ namespace MBH\Bundle\OnlineBundle\EventListener;
 use MBH\Bundle\OnlineBundle\Services\ApiResponseCompiler;
 use Symfony\Component\HttpKernel\Event\GetResponseForControllerResultEvent;
 
-class AutoSiteViewListener
+class ApiResponseCompilerViewListener
 {
     public function onKernelView(GetResponseForControllerResultEvent $event)
     {

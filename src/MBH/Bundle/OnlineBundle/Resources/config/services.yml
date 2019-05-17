@@ -160,6 +160,6 @@ services:
         tags:
             - {name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 10 }
 
-    MBH\Bundle\OnlineBundle\EventListener\AutoSiteViewListener:
+    MBH\Bundle\OnlineBundle\EventListener\ApiResponseCompilerViewListener:
         tags:
             - {name: kernel.event_listener, event: kernel.view}

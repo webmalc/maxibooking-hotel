@@ -149,7 +149,7 @@ class AutoSiteControllerInterface extends BaseController implements CheckSiteMan
         if ($hotelNotExists) {
             $responseCompiler->addErrorMessage('The hotel is not for this form.');
 
-            return $responseCompiler->getResponse();
+            return $responseCompiler;
         }
 
         $roomTypesQB = $this->dm->getRepository('MBHHotelBundle:RoomType')
