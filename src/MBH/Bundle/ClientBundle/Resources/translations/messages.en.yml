@@ -144,6 +144,7 @@ form.clientConfigType.currency.options.inr: 'Indian rupee'
 form.clientConfigType.currency.options.pln: 'Polish złoty'
 form.clientConfigType.currency.options.gel: 'Georgian Lari'
 form.clientConfigType.currency.options.tbh: 'Thai baht'
+form.clientConfigType.currency.options.idr: 'Indonesian rupiah'
 form.clientConfigType.currency.label: Currency
 controller.clientConfig.change_time_zone_contact_support: 'To change the time zone, please contact support:"%supportEmail%"'
 room_controller.limit_of_room_fund_exceeded: 'Number of rooms exceeds available maximum set in rates. Available number of rooms: %availableNumberOfRooms%. Check details here <a target="_blank" href="%overviewUrl%">rooms info</a>'
