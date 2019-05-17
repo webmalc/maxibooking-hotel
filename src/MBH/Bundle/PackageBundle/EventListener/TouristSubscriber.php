@@ -53,12 +53,13 @@ class TouristSubscriber implements EventSubscriber
 
             if ($isUpdated) {
                 $this->checkUpdateIsUnwelcome($tourist);
-                $uow = $dm->getUnitOfWork();
-                $meta = $dm->getClassMetadata(Tourist::class);
-                $uow->recomputeSingleDocumentChangeSet($meta, $tourist);
             }
 
             $this->updateTouristAddressObjectCombined($tourist);
+
+            $uow = $dm->getUnitOfWork();
+            $meta = $dm->getClassMetadata(Tourist::class);
+            $uow->recomputeSingleDocumentChangeSet($meta, $tourist);
         }
 
     }
