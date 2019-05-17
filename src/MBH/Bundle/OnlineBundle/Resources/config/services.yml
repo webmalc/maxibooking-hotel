@@ -142,3 +142,24 @@ services:
         arguments:
             - '@vich_uploader.templating.helper.uploader_helper'
             - '@liip_imagine.cache.manager'
+
+    MBH\Bundle\OnlineBundle\EventListener\CheckSiteMangerListener:
+        arguments:
+            - '@mbh.client_config_manager'
+            - '@mbh.site_manager'
+            - '@mbh.api_response_compiler'
+        tags:
+            - {name: kernel.event_listener, event: kernel.controller, method: checkSiteManger, priority: 11}
+
+    MBH\Bundle\OnlineBundle\EventListener\AutoSiteResolveParamListener:
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@mbh.api_response_compiler'
+            - '@mbh.site_manager'
+            - '@MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigManager'
+        tags:
+            - {name: kernel.event_listener, event: kernel.controller, method: onKernelController, priority: 10 }
+
+    MBH\Bundle\OnlineBundle\EventListener\AutoSiteViewListener:
+        tags:
+            - {name: kernel.event_listener, event: kernel.view}

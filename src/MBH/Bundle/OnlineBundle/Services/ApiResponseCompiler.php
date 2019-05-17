@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\OnlineBundle\Services;
 
+use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Translation\TranslatorInterface;
 
@@ -12,6 +13,11 @@ use Symfony\Component\Translation\TranslatorInterface;
  */
 class ApiResponseCompiler
 {
+    /**
+     * @var HeaderBag
+     */
+    private $headerBag;
+
     /** @var  TranslatorInterface */
     private $translator;
     private $errors = [];
@@ -32,6 +38,13 @@ class ApiResponseCompiler
 
     public function __construct(TranslatorInterface $translator) {
         $this->translator = $translator;
+
+        $this->headerBag = new HeaderBag();
+    }
+
+    public function addHeader(string $key, string $value): void
+    {
+        $this->headerBag->set($key, $value);
     }
 
     /**
@@ -91,6 +104,6 @@ class ApiResponseCompiler
             $response['errors'] = $this->errors;
         }
 
-        return new JsonResponse($response);
+        return new JsonResponse($response, 200, $this->headerBag->all());
     }
 }

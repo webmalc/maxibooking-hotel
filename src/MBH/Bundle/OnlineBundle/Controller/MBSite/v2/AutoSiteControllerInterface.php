@@ -4,17 +4,16 @@ namespace MBH\Bundle\OnlineBundle\Controller\MBSite\v2;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigManager;
+use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
-use MBH\Bundle\OnlineBundle\Exception\MBSiteIsDisabledInClientConfigException;
-use MBH\Bundle\OnlineBundle\Exception\NotFoundConfigMBSiteException;
+use MBH\Bundle\OnlineBundle\Interfaces\Controllers\AutoSiteHandlerInterface;
+use MBH\Bundle\OnlineBundle\Interfaces\Controllers\CheckSiteManagerInterface;
+use MBH\Bundle\OnlineBundle\Services\ApiHandler;
+use MBH\Bundle\OnlineBundle\Services\ApiResponseCompiler;
 use MBH\Bundle\OnlineBundle\Services\MBSite\v2\CollectRoomTypeData;
 use MBH\Bundle\OnlineBundle\Services\MBSite\v2\CollectHotelData;
 use MBH\Bundle\OnlineBundle\Lib\MBSite\FormConfigDecoratorForMBSite;
 use MBH\Bundle\OnlineBundle\Services\DataForSearchForm;
-use MBH\Bundle\OnlineBundle\Services\SiteManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use MBH\Bundle\HotelBundle\Document\RoomType;
@@ -26,13 +25,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
  * @Route("/api/mb-site/v2")
  * Class AutoSiteController
  */
-class AutoSiteController extends BaseController
+class AutoSiteControllerInterface extends BaseController implements CheckSiteManagerInterface, AutoSiteHandlerInterface
 {
-    /**
-     * @var SiteManager
-     */
-    private $siteManager;
-
     /**
      * @Route("/settings", name="api_mb_site_v2_settings")
      * @SWG\Get(
@@ -40,26 +34,9 @@ class AutoSiteController extends BaseController
      *     produces={"application/json"},
      *     @SWG\Response(response="200", description="Return general setting for site"),
      * )
-     * @return JsonResponse
      */
-    public function getMainSettingsAction()
+    public function getMainSettingsAction(ApiResponseCompiler $responseCompiler, SiteConfig $siteConfig, FormConfig $formConfig)
     {
-        $siteConfig = $this->checkSiteMangerAndInitDataAndGetSiteConfig();
-
-        $responseCompiler = $this->get('mbh.api_response_compiler');
-
-        $formConfig = $this->get(FormConfigManager::class)->getForMBSite();
-
-        if ($formConfig === null) {
-            $responseCompiler->addErrorMessage(
-                'Not found form config for MBSite.'
-            );
-        }
-
-        if (!$responseCompiler->isSuccessful()) {
-            return $responseCompiler->getResponse();
-        }
-
         $responseCompiler->setData(
             [
                 'hotels'               => [
@@ -71,7 +48,6 @@ class AutoSiteController extends BaseController
                 'formConfig'           => new FormConfigDecoratorForMBSite($formConfig, $this->get(DataForSearchForm::class)),
                 'keyWords'             => $siteConfig->getKeyWords(),
                 'personalDataPolicies' => $siteConfig->getPersonalDataPolicies(),
-                //            'contract'             => $siteConfig->getContract(),
                 'currency'             => $this->clientConfig->getCurrency(),
                 'languages'            => $this->clientConfig->getLanguages(),
                 'defaultLang'          => $this->getParameter('locale'),
@@ -85,7 +61,7 @@ class AutoSiteController extends BaseController
             ]
         );
 
-        return $responseCompiler->getResponse();
+        return $responseCompiler;
     }
 
     /**
@@ -95,17 +71,12 @@ class AutoSiteController extends BaseController
      *     produces={"application/json"},
      *     @SWG\Response(response="200", description="Return link for social networking services, aggregator serveces"),
      * )
-     * @return JsonResponse
-     * @ParamConverter("hotel", options={"id":"hotelId"}, class="MBH\Bundle\HotelBundle\Document\Hotel")
      */
-    public function additionalContentAction(Hotel $hotel)
+    public function additionalContentAction(ApiResponseCompiler $responseCompiler, SiteConfig $siteConfig, Hotel $hotel)
     {
-        $siteConfig = $this->checkSiteMangerAndInitDataAndGetSiteConfig();
         $siteContent = $siteConfig->getContentForHotel($hotel);
 
         $this->setLocaleByRequest();
-
-        $responseCompiler = $this->get('mbh.api_response_compiler');
 
         $responseCompiler->setData(
             [
@@ -115,7 +86,7 @@ class AutoSiteController extends BaseController
             ]
         );
 
-        return $responseCompiler->getResponse();
+        return $responseCompiler;
     }
 
     /**
@@ -125,23 +96,12 @@ class AutoSiteController extends BaseController
      *     produces={"application/json"},
      * )
      * @Route("/hotels")
-     * @param Request $request
-     * @return JsonResponse
      */
-    public function hotelsAction(Request $request)
+    public function hotelsAction(Request $request, ApiResponseCompiler $responseCompiler, FormConfig $formConfig)
     {
-        $this->checkSiteMangerAndInitDataAndGetSiteConfig();
         $this->setLocaleByRequest();
 
-        $requestHandler = $this->get('mbh.api_handler');
-        $responseCompiler = $this->get('mbh.api_response_compiler');
         $queryData = $request->query;
-
-        $formConfig = $requestHandler->getFormConfig($queryData->get('onlineFormId'), $responseCompiler);
-
-        if (!$responseCompiler->isSuccessful()) {
-            return $responseCompiler->getResponse();
-        }
 
         $responseData = [];
 
@@ -165,7 +125,7 @@ class AutoSiteController extends BaseController
 
         $responseCompiler->setData($responseData);
 
-        return $responseCompiler->getResponse();
+        return $responseCompiler;
     }
 
     /**
@@ -177,28 +137,16 @@ class AutoSiteController extends BaseController
      *     @SWG\Response(response="200", description="Return array of room types"),
      * )
      * @Route("/room-types")
-     * @param Request $request
-     * @return JsonResponse
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function roomTypesAction(Request $request)
+    public function roomTypesAction(Request $request, ApiResponseCompiler $responseCompiler, Hotel $hotel, FormConfig $formConfig)
     {
-        $this->checkSiteMangerAndInitDataAndGetSiteConfig();
         $this->setLocaleByRequest();
 
-        $requestHandler = $this->get('mbh.api_handler');
-        $responseCompiler = $this->get('mbh.api_response_compiler');
-        $queryData = $request->query;
-
-        $formConfig = $requestHandler->getFormConfig($queryData->get('onlineFormId'), $responseCompiler);
-
-        if (!$responseCompiler->isSuccessful()) {
-            return $responseCompiler->getResponse();
-        }
-
-        $hotelId = $queryData->get('hotelId');
-
-        if (!$formConfig->getHotels()->exists(function ($key, Hotel $hotel) use ($hotelId) { return $hotel->getId() === $hotelId;})) {
+        $hotelNotExists = !$formConfig->getHotels()->exists(function ($key, Hotel $hotelInside) use ($hotel) {
+            return $hotelInside->getId() === $hotel->getId();}
+        );
+        if ($hotelNotExists) {
             $responseCompiler->addErrorMessage('The hotel is not for this form.');
 
             return $responseCompiler->getResponse();
@@ -209,7 +157,7 @@ class AutoSiteController extends BaseController
             ->sort('fullTitle')
             ->field('isEnabled')->equals(true);
 
-        $roomTypesQB->field('hotel.id')->equals($hotelId);
+        $roomTypesQB->field('hotel.id')->equals($hotel->getId());
 
         $roomTypes = $roomTypesQB
             ->getQuery()
@@ -231,9 +179,8 @@ class AutoSiteController extends BaseController
         }
         $responseCompiler->setData($responseData);
 
-        return $responseCompiler->getResponse();
+        return $responseCompiler;
     }
-
 
     /**
      * @SWG\Get(
@@ -242,33 +189,28 @@ class AutoSiteController extends BaseController
      *     @SWG\Response(response="200", description="Return min prices"),
      * )
      * @Route("/min-prices")
-     * @param Request $request
-     * @return JsonResponse
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function minPricesForRoomTypesAction(Request $request)
+    public function minPricesForRoomTypesAction(ApiResponseCompiler $responseCompiler, Hotel $hotel)
     {
-        $this->checkSiteMangerAndInitDataAndGetSiteConfig();
         $this->setLocaleByRequest();
 
-        $responseCompiler = $this->get('mbh.api_response_compiler');
-        $requestHandler = $this->get('mbh.api_handler');
-        $queryData = $request->query;
-
-        $hotel = $this->dm->find('MBHHotelBundle:Hotel', $queryData->get('hotelId'));
         $onlineTariffs = $this->dm
             ->getRepository('MBHPriceBundle:Tariff')
             ->fetch($hotel, null, true, true);
         $onlineTariffsIds = $this->helper->toIds($onlineTariffs);
 
         $minPrices = $this->get('mbh.calculation')
-            ->getMinPricesForRooms($hotel->getRoomTypes()->toArray(), $onlineTariffsIds, $requestHandler::MIN_PRICES_PERIOD_IN_DAYS);
+            ->getMinPricesForRooms(
+                $hotel->getRoomTypes()->toArray(),
+                $onlineTariffsIds,
+                ApiHandler::MIN_PRICES_PERIOD_IN_DAYS
+            );
 
         $responseCompiler->setData($minPrices);
 
-        return $responseCompiler->getResponse();
+        return $responseCompiler;
     }
-
 
     /**
      * @Method("GET")
@@ -278,38 +220,15 @@ class AutoSiteController extends BaseController
      *     @SWG\Response(response="200", description="Return array of facilities data"),
      * )
      * @Route("/facilities-data")
-     * @param Request $request
-     * @return JsonResponse
      */
-    public function getFacilitiesData(Request $request)
+    public function getFacilitiesData(Request $request, ApiResponseCompiler $responseCompiler)
     {
-        $this->checkSiteMangerAndInitDataAndGetSiteConfig();
         $this->setLocaleByRequest();
-
-        $responseCompiler = $this->get('mbh.api_response_compiler');
 
         $responseCompiler->setData(
             $this->get('mbh.facility_repository')->getActualFacilitiesData($request->getLocale())
         );
 
-        return $responseCompiler->getResponse();
-    }
-
-    private function checkSiteMangerAndInitDataAndGetSiteConfig(): SiteConfig
-    {
-        if (!$this->clientConfig->isMBSiteEnabled()) {
-            throw new MBSiteIsDisabledInClientConfigException();
-        }
-
-        $this->siteManager = $this->get('mbh.site_manager');
-        $siteConfig = $this->siteManager->getSiteConfig();
-
-        if ($siteConfig === null) {
-            throw new NotFoundConfigMBSiteException();
-        }
-
-        header(sprintf('Access-Control-Allow-Origin: %s', $this->siteManager->getSiteAddress()));
-
-        return $siteConfig;
+        return $responseCompiler;
     }
 }
