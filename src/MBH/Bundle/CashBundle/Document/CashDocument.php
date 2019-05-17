@@ -29,9 +29,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class CashDocument extends Base
 {
-    const METHOD_ELECTRONIC = "electronic";
-    const METHOD_CASHLESS = "cashless";
-    const METHOD_CASH = "cash";
+    public const METHOD_ELECTRONIC = "electronic";
+    public const METHOD_CASHLESS = "cashless";
+    public const METHOD_CASH = "cash";
 
     const OPERATION_IN = 'in';
     const OPERATION_OUT = 'out';

@@ -258,3 +258,7 @@ services:
             - '@translator'
             - '%mbh.package.statuses%'
             - '@mbh.helper'
+
+    mbh.template_prices_generator:
+        class: MBH\Bundle\PackageBundle\Services\TemplatePricesGenerator
+        arguments: ['@doctrine.odm.mongodb.document_manager', '@service_container']
