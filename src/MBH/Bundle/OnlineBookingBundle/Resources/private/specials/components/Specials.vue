@@ -108,10 +108,12 @@
 <script lang="ts">
     import SpecItem from './SpecItem.vue';
     import moment from 'moment';
+    import arrows from './../images/arrows';
+    import URLSearchParams from '@ungap/url-search-params'
 
     declare const Routing: any;
-
     moment.locale('ru');
+    const params = new URLSearchParams(location.search);
 
     export default {
         name: "Specials",
@@ -166,8 +168,15 @@
                 const categories = data.data.categories;
                 this.fillFilters(filters);
                 this.fillCategories(categories);
-                this.setDefaultFiltersValue()
+                this.setDefaultFiltersValue();
+                // this.updateHistory();
+
             })();
+        },
+        updated() {
+            //** TODO: Проблема что updated вызывается на все.
+            console.log('call updated');
+            this.updateHistory();
         },
         computed: {
             filteredSpecs() {
@@ -187,7 +196,7 @@
 
                 })
             },
-            roomTypeFilteredSpecs(){
+            roomTypeFilteredSpecs() {
                 const roomType = this.selectedFilters.roomType;
 
                 return this.specials.filter(spec => {
@@ -237,10 +246,10 @@
                 return specs.slice(0, viewAmount * page);
             },
             priceArrow() {
-                return this.sorting.price ? 'https://azovsky.ru/images/selectspec/spec-arr-up.png' : 'https://azovsky.ru/images/selectspec/spec-arr-down.png'
+                return this.sorting.price ? arrows.arrowUp : arrows.arrowDown
             },
             dateArrow() {
-                return this.sorting.date ? 'https://azovsky.ru/images/selectspec/spec-arr-up.png' : 'https://azovsky.ru/images/selectspec/spec-arr-down.png'
+                return this.sorting.date ? arrows.arrowUp : arrows.arrowDown;
             },
             isAllDisplayed() {
                 return this.filteredSpecs.length <= this.selectedFilters.viewAmount * this.selectedFilters.page;
@@ -258,30 +267,44 @@
 
                     })).length;
 
-                    return (currentMonthFilter && selectedRoomTypeMonthFilter)  || filterMonth === 0;
+                    return (currentMonthFilter && selectedRoomTypeMonthFilter) || filterMonth === 0;
                 });
             }
         },
         watch: {
-            'selectedFilters.hotel'() {
-                this.selectedFilters.roomType = 'all';
-                // this.selectedFilters.month = 0;
+            'selectedFilters.hotel'(newHotelId) {
+                const roomTypeId = this.selectedFilters.roomType;
+                if (newHotelId && newHotelId !== 'all' && roomTypeId && roomTypeId !== 'all') {
+                    let category = this.categories.find(category => {
+                        return category.categoryId === roomTypeId;
+                    });
+                    if (category.hotelId !== newHotelId) {
+                        this.selectedFilters.roomType = 'all';
+                    }
+
+                }
+                console.log('changed hotel');
             },
             'selectedFilters.roomType'() {
                 const currentMonth = this.selectedFilters.month;
                 const isMonthExistsForRoomType = (this.getMonthFilters.filter(month => {
                     return month.value === currentMonth;
                 })).length;
-
                 if (!isMonthExistsForRoomType) {
                     this.selectedFilters.month = 0;
                 }
+                console.log('changed roomType');
+            },
+            'selectedFilters.month'() {
+                console.log('changed month')
+            },
+            '$route'() {
+                console.log('trigger route change')
+                // this.setDefaultFiltersValue();
             }
-
         },
         methods: {
             async getSpecials() {
-                // TODO: не забыть поменять
                 const url = Routing.generate('az_specials_search', {}, true);
                 try {
                     const response = await fetch(url);
@@ -298,23 +321,6 @@
                     this.status = 'error';
                     console.error(err);
                 }
-            },
-            togglePriceSorting() {
-                if (this.sorting.currentSorting === 'price') {
-                    this.$set(this.sorting, 'price', !this.sorting.price);
-                }
-                this.$set(this.sorting, 'currentSorting', 'price');
-
-
-            },
-            toggleDateSorting() {
-                if (this.sorting.currentSorting === 'date') {
-                    this.$set(this.sorting, 'date', !this.sorting.date);
-                }
-                this.$set(this.sorting, 'currentSorting', 'date');
-            },
-            toggleShowAmount(amount) {
-                this.selectedFilters.viewAmount = amount;
             },
             fillFilters(filters) {
                 const hotels = filters['hotels'];
@@ -334,13 +340,74 @@
                 this.categories = categories;
             },
             setDefaultFiltersValue() {
-                this.$set(this.selectedFilters, 'hotel', 'all');
-                this.$set(this.selectedFilters, 'roomType', 'all');
+                let hotel = params.get('hotel');
+                let category = params.get('category');
+                let month = params.get('month');
+                if (!hotel) {
+                    hotel = 'all';
+                }
+                if (!category) {
+                    category = 'all';
+                }
+                if (!month && parseInt(month) !== 0) {
+                    month = moment().format('M');
+                }
 
-                //TODO: хорошо бы переделать как будет время
-                const currentMonth = moment().format('M');
-                const month = Math.min(Math.max(5, parseInt(currentMonth)), 9);
-                this.$set(this.selectedFilters, 'month', month);
+                const april = 4;
+                const september = 9;
+                const computedMonth = Math.min(Math.max(april, parseInt(month)), september);
+
+                this.$set(this.selectedFilters, 'hotel', hotel);
+                this.$set(this.selectedFilters, 'roomType', category);
+                this.$set(this.selectedFilters, 'month', computedMonth);
+            },
+            updateHistory() {
+                const hotel = this.selectedFilters.hotel;
+                const category = this.selectedFilters.roomType;
+                const month = this.selectedFilters.month;
+
+                if (hotel) {
+                    if (hotel === 'all') {
+                        params.delete('hotel');
+                    } else {
+                        params.set('hotel', hotel);
+                    }
+                }
+                //
+                if (category) {
+                    if (category === 'all') {
+                        params.delete('category');
+                    } else {
+                        params.set('category', category);
+                    }
+
+                }
+                if (month) {
+                    params.set('month', month);
+                } else if (parseInt(month) === 0) {
+                    params.delete('month');
+                }
+
+                const query = params.toString().length ? `?${params.toString()}` : '/';
+                this.$router.push(query);
+
+            },
+            togglePriceSorting() {
+                if (this.sorting.currentSorting === 'price') {
+                    this.$set(this.sorting, 'price', !this.sorting.price);
+                }
+                this.$set(this.sorting, 'currentSorting', 'price');
+
+
+            },
+            toggleDateSorting() {
+                if (this.sorting.currentSorting === 'date') {
+                    this.$set(this.sorting, 'date', !this.sorting.date);
+                }
+                this.$set(this.sorting, 'currentSorting', 'date');
+            },
+            toggleShowAmount(amount) {
+                this.selectedFilters.viewAmount = amount;
             },
             showMore() {
                 this.selectedFilters.page++;
@@ -365,7 +432,8 @@
                     amountActive: amount === this.selectedFilters.viewAmount,
                     amountLink: true
                 }
-            }
+            },
+
         }
     }
 </script>

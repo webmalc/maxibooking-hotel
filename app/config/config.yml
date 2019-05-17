@@ -38,7 +38,8 @@ framework:
 
 # Twig Configuration
 twig:
-    debug:            "%kernel.debug%"
+    debug: "%kernel.debug%"
+    auto_reload: true
     strict_variables: "%kernel.debug%"
     base_template_class: MBH\Bundle\BaseBundle\Twig\Template
     globals:
