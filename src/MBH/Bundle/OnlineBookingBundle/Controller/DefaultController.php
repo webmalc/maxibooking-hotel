@@ -68,6 +68,7 @@ class DefaultController extends BaseController
     {
         $form = $this->createForm(SearchFormType::class, $this->get('mbh.online.search_form_data'));
         $requestSearchUrl = $this->getParameter('online_booking')['request_search_url'];
+        $requestSearchUrlAsync = $this->getParameter('online_booking')['request_search_url_async'];
         $payOnlineUrl = $this->getParameter('online_booking')['payonlineurl'];
         $form->handleRequest($request);
 
@@ -75,6 +76,7 @@ class DefaultController extends BaseController
         return [
             'form' => $formView,
             'requestSearchUrl' => $requestSearchUrl,
+            'requestSearchUrlAsync' => $requestSearchUrlAsync,
             'payOnlineUrl' => $payOnlineUrl,
             'restrictions' => json_encode($this->dm->getRepository('MBHPriceBundle:Restriction')->fetchInOut()),
         ];

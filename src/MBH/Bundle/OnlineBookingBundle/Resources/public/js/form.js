@@ -92,6 +92,8 @@ $(function () {
     formFill();
     $('select.dropdown').easyDropDown();
 
+
+
     var restrictions,
         updateRestrictions = function () {
             restrictions = getRestrictions();
@@ -240,6 +242,10 @@ $(function () {
 //////////////////////////////////////////////
 
     $("form#search-form").on('submit', function (e) {
+        var syncSearch = $(this).data('sync');
+        var asyncSearch = $(this).data('async');
+        $(this).attr('action', $('#sync-async-toggle').is(':checked') ? asyncSearch : syncSearch);
+
         $(".spinn").css('display', 'block');
         if('undefined' !== typeof yaCounter10885255) {
             yaCounter10885255.reachGoal('mb_bron_price');
