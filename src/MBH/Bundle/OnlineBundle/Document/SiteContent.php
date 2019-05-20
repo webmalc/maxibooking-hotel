@@ -104,7 +104,7 @@ class SiteContent extends Base
     }
 
     /**
-     * @param SocialService[] $socialNetworkingServices
+     * @param SocialService[]| ArrayCollection $socialNetworkingServices
      */
     public function setSocialNetworkingServices($socialNetworkingServices): self
     {
