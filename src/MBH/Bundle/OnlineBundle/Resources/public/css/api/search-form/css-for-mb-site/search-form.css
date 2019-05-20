@@ -127,6 +127,9 @@
   text-align: center;
   padding: 0;
   width: 72px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }
 @media (min-width: 732px) and (max-width: 831px) {
   #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-additional-form-amount-guest-wrapper .additional-input {
