@@ -117,7 +117,7 @@ class WarningsCompiler
                 true
             );
 
-            $emptyCachePeriods = empty($sortedCaches)
+            $emptyCachePeriods = empty($sortedEmptyCachePeriods)
                 ? []
                 : $sortedEmptyCachePeriods[$roomType->getHotel()->getId()][$roomType->getId()][$cacheType === PriceCache::class ? $tariff->getId() : 0];
         }

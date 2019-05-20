@@ -92,6 +92,7 @@ mailer.userArrival.bye: 'We will be glad to see you!'
 mailer.base.rate.bad: Bad
 mailer.base.rate.good: Good
 mailer.base.rate.perfect: Perfect
+notifier.online.city_not_found.message: 'City not found. Please contact Maxibooking technical support.'
 to: to
 from: from
 mbhbasebundle.view.partials.datepickerperiodselect.period: Period
@@ -638,6 +639,8 @@ mbh.weekdays.mon: Monday
 mbh.weekdays.sun: Sunday
 currency.kzt.small: tiyin
 currency.kzt.text: KZT
+currency.idr.text: Rp
+currency.idr.small: cen.
 mbh.package.arrivals.humanitarian: Humanitarian
 mbh.mailer.subject.text: 'Messages from MaxiBooking'
 mbh.services.calcTypes.per_stay: 'One-time charge per reservation'
