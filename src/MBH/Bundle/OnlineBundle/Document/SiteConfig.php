@@ -242,7 +242,6 @@ class SiteConfig extends Base
     public function addHotel(Hotel $hotel)
     {
         $this->hotels->add($hotel);
-        $this->addContent($hotel);
 
         return $this;
     }
@@ -343,9 +342,9 @@ class SiteConfig extends Base
     /**
      * @return array|ArrayCollection|SiteContent[]
      */
-    public function getContents(bool $forAll = false)
+    public function getContents(bool $all = false)
     {
-        return $forAll
+        return $all
             ? $this->content
             : $this->content->filter(function (SiteContent $content) {
                 return $this->hotels->contains($content->getHotel());
@@ -368,10 +367,5 @@ class SiteConfig extends Base
         $this->content = $content;
 
         return $this;
-    }
-
-    private function addContent(Hotel $hotel): void
-    {
-        $this->content->add((new SiteContent())->setHotel($hotel));
     }
 }

@@ -163,3 +163,7 @@ services:
     MBH\Bundle\OnlineBundle\EventListener\ApiResponseCompilerViewListener:
         tags:
             - {name: kernel.event_listener, event: kernel.view}
+
+    MBH\Bundle\OnlineBundle\EventListener\SiteConfigSubscriber:
+        tags:
+            - {name: doctrine_mongodb.odm.event_subscriber, connection: default }
