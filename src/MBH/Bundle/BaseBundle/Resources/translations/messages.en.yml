@@ -92,6 +92,7 @@ mailer.userArrival.bye: 'We will be glad to see you!'
 mailer.base.rate.bad: Bad
 mailer.base.rate.good: Good
 mailer.base.rate.perfect: Perfect
+notifier.online.city_not_found.message: 'City not found. Please contact Maxibooking technical support.'
 to: to
 from: from
 mbhbasebundle.view.partials.datepickerperiodselect.period: Period

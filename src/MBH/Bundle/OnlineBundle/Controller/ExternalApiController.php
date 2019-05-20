@@ -4,6 +4,7 @@ namespace MBH\Bundle\OnlineBundle\Controller;
 
 use Doctrine\ODM\MongoDB\MongoDBException;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
+use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
@@ -240,8 +241,31 @@ class ExternalApiController extends BaseController
 
         if (count($organizationData)) {
             if (isset($organizationData[0]['cityId']) && isset($organizationData[0]['countryTld'])) {
-                $organizationData[0]['city'] = $billingApi->getCityById($organizationData[0]['cityId'])->getName();
-                $organizationData[0]['country'] = $billingApi->getCountryByTld($organizationData[0]['countryTld'])->getName();
+                try {
+                    $organizationData[0]['city'] = $billingApi->getCityById($organizationData[0]['cityId'])->getName();
+                    $organizationData[0]['country'] = $billingApi->getCountryByTld($organizationData[0]['countryTld'])->getName();
+                } catch (\Throwable $e) {
+                    if ($e instanceof \RuntimeException || $e instanceof \InvalidArgumentException) {
+                        //cityID is set but not found in billing
+                        $notifier = $this->get('mbh.notifier');
+                        $message = $notifier::createMessage();
+                        $message
+                            ->setText('notifier.online.city_not_found.message')
+                            ->setFrom('online')
+                            ->setSubject('notifier.online.city_not_found.message')
+                            ->setType('danger')
+                            ->setCategory('notification')
+                            ->setAutohide(false)
+                            ->setMessageType(NotificationType::ERROR);
+                        //send to backend
+                        try {
+                            $notifier->setMessage($message)->notify();
+                        } catch (\Throwable $e) {
+                        }
+                    } else {
+                        throw $e;
+                    }
+                }
                 unset($organizationData[0]['cityId']);
                 unset($organizationData[0]['countryTld']);
             }
@@ -313,7 +337,31 @@ class ExternalApiController extends BaseController
 
                 $hotelData = $mangerHotelData->getJsonSerialized($isFull);
                 if ($isFull && $hotel->getCityId()) {
-                    $hotelData['city'] = $this->get('mbh.billing.api')->getCityById($hotel->getCityId())->getName();
+                    try {
+                        $hotelData['city'] = $this->get('mbh.billing.api')->getCityById($hotel->getCityId())->getName();
+                    } catch (\Throwable $e) {
+                        if ($e instanceof \RuntimeException || $e instanceof \InvalidArgumentException) {
+                            //cityID is set but not found in billing
+                            $notifier = $this->get('mbh.notifier');
+                            $message = $notifier::createMessage();
+                            $message
+                                ->setText('notifier.online.city_not_found.message')
+                                ->setFrom('online')
+                                ->setSubject('notifier.online.city_not_found.message')
+                                ->setType('danger')
+                                ->setCategory('notification')
+                                ->setHotel($hotel)
+                                ->setAutohide(false)
+                                ->setMessageType(NotificationType::ERROR);
+                            //send to backend
+                            try {
+                                $notifier->setMessage($message)->notify();
+                            } catch (\Throwable $e) {
+                            }
+                        } else {
+                            throw $e;
+                        }
+                    }
                 }
                 $responseData[] = $hotelData;
             }
