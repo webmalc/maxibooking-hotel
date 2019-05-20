@@ -15,7 +15,7 @@
         <div class="hotel-thumb">
             <p class="food">
                 <img src="https://azovsky.ru/images/specnew/spoon.png" alt="">
-                <a href="https://azovsky.ru/shvedskiy-stol/azovland/" title="Шведский стол">5-раз. питание шведский
+                <a :href="`https://azovsky.ru${eat.url}`" title="Шведский стол">{{eat.number}}-раз. питание шведский
                     стол</a>
             </p>
         </div>
@@ -25,7 +25,7 @@
             class="room_link" href="https://azovsky.ru/azovland/tipi-nomerov/semeinie-nomera/" target="_blank"><p
             class="room">{{roomType.categoryName}}</p></a>
         <p class="food"><img src="https://azovsky.ru/images/specnew/spoon.png" alt=""> <a
-                href="https://azovsky.ru/shvedskiy-stol/azovland/" title="Шведский стол">5-раз. питание шведский
+                :href="`https://azovsky.ru${eat.url}`" title="Шведский стол">{{eat.number}}-раз. питание шведский
             стол</a></p></div>
     <div class="spec-date"><p class="date">{{viewBegin}}-{{viewEnd}}</p>
         <p class="daynight">{{days}} днeй/ {{nights}} ночей</p>
@@ -103,6 +103,12 @@
                     full: this.roomType.image[0].full
                 }
             },
+            eat() {
+                return {
+                    number: this.data.hotelLink.eat.number,
+                    url: this.data.hotelLink.eat.url,
+                }
+            }
 
         },
         methods: {
