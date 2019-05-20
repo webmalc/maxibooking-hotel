@@ -175,7 +175,6 @@
         },
         updated() {
             //** TODO: Проблема что updated вызывается на все.
-            console.log('call updated');
             this.updateHistory();
         },
         computed: {
@@ -299,8 +298,6 @@
                 console.log('changed month')
             },
             '$route'() {
-                console.log('trigger route change')
-                // this.setDefaultFiltersValue();
             }
         },
         methods: {
@@ -345,13 +342,23 @@
                 let month = params.get('month');
                 if (!hotel) {
                     hotel = 'all';
+                } else {
+                    console.log(hotel);
+                    hotel = hotel.replace(/\//, '');
+                    console.log(hotel);
+
                 }
                 if (!category) {
                     category = 'all';
+                } else {
+                    category = category.replace(/\//, '');
                 }
                 if (!month && parseInt(month) !== 0) {
                     month = moment().format('M');
+                } else {
+                    month = month.replace(/\//, '');
                 }
+
 
                 const april = 4;
                 const september = 9;
@@ -388,8 +395,12 @@
                     params.delete('month');
                 }
 
-                const query = params.toString().length ? `?${params.toString()}` : '/';
-                this.$router.push(query);
+                // const query = params.toString().length ? `?${params.toString()}` : '/';
+                // this.$router.push(query);
+                const prefix = '/specpredlojenia-dnia/';
+                const query = params.toString().length ? `${prefix}?${params.toString()}` : prefix;
+                window.history.replaceState({},'', `${query}`);
+
 
             },
             togglePriceSorting() {
