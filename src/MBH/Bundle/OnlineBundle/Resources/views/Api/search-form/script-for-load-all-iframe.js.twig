@@ -88,10 +88,10 @@ OnLoadFormLoad.prototype.createIframeWithAdditionalForm = function() {
     additionalFormFrame.style.top = '0px';
     additionalFormFrame.scrolling = "no";
     additionalFormFrame.setAttribute('frameborder', 0);
-    additionalFormFrame.setAttribute('width', this.sizeIframe.additionalForm.width);
-    additionalFormFrame.setAttribute('height', this.sizeIframe.additionalForm.height);
-    additionalFormFrame.setAttribute('src', this.urlIframe.additionalForm);
-    additionalFormFrame.setAttribute('title', 'Support frame with additional data for search form.');
+    additionalFormFrame.width = this.sizeIframe.additionalForm.width;
+    additionalFormFrame.height = this.sizeIframe.additionalForm.height;
+    additionalFormFrame.src = this.urlIframe.additionalForm;
+    additionalFormFrame.title = 'Support frame with additional data for search form.';
 
     document.body.appendChild(additionalFormFrame);
 

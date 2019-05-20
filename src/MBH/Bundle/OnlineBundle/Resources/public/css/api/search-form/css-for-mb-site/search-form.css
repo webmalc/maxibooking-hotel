@@ -56,7 +56,7 @@
   #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-form-begin-wrapper {
     margin-right: 7px;
   }
-  #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-form-additional-wrapper,
+  #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-additional-form-amount-guest-wrapper,
   #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-form-end-wrapper {
     margin: 0 7px;
   }
@@ -84,13 +84,13 @@
   }
 }
 @media (min-width: 732px) {
-  #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-row#mbh-form-additional-wrapper,
+  #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-row.mbh-form-additional-form-amount-guest-wrapper,
   #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-row#mbh-form-submit-wrapper {
     width: 130px;
   }
 }
 @media (min-width: 832px) {
-  #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-row#mbh-form-additional-wrapper,
+  #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-row.mbh-form-additional-form-amount-guest-wrapper,
   #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-row#mbh-form-submit-wrapper {
     width: 180px;
   }
@@ -112,7 +112,7 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
-#mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-form-additional-wrapper::after {
+#mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-additional-form-amount-guest-wrapper::after {
   margin-right: 10px;
   content: "";
   width: 20px;
@@ -121,7 +121,7 @@
   background-repeat: no-repeat;
   background-position: right;
 }
-#mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-form-additional-wrapper .additional-input {
+#mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-additional-form-amount-guest-wrapper .additional-input {
   background: #fff;
   border: none;
   text-align: center;
@@ -129,7 +129,7 @@
   width: 72px;
 }
 @media (min-width: 732px) and (max-width: 831px) {
-  #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-form-additional-wrapper .additional-input {
+  #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-additional-form-amount-guest-wrapper .additional-input {
     width: 30px;
   }
 }

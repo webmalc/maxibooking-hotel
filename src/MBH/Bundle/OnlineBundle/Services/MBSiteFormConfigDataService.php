@@ -62,7 +62,7 @@ class MBSiteFormConfigDataService
         );
 
         $formConfig
-            ->setAdditionalFormFrameWidth('270px')
+            ->setAdditionalFormFrameWidth('251px')
             ->setAdditionalFormFrameHeight('auto')
             ->setCalendarFrameHeight('230px')
             ->setCalendarFrameWidth('235px')

@@ -72,7 +72,7 @@
     {% endif %}
 
     {% if formConfig.useAdditionalForm %}
-        <div class="mbh-form-row form-group" id="mbh-form-additional-wrapper">
+        <div class="mbh-form-row form-group mbh-form-additional-form-amount-guest-wrapper">
             <label class="additional-form-label">{{ fieldsName.guest is not empty ? fieldsName.guest : ('views.api.form.guest.label' | trans({}, 'MBHOnlineBundle') ) }}</label>
             <input type="button" class="btn btn-default btn-sm additional-input" value="1">
         </div>

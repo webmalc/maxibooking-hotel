@@ -55,7 +55,7 @@ SearchForm.prototype.additionalFormWriteAmountGuest = function(adults, children)
 
 SearchForm.prototype.additionalFormDataInit = function () {
 
-    this.additionalFormWrapper = jQuery('#mbh-form-additional-wrapper');
+    this.additionalFormWrapper = jQuery('.mbh-form-additional-form-amount-guest-wrapper');
     this.additionalFormUseIt = this.additionalFormWrapper.length > 0 ? {} : null;
 
     this.additionalFormStepper = this.additionalFormWrapper.find('.additional-input');
@@ -341,9 +341,13 @@ SearchForm.prototype.viewChange = function(self) {
     this.end.on('focus', showIFrame);
     this.additionalFormWrapper.on('click', {action: 'showAdditionalForm'}, showIFrame);
 
-    var eTarget;
+    var eTarget, needHideAdditionalData;
     jQuery('html').click(function(e) {
         eTarget = jQuery(e.target);
+        needHideAdditionalData = !eTarget.hasClass('mbh-form-additional-form-amount-guest-wrapper')
+            && !eTarget.hasClass('additional-form-label')
+            && !eTarget.hasClass('additional-input');
+
         if (!eTarget.hasClass('mbh-calendar-input')) {
             window.parent.postMessage({
                 type: 'mbh',
@@ -351,7 +355,7 @@ SearchForm.prototype.viewChange = function(self) {
             }, "*");
         }
 
-        if (!eTarget.hasClass('additional-input')) {
+        if (needHideAdditionalData) {
             window.parent.postMessage({
                 type: 'mbh',
                 action: 'hideAdditionalForm'

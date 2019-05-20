@@ -18,6 +18,7 @@ body .mbh-form-row {
   align-items: baseline;
   margin-bottom: 12px;
   margin-left: 23px;
+  margin-right: 23px;
 }
 body .mbh-form-row:first-child {
   margin-top: 23px;
