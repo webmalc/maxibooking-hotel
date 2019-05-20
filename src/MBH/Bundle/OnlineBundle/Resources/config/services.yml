@@ -1,5 +1,5 @@
 parameters:
-    log_file.mb_site: !php/const:MBH\Bundle\OnlineBundle\Command\MBSiteStyleOnlineFormUpdateCommand::FILE_LOG_NAME
+    log_file.mb_site: !php/const:MBH\Bundle\OnlineBundle\Command\MBSiteCreateSiteContentMigrationCommand::FILE_LOG_NAME
 
 services:
     mbh.online.logger:
