@@ -7,6 +7,9 @@ namespace MBH\Bundle\OnlineBundle\Command;
 
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FieldsName;
+use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigManager;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
 use MBH\Bundle\OnlineBundle\Document\SiteContent;
 use MBH\Bundle\OnlineBundle\Document\SocialLink\SocialService;
@@ -23,6 +26,11 @@ class MBSiteCreateSiteContentMigrationCommand extends ContainerAwareCommand
     private const TYPE_LOG_INFO = 'info';
     private const TYPE_LOG_ERROR = 'error';
 
+    /**
+     * @var DocumentManager
+     */
+    private $dm;
+
     protected function configure()
     {
         $this->setName(self::COMMAND_NAME);
@@ -31,7 +39,6 @@ class MBSiteCreateSiteContentMigrationCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln('begin migration');
-        $dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
         $siteConfig = $this->getContainer()->get('mbh.site_manager')->getSiteConfig();
 
         if ($siteConfig === null) {
@@ -42,6 +49,21 @@ class MBSiteCreateSiteContentMigrationCommand extends ContainerAwareCommand
             return 0;
         }
 
+        $this->dm = $this->getContainer()->get('doctrine.odm.mongodb.document_manager');
+
+        $this->moveContent($siteConfig);
+        $this->addNameFields();
+
+        $msg = 'create siteContent. updated siteConfig';
+        $output->writeln($msg. '. end migration');
+        $this->logger($msg);
+
+        return 0;
+    }
+
+    private function moveContent(SiteConfig $siteConfig): void
+    {
+        $dm = $this->dm;
         $repoSiteConfig = $dm->getDocumentCollection(SiteConfig::class);
         $qb = $repoSiteConfig->createQueryBuilder();
         $preQuery = $qb
@@ -86,13 +108,30 @@ class MBSiteCreateSiteContentMigrationCommand extends ContainerAwareCommand
 
         $dm->persist($siteConfig);
         $dm->flush();
+    }
 
+    private function addNameFields(): void
+    {
+        if ($this->getContainer()->getParameter('locale') !== 'ru') {
+            return;
+        }
 
-        $msg = 'create siteContent. updated siteConfig';
-        $output->writeln($msg. '. end migration');
-        $this->logger($msg);
+        $formConfig = $this->getContainer()->get(FormConfigManager::class)->getForMBSite(false);
 
-        return 0;
+        if ($formConfig === null) {
+            return;
+        }
+
+        $fields = new FieldsName();
+        $fields
+            ->setBegin('заезд')
+            ->setEnd('выезд');
+
+        $formConfig
+            ->setFieldsName($fields);
+
+        $this->dm->persist($formConfig);
+        $this->dm->flush();
     }
 
     private function logger(string $msg, string $type = self::TYPE_LOG_INFO): void

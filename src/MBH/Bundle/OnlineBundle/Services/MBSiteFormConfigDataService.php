@@ -43,7 +43,8 @@ class MBSiteFormConfigDataService
         $formConfig
             ->setIsFullWidth(true)
             ->setUseAdditionalForm(true)
-            ->setIconLogoLink(true);
+            ->setIconLogoLink(true)
+            ->setTheme(null);
 
         if ($styleIsNeed) {
             $this->addStyle($formConfig);
