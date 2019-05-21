@@ -67,6 +67,10 @@ class SearchResultComposer
     private $packages;
 
     private $router;
+    /**
+     * @var array
+     */
+    private $onlineOptions;
 
     /**
      * SearchResultComposer constructor.
@@ -89,7 +93,9 @@ class SearchResultComposer
         EventDispatcherInterface $dispatcher,
         FilterHelper $filterHelper,
         Packages $packages,
-        HttpFoundationExtension $router
+        HttpFoundationExtension $router,
+        array $onlineOptions
+
 )
     {
         $this->roomManager = $roomManager;
@@ -104,6 +110,7 @@ class SearchResultComposer
         $this->packages = $packages;
         $this->router = $router;
 
+        $this->onlineOptions = $onlineOptions;
     }
 
 
@@ -127,6 +134,10 @@ class SearchResultComposer
         }
 
         $resultRoomType = ResultRoomType::createInstance($roomType);
+        $eat = $this->onlineOptions['hotels_links'][$roomType->getHotel()->getId()] ?? null;
+        if ($eat) {
+            $resultRoomType->setLinks($eat);
+        }
 
         $images = $roomType->getImages();
         $resultImages = [];

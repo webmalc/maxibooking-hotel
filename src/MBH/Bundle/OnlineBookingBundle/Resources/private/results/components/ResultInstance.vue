@@ -24,7 +24,7 @@
                 <div class="rightrdm">
                     <div class="leftinrdm">
                         <p class="titlerdm">
-                            <a href="#" @click.prevent class="hotel_link" target="_blank">
+                            <a :href="hotelLink"  class="hotel_link" target="_blank">
                                 {{roomType.hotelName}}
                             </a> &nbsp;
                         </p>
@@ -37,12 +37,12 @@
                                 {{roomType.categoryName}}</a>
                         </p>
                         <p class="gueststype"><b>Гости:</b> {{formData.adults}} взр. {{formData.children}} реб</p>
-                        <a href="https://azovsky.ru/shvedskiy-stol/azovland/"
+                        <a :href="`https://azovsky.ru${eat.url}`"
                            class="eat_link"
                            target="_blank">
                             <p class="eattype">
                                 <img src="/images/vl.png" alt="">
-                                5-разовое питание<br>шведский стол
+                                {{eat.number}}-разовое питание<br>шведский стол
                             </p>
                         </a>
                         <div class="iconstype"></div>
@@ -190,6 +190,15 @@
             },
             mainImageindex() {
                 return this.images.findIndex(image => image.isMain);
+            },
+            hotelLink() {
+                return this.roomType.links.url;
+            },
+            eat() {
+                return {
+                    number: this.roomType.links.eat.number,
+                    url: this.roomType.links.eat.url
+                }
             }
         },
         methods: {

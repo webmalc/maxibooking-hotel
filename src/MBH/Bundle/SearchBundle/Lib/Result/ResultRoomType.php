@@ -30,6 +30,9 @@ class ResultRoomType
 
     private $images;
 
+    /** @var array */
+    private $links = [];
+
     /**
      * @return string
      */
@@ -178,6 +181,27 @@ class ResultRoomType
 
         return $this;
     }
+
+    /**
+     * @return array
+     */
+    public function getLinks(): array
+    {
+        return $this->links;
+    }
+
+    /**
+     * @param array $links
+     * @return ResultRoomType
+     */
+    public function setLinks(array $links): ResultRoomType
+    {
+        $this->links = $links;
+
+        return $this;
+    }
+
+
 
 
 
