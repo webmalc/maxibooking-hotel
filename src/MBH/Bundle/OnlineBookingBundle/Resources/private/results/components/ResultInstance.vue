@@ -36,7 +36,7 @@
                                target="_blank">
                                 {{roomType.categoryName}}</a>
                         </p>
-                        <p class="gueststype"><b>Гости:</b> {{formData.adults}} взр. {{formData.children}} реб</p>
+                        <p class="gueststype"><b>Гости:</b> {{formData.adults}} взр. {{formData.children ? `${formData.children} реб`: '' }}</p>
                         <a :href="`https://azovsky.ru${eat.url}`"
                            class="eat_link"
                            target="_blank">
