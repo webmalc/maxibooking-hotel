@@ -22,11 +22,3 @@ class TwigBackslashEscapeNode extends Node
             ->write("echo str_replace('\\\', '&#92', ob_get_clean() );\n");
     }
 }
-
-/*
- * {% escapebackslash %}
-{% wrapinline %}
- *
- * {% endwrapinline %}
-{% endescapebackslash %}
- */
