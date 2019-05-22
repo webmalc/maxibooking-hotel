@@ -186,8 +186,6 @@ AdditionalForm.prototype.listenerPostMessage = function (self){
         if (roomType !== null && form.roomType !== '') {
             self.selectedOption(roomType, form.roomType);
         }
-
-        console.log(e.data);
     });
 };
 
