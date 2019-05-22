@@ -527,6 +527,7 @@ class Extension extends \Twig_Extension
     {
         return [
             'wrapinline' => new TwigWrapInLineTokenParser(),
+            'escapebackslash' => new TwigBackslashEscapeTokenParser()
         ];
     }
 

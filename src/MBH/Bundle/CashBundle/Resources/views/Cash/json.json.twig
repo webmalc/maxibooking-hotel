@@ -1,3 +1,5 @@
+{% escapebackslash %}
+{% wrapinline %}
 {% extends 'MBHCashBundle:Cash:jsonCommon.json.twig' %}
 {% import 'MBHCashBundle:Cash:macrosHtml.html.twig' as html %}
 {% block data %}
@@ -6,3 +8,5 @@
 ]{% if loop.index != entities.count(true) %},{% endif %}
 {% endfor %}
 {% endblock data %}
+{% endwrapinline %}
+{% endescapebackslash %}

@@ -1,7 +1,9 @@
+{% escapebackslash %}
+{% wrapinline %}
 {
     "recordsTotal": "{{ recordsFiltered }}",
     "recordsFiltered": "{{ recordsFiltered }}",
-    "totals" : {{ totals|raw }},
+    "totals" : "{{ totals|raw }}",
     "data": [
         {% for item in results %}
             [
@@ -22,3 +24,5 @@
         {% endfor %}
     ]
 }
+{% endwrapinline %}
+{% endescapebackslash %}
