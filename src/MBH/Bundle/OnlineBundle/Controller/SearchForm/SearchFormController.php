@@ -80,7 +80,7 @@ class SearchFormController extends Controller
     }
 
     /**
-     * @Route("/file/{formConfigId}/load-search-form", name=FormConfig::ROUTER_NAME_LOAD_ALL_IFRAME, defaults={"_format"="js"})
+     * @Route("/file/{formConfigId}/load-search-form", name=MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig::ROUTER_NAME_LOAD_ALL_IFRAME, defaults={"_format"="js"})
      * @Cache(expires="tomorrow", public=true)
      * @ParamConverter(converter="form_config_converter")
      */
@@ -129,7 +129,7 @@ class SearchFormController extends Controller
     }
 
     /**
-     * @Route("/form/iframe/additional_form/{formConfigId}", name=MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig::ROUTER_NAME_ADDITIONAL_IFRAME)
+     * @Route("/form/iframe/additional-form/{formConfigId}", name=MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig::ROUTER_NAME_ADDITIONAL_IFRAME)
      * @Method("GET")
      * @Cache(expires="tomorrow", public=true)
      * @ParamConverter(converter="form_config_converter")
@@ -156,7 +156,7 @@ class SearchFormController extends Controller
 
     /**
      * Online form iframe
-     * @Route("/form/search_iframe/{formConfigId}", name=FormConfig::ROUTER_NAME_SEARCH_IFRAME)
+     * @Route("/form/search-iframe/{formConfigId}", name=FormConfig::ROUTER_NAME_SEARCH_IFRAME)
      * @Method("GET")
      * @Cache(expires="tomorrow", public=true)
      * @ParamConverter(converter="form_config_converter")

@@ -137,7 +137,7 @@ class SiteConfig extends Base
     public function __construct()
     {
         $this->hotels = new ArrayCollection();
-        $this->socialNetworkingServices = new ArrayCollection();
+        $this->content = new ArrayCollection();
     }
 
     /**

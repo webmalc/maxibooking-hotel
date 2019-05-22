@@ -21,7 +21,7 @@ class FormControllerTest extends \MBH\Bundle\BaseBundle\Lib\Test\CrudWebTestCase
     {
         parent::setUp();
         $this
-            ->setFormName(\MBH\Bundle\OnlineBundle\Form\FormType::PREFIX)
+            ->setFormName(\MBH\Bundle\OnlineBundle\Form\SettingsOnlineForm\FormType::PREFIX)
             ->setNewTitle('not used')
             ->setEditTitle('not used')
             ->setNewUrl('/management/online/form/new')

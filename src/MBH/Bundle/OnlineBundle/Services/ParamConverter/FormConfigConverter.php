@@ -20,15 +20,15 @@ class FormConfigConverter implements ParamConverterInterface
     /**
      * @var FormConfigManager
      */
-    private $formConfigRepo;
+    private $formConfigManager;
 
     /**
      * FormConfigConverter constructor.
-     * @param FormConfigManager $formConfigRepo
+     * @param FormConfigManager $formConfigManager
      */
-    public function __construct(FormConfigManager $formConfigRepo)
+    public function __construct(FormConfigManager $formConfigManager)
     {
-        $this->formConfigRepo = $formConfigRepo;
+        $this->formConfigManager = $formConfigManager;
     }
 
     public function apply(Request $request, ParamConverter $configuration)
@@ -43,7 +43,7 @@ class FormConfigConverter implements ParamConverterInterface
             throw new NotFoundFormConfigException('Not found online form id in params.');
         }
 
-        $formConfig = $this->formConfigRepo->findOneById($formConfigId);
+        $formConfig = $this->formConfigManager->findOneById($formConfigId);
 
         if ($formConfig === null) {
             throw new NotFoundFormConfigException();

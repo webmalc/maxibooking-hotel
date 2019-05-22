@@ -36,10 +36,10 @@ class FormConfigManager
         $this->clientConfig = $clientConfigManager->fetchConfig();
     }
 
-    public function findOneById($id = null): ?FormConfig
+    public function findOneById(string $id = null): ?FormConfig
     {
         $qb = $this->repo->createQueryBuilder();
-        if ($id) {
+        if ($id !== null) {
             $qb->field('id')->equals($id);
         }
 

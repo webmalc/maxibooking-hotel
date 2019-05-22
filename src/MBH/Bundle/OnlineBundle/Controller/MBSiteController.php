@@ -32,7 +32,6 @@ class MBSiteController extends BaseController
      * @Template()
      * @Route("/", name="site_settings")
      * @param Request $request
-     * @return array
      * @Security("is_granted('ROLE_MB_SITE')")
      * @throws \Exception
      */
@@ -40,7 +39,7 @@ class MBSiteController extends BaseController
     {
         $siteManager = $this->get('mbh.site_manager');
         $siteConfig = $siteManager->getSiteConfig();
-        $formConfig = $siteManager->fetchFormConfig();
+        $formConfig = $siteManager->fetchFormConfig(false);
 
         $clientManager = $this->get('mbh.client_manager');
         $clientSite = $clientManager->getClientSite();
@@ -103,6 +102,8 @@ class MBSiteController extends BaseController
                     $this->dm->flush();
                     $this->addFlash('success', 'mb_site_controller.site_config_saved');
                 }
+
+                return $this->redirectToRoute('site_settings');
             }
         } else {
             $form->get('paymentTypes')->setData($formConfig->getPaymentTypes());

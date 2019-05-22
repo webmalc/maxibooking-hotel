@@ -16,9 +16,9 @@ class DeleteReasonData extends AbstractFixture implements OrderedFixtureInterfac
     use ContainerAwareTrait;
 
     const DATA = [
-        'mbh.package_bundle.fixtures.delete_reason_data.denial' => ['cancel', true],
-        'mbh.package_bundle.fixtures.delete_reason_data.error' => ['error', false],
-        'mbh.package_bundle.fixtures.delete_reason_data.rebooking' => ['update', false],
+        'mbh.package_bundle.fixtures.delete_reason_data.denial' => ['code' => 'cancel', 'default' => true],
+        'mbh.package_bundle.fixtures.delete_reason_data.error' => ['code' => 'error', 'default' => false],
+        'mbh.package_bundle.fixtures.delete_reason_data.rebooking' => ['code' => 'update', 'default' => false],
     ];
 
     /**
@@ -27,15 +27,15 @@ class DeleteReasonData extends AbstractFixture implements OrderedFixtureInterfac
     public function load(ObjectManager $manager)
     {
         foreach (self::DATA as $fullTitle => $arrayValue) {
-            if ($manager->getRepository('MBHPackageBundle:DeleteReason')->findBy(['code' => $arrayValue['0']])) {
+            if ($manager->getRepository('MBHPackageBundle:DeleteReason')->findBy(['code' => $arrayValue['code']])) {
                 continue;
             }
 
             $deleteReason = new DeleteReason();
             $deleteReason
                 ->setFullTitle($this->container->get('translator')->trans($fullTitle))
-                ->setCode($arrayValue['0'])
-                ->setIsDefault($arrayValue['1'])
+                ->setCode($arrayValue['code'])
+                ->setIsDefault($arrayValue['default'])
                 ->setSystem(true);
 
             $manager->persist($deleteReason);

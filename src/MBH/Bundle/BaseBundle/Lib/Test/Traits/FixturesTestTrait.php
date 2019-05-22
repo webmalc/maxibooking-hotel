@@ -5,7 +5,6 @@ namespace MBH\Bundle\BaseBundle\Lib\Test\Traits;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Output\BufferedOutput;
-use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 trait FixturesTestTrait
@@ -22,7 +21,6 @@ trait FixturesTestTrait
         $application->setAutoExit(false);
 
         $input = new ArrayInput(['command' => $name]);
-//        $output = new NullOutput();
         $output = new BufferedOutput();
         $application->run($input, $output);
     }

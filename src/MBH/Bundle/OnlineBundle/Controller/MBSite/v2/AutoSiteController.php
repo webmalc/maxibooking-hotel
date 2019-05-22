@@ -25,10 +25,10 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
  * @Route("/api/mb-site/v2")
  * Class AutoSiteController
  */
-class AutoSiteControllerInterface extends BaseController implements CheckSiteManagerInterface, AutoSiteHandlerInterface
+class AutoSiteController extends BaseController implements CheckSiteManagerInterface, AutoSiteHandlerInterface
 {
     /**
-     * @Route("/settings", name="api_mb_site_v2_settings")
+     * @Route("/settings", name="mb_site_api_v2_settings")
      * @SWG\Get(
      *     path="/management/online/api/v2/settings",
      *     produces={"application/json"},
@@ -37,7 +37,7 @@ class AutoSiteControllerInterface extends BaseController implements CheckSiteMan
      */
     public function getMainSettingsAction(ApiResponseCompiler $responseCompiler, SiteConfig $siteConfig, FormConfig $formConfig)
     {
-        $responseCompiler->setData(
+        return $responseCompiler->setData(
             [
                 'hotels'               => [
                     'amount' => $siteConfig->getHotels()->count(),
@@ -60,12 +60,10 @@ class AutoSiteControllerInterface extends BaseController implements CheckSiteMan
                 'usePaymentForm'       => $siteConfig->isUsePaymentForm(),
             ]
         );
-
-        return $responseCompiler;
     }
 
     /**
-     * @Route("/additional-content/{hotelId}", name="api_mb_site_v2_additional_contant")
+     * @Route("/additional-content/{hotelId}", name="mb_site_api_v2_additional_content")
      * @SWG\Get(
      *     path="/management/online/api/v2/additional-content",
      *     produces={"application/json"},
@@ -78,15 +76,13 @@ class AutoSiteControllerInterface extends BaseController implements CheckSiteMan
 
         $this->setLocaleByRequest();
 
-        $responseCompiler->setData(
+        return $responseCompiler->setData(
             [
                 'useBanner'          => $siteContent->isUseBanner(),
                 'socialServices'     => $siteContent->getSocialNetworkingServices()->getValues(),
                 'aggregatorServices' => $siteContent->getAggregatorServices()->getValues(),
             ]
         );
-
-        return $responseCompiler;
     }
 
     /**
@@ -95,13 +91,11 @@ class AutoSiteControllerInterface extends BaseController implements CheckSiteMan
      *     path="/management/online/api/mb-site/v2/hotels",
      *     produces={"application/json"},
      * )
-     * @Route("/hotels")
+     * @Route("/hotels", name="mb_site_api_v2_hotels")
      */
     public function hotelsAction(Request $request, ApiResponseCompiler $responseCompiler, FormConfig $formConfig)
     {
         $this->setLocaleByRequest();
-
-        $queryData = $request->query;
 
         $responseData = [];
 
@@ -109,7 +103,7 @@ class AutoSiteControllerInterface extends BaseController implements CheckSiteMan
         $collectHotelData = $this->get(CollectHotelData::class);
         $collectHotelData
             ->setBillingApi($this->get('mbh.billing.api'))
-            ->setLocale($queryData->get('locale'));
+            ->setLocale($request->getLocale());
 
         /** @var Hotel $hotel */
         foreach ($formConfig->getHotels() as $hotel) {
@@ -123,9 +117,7 @@ class AutoSiteControllerInterface extends BaseController implements CheckSiteMan
             $responseData[] = $hotelData;
         }
 
-        $responseCompiler->setData($responseData);
-
-        return $responseCompiler;
+        return $responseCompiler->setData($responseData);
     }
 
     /**
@@ -136,7 +128,7 @@ class AutoSiteControllerInterface extends BaseController implements CheckSiteMan
      *     produces={"application/json"},
      *     @SWG\Response(response="200", description="Return array of room types"),
      * )
-     * @Route("/room-types")
+     * @Route("/room-types" , name="mb_site_api_v2_room_types")
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function roomTypesAction(Request $request, ApiResponseCompiler $responseCompiler, Hotel $hotel, FormConfig $formConfig)
@@ -177,9 +169,8 @@ class AutoSiteControllerInterface extends BaseController implements CheckSiteMan
             $responseData['amount']++;
             $responseData['list'][] = $roomTypeImageData->getPreparedData();
         }
-        $responseCompiler->setData($responseData);
 
-        return $responseCompiler;
+        return $responseCompiler->setData($responseData);
     }
 
     /**
@@ -188,7 +179,7 @@ class AutoSiteControllerInterface extends BaseController implements CheckSiteMan
      *     produces={"application/json"},
      *     @SWG\Response(response="200", description="Return min prices"),
      * )
-     * @Route("/min-prices")
+     * @Route("/min-prices", name="mb_site_api_v2_min_prices")
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function minPricesForRoomTypesAction(ApiResponseCompiler $responseCompiler, Hotel $hotel)
@@ -207,9 +198,7 @@ class AutoSiteControllerInterface extends BaseController implements CheckSiteMan
                 ApiHandler::MIN_PRICES_PERIOD_IN_DAYS
             );
 
-        $responseCompiler->setData($minPrices);
-
-        return $responseCompiler;
+        return $responseCompiler->setData($minPrices);
     }
 
     /**
@@ -219,16 +208,14 @@ class AutoSiteControllerInterface extends BaseController implements CheckSiteMan
      *     produces={"application/json"},
      *     @SWG\Response(response="200", description="Return array of facilities data"),
      * )
-     * @Route("/facilities-data")
+     * @Route("/facilities-data", name="mb_site_api_v2_facilities_data")
      */
     public function getFacilitiesData(Request $request, ApiResponseCompiler $responseCompiler)
     {
         $this->setLocaleByRequest();
 
-        $responseCompiler->setData(
+        return $responseCompiler->setData(
             $this->get('mbh.facility_repository')->getActualFacilitiesData($request->getLocale())
         );
-
-        return $responseCompiler;
     }
 }

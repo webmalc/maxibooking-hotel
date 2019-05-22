@@ -37,7 +37,7 @@ class PaymentFormData extends AbstractFixture implements OrderedFixtureInterface
      */
     protected function getEnvs(): array
     {
-        return ['test', 'dev'];
+        return ['test'];
     }
 
     public function getOrder()

@@ -8,22 +8,59 @@ namespace Tests\Bundle\OnlineBundle\Controller;
 
 
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
-use MBH\Bundle\OnlineBundle\Form\SocialNetworking\OneSocialNetworkingServiceType;
+use MBH\Bundle\OnlineBundle\Document\SiteContent;
+use MBH\Bundle\OnlineBundle\Form\SocialNetworking\ManySocialNetworkingServicesType;
+use MBH\Bundle\OnlineBundle\Services\SiteManager;
 use MBH\Bundle\UserBundle\DataFixtures\MongoDB\UserData;
 
 class MBSiteControllerTest extends WebTestCase
 {
-    private const URL_PREFIX = '/management/online/mb_site/';
+    private const URL_PREFIX = '/management/online/mb-site/';
+    private const URL_SOCIAL_NETWORKING_SERVICES = 'social-networking-services';
+
+    /**
+     * @var SiteManager
+     */
+    private static $siteManager;
 
     public static function setUpBeforeClass()
     {
         self::baseFixtures();
 
-        $siteConfig = new SiteConfig();
+        $container = self::getContainerStat();
 
-        $dm = self::getContainerStat()->get('doctrine.odm.mongodb.document_manager');
-        $dm->persist($siteConfig);
+        /** TODO: move to fixture? */
+        $dm = $container->get('doctrine.odm.mongodb.document_manager');
+        $clientConfig = $container->get('mbh.client_config_manager')->fetchConfig();
+        $clientConfig->setIsMBSiteEnabled(true);
+        $dm->persist($clientConfig);
+        $dm->flush();
+
+        self::$siteManager = $container->get('mbh.site_manager');
+
+        $siteConfig = self::$siteManager->getSiteConfig();
+
+        /** TODO: move to fixture? */
+        if ($siteConfig === null) {
+            $hotel = $dm->getRepository(Hotel::class)->findOneBy([]);
+
+            $siteContent = new SiteContent();
+            $siteContent->setHotel($hotel);
+
+            $dm->persist($siteContent);
+
+            $siteConfig = new SiteConfig();
+            $siteConfig->getHotels()->add($hotel);
+            $siteConfig->getContents(true)->add($siteContent);
+            $siteConfig
+                ->setSiteDomain('best-site');
+
+
+            $dm->persist($siteConfig);
+        }
+
         $dm->flush();
     }
 
@@ -87,29 +124,36 @@ class MBSiteControllerTest extends WebTestCase
     public function testCreateSocialNetworkingServices(bool $valid, string $url)
     {
         $nameService = 'twitter';
-        $this->client = self::makeClient(true);
-        $blockPrefix = (new OneSocialNetworkingServiceType())->getBlockPrefix();
+        $this->client = $this->makeClient(true);
+        $blockPrefix = (new ManySocialNetworkingServicesType())->getBlockPrefix();
 
         $crawler = $this->getListCrawler($this->getUrlForSocialNetworkingServices());
 
         $form = $crawler->filter(sprintf('form[name="%s"]', $blockPrefix))->form();
 
         $form->setValues([
-            $blockPrefix . '[snss][' . $nameService . '][url]' => $url,
+            $blockPrefix . '[many][0][socialServices][' . $nameService . '][url]' => $url,
         ]);
 
+        $this->client->followRedirects(true);
         $this->client->submit($form);
 
         if ($valid) {
             /** @var SiteConfig $siteConfig */
-            $siteConfig = self::getContainerStat()->get('doctrine.odm.mongodb.document_manager')
-                    ->getRepository(SiteConfig::class)->findOneBy([]);
+            $siteConfig = $this->getSiteManager()->getSiteConfig();
 
-            $keys = implode(', ', $siteConfig->getSocialNetworkingServices()->getKeys());
+            $dm = self::getContainerStat()->get('doctrine.odm.mongodb.document_manager');
+            $dm->persist($siteConfig);
+            $dm->refresh($siteConfig);
+
+            /** @var SiteContent $siteContent */
+            $siteContent = $siteConfig->getContents()->first();
+
+            $keys = implode(', ', $siteContent->getSocialNetworkingServices()->getKeys());
 
             $this->assertCount(
                 1,
-                $siteConfig->getSocialNetworkingServices(),
+                $siteContent->getSocialNetworkingServices(),
                 'Amount services greater that 1: ' . $keys
             );
 
@@ -120,7 +164,7 @@ class MBSiteControllerTest extends WebTestCase
             );
         } else {
             $this->assertValidationErrors(
-                ['children[snss].children[twitter].children[url].data'],
+                ['children[many].children[0].children[socialServices].children['. $nameService .'].children[url].data'],
                 $this->client->getContainer()
             );
         }
@@ -128,6 +172,11 @@ class MBSiteControllerTest extends WebTestCase
 
     private function getUrlForSocialNetworkingServices(): string
     {
-        return self::URL_PREFIX . 'social_networking_services';
+        return self::URL_PREFIX . self::URL_SOCIAL_NETWORKING_SERVICES;
+    }
+
+    private function getSiteManager(): SiteManager
+    {
+        return self::$siteManager;
     }
 }

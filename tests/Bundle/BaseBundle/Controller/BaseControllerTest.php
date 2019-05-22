@@ -4,10 +4,28 @@ namespace Tests\Bundle\BaseBundle\Controller;
 
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
+use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
 use Symfony\Component\Routing\Route;
 
 class BaseControllerTest extends WebTestCase
 {
+    private const AUTO_SITE_V2 = [
+        'mb_site_api_v2_settings',
+        'mb_site_api_v2_additional_content',
+        'mb_site_api_v2_hotels',
+        'mb_site_api_v2_room_types',
+        'mb_site_api_v2_min_prices',
+        'mb_site_api_v2_facilities_data',
+    ];
+
+    private const SEARCH_FORM = [
+        FormConfig::ROUTER_NAME_ADDITIONAL_IFRAME,
+        FormConfig::ROUTER_NAME_CALENDAR_IFRAME,
+        FormConfig::ROUTER_NAME_LOAD_ALL_IFRAME,
+        FormConfig::ROUTER_NAME_SEARCH_IFRAME,
+        'online_form_iframe'
+    ];
+
     const EXCLUDED_ROUTES_FOR_INVALID_AUTH = [
         "create_region",                //TODO: Какие права нужны? src/MBH/Bundle/BillingBundle/Controller/BillingDataController.php
         "create_city",                  //TODO: Какие права нужны? src/MBH/Bundle/BillingBundle/Controller/BillingDataController.php
@@ -35,7 +53,6 @@ class BaseControllerTest extends WebTestCase
     ];
 
     const EXCLUDED_ROUTES = [
-        'mb_site_main_settings',            //without params 500, need hotel
         'export_to_kontur',
         'add_tip',
         'user_tariff',
@@ -57,12 +74,11 @@ class BaseControllerTest extends WebTestCase
         'restaurant_table_save',            //need params
         'site_hotel_settings',              //need params
         'save_list',                        //need params
-        'site_settings',
         'fos_user_profile_edit',            //not used
         'fos_user_profile_show',            //not used
         'api_success_url',                  //master test there is, but if not setting client config -> 404, so common exclude
         'api_fail_url',                     //master test there is, but if not setting client config -> 404, so common exclude
-        'reset_login_alias'                 //redirect
+        'reset_login_alias',                //redirect
     ];
 
     private const ROUTES_WITH_OWN_TEST = [
@@ -133,6 +149,7 @@ class BaseControllerTest extends WebTestCase
         'document_templates_show',
         'document_templates_delete',
         'site_config_social_networking_services',
+        'site_settings',
     ];
 
     private const ROUTERS_CHANNEL_MANAGER = [
@@ -248,7 +265,7 @@ class BaseControllerTest extends WebTestCase
      */
     public function testBasicGetRoutes(string $url)
     {
-        $client = static::makeClient(true);
+        $client = $this->makeClient(true);
         $client->request('GET', $url);
         $response = $client->getResponse();
 
@@ -317,7 +334,9 @@ class BaseControllerTest extends WebTestCase
         return array_merge(
             self::ROUTERS_CHANNEL_MANAGER,
             self::EXCLUDED_ROUTES,
-            self::ROUTES_ALWAYS_302
+            self::ROUTES_ALWAYS_302,
+            self::AUTO_SITE_V2,
+            self::SEARCH_FORM
         );
     }
 

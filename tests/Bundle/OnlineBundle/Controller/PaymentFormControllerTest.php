@@ -24,8 +24,8 @@ class PaymentFormControllerTest extends \MBH\Bundle\BaseBundle\Lib\Test\CrudWebT
             ->setFormName(\MBH\Bundle\OnlineBundle\Form\PaymentFormType::PREFIX)
             ->setNewTitle('not used')
             ->setEditTitle('not used')
-            ->setNewUrl('/management/online/payment_form/new')
-            ->setListUrl('/management/online/payment_form/');
+            ->setNewUrl('/management/online/payment-form/new')
+            ->setListUrl('/management/online/payment-form/');
 
         $this
             ->setNewFormValues(['frameWidth' => 100500])
@@ -74,8 +74,6 @@ class PaymentFormControllerTest extends \MBH\Bundle\BaseBundle\Lib\Test\CrudWebT
         string $titleEdited = null,
         string $formName = null
     ) {
-        $title = $title ?? $this->getNewTitle();
-        $titleEdited = $titleEdited ?? $this->getEditTitle();
         $formName = $formName ?? $this->getFormName();
         $values = $values ?? $this->getEditFormValues();
 
