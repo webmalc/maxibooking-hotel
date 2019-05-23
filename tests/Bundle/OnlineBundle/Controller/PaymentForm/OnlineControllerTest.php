@@ -4,7 +4,7 @@
  * Date: 03.12.18
  */
 
-namespace Tests\Bundle\OnlineBundle\Controller;
+namespace Tests\Bundle\OnlineBundle\Controller\Payment;
 
 
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
@@ -13,7 +13,7 @@ use MBH\Bundle\OnlineBundle\Form\OrderSearchType;
 use MBH\Bundle\PackageBundle\DataFixtures\MongoDB\OrderData;
 use MBH\Bundle\PackageBundle\DataFixtures\MongoDB\TouristData;
 
-class ApiPaymentFormControllerTest extends WebTestCase
+class OnlineControllerTest extends WebTestCase
 {
     private const URL_NAME_LOAD = 'online_payment_form_load_js';
     private const URL_NAME_SEARCH = 'online_payment_search_form';
@@ -24,7 +24,7 @@ class ApiPaymentFormControllerTest extends WebTestCase
      */
     private static $paymentForm;
 
-    private const URL_PREFIX = '/management/online/api_payment_form/';
+    private const URL_PREFIX = '/management/online/api-payment-form/';
 
     public static function setUpBeforeClass()
     {

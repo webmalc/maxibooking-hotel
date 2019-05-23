@@ -1,4 +1,4 @@
-{% extends 'MBHOnlineBundle:PaymentForm:common_for_new_and_edit.html.twig' %}
+{% extends 'MBHOnlineBundle:PaymentForm/Setting:common_for_new_and_edit.html.twig' %}
 
 {% if form.formTemplate is defined %}
     {% form_theme form.formTemplate '@MBHOnline/Form/Template/formTemplate.html.twig' %}
@@ -17,7 +17,7 @@
 {% endblock %}
 
 {% block content %}
-    {% include '@MBHOnline/PaymentForm/tabs.html.twig' %}
+    {% include '@MBHOnline/PaymentForm/Setting/tabs.html.twig' %}
     <div class="tab-content">
 
         {{ form_start(form, {'action': path('online_payment_form_edit', {id: config.id}), 'attr': {'class': 'form-horizontal'}}) }}

@@ -4,7 +4,7 @@
  * Date: 01.06.18
  */
 
-namespace MBH\Bundle\OnlineBundle\Controller;
+namespace MBH\Bundle\OnlineBundle\Controller\PaymentForm;
 
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
@@ -28,11 +28,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class ApiPaymentFormController
- * @package MBH\Bundle\OnlineBundle\Controller
- * @Route("/api_payment_form")
+ * @Route("/api-payment-form")
  */
-class ApiPaymentFormController extends Controller
+class OnlineController extends Controller
 {
     /**
      * @Route("/file/{configId}/load", defaults={"_format" = "js"} ,name="online_payment_form_load_js")
@@ -50,7 +48,7 @@ class ApiPaymentFormController extends Controller
         }
 
         return $this->render(
-            'MBHOnlineBundle:ApiPaymentForm:loadIframe.js.twig',
+            '@MBHOnline/PaymentForm/Online/loadIframe.js.twig',
             [
                 'config'         => $config,
                 'wrapperId'      => PaymentFormConfig::WRAPPER_ID,

@@ -4,7 +4,7 @@
  * Date: 31.05.18
  */
 
-namespace MBH\Bundle\OnlineBundle\Controller;
+namespace MBH\Bundle\OnlineBundle\Controller\PaymentForm;
 
 
 use MBH\Bundle\OnlineBundle\Document\PaymentFormConfig;
@@ -20,7 +20,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route("/payment-form")
  */
-class PaymentFormController extends Controller
+class SettingController extends Controller
 {
     /**
      * @Route("/", name="online_payment_form")
