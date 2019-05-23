@@ -18,14 +18,14 @@
 
         {% block styles %}
             {% stylesheets filter='cssrewrite, uglifycss'
-                '@MBHOnlineBundle/Resources/public/css/api/search-form/default-form.less'
+                '@MBHOnlineBundle/Resources/public/css/search-form/default-form.less'
             %}
                 <link rel="stylesheet" href="{{ absolute_url(asset_url) }}"/>
             {% endstylesheets %}
 
             {% if formConfig.isHorizontal %}
                 {% stylesheets filter='cssrewrite, uglifycss'
-                    '@MBHOnlineBundle/Resources/public/css/api/search-form/default-form-horizontal.less'
+                    '@MBHOnlineBundle/Resources/public/css/search-form/default-form-horizontal.less'
                 %}
                     <link rel="stylesheet" href="{{ absolute_url(asset_url) }}"/>
                 {% endstylesheets %}

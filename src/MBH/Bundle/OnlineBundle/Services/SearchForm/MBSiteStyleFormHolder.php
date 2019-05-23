@@ -10,7 +10,7 @@ use Symfony\Bridge\Monolog\Logger;
 
 class MBSiteStyleFormHolder
 {
-    private const FILE_PREFIX = '/../src/MBH/Bundle/OnlineBundle/Resources/public/css/api/search-form/css-for-mb-site/';
+    private const FILE_PREFIX = '/../src/MBH/Bundle/OnlineBundle/Resources/public/css/search-form/css-for-mb-site/';
 
     private const FILE_STYLE_SEARCH_IFRAME = 'search-form.css';
     private const FILE_STYLE_CALENDAR_IFRAME = 'calendar.css';
