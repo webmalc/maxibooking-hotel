@@ -23,7 +23,7 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class NewRbk extends Wrapper
 {
-    public function getFormData(CashDocument $cashDocument, $url = null, $checkUrl = null)
+    public function getFormData(CashDocument $cashDocument, $url = null, $checkUrl = null): array
     {
         return [
             'total'     => $cashDocument->getTotal(),

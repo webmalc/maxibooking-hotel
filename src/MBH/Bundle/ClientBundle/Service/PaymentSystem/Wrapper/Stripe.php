@@ -28,7 +28,7 @@ class Stripe extends Wrapper
      * @param string $checkUrl
      * @return array
      */
-    public function getFormData(CashDocument $cashDocument, $url = null, $checkUrl = null)
+    public function getFormData(CashDocument $cashDocument, $url = null, $checkUrl = null): array
     {
         return [
             'token'       => $this->entity->getPublishableToken(),

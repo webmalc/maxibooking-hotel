@@ -69,7 +69,7 @@ class Tinkoff extends Wrapper
         return $holder;
     }
 
-    public function getFormData(CashDocument $cashDocument, $url = null, $checkUrl = null)
+    public function getFormData(CashDocument $cashDocument, $url = null, $checkUrl = null): array
     {
         return [
             'cashDocumentId' => $cashDocument->getId(),

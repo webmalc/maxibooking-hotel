@@ -13,9 +13,9 @@ use Symfony\Component\HttpFoundation\Request;
 
 class Payanyway extends Wrapper
 {
-    public function getFormData(CashDocument $cashDocument, $url = null , $checkUrl = null)
+    public function getFormData(CashDocument $cashDocument, $url = null , $checkUrl = null): array
     {
-
+        return [];
     }
 
     /**

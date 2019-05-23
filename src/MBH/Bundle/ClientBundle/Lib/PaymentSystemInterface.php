@@ -16,7 +16,7 @@ interface PaymentSystemInterface
      * @param string $checkUrl
      * @return array
      */
-    public function getFormData(CashDocument $cashDocument, $url = null , $checkUrl = null);
+    public function getFormData(CashDocument $cashDocument, $url = null , $checkUrl = null): array;
 
     /**
      * @param CashDocument $cashDocument

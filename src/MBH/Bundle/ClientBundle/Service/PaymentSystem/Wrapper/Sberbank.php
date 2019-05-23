@@ -23,7 +23,7 @@ class Sberbank extends Wrapper
 {
     public const SUCCESSFUL_RESPONSE = 'OK';
 
-    public function getFormData(CashDocument $cashDocument, $url = null, $checkUrl = null)
+    public function getFormData(CashDocument $cashDocument, $url = null, $checkUrl = null): array
     {
         return [
             'cashDocumentId' => $cashDocument->getId(),

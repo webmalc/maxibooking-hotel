@@ -22,7 +22,7 @@ class Rbk extends Wrapper
     /**
      * @inheritdoc
      */
-    public function getFormData(CashDocument $cashDocument, $url = null, $checkUrl = null)
+    public function getFormData(CashDocument $cashDocument, $url = null, $checkUrl = null): array
     {
         $payer = $cashDocument->getPayer();
         $createdAt = clone $cashDocument->getCreatedAt();

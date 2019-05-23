@@ -964,7 +964,7 @@ class ClientConfig extends Base
      * @return array
      * @throws Exception
      */
-    public function getFormData(CashDocument $cashDocument, $paymentSystemName, $url = null)
+    public function getFormData(CashDocument $cashDocument, $paymentSystemName, $url = null): array
     {
 
         $doc = $this->getPaymentSystemDocByName($paymentSystemName);
