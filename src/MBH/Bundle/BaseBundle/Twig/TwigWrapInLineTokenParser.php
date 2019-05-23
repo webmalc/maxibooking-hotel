@@ -1,14 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: mb3
- * Date: 20.03.18
- * Time: 10:59
- */
 
 namespace MBH\Bundle\BaseBundle\Twig;
 
-use \Twig_Token;
+use Twig\Token;
+use Twig\TokenParser\AbstractTokenParser;
 
 /**
  * Удаление переноса строк (\r\n)
@@ -25,20 +20,20 @@ use \Twig_Token;
  * </pre>
  */
 
-class TwigWrapInLineTokenParser extends \Twig_TokenParser
+class TwigWrapInLineTokenParser extends AbstractTokenParser
 {
-    public function parse(Twig_Token $token)
+    public function parse(Token $token)
     {
         $lineno = $token->getLine();
 
-        $this->parser->getStream()->expect(Twig_Token::BLOCK_END_TYPE);
+        $this->parser->getStream()->expect(Token::BLOCK_END_TYPE);
         $body = $this->parser->subparse([$this, 'decideWrapinlineEnd'], true);
-        $this->parser->getStream()->expect(Twig_Token::BLOCK_END_TYPE);
+        $this->parser->getStream()->expect(Token::BLOCK_END_TYPE);
 
         return new TwigWrapInLineNode($body, $lineno, $this->getTag());
     }
 
-    public function decideWrapinlineEnd(Twig_Token $token)
+    public function decideWrapinlineEnd(Token $token)
     {
         return $token->test('endwrapinline');
     }

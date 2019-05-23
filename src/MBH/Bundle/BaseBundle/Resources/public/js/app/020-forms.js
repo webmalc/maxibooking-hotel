@@ -1192,24 +1192,35 @@ function initSelect2TextForBilling(inputId, apiSettings) {
         initSelection: function (element, callback) {
             var id = $(element).val();
             if (id) {
-                $.ajax(apiSettings['url'] + '/' + id + '/', {
+                $.ajax({
+                    url: apiSettings['url'] + '/' + id + '/',
                     dataType: "json",
                     headers: {
                         Authorization: "Token " + mbh['front_token']
-                    }
-                }).done(function (data) {
-                    var optionId = data[apiSettings['id']];
-                    var optionTitle = data[apiSettings['text']];
+                    },
+                    error: function(data) {
+                        if (data.status === 404) {
+                            var optionTitle = Translator.trans('020-forms.not_found', {'id': id});
+                            var selectedOrgan = {
+                                text: optionTitle
+                            };
+                            callback(selectedOrgan);
+                        }
+                    },
+                    success: function (data) {
+                        var optionId = data[apiSettings['id']];
+                        var optionTitle = data[apiSettings['text']];
 
-                    if (apiSettings['checkable'] && data['is_checked'] === false) {
-                        optionTitle += ' (' + Translator.trans('020-forms.on_moderation') + ')';
-                    }
+                        if (apiSettings['checkable'] && data['is_checked'] === false) {
+                            optionTitle += ' (' + Translator.trans('020-forms.on_moderation') + ')';
+                        }
 
-                    var selectedOrgan = {
-                        id: optionId,
-                        text: optionTitle
-                    };
-                    callback(selectedOrgan);
+                        var selectedOrgan = {
+                            id: optionId,
+                            text: optionTitle
+                        };
+                        callback(selectedOrgan);
+                    }
                 });
             }
         },

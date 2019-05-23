@@ -40,12 +40,16 @@ class DeleteReasonSubscriber implements EventSubscriber
      */
     private function setOtherReasonsNotDefault(LifecycleEventArgs $args, DeleteReason $reason): void
     {
+        $dm = $args->getDocumentManager();
+        $meta = $dm->getClassMetadata(DeleteReason::class);
+
         $defaultReasons = $args
             ->getDocumentManager()
             ->getRepository('MBHPackageBundle:DeleteReason')
             ->findBy(['isDefault' => true, 'id' => ['$ne' => $reason->getId()]]);
         foreach ($defaultReasons as $defaultReason) {
             $defaultReason->setIsDefault(false);
+            $dm->getUnitOfWork()->computeChangeSet($meta, $defaultReasons);
         }
     }
 }

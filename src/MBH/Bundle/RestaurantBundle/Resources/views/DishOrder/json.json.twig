@@ -1,3 +1,5 @@
+{% escapebackslash %}
+{% wrapinline %}
 {
     "draw": "{{ draw }}",
     "recordsTotal": "{{ total }}",
@@ -43,3 +45,5 @@
     ],
     "restaurant_order_total": "{{ restaurant_order_total }}"
 }
+{% endwrapinline %}
+{% endescapebackslash %}

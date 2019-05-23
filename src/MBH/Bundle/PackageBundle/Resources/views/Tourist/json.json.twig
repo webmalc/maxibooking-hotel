@@ -1,3 +1,5 @@
+{% escapebackslash %}
+{% wrapinline %}
 {
     "draw" : "{{ draw }}",
     "recordsTotal": "{{ total }}",
@@ -27,3 +29,5 @@
         {% endfor %}
     ]
 }
+{% endwrapinline %}
+{% endescapebackslash %}
