@@ -3,7 +3,7 @@
  * Date: 07.05.19
  */
 
-namespace MBH\Bundle\OnlineBundle\Services;
+namespace MBH\Bundle\OnlineBundle\Services\SearchForm;
 
 
 use Symfony\Bridge\Monolog\Logger;

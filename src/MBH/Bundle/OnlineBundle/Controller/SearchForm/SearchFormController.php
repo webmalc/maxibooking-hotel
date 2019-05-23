@@ -98,7 +98,7 @@ class SearchFormController extends Controller
         $dataForSearchForm = $this->get(DataForSearchForm::class)->setFormConfig($formConfig);
 
         return $this->render(
-            '@MBHOnline/Api/search-form/script-for-load-all-iframe.js.twig',
+            '@MBHOnline/SearchForm/script-for-load-all-iframe.js.twig',
             array_merge(
                 [
                     'formConfig' => $formConfig,
@@ -121,7 +121,7 @@ class SearchFormController extends Controller
         $this->setLocaleByRequest();
 
         return $this->render(
-            '@MBHOnline/Api/search-form/calendar-iframe.html.twig',
+            '@MBHOnline/SearchForm/calendar-iframe.html.twig',
             [
                 'formConfig' => $formConfig
             ]
@@ -146,7 +146,7 @@ class SearchFormController extends Controller
         $helperDataForm = $this->get(DataForSearchForm::class)->setFormConfig($formConfig);
 
         return $this->render(
-            '@MBHOnline/Api/search-form/additional-form-iframe.html.twig',
+            '@MBHOnline/SearchForm/additional-form-iframe.html.twig',
             [
                 'formConfig' => $formConfig,
                 'choices'    => $helperDataForm->getRoomTypes(),
@@ -167,7 +167,7 @@ class SearchFormController extends Controller
         $this->setLocaleByRequest();
 
         return $this->render(
-            '@MBHOnline/Api/search-form/search-iframe.html.twig',
+            '@MBHOnline/SearchForm/search-iframe.html.twig',
             [
                 'formConfig' => $formConfig,
                 'siteConfig' => $this->get('mbh.site_manager')->getSiteConfig(),
@@ -203,10 +203,10 @@ class SearchFormController extends Controller
 
         $text = $formConfig->getFormTemplate()
             ? $twig->createTemplate($formConfig->getFormTemplate())->render($context)
-            : $twig->render('@MBHOnline/Api/search-form/search-html-form.html.twig', $context);
+            : $twig->render('@MBHOnline/SearchForm/search-html-form.html.twig', $context);
 
         return $this->render(
-            '@MBHOnline/Api/search-form/search-insert-html-form.js.twig',
+            '@MBHOnline/SearchForm/search-insert-html-form.js.twig',
             [
                 'text'               => $text,
                 'formConfig'         => $formConfig,

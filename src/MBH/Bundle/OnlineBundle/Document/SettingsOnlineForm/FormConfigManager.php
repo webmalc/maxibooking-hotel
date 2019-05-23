@@ -6,7 +6,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Service\ClientConfigManager;
-use MBH\Bundle\OnlineBundle\Services\MBSiteFormConfigDataService;
+use MBH\Bundle\OnlineBundle\Services\SearchForm\MBSiteFormConfigDataService;
 
 class FormConfigManager
 {

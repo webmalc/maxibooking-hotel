@@ -3,22 +3,37 @@
 {% endif %}
 
 function MbhPaymentFunc() {
-    this.frameId = '{{ wrapperId }}-iframe';
-    this.locale = '{{ locale }}';
+    this._locale = '{{ locale }}';
     this.formWrapper = null;
     this.spinner = null;
     this.formIframe = null;
+
+    this.urlToSearch = '{{ url('online_payment_search_form', {formId: config.id}) | raw }}';
+
+    this._hotelId = null;
+    this._paramUrl = [];
+
+    this._iframeConfig = {
+        id: '{{ wrapperId }}-iframe',
+        width: "{{ config.fullWidth ? '100%' : config.frameWidth }}",
+        height: "{{ config.frameHeight }}"
+    }
 }
 
-MbhPaymentFunc.prototype.getForm = function(locale) {
+MbhPaymentFunc.prototype.getForm = function(locale, hotel) {
     this.formWrapper = document.querySelector('#{{ wrapperId }}');
     if (this.formWrapper === null) {
         console.error('Not found wrapper for mbh-payment-form')
         return;
     }
 
+    this._hotelId = null;
+    if (hotel !== undefined) {
+        this._hotelId = hotel;
+    }
+
     if (locale !== undefined) {
-        this.locale = locale;
+        this._locale = locale;
     }
 
     var self = this;
@@ -44,25 +59,32 @@ MbhPaymentFunc.prototype.hideWaitingSpinner = function (_this) {
 };
 
 MbhPaymentFunc.prototype.generateUrl = function() {
-    return '{{ url('online_payment_search_form', {formId: config.id}) | raw }}?locale=' + this.locale
+    this._paramUrl = [];
+    this._paramUrl.push('locale=' + this._locale);
+
+    if (this._hotelId !== null) {
+        this._paramUrl.push('hotel=' + this._hotelId);
+    }
+
+    return this.urlToSearch + '?' + this._paramUrl.join('&');
 };
 
 MbhPaymentFunc.prototype.getIframe = function() {
     var iframe = document.createElement('iframe');
-    iframe.id = this.frameId;
-    iframe.name = this.frameId;
+    iframe.id = this._iframeConfig.id;
+    iframe.name = this._iframeConfig.id;
     iframe.src = this.generateUrl();
     iframe.scrolling = 'no';
     iframe.frameBorder = 0;
-    iframe.width = "{{ config.fullWidth ? '100%' : config.frameWidth }}";
-    iframe.height = "{{ config.frameHeight }}";
+    iframe.width = this._iframeConfig.width;
+    iframe.height = this._iframeConfig.height;
     iframe.title = 'Frame with form to pay for the order';
 
     return iframe;
 };
 
 MbhPaymentFunc.prototype.addWaitingSpinner = function() {
-    var text = this.locale ? 'Подождите...' : 'Please wait...',
+    var text = this._locale ? 'Подождите...' : 'Please wait...',
         spinner = document.createElement('div');
     spinner.id = 'mbh-form-load-spinner';
     spinner.className = 'alert alert-info';

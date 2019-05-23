@@ -3,7 +3,7 @@
  * Date: 13.05.19
  */
 
-namespace MBH\Bundle\OnlineBundle\Services;
+namespace MBH\Bundle\OnlineBundle\Services\SearchForm;
 
 
 use Doctrine\ODM\MongoDB\DocumentManager;
