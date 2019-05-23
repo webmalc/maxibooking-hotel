@@ -38,7 +38,6 @@ class MBSitePaymentFormConfigData
     public function changeConfig(PaymentFormConfig $formConfig, bool $styleIsNeed = true): void
     {
         $formConfig
-//            ->setForMbSite(true)
             ->setUseAccordion(true)
             ->setIsFullWidth(true)
             ->setTheme(FormConfig::THEMES[self::DEFAULT_BOOTSTRAP_THEME])

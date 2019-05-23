@@ -15,7 +15,6 @@ use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\PayerInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class SearchForm
 {

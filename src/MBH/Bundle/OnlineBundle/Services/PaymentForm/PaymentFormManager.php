@@ -11,7 +11,6 @@ use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Service\ClientConfigManager;
 use MBH\Bundle\OnlineBundle\Document\PaymentFormConfig;
-use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
 
 class PaymentFormManager
 {

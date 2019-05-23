@@ -10,11 +10,11 @@ use MBH\Bundle\BillingBundle\Service\BillingApi;
 use MBH\Bundle\ClientBundle\Service\ClientManager;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
-use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FieldsName;
 use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
 use MBH\Bundle\OnlineBundle\Document\PaymentFormConfig;
 use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigManager;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
+use MBH\Bundle\OnlineBundle\Services\PaymentForm\PaymentFormManager;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -23,7 +23,7 @@ class SiteManager
 {
     const DEFAULT_RESULTS_PAGE = '/results';
     const PERSONAL_DATA_POLICIES_PAGE = '/personal-data-policies?q';
-    const DEFAULT_BOOTSTRAP_THEME = 'cerulean';
+
     const MANDATORY_FIELDS_BY_ROUTE_NAMES = [
         Hotel::class => [
             'hotel_edit'                => ['description', 'logoImage'],
@@ -55,7 +55,12 @@ class SiteManager
     /**
      * @var FormConfigManager
      */
-    private $formConfigRepo;
+    private $formConfigManager;
+
+    /**
+     * @var PaymentFormManager
+     */
+    private $paymentFormManager;
 
     public function __construct(
         DocumentManager $dm, 
@@ -64,7 +69,8 @@ class SiteManager
         WarningsCompiler $warningsCompiler,
         BillingApi $billingApi,
         ClientManager $clientManager,
-        FormConfigManager $formConfigRepository
+        FormConfigManager $formConfigManager,
+        PaymentFormManager $paymentFormManager
     ) {
         $this->dm = $dm;
         $this->documentFieldsManager = $documentFieldsManager;
@@ -72,7 +78,8 @@ class SiteManager
         $this->warningsCompiler = $warningsCompiler;
         $this->billingApi = $billingApi;
         $this->clientManager = $clientManager;
-        $this->formConfigRepo = $formConfigRepository;
+        $this->formConfigManager = $formConfigManager;
+        $this->paymentFormManager = $paymentFormManager;
     }
 
     /**
@@ -127,25 +134,12 @@ class SiteManager
      */
     public function fetchFormConfig(bool $styleIsNeed = true)
     {
-        return $this->formConfigRepo->getForMBSite($styleIsNeed);
+        return $this->formConfigManager->getForMBSite($styleIsNeed);
     }
 
-    public function fetchPaymentFormConfig(): PaymentFormConfig
+    public function getPaymentFormConfig(bool $styleIsNeed = true): PaymentFormConfig
     {
-        $formConfig = $this->dm->getRepository(PaymentFormConfig::class)->findOneBy(['forMbSite' => true]);
-        if ($formConfig === null) {
-            $formConfig = new PaymentFormConfig();
-            $formConfig
-                ->setForMbSite(true)
-                ->setUseAccordion(true)
-                ->setIsFullWidth(true)
-                ->setTheme(FormConfig::THEMES[self::DEFAULT_BOOTSTRAP_THEME])
-                ->setFrameHeight(600);
-
-            $this->dm->persist($formConfig);
-        }
-
-        return $formConfig;
+        return $this->paymentFormManager->getForMBSite($styleIsNeed);
     }
 
     /**
@@ -207,7 +201,7 @@ class SiteManager
         }
 
         /** @var PaymentFormConfig $paymentForm */
-        $paymentForm = $this->fetchPaymentFormConfig();
+        $paymentForm = $this->getPaymentFormConfig(false);
         $paymentForm->setHotels($config->getHotels()->toArray());
         $this->dm->persist($paymentForm);
 

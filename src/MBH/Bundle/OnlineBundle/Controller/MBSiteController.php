@@ -11,7 +11,6 @@ use MBH\Bundle\OnlineBundle\Document\SiteConfig;
 use MBH\Bundle\OnlineBundle\Form\SiteForm;
 use MBH\Bundle\OnlineBundle\Form\SitePersonalDataPoliciesType;
 use MBH\Bundle\OnlineBundle\Form\SocialNetworking\ManySocialNetworkingServicesType;
-use MBH\Bundle\OnlineBundle\Form\SocialNetworking\OneSocialNetworkingServiceType;
 use MBH\Bundle\OnlineBundle\Exception\NotFoundConfigMBSiteException;
 use MBH\Bundle\OnlineBundle\Lib\SocialNetworking\HolderSocialLinks;
 use MBH\Bundle\OnlineBundle\Services\AvailableSocialNetworkingServices;
