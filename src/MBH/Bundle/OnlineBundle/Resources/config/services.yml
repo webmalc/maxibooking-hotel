@@ -111,17 +111,21 @@ services:
             - "%kernel.logs_dir%/%kernel.environment%.%log_file.mb_site%"
             - 200
 
-    MBH\Bundle\OnlineBundle\Services\SearchForm\MBSiteStyleFormHolder:
+    MBH\Bundle\OnlineBundle\Services\MBSite\StyleDataFromFile:
+      arguments:
+        - '@mbh.sentry_logger'
+        - '%kernel.root_dir%'
+
+    MBH\Bundle\OnlineBundle\Services\SearchForm\MBSiteSearchFormStyle:
         arguments:
-            - '@mbh.sentry_logger'
-            - '%kernel.root_dir%'
+            - '@MBH\Bundle\OnlineBundle\Services\MBSite\StyleDataFromFile'
 
     mbh.online_payment_form.validator:
         class: MBH\Bundle\OnlineBundle\Services\OnlineFormValidator
 
     MBH\Bundle\OnlineBundle\Services\SearchForm\MBSiteFormConfigDataService:
         arguments:
-            - '@MBH\Bundle\OnlineBundle\Services\SearchForm\MBSiteStyleFormHolder'
+            - '@MBH\Bundle\OnlineBundle\Services\SearchForm\MBSiteSearchFormStyle'
             - '@doctrine.odm.mongodb.document_manager'
             - '%locale%'
 

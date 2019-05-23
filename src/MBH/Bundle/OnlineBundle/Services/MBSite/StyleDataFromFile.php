@@ -1,24 +1,20 @@
 <?php
 /**
- * Date: 07.05.19
+ * Date: 23.05.19
  */
 
-namespace MBH\Bundle\OnlineBundle\Services\SearchForm;
+namespace MBH\Bundle\OnlineBundle\Services\MBSite;
 
 
+use MBH\Bundle\OnlineBundle\Lib\MBSite\StyleDataInterface;
 use Symfony\Bridge\Monolog\Logger;
 
-class MBSiteStyleFormHolder
+class StyleDataFromFile implements StyleDataInterface
 {
-    private const FILE_PREFIX = '/../src/MBH/Bundle/OnlineBundle/Resources/public/css/search-form/css-for-mb-site/';
-
-    private const FILE_STYLE_SEARCH_IFRAME = 'search-form.css';
-    private const FILE_STYLE_CALENDAR_IFRAME = 'calendar.css';
-    private const FILE_STYLE_ADDITIONAL_IFRAME = 'additional-form.css';
-    private const FILE_STYLE_RESULT_FORM = '';
-
     public const MSG_NO_FOUND_FILE = 'File "%s" not found in "%s".';
     public const MSG_NO_CONTENT = 'Can not read file "%s".';
+
+    private const PREFIX_DIR = '/../src/MBH/Bundle/OnlineBundle/Resources/public/css/mb-site/for-form/';
 
     private const TYPE_LOG_INFO = 'info';
     private const TYPE_LOG_ERROR = 'error';
@@ -31,44 +27,24 @@ class MBSiteStyleFormHolder
     /**
      * @var string
      */
-    private $prefixDir;
+    private $dir;
 
     public function __construct(Logger $logger, string $rootDir)
     {
         $this->logger = $logger;
-        $this->prefixDir = $rootDir . self::FILE_PREFIX;
+        $this->dir = $rootDir . self::PREFIX_DIR;
     }
 
-    public function getStyleSearchForm(): ?string
+    public function getContent(string $fileName, string $formName): ?string
     {
-        return $this->getFileContent(self::FILE_STYLE_SEARCH_IFRAME);
-    }
-
-    public function getStyleCalendar(): ?string
-    {
-        return $this->getFileContent(self::FILE_STYLE_CALENDAR_IFRAME);
-    }
-
-    public function getStyleAdditionalForm(): ?string
-    {
-        return $this->getFileContent(self::FILE_STYLE_ADDITIONAL_IFRAME);
-    }
-
-    private function getPrefixDir(): string
-    {
-        return $this->prefixDir;
-    }
-
-    private function getFileContent(string $file): ?string
-    {
-        $pathToFile = $this->getPrefixDir() . $file;
+        $pathToFile = $this->getDir() . $formName . '/' . $fileName;
 
         if (!file_exists($pathToFile)) {
             $this->logger(
                 sprintf(
                     self::MSG_NO_FOUND_FILE,
-                    $file,
-                    $this->getPrefixDir()
+                    $fileName,
+                    $formName
                 ),
                 self::TYPE_LOG_ERROR
             );
@@ -85,6 +61,11 @@ class MBSiteStyleFormHolder
         }
 
         return $content;
+    }
+
+    private function getDir(): string
+    {
+        return $this->dir;
     }
 
     private function logger(string $msg, string $type = self::TYPE_LOG_INFO): void

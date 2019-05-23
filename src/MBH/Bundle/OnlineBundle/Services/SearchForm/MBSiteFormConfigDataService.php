@@ -13,7 +13,7 @@ use MBH\Bundle\OnlineBundle\Document\SiteConfig;
 class MBSiteFormConfigDataService
 {
     /**
-     * @var MBSiteStyleFormHolder
+     * @var MBSiteSearchFormStyle
      */
     private $styleHolder;
 
@@ -28,7 +28,7 @@ class MBSiteFormConfigDataService
     private $locale;
 
     public function __construct(
-        MBSiteStyleFormHolder $styleFormHolder,
+        MBSiteSearchFormStyle $styleFormHolder,
         DocumentManager $documentManager,
         string $locale
     )
