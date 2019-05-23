@@ -21,7 +21,7 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
  * Class FormPaymentConfig
  * @package MBH\Bundle\OnlineBundle\Document
  *
- * @ODM\Document(collection="PaymentFormConfig", repositoryClass="PaymentFormConfigRepository")
+ * @ODM\Document(collection="PaymentFormConfig")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */

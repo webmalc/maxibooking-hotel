@@ -9,12 +9,10 @@ namespace MBH\Bundle\OnlineBundle\Controller\PaymentForm;
 
 use MBH\Bundle\BaseBundle\Controller\BaseController as Controller;
 use MBH\Bundle\CashBundle\Document\CashDocument;
-use MBH\Bundle\ClientBundle\Lib\PaymentSystem\ExtraData;
 use MBH\Bundle\OnlineBundle\Document\PaymentFormConfig;
-use MBH\Bundle\OnlineBundle\Exception\NotFoundConfigPaymentFormException;
 use MBH\Bundle\OnlineBundle\Form\OrderSearchType;
 use MBH\Bundle\OnlineBundle\Lib\HolderDataForRenderBtn;
-use MBH\Bundle\OnlineBundle\Lib\SearchForm;
+use MBH\Bundle\OnlineBundle\Services\PaymentForm\SearchForm;
 use MBH\Bundle\OnlineBundle\Lib\PaymentSystemHelper;
 use MBH\Bundle\OnlineBundle\Services\RenderPaymentButton;
 use MBH\Bundle\PackageBundle\Document\Order;
@@ -34,23 +32,17 @@ class OnlineController extends Controller
 {
     /**
      * @Route("/file/{configId}/load", defaults={"_format" = "js"}, name="online_payment_form_load_js")
+     * @ParamConverter(converter="payment_form_config_converter", options={"formConfigId": "configId"})
      * @Cache(expires="tomorrow", public=true)
      */
-    public function loadAction($configId)
+    public function loadAction(PaymentFormConfig $formConfig)
     {
         $this->setLocaleByRequest();
-
-        $config = $this->dm->getRepository('MBHOnlineBundle:PaymentFormConfig')
-            ->findOneById($configId);
-
-        if ($config === null) {
-            throw new NotFoundConfigPaymentFormException();
-        }
 
         return $this->render(
             '@MBHOnline/PaymentForm/Online/loadIframe.js.twig',
             [
-                'config'         => $config,
+                'config'         => $formConfig,
                 'wrapperId'      => PaymentFormConfig::WRAPPER_ID,
                 'paymentSystems' => $this->clientConfig->getPaymentSystems(),
                 'locale'         => $this->getRequest()->getLocale(),
@@ -62,22 +54,15 @@ class OnlineController extends Controller
      * @Route("/form/search/{formId}", name="online_payment_search_form", defaults={"formId"=null})
      * @Method("GET")
      * @Cache(expires="tomorrow", public=true)
+     * @ParamConverter(converter="payment_form_config_converter", options={"formConfigId": "formId"})
      * @Template()
      */
-    public function searchFormAction(Request $request, string $formId)
+    public function searchFormAction(Request $request, PaymentFormConfig $formConfig)
     {
         $this->setLocaleByRequest();
 
-        /** @var PaymentFormConfig $paymentFormConfig */
-        $paymentFormConfig = $this->dm->getRepository('MBHOnlineBundle:PaymentFormConfig')
-            ->findOneById($formId);
-
-        if ($paymentFormConfig === null || !$paymentFormConfig->getIsEnabled()) {
-            throw new NotFoundConfigPaymentFormException();
-        }
-
         $search = $this->container->get('mbh.online.search_order');
-        $search->setConfigId($formId);
+        $search->setConfigId($formConfig->getId());
         $search->setSelectedHotelId($request->get('hotel'));
 
         $form = $this->createForm(OrderSearchType::class, $search);
@@ -87,7 +72,7 @@ class OnlineController extends Controller
         return [
             'form'                => $form->createView(),
             'formId'              => OrderSearchType::PREFIX,
-            'paymentFormConfig'   => $paymentFormConfig,
+            'paymentFormConfig'   => $formConfig,
             'referer'             => $match[1] ?? '*',
             'siteConfig'          => $this->get('mbh.site_manager')->getSiteConfig(),
             'locale'              => $this->getRequest()->getLocale(),
@@ -164,7 +149,7 @@ class OnlineController extends Controller
 
     /**
      * @Route("/search", name="online_api_payment_form_search")
-     * @ParamConverter(class="MBH\Bundle\OnlineBundle\Lib\SearchForm")
+     * ParamConverter(class="MBH\Bundle\OnlineBundle\Lib\SearchForm")
      * @Method("POST")
      */
     public function searchAction(Request $request)

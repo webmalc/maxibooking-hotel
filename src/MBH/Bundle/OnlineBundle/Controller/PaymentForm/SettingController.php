@@ -9,6 +9,7 @@ namespace MBH\Bundle\OnlineBundle\Controller\PaymentForm;
 
 use MBH\Bundle\OnlineBundle\Document\PaymentFormConfig;
 use MBH\Bundle\OnlineBundle\Form\PaymentFormType;
+use MBH\Bundle\OnlineBundle\Services\PaymentForm\PaymentFormManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -30,7 +31,7 @@ class SettingController extends Controller
      */
     public function indexAction()
     {
-        $paymentForms = $this->dm->getRepository('MBHOnlineBundle:PaymentFormConfig')->findAll();
+        $paymentForms = $this->get(PaymentFormManager::class)->findAll();
 
         $siteConfig = $this->get('mbh.site_manager')->getSiteConfig();
         $hasEnabledMBSite = $siteConfig !== null && $siteConfig->getIsEnabled();
@@ -77,7 +78,7 @@ class SettingController extends Controller
      * @Method({"GET", "POST"})
      * @Security("is_granted('ROLE_ONLINE_PAYMENT_FORM_EDIT')")
      * @Template()
-     * @ParamConverter(class="MBHOnlineBundle:PaymentFormConfig")
+     * @ParamConverter(converter="payment_form_config_converter", options={"formConfigId": "id"})
      * @param Request $request
      * @param PaymentFormConfig $entity
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
@@ -108,6 +109,7 @@ class SettingController extends Controller
     /**
      * @Route("/{id}/form-code", name="payment_form_code")
      * @Template()
+     * @ParamConverter(converter="payment_form_config_converter", options={"formConfigId": "id"})
      * @param PaymentFormConfig $config
      * @return array
      */

@@ -4,7 +4,7 @@
  * Date: 01.06.18
  */
 
-namespace MBH\Bundle\OnlineBundle\Lib;
+namespace MBH\Bundle\OnlineBundle\Services\PaymentForm;
 
 
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -61,21 +61,29 @@ class SearchForm
     private $order;
 
     /**
-     * @var ContainerInterface
-     */
-    private $container;
-
-    /**
      * @var DocumentManager
      */
     private $dm;
 
-    public function __construct(ContainerInterface $container = null)
+    /**
+     * @var PaymentFormManager
+     */
+    private $paymentFormManger;
+
+    /**
+     * @var SearchFormResult
+     */
+    private $searchFormResult;
+
+    public function __construct(
+        DocumentManager $dm,
+        PaymentFormManager $paymentFormManager,
+        SearchFormResult $searchFormResult
+    )
     {
-        $this->container = $container;
-        if ($container !== null) {
-            $this->dm = $container->get('doctrine.odm.mongodb.document_manager');
-        }
+        $this->dm = $dm;
+        $this->paymentFormManger = $paymentFormManager;
+        $this->searchFormResult = $searchFormResult;
     }
 
     /**
@@ -136,8 +144,7 @@ class SearchForm
 
     private function loadPaymentFormConfig(): void
     {
-        $this->paymentFormConfig = $this->dm->getRepository('MBHOnlineBundle:PaymentFormConfig')
-            ->find($this->getConfigId());
+        $this->paymentFormConfig = $this->paymentFormManger->findOneById($this->getConfigId());
     }
 
     /**
@@ -214,7 +221,7 @@ class SearchForm
                 'numberWithPrefix' => $this->getNumberPackage(),
             ]);
 
-        $result = new SearchFormResult($this->container);
+        $result = $this->searchFormResult;
 
         if ($package === null) {
             return $result;

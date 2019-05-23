@@ -1,0 +1,26 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:400,500,700&subset=cyrillic');
+.btn-primary,
+.btn-primary,
+.btn-primary:active,
+.btn-primary:focus,
+.btn-success,
+.btn-success:active,
+.btn-success:focus,
+.btn-info,
+.btn-info:hover,
+.btn-primary {
+  font-size: 16px;
+}
+h4 {
+  color: black !important;
+}
+form .form-control {
+  background-color: #fff;
+}
+#mbh-form-payment-accordion-search,
+#mbh-form-payment-generate,
+#mbh-form-payment-pay,
+input,
+button {
+  border-radius: 0 !important;
+}

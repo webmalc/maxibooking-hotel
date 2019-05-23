@@ -29,9 +29,16 @@ services:
         tags:
             {name: form.type}
 
+    MBH\Bundle\OnlineBundle\Services\PaymentForm\SearchFormResult:
+        arguments:
+            - '@translator'
+
     mbh.online.search_order:
-        class: MBH\Bundle\OnlineBundle\Lib\SearchForm
-        arguments: ['@service_container']
+        class: MBH\Bundle\OnlineBundle\Services\PaymentForm\SearchForm
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@MBH\Bundle\OnlineBundle\Services\PaymentForm\PaymentFormManager'
+            - '@MBH\Bundle\OnlineBundle\Services\PaymentForm\SearchFormResult'
 
     mbh.payment_types_type:
         class: MBH\Bundle\OnlineBundle\Form\PaymentTypesType
@@ -59,6 +66,7 @@ services:
             - '@mbh.billing.api'
             - '@mbh.client_manager'
             - '@MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigManager'
+            - '@MBH\Bundle\OnlineBundle\Services\PaymentForm\PaymentFormManager'
 
     MBH\Bundle\OnlineBundle\Services\RenderPaymentButton:
         arguments:
@@ -141,6 +149,12 @@ services:
         tags:
             - {name: request.param_converter, converter: form_config_converter}
 
+    MBH\Bundle\OnlineBundle\Services\ParamConverter\PaymentFormConfigConverter:
+        arguments:
+            - '@MBH\Bundle\OnlineBundle\Services\PaymentForm\PaymentFormManager'
+        tags:
+            - {name: request.param_converter, converter: payment_form_config_converter}
+
     MBH\Bundle\OnlineBundle\Services\MBSite\v2\:
         resource: '%kernel.root_dir%/../src/MBH/Bundle/OnlineBundle/Services/MBSite/v2/*'
         arguments:
@@ -171,3 +185,14 @@ services:
     MBH\Bundle\OnlineBundle\EventListener\SiteConfigSubscriber:
         tags:
             - {name: doctrine_mongodb.odm.event_subscriber, connection: default }
+
+    MBH\Bundle\OnlineBundle\Services\PaymentForm\MBSitePaymentFormConfigData:
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@MBH\Bundle\OnlineBundle\Services\MBSite\StyleDataFromFile'
+
+    MBH\Bundle\OnlineBundle\Services\PaymentForm\PaymentFormManager:
+        arguments:
+            - '@doctrine.odm.mongodb.document_manager'
+            - '@MBH\Bundle\OnlineBundle\Services\PaymentForm\MBSitePaymentFormConfigData'
+            - '@mbh.client_config_manager'

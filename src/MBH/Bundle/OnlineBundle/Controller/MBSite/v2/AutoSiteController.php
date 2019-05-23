@@ -54,7 +54,8 @@ class AutoSiteController extends BaseController implements CheckSiteManagerInter
                 'colorTheme'           => $siteConfig->getThemeColors(),
                 'paymentFormUrl'       => $this->generateUrl(
                     'online_payment_form_load_js',
-                    ['configId' => $siteConfig->getPaymentFormId()]
+                    ['configId' => $siteConfig->getPaymentFormId()],
+                    UrlGeneratorInterface::ABSOLUTE_URL
                 ),
                 'paymentSystems'       => $this->clientConfig->getPaymentSystems(),
                 'usePaymentForm'       => $siteConfig->isUsePaymentForm(),

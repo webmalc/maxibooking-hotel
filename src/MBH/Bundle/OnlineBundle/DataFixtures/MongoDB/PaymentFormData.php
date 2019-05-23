@@ -17,27 +17,24 @@ class PaymentFormData extends AbstractFixture implements OrderedFixtureInterface
 {
     public function doLoad(ObjectManager $manager)
     {
-        $hotel = $this->getReference(HotelData::HOTELS_DATA_KEY_ONE);
-
         $formConfig = new PaymentFormConfig();
-        $formConfig
-            ->setHotels([$hotel])
-            ->setEnabledReCaptcha(false)
-            ->setFieldUserNameIsVisible(false)
-            ->setForMbSite(false)
-            ->setIsFullWidth(true);
+
+        if ($this->getEnv() === 'test') {
+            $hotel = $this->getReference(HotelData::HOTELS_DATA_KEY_ONE);
+
+            $formConfig
+                ->setHotels([$hotel])
+                ->setEnabledReCaptcha(false)
+                ->setFieldUserNameIsVisible(false)
+                ->setForMbSite(false)
+                ->setIsFullWidth(true);
+        } else {
+            $formConfig->setForMbSite(true);
+        }
 
         $manager->persist($formConfig);
 
         $manager->flush();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function getEnvs(): array
-    {
-        return ['test'];
     }
 
     public function getOrder()

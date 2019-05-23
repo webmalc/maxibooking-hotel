@@ -4,10 +4,8 @@
  * Date: 13.06.18
  */
 
-namespace MBH\Bundle\OnlineBundle\Lib;
+namespace MBH\Bundle\OnlineBundle\Services\PaymentForm;
 
-
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class SearchFormResult implements \JsonSerializable
 {
@@ -27,20 +25,13 @@ class SearchFormResult implements \JsonSerializable
     private $orderId;
 
     /**
-     * @var ContainerInterface
-     */
-    private $container;
-
-    /**
      * @var \Symfony\Component\Translation\DataCollectorTranslator
      */
     private $translator;
 
-    public function __construct(ContainerInterface $container)
+    public function __construct(\Symfony\Component\Translation\DataCollectorTranslator $translator)
     {
-        $this->container = $container;
-
-        $this->translator = $this->container->get('translator');
+        $this->translator = $translator;
     }
 
     /**
