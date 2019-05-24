@@ -56,20 +56,22 @@ class MBSiteFormConfigDataService
         /** @var SiteConfig $siteConfig */
         $siteConfig = $this->dm->getRepository(SiteConfig::class)->findOneBy([]);
 
-        $css = sprintf(
-            "#mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-form-submit {background: %s;}\n%s",
-            $siteConfig->getThemeColors()['main'],
-            $this->styleHolder->getStyleSearchForm()
-        );
+        if ($siteConfig !== null) {
+            $css = sprintf(
+                "#mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-form-submit {background: %s;}\n%s",
+                $siteConfig->getThemeColors()['main'],
+                $this->styleHolder->getStyleSearchForm()
+            );
 
-        $formConfig
-            ->setAdditionalFormFrameWidth('251px')
-            ->setAdditionalFormFrameHeight('auto')
-            ->setCalendarFrameHeight('230px')
-            ->setCalendarFrameWidth('235px')
-            ->setCss($css)
-            ->setCalendarCss($this->styleHolder->getStyleCalendar())
-            ->setAdditionalFormCss($this->styleHolder->getStyleAdditionalForm());
+            $formConfig
+                ->setAdditionalFormFrameWidth('251px')
+                ->setAdditionalFormFrameHeight('auto')
+                ->setCalendarFrameHeight('230px')
+                ->setCalendarFrameWidth('235px')
+                ->setCss($css)
+                ->setCalendarCss($this->styleHolder->getStyleCalendar())
+                ->setAdditionalFormCss($this->styleHolder->getStyleAdditionalForm());
+        }
     }
 
 }

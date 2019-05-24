@@ -48,13 +48,15 @@ class MBSitePaymentFormConfigData
             /** @var SiteConfig $siteConfig */
             $siteConfig = $this->dm->getRepository(SiteConfig::class)->findOneBy([]);
 
-            $css = sprintf(
-                '.panel-primary .panel-heading {background-color: %1$s;}.btn-info:active {background: %1$s !important;border-color: %1$s !important;} %2$s',
-                $siteConfig->getThemeColors()['main'],
-                $this->getStyle()
-            );
+            if ($siteConfig !== null) {
+                $css = sprintf(
+                    '.panel-primary .panel-heading {background-color: %1$s;}.btn-info:active {background: %1$s !important;border-color: %1$s !important;} %2$s',
+                    $siteConfig->getThemeColors()['main'],
+                    $this->getStyle()
+                );
 
-            $formConfig->setCss($css);
+                $formConfig->setCss($css);
+            }
         }
     }
 
