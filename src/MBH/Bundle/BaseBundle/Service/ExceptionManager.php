@@ -28,7 +28,7 @@ class ExceptionManager
         $user = $this->tokenStorage->getToken();
         $message = $this->exceptionNotifier::createMessage();
 
-        $format = "Error. Client: \"%s\". User: \"%s\".\n Msg: \"%s\". \n Стек: %s";
+        $format = "Err. Client: \"%s\". User: \"%s\".\n Msg: \"%s\". \n Стек: %s";
 
         $messageText = sprintf(
             $format,

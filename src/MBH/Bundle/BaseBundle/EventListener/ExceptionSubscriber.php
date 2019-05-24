@@ -12,13 +12,10 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 class ExceptionSubscriber implements EventSubscriberInterface
 {
-    /** @var \AppKernel  */
-    private $kernel;
     private $exceptionManager;
 
-    public function __construct(KernelInterface $kernel, ExceptionManager $exceptionManager)
+    public function __construct(ExceptionManager $exceptionManager)
     {
-        $this->kernel = $kernel;
         $this->exceptionManager = $exceptionManager;
     }
 
@@ -56,7 +53,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
     public function notifyException(GetResponseForExceptionEvent $event)
     {
         $exception = $event->getException();
-        if (!$exception instanceof AccessDeniedException && !$exception instanceof NotFoundHttpException && $this->kernel->getEnvironment() === 'prod') {
+        if (!$exception instanceof AccessDeniedException && !$exception instanceof NotFoundHttpException) {
             $this->exceptionManager->sendExceptionNotification($exception);
         }
     }

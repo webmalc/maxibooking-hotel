@@ -24,6 +24,7 @@ monolog:
 services:
     mbh.exception_subscriber:
         class: MBH\Bundle\BaseBundle\EventListener\ExceptionSubscriber
-        arguments: ['@kernel', '@mbh.exception_manager']
+        arguments:
+            - '@mbh.exception_manager'
         tags:
             - {name: kernel.event_subscriber}

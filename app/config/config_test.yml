@@ -14,6 +14,7 @@ swiftmailer:
     disable_delivery: true
 
 parameters:
+    sentry_default_breadcrumb_handlers: false
     mb_user_pwd: 'mb_user_pwd'
     mbh.environment: "prod" #это для обхода проверки \MBH\Bundle\BaseBundle\EventListener\OnController::onKernelController
     mbh_cache:

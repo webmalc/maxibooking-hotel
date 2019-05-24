@@ -231,7 +231,6 @@ class BaseControllerTest extends WebTestCase
     }
 
     /**
-     *
      * @dataProvider getRouterFor302
      * @param string $url
      */

@@ -480,7 +480,9 @@ services:
 
     mbh.raven_client:
         class: Raven_Client
-        arguments: ['%sentry_dsn%']
+        arguments:
+            - '%sentry_dsn%'
+            - {install_default_breadcrumb_handlers: '%sentry_default_breadcrumb_handlers%'}
         public: false
 
     mbh.guides_data_service:
