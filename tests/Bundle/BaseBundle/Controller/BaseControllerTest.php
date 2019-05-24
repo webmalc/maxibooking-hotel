@@ -29,7 +29,6 @@ class BaseControllerTest extends WebTestCase
     const EXCLUDED_ROUTES_FOR_INVALID_AUTH = [
         "create_region",                //TODO: Какие права нужны? src/MBH/Bundle/BillingBundle/Controller/BillingDataController.php
         "create_city",                  //TODO: Какие права нужны? src/MBH/Bundle/BillingBundle/Controller/BillingDataController.php
-        'online_form_calendar',
     ];
 
     /**
@@ -238,7 +237,7 @@ class BaseControllerTest extends WebTestCase
      */
     public function testRouteAlways302(string $url)
     {
-        $client = static::makeClient(true);
+        $client = $this->makeClient(true);
         $client->followRedirects(true);
 
         $client->request('GET', $url);
@@ -252,7 +251,7 @@ class BaseControllerTest extends WebTestCase
      */
     public function testBasicGetRouterInvalidAuth(string $url)
     {
-        $client = static::makeClient(false);
+        $client = $this->makeClient(false);
         $client->request('GET', $url);
 
         $this->assertStatusCodeWithMsg($url, 401, $client);

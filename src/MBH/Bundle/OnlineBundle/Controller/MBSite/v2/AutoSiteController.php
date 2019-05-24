@@ -92,6 +92,7 @@ class AutoSiteController extends BaseController implements CheckSiteManagerInter
      * @SWG\Get(
      *     path="/management/online/api/mb-site/v2/hotels",
      *     produces={"application/json"},
+     *     @SWG\Response(response="200", description="return data hotels")
      * )
      * @Route("/hotels", name="mb_site_api_v2_hotels")
      */
