@@ -4,11 +4,11 @@
  * Date: 31.01.19
  */
 
-namespace MBH\Bundle\OnlineBundle\Lib;
+namespace MBH\Bundle\OnlineBundle\Services\PaymentForm;
 
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\ExtraData;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use MBH\Bundle\ClientBundle\Service\ClientConfigManager;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class PaymentSystemHelper
@@ -49,18 +49,49 @@ class PaymentSystemHelper
     private $usedPaymentSystems;
 
     /**
+     * @var ContactHotelPaymentForm
+     */
+    private $contactHotel;
+
+    /**
      * SearchFormExtraHtmlData constructor.
      */
-    public function __construct(ContainerInterface $container, ClientConfig $clientConfig, SearchForm $search)
+    public function __construct(
+        TranslatorInterface $translator,
+        ClientConfigManager $clientConfigManager,
+        ExtraData $extraData,
+        ContactHotelPaymentForm $contactHotel
+    )
     {
-        $this->trans = $container->get('translator');
-        $this->clientConfig = $clientConfig;
-        $this->searchForm = $search;
+        $this->trans = $translator;
+        $this->clientConfig = $clientConfigManager->fetchConfig();
+        $this->extra = $extraData;
+        $this->contactHotel = $contactHotel;
+
         $this->usedPaymentSystems = $this->clientConfig->getPaymentSystems();
-        $this->extra = $container->get('mbh.payment_extra_data');
         $this->isOnePaymentSystem = count($this->usedPaymentSystems) <= 2;
 
         $this->generateOptionsTagAsString();
+    }
+
+    /**
+     * @param SearchForm $searchForm
+     */
+    public function setSearchForm(SearchForm $searchForm): self
+    {
+        $this->searchForm = $searchForm;
+        $this->contactHotel->setSearchForm($searchForm);
+
+        return $this;
+    }
+
+    public function getTextForWarning(): string
+    {
+        if ($this->getUsedPaymentSystems() === []) {
+            return $this->contactHotel->getText();
+        }
+
+        return '';
     }
 
     /**
@@ -69,14 +100,6 @@ class PaymentSystemHelper
     public function getSearchForm(): SearchForm
     {
         return $this->searchForm;
-    }
-
-    /**
-     * @return TranslatorInterface
-     */
-    public function getTrans(): TranslatorInterface
-    {
-        return $this->trans;
     }
 
     /**

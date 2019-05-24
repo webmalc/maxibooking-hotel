@@ -13,7 +13,7 @@ use MBH\Bundle\OnlineBundle\Document\PaymentFormConfig;
 use MBH\Bundle\OnlineBundle\Form\OrderSearchType;
 use MBH\Bundle\OnlineBundle\Lib\HolderDataForRenderBtn;
 use MBH\Bundle\OnlineBundle\Services\PaymentForm\SearchForm;
-use MBH\Bundle\OnlineBundle\Lib\PaymentSystemHelper;
+use MBH\Bundle\OnlineBundle\Services\PaymentForm\PaymentSystemHelper;
 use MBH\Bundle\OnlineBundle\Services\RenderPaymentButton;
 use MBH\Bundle\PackageBundle\Document\Order;
 use ReCaptcha\ReCaptcha;
@@ -65,6 +65,8 @@ class OnlineController extends Controller
         $search->setConfigId($formConfig->getId());
         $search->setSelectedHotelId($request->get('hotel'));
 
+        $paymentSystemHelper = $this->get(PaymentSystemHelper::class)->setSearchForm($search);
+
         $form = $this->createForm(OrderSearchType::class, $search);
 
         $refer = preg_match('/(.*:\/\/.*?)\//', $request->headers->get('referer'), $match);
@@ -75,8 +77,8 @@ class OnlineController extends Controller
             'paymentFormConfig'   => $formConfig,
             'referer'             => $match[1] ?? '*',
             'siteConfig'          => $this->get('mbh.site_manager')->getSiteConfig(),
-            'locale'              => $this->getRequest()->getLocale(),
-            'paymentSystemHelper' => new PaymentSystemHelper($this->container, $this->clientConfig, $search),
+            'locale'              => $request->getLocale(),
+            'paymentSystemHelper' => $paymentSystemHelper,
         ];
     }
 

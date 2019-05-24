@@ -4,7 +4,7 @@
  * Date: 01.02.19
  */
 
-namespace MBH\Bundle\OnlineBundle\Lib;
+namespace MBH\Bundle\OnlineBundle\Services\PaymentForm;
 
 
 use MBH\Bundle\HotelBundle\Document\ContactInfo;
@@ -28,12 +28,19 @@ class ContactHotelPaymentForm
      */
     private $trans;
 
-    public function __construct(PaymentSystemHelper $paymentSystemsHelper)
+    public function __construct(TranslatorInterface $translator)
     {
-        $this->searchForm = $paymentSystemsHelper->getSearchForm();
-        $this->trans = $paymentSystemsHelper->getTrans();
+        $this->trans =$translator;
+    }
 
-        $this->generateTextIfNotSetPaymentSystems();
+    /**
+     * @param SearchForm $searchForm
+     */
+    public function setSearchForm(SearchForm $searchForm): self
+    {
+        $this->searchForm = $searchForm;
+
+        return $this;
     }
 
     /**
@@ -41,12 +48,14 @@ class ContactHotelPaymentForm
      */
     public function getText(): string
     {
+        $this->generateTextIfNotSetPaymentSystems();
+
         return $this->text;
     }
 
     public function __toString()
     {
-        return $this->text;
+        return $this->getText();
     }
 
     private function generateTextIfNotSetPaymentSystems(): void

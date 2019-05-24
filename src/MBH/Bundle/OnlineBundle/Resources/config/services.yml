@@ -196,3 +196,14 @@ services:
             - '@doctrine.odm.mongodb.document_manager'
             - '@MBH\Bundle\OnlineBundle\Services\PaymentForm\MBSitePaymentFormConfigData'
             - '@mbh.client_config_manager'
+
+    MBH\Bundle\OnlineBundle\Services\PaymentForm\ContactHotelPaymentForm:
+        arguments:
+            - '@translator'
+
+    MBH\Bundle\OnlineBundle\Services\PaymentForm\PaymentSystemHelper:
+        arguments:
+            - '@translator'
+            - '@mbh.client_config_manager'
+            - '@mbh.payment_extra_data'
+            - '@MBH\Bundle\OnlineBundle\Services\PaymentForm\ContactHotelPaymentForm'

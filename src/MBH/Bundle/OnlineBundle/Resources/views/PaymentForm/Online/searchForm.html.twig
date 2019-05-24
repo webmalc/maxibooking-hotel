@@ -29,7 +29,7 @@
             function MbhIframe() {
                 this.idFormSearch = '{{ formId }}';
                 this.idDivResultSearch = '{{ idDivResultSearch }}';
-                this.textWithoutPaymentSystem = '{{ paymentSystemHelper.usedPaymentSystems == [] ? contact_hotel(paymentSystemHelper) : ''}}';
+                this.textWithoutPaymentSystem = '{{ paymentSystemHelper.textForWarning }}';
                 this._idFormPayment = 'go-form';
                 this._actionPayment = '{{ url('online_api_payment_form_payment', {locale: locale}) }}';
                 this._form = {
@@ -46,7 +46,6 @@
         %}
             <script type="text/javascript" src="{{ absolute_url(asset_url) }}"></script>
         {% endjavascripts %}
-{#        {% include '@MBHOnline/ApiPaymentForm/siteStyles.html.twig' %}#}
     </head>
     {% if paymentFormConfig.css %}
         <style>
@@ -94,9 +93,7 @@
                 </div>
             </div>
         </div>
-
     </div>
-
     {% if constant('MBH\\Bundle\\ClientBundle\\Document\\PaymentSystem\\NewRbk::KEY') in paymentSystemHelper.usedPaymentSystems %}
         {% include '@MBHClient/PaymentSystem/newRbk/scripts_for_iframe.html.twig' %}
         <script>
@@ -105,8 +102,6 @@
             });
         </script>
     {% endif %}
-    
     </body>
-
     </html>
 {% endspaceless %}
