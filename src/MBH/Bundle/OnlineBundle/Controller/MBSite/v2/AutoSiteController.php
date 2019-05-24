@@ -20,6 +20,7 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Swagger\Annotations as SWG;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * @Route("/api/mb-site/v2")
