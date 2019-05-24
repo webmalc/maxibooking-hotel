@@ -103,20 +103,19 @@ RoomTypeRow.prototype.handleChartData = function (data) {
 };
 
 RoomTypeRow.prototype.fancyInit = function () {
-    this.$row
+    var fancies = this.$row
         .find('.fancybox')
+        .fancybox()
         .each(function () {
-            $(this).fancybox()
-                .on('click', function (e) {
-                    e.stopPropagation();
-                });
-        })
+            $(this).on('click', function (e) {
+                e.stopPropagation();
+            });
+        });
 
     this.$row
         .find(".imghotel")
-        .on('click', function (e) {
-            $.fancybox.open($('.fancybox', $(this)));
-
+        .on('click', function () {
+            $(fancies[0]).click();
         });
 };
 
@@ -354,14 +353,14 @@ AddingDates.prototype.bindHandlers = function () {
         '&' + encodeURIComponent('search_form[addDates]') + '=' + 'true';
     this.$link.on('click', function (e) {
         e.preventDefault();
-        if(that.isLoading()) {
+        if (that.isLoading()) {
             return false;
         }
         //TODO: Сделать затемнение?
         var ajax = $.get({
                 url: Routing.generate('online_booking', {}, true),
                 data: formData,
-                beforeSend: function() {
+                beforeSend: function () {
                     that.startLoading();
                 }
             }
