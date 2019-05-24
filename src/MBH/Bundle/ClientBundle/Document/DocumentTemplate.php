@@ -73,7 +73,7 @@ class DocumentTemplate extends Base
 
     /**
      * @var bool
-     * @ODM\Field(type="bool")
+     * @ODM\Field(type="boolean")
      */
     protected $isDefault = false;
 

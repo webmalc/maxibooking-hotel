@@ -131,7 +131,7 @@ class RoomType extends Base implements RoomTypeInterface
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Integer(name="places")
+     * @ODM\Field(type="integer")
      * @Assert\NotNull()
      * @Assert\Type(type="numeric")
      * @Assert\Range(
@@ -145,7 +145,7 @@ class RoomType extends Base implements RoomTypeInterface
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Integer(name="additionalPlaces")
+     * @ODM\Field(type="integer")
      * @Assert\NotNull()
      * @Assert\Type(type="numeric")
      * @Assert\Range(
@@ -210,7 +210,7 @@ class RoomType extends Base implements RoomTypeInterface
 
     /**
      * @var bool
-     * @ODM\Field(type="bool")
+     * @ODM\Field(type="boolean")
      */
     protected $isSmoking = false;
 

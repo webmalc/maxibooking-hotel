@@ -78,7 +78,7 @@ class DishOrderItem extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean(name="isFreezed")
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */

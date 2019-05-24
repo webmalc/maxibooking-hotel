@@ -115,7 +115,7 @@ class Package extends Base implements \JsonSerializable, OwnerInterface
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      * @ODM\Index()
      */
     protected $number;
@@ -133,7 +133,7 @@ class Package extends Base implements \JsonSerializable, OwnerInterface
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Integer(name="adults")
+     * @ODM\Field(type="integer")
      * @Assert\NotNull(message="mbhpackagebundle.document.package.kolichestvo.vzroslykh.ne.ukazano")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
@@ -148,7 +148,7 @@ class Package extends Base implements \JsonSerializable, OwnerInterface
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Integer(name="children")
+     * @ODM\Field(type="integer")
      * @Assert\NotNull(message="mbhpackagebundle.document.package.kolichestvo.detey.ne.ukazano")
      * @Assert\Type(type="numeric")
      * @Assert\Range(

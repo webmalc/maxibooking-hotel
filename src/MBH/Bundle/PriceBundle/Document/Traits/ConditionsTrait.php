@@ -19,7 +19,7 @@ trait ConditionsTrait
     protected $condition;
 
     /**
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      * @var integer
      * @Assert\Type(type="numeric")
      * @Assert\Range(min="1")
@@ -34,7 +34,7 @@ trait ConditionsTrait
     protected $additionalCondition;
 
     /**
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      * @var integer
      * @Assert\Type(type="numeric")
      * @Assert\Range(min="1")

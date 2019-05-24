@@ -77,7 +77,7 @@ class PaymentFormConfig extends Base implements DecorationInterface, DecorationD
     /**
      * @var bool
      * @Gedmo\Versioned
-     * @ODM\Field(type="bool")
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -86,7 +86,7 @@ class PaymentFormConfig extends Base implements DecorationInterface, DecorationD
     /**
      * @var bool
      * @Gedmo\Versioned
-     * @ODM\Field(type="bool")
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -101,7 +101,7 @@ class PaymentFormConfig extends Base implements DecorationInterface, DecorationD
 
     /**
      * @var bool
-     * @ODM\Field(type="bool")
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */

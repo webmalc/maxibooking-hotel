@@ -118,7 +118,7 @@ class Room extends Base
 
     /**
      * @var bool
-     * @ODM\Field(type="bool")
+     * @ODM\Field(type="boolean")
      */
     protected $isSmoking = false;
 

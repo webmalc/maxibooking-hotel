@@ -52,7 +52,7 @@ class AirbnbConfig extends Base implements ChannelManagerConfigInterface
     protected $tariffs;
 
     /**
-     * @ODM\Field(type="bool")
+     * @ODM\Field(type="boolean")
      * @var bool
      */
     private $isRoomLinksPageViewed = false;

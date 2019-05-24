@@ -113,20 +113,20 @@ class Service extends Base
 
     /**
      * @var bool
-     * @ODM\Field(type="bool")
+     * @ODM\Field(type="boolean")
      */
     protected $includeInAccommodationPrice = false;
 
     /**
      * @var bool
-     * @ODM\Field(type="bool")
+     * @ODM\Field(type="boolean")
      */
     protected $subtractFromAccommodationPrice = false;
 
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean(name="isOnline")
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      */
@@ -169,7 +169,7 @@ class Service extends Base
     /**
      * @var bool
      * @Gedmo\Versioned()
-     * @ODM\Field(type="bool")
+     * @ODM\Field(type="boolean")
      */
     protected $recalcCausedByTouristsNumberChange = false;
 

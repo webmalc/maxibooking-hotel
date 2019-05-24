@@ -46,7 +46,7 @@ trait DecorationTrait
 
     /**
      * @var bool
-     * @ODM\Field(type="bool")
+     * @ODM\Field(type="boolean")
      * @Assert\Type(type="bool")
      */
     private $isFullWidth = false;
@@ -64,7 +64,7 @@ trait DecorationTrait
     /**
      * @var array
      * @Gedmo\Versioned
-     * @ODM\Collection
+     * @ODM\Field(type="collection")
      * @Assert\Choice(callback = "getCssLibrariesList", multiple = true)
      */
     private $cssLibraries;

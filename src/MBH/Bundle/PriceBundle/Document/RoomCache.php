@@ -56,7 +56,7 @@ class RoomCache extends Base
 
     /**
      * @var int
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      * @Assert\NotNull()
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0)
@@ -67,7 +67,7 @@ class RoomCache extends Base
 
     /**
      * @var int
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      * @Assert\NotNull()
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0)
@@ -78,7 +78,7 @@ class RoomCache extends Base
 
     /**
      * @var int
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      * @Assert\Type(type="numeric")
      * @ODM\Index()
      */

@@ -48,7 +48,7 @@ class RoomTypeImage
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean(name="isMain")
+     * @ODM\Field(type="boolean")
      */
     protected $isMain = false;
 

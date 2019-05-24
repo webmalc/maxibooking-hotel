@@ -113,7 +113,7 @@ class Special extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Boolean(name="isPercent")
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      * @Assert\Type(type="boolean")
      * @ODM\Index()

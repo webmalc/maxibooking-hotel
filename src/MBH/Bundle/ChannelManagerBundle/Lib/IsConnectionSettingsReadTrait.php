@@ -8,7 +8,7 @@ trait IsConnectionSettingsReadTrait
 {
     /**
      * @var bool
-     * @ODM\Field(type="bool")
+     * @ODM\Field(type="boolean")
      */
     protected $isConnectionSettingsRead = false;
 

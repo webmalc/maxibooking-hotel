@@ -17,7 +17,7 @@ class PollQuestion
 
     /**
      * @var int
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      */
     protected $sort = 0;
 

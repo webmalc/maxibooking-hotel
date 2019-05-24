@@ -64,7 +64,7 @@ class PackageAccommodation extends Base implements \JsonSerializable
 
     /**
      * @var bool
-     * @ODM\Field(type="bool")
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull
      */
     protected $isAutomaticallyChangeable = true;

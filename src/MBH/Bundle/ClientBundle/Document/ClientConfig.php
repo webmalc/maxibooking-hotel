@@ -92,7 +92,7 @@ class ClientConfig extends Base
     /**
      * @var boolean
      * @Gedmo\Versioned
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      * @Assert\NotNull()
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0, max=10)
@@ -102,7 +102,7 @@ class ClientConfig extends Base
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      * @Assert\NotNull()
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0, max=999)
@@ -243,7 +243,7 @@ class ClientConfig extends Base
     /**
      * @var integer
      * @Gedmo\Versioned
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      * @Assert\NotNull()
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0, max=365)
@@ -271,7 +271,7 @@ class ClientConfig extends Base
 
     /**
      * @var bool
-     * @ODM\Field(type="bool")
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      */
     protected $isDisableableOn = false;
@@ -279,7 +279,7 @@ class ClientConfig extends Base
     /**
      * @var bool
      * @Assert\NotNull()
-     * @ODM\Field(type="bool")
+     * @ODM\Field(type="boolean")
      */
     protected $canBookWithoutPayer = true;
 
@@ -297,7 +297,7 @@ class ClientConfig extends Base
 
     /**
      * @var bool
-     * @ODM\Field(type="bool")
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      */
     protected $isSendMailAtPaymentConfirmation = false;
@@ -318,7 +318,7 @@ class ClientConfig extends Base
 
     /**
      * @var bool
-     * @ODM\Field(type="bool")
+     * @ODM\Field(type="boolean")
      */
     protected $isCacheValid = false;
 
@@ -338,13 +338,13 @@ class ClientConfig extends Base
 
     /**
      * @var bool
-     * @ODM\Field(type="bool")
+     * @ODM\Field(type="boolean")
      */
     protected $isMBSiteEnabled = false;
 
     /**
      * @var bool
-     * @ODM\Field(type="bool")
+     * @ODM\Field(type="boolean")
      */
     protected $confirmOrdersCreatedByManager = false;
 
@@ -506,7 +506,7 @@ class ClientConfig extends Base
 
     /**
      * @var bool
-     * @ODM\Field(type="bool")
+     * @ODM\Field(type="boolean")
      */
     protected $showLabelTips = true;
 

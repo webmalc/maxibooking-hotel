@@ -23,7 +23,7 @@ class DailyTaskSetting
 
     /**
      * @var int
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      * @Assert\GreaterThan(value = 0)
      * @Assert\LessThanOrEqual(value = 60)
      * @Assert\Type(type="numeric")

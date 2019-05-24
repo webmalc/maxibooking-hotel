@@ -11,7 +11,7 @@ class BookingRoom extends Room
 {
     /**
      * @var bool
-     * @ODM\Field(type="bool")
+     * @ODM\Field(type="boolean")
      */
     private $uploadSinglePrices = true;
 

@@ -136,7 +136,7 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
     /**
      * @var array
      * @Gedmo\Versioned
-     * @ODM\Collection
+     * @ODM\Field(type="collection")
      * @Assert\NotNull()
      * @Assert\Choice(callback = "getPaymentTypesList", multiple = true)
      */
@@ -161,7 +161,7 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      * @Assert\NotNull()
      * @Assert\Type(type="numeric")
      * @Assert\Range(
@@ -179,7 +179,7 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
 
     /**
      * @var bool
-     * @ODM\Field(type="bool")
+     * @ODM\Field(type="boolean")
      * @Gedmo\Versioned
      * @Assert\NotNull()
      */
@@ -187,7 +187,7 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
 
     /**
      * @var bool
-     * @ODM\Field(type="bool")
+     * @ODM\Field(type="boolean")
      * @Gedmo\Versioned
      * @Assert\NotNull()
      */
@@ -195,7 +195,7 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
 
     /**
      * @var bool
-     * @ODM\Field(type="bool")
+     * @ODM\Field(type="boolean")
      * @Gedmo\Versioned
      * @Assert\NotNull()
      */

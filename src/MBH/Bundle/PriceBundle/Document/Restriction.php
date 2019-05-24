@@ -53,7 +53,7 @@ class Restriction extends Base
 
     /**
      * @var int
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=1)
      */
@@ -61,7 +61,7 @@ class Restriction extends Base
 
     /**
      * @var int
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=1)
      */
@@ -69,7 +69,7 @@ class Restriction extends Base
 
     /**
      * @var int
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=1)
      */
@@ -77,7 +77,7 @@ class Restriction extends Base
 
     /**
      * @var int
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=1)
      */
@@ -85,7 +85,7 @@ class Restriction extends Base
 
     /**
      * @var int
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=1)
      */
@@ -93,7 +93,7 @@ class Restriction extends Base
 
     /**
      * @var int
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=1)
      */
@@ -101,7 +101,7 @@ class Restriction extends Base
 
     /**
      * @var int
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=1)
      */
@@ -109,7 +109,7 @@ class Restriction extends Base
 
     /**
      * @var int
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=1)
      */

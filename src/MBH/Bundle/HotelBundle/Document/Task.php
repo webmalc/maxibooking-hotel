@@ -105,7 +105,7 @@ class Task extends Base
 
     /**
      * @var int
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      */
     protected $priority;
 

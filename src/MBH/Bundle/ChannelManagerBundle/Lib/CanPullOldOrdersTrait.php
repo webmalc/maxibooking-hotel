@@ -6,7 +6,7 @@ trait CanPullOldOrdersTrait
 {
     /**
      * @var bool
-     * @ODM\Field(type="bool")
+     * @ODM\Field(type="boolean")
      */
     protected $isAllPackagesPulled = false;
 

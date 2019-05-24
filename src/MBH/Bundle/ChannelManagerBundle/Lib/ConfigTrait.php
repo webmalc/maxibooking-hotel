@@ -8,28 +8,28 @@ use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 trait ConfigTrait
 {
     /**
-     * @ODM\Field(type="bool")
+     * @ODM\Field(type="boolean")
      * @var bool
      * @Gedmo\Versioned
      */
     private $isMainSettingsFilled = false;
 
     /**
-     * @ODM\Field(type="bool")
+     * @ODM\Field(type="boolean")
      * @var bool
      * @Gedmo\Versioned
      */
     private $isConfirmedWithDataWarnings = false;
 
     /**
-     * @ODM\Field(type="bool")
+     * @ODM\Field(type="boolean")
      * @var bool
      * @Gedmo\Versioned
      */
     private $isTariffsConfigured = false;
 
     /**
-     * @ODM\Field(type="bool")
+     * @ODM\Field(type="boolean")
      * @var bool
      * @Gedmo\Versioned
      */

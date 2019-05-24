@@ -56,56 +56,56 @@ class WorkShift extends Base
      * Количество гостей на начало
      * @var integer
      * @Gedmo\Versioned
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      */
     protected $beginGuestTotal;
     /**
      * Количество гостей на конец
      * @var integer
      * @Gedmo\Versioned
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      */
     protected $endGuestTotal;
     /**
      * Количество оформленных туристов на начало
      * @var integer
      * @Gedmo\Versioned
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      */
     protected $beginTouristTotal;
     /**
      * Количетво заехавших туриство за смену
      * @var integer
      * @Gedmo\Versioned
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      */
     protected $arrivalTouristTotal;
     /**
      * Количетво не заехавших туриство за смену
      * @var integer
      * @Gedmo\Versioned
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      */
     protected $noArrivalTouristTotal;
     /**
      * Продлились
      * @var integer
      * @Gedmo\Versioned
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      */
     protected $continuePackageTotal;
     /**
      * Выехавших туристов
      * @var integer
      * @Gedmo\Versioned
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      */
     protected $departureTouristTotal;
     /**
      * Не выехавших туристов
      * @var integer
      * @Gedmo\Versioned
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      */
     protected $noDepartureTouristTotal;
 
@@ -113,21 +113,21 @@ class WorkShift extends Base
      * Созданные этим пользователем за его смену
      * @var integer
      * @Gedmo\Versioned
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      */
     protected $cashIncomeTotal;
 
     /**
      * @var integer
      * @Gedmo\Versioned
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      */
     protected $electronicCashIncomeTotal;
 
     /**
      * @var integer
      * @Gedmo\Versioned
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      */
     protected $cashExpenseTotal;
 

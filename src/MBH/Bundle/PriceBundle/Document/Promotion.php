@@ -99,7 +99,7 @@ class Promotion extends Base implements ConditionsInterface
     protected $comment;
 
     /**
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      * @var integer
      * @Assert\Type(type="numeric")
      * @Assert\Range(min="1", max="10")
@@ -107,7 +107,7 @@ class Promotion extends Base implements ConditionsInterface
     protected $freeChildrenQuantity;
 
     /**
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      * @var integer
      * @Assert\Type(type="numeric")
      * @Assert\Range(min="1", max="10")
@@ -115,7 +115,7 @@ class Promotion extends Base implements ConditionsInterface
     protected $freeAdultsQuantity;
 
     /**
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      * @var integer
      * @Assert\Type(type="numeric")
      * @Assert\Range(min="1", max="100")

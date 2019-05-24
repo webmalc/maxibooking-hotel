@@ -179,7 +179,7 @@ class CashDocument extends Base
 
     /**
      * @var bool
-     * @ODM\Field(type="bool")
+     * @ODM\Field(type="boolean")
      * @Assert\NotNull()
      */
     protected $isSendMail;

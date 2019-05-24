@@ -122,7 +122,7 @@ class PackageService extends Base
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=1,
@@ -135,7 +135,7 @@ class PackageService extends Base
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=1,
@@ -147,7 +147,7 @@ class PackageService extends Base
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      * @Assert\Type(type="numeric")
      * @Assert\Range(
      *      min=1,
@@ -199,7 +199,7 @@ class PackageService extends Base
     /**
      * @var bool
      * @Gedmo\Versioned()
-     * @ODM\Field(type="bool")
+     * @ODM\Field(type="boolean")
      */
     protected $recalcCausedByTouristsNumberChange = false;
 
