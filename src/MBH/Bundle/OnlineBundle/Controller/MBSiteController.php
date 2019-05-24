@@ -85,7 +85,7 @@ class MBSiteController extends BaseController
                 }
 
                 if ($isSuccess) {
-                    $paymentForm = $siteManager->getPaymentFormConfig();
+                    $paymentForm = $siteManager->getPaymentFormConfig(false);
 
                     if ($siteConfig->isUsePaymentForm()) {
                         $paymentForm->setHotels($siteConfig->getHotels()->toArray());
