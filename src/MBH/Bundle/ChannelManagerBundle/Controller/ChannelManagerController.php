@@ -49,7 +49,7 @@ class ChannelManagerController extends Controller
      */
     public function logsAction(Request $request)
     {
-        $content = null;
+        $data = null;
 
         $file = $this->container->get('mbh.channelmanager.logger_handler')->getUrl();
 
@@ -65,17 +65,38 @@ class ChannelManagerController extends Controller
                 return $this->redirect($this->generateUrl('channel_manager_logs'));
             }
 
-            ob_start();
-            passthru('tail -2000 ' . escapeshellarg($file));
-            $content = trim(preg_replace('/==>.*<==/', '', ob_get_clean()));
+            $strByteLength = 20000000;
+
+            $fp = fopen($file, 'r');
+            fseek($fp, -$strByteLength, SEEK_END);
+            $content = fread($fp, $strByteLength);
+            fclose($fp);
+            $content = substr($content, strpos($content, PHP_EOL) + 1);
+            $content = substr($content, 0, -1);
+
+            if ($content) {
+                $contentArray = explode(
+                    PHP_EOL,
+                    htmlentities(
+                        implode("\n", array_reverse(explode("\n", $content))),
+                        ENT_SUBSTITUTE,
+                        "UTF-8"
+                    )
+                );
+                $content = null;
+
+                foreach ($contentArray as $string) {
+                    $stringHalf = trim(preg_replace('!\s+!', ' ', mb_substr($string, 22)));
+                    $data[] = [
+                        trim(mb_substr($string, 0, 21)),
+                        $stringHalf
+                    ];
+                }
+            }
         }
 
         return [
-            'content' => str_replace(
-                PHP_EOL,
-                '<br><br>',
-                htmlentities(implode("\n", array_reverse(explode("\n", $content))), ENT_SUBSTITUTE, "UTF-8")
-            )
+            'contentArray' => $data,
         ];
     }
 

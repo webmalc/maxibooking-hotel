@@ -4,14 +4,33 @@
 {% set layout = "box" %}
 
 {% block content %}
-    {% if content %}
-        <div class="well scrolling">
-            <form action="" method="POST">
-            <pre>{{ content|raw }}</pre>
-                {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close': false, save_text: 'channel_manager.logs.clear'|trans } %}
-            </form>
-        </div>
+    {% if contentArray %}
+        <form action="" method="POST">
+            <table id="log-table" class="table table-striped table-hover table-condensed table-icons table-actions" style="width:100%">
+                <thead>
+                <tr>
+                    <th class="td-xl">Date</th>
+                    <th >Log</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for stringArray in contentArray %}
+                    <tr role="row" class="odd">
+                        <td>
+                            <div class="text-left">{{ stringArray[0] | raw }}</div>
+                        </td>
+                        <td>
+                            <div class="text-left">
+                                <div>{{ stringArray[1] | raw }}</div>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close': false, save_text: 'channel_manager.logs.clear'|trans } %}
+        </form>
     {% else %}
-        <div class="alert alert-warning">{{ 'channel_manager.logs.no_entries_in_file'|trans}}</div>
+        <div class="alert alert-warning">{{ 'channel_manager.logs.no_entries_in_file'|trans }}</div>
     {% endif %}
 {% endblock %}
