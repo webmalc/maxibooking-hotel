@@ -24,7 +24,9 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Translation\Translator;
 
@@ -34,13 +36,82 @@ use Symfony\Component\Translation\Translator;
 class ResultsFormController extends BaseController
 {
     /**
-     * Online form results iframe
-     * @Route("/form/results/iframe/{formId}", name="online_form_results_iframe")
+     * for old client
+     * @Route("/form/results/iframe/{formId}", name="online_form_results_iframe_old_not_use_only_redirect")
      * @Method("GET")
      * @Cache(expires="tomorrow", public=true)
      * @ParamConverter(converter="form_config_converter", options={"formConfigId": "formId"})
      */
-    public function getFormResultsIframeAction(FormConfig $formConfig)
+    public function getFormResultsIframeAction(Request $request, FormConfig $formConfig)
+    {
+        if (!$formConfig || !$formConfig->isEnabled()) {
+            throw $this->createNotFoundException();
+        }
+
+        $this->setLocaleByRequest();
+
+        $unparsedUrl = function (string $rawUrl): string {
+            $parsedUrl = parse_url($rawUrl);
+            $scheme   = isset($parsedUrl['scheme']) ? $parsedUrl['scheme'] . '://' : '';
+            $host     = isset($parsedUrl['host']) ? $parsedUrl['host'] : '';
+            $port     = isset($parsedUrl['port']) ? ':' . $parsedUrl['port'] : '';
+
+            return $scheme.$host.$port;
+        };
+
+        return new RedirectResponse(
+            $this->generateUrl(
+                'online_form_load_result_file',
+                array_merge(
+                    $request->query->all(),
+                    [
+                        'formConfigId' => $formConfig->getId(),
+                        'redirectKey'  => sha1($formConfig->getCreatedAt()->getTimestamp())
+                    ]
+                )
+            ),
+            302,
+            [
+                'Access-Control-Allow-Origin' => $unparsedUrl($formConfig->getResultsUrl())
+            ]
+        );
+    }
+
+    /**
+     * @Route("/file/{formConfigId}/load-result", name="online_form_load_result_file", defaults={"_format"="js"})
+     * @Cache(expires="tomorrow", public=true)
+     * @ParamConverter(converter="form_config_converter")
+     */
+    public function loadResultAction(Request $request, FormConfig $formConfig)
+    {
+        $this->setLocaleByRequest();
+        $response = new Response();
+
+        $redirectKey = $request->get('redirectKey') ?? null;
+        if ($redirectKey !== null && $redirectKey === sha1($formConfig->getCreatedAt()->getTimestamp())) {
+            $response->headers->set('Access-Control-Allow-Origin', '*');
+        }
+
+        $clientConfig = $this->clientConfig;
+
+        return $this->render(
+            '@MBHOnline/ResultsForm/loadResult.js.twig',
+            [
+                'config'         => $formConfig,
+                'paymentSystems' => $clientConfig->getPaymentSystems(),
+                'successUrl'     => $clientConfig->getSuccessUrl(),
+            ],
+            $response
+        );
+    }
+
+    /**
+     * @Route("/form/results/main-iframe/{formConfigId}", name="online_form_results_iframe")
+     * @Method("GET")
+     * @Cache(expires="tomorrow", public=true)
+     * @ParamConverter(converter="form_config_converter")
+     */
+    public function resultFormIframeAction(FormConfig $formConfig)
     {
         $this->setLocaleByRequest();
 
@@ -50,6 +121,41 @@ class ResultsFormController extends BaseController
                 'formId'     => $formConfig->getId(),
                 'formConfig' => $formConfig,
                 'siteConfig' => $this->get('mbh.site_manager')->getSiteConfig(),
+            ]
+        );
+    }
+
+    /**
+     * Results js
+     * @Route("/results/{id}", name="online_form_results", defaults={"_format"="js"})
+     * @Method("GET")
+     * @ParamConverter(converter="form_config_converter", options={"formConfigId": "id"})
+     */
+    public function getResultsAction(FormConfig $formConfig)
+    {
+        $this->setLocaleByRequest();
+
+        $params = ['id' => $formConfig->getId()];
+
+        return $this->render(
+            '@MBHOnline/ResultsForm/getResults.js.twig',
+            [
+                'styles' => $this->get('templating')->render('MBHOnlineBundle:Api:results.css.twig'),
+                'configId' => $formConfig->getId(),
+                'urls' => [
+                    'table' => $this->generateUrl(
+                        'online_form_results_table',
+                        $params,
+                        UrlGeneratorInterface::ABSOLUTE_URL
+                    ),
+                    'user_form' => $this->generateUrl('online_form_user_form', [], UrlGeneratorInterface::ABSOLUTE_URL),
+                    'payment_type' => $this->generateUrl(
+                        'online_form_payment_type',
+                        $params,
+                        UrlGeneratorInterface::ABSOLUTE_URL
+                    ),
+                    'results' => $this->generateUrl('online_form_packages_create', [], UrlGeneratorInterface::ABSOLUTE_URL),
+                ],
             ]
         );
     }
@@ -521,59 +627,5 @@ class ResultsFormController extends BaseController
         }
 
         return $order;
-    }
-
-    /**
-     * @Route("/file/{configId}/load-result", name="online_form_load_result_file", defaults={"_format"="js"})
-     * @Cache(expires="tomorrow", public=true)
-     * @ParamConverter(converter="form_config_converter", options={"formConfigId": "configId"})
-     */
-    public function loadResultAction(FormConfig $formConfig)
-    {
-        $clientConfig = $this->clientConfig;
-
-        return $this->render(
-            '@MBHOnline/ResultsForm/loadResult.js.twig',
-            [
-                'config'         => $formConfig,
-                'paymentSystems' => $clientConfig->getPaymentSystems(),
-                'successUrl'     => $clientConfig->getSuccessUrl(),
-            ]
-        );
-    }
-
-    /**
-     * Results js
-     * @Route("/results/{id}", name="online_form_results", defaults={"_format"="js"})
-     * @Method("GET")
-     * @ParamConverter(converter="form_config_converter", options={"formConfigId": "id"})
-     */
-    public function getResultsAction(FormConfig $formConfig)
-    {
-        $this->setLocaleByRequest();
-
-        $params = ['id' => $formConfig->getId()];
-
-        return $this->render(
-            '@MBHOnline/ResultsForm/getResults.js.twig',
-            [
-                'styles' => $this->get('templating')->render('MBHOnlineBundle:Api:results.css.twig'),
-                'configId' => $formConfig->getId(),
-                'urls' => [
-                    'table' => $this->generateUrl(
-                        'online_form_results_table',
-                        $params,
-                        UrlGeneratorInterface::ABSOLUTE_URL
-                    ),
-                    'user_form' => $this->generateUrl('online_form_user_form', [], UrlGeneratorInterface::ABSOLUTE_URL),
-                    'payment_type' => $this->generateUrl(
-                        'online_form_payment_type',
-                        $params,
-                        UrlGeneratorInterface::ABSOLUTE_URL
-                    ),
-                    'results' => $this->generateUrl('online_form_packages_create', [], UrlGeneratorInterface::ABSOLUTE_URL),
-                ],
-            ]
-        );
     }
 }

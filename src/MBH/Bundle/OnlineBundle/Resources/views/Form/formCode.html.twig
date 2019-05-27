@@ -49,7 +49,7 @@
                 <div id="mbh-date-error" class="hide"><i class="fa fa-exclamation-circle"></i> {{ 'views.form.period_is_not_filled'|trans({}, 'MBHOnlineBundle') }}</div>
                 {% set code1  = '<div id="mbh-results-wrapper"><a href="https://maxi-booking.com/">' ~ 'views.api.form.online_reservation_system'|trans({}, 'MBHOnlineBundle') ~ '</a></div>' %}
                 {% set code4 %}
-                    <script src="{{ url('online_form_load_result_file', {configId: config.id}) }}"></script>
+                    <script src="{{ url('online_form_load_result_file', {formConfigId: config.id}) }}"></script>
                 {% endset %}
 
                 <div class="row spacer-bottom">
