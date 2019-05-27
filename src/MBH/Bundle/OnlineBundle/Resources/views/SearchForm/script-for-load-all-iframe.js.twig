@@ -218,8 +218,7 @@ OnLoadFormLoad.prototype.fillObject = function (object, data) {
     } else {
         object[temp[0]] = temp[1]
     }
-}
-
+};
 
 OnLoadFormLoad.prototype.changeUrl = function (self, oldUrl) {
     var indexChart = oldUrl.indexOf('?');
@@ -231,9 +230,9 @@ OnLoadFormLoad.prototype.changeUrl = function (self, oldUrl) {
     var params = {},
         oldParams = {};
 
-    window.location.search.replace('?', '').split('&').forEach(function(value) { self.fillObject(params, value); })
+    window.location.search.replace('?', '').split('&').forEach(function(value) { self.fillObject(params, value); });
 
-    oldUrl.slice(indexChart + 1).split('&').forEach(function(value) { self.fillObject(oldParams, value); })
+    oldUrl.slice(indexChart + 1).split('&').forEach(function(value) { self.fillObject(oldParams, value); });
 
     var key;
     for (key in oldParams) {
@@ -255,7 +254,7 @@ OnLoadFormLoad.prototype.changeUrl = function (self, oldUrl) {
     }
 
     return oldUrl.substring(0, indexChart) + '?' + temp.join('&');
-}
+};
 
 OnLoadFormLoad.prototype.createIframeWithForm = function () {
     var url = this.urlIframe.search;
