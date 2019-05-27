@@ -29,6 +29,7 @@ class AdditionalDatesGenerator
         $combinedDates = $this->generateDates($begin, $end, $additionalBegin, $additionalEnd);
         $sorter = SorterFactory::createSorter($sorterName);
 
+        /** TODO: Сортеру тут делать нечего, нужно его переносить в место где генерятся группы запросов */
         return $sorter->sort($begin, $end, $combinedDates);
     }
 

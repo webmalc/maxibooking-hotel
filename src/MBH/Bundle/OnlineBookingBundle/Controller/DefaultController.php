@@ -16,6 +16,7 @@ use MBH\Bundle\PackageBundle\Services\OrderManager;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Lib\PaymentType;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -98,7 +99,12 @@ class DefaultController extends BaseController
             /** @var OnlineSearchFormData $data */
             $data = $form->getData();
             $resultDataProvider = $this->get('mbh.online.search_helper');
-            $searchResults = $resultDataProvider->getResults($data);
+            try {
+                $searchResults = $resultDataProvider->getResults($data);
+            } catch (SearchConditionException $e) {
+                return new Response(sprintf('<div><p>Произошла ошибка запроса. Пожалуйста позвоните нам.</p> <small style="color: red;"><p>%s</p></small></div>', $e->getMessage()));
+            }
+
         }
         $html = '';
         $requestSearchUrl = $this->onlineOptions['request_search_url'];

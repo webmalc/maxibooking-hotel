@@ -59,12 +59,18 @@ class DebugPriceChecker
             $searchQuery = $this->createQuery($compareData['query']);
             $result = $this->legacySearch->search($searchQuery);
             $searchResult = reset($result);
-            try {
-                $this->comparePrice($searchResult, $compareData['price']);
-            } catch (DebugPriceCheckerException $e) {
+            if ($searchResult instanceof SearchResult) {
+                try {
+                    $this->comparePrice($searchResult, $compareData['price']);
+                } catch (DebugPriceCheckerException $e) {
+                    $errors[] = $compareData['hash'];
+                    $this->notifier->notify($this->createWrongPriceMessage($compareData, $searchResult, $e->getLegacyPrice()));
+                }
+            } else {
+                $this->notifier->notify($this->createNoLegacyResultMessage($compareData));
                 $errors[] = $compareData['hash'];
-                $this->notifier->notify($this->createMessage($compareData, $searchResult, $e->getLegacyPrice()));
             }
+
         }
 
         return $errors;
@@ -112,7 +118,7 @@ class DebugPriceChecker
 
     }
 
-    private function createMessage(array $originData, SearchResult $result, int $legacyPrice): string
+    private function createWrongPriceMessage(array $originData, SearchResult $result, int $legacyPrice): string
     {
         $query = $originData['query'];
         $message = sprintf(
@@ -129,6 +135,24 @@ class DebugPriceChecker
             $originData['price'],
             $legacyPrice
             );
+
+        return $message;
+    }
+
+    private function createNoLegacyResultMessage(array $originData): string
+    {
+        $query = $originData['query'];
+        $message = sprintf(
+            'Begin:%s End:%s Adults:%s Children:%s ChildrenAges:%s isUseCache:%s RoomType:%s Tariff:%s NO actually legacy result!',
+            $query['begin'],
+            $query['end'],
+            $query['adults'],
+            $query['children'],
+            implode('_',$query['childrenAges']) ?: 'Нет',
+            $query['isUseCache'] ? 'true' : 'false',
+            $query['roomType'],
+            $query['tariff']
+        );
 
         return $message;
     }
