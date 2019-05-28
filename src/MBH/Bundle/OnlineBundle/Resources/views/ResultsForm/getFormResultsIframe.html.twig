@@ -1,25 +1,27 @@
-{% spaceless %}
 <!doctype html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     <title>Maxibooking</title>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/select2/3.5.0/select2.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/fancybox/3.0.47/jquery.fancybox.css">
+    {% block styles %}
+        {% stylesheets filter='cssrewrite, uglifycss'
+            '@MBHBaseBundle/Resources/public/css/mbsuperfont/styles.less'
+            '@MBHOnlineBundle/Resources/public/css/results-form/*.less'
+        %}
+            <link rel="stylesheet" href="{{ absolute_url(asset_url) }}"/>
+        {% endstylesheets %}
+    {% endblock %}
     {% if formConfig.theme %}
         <link rel="stylesheet" href="{{ formConfig.theme }}">
     {% endif %}
-
-    {% include '@MBHOnline/Api/results.css.twig' %}
-
     {% if formConfig.css %}
         <style>
             {{ formConfig.css |raw}}
         </style>
     {% endif %}
-
     <script>
         function MbhResultForm(mbhVariables) {
             this.paymentTypes = {
@@ -63,15 +65,12 @@
     <script defer src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
     <script defer src="//cdnjs.cloudflare.com/ajax/libs/fancybox/3.0.47/jquery.fancybox.min.js"></script>
     {% block scripts %}
-
         {% javascripts filter='?uglifyjs2'
-            '@MBHOnlineBundle/Resources/public/js/result-form/*'
+            '@MBHOnlineBundle/Resources/public/js/results-form/*'
         %}
             <script defer type="text/javascript" src="{{ absolute_url(asset_url) }}"></script>
         {% endjavascripts %}
-
     {% endblock %}
-
     {% if formConfig.js %}
         <script>
             window.addEventListener('load', function () {
@@ -79,13 +78,9 @@
             });
         </script>
     {% endif %}
-{#    {% include '@MBHOnline/Api/siteStyles.html.twig' %}#}
 </head>
-
 <body>
     <div id="mbh-results-wrapper" style=" width: auto; height: auto; padding: 10px 20px; overflow: auto;"></div>
     <script defer type="text/javascript" src="{{ url('online_form_results', {id: formId}) }}"></script>
 </body>
-
 </html>
-{% endspaceless %}
