@@ -68,10 +68,11 @@ class DebugPriceChecker
                 }
             }
 
-            if (!($searchResult instanceof SearchResult)) {
-                $this->notifier->notify($this->createNoLegacyResultMessage($compareData));
-                $errors[] = $compareData['hash'];
-            }
+            /** TODO: (при генерации данных поиска не учитывается доступ пользователя к отелю  */
+//            if (!($searchResult instanceof SearchResult)) {
+//                $this->notifier->notify($this->createNoLegacyResultMessage($compareData));
+//                $errors[] = $compareData['hash'];
+//            }
         }
 
         return $errors;
