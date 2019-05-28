@@ -66,11 +66,12 @@ class DebugPriceChecker
                     $errors[] = $compareData['hash'];
                     $this->notifier->notify($this->createWrongPriceMessage($compareData, $searchResult, $e->getLegacyPrice()));
                 }
-            } else {
+            }
+
+            if (!($searchResult instanceof SearchResult)) {
                 $this->notifier->notify($this->createNoLegacyResultMessage($compareData));
                 $errors[] = $compareData['hash'];
             }
-
         }
 
         return $errors;

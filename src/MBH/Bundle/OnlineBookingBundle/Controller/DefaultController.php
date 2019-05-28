@@ -21,6 +21,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\Debug\Exception\FatalThrowableError;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -101,7 +102,7 @@ class DefaultController extends BaseController
             $resultDataProvider = $this->get('mbh.online.search_helper');
             try {
                 $searchResults = $resultDataProvider->getResults($data);
-            } catch (SearchConditionException $e) {
+            } catch (SearchConditionException|FatalThrowableError $e) {
                 return new Response(sprintf('<div><p>Произошла ошибка запроса. Пожалуйста позвоните нам.</p> <small style="color: red;"><p>%s</p></small></div>', $e->getMessage()));
             }
 

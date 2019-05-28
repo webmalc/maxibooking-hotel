@@ -3,6 +3,7 @@
 namespace MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper;
 
 
+use function array_slice;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
 use MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\DataProviders\SpecialDataProvider;
@@ -48,7 +49,7 @@ class OnlineSearchHelper
      * @return array
      * TODO: Очень костыльно получилось с доп датами. В идеале рефакторить и тут. Лимит получения лучше бы в интерфейс ?.
      */
-    public function getResults(OnlineSearchFormData $formInstance)
+    public function getResults(OnlineSearchFormData $formInstance): array
     {
         $results = [];
         if (!$this->isAdditionalData($formInstance)) {
@@ -60,7 +61,7 @@ class OnlineSearchHelper
                     //** Костылище для ограничения лимита по выводу спец */
                     $limit = $this->options['show_special_restrict'];
                     if ($limit) {
-                        $dataResults = \array_slice($dataResults, 0, $limit, true);
+                        $dataResults = array_slice($dataResults, 0, $limit, true);
                         //** Костылище для сортировки по просьбе Малеевой от 21.06.2018 */
                         usort(
                             $dataResults,
