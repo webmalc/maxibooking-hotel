@@ -1,3 +1,4 @@
+{% spaceless %}
 <!doctype html>
 <html lang="en">
 
@@ -7,33 +8,84 @@
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/select2/3.5.0/select2.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/fancybox/3.0.47/jquery.fancybox.css">
-    {% if formConfig and formConfig.theme %}
+    {% if formConfig.theme %}
         <link rel="stylesheet" href="{{ formConfig.theme }}">
     {% endif %}
-    {% include '@MBHOnline/Api/siteStyles.html.twig' %}
+
+    {% include '@MBHOnline/Api/results.css.twig' %}
+
+    {% if formConfig.css %}
+        <style>
+            {{ formConfig.css |raw}}
+        </style>
+    {% endif %}
+
+    <script>
+        function MbhResultForm(mbhVariables) {
+            this.paymentTypes = {
+                online: {
+                    firstDay: '{{ constant('MBH\\Bundle\\OnlineBundle\\Document\\SettingsOnlineForm\\FormConfig::PAYMENT_TYPE_ONLINE_FIRST_DAY') }}',
+                    full: '{{ constant('MBH\\Bundle\\OnlineBundle\\Document\\SettingsOnlineForm\\FormConfig::PAYMENT_TYPE_ONLINE_FULL') }}',
+                    half: '{{ constant('MBH\\Bundle\\OnlineBundle\\Document\\SettingsOnlineForm\\FormConfig::PAYMENT_TYPE_ONLINE_HALF') }}'
+                },
+                receipt: {
+                    firstDay: '{{ constant('MBH\\Bundle\\OnlineBundle\\Document\\SettingsOnlineForm\\FormConfig::PAYMENT_TYPE_BY_RECEIPT_FIRST_DAY') }}',
+                    full: '{{ constant('MBH\\Bundle\\OnlineBundle\\Document\\SettingsOnlineForm\\FormConfig::PAYMENT_TYPE_BY_RECEIPT_FULL') }}'
+                }
+            };
+
+            this.paymentTypes.onlines  =  [
+                this.paymentTypes.online.full,
+                this.paymentTypes.online.half,
+                this.paymentTypes.online.firstDay
+            ];
+
+
+            this.wrapper = mbhVariables.wrapper;
+            this.formConfigId = mbhVariables.formConfigId;
+
+            this.waitingText = mbhVariables.waitingText;
+
+            this._urls = {
+                table: mbhVariables.urls.table,
+                userForm: mbhVariables.urls.userForm,
+                paymentType: mbhVariables.urls.paymentType,
+                results: mbhVariables.urls.results
+            };
+
+            this._requestParams = {};
+        }
+    </script>
+    {#<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>#}
+    <script defer src="//code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+    <script defer src="//cdnjs.cloudflare.com/ajax/libs/select2/3.5.0/select2.min.js"></script>
+    <script defer src="//cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.3.1/jquery.maskedinput.min.js"></script>
+    <script defer src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script defer src="//cdnjs.cloudflare.com/ajax/libs/fancybox/3.0.47/jquery.fancybox.min.js"></script>
+    {% block scripts %}
+
+        {% javascripts filter='?uglifyjs2'
+            '@MBHOnlineBundle/Resources/public/js/result-form/*'
+        %}
+            <script defer type="text/javascript" src="{{ absolute_url(asset_url) }}"></script>
+        {% endjavascripts %}
+
+    {% endblock %}
+
+    {% if formConfig.js %}
+        <script>
+            window.addEventListener('load', function () {
+                {{ formConfig.js | raw }}
+            });
+        </script>
+    {% endif %}
+{#    {% include '@MBHOnline/Api/siteStyles.html.twig' %}#}
 </head>
 
 <body>
     <div id="mbh-results-wrapper" style=" width: auto; height: auto; padding: 10px 20px; overflow: auto;"></div>
-    {% if formConfig and formConfig.css %}
-        <style>
-         {{ formConfig.css |raw}}
-        </style>
-    {% endif %}
-    {% if formConfig.js %}
-        <script>
-            window.addEventListener('load', function () {
-                {{ formConfig.js|raw }}
-            });
-        </script>
-    {% endif %}
-    {#<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>#}
-    <script src="//code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/select2/3.5.0/select2.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.3.1/jquery.maskedinput.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/fancybox/3.0.47/jquery.fancybox.min.js"></script>
-    <script type="text/javascript" src="{{ url('online_form_results', {id: formId}) }}"></script>
+    <script defer type="text/javascript" src="{{ url('online_form_results', {id: formId}) }}"></script>
 </body>
 
 </html>
+{% endspaceless %}

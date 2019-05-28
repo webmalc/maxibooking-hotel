@@ -34,8 +34,8 @@ function addLoadEvent(func) {
 }
 
 function onLoadResultsLoad() {
+    var useYaMetrics = typeof yaCounterId !== 'undefined';
     (function () {
-        var useYaMetrics = typeof yaCounterId !== 'undefined';
         if (useYaMetrics) {
             var yaCounterObjName = 'yaCounter' + yaCounterId;
             {#<!-- Yandex.Metrika counter -->#}
@@ -72,8 +72,8 @@ function onLoadResultsLoad() {
         }
     }) ();
 
+    var useGoogleMetrics = typeof googleCounterId !== 'undefined';
     (function() {
-        var useGoogleMetrics = typeof googleCounterId !== 'undefined';
         if (useGoogleMetrics) {
             (function (i, s, o, g, r, a, m) {
                 i['GoogleAnalyticsObject'] = r;

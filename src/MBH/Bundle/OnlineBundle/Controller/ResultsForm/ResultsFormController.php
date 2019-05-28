@@ -107,7 +107,7 @@ class ResultsFormController extends BaseController
 
     /**
      * @Route("/form/results/main-iframe/{formConfigId}", name="online_form_results_iframe")
-     * @Method("GET")
+     * Method("GET")
      * @Cache(expires="tomorrow", public=true)
      * @ParamConverter(converter="form_config_converter")
      */
@@ -140,7 +140,7 @@ class ResultsFormController extends BaseController
         return $this->render(
             '@MBHOnline/ResultsForm/getResults.js.twig',
             [
-                'styles' => $this->get('templating')->render('MBHOnlineBundle:Api:results.css.twig'),
+//                'styles' => $this->get('templating')->render('MBHOnlineBundle:Api:results.css.twig'),
                 'configId' => $formConfig->getId(),
                 'urls' => [
                     'table' => $this->generateUrl(
@@ -473,10 +473,9 @@ class ResultsFormController extends BaseController
     }
 
     /**
-     * @param Order $order
-     * @return bool
+     * @param Order $orderl
      */
-    private function sendNotifications(Order $order)
+    private function sendNotifications(Order $order): void
     {
         $this->dm->refresh($order);
         try {
@@ -560,7 +559,6 @@ class ResultsFormController extends BaseController
                     ->notify();
             }
         } catch (\Exception $e) {
-            return false;
         }
     }
 
