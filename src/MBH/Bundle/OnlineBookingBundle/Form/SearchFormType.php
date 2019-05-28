@@ -25,6 +25,7 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData;
 
 class SearchFormType extends AbstractType
 {
@@ -43,7 +44,7 @@ class SearchFormType extends AbstractType
      * @param FormBuilderInterface $builder
      * @param array $options
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add(
@@ -156,7 +157,7 @@ class SearchFormType extends AbstractType
                 'roomType',
                 DocumentType::class,
                 [
-                    'class' => 'MBH\Bundle\HotelBundle\Document\RoomType',
+                    'class' => RoomType::class,
                     'required' => false,
                 ]
             )
@@ -173,7 +174,7 @@ class SearchFormType extends AbstractType
                         $specialsFilter->setBegin($begin);
                         /** @var SpecialRepository $documentRepository */
                         $qb = $documentRepository->getFilteredQueryBuilder($specialsFilter);
-                        $qb->addAnd($qb->expr()->field('begin')->gt(new \DateTime("midnight")));
+                        $qb->addAnd($qb->expr()->field('begin')->gt(new \DateTime('midnight')));
                         $qb->field('prices')->exists(true);
 
                         return $qb;
@@ -204,11 +205,11 @@ class SearchFormType extends AbstractType
      * @param FormEvent $event
      * @param $options
      */
-    private function forceFilterChildrenAge(FormEvent $event, $options)
+    private function forceFilterChildrenAge(FormEvent $event, $options): void
     {
 
         $data = $event->getData();
-        if (1 < ($children = (int)$data['children'] ?? (int)null)) {
+        if (($data['children'] ?? 0) > 1) {
             $children_age = $data['children_age'] ?? null;
             if (is_array($children_age)) {
                 $isWasInfant = false;
@@ -231,7 +232,7 @@ class SearchFormType extends AbstractType
     /**
      * @param OptionsResolver $resolver
      */
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver
             ->setDefaults(
@@ -241,13 +242,13 @@ class SearchFormType extends AbstractType
                     'attr' => [
                         'class' => 'booking-form',
                     ],
-                    'data_class' => 'MBH\Bundle\OnlineBookingBundle\Lib\OnlineSearchFormData',
+                    'data_class' => OnlineSearchFormData::class,
                     'infant_age' => 2,
                 ]
             );
     }
 
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'search_form';
     }

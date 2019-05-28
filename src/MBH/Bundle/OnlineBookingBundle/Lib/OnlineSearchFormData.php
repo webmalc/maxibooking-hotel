@@ -2,6 +2,7 @@
 namespace MBH\Bundle\OnlineBookingBundle\Lib;
 
 
+use DateTime;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
@@ -19,9 +20,9 @@ class OnlineSearchFormData
     protected $hotel;
     /** @var  RoomType */
     protected $roomType;
-    /** @var \DateTime*/
+    /** @var DateTime*/
     protected $begin;
-    /** @var  \DateTime */
+    /** @var  DateTime */
     protected $end;
     /** @var  int */
     protected $adults;
@@ -88,18 +89,18 @@ class OnlineSearchFormData
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getBegin(): ?\DateTime
+    public function getBegin(): ?DateTime
     {
         return $this->begin;
     }
 
     /**
-     * @param \DateTime $begin
+     * @param DateTime $begin
      * @return $this
      */
-    public function setBegin(\DateTime $begin)
+    public function setBegin(?DateTime $begin)
     {
         $this->begin = $begin;
 
@@ -107,18 +108,18 @@ class OnlineSearchFormData
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getEnd(): ?\DateTime
+    public function getEnd(): ?DateTime
     {
         return $this->end;
     }
 
     /**
-     * @param \DateTime $end
+     * @param DateTime $end
      * @return $this
      */
-    public function setEnd(\DateTime $end)
+    public function setEnd(?DateTime $end)
     {
         $this->end = $end;
 

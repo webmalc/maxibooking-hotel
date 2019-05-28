@@ -102,11 +102,24 @@ class DefaultController extends BaseController
             $resultDataProvider = $this->get('mbh.online.search_helper');
             try {
                 $searchResults = $resultDataProvider->getResults($data);
-            } catch (SearchConditionException|FatalThrowableError $e) {
+            } catch (SearchConditionException $e) {
                 return new Response(sprintf('<div><p>Произошла ошибка запроса. Пожалуйста позвоните нам.</p> <small style="color: red;"><p>%s</p></small></div>', $e->getMessage()));
             }
+        } else {
+            $errors = $form->getErrors(true);
+            $errorText = '';
+            foreach ($errors as $error) {
+                $errorText .= $error->getMessage() . $error->getCause()->getPropertyPath();
+            }
+            $html = sprintf(
+                '<div><p>Произошла ошибка запроса. Пожалуста проверьте корректность введенных данных или позвоните нам.</p> <small style="color: red;"><p>%s</p></small></div>',
+                $errorText
 
+            );
+
+            return new Response($html);
         }
+
         $html = '';
         $requestSearchUrl = $this->onlineOptions['request_search_url'];
         if ($request->get('getalltariff')) {
