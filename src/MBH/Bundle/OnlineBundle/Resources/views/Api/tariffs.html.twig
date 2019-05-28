@@ -10,11 +10,13 @@
                         <li>
                             <p class="mbh-results-tariffs-label">
                                 {% if defaultTariff.id == tariff.id %}
-                                    <input type="radio" disabled checked><span id="mbh-results-tariffs-selected"
-                                                                               data-id="{{ tariff.id }}">{{ tariff.fullTitle }}</span>
+                                    <input type="radio" disabled checked>
+                                    <span id="mbh-results-tariffs-selected"
+                                          data-id="{{ tariff.id }}">{{ tariff.fullTitle }}</span>
                                 {% else %}
                                     {% set href = app.request.query.all|merge({'tariff': tariff.id })|url_encode %}
-                                    <input type="radio" disabled><a href="?{{ href }}">{{ tariff.fullTitle }}</a>
+                                    <input type="radio" disabled>
+                                    <a href="?{{ href }}">{{ tariff.fullTitle }}</a>
                                 {% endif %}
                                 {% if tariff.isDefault %}&nbsp;
                                     <small>{{ 'views.api.tariffs.base_tariff'|trans({}, 'MBHOnlineBundle') }}</small>

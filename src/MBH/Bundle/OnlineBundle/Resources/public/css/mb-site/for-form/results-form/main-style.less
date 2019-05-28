@@ -1,181 +1,148 @@
-#mbh-form {
-  border-radius: 0;
-  //background-color: {{ themeColors['mainlight'] }};
-}
+@import "../common-style.mixin";
 
-.mbh-form-row {
-  vertical-align: top;
-}
-
-.mbh-form-row.form-group:not(#mbh-form-submit-wrapper) {
-  padding: 5px 15px;
-  background: #fff;
-  font-family: 'PT Serif Caption', serif;
-}
-#mbh-form .form-group label, #mbh-form-adults-children-wrapper>.form-group label {
-  margin-bottom: 5px;
-  padding-bottom: 3px;
-  font-size: 14px;
-  border-bottom: 1px solid #969696;
-  font-weight: 400;
-}
-
-#mbh-form-adults-children-wrapper div.mbh-form-row select.children-age-form {
-  margin: unset;
-}
-
-#mbh-form-adults-children-wrapper div.mbh-form-row {
-  float: unset!important;
-  /*margin-bottom: unset!important;*/
-}
-
-#mbh-form-adults-children-wrapper input.form-control {
-  display: unset;
-}
-
-#mbh-form-submit-wrapper {
-  vertical-align: top;
-}
-.btn-primary, .btn-primary:active, .btn-primary:focus, #mbh-results-wrapper .panel-heading, .btn-info, .btn-info:hover, .btn-info:active {
-  //background: {{ themeColors['main'] }} !important;
-  //border-color: {{ themeColors['main'] }}  !important;
-}
-.btn-primary {
-  font-size: 16px;
-}
-#mbh-results-wrapper .panel-primary {
-  //border-color: {{ themeColors['main'] }};
-}
-button#mbh-form-submit {
-  font-family: 'PT Sans Caption', sans-serif;
-  height: 69px;
-  width: inherit;
-  border-radius: 0;
-  transition: background 200ms;
-}
-
-button#mbh-form-submit::after {
-  transition: color 200ms;
-  font-size: 18px;
-  //content: "{{ 'views.api.form.find_room'|trans({}, 'MBHOnlineBundle') }}";
-}
-
-button#mbh-form-submit:hover {
-  background: #fff !important;
-}
-
-button#mbh-form-submit:hover::after {
-  color: #323232;
-}
-
-#mbh-form .input-sm {
-  border: none;
-  font-weight: 600;
-  font-size: 16px;
-}
-#mbh-form .form-control {
-  background-color: #fff;
-}
-.mbh-results-info {
-  padding: 19px;
-  margin-bottom: 20px;
-  background-color: #f5f5f5;
-  border: 1px solid #e3e3e3;
-  border-radius: 4px;
-  color: #333;
-}
-
-#mbh-form .input-sm {
-  font-weight: unset;
-}
-
-//@media (min-width: 768px) and (max-width: 1100px) {
-//  button#mbh-form-submit::after {
-//    //content: "{{ 'views.api.form.find_room.shot'|trans({}, 'MBHOnlineBundle') }}";
-//  }
-//}
-
-@media (min-width: 601px) {
-  #mbh-form.well {
-    padding: 19px 0;
-  }
-  #mbh-form-begin, #mbh-form-end {
-    width: 140px !important;
-  }
-
-  #mbh-form-begin, #mbh-form-end {
-    //background-image: url({{ asset('bundles/mbhonline/images/icon-calendar.png') }});
-    background-repeat: no-repeat;
-    background-position: right;
-  }
-}
-
-@media (max-width: 600px) {
-  #mbh-form > #mbh-form-adults-children-wrapper,
-  #mbh-form > #mbh-form-adults-children-wrapper .mbh-form-row,
-  #mbh-form > .mbh-form-row.form-group {
-    display: block;
-    margin-right: unset;
-  }
-
-  #mbh-form > #mbh-form-adults-children-wrapper .mbh-form-row,
-  #mbh-form > #mbh-form-adults-children-wrapper {
-    margin-left: unset;
-  }
-
-  #mbh-form > #mbh-form-adults-children-wrapper .mbh-form-row.form-group label,
-  #mbh-form > #mbh-form-adults-children-wrapper .mbh-form-row.form-group input,
-  #mbh-form > #mbh-form-adults-children-wrapper .mbh-form-row.form-group select,
-  #mbh-form > .mbh-form-row.form-group label,
-  #mbh-form > .mbh-form-row.form-group input,
-  #mbh-form > .mbh-form-row.form-group select {
-    display: inline-block;
-  }
-
-  #mbh-form > #mbh-form-adults-children-wrapper .mbh-form-row.form-group label,
-  #mbh-form > .mbh-form-row.form-group label {
-    margin-bottom: unset;
-    padding-bottom: unset;
-    border-bottom: unset;
-    width: 25%;
-  }
-
-  #mbh-form > #mbh-form-adults-children-wrapper .mbh-form-row.form-group input,
-  #mbh-form > #mbh-form-adults-children-wrapper .mbh-form-row.form-group select,
-  #mbh-form > .mbh-form-row.form-group input,
-  #mbh-form > .mbh-form-row.form-group select {
-    text-align: center;
-    width: 70%;
-  }
+.importFont();
 
 
-  #mbh-form #mbh-form-submit-wrapper {
-    margin-top: 8px;
-    width: 100%;
-  }
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-  button#mbh-form-submit {
-    height: unset;
-    padding: 11px;
-  }
+  .commonStyleFont();
 
-  div.mbh-form-row.form-group.children-ages {
-    display: table;
-    width: 100%;
-  }
+  #mbh-results-wrapper {
 
-  .mbh-form-row.form-group.children-ages * {
-    display: table-cell !important;
-  }
-}
+    .widthContainer() {
+      width: 100%;
+    }
 
-@media (max-width: 520px) {
-  #mbh-form > #mbh-form-adults-children-wrapper .mbh-form-row.form-group label,
-  #mbh-form > #mbh-form-adults-children-wrapper .mbh-form-row.form-group input,
-  #mbh-form > #mbh-form-adults-children-wrapper .mbh-form-row.form-group select,
-  #mbh-form > .mbh-form-row.form-group label,
-  #mbh-form > .mbh-form-row.form-group input,
-  #mbh-form > .mbh-form-row.form-group select {
-    width: 50%;
+    .maxOuterBorders() {
+      box-sizing: border-box;
+
+      @media (min-width: @size-screen-max-width-mobile) {
+        width: @size-screen-max-width-mobile;
+      }
+
+      @media (min-width: @size-screen-mid-width-tablet) {
+        width: @size-screen-mid-width-tablet;
+      }
+
+      //@media (min-width: @size-screen-min-width-desktop) {
+      //  width: @general-width-desktop-max;
+      //}
+
+
+    }
+
+    .maxOuterBorders();
+
+
+    #mbh-result-response-info {
+      display: none;
+    }
+
+
+    #mbh-results-tariffs {
+      .heightPanelHeading () {
+        height: 52px;
+      }
+
+      .panel {
+        .panel-heading {
+          display: flex;
+          align-items: center;
+
+          .fontRobotoSlab();
+
+          font-size: 20px;
+          line-height: 24px;
+
+          background: #282828;
+          opacity: 0.7;
+
+          color: #FFFFFF;
+
+          padding-left: 25px;
+
+          .heightPanelHeading ();
+        }
+
+        .panel-body {
+          ul {
+            padding: 0;
+            margin: 0;
+            list-style: none;
+
+            li {
+              border-bottom: 1px solid #A0A0A0;
+
+              .heightPanelHeading ();
+
+              .mbh-results-tariffs-label {
+
+                height: 100%;
+                display: flex;
+                align-items: center;
+                margin: 0;
+
+                font-size: 16px;
+                line-height: 24px;
+
+                input[type="radio"] {
+                  margin: 0 0 0 10px;
+
+                  .commonRadio() {
+                    content: '';
+                    position: absolute;
+                    border-radius: 50%;
+                    width: 18px;
+                    height: 18px;
+                    background: #FFFFFF;
+
+                    margin-top: -6px;
+                  }
+
+                  &:disabled {
+                    &:before {
+                      .commonRadio();
+                      border: 1px solid #DADADA;
+                    }
+
+                    &:checked {
+                      &:before {
+                        .commonRadio();
+                        border: 1px solid #0099FF;
+                      }
+
+                      &:after {
+                        .commonRadio();
+                        width: 10px;
+                        height: 10px;
+                        background: #0099FF;
+
+                        margin: -1px 5px 5px 5px;
+                      }
+                    }
+                  }
+
+                }
+
+                #mbh-results-tariffs-selected {
+                  margin-left: 15px;
+                }
+
+                a {
+                  text-decoration: none;
+                  padding-left: 35px;
+                  margin-left: -20px;
+                  z-index: 1;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
   }
 }

@@ -2,6 +2,13 @@
   @import (css) url('https://fonts.googleapis.com/css?family=Roboto:400,500,700&subset=cyrillic');
 }
 
+@size-screen-mid-width-tablet: 832px;
+@size-screen-max-width-mobile: 732px;
+
+@size-screen-mid-width-tablet-minus-one: 831px;
+@size-screen-max-width-mobile-minus-one: 731px;
+
+
 .commonStyleFont() {
   font-family: 'Roboto', sans-serif;
 
@@ -13,6 +20,10 @@
   color: #282828;
 }
 
+.fontRobotoSlab() {
+  font-family: 'Roboto Slab', serif;
+};
+
 .iframeBorderStyle() {
   border-color: rgb(170, 170, 170);
   border-style: solid;
@@ -23,3 +34,4 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
+

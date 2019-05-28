@@ -9,17 +9,22 @@
     {% block styles %}
         {% stylesheets filter='cssrewrite, uglifycss'
             '@MBHBaseBundle/Resources/public/css/mbsuperfont/styles.less'
-            '@MBHOnlineBundle/Resources/public/css/results-form/*.less'
         %}
             <link rel="stylesheet" href="{{ absolute_url(asset_url) }}"/>
         {% endstylesheets %}
+
+        {% if formConfig.theme %}
+            <link rel="stylesheet" href="{{ formConfig.theme }}">
+            {% stylesheets filter='cssrewrite, uglifycss'
+                '@MBHOnlineBundle/Resources/public/css/results-form/*'
+            %}
+                <link rel="stylesheet" href="{{ absolute_url(asset_url) }}"/>
+            {% endstylesheets %}
+        {% endif %}
     {% endblock %}
-    {% if formConfig.theme %}
-        <link rel="stylesheet" href="{{ formConfig.theme }}">
-    {% endif %}
-    {% if formConfig.css %}
+    {% if formConfig.resultFormCss is not empty %}
         <style>
-            {{ formConfig.css |raw}}
+            {{ formConfig.resultFormCss |raw}}
         </style>
     {% endif %}
     <script>
@@ -80,7 +85,7 @@
     {% endif %}
 </head>
 <body>
-    <div id="mbh-results-wrapper" style=" width: auto; height: auto; padding: 10px 20px; overflow: auto;"></div>
+    <div id="mbh-results-wrapper"></div>
     <script defer type="text/javascript" src="{{ url('online_form_results', {id: formId}) }}"></script>
 </body>
 </html>
