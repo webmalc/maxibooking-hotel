@@ -248,6 +248,13 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
      */
+    private $resultFormCss;
+
+    /**
+     * @var string | null
+     * @Gedmo\Versioned
+     * @ODM\Field(type="string")
+     */
     private $additionalFormCss;
 
     /**
@@ -300,6 +307,24 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
     {
         $this->roomTypeChoices = new ArrayCollection();
         $this->hotels = new ArrayCollection();
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getResultFormCss(): ?string
+    {
+        return $this->resultFormCss;
+    }
+
+    /**
+     * @param string|null $resultFormCss
+     */
+    public function setResultFormCss(?string $resultFormCss): self
+    {
+        $this->resultFormCss = $resultFormCss;
+
+        return $this;
     }
 
     /**

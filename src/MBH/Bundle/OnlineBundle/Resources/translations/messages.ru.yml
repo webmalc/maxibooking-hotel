@@ -74,7 +74,8 @@ controller.formController.frame_sizes_changed: 'Изменены значени�
 form.inviteType.type.single: 'Однократная (600 руб.)'
 form.inviteType.type.twice: 'Двукратная (900 руб.)'
 online_invite.voting_code: 'Код голосования для вставки на сайт'
-form.formType.css_label: css
+form.formType.search_form_css.label: 'CSS для формы поиска'
+form.formType.css_label: CSS
 form.formType.is_horizontal.label: 'Горизонтальная?'
 form.formType.is_horizontal.help: 'Поля формы расположены в одну линию?'
 form.formType.css: Оформление
@@ -95,6 +96,7 @@ form.formType.help.css_libraries: 'Подключение дополнитель
 form.formType.template: Шаблоны
 form.formType.template_label: 'Шаблон формы'
 form.formType.template_help: 'Шаблон формы поиска'
+form.formType.result_form_css.label: 'CSS для формы с результатами'
 onlinebundle.resources.views.hotels: Отели
 onlinebundle.resources.views.room_types: 'Типы номеров'
 onlinebundle.resources.views.guests: Гости

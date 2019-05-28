@@ -192,7 +192,19 @@ class FormType extends AbstractType implements DecorationTypeInterface
             ->add($this->isFullWidth($builder))
             ->add($this->frameWidth($builder))
             ->add($this->frameHeight($builder))
-            ->add($this->css($builder))
+            ->add($this->css($builder, 'form.formType.search_form_css.label'));
+        $builder
+            ->add('resultFormCss',
+                TextareaType::class,
+                [
+                    'group'    => 'form.formType.css',
+                    'label'    => 'form.formType.result_form_css.label',
+                    'required' => false,
+                    'help'     => 'form.formType.css_help',
+                    'attr'     => ['rows' => 60],
+                ]);
+
+        $builder
             ->add($this->isHorizontal($builder))
             ->add($this->cssLibraries($builder))
             ->add($this->theme($builder));

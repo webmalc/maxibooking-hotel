@@ -61,12 +61,14 @@ form.formType.calendar.decor.height.help: 'Frame height'
 form.formType.calendar.decor.css.label: CSS
 form.formType.calendar.decor.css.help: 'Additional css styles for the calendar'
 online_invite.voting_code: 'Voting web form embeded code'
+form.formType.search_form_css.label: 'Search form CSS'
 form.formType.css_label: CSS
 form.formType.css: Layout
 form.formType.css_help: 'Additional css-styles for web form'
 form.formType.theme_label: Theme
 form.formType.resultsUrl_label: 'Result page'
 form.formType.resultsUrl_help: 'Search result page URL'
+form.formType.result_form_css.label: 'Result form CSS'
 onlinebundle.resources.views.all_hotels: 'All hotels'
 mbhonlinebundle.form.invitedtouristtype.mister: Mr.
 mbhonlinebundle.form.invitedtouristtype.mistress: Mrs.

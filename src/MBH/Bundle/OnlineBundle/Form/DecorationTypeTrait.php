@@ -46,13 +46,13 @@ trait DecorationTypeTrait
         ]);
     }
 
-    public function css(FormBuilderInterface $builder): FormBuilderInterface
+    public function css(FormBuilderInterface $builder, string $label = 'form.formType.css_label'): FormBuilderInterface
     {
         return $builder->create('css',
             TextareaType::class,
             [
                 'group'    => 'form.formType.css',
-                'label'    => 'form.formType.css_label',
+                'label'    => $label,
                 'required' => false,
                 'help'     => 'form.formType.css_help',
                 'attr'     => ['rows' => 60],

@@ -9,13 +9,19 @@ namespace MBH\Bundle\OnlineBundle\Services\SearchForm;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
+use MBH\Bundle\OnlineBundle\Services\ResultsForm\MBSiteResultFormStyle;
 
 class MBSiteFormConfigDataService
 {
     /**
      * @var MBSiteSearchFormStyle
      */
-    private $styleHolder;
+    private $searchStyleHolder;
+
+    /**
+     * @var MBSiteResultFormStyle
+     */
+    private $resultStyleHolder;
 
     /**
      * @var DocumentManager
@@ -29,11 +35,13 @@ class MBSiteFormConfigDataService
 
     public function __construct(
         MBSiteSearchFormStyle $styleFormHolder,
+        MBSiteResultFormStyle $resultFormStyle,
         DocumentManager $documentManager,
         string $locale
     )
     {
-        $this->styleHolder = $styleFormHolder;
+        $this->searchStyleHolder = $styleFormHolder;
+        $this->resultStyleHolder = $resultFormStyle;
         $this->dm = $documentManager;
         $this->locale = $locale;
     }
@@ -57,21 +65,33 @@ class MBSiteFormConfigDataService
         $siteConfig = $this->dm->getRepository(SiteConfig::class)->findOneBy([]);
 
         if ($siteConfig !== null) {
-            $css = sprintf(
-                "#mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-form-submit {background: %s;}\n%s",
-                $siteConfig->getThemeColors()['main'],
-                $this->styleHolder->getStyleSearchForm()
-            );
-
-            $formConfig
-                ->setAdditionalFormFrameWidth('251px')
-                ->setAdditionalFormFrameHeight('auto')
-                ->setCalendarFrameHeight('230px')
-                ->setCalendarFrameWidth('235px')
-                ->setCss($css)
-                ->setCalendarCss($this->styleHolder->getStyleCalendar())
-                ->setAdditionalFormCss($this->styleHolder->getStyleAdditionalForm());
+            $this->addSearchStyle($formConfig, $siteConfig);
+            $this->addResultStyle($formConfig, $siteConfig);
         }
+    }
+
+    private function addResultStyle(FormConfig $formConfig, SiteConfig $siteConfig): void
+    {
+        $formConfig
+            ->setResultFormCss($this->resultStyleHolder->getMainStyle());
+    }
+
+    private function addSearchStyle(FormConfig $formConfig, SiteConfig $siteConfig): void
+    {
+        $css = sprintf(
+            "#mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-form-submit {background: %s;}\n%s",
+            $siteConfig->getThemeColors()['main'],
+            $this->searchStyleHolder->getStyleSearchForm()
+        );
+
+        $formConfig
+            ->setAdditionalFormFrameWidth('251px')
+            ->setAdditionalFormFrameHeight('auto')
+            ->setCalendarFrameHeight('230px')
+            ->setCalendarFrameWidth('235px')
+            ->setCss($css)
+            ->setCalendarCss($this->searchStyleHolder->getStyleCalendar())
+            ->setAdditionalFormCss($this->searchStyleHolder->getStyleAdditionalForm());
     }
 
 }

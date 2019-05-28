@@ -128,12 +128,17 @@ services:
         arguments:
             - '@MBH\Bundle\OnlineBundle\Services\MBSite\StyleDataFromFile'
 
+    MBH\Bundle\OnlineBundle\Services\ResultsForm\MBSiteResultFormStyle:
+        arguments:
+            - '@MBH\Bundle\OnlineBundle\Services\MBSite\StyleDataFromFile'
+
     mbh.online_payment_form.validator:
         class: MBH\Bundle\OnlineBundle\Services\OnlineFormValidator
 
     MBH\Bundle\OnlineBundle\Services\SearchForm\MBSiteFormConfigDataService:
         arguments:
             - '@MBH\Bundle\OnlineBundle\Services\SearchForm\MBSiteSearchFormStyle'
+            - '@MBH\Bundle\OnlineBundle\Services\ResultsForm\MBSiteResultFormStyle'
             - '@doctrine.odm.mongodb.document_manager'
             - '%locale%'
 
