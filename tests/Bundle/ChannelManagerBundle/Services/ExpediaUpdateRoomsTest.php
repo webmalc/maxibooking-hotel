@@ -3,19 +3,15 @@
 namespace Tests\Bundle\ChannelManagerBundle\Services;
 
 
-use MBH\Bundle\BaseBundle\Lib\Test\UnitTestCase;
+use MBH\Bundle\BaseBundle\Lib\Test\ChannelManagerServiceTestCase;
 use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
-use MBH\Bundle\ChannelManagerBundle\Document\Room;
-use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use MBH\Bundle\ChannelManagerBundle\Services\Expedia\Expedia;
 use MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaRequestDataFormatter;
 use MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaRequestFormatter;
-use MBH\Bundle\HotelBundle\Document\Hotel;
-use MBH\Bundle\HotelBundle\Document\RoomType;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 
-class ExpediaUpdateRoomsTest  extends UnitTestCase
+class ExpediaUpdateRoomsTest  extends ChannelManagerServiceTestCase
 {
     const EXPEDIA_HOTEL_ID1 = 123;
     const EXPEDIA_HOTEL_ID2 = 321;
@@ -29,9 +25,6 @@ class ExpediaUpdateRoomsTest  extends UnitTestCase
 
     /**@var Expedia */
     private $expedia;
-    
-    /**@var \Doctrine\ODM\MongoDB\DocumentManager */
-    private $dm;
 
     /**@var \DateTime */
     private $startDate;
@@ -70,6 +63,16 @@ class ExpediaUpdateRoomsTest  extends UnitTestCase
         $this->requestDataFormatter = $this->container->get('mbh.channelmanager.expedia_request_data_formatter');
     }
 
+    protected function getServiceHotelIdByIsDefault(bool $isDefault): int
+    {
+        return $isDefault ? self::EXPEDIA_HOTEL_ID1 : self::EXPEDIA_HOTEL_ID2;
+    }
+
+    protected function getServiceConfig(): ChannelManagerConfigInterface
+    {
+       return new ExpediaConfig();
+    }
+
     public function testGetConfig()
     {
         $configs = $this->expedia->getConfig();
@@ -90,8 +93,8 @@ class ExpediaUpdateRoomsTest  extends UnitTestCase
             $requestDataArray[] = $ans[0];
         }
 
-        $this->assertEquals($this->getXML(false), $requestDataArray[1]);
-        $this->assertEquals($this->getXML(true), $requestDataArray[0]);
+        $this->assertEquals($this->getRequestData(false), $requestDataArray[1]);
+        $this->assertEquals($this->getRequestData(true), $requestDataArray[0]);
     }
 
     /** @depends testGetConfig */
@@ -106,11 +109,11 @@ class ExpediaUpdateRoomsTest  extends UnitTestCase
         }
 
         $this->assertEquals(self::METHOD_NAME, $requestDataFormatterArray[0]->getMethodName());
-        $this->assertEquals($this->getXML(true), $requestDataFormatterArray[0]->getRequestData());
+        $this->assertEquals($this->getRequestData(true), $requestDataFormatterArray[0]->getRequestData());
         $this->assertEquals(self::HEADERS, $requestDataFormatterArray[0]->getHeadersList());
         $this->assertEquals(self::EXPEDIA_UPDATE_ROOMS_API_URL, $requestDataFormatterArray[0]->getUrl());
         $this->assertEquals(self::METHOD_NAME, $requestDataFormatterArray[1]->getMethodName());
-        $this->assertEquals($this->getXML(false), $requestDataFormatterArray[1]->getRequestData());
+        $this->assertEquals($this->getRequestData(false), $requestDataFormatterArray[1]->getRequestData());
         $this->assertEquals(self::HEADERS, $requestDataFormatterArray[1]->getHeadersList());
         $this->assertEquals(self::EXPEDIA_UPDATE_ROOMS_API_URL, $requestDataFormatterArray[1]->getUrl());
     }
@@ -126,81 +129,10 @@ class ExpediaUpdateRoomsTest  extends UnitTestCase
     }
 
     /**
-     * @return RoomType
-     */
-    private function getRoomType(): RoomType
-    {
-        return $this->getHotelByIsDefault(true)->getRoomTypes()[0];
-    }
-
-    /**
-     * @param $isDefault
-     * @return void
-     */
-    private function initConfig($isDefault)
-    {
-        $hotelId = $isDefault ? self::EXPEDIA_HOTEL_ID1 : self::EXPEDIA_HOTEL_ID2;
-        $config = (new ExpediaConfig())
-            ->setHotelId($hotelId)
-            ->setHotel($this->getHotelByIsDefault($isDefault));
-
-        $serviceRoomIds = $this->getServiceRoomIds($isDefault);
-        foreach ($this->getHotelByIsDefault($isDefault)->getRoomTypes() as $number => $roomType) {
-            $config->addRoom((new Room())->setRoomId($serviceRoomIds[$number])->setRoomType($roomType));
-        }
-
-        $tariff = (new Tariff())
-            ->setTariff($this->getHotelByIsDefault($isDefault)->getBaseTariff())
-            ->setTariffId(ChannelManagerServiceMock::FIRST_TARIFF_ID);
-        $config->addTariff($tariff);
-
-        $config->setIsAllPackagesPulled(true);
-        $config->setIsEnabled(true);
-        $config->setIsTariffsConfigured(true);
-        $config->setIsRoomsConfigured(true);
-        $config->setIsConfirmedWithDataWarnings(true);
-
-        $this->getHotelByIsDefault($isDefault)
-            ->setExpediaConfig($config);
-
-        $this->dm->persist($config);
-        $this->dm->flush();
-    }
-
-    /**
-     * @param bool $isDefault
-     * @return Hotel
-     */
-    private function getHotelByIsDefault($isDefault = true)
-    {
-        return $this->dm
-            ->getRepository(Hotel::class)
-            ->findOneBy(['isDefault' => $isDefault]);
-    }
-
-    /**
-     * @param bool $isDefault
-     * @return array
-     */
-    private function getServiceRoomIds($isDefault = true)
-    {
-        if ($isDefault) {
-            return array_map(function (int $number) {
-                return 'def_room' . $number;
-            }, range(1, $this->getHotelByIsDefault(true)->getRoomTypes()->count()));
-        } else {
-            return array_map(function (int $number) {
-                return 'not_def_room' . $number;
-            }, range(1, $this->getHotelByIsDefault(false)->getRoomTypes()->count()));
-        }
-
-    }
-
-    /**
      * @param bool $isDefault
      * @return string
      */
-    private function getXML($isDefault = true)
+    private function getRequestData($isDefault = true)
     {
         $begin = $this->startDate->format(ExpediaRequestDataFormatter::EXPEDIA_DEFAULT_DATE_FORMAT_STRING);
         $end = $this->endDate->format(ExpediaRequestDataFormatter::EXPEDIA_DEFAULT_DATE_FORMAT_STRING);

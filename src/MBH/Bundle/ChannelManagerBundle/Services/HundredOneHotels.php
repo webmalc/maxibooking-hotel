@@ -102,6 +102,7 @@ class HundredOneHotels extends Base
             }
 
             $request = $requestFormatter->getRequest($config);
+            $requestFormatter->resetRequestData();
             $this->log(json_encode($request));
 
             $sendResult = $this->send(static::BASE_URL, $request, null, true);
@@ -202,6 +203,7 @@ class HundredOneHotels extends Base
             }
 
             $request = $requestFormatter->getRequest($config);
+            $requestFormatter->resetRequestData();
             $this->log(json_encode($request));
             $sendResult = $this->send(static::BASE_URL, $request, null, true);
 
@@ -356,6 +358,7 @@ class HundredOneHotels extends Base
             }
 
             $request = $requestFormatter->getRequest($config);
+            $requestFormatter->resetRequestData();
             $sendResult = $this->send(static::BASE_URL, $request, null, true);
 
             if ($result) {
@@ -410,6 +413,7 @@ class HundredOneHotels extends Base
             $endTime = new \DateTime();
             $requestFormatter->addDateCondition($startTime, $endTime);
             $request = $requestFormatter->getRequest($config, 'get_bookings');
+            $requestFormatter->resetRequestData();
 
             $serviceOrders = $this->send(static::BASE_URL, $request, null, true);
             $this->log($serviceOrders);
