@@ -14,8 +14,8 @@
             "<div class='text-center'>{{ entity.childAge }}</div>",
             "<div class='text-center'>{{ entity.infantAge }}</div>",
             "<div class='text-center'>{{ entity.begin|mbh_format }} - {{ entity.end|mbh_format }}</div>",
-            "<div class='text-center'>{% if entity.isDefault %}<span class=\"label label-success\">{{ 'mbhpricebundle.view.tariff.index.da'|trans }}</span>{% else %}<span class=\"label label-default\">{{ 'mbhpricebundle.view.tariff.index.net'|trans }}</span>{% endif %}</div>",
-            "<div class='text-center'>{% if entity.isOnline %}<span class=\"label label-success\">{{ 'mbhpricebundle.view.tariff.index.da'|trans }}</span>{% else %}<span class=\"label label-default\">{{ 'mbhpricebundle.view.tariff.index.net'|trans }}</span>{% endif %}</div>",
+            "<div class='text-center'>{% if entity.isDefault %}<span class='label label-success',>{{ 'mbhpricebundle.view.tariff.index.da'|trans }}</span>{% else %}<span class='label label-default'>{{ 'mbhpricebundle.view.tariff.index.net'|trans }}</span>{% endif %}</div>",
+            "<div class='text-center'>{% if entity.isOnline %}<span class='label label-success'>{{ 'mbhpricebundle.view.tariff.index.da'|trans }}</span>{% else %}<span class='label label-default'>{{ 'mbhpricebundle.view.tariff.index.net'|trans }}</span>{% endif %}</div>",
             "{% embed 'MBHBaseBundle:Actions:entry_actions.html.twig' with {'entity': entity, 'route': 'tariff', 'copy': entity.parent is empty } %}{% block additional_buttons %}{% if entity.parent is empty and is_granted('ROLE_TARIFF_NEW') %}<a href='{{ path('tariff_extend', { 'id': entity.id }) }}' class='btn btn-default btn-xs' title='{{ 'mbhpricebundle.view.tariff.index.sozdatdocherniytarif'|trans }}' data-toggle='tooltip'><i class='fa fa-arrow-circle-right'></i></a>{% endif %}{% endblock %}{% endembed %}"
         ]{% if loop.index != entities|length %},{% endif %}
         {% endfor %}
