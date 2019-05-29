@@ -236,10 +236,34 @@ MbhResultForm.prototype.showServices = function () {
     }
 };
 
-MbhResultForm.prototype.tariffLinks = function () {
-    jQuery('#mbh-results-tariffs a').each(function() {
-        jQuery(this).attr('href', jQuery(location).attr('pathname') + jQuery(this).attr('href'));
-    })
+MbhResultForm.prototype.tariffsAction = function () {
+    var tariffsWrapper = jQuery('#mbh-results-tariffs');
+
+    if (tariffsWrapper.length > 0) {
+
+        tariffsWrapper.find('a').each(function() {
+            jQuery(this).attr('href', jQuery(location).attr('pathname') + jQuery(this).attr('href'));
+        });
+
+        var textShow = this._text.tariffDesc.show,
+            textHide = this._text.tariffDesc.hide;
+
+        tariffsWrapper[0].querySelectorAll('.mbh-results-tariff-wrapper').forEach(function(wrapper) {
+            var btn = wrapper.querySelector('.mbh-results-tariffs-description-toggle');
+
+            if (btn === null) {
+                return;
+            }
+
+            btn.addEventListener('click', function() {
+                if (wrapper.classList.toggle('show-description')) {
+                    btn.innerHTML = textHide;
+                } else {
+                    btn.innerHTML = textShow;
+                }
+            })
+        })
+    }
 };
 
 MbhResultForm.prototype.stepOne = function() {
@@ -259,7 +283,7 @@ MbhResultForm.prototype.stepOne = function() {
 
             _this.descriptionToggle();
 
-            _this.tariffLinks();
+            _this.tariffsAction();
 
             _this.tablePrices();
 

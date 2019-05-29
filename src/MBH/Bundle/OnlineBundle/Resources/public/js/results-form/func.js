@@ -1,5 +1,5 @@
 MbhResultForm.prototype.waiting = function() {
-    this.wrapper.html('<div class="mbh-results-info alert alert-info"><i class="fa fa-spinner fa-spin"></i> ' + this.waitingText + '</div>');
+    this.wrapper.html('<div class="mbh-results-info alert alert-info"><i class="fa fa-spinner fa-spin"></i> ' + this._waitingText + '</div>');
 };
 
 MbhResultForm.prototype.setSelect2 = function() {

@@ -55,7 +55,14 @@
             this.wrapper = mbhVariables.wrapper;
             this.formConfigId = mbhVariables.formConfigId;
 
-            this.waitingText = mbhVariables.waitingText;
+            this._waitingText = '{{ "package.processing"|trans({}, 'front_messages')}}';
+
+            this._text = {
+                tariffDesc: {
+                    show: '{{ 'views.api.tariffs.tariff.description.show'|trans({}, 'MBHOnlineBundle') }}',
+                    hide: '{{ 'views.api.tariffs.tariff.description.hide'|trans({}, 'MBHOnlineBundle') }}'
+                }
+            };
 
             this._urls = {
                 stepOne  : mbhVariables.urls.stepOne,

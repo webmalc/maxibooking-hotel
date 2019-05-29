@@ -4,10 +4,9 @@
         <div id="mbh-results-global-wrapper" class="step-first">
 
             {% if results|length %}
+                {% include 'MBHOnlineBundle:ResultsForm:stepInfo.html.twig' with {'stepNumber': 1} %}
 
-                {% if tariffResults|length > 0 %}
-                    {% include 'MBHOnlineBundle:Api:tariffs.html.twig' with {'tariffResults': tariffResults} %}
-                {% endif %}
+                {% include 'MBHOnlineBundle:Api:tariffs.html.twig' with {'tariffResults': tariffResults} %}
 
                 <div id="mbh-results-duration">
                     <div id="mbh-result-response-info">
@@ -83,7 +82,6 @@
                                     {% if result.roomType.facilities is not empty %}
                                         <ul class="inline-facility spacer-top">
                                             {% for facility in result.roomType.facilities %}
-                                                {#                                                    <li><span class="fa fa-lg mbf-{{ facility }}" data-title="{% for key, val in facilityArray %}{% if key == facility %}{{ val }}{% endif %}{% endfor %}"></span></li>#}
                                                 <li><span class="fa fa-lg mbf-{{ facility }}" title="{% for key, val in facilityArray %}{% if key == facility %}{{ val }}{% endif %}{% endfor %}"></span></li>
                                             {% endfor %}
                                         </ul>
@@ -162,9 +160,7 @@
                     </button>
                 </div>
             {% else %}
-                {% if tariffResults|length > 0 %}
-                    {% include 'MBHOnlineBundle:Api:tariffs.html.twig' with {'tariffResults': tariffResults} %}
-                {% endif %} 
+                {% include 'MBHOnlineBundle:Api:tariffs.html.twig' with {'tariffResults': tariffResults} %}
                 <div class="mbh-results-error"><i
                             class="fa fa-exclamation-circle"> </i> {{ 'views.api.getResultsTable.nothing_found_for_your_query'|trans({}, 'MBHOnlineBundle') }}
                 </div>

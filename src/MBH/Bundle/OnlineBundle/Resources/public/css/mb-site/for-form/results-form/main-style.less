@@ -2,12 +2,15 @@
 
 .importFont();
 
+@general_color: #0099FF;
+@general_color_light: #C3EBFF;
+
 body {
   display: flex;
   flex-direction: column;
   align-items: center;
 
-  background: #C4C4C4;
+  background: #F2F2F2;
 
   .commonStyleFont();
 
@@ -37,8 +40,46 @@ body {
 
     .maxOuterBorders();
 
+    .step-info {
+      margin-top: 25px;
+      display: flex;
+      .step-number-info {
+        display: flex;
+        align-items: center;
+
+        &.active {
+          .step-number {
+            background: @general_color;
+          }
+        }
+
+        .step-number {
+          font-size: 16px;
+          line-height: 16px;
+
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          width: 40px;
+          height: 40px;
+          background: #BDBDBD;
+          color: #FFFFFF;
+        }
+
+        .step-title {
+          margin-left: 18px;
+          margin-right: 18px;
+          font-size: 16px;
+          line-height: 24px;
+        }
+      }
+    }
+
+
     .step-first {
 
+// BEGIN TARIFFS
       #mbh-results-tariffs {
 
         margin-top: 25px;
@@ -69,8 +110,8 @@ body {
           }
 
           .panel-body {
+  // BEGIN LIST
             padding: 0;
-
             ul {
               padding: 0;
               margin: 0;
@@ -80,74 +121,117 @@ body {
               li {
                 border-bottom: 1px solid #A0A0A0;
 
-                .heightPanelHeading ();
+                .mbh-results-tariff-wrapper {
 
-                .mbh-results-tariffs-label {
+                  &.show-description {
 
-                  height: 100%;
-                  display: flex;
-                  align-items: center;
-                  margin: 0;
+                    background: @general_color_light;
+                    .mbh-results-tariff-description {
+                      display: block;
+                    }
 
-                  font-size: 16px;
-                  line-height: 24px;
+                    .mbh-results-tariff-label {
+                      .mbh-results-tariffs-description-toggle {
+                        background: @general_color_light;
+                      }
+                      #mbh-results-tariff-selected {
+                        font-weight: bold;
+                      }
+                    }
+                  }
 
-                  input[type="radio"] {
-                    margin: 0 0 0 10px;
-
-                    .commonRadio() {
-                      content: '';
-                      position: absolute;
-                      border-radius: 50%;
-                      width: 18px;
-                      height: 18px;
+                  .mbh-results-tariff-label {
+                    .mbh-results-tariffs-description-toggle {
+                      border: none;
                       background: #FFFFFF;
 
-                      margin-top: -3px;
+                      font-style: italic;
+                      font-weight: normal;
+                      font-size: 16px;
+                      line-height: 24px;
+
+                      color: #737373;
                     }
 
-                    &:disabled {
-                      &:before {
-                        .commonRadio();
-                        border: 1px solid #DADADA;
+
+                    .heightPanelHeading ();
+                    display: flex;
+                    align-items: center;
+                    margin: 0;
+
+                    font-size: 16px;
+                    line-height: 24px;
+
+                    #mbh-results-tariff-selected {
+                      margin-left: 15px;
+                    }
+
+                    a {
+                      text-decoration: none;
+                      padding-left: 35px;
+                      margin-left: -20px;
+                      z-index: 1;
+                    }
+
+                  // BEGIN RADIO
+                    input[type="radio"] {
+                      margin: 0 0 0 10px;
+
+                      .commonRadio() {
+                        content: '';
+                        position: absolute;
+                        border-radius: 50%;
+                        width: 18px;
+                        height: 18px;
+                        background: #FFFFFF;
+
+                        margin-top: -3px;
                       }
 
-                      &:checked {
+                      &:disabled {
                         &:before {
                           .commonRadio();
-                          border: 1px solid #0099FF;
+                          border: 1px solid #DADADA;
                         }
 
-                        &:after {
-                          .commonRadio();
-                          width: 10px;
-                          height: 10px;
-                          background: #0099FF;
+                        &:checked {
+                          &:before {
+                            .commonRadio();
+                            border: 1px solid #0099FF;
+                          }
 
-                          margin-left: 4px;
-                          margin-top: 1px;
+                          &:after {
+                            .commonRadio();
+                            width: 10px;
+                            height: 10px;
+                            background: #0099FF;
+
+                            margin-left: 4px;
+                            margin-top: 1px;
+                          }
                         }
                       }
+
                     }
-
+                  // END RADIO
                   }
 
-                  #mbh-results-tariffs-selected {
-                    margin-left: 15px;
+                  .mbh-results-tariff-description {
+                    display: none;
+                    margin-left: 35px;
+                    padding-bottom: 5px;
+                    //font-size: 16px;
+                    //line-height: 24px;
                   }
 
-                  a {
-                    text-decoration: none;
-                    padding-left: 35px;
-                    margin-left: -20px;
-                    z-index: 1;
-                  }
                 }
               }
             }
+  // END LIST
           }
         }
       }
+// END TARIFFS
 
       #mbh-results-duration {
 
@@ -159,13 +243,13 @@ body {
           display: none;
         }
       }
-
+// BEGIN RESULT
       #mbh-results-list-wrapper {
         .mbh-results-container {
           margin: 10px 0;
           padding: 5px 0;
           background: #FFFFFF;
-
+  // BEGIN IMAGE
           .mbh-results-image-wrapper {
             .main-image {
               margin-bottom: 5px;
@@ -176,7 +260,8 @@ body {
               justify-content: space-between;
             }
           }
-
+  // END IMAGE
+  // BEGIN DESCRIPTION
           .mbh-results-description-container {
             .mbh-results-room-type-name-wrapper {
               .fontRobotoSlab();
@@ -228,7 +313,8 @@ body {
               }
             }
           }
-
+  // END DESCRIPTION
+  // BEGIN PRICE
           .mbh-results-price-container {
             > * {
               text-align: center;
@@ -268,8 +354,10 @@ body {
               line-height: 20px;
             }
           }
+  // END PRICE
         }
       }
+// END RESULT
     }
 
   }

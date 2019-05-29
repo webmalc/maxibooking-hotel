@@ -3,6 +3,8 @@
 <div id="mbh-results-global-wrapper">
     {% if request.packages|length %}
 
+        {% include 'MBHOnlineBundle:ResultsForm:stepInfo.html.twig' with {'stepNumber': 2} %}
+
         <div id="mbh-package-info">
             {{ 'views.api.getPaymentType.dates'|trans({}, 'MBHOnlineBundle') }} <strong>{{ request.begin }} - {{ request.end }}.</strong>
             {{ 'views.api.getPaymentType.days_and_nights'|trans({}, 'MBHOnlineBundle') }} <strong>{{ request.days }}/<span id="mbh-package-info-nights">{{ request.nights }}</span></strong>.

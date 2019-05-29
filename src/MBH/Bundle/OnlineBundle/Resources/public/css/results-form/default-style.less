@@ -4,79 +4,158 @@
   padding: 10px 20px;
   overflow: auto;
 }
+
 .spacer-top {
   margin-top: 10px;
 }
+
 .spacer-left-sm {
   margin-left: 5px;
 }
+
 #mbh-result-response-info {
   display: none;
 }
+
 .mbh-right {
   text-align: right;
 }
+
 .mbh-left {
   text-align: left;
 }
+
 .mbh-center {
   text-align: center;
 }
+
 .mbh-results-packages-count {
   width: 50px;
 }
+
 .select2-container a {
   text-decoration: none !important;
   color: #949494 !important;
 }
+/* ----------- STEP -------- */
 
+.step-info {
+  margin-top: 25px;
+  display: flex;
+  .step-number-info {
+    display: flex;
+    align-items: center;
+
+    &.active {
+      .step-number {
+        background: #f67a00;
+      }
+    }
+
+    .step-number {
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      width: 40px;
+      height: 40px;
+      background: #BDBDBD;
+      color: #FFFFFF;
+    }
+
+    .step-title {
+      margin-left: 18px;
+      margin-right: 18px;
+      font-size: 16px;
+      line-height: 24px;
+    }
+  }
+}
 
 /* ------------------------------------------------------  TARIFFS ---------------------------------- */
-#mbh-results-tariffs p {
-  padding: 0;
-  margin: 0;
-}
-#mbh-results-tariffs a{
-  text-decoration: none !important;
-}
-#mbh-results-tariffs small {
-  font-size: 11px;
-}
-.mbh-results-tariffs-description {
-  font-size: 12px;
-  color: #999;
-  padding: 0 0 0 20px !important;
-}
-#mbh-results-tariffs p input {
-  margin: 0 6px 0 0;
-  display: inline-block;
-  vertical-align: middle;
-}
-#mbh-results-tariffs ul {
-  padding: 0 15px;
-  list-style-type: none;
-  margin: 0;
-}
 
-#mbh-results-tariffs ul li {
-  margin: 3px 0 0 0;
-  padding: 0;
-  border: 10px;
+#mbh-results-tariffs {
 
-}
-#mbh-results-tariffs-selected {
-  color: #f67a00;
+  small {
+    font-size: 11px;
+  }
+
+  a {
+    text-decoration: none !important;
+  }
+
+  ul {
+    padding: 0 15px;
+    list-style-type: none;
+    margin: 0;
+  }
+
+  .mbh-results-tariff-wrapper {
+
+    &.show-description {
+
+      .mbh-results-tariff-description {
+        display: block;
+      }
+
+      .mbh-results-tariff-label {
+        .mbh-results-tariffs-description-toggle {
+        }
+
+        #mbh-results-tariff-selected {
+        }
+      }
+    }
+
+    .mbh-results-tariff-label {
+      .mbh-results-tariffs-description-toggle {
+        border: none;
+        background: #FFFFFF;
+        font-size: 12px;
+      }
+
+
+      display: flex;
+      align-items: center;
+      margin: 0;
+
+      font-size: 16px;
+      line-height: 24px;
+
+      #mbh-results-tariff-selected {
+        margin-left: 15px;
+      }
+
+      a {
+        text-decoration: none;
+        padding-left: 35px;
+        margin-left: -20px;
+        z-index: 1;
+      }
+    }
+
+    .mbh-results-tariff-description {
+      display: none;
+      margin-left: 35px;
+      padding-bottom: 5px;
+    }
+
+  }
+
 }
 
 /* -------------------------- RESULTS -------------------------------- */
 .mbh-results-tariff {
   display: none;
 }
+
 .mbh-results-hotel {
   font-size: 12px;
   color: #999;
   padding: 0 0 0 4px;
 }
+
 .warning .mbh-results-hotel {
   color: #000;
 }
@@ -92,6 +171,7 @@
         margin-bottom: 5px;
         text-align: center;
       }
+
       .list-small-image {
         display: flex;
         justify-content: space-between;
@@ -115,6 +195,7 @@
           margin-left: 0;
           padding: 0;
           list-style: none;
+
           li {
             display: inline-block;
             margin-right: 5px;
@@ -154,79 +235,97 @@
   padding: 0;
   list-style-type: none;
 }
+
 .mbh-results-prices li {
   font-size: 16px;
 }
+
 .mbh-results-per-person {
   font-size: 11px;
   color: #7e747c;
 }
+
 .mbh-results-room-type-name {
   font-size: 18px;
 }
+
 .mbh-results-tourists-select {
   width: 100px;
 }
-
 
 /* -------------------------- SERVICES -------------------------------- */
 .mbh-results-services-name small {
   font-size: 11px;
   color: #7e747c;
 }
+
 .mbh-results-services-name {
   font-size: 15px;
 }
+
 .mbh-results-services-per-service {
   font-size: 11px;
   color: #7e747c;
 }
+
 .mbh-results-services-prices {
   font-size: 16px;
 }
+
 #mbh-results-table-services-th-price {
-  width:120px;
+  width: 120px;
 }
+
 #mbh-results-table-services-th-amount {
-  width:80px;
+  width: 80px;
 }
+
 /* -------------------------- RESULTS ACTIONS -------------------------------- */
 #mbh-results-actions {
   margin: 20px 0;
   text-align: right;
 }
+
 .mbh-results-total-sum {
   font-size: 16px;
   font-weight: bold;
 }
+
 /* -------------------------- USER FORM -------------------------------- */
 .mbh-results-services-count {
   width: 60px;
 }
+
 #mbh-user-form sup {
   color: maroon;
 }
+
 #mbh-user-form-form label {
   font-weight: bold;
 }
+
 #mbh-user-form-birthday, #mbh-user-form-arrival, #mbh-user-form-departure {
   width: 100px;
 }
+
 /* -------------------------- PAYMENT TYPE FORM -------------------------------- */
 .mbh-payment-type-row {
   margin-bottom: 5px;
   padding: 5px;
 }
+
 .mbh-payment-type-row p {
   font-size: 11px;
   color: #7e747c;
 }
+
 .mbh-payment-type-row label {
   font-size: 16px;
   font-weight: normal;
   margin-left: 6px;
   cursor: pointer;
 }
+
 .hidden {
   display: none !important;
 }
@@ -236,6 +335,7 @@
   margin-top: 20px;
   text-align: center;
 }
+
 #mbh-results-pay-form-button {
   font-size: 21px;
   margin: 0;
