@@ -61,7 +61,7 @@
     "twig/twig": "^2.5",
     "phpunit/phpunit": "<7",
     "snc/redis-bundle": "^2.1",
-    "php-amqplib/php-amqplib": "2.7.2",
+    "php-amqplib/php-amqplib": "^2.9.2",
     "php-http/curl-client": "^1.7",
     "guzzlehttp/psr7": "^1.5",
     "jolicode/slack-php-api": "^1.1",
