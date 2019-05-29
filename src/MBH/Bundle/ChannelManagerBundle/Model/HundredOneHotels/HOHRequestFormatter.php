@@ -20,6 +20,11 @@ class HOHRequestFormatter
         $this->requestData = $data;
     }
 
+    public function resetRequestData()
+    {
+        $this->requestData = [];
+    }
+
     /**
      * get array key, where "day" field equal to specified value
      * @param $dateString
