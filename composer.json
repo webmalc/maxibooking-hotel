@@ -82,7 +82,8 @@
     "symfony/phpunit-bridge": "*@stable",
 
     "liip/functional-test-bundle": "*@stable",
-    "phpunit/phpunit": "^6.2"
+    "phpunit/phpunit": "^6.2",
+    "mockery/mockery": "*@stable"
   },
   "scripts": {
     "symfony-scripts": [
