@@ -3,13 +3,13 @@
 jQuery(document).ready(function() {
     var mbhVariables = {
         wrapper: jQuery('#mbh-results-wrapper'),
-        formConfigId: '{{ configId }}',
+        formConfigId: '{{ formConfigId }}',
         waitingText: '{{ "package.processing"|trans({}, 'front_messages')}}',
         urls: {
-            table: '{{ urls.table }}',
-            userForm: '{{ urls.user_form }}',
-            paymentType: '{{ urls.payment_type }}',
-            results: '{{ urls.results }}'
+            stepOne  : '{{ urls.stepOne }}',
+            stepTwo  : '{{ urls.stepTwo }}',
+            stepThree: '{{ urls.stepThree }}',
+            results  : '{{ urls.results }}'
         }
     }
 
@@ -20,6 +20,14 @@ jQuery(document).ready(function() {
     window.addEventListener('resize', function(ev) {
         mbhResultForm.resize();
     })
+
+    var timerId = setInterval(function() {
+        mbhResultForm.resize();
+    }, 300);
+
+    setTimeout(function() {
+        clearTimeout(timerId);
+    }, 5000);
 
     var getUrlVars = function() {
             var vars = [],
@@ -46,5 +54,5 @@ jQuery(document).ready(function() {
     mbhResultForm.waiting();
 
     // load table
-    mbhResultForm.loadTable();
+    mbhResultForm.stepOne();
 })

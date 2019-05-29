@@ -22,6 +22,10 @@
             {% endstylesheets %}
         {% endif %}
     {% endblock %}
+    {# kludge #}
+    {% if kludgeTheme != false %}
+        <link rel="stylesheet" href="{{ kludgeTheme }}">
+    {% endif %}
     {% if formConfig.resultFormCss is not empty %}
         <style>
             {{ formConfig.resultFormCss |raw}}
@@ -54,10 +58,10 @@
             this.waitingText = mbhVariables.waitingText;
 
             this._urls = {
-                table: mbhVariables.urls.table,
-                userForm: mbhVariables.urls.userForm,
-                paymentType: mbhVariables.urls.paymentType,
-                results: mbhVariables.urls.results
+                stepOne  : mbhVariables.urls.stepOne,
+                stepTwo  : mbhVariables.urls.stepTwo,
+                stepThree: mbhVariables.urls.stepThree,
+                results  : mbhVariables.urls.results
             };
 
             this._requestParams = {};
@@ -86,6 +90,6 @@
 </head>
 <body>
     <div id="mbh-results-wrapper"></div>
-    <script defer type="text/javascript" src="{{ url('online_form_results', {id: formId}) }}"></script>
+    <script defer type="text/javascript" src="{{ url('online_form_results', {formConfigId: formId}) }}"></script>
 </body>
 </html>

@@ -13,6 +13,7 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
 use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigManager;
+use MBH\Bundle\OnlineBundle\Exception\FormConfig\NotFoundFormConfigException;
 use MBH\Bundle\OnlineBundle\Services\RenderPaymentButton;
 use MBH\Bundle\PackageBundle\Document\Order;
 
@@ -115,41 +116,46 @@ class ResultsFormController extends BaseController
     {
         $this->setLocaleByRequest();
 
+        $kludgeTheme = false;
+
+        if ($formConfig->isForMbSite()) {
+            $kludgeTheme = FormConfig::THEMES['cosmo'];
+        }
+
         return $this->render(
             '@MBHOnline/ResultsForm/getFormResultsIframe.html.twig',
             [
                 'formId'     => $formConfig->getId(),
                 'formConfig' => $formConfig,
-                'siteConfig' => $this->get('mbh.site_manager')->getSiteConfig(),
+                'kludgeTheme'=> $kludgeTheme
             ]
         );
     }
 
     /**
      * Results js
-     * @Route("/results/{id}", name="online_form_results", defaults={"_format"="js"})
+     * @Route("/results/{formConfigId}", name="online_form_results", defaults={"_format"="js"})
      * @Method("GET")
-     * @ParamConverter(converter="form_config_converter", options={"formConfigId": "id"})
+     * @ParamConverter(converter="form_config_converter")
      */
     public function getResultsAction(FormConfig $formConfig)
     {
         $this->setLocaleByRequest();
 
-        $params = ['id' => $formConfig->getId()];
+        $params = ['formConfigId' => $formConfig->getId()];
 
         return $this->render(
             '@MBHOnline/ResultsForm/getResults.js.twig',
             [
-//                'styles' => $this->get('templating')->render('MBHOnlineBundle:Api:results.css.twig'),
-                'configId' => $formConfig->getId(),
+                'formConfigId' => $formConfig->getId(),
                 'urls' => [
-                    'table' => $this->generateUrl(
+                    'stepOne' => $this->generateUrl(
                         'online_form_results_table',
                         $params,
                         UrlGeneratorInterface::ABSOLUTE_URL
                     ),
-                    'user_form' => $this->generateUrl('online_form_user_form', [], UrlGeneratorInterface::ABSOLUTE_URL),
-                    'payment_type' => $this->generateUrl(
+                    'stepTwo' => $this->generateUrl('online_form_user_form', [], UrlGeneratorInterface::ABSOLUTE_URL),
+                    'stepThree' => $this->generateUrl(
                         'online_form_payment_type',
                         $params,
                         UrlGeneratorInterface::ABSOLUTE_URL
@@ -162,11 +168,11 @@ class ResultsFormController extends BaseController
 
     /**
      * Results table
-     * @Route("/results/table/{id}", name="online_form_results_table", options={"expose"=true}, defaults={"id"=null})
+     * @Route("/results/table/{formConfigId}", name="online_form_results_table", options={"expose"=true}, defaults={"id"=null})
      * @Method("GET")
-     * @ParamConverter(converter="form_config_converter", options={"formConfigId": "id"})
+     * @ParamConverter(converter="form_config_converter")
      */
-    public function getResultsTableAction(Request $request, FormConfig $formConfig)
+    public function stepOneAction(Request $request, FormConfig $formConfig)
     {
         $this->setLocaleByRequest();
 
@@ -300,7 +306,7 @@ class ResultsFormController extends BaseController
         }
 
         return $this->render(
-            '@MBHOnline/ResultsForm/getResultsTable.html.twig',
+            '@MBHOnline/ResultsForm/stepOne.html.twig',
             [
                 'defaultTariff' => $defaultTariff ?? null,
                 'facilityArray' => $facilityArray,
@@ -315,10 +321,10 @@ class ResultsFormController extends BaseController
 
     /**
      * User form
-     * @Route("/results/user/form", name="online_form_user_form", options={"expose"=true}, defaults={"id"=null})
+     * @Route("/results/user/form", name="online_form_user_form", options={"expose"=true})
      * @Method("POST")
      */
-    public function getUserFormAction(Request $request)
+    public function stepTwoAction(Request $request)
     {
         $this->setLocaleByRequest();
         $requestJson = json_decode($request->getContent());
@@ -336,10 +342,10 @@ class ResultsFormController extends BaseController
             $services = array_merge($services, $hotel->getServices(true, true));
         }
 
-        $formConfig = $this->get(FormConfigManager::class)->findOneById($requestJson->configId);
+        $formConfig = $this->get(FormConfigManager::class)->findOneById($requestJson->formConfigId);
 
         if ($formConfig === null || !$formConfig->isEnabled()) {
-            throw $this->createNotFoundException();
+            throw new NotFoundFormConfigException();
         }
 
         $emailIsRequired = false;
@@ -352,7 +358,7 @@ class ResultsFormController extends BaseController
         }
 
         return $this->render(
-            '@MBHOnline/ResultsForm/getUserForm.html.twig',
+            '@MBHOnline/ResultsForm/stepTwo.html.twig',
             [
                 'request'         => $requestJson,
                 'services'        => $services,
@@ -365,8 +371,8 @@ class ResultsFormController extends BaseController
 
     /**
      * Payment type form
-     * @Route("/results/payment/type/{id}", name="online_form_payment_type", options={"expose"=true})
-     * @ParamConverter(converter="form_config_converter", options={"formConfigId": "id"})
+     * @Route("/results/payment/type/{formConfigId}", name="online_form_payment_type", options={"expose"=true})
+     * @ParamConverter(converter="form_config_converter")
      * @Method("POST")
      */
     public function getPaymentTypeAction(Request $request, FormConfig $formConfig)

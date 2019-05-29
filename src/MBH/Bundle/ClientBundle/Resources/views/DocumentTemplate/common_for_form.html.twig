@@ -86,16 +86,16 @@
                 plugins                  : '{{ plugins|join(' ') }} mbh_data codemirror',
                 toolbar                  : '{{ toolbar|join(' | ') }} | mbh_toggle_border mbh_rotate',
                 menu                     : {
-                    file  : {title: 'File', items: 'newdocument'},
-                    edit  : {title: 'Edit', items: 'undo redo | cut copy paste pastetext | selectall'},
-                    insert: {title: 'Insert', items: 'link media | template hr'},
-                    view  : {title: 'View', items: 'visualaid'},
-                    format: {
+                    file   : {title: 'File', items: 'newdocument'},
+                    edit   : {title: 'Edit', items: 'undo redo | cut copy paste pastetext | selectall'},
+                    insert : {title: 'Insert', items: 'link media | template hr'},
+                    view   : {title: 'View', items: 'visualaid'},
+                    format : {
                         title: 'Format',
                         items: 'bold italic underline strikethrough superscript subscript | formats | removeformat'
                     },
-                    table : {title: 'Table', items: 'inserttable tableprops deletetable | cell row column'},
-                    tools : {title: 'Tools', items: 'code'}
+                    stepOne: {title: 'Table', items: 'inserttable tableprops deletetable | cell row column'},
+                    tools  : {title: 'Tools', items: 'code'}
                 },
                 contextmenu              : 'mbh_table_add statement_mbh mbh_table_property | mbh_all_data mbh_table_entity | link image | inserttable tableprops | cell row column deletetable',
                 codemirror               : {

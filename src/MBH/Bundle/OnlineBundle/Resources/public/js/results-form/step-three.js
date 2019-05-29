@@ -2,7 +2,7 @@ MbhResultForm.prototype.stepThree = function() {
     var _this = this;
 
     jQuery.ajax({
-        url: this._urls.paymentType,
+        url: this._urls.stepThree,
         type: 'POST',
         data: JSON.stringify(this._requestParams),
         dataType: 'html',
@@ -80,7 +80,7 @@ MbhResultForm.prototype.stepThree = function() {
                     purpose: 'choose'
                 }, "*");
                 _this._requestParams.total = jQuery('#mbh-package-info-total-hidden').text();
-                _this._requestParams.paymentType = jQuery('.mbh-payment-types-radio:checked').val();
+                _this._requestParams.stepThree = jQuery('.mbh-payment-types-radio:checked').val();
                 _this._requestParams.paymentSystem = jQuery('#mbh-form-payment-system').val();
 
                 _this.waiting();

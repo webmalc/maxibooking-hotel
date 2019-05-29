@@ -2,7 +2,7 @@ MbhResultForm.prototype.stepTwo = function() {
     var _this = this;
 
     jQuery.ajax({
-        url: this._urls.userForm,
+        url: this._urls.stepTwo,
         type: 'POST',
         data: JSON.stringify(this._requestParams),
         dataType: 'html',
@@ -153,8 +153,8 @@ MbhResultForm.prototype.stepTwo = function() {
 
                 var $personalDataCheckbox = $('#mbh-form-personal-data');
                 _this._requestParams.isConfrmWithPersDataProcessing
-                    = $personalDataCheckbox.length == 1 && $personalDataCheckbox.is(':checked');
-                _this._requestParams.configId = _this.formConfigId;
+                    = $personalDataCheckbox.length === 1 && $personalDataCheckbox.is(':checked');
+                _this._requestParams.formConfigId = _this.formConfigId;
                 _this.waiting();
 
                 // ------------------------------ STEP 3: load payment type -------------------------
