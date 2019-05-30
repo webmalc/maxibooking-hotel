@@ -11,15 +11,16 @@ function AdditionalForm(isDisplayChildAges) {
     this.lastIframeHeight = 0;
 }
 
-AdditionalForm.prototype.eventHandler = function (self) {
-    var property;
+AdditionalForm.prototype.eventHandler = function () {
+    var _this = this,
+        property;
 
     this.iframeResize();
 
     var dataForm = {};
 
     ['adults', 'children-age', 'room-type'].forEach(function(name) {
-        property = self.wrapper.querySelectorAll('[data-form="' + name + '"]');
+        property = _this.wrapper.querySelectorAll('[data-form="' + name + '"]');
         switch (name) {
             case 'adults':
                 dataForm[name] = property[0] ? parseInt(property[0].innerHTML) : 1;
@@ -27,7 +28,7 @@ AdditionalForm.prototype.eventHandler = function (self) {
             case 'children-age':
                 dataForm['children'] = property.length;
                 dataForm['children-ages'] = [];
-                if (self.isDisplayChildAges && dataForm['children'] > 0) {
+                if (_this.isDisplayChildAges && dataForm['children'] > 0) {
                     property.forEach(function(value, index) {
                         dataForm['children-ages'].push(value.value);
                     })
@@ -62,17 +63,18 @@ AdditionalForm.prototype.iframeResize = function () {
     }
 };
 
-AdditionalForm.prototype.wrapperAddListener = function (self) {
+AdditionalForm.prototype.wrapperAddListener = function () {
+    var _this = this;
     this.wrapper.addEventListener('click', function(evt) {
-        self.eventHandler(self);
+        _this.eventHandler();
     });
 
     this.wrapper.addEventListener('keyup', function(evt) {
-        self.eventHandler(self);
+        _this.eventHandler();
     });
 
     window.addEventListener('resize', function(ev) {
-        self.iframeResize();
+        _this.iframeResize();
     });
 };
 
@@ -98,19 +100,21 @@ AdditionalForm.prototype.childrenCheckStepperValue = function () {
     }
 };
 
-AdditionalForm.prototype.childrenAddListener = function (self) {
+AdditionalForm.prototype.childrenAddListener = function () {
+    var _this = this;
+
     this.childrenBtnSubtract.addEventListener('click', function(evt) {
-        var newValue = parseInt(self.childrenStepperValue.innerHTML) - 1;
-        self.childrenStepperValue.innerHTML = newValue;
-        self.childrenCheckStepperValue();
-        self.childrenAgeRemoveSection(newValue + 1);
+        var newValue = parseInt(_this.childrenStepperValue.innerHTML) - 1;
+        _this.childrenStepperValue.innerHTML = newValue;
+        _this.childrenCheckStepperValue();
+        _this.childrenAgeRemoveSection(newValue + 1);
     });
 
     this.childrenSection.querySelector('.btn-add').addEventListener('click', function(evt) {
-        var newValue = parseInt(self.childrenStepperValue.innerHTML) + 1;
-        self.childrenStepperValue.innerHTML = newValue;
-        self.childrenCheckStepperValue();
-        self.childrenAgeAddSelection(newValue, false);
+        var newValue = parseInt(_this.childrenStepperValue.innerHTML) + 1;
+        _this.childrenStepperValue.innerHTML = newValue;
+        _this.childrenCheckStepperValue();
+        _this.childrenAgeAddSelection(newValue, false);
     });
 };
 
@@ -123,7 +127,7 @@ AdditionalForm.prototype.childrenSectionInit = function () {
     this.childrenAges = document.querySelector('.children-ages-wrapper');
     this.childrenAgesHolder = this.childrenAges.querySelector('.holder-children-ages');
 
-    this.childrenAddListener(this);
+    this.childrenAddListener();
 
     this.childrenCheckStepperValue();
 };
@@ -155,7 +159,8 @@ AdditionalForm.prototype.childrenAgeAddSelection = function (index, age) {
     }
 };
 
-AdditionalForm.prototype.listenerPostMessage = function (self){
+AdditionalForm.prototype.listenerPostMessage = function (){
+    var _this = this;
 
     var roomType = this.wrapper.querySelector('#mbh-form-roomType');
 
@@ -163,56 +168,61 @@ AdditionalForm.prototype.listenerPostMessage = function (self){
         if (e.data.type !== 'mbh') {
             return;
         }
-        if (e.data.target !== self._PM_TARGET_PARENT_FORM) {
+        if (e.data.target !== _this._PM_TARGET_PARENT_FORM) {
             return;
         }
 
         var form = e.data.form;
-
-        if (form.adults) {
-            self.wrapper.querySelector('.stepper-value[data-form="adults"]').innerHTML = form.adults;
+        if (form.adults !== undefined) {
+            _this.wrapper.querySelector('.stepper-value[data-form="adults"]').innerHTML = form.adults;
+            _this.adultsCheckStepperValue();
         }
 
-        if (form.children && parseInt(form.children) > 0 ) {
-            self.childrenStepperValue.innerHTML = form.children;
+        if (form.children !== undefined && form.children > 0 ) {
+            _this.childrenStepperValue.innerHTML = form.children;
 
-            form['children-ages'].forEach(function(age, index) {
-                self.childrenAgeAddSelection(index + 1, age);
-            });
+            if (form['children-ages'].length === form.children) {
+                form['children-ages'].forEach(function(age, index) {
+                    _this.childrenAgeAddSelection(index + 1, age);
+                });
+            } else {
+                for (var index = 1; index <= form.children; index++) {
+                    _this.childrenAgeAddSelection(index, false);
+                }
+            }
 
-            self.childrenCheckStepperValue();
+            _this.childrenCheckStepperValue();
         }
 
         if (roomType !== null && form.roomType !== '') {
-            self.selectedOption(roomType, form.roomType);
+            _this.selectedOption(roomType, form.roomType);
         }
     });
 };
 
+AdditionalForm.prototype.adultsCheckStepperValue = function () {
+    this.adultsBtnSubtract.disabled = parseInt(this.adultsStepperValue.innerHTML) <= 1;
+};
+
 AdditionalForm.prototype.adultsSectionInit = function () {
-    this.wrapper.querySelectorAll('.mbh-form-row.adults').forEach(function(element) {
-        var stepperValue = element.querySelector('.stepper-value'),
-            btnSubtract = element.querySelector('.btn-subtract'),
-            checkStepperValue = function() {
-                if (parseInt(stepperValue.innerHTML) <= 1) {
-                    btnSubtract.disabled = true;
-                } else {
-                    btnSubtract.disabled = false;
-                }
-            };
 
-        checkStepperValue();
+    var adults = this.wrapper.querySelector('.mbh-form-row.adults');
 
-        btnSubtract.addEventListener('click', function(evt) {
-            stepperValue.innerHTML = parseInt(stepperValue.innerHTML) - 1;
-            checkStepperValue();
-        });
+    this.adultsStepperValue = adults.querySelector('.stepper-value');
+    this.adultsBtnSubtract = adults.querySelector('.btn-subtract');
 
-        element.querySelector('.btn-add').addEventListener('click', function(evt) {
-            stepperValue.innerHTML = parseInt(stepperValue.innerHTML) + 1;
-            checkStepperValue();
-        });
+    this.adultsCheckStepperValue();
 
+    var _this = this;
+
+    this.adultsBtnSubtract.addEventListener('click', function(evt) {
+        _this.adultsStepperValue.innerHTML = parseInt(_this.adultsStepperValue.innerHTML) - 1;
+        _this.adultsCheckStepperValue();
+    });
+
+    adults.querySelector('.btn-add').addEventListener('click', function(evt) {
+        _this.adultsStepperValue.innerHTML = parseInt(_this.adultsStepperValue.innerHTML) + 1;
+        _this.adultsCheckStepperValue();
     });
 };
 
@@ -221,8 +231,8 @@ AdditionalForm.prototype.exec = function() {
     this.childrenSectionInit();
     this.adultsSectionInit();
 
-    this.listenerPostMessage(this);
-    this.wrapperAddListener(this);
+    this.listenerPostMessage();
+    this.wrapperAddListener();
 };
 
 window.addEventListener('load', function(ev) {

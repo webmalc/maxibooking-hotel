@@ -209,19 +209,22 @@ OnLoadFormLoad.prototype.resizeIframeHeight = function (event) {
 };
 
 OnLoadFormLoad.prototype.fillObject = function (object, data) {
-    temp = data.split('=');
+    var temp = data.split('='),
+        value = temp[1] !== '' && !isNaN(temp[1]) ? parseInt(temp[1]) : temp[1];
+
     if (temp[0].indexOf('children-ages') !== -1) {
         if (object['children-ages'] === undefined) {
             object['children-ages'] = [];
         }
-        object['children-ages'].push(temp[1]);
+        object['children-ages'].push(value);
     } else {
-        object[temp[0]] = temp[1]
+        object[temp[0]] = value
     }
 };
 
-OnLoadFormLoad.prototype.changeUrl = function (self, oldUrl) {
-    var indexChart = oldUrl.indexOf('?');
+OnLoadFormLoad.prototype.changeUrl = function (oldUrl) {
+    var _this = this,
+        indexChart = oldUrl.indexOf('?');
 
     if (indexChart === -1) {
         return oldUrl + window.location.search;
@@ -230,9 +233,9 @@ OnLoadFormLoad.prototype.changeUrl = function (self, oldUrl) {
     var params = {},
         oldParams = {};
 
-    window.location.search.replace('?', '').split('&').forEach(function(value) { self.fillObject(params, value); });
+    window.location.search.replace('?', '').split('&').forEach(function(value) { _this.fillObject(params, value); });
 
-    oldUrl.slice(indexChart + 1).split('&').forEach(function(value) { self.fillObject(oldParams, value); });
+    oldUrl.slice(indexChart + 1).split('&').forEach(function(value) { _this.fillObject(oldParams, value); });
 
     var key;
     for (key in oldParams) {
@@ -244,12 +247,12 @@ OnLoadFormLoad.prototype.changeUrl = function (self, oldUrl) {
     var temp = [];
 
     for (key in params) {
-        if (typeof params[key] === 'string') {
-            temp.push(key + '=' + params[key]);
-        } else {
+        if (Array.isArray(params[key])) {
             params[key].forEach( function (value) {
                 temp.push(key + '=' + value);
             });
+        } else {
+            temp.push(key + '=' + params[key]);
         }
     }
 
@@ -260,7 +263,7 @@ OnLoadFormLoad.prototype.createIframeWithForm = function () {
     var url = this.urlIframe.search;
 
     if (window.location.search !== '') {
-        url = this.changeUrl(this, url);
+        url = this.changeUrl(url);
     }
 
     this.searchIframe = document.createElement('iframe');
@@ -278,7 +281,7 @@ OnLoadFormLoad.prototype.exec = function () {
         return;
     }
 
-    var self = this;
+    var _this = this;
 
     this.formWrapper.innerText = '';
 
@@ -288,7 +291,7 @@ OnLoadFormLoad.prototype.exec = function () {
     this.formWrapper.appendChild(this.searchIframe);
 
     this.searchIframe.addEventListener('load', function() {
-        self.hideWaitingSpinner(this);
+        _this.hideWaitingSpinner(this);
     }, {once: true});
 
     if (this.itIsFirstLoad) {
@@ -300,25 +303,25 @@ OnLoadFormLoad.prototype.exec = function () {
         this.additionalFormIframe = this.createIframeWithAdditionalForm();
 
         document.addEventListener("click", function(ev) {
-            self.hideIframe(self.calendarIframe);
-            self.hideIframe(self.additionalFormIframe);
+            _this.hideIframe(_this.calendarIframe);
+            _this.hideIframe(_this.additionalFormIframe);
         });
         document.addEventListener("keyup", function (e) {
             if (e.keyCode === 27) {
-                self.hideIframe(self.calendarIframe);
-                self.hideIframe(self.additionalFormIframe);
+                _this.hideIframe(_this.calendarIframe);
+                _this.hideIframe(_this.additionalFormIframe);
             }
         });
 
         setInterval(function () {
-            self.resizeIframeWidth();
+            _this.resizeIframeWidth();
         }, 300);
 
         window.addEventListener('message', function(ev) {
-            self.processMessage(ev);
+            _this.processMessage(ev);
         }, false);
         window.addEventListener("message", function(ev) {
-            self.resizeIframeHeight(ev);
+            _this.resizeIframeHeight(ev);
         }, false);
     }
 

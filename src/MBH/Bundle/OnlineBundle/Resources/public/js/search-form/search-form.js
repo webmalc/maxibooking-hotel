@@ -7,20 +7,19 @@ function SearchForm(widthIframeWithDatepiker) {
             hash,
             hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
 
-        vars['children-ages'] = [];
-
         for (var i = 0; i < hashes.length; i++) {
             hash = hashes[i].split('=');
             if (/children-ages/.test(hash[0])) {
-                tempChildrenAges.push(hash[1])
+                tempChildrenAges.push(parseInt(hash[1]))
             } else {
                 vars.push(hash[0]);
-                vars[hash[0]] = hash[1];
+                vars[hash[0]] = (hash[1] !== '' && !isNaN(hash[1])) ? parseInt(hash[1]) : hash[1];
             }
 
         }
 
-        if (parseInt(vars['children']) > 0) {
+        vars['children-ages'] = [];
+        if (vars['children'] > 0 && tempChildrenAges.length === vars['children'] ) {
             vars['children-ages'] = tempChildrenAges;
         }
 
@@ -65,8 +64,8 @@ SearchForm.prototype.additionalFormDataInit = function () {
     var dataForForm = (function(query) {
 
         return {
-            adults: query.adults,
-            children: query.children,
+            adults: parseInt(query.adults),
+            children: parseInt(query.children),
             roomType: query.roomType,
             'children-ages': query['children-ages']
         }
@@ -82,7 +81,7 @@ SearchForm.prototype.additionalFormDataInit = function () {
 };
 
 SearchForm.prototype.setValue = function(field, val) {
-    if (val && field.length) {
+    if (val !== undefined && field.length) {
         field.val(val);
     }
 };
@@ -123,11 +122,13 @@ SearchForm.prototype.processMessage = function(e) {
     }
 };
 
-SearchForm.prototype.addEventListeners = function (self) {
+SearchForm.prototype.addEventListeners = function () {
+    var _this = this;
+
     if (window.addEventListener) {
-        window.addEventListener("message", function (e) {self.processMessage(e);}, false);
+        window.addEventListener("message", function (e) {_this.processMessage(e);}, false);
     } else {
-        window.attachEvent("onmessage", function (e) {self.processMessage(e);});
+        window.attachEvent("onmessage", function (e) {_this.processMessage(e);});
     }
 
     var $mbhForm = $("#mbh-form");
@@ -141,10 +142,10 @@ SearchForm.prototype.addEventListeners = function (self) {
 };
 
 SearchForm.prototype.searchFormActions  = function () {
-    var self = this;
+    var _this = this;
 
-    this.viewChange(this);
-    this.addEventListeners(this);
+    this.viewChange();
+    this.addEventListeners();
 
     if (!this.begin.val() || !this.end.val()) {
         this.button.prop('disabled', true);
@@ -153,13 +154,13 @@ SearchForm.prototype.searchFormActions  = function () {
     if (this.nights.length) {
         jQuery('#mbh-form-nights, #mbh-form-begin').change(function() {
 
-            var beginDate = jQuery.datepicker.parseDate('dd.mm.yy', self.begin.val());
+            var beginDate = jQuery.datepicker.parseDate('dd.mm.yy', _this.begin.val());
             if (!beginDate) {
                 return;
             }
             var endDate = beginDate;
-            endDate.setDate(endDate.getDate() + parseInt(self.nights.val(), 10));
-            self.end.val(jQuery.datepicker.formatDate( "dd.mm.yy", endDate));
+            endDate.setDate(endDate.getDate() + parseInt(_this.nights.val(), 10));
+            _this.end.val(jQuery.datepicker.formatDate( "dd.mm.yy", endDate));
         });
 
     }
@@ -174,58 +175,59 @@ SearchForm.prototype.searchFormActions  = function () {
     jQuery('#mbh-form-hotel').val(this.query.hotel);
 
     this.begin.change(function() {
-        var beginDate = jQuery.datepicker.parseDate('dd.mm.yy', self.begin.val()),
-            endDate = jQuery.datepicker.parseDate('dd.mm.yy', self.end.val());
+        var beginDate = jQuery.datepicker.parseDate('dd.mm.yy', _this.begin.val()),
+            endDate = jQuery.datepicker.parseDate('dd.mm.yy', _this.end.val());
 
         if (!beginDate) {
             return false;
         }
 
         if (endDate < beginDate) {
-            self.end.val(null);
+            _this.end.val(null);
         }
     });
 
     this.end.change(function() {
-        var beginDate = jQuery.datepicker.parseDate('dd.mm.yy', self.begin.val()),
-            endDate = jQuery.datepicker.parseDate('dd.mm.yy', self.end.val());
+        var beginDate = jQuery.datepicker.parseDate('dd.mm.yy', _this.begin.val()),
+            endDate = jQuery.datepicker.parseDate('dd.mm.yy', _this.end.val());
 
         if (!endDate) {
             return false;
         }
 
         if (beginDate > endDate) {
-            self.begin.val(null);
+            _this.begin.val(null);
         }
     });
 
     if (this.adults.length) {
         this.adults.change(function() {
-            var val = parseInt(self.adults.val());
+            var val = parseInt(_this.adults.val());
             if (isNaN(val)) {
-                self.adults.val(1);
+                _this.adults.val(1);
             } else {
-                self.adults.val(val);
+                _this.adults.val(val);
             }
         });
     }
+
     if (this.children.length) {
         this.children.bind('keyup mouseup change', function() {
-            var val = parseInt(self.children.val());
+            var val = parseInt(_this.children.val());
             if (isNaN(val)) {
-                self.children.val(0);
+                _this.children.val(0);
             } else {
-                self.setChildAgeForms(val);
-                self.children.val(val);
+                _this.setChildAgeForms(val);
+                _this.children.val(val);
             }
         });
     }
 
     jQuery('#mbh-form-begin, #mbh-form-end').change(function() {
-        if (self.begin.val() && self.end.val()) {
-            self.button.prop('disabled', false);
+        if (_this.begin.val() && _this.end.val()) {
+            _this.button.prop('disabled', false);
         } else {
-            self.button.prop('disabled', true);
+            _this.button.prop('disabled', true);
         }
     });
 
@@ -273,7 +275,8 @@ SearchForm.prototype.setChildAgeForms = function(childrenCount, query) {
     }
 };
 
-SearchForm.prototype.viewChange = function(self) {
+SearchForm.prototype.viewChange = function() {
+    var _this = this;
 
     var resizeHandler = function () {
         var formHeight = document.getElementById('mbh-form-wrapper').clientHeight;
@@ -311,8 +314,8 @@ SearchForm.prototype.viewChange = function(self) {
         if (needChangePaddingLeft()) {
             var halfWidthScreen = window.screen.width / 2;
 
-            if (halfWidthScreen - self.widthIframeWithDatepiker < 30 ) {
-                return halfWidthScreen - (self.widthIframeWithDatepiker / 2 );
+            if (halfWidthScreen - _this.widthIframeWithDatepiker < 30 ) {
+                return halfWidthScreen - (_this.widthIframeWithDatepiker / 2 );
             }
         }
 
@@ -321,7 +324,7 @@ SearchForm.prototype.viewChange = function(self) {
 
     var showIFrame = function(event) {
         var el = jQuery(this);
-        self.last = el;
+        _this.last = el;
         window.parent.postMessage({
             type: 'mbh',
             action: (event.data !== undefined && event.data.action !== undefined) ? event.data.action : 'showCalendar',

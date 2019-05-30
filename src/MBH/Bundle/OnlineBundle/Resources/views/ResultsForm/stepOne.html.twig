@@ -54,7 +54,7 @@
                                           data-id="{{ result.tariff.id }}">{{ result.tariff.fullTitle }}</span>
                                 </div>
                                 <div>
-                                    <select class="mbh-results-tourists-select select2 {% if result.prices|length == 1 %}hidden{% endif %}">
+                                    <select class="mbh-results-tourists-select select2{% if result.prices|length == 1 %} hidden{% endif %}">
                                         {% for priceTourists, price  in result.prices %}
                                             {% set arr = priceTourists|split('_') %}
                                             <option value="{{ priceTourists }}">
@@ -82,7 +82,7 @@
                                     {% if result.roomType.facilities is not empty %}
                                         <ul class="inline-facility spacer-top">
                                             {% for facility in result.roomType.facilities %}
-                                                <li><span class="fa fa-lg mbf-{{ facility }}" title="{% for key, val in facilityArray %}{% if key == facility %}{{ val }}{% endif %}{% endfor %}"></span></li>
+                                                <li><span class="fa fa-2x mbf-{{ facility }}" title="{% for key, val in facilityArray %}{% if key == facility %}{{ val }}{% endif %}{% endfor %}"></span></li>
                                             {% endfor %}
                                         </ul>
                                     {% endif %}
