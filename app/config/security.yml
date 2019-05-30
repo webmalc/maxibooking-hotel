@@ -33,6 +33,11 @@ security:
             access_denied_handler: mbh.api_access_denied_handler
 
 
+        refresh_token:
+            pattern: ^/api/token/refresh
+            stateless: true
+            anonymous: true
+
         jwt_api_login:
             pattern: ^/api/login
             stateless: true
@@ -78,6 +83,7 @@ security:
 
 
     access_control:
+        - { path: ^/api/token/refresh, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/deploy, role: 'IS_AUTHENTICATED_ANONYMOUSLY' }

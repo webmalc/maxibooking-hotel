@@ -8,7 +8,8 @@ jwt
     $ openssl rsa -pubout -in config/jwt/private.pem -out config/jwt/public.pem
     
     Also need rights to www-data  or chmod 666 for keys ?
-
+    
+    
 
 jenkins
 --------

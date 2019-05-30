@@ -1,6 +1,7 @@
 <?php
 
 use Doctrine\Bundle\DoctrineCacheBundle\DoctrineCacheBundle;
+use Gesdinet\JWTRefreshTokenBundle\GesdinetJWTRefreshTokenBundle;
 use Knp\Bundle\GaufretteBundle\KnpGaufretteBundle;
 use Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle;
 use MBH\Bundle\BillingBundle\MBHBillingBundle;
@@ -67,6 +68,7 @@ class AppKernel extends Kernel
             new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
             new ObHighchartsBundle(),
             new LexikJWTAuthenticationBundle(),
+            new GesdinetJWTRefreshTokenBundle(),
 
 
             //Project bundles,

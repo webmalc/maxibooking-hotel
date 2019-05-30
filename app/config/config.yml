@@ -395,3 +395,8 @@ lexik_jwt_authentication:
   public_key:       '%kernel.project_dir%/app/config/jwt/public.pem'
   pass_phrase:      '%jwt_authentication_pass_phrase%'
   token_ttl:        3600
+
+gesdinet_jwt_refresh_token:
+  user_provider: fos_user.user_provider.username_email
+  manager_type: mongodb
+  refresh_token_class: MBH\Bundle\UserBundle\Document\JwtRefreshToken

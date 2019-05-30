@@ -76,7 +76,8 @@
     "facebook/webdriver": "^1.6",
     "ob/highcharts-bundle": "^1.6",
     "php-amqplib/php-amqplib": "2.7",
-    "lexik/jwt-authentication-bundle": "^2.6"
+    "lexik/jwt-authentication-bundle": "^2.6",
+    "gesdinet/jwt-refresh-token-bundle": "^0.6.2"
   },
   "require-dev": {
     "sensio/generator-bundle": "^3.0",
