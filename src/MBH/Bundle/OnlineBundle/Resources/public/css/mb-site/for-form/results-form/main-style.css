@@ -57,14 +57,14 @@ body #mbh-results-wrapper .step-info .step-number-info .step-title {
   font-size: 16px;
   line-height: 24px;
 }
-body #mbh-results-wrapper .step-first #mbh-results-tariffs {
+body #mbh-results-wrapper .step-one #mbh-results-tariffs {
   margin-top: 25px;
 }
-body #mbh-results-wrapper .step-first #mbh-results-tariffs .panel {
+body #mbh-results-wrapper .step-one #mbh-results-tariffs .panel {
   padding: 0;
   border: none;
 }
-body #mbh-results-wrapper .step-first #mbh-results-tariffs .panel .panel-heading {
+body #mbh-results-wrapper .step-one #mbh-results-tariffs .panel .panel-heading {
   display: flex;
   align-items: center;
   font-family: 'Roboto Slab', serif;
@@ -75,31 +75,31 @@ body #mbh-results-wrapper .step-first #mbh-results-tariffs .panel .panel-heading
   color: #FFFFFF;
   height: 52px;
 }
-body #mbh-results-wrapper .step-first #mbh-results-tariffs .panel .panel-body {
+body #mbh-results-wrapper .step-one #mbh-results-tariffs .panel .panel-body {
   padding: 0;
 }
-body #mbh-results-wrapper .step-first #mbh-results-tariffs .panel .panel-body ul {
+body #mbh-results-wrapper .step-one #mbh-results-tariffs .panel .panel-body ul {
   padding: 0;
   margin: 0;
   list-style: none;
   background: #FFFFFF;
 }
-body #mbh-results-wrapper .step-first #mbh-results-tariffs .panel .panel-body ul li {
+body #mbh-results-wrapper .step-one #mbh-results-tariffs .panel .panel-body ul li {
   border-bottom: 1px solid #A0A0A0;
 }
-body #mbh-results-wrapper .step-first #mbh-results-tariffs .panel .panel-body ul li .mbh-results-tariff-wrapper.show-description {
+body #mbh-results-wrapper .step-one #mbh-results-tariffs .panel .panel-body ul li .mbh-results-tariff-wrapper.show-description {
   background: #c3ebff;
 }
-body #mbh-results-wrapper .step-first #mbh-results-tariffs .panel .panel-body ul li .mbh-results-tariff-wrapper.show-description .mbh-results-tariff-description {
+body #mbh-results-wrapper .step-one #mbh-results-tariffs .panel .panel-body ul li .mbh-results-tariff-wrapper.show-description .mbh-results-tariff-description {
   display: block;
 }
-body #mbh-results-wrapper .step-first #mbh-results-tariffs .panel .panel-body ul li .mbh-results-tariff-wrapper.show-description .mbh-results-tariff-label .mbh-results-tariffs-description-toggle {
+body #mbh-results-wrapper .step-one #mbh-results-tariffs .panel .panel-body ul li .mbh-results-tariff-wrapper.show-description .mbh-results-tariff-label .mbh-results-tariffs-description-toggle {
   background: #c3ebff;
 }
-body #mbh-results-wrapper .step-first #mbh-results-tariffs .panel .panel-body ul li .mbh-results-tariff-wrapper.show-description .mbh-results-tariff-label #mbh-results-tariff-selected {
+body #mbh-results-wrapper .step-one #mbh-results-tariffs .panel .panel-body ul li .mbh-results-tariff-wrapper.show-description .mbh-results-tariff-label #mbh-results-tariff-selected {
   font-weight: bold;
 }
-body #mbh-results-wrapper .step-first #mbh-results-tariffs .panel .panel-body ul li .mbh-results-tariff-wrapper .mbh-results-tariff-label {
+body #mbh-results-wrapper .step-one #mbh-results-tariffs .panel .panel-body ul li .mbh-results-tariff-wrapper .mbh-results-tariff-label {
   height: 52px;
   display: flex;
   align-items: center;
@@ -107,7 +107,7 @@ body #mbh-results-wrapper .step-first #mbh-results-tariffs .panel .panel-body ul
   font-size: 16px;
   line-height: 24px;
 }
-body #mbh-results-wrapper .step-first #mbh-results-tariffs .panel .panel-body ul li .mbh-results-tariff-wrapper .mbh-results-tariff-label .mbh-results-tariffs-description-toggle {
+body #mbh-results-wrapper .step-one #mbh-results-tariffs .panel .panel-body ul li .mbh-results-tariff-wrapper .mbh-results-tariff-label .mbh-results-tariffs-description-toggle {
   border: none;
   background: #FFFFFF;
   font-style: italic;
@@ -116,19 +116,19 @@ body #mbh-results-wrapper .step-first #mbh-results-tariffs .panel .panel-body ul
   line-height: 24px;
   color: #737373;
 }
-body #mbh-results-wrapper .step-first #mbh-results-tariffs .panel .panel-body ul li .mbh-results-tariff-wrapper .mbh-results-tariff-label #mbh-results-tariff-selected {
+body #mbh-results-wrapper .step-one #mbh-results-tariffs .panel .panel-body ul li .mbh-results-tariff-wrapper .mbh-results-tariff-label #mbh-results-tariff-selected {
   margin-left: 15px;
 }
-body #mbh-results-wrapper .step-first #mbh-results-tariffs .panel .panel-body ul li .mbh-results-tariff-wrapper .mbh-results-tariff-label a {
+body #mbh-results-wrapper .step-one #mbh-results-tariffs .panel .panel-body ul li .mbh-results-tariff-wrapper .mbh-results-tariff-label a {
   text-decoration: none;
   padding-left: 35px;
   margin-left: -20px;
   z-index: 1;
 }
-body #mbh-results-wrapper .step-first #mbh-results-tariffs .panel .panel-body ul li .mbh-results-tariff-wrapper .mbh-results-tariff-label input[type="radio"] {
+body #mbh-results-wrapper .step-one #mbh-results-tariffs .panel .panel-body ul li .mbh-results-tariff-wrapper .mbh-results-tariff-label input[type="radio"] {
   margin: 0 0 0 10px;
 }
-body #mbh-results-wrapper .step-first #mbh-results-tariffs .panel .panel-body ul li .mbh-results-tariff-wrapper .mbh-results-tariff-label input[type="radio"]:disabled:before {
+body #mbh-results-wrapper .step-one #mbh-results-tariffs .panel .panel-body ul li .mbh-results-tariff-wrapper .mbh-results-tariff-label input[type="radio"]:disabled:before {
   content: '';
   position: absolute;
   border-radius: 50%;
@@ -138,7 +138,7 @@ body #mbh-results-wrapper .step-first #mbh-results-tariffs .panel .panel-body ul
   margin-top: -3px;
   border: 1px solid #DADADA;
 }
-body #mbh-results-wrapper .step-first #mbh-results-tariffs .panel .panel-body ul li .mbh-results-tariff-wrapper .mbh-results-tariff-label input[type="radio"]:disabled:checked:before {
+body #mbh-results-wrapper .step-one #mbh-results-tariffs .panel .panel-body ul li .mbh-results-tariff-wrapper .mbh-results-tariff-label input[type="radio"]:disabled:checked:before {
   content: '';
   position: absolute;
   border-radius: 50%;
@@ -148,7 +148,7 @@ body #mbh-results-wrapper .step-first #mbh-results-tariffs .panel .panel-body ul
   margin-top: -3px;
   border: 1px solid #0099FF;
 }
-body #mbh-results-wrapper .step-first #mbh-results-tariffs .panel .panel-body ul li .mbh-results-tariff-wrapper .mbh-results-tariff-label input[type="radio"]:disabled:checked:after {
+body #mbh-results-wrapper .step-one #mbh-results-tariffs .panel .panel-body ul li .mbh-results-tariff-wrapper .mbh-results-tariff-label input[type="radio"]:disabled:checked:after {
   content: '';
   position: absolute;
   border-radius: 50%;
@@ -162,65 +162,67 @@ body #mbh-results-wrapper .step-first #mbh-results-tariffs .panel .panel-body ul
   margin-left: 4px;
   margin-top: 1px;
 }
-body #mbh-results-wrapper .step-first #mbh-results-tariffs .panel .panel-body ul li .mbh-results-tariff-wrapper .mbh-results-tariff-description {
+body #mbh-results-wrapper .step-one #mbh-results-tariffs .panel .panel-body ul li .mbh-results-tariff-wrapper .mbh-results-tariff-description {
   display: none;
   margin-left: 35px;
   padding-bottom: 5px;
 }
-body #mbh-results-wrapper .step-first #mbh-results-duration {
+body #mbh-results-wrapper .step-one #mbh-results-duration {
   font-family: 'Roboto Slab', serif;
   font-size: 32px;
   line-height: 44px;
 }
-body #mbh-results-wrapper .step-first #mbh-results-duration #mbh-result-response-info {
+body #mbh-results-wrapper .step-one #mbh-results-duration #mbh-result-response-info {
   display: none;
 }
-body #mbh-results-wrapper .step-first #mbh-results-list-wrapper .mbh-results-container {
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container {
   margin: 10px 0;
   padding: 5px 0;
   background: #FFFFFF;
 }
-body #mbh-results-wrapper .step-first #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .main-image {
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .main-image {
   margin-bottom: 5px;
   text-align: center;
 }
-body #mbh-results-wrapper .step-first #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .list-small-image {
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .list-small-image {
   display: flex;
   justify-content: space-between;
 }
-body #mbh-results-wrapper .step-first #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-room-type-name-wrapper {
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-room-type-name-wrapper {
   font-family: 'Roboto Slab', serif;
   font-size: 20px;
   line-height: 24px;
 }
-body #mbh-results-wrapper .step-first #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-hotel-and-tariff-wrapper span + span {
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-hotel-and-tariff-wrapper span + span {
   margin-left: 5px;
 }
-body #mbh-results-wrapper .step-first #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .facility-wrapper ul.inline-facility {
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .facility-wrapper ul.inline-facility {
   list-style: none;
+  padding: 0;
 }
-body #mbh-results-wrapper .step-first #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .facility-wrapper ul.inline-facility li {
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .facility-wrapper ul.inline-facility li {
+  padding: 2px;
   display: inline-block;
 }
-body #mbh-results-wrapper .step-first #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-room-type-description-container .mbh-results-room-type-description-wrapper .mbh-results-room-type-description-toggle {
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-room-type-description-container .mbh-results-room-type-description-wrapper .mbh-results-room-type-description-toggle {
   background: #FFFFFF;
   border: none;
   font-style: italic;
   font-size: 16px;
   line-height: 24px;
 }
-body #mbh-results-wrapper .step-first #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-room-type-description-container .mbh-results-room-type-description-wrapper.show-description .mbh-results-room-type-description {
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-room-type-description-container .mbh-results-room-type-description-wrapper.show-description .mbh-results-room-type-description {
   display: block;
 }
-body #mbh-results-wrapper .step-first #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-room-type-description-container .mbh-results-room-type-description-wrapper .mbh-results-room-type-description {
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-room-type-description-container .mbh-results-room-type-description-wrapper .mbh-results-room-type-description {
   display: none;
   font-size: 16px;
   line-height: 24px;
 }
-body #mbh-results-wrapper .step-first #mbh-results-list-wrapper .mbh-results-container .mbh-results-price-container > * {
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-price-container > * {
   text-align: center;
 }
-body #mbh-results-wrapper .step-first #mbh-results-list-wrapper .mbh-results-container .mbh-results-price-container .price .mbh-results-prices {
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-price-container .price .mbh-results-prices {
   margin: 0;
   padding: 0;
   list-style-type: none;
@@ -229,24 +231,20 @@ body #mbh-results-wrapper .step-first #mbh-results-list-wrapper .mbh-results-con
   line-height: 44px;
   color: #4F4F4F;
 }
-body #mbh-results-wrapper .step-first #mbh-results-list-wrapper .mbh-results-container .mbh-results-price-container .nights {
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-price-container .nights {
   font-size: 16px;
   line-height: 28px;
   /* or 175% */
   text-align: center;
   color: #282828;
 }
-body #mbh-results-wrapper .step-first #mbh-results-list-wrapper .mbh-results-container .mbh-results-price-container .room-count-selector {
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-price-container .room-count-selector {
   margin-top: 10px;
 }
-body #mbh-results-wrapper .step-first #mbh-results-list-wrapper .mbh-results-container .mbh-results-price-container .room-amount {
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-price-container .room-amount {
   margin-top: 10px;
   font-size: 14px;
   line-height: 20px;
-}
-body #mbh-results-actions {
-  margin: 20px 0;
-  text-align: right;
 }
 body .mbh-results-total-sum {
   font-size: 16px;

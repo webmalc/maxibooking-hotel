@@ -1,7 +1,7 @@
 {% spaceless %}
 
     {% if tariffResults|length > 0 %}
-        <div id="mbh-results-global-wrapper" class="step-first">
+        <div id="mbh-results-global-wrapper" class="step-one">
 
             {% if results|length %}
                 {% include 'MBHOnlineBundle:ResultsForm:stepInfo.html.twig' with {'stepNumber': 1} %}
@@ -115,9 +115,10 @@
                                 </div>
 
                                 <div class="room-count-selector">
-                                    <label>
+                                    <div>
                                         {{ 'views.api.getResultsTable.rooms_amount'|trans({}, 'MBHOnlineBundle') }}
-                                        <br>
+                                    </div>
+                                    <label>
                                         {% set maxConfig = formConfig.maxPackages %}
                                         {% if  result.roomsCount > maxConfig %}
                                             {% set max = maxConfig %}

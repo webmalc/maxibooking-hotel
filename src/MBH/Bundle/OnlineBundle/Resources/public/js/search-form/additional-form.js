@@ -173,7 +173,7 @@ AdditionalForm.prototype.listenerPostMessage = function (){
         }
 
         var form = e.data.form;
-        if (form.adults !== undefined) {
+        if (form.adults !== undefined && form.adults > 0) {
             _this.wrapper.querySelector('.stepper-value[data-form="adults"]').innerHTML = form.adults;
             _this.adultsCheckStepperValue();
         }

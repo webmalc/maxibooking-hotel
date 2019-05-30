@@ -6,6 +6,28 @@
 @general_color_light: #C3EBFF;
 
 body {
+  .widthContainer() {
+    width: 100%;
+  }
+
+  .maxOuterBorders() {
+    box-sizing: border-box;
+
+    @media (min-width: @size-screen-max-width-mobile) {
+      width: @size-screen-max-width-mobile;
+    }
+
+    @media (min-width: @size-screen-mid-width-tablet) {
+      width: @size-screen-mid-width-tablet;
+    }
+
+    //@media (min-width: @size-screen-min-width-desktop) {
+    //  width: @general-width-desktop-max;
+    //}
+
+
+  }
+
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -15,28 +37,6 @@ body {
   .commonStyleFont();
 
   #mbh-results-wrapper {
-
-    .widthContainer() {
-      width: 100%;
-    }
-
-    .maxOuterBorders() {
-      box-sizing: border-box;
-
-      @media (min-width: @size-screen-max-width-mobile) {
-        width: @size-screen-max-width-mobile;
-      }
-
-      @media (min-width: @size-screen-mid-width-tablet) {
-        width: @size-screen-mid-width-tablet;
-      }
-
-      //@media (min-width: @size-screen-min-width-desktop) {
-      //  width: @general-width-desktop-max;
-      //}
-
-
-    }
 
     .maxOuterBorders();
 
@@ -77,7 +77,7 @@ body {
     }
 
 
-    .step-first {
+    .step-one {
 
 // BEGIN TARIFFS
       #mbh-results-tariffs {
@@ -278,7 +278,9 @@ body {
             .facility-wrapper {
               ul.inline-facility {
                 list-style: none;
+                padding: 0;
                 li {
+                  padding: 2px;
                   display: inline-block;
                 }
               }
@@ -362,124 +364,13 @@ body {
 
   }
 
-
-  ///* -------------------------- RESULTS -------------------------------- */
-  //.mbh-results-tariff {
-  //  display: none;
-  //}
-  //.mbh-results-hotel {
-  //  font-size: 12px;
-  //  color: #999;
-  //  padding: 0 0 0 4px;
-  //}
-  //.warning .mbh-results-hotel {
-  //  color: #000;
-  //}
-  //.mbh-results-image-wrapper {
-  //  float: left;
-  //  max-width: 180px;
-  //}
-  //.mbh-results-image-wrapper img {
-  //  margin: 0 5px 5px 0;
-  //  max-width: 30px;
-  //}
-  //.mbh-results-image-wrapper img.main {
-  //  margin: 0 5px 5px 0;
-  //  max-width: 155px;
-  //}
-  //#mbh-results-table-th-amount {
-  //  width:80px;
-  //}
-  //#mbh-results-table-th-price {
-  //  width: 120px;
-  //}
-  //#mbh-results-table-th-tourist {
-  //  width: 100px;
-  //}
-  //#mbh-results-table-th-roomType {
-  //
-  //}
-  //.mbh-results-prices {
-  //  margin: 0;
-  //  padding: 0;
-  //  list-style-type: none;
-  //}
-  //.mbh-results-prices li {
-  //  font-size: 16px;
-  //}
-  //.mbh-results-per-person {
-  //  font-size: 11px;
-  //  color: #7e747c;
-  //}
-  //.mbh-results-roomType {
-  //  font-size: 18px;
-  //}
-  //.mbh-results-tourists-select {
-  //  width: 100px;
-  //}
-  //.mbh-results-roomType-description-link {
-  //  font-size: 11px;
-  //}
-  //.mbh-results-roomType-description {
-  //  background-color: #fff;
-  //  border: 0;
-  //}
-  //.mbh-results-roomType-description p {
-  //  padding: 0;
-  //  margin: 0 0 0 3px;
-  //}
-  //.mbh-roomType-image {
-  //  max-width: 100px;
-  //  -webkit-border-radius: 4px;
-  //  -moz-border-radius: 4px;
-  //  border-radius: 4px;
-  //  float: left;
-  //  margin: 0 10px 0 0;
-  //}
-  //#mbh-image-show-wrapper {
-  //  border: 1px solid #b4b4b4;
-  //  position: absolute;
-  //  z-index: 100;
-  //  max-width: 420px;
-  //  -webkit-border-radius: 4px;
-  //  -moz-border-radius: 4px;
-  //  border-radius: 4px;
-  //  background-color: #fff;
-  //  padding: 10px;
-  //  text-align: center;
-  //  visibility: hidden;
-  //  overflow: hidden;
-  //
-  //}
-  //#mbh-image-show-wrapper img {
-  //  max-width: 400px;
-  //  max-height: 400px;
-  //}
-  ///* -------------------------- SERVICES -------------------------------- */
-  //.mbh-results-services-name small {
-  //  font-size: 11px;
-  //  color: #7e747c;
-  //}
-  //.mbh-results-services-name {
-  //  font-size: 15px;
-  //}
-  //.mbh-results-services-per-service {
-  //  font-size: 11px;
-  //  color: #7e747c;
-  //}
-  //.mbh-results-services-prices {
-  //  font-size: 16px;
-  //}
-  //#mbh-results-table-services-th-price {
-  //  width:120px;
-  //}
-  //#mbh-results-table-services-th-amount {
-  //  width:80px;
-  //}
   /* -------------------------- RESULTS ACTIONS -------------------------------- */
   #mbh-results-actions {
-    margin: 20px 0;
-    text-align: right;
+    //margin: 20px 0;
+    //text-align: right;
+    //display: flex;
+    //position: fixed;
+    //.maxOuterBorders();
   }
   .mbh-results-total-sum {
     font-size: 16px;
