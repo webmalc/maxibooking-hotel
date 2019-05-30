@@ -1,3 +1,5 @@
+{% escapebackslash %}
+{% wrapinline %}
 {
     "recordsTotal": "{{ recordsFiltered }}",
     "recordsFiltered": "{{ recordsFiltered }}",
@@ -22,3 +24,5 @@
         {% endfor %}
     ]
 }
+{% endwrapinline %}
+{% endescapebackslash %}

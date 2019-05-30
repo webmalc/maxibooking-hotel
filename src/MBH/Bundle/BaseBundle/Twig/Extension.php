@@ -2,6 +2,7 @@
 namespace MBH\Bundle\BaseBundle\Twig;
 
 use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\BillingBundle\Lib\Model\Country;
 use MBH\Bundle\ClientBundle\Service\DocumentSerialize\Mortal;
@@ -142,6 +143,34 @@ class Extension extends \Twig_Extension
     public function translateToLat($value)
     {
         return $this->container->get('mbh.helper')->translateToLat($value);
+    }
+
+    /**
+     * @param \MBH\Bundle\ClientBundle\Service\DocumentSerialize\Order $order
+     * @return string
+     */
+    public function getCashPrice(\MBH\Bundle\ClientBundle\Service\DocumentSerialize\Order $order): string
+    {
+        $price = $this->container->get('mbh.template_prices_generator')->getPriceByMethod(
+            $order,
+            [CashDocument::METHOD_CASH]
+        );
+
+        return $price === null ? '0.00' : (string)$price;
+    }
+
+    /**
+     * @param \MBH\Bundle\ClientBundle\Service\DocumentSerialize\Order $order
+     * @return string
+     */
+    public function getCashlessPrice(\MBH\Bundle\ClientBundle\Service\DocumentSerialize\Order $order): string
+    {
+        $price = $this->container->get('mbh.template_prices_generator')->getPriceByMethod(
+            $order,
+            [CashDocument::METHOD_ELECTRONIC, CashDocument::METHOD_CASHLESS]
+        );
+
+        return $price === null ? '0.00' : (string)$price;
     }
 
     /**
@@ -475,6 +504,8 @@ class Extension extends \Twig_Extension
             'offset'                  => new \Twig_SimpleFunction('mbh_offset', [$this, 'offset'], ['is_safe' => ['html']]),
             'get_guide_article_url'   => new \Twig_SimpleFunction('get_guide_article_url', [$this, 'getGuideArticleUrl'], ['is_safe' => ['html']]),
             'contact_hotel'           => new \Twig_SimpleFunction('contact_hotel', [$this, 'getContactHotelIfNotSetPaymentSystem'], ['is_safe' => ['html']]),
+            'get_cash_price'          => new \Twig_SimpleFunction('get_cash_price', [$this, 'getCashPrice'], ['is_safe' => ['html']]),
+            'get_cashless_price'      => new \Twig_SimpleFunction('get_cashless_price', [$this, 'getCashlessPrice'], ['is_safe' => ['html']])
         ];
     }
 
@@ -505,6 +536,7 @@ class Extension extends \Twig_Extension
     {
         return [
             'wrapinline' => new TwigWrapInLineTokenParser(),
+            'escapebackslash' => new TwigBackslashEscapeTokenParser()
         ];
     }
 

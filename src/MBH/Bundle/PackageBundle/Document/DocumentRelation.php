@@ -3,6 +3,7 @@
 namespace MBH\Bundle\PackageBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use MBH\Bundle\PackageBundle\Lib\DocumentRelationOfMortalInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -11,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ODM\HasLifecycleCallbacks()
  */
-class DocumentRelation implements \JsonSerializable
+class DocumentRelation implements \JsonSerializable, DocumentRelationOfMortalInterface
 {
     /**
      * @var String

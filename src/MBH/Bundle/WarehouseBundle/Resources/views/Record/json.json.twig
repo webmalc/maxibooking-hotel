@@ -1,3 +1,5 @@
+{% escapebackslash %}
+{% wrapinline %}
 {
     "draw" : "{{ draw }}",
     "recordsTotal": "{{ total }}",
@@ -16,3 +18,5 @@
             ]{% if loop.index != records|length %},{% endif %}
         {% endfor %}
 ]}
+{% endwrapinline %}
+{% endescapebackslash %}

@@ -1,13 +1,14 @@
+{% escapebackslash %}
+{% wrapinline %}
 {
 "draw": "{{ draw }}",
-"recordsTotal": {{ recordsTotal }},
-"recordsFiltered": {{ recordsTotal }},
+"recordsTotal": "{{ recordsTotal }}",
+"recordsFiltered": "{{ recordsTotal }}",
 "data": [
 {% for task in tasks %}
     [
-    {#"<div class='text-center'><i class='fa fa-tasks'></i></div>",#}
     "<a data-row-class='{% if task.isDeleted %}danger{% elseif task.isExpired and not task.status == 'closed' %}danger{% elseif task.priority == 2 %}warning{% elseif taskRepository.isAcceptableTaskForUser(app.user, task) %}info{% endif %}' {% if not task.isDeleted and is_granted('ROLE_TASK_EDIT') %}rel='main' href='{{ path('task_edit', { 'id': task.id }) }}'{% endif %}>{{ task.id }}</a>",
-    "{% if task.status == 'open' %}<i data-toggle='tooltip' title='{{ statuses[task.status].title|trans }}' class='fa fa-plus text-danger'></i>{% elseif task.status == 'process' %}<i data-toggle='tooltip' title='{{ statuses[task.status].title|trans }}' class='fa fa-clock-o text-info'></i>{% elseif task.status == 'closed' %}<i data-toggle='tooltip' title='{{ statuses[task.status].title|trans }}' class='fa fa-check text-success'></i>{% endif %}{#% if statuses[task.status] is defined %}<span class='text-{{ statuses[task.status].class }}'>{{ statuses[task.status].title }}</span>{% endif %#}",
+    "{% if task.status == 'open' %}<i data-toggle='tooltip' title='{{ statuses[task.status].title|trans }}' class='fa fa-plus text-danger'></i>{% elseif task.status == 'process' %}<i data-toggle='tooltip' title='{{ statuses[task.status].title|trans }}' class='fa fa-clock-o text-info'></i>{% elseif task.status == 'closed' %}<i data-toggle='tooltip' title='{{ statuses[task.status].title|trans }}' class='fa fa-check text-success'></i>{% endif %}",
     "{{ task.type.title }}{% if task.isDeleted %}<br><small><i class='fa fa-trash-o' title='{{ "views.task.index.deleted"|trans({}, "MBHHotelBundle") }}' data-toggle='tooltip'></i> {{ "views.task.index.entity_was_deleted"|trans }}</small>{% endif %}",
     "{% if task.priority == 3 %}<i title='{{ priorities[task.priority] }}' class='fa fa-arrow-up text-danger'></i><i title='{{ priorities[task.priority] }}' class='fa fa-arrow-up text-danger'></i>{% elseif task.priority == 2 %}<i title='{{ priorities[task.priority] }}' class='fa fa-arrow-up text-primary'></i>{% elseif task.priority == 1 %}<i title='{{ priorities[task.priority] }}' class='fa fa-arrow-down text-success'></i>{% endif %}",
     "{{ task.room.fullTitle }}",
@@ -21,3 +22,5 @@
 {% endfor %}
 ]
 }
+{% endwrapinline %}
+{% endescapebackslash %}

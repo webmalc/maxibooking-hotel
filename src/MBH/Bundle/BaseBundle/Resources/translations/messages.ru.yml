@@ -199,6 +199,7 @@ mailer.base.rate.perfect: Отлично
 mailer.resetting_mail.reset_pass_button.text: 'Сбросить пароль'
 mailer.recipient.empty.email: 'Пустая почта у получателя %guest%'
 mailer.image.not.exists: 'Не существует файла %path%. Возможно не создан кеш файла'
+notifier.online.city_not_found.message: 'Город не найден. Пожалуйста, обратитесь в службу технической поддержки Maxibooking.'
 debt: Долг
 partially_paid: Частично
 paid: Оплачено
@@ -656,6 +657,8 @@ currency.kzt.text: тенге
 currency.kzt.small: тиын
 currency.uzs.text: сум.
 currency.uzs.small: тийин
+currency.idr.text: руп.
+currency.idr.small: сен.
 
 mbh.weekdays.sun: Воскресенье
 mbh.weekdays.mon: Понедельник

@@ -1,15 +1,13 @@
 <?php
-/**
- * Created by PhpStorm.
- * Date: 28.04.18
- */
 
 namespace MBH\Bundle\ClientBundle\Service\DocumentSerialize;
 
 
 use MBH\Bundle\PackageBundle\Document\Tourist as TouristBase;
 use MBH\Bundle\PackageBundle\Lib\AddressInterface;
+use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PackageBundle\Lib\DataOfMortalInterface;
+use MBH\Bundle\PackageBundle\Lib\DocumentRelationOfMortalInterface;
 
 /**
  * Class Mortal
@@ -18,10 +16,11 @@ use MBH\Bundle\PackageBundle\Lib\DataOfMortalInterface;
  *
  * @package MBH\Bundle\ClientBundle\Service\DocumentSerialize
  */
-class Mortal extends Common implements DataOfMortalInterface, AdvancedAddressInterface
+class Mortal extends Common implements DataOfMortalInterface, AdvancedAddressInterface, DocumentRelationOfMortalInterface
 {
     use TraitAddress;
     use TraitDataOfMortal;
+    use TraitDocumentRelation;
 
     protected const METHOD = [
         'getSex',

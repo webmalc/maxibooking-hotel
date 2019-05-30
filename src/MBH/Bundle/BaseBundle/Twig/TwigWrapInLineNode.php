@@ -1,22 +1,18 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: mb3
- * Date: 20.03.18
- * Time: 11:01
- */
 
 namespace MBH\Bundle\BaseBundle\Twig;
 
+use Twig\Compiler;
+use Twig\Node\Node;
 
-class TwigWrapInLineNode extends \Twig_Node
+class TwigWrapInLineNode extends Node
 {
-    public function __construct(\Twig_Node $body, $lineno, $tag)
+    public function __construct(Node $body, $lineno, $tag)
     {
         parent::__construct(['body' => $body], [], $lineno, $tag);
     }
 
-    public function compile(\Twig_Compiler $compiler)
+    public function compile(Compiler $compiler)
     {
         $compiler
             ->addDebugInfo($this)
