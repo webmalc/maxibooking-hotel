@@ -13,10 +13,7 @@ use Predis\Client;
 class RoomTypeSearchDecisionMaker implements AsyncSearchDecisionMakerInterface
 {
 
-    /** @var int  */
-    public const ROOM_TYPE_SEARCHED_THRESHOLD = 2;
-
-    /** @var Client */
+    /** @var RedisCache */
     private $cache;
 
     /**
@@ -37,7 +34,7 @@ class RoomTypeSearchDecisionMaker implements AsyncSearchDecisionMakerInterface
         $hash = $conditions->getSearchHash();
         $results = (int)$this->cache->get($this->getKey($hash, $roomTypeId));
 
-        return $results < self::ROOM_TYPE_SEARCHED_THRESHOLD;
+        return $results < $conditions->getAdditionalResultsLimit();
     }
 
     public function markFoundedResults(SearchConditions $conditions, QueryGroupInterface $group): void
