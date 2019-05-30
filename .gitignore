@@ -155,3 +155,4 @@ Vagrantfile
 /scripts/checkalias/__pycache__/
 /scripts/checkalias/settings.py
 
+/app/config/jwt/*

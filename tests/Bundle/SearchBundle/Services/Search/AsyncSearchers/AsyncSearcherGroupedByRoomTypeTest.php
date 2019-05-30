@@ -12,6 +12,7 @@ use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupByRoomType;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStore;
+use MBH\Bundle\SearchBundle\Services\Search\AsyncSearchers\AsyncSearchDecisionMakerInterface;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncSearchers\AsyncSearcherGroupedByRoomType;
 use MBH\Bundle\SearchBundle\Services\Search\CacheSearcher;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncSearcher;
@@ -24,7 +25,7 @@ class AsyncSearcherGroupedByRoomTypeTest extends SearchWebTestCase
     public function testSearch(): void
     {
         $dm = $this->createMock(DocumentManager::class);
-        $searchConditions = (new SearchConditions())->setSearchHash('fakeSearchHash')->setAdditionalResultsLimit(5);
+        $searchConditions = (new SearchConditions())->setSearchHash('fakeSearchHash');
         $conditionsRepository = $this->createMock(SearchConditionsRepository::class);
         $conditionsRepository->expects($this->exactly(3))->method('find')->willReturn($searchConditions, $searchConditions, null);
         $conditionsRepository->expects($this->exactly(2))->method('getDocumentManager')->willReturn($dm);
@@ -50,21 +51,26 @@ class AsyncSearcherGroupedByRoomTypeTest extends SearchWebTestCase
             }
 
         });
-        $resultStore->expects($this->exactly(2))->method('getAlreadySearchedDay')->willReturn(4, 6);
+
+        $decisionMaker = $this->createMock(AsyncSearchDecisionMakerInterface::class);
+        $decisionMaker->expects($this->exactly(2))->method('isNeedSearch')->willReturn(true, false);
+        $decisionMaker->expects($this->exactly(1))->method('markFoundedResults');
+
+
         $resultStore->expects($this->exactly(1))->method('addFakeReceivedCount')->willReturnCallback(function ($actualHash, $actualCount) {
             $this->assertEquals(3, $actualCount);
             $this->assertEquals('fakeSearchHash', $actualHash);
         });
-        $resultStore->expects($this->once())->method('increaseAlreadySearchedDay');
 
 
         $searchQuery = $this->createMock(SearchQuery::class);
         $group = new QueryGroupByRoomType();
         $group->setSearchQueries([clone $searchQuery, clone $searchQuery, clone $searchQuery]);
 
-        $search = new AsyncSearcherGroupedByRoomType($conditionsRepository, $resultStore, $searcherFactory);
+        $search = new AsyncSearcherGroupedByRoomType($conditionsRepository, $resultStore, $searcherFactory, $decisionMaker);
         $search->search('fakeConditionsId', $group);
         $search->search('fakeConditionsId', $group);
+
         $this->expectException(ConsumerSearchException::class);
         $search->search('fakeConditionsId', $group);
 
