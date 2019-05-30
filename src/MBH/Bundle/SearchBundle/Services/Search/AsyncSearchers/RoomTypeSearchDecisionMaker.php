@@ -12,6 +12,8 @@ use Predis\Client as RedisCache;
 
 class RoomTypeSearchDecisionMaker implements AsyncSearchDecisionMakerInterface
 {
+    public const EXPIRED = 600;
+
 
     /** @var RedisCache */
     private $cache;
@@ -45,6 +47,7 @@ class RoomTypeSearchDecisionMaker implements AsyncSearchDecisionMakerInterface
 
         $key = $this->getKey($conditions->getSearchHash(), $group->getRoomTypeId());
         $this->cache->incr($key);
+        $this->cache->expire($key, self::EXPIRED);
     }
 
     private function getKey(string $hash, string $roomTypeId): string
