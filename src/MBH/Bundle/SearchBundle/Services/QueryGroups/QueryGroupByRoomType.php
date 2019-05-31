@@ -8,6 +8,7 @@ use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 
 class QueryGroupByRoomType implements QueryGroupInterface, AsyncQueryGroupInterface
 {
+    public const QUERY_GROUP_BY_ROOM_TYPE = 'queryGroupByRoomType';
 
     /** @var SearchQuery[] */
     private $searchQueries = [];
@@ -82,7 +83,7 @@ class QueryGroupByRoomType implements QueryGroupInterface, AsyncQueryGroupInterf
 
     public function getGroupName(): string
     {
-        return 'queryGroupByRoomType';
+        return self::QUERY_GROUP_BY_ROOM_TYPE;
     }
 
 
