@@ -12,7 +12,6 @@ class SearcherFactory
 
     /**
      * @var bool
-     * temporary disable cache
      */
     private const IS_USE_CACHE = true;
     /** @var Searcher */
