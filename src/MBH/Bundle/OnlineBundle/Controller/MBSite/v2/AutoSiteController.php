@@ -36,7 +36,7 @@ class AutoSiteController extends BaseController implements CheckSiteManagerInter
      *     @SWG\Response(response="200", description="Return general setting for site"),
      * )
      */
-    public function getMainSettingsAction(ApiResponseCompiler $responseCompiler, SiteConfig $siteConfig, FormConfig $formConfig)
+    public function settingsAction(ApiResponseCompiler $responseCompiler, SiteConfig $siteConfig, FormConfig $formConfig)
     {
         return $responseCompiler->setData(
             [
@@ -48,7 +48,6 @@ class AutoSiteController extends BaseController implements CheckSiteManagerInter
                 ],
                 'formConfig'           => new FormConfigDecoratorForMBSite($formConfig, $this->get(DataForSearchForm::class)),
                 'keyWords'             => $siteConfig->getKeyWords(),
-                'personalDataPolicies' => $siteConfig->getPersonalDataPolicies(),
                 'currency'             => $this->clientConfig->getCurrency(),
                 'languages'            => $this->clientConfig->getLanguages(),
                 'defaultLang'          => $this->getParameter('locale'),
@@ -83,6 +82,24 @@ class AutoSiteController extends BaseController implements CheckSiteManagerInter
                 'useBanner'          => $siteContent->isUseBanner(),
                 'socialServices'     => $siteContent->getSocialNetworkingServices()->getValues(),
                 'aggregatorServices' => $siteContent->getAggregatorServices()->getValues(),
+            ]
+        );
+    }
+
+    /**
+     * @Route("/personal-data-policies", name="mb_site_api_v2_pers-data-policies")
+     * @SWG\Get(
+     *     path="/management/online/api/v2/personal-data-policies",
+     *     produces={"application/json"},
+     *     @SWG\Response(response="200", description="Return personal data policies"),
+     * )
+     */
+    public function personalDataPoliciesAction(ApiResponseCompiler $responseCompiler, SiteConfig $siteConfig)
+    {
+        $this->setLocaleByRequest();
+        return $responseCompiler->setData(
+            [
+                'text' => $siteConfig->getPersonalDataPolicies(),
             ]
         );
     }
