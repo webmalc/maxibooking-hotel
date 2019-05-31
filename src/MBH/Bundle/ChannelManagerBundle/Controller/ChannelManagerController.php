@@ -53,7 +53,19 @@ class ChannelManagerController extends Controller
 
         $offset = $request->get('offset', 0);
         $page = $request->get('page', 1);
+
+        if ($request->getMethod() == 'POST') {
+            $channelManagerHandler->clearLogFile();
+
+            $this->addFlash(
+                'success',
+                $this->get('translator')->trans('controller.channel_manager_controller.logs_clear_successful')
+            );
+
+            return $this->redirect($this->generateUrl('channel_manager_logs'));
+        }
         $data = $channelManagerHandler->getNext($page, $offset);
+
 
         return [
             'contentArray' => $data,

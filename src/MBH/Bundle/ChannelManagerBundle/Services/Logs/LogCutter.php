@@ -39,16 +39,30 @@ class LogCutter
         return $eolOffset === 0 ? null : $eolOffset + $offset;
     }
 
+    public function clearLogFile()
+    {
+        $file = $this->channelManagerHandler->getUrl();
+
+        if (file_exists($file) && is_readable($file)) {
+            $file = $this->channelManagerHandler->getUrl();
+            file_put_contents($file, '');
+        }
+    }
+
     private function getLocalOffset(int $page, int $offset): int
     {
         $eolOffset = 0;
         $file = $this->channelManagerHandler->getUrl();
-        $fp = fopen($file, 'r');
-        fseek($fp, -self::STR_LENGTH * $page + $offset, SEEK_END);
-        $content = fread($fp, self::STR_LENGTH);
-        if (ftell($fp) !== self::STR_LENGTH) {
-            $eolOffset = strpos($content, PHP_EOL) + 1;
+
+        if (file_exists($file) && is_readable($file)) {
+            $fp = fopen($file, 'r');
+            fseek($fp, -self::STR_LENGTH * $page + $offset, SEEK_END);
+            $content = fread($fp, self::STR_LENGTH);
+            if (ftell($fp) !== self::STR_LENGTH) {
+                $eolOffset = strpos($content, PHP_EOL) + 1;
+            }
         }
+
         return $eolOffset;
     }
 
@@ -57,7 +71,9 @@ class LogCutter
         $data = [];
 
         $content = $this->cutFileSetFpPosition($page, $offset);
-        $content = $this->cutStr($content);
+        if (!is_null($content)) {
+            $content = $this->cutStr($content);
+        }
 
         if (!is_null($content)) {
             $data = $this->formatData($content);
@@ -88,10 +104,11 @@ class LogCutter
             fseek($fp, -self::STR_LENGTH * $page + $offset, SEEK_END);
             $this->setFpPos(ftell($fp));
             $content = fread($fp, self::STR_LENGTH);
+            var_dump($content);
             fclose($fp);
         }
 
-        return isset($content) ? $content : null;
+        return (isset($content) && strlen($content)) ? $content : null;
     }
 
     private function formatData(string $content): array

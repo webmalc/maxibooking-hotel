@@ -192,5 +192,5 @@ services:
         shared: false
 
     mbh.channel_manager_logs_handler:
-        class: MBH\Bundle\ChannelManagerBundle\Services\Logs\LogHandler
+        class: MBH\Bundle\ChannelManagerBundle\Services\Logs\LogCutter
         arguments: ['@mbh.channelmanager.logger_handler']
