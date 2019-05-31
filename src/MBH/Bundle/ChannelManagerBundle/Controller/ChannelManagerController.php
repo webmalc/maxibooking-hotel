@@ -49,13 +49,13 @@ class ChannelManagerController extends Controller
      */
     public function logsAction(Request $request)
     {
-        $channelManagerHandler = $this->container->get('mbh.channel_manager_logs_handler');
+        $channelManagerLogHandler = $this->container->get('mbh.channel_manager_logs_handler');
 
         $offset = $request->get('offset', 0);
         $page = $request->get('page', 1);
 
         if ($request->getMethod() == 'POST') {
-            $channelManagerHandler->clearLogFile();
+            $channelManagerLogHandler->clearLogFile();
 
             $this->addFlash(
                 'success',
@@ -64,14 +64,14 @@ class ChannelManagerController extends Controller
 
             return $this->redirect($this->generateUrl('channel_manager_logs'));
         }
-        $data = $channelManagerHandler->getNext($page, $offset);
+        $data = $channelManagerLogHandler->getNext($page, $offset);
 
 
         return [
             'contentArray' => $data,
             'link' => $this->generateUrl('channel_manager_logs'),
             'page' => $page,
-            'offset' => $channelManagerHandler->getOffset($page, $offset)
+            'offset' => $channelManagerLogHandler->getOffset($page, $offset)
         ];
     }
 
