@@ -6,16 +6,15 @@ namespace MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores;
 
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\AsyncResultReceiverException;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\GroupingFactoryException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
-use MBH\Bundle\SearchBundle\Lib\Result\ResultCacheablesInterface;
 use MBH\Bundle\SearchBundle\Services\Data\Serializers\ResultSerializer;
-use MBH\Bundle\SearchBundle\Services\FinalSearchResultsBuilder;
 use MBH\Bundle\SearchBundle\Services\Search\FinalSearchResultsAnswerManager;
 use Predis\Client;
-use Symfony\Component\Cache\Simple\RedisCache;
 
 class AsyncResultStore implements AsyncResultStoreInterface
 {
+    public const EXPIRE_TIME = 300;
 
     /** @var Client */
     private $cache;
@@ -57,7 +56,7 @@ class AsyncResultStore implements AsyncResultStoreInterface
         }
 
         /** @var Result $searchResult */
-        $this->cache->set($resultUniqueId, $data);
+        $this->cache->set($resultUniqueId, $data, 'EX', self::EXPIRE_TIME);
         $this->cache->sadd($hash, [$resultUniqueId]);
     }
 
@@ -68,7 +67,7 @@ class AsyncResultStore implements AsyncResultStoreInterface
      * @param bool $isCreateAnswer
      * @return mixed
      * @throws AsyncResultReceiverException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\GroupingFactoryException
+     * @throws GroupingFactoryException
      */
     public function receive(
         SearchConditions $conditions,
@@ -125,7 +124,7 @@ class AsyncResultStore implements AsyncResultStoreInterface
     public function addFakeReceivedCount(string $hash, int $number): void
     {
         $fakeReceived = $this->cache->get('received_fake'.$hash);
-        $this->cache->set('received_fake'.$hash, (int)$fakeReceived + $number);
+        $this->cache->set('received_fake'.$hash, (int)$fakeReceived + $number, 'EX', self::EXPIRE_TIME);
     }
 
 }

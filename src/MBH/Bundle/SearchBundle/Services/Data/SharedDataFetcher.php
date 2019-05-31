@@ -23,30 +23,11 @@ class SharedDataFetcher implements SharedDataFetcherInterface
     /** @var Room[] */
     private $rooms;
 
-    /** @var array */
-    private $hotelGrouped;
-
     public function __construct(TariffRepository $tariffRepository, RoomTypeRepository $roomTypeRepository, RoomRepository $roomRepository)
     {
         $this->tariffs = $tariffRepository->findAll();
         $this->roomTypes = $roomTypeRepository->findAll();
         $this->rooms = $roomRepository->findAll();
-//        $this->groupDataByHotelId();
-
-    }
-
-    private function groupDataByHotelId(): void
-
-    {
-        foreach ($this->tariffs as $tariff) {
-            $hotelId = $tariff->getHotel()->getId();
-            $this->hotelGrouped[$hotelId]['tariffs'][] = $tariff;
-        }
-
-        foreach ($this->roomTypes as $roomType) {
-            $hotelId = $roomType->getHotel()->getId();
-            $this->hotelGrouped[$hotelId]['roomTypes'][] = $roomType;
-        }
     }
 
     /**

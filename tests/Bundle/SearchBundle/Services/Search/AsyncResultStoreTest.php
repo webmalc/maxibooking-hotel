@@ -12,6 +12,7 @@ use MBH\Bundle\SearchBundle\Lib\Result\ResultConditions;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultRoomType;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultTariff;
 use MBH\Bundle\SearchBundle\Services\Cache\ErrorFilters\ErrorResultFilter;
+use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStore;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
 class AsyncResultStoreTest extends SearchWebTestCase
@@ -98,6 +99,34 @@ class AsyncResultStoreTest extends SearchWebTestCase
         $this->assertCount(0, $asyncCache->keys($hash . '*'));
         $this->assertEquals($resultsCount, (int)$asyncCache->get('received'. $hash));
     }
+
+
+    public function testKeyExpire(): void
+    {
+        $cache = $this->getContainer()->get('snc_redis.results');
+        $service = $this->getContainer()->get('mbh_search.async_result_store');
+        $result = [
+            'id' => 'fakeResultExpireId',
+            'result' => 'resultvalue'
+        ];
+
+        $conditions = new SearchConditions();
+        $conditions->setSearchHash('fakeHash');
+        $service->store($result, $conditions);
+
+        $key = $result['id'];
+        $ttl = $cache->ttl($key);
+        $this->assertEquals(AsyncResultStore::EXPIRE_TIME, $ttl);
+
+        $hash = $conditions->getSearchHash();
+
+        $service->addFakeReceivedCount($hash, 1);
+
+        $key = 'received_fake' . $hash;
+        $ttl = $cache->ttl($key);
+        $this->assertEquals(AsyncResultStore::EXPIRE_TIME, $ttl);
+    }
+
 
     private function getData(string $hash, string $status, ?int $errorType = null): Result
     {
