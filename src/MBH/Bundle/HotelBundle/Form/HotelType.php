@@ -87,7 +87,15 @@ class HotelType extends FormWithMultiLangFields
                 'group' => 'form.hotelType.settings',
                 'required' => false,
                 'choices' => range(0, 23)
-            ]);
+            ])
+            ->add('isSearchActive', CheckboxType::class, [
+                'label' => 'Активен ли в поиске',
+                'group' => 'form.hotelType.settings',
+                'required' => false,
+                'help' => 'Искать предложение в данном отеле'
+            ])
+
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver)
