@@ -173,3 +173,7 @@ airbnb.room_links.connection_instructions.list.text8: 'Затем в поле <s
 airbnb.room_links.connection_instructions.list.text9: 'Нажмите кнопку <strong>Import Calendar</strong>'
 airbnb.room_links.connection_instructions.text3: 'Это действие нужно повторить для каждого объекта размещения.'
 airbnb.room_links.copy_link_button.text: 'Копировать ссылку'
+log.pagination.forward: 'Вперед'
+log.pagination.back: 'Назад'
+log.data_table.date: 'Дата/время'
+log.data_table.log: 'Строка лога'

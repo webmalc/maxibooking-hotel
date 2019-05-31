@@ -49,54 +49,17 @@ class ChannelManagerController extends Controller
      */
     public function logsAction(Request $request)
     {
-        $data = null;
+        $channelManagerHandler = $this->container->get('mbh.channel_manager_logs_handler');
 
-        $file = $this->container->get('mbh.channelmanager.logger_handler')->getUrl();
-
-        if (file_exists($file) && is_readable($file)) {
-            if ($request->getMethod() == 'POST') {
-                file_put_contents($file, '');
-
-                $this->addFlash(
-                    'success',
-                    $this->get('translator')->trans('controller.channel_manager_controller.logs_clear_successful')
-                );
-
-                return $this->redirect($this->generateUrl('channel_manager_logs'));
-            }
-
-            $strByteLength = 20000000;
-
-            $fp = fopen($file, 'r');
-            fseek($fp, -$strByteLength, SEEK_END);
-            $content = fread($fp, $strByteLength);
-            fclose($fp);
-            $content = substr($content, strpos($content, PHP_EOL) + 1);
-            $content = substr($content, 0, -1);
-
-            if ($content) {
-                $contentArray = explode(
-                    PHP_EOL,
-                    htmlentities(
-                        implode("\n", array_reverse(explode("\n", $content))),
-                        ENT_SUBSTITUTE,
-                        "UTF-8"
-                    )
-                );
-                $content = null;
-
-                foreach ($contentArray as $string) {
-                    $stringHalf = trim(preg_replace('!\s+!', ' ', mb_substr($string, 22)));
-                    $data[] = [
-                        trim(mb_substr($string, 0, 21)),
-                        $stringHalf
-                    ];
-                }
-            }
-        }
+        $offset = $request->get('offset', 0);
+        $page = $request->get('page', 1);
+        $data = $channelManagerHandler->getNext($page, $offset);
 
         return [
             'contentArray' => $data,
+            'link' => $this->generateUrl('channel_manager_logs'),
+            'page' => $page,
+            'offset' => $channelManagerHandler->getOffset($page, $offset)
         ];
     }
 

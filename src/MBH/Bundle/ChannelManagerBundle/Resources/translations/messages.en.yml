@@ -197,3 +197,7 @@ airbnb.room_links.connection_instructions.list.text5: 'On the opened page click 
 airbnb.room_links.connection_instructions.list.text7: 'In the newly opened window paste the link to the <strong>Calendar Address (URL)</strong> field'
 airbnb.room_links.connection_instructions.list.text8: 'Then enter the name of the calendar in the <strong>Name Your Calendar</strong> field. The name should be Maxibooking'
 airbnb.room_links.connection_instructions.list.text9: 'Click <strong>Import Calendar</ strong>'
+log.pagination.forward: 'Next'
+log.pagination.back: 'Previous'
+log.data_table.date: 'Date/time'
+log.data_table.log: 'Log string'
