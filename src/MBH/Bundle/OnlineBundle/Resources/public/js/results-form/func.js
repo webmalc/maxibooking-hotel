@@ -37,3 +37,9 @@ MbhResultForm.prototype.resize = function() {
         height: jQuery('body').height()
     }, "*");
 };
+
+MbhResultForm.prototype.addEventReloadPage = function(selector) {
+    jQuery(selector).click(function() {
+        window.location.reload();
+    });
+};

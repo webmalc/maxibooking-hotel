@@ -13,12 +13,12 @@ MbhResultForm.prototype.stepThree = function() {
             var total = _this._requestParams.total.replace(/,/g, ''),
                 totalPackages = _this._requestParams.totalPackages.replace(/,/g, ''),
                 totalServices = _this._requestParams.totalServices.replace(/,/g, '');
+
             _this.wrapper.html(data);
 
             _this.resize();
-            jQuery('#mbh-payment-types-previous').click(function() {
-                window.location.reload();
-            });
+
+            _this.addEventReloadPage('#mbh-payment-types-previous');
 
             // user payment form validate & calc total
             (function() {

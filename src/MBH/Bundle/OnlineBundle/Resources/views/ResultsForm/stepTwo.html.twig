@@ -5,185 +5,163 @@
 
         {% include 'MBHOnlineBundle:ResultsForm:stepInfo.html.twig' with {'stepNumber': 2} %}
 
-        <div id="mbh-package-info">
-            {{ 'views.api.getPaymentType.dates'|trans({}, 'MBHOnlineBundle') }} <strong>{{ request.begin }} - {{ request.end }}.</strong>
-            {{ 'views.api.getPaymentType.days_and_nights'|trans({}, 'MBHOnlineBundle') }} <strong>{{ request.days }}/<span id="mbh-package-info-nights">{{ request.nights }}</span></strong>.
-            {{ 'views.api.getPaymentType.nomerov'|trans({}, 'MBHOnlineBundle') }} <strong>{{ request.packages|length }}</strong><br />
-            {{ 'views.api.getPaymentType.order_result'|trans({}, 'MBHOnlineBundle') }} <strong><span class="mbh-results-total-sum"><span id="mbh-package-info-total">{{ request.total }}</span>&nbsp;{{ currency().text|trans }}</span></strong>&nbsp; {{ 'views.api.getPaymentType.nomera'|trans({}, 'MBHOnlineBundle') }} <span class="mbh-results-total-sum"><span id="mbh-package-info-total-packages">{{ request.totalPackages }}</span>&nbsp;{{ currency().text|trans }}</span>&nbsp; <span style="display: none;">{{ 'views.api.getPaymentType.services'|trans({}, 'MBHOnlineBundle') }} <span class="mbh-results-total-sum"><span id="mbh-package-info-total-services">{{ request.totalServices }}</span>&nbsp;{{ currency().text|trans }}</span></span><br />
-            {% if request.tariff is defined %}
-                {{ 'views.api.getPaymentType.tariff'|trans({}, 'MBHOnlineBundle') }} <strong>{{ request.tariff.title }}</strong>
-            {% endif %}
-            {% for package in request.packages %}
-                <p>{{ package.hotel.title }} - {{ package.roomType.title }} ({{ package.adults }}+{{ package.children }}) {{ package.price|number_format(2) }}&nbsp;{{ currency().text|trans }}</p>
-            {% endfor %}
-            <span id="mbh-package-info-total-hidden" style="display: none;">{{ request.total }}</span>
-        </div>
-
-            {% if services|length %}
-
-                <div id="mbh-results-services-wrapper">
-                    <div class="panel panel-primary spacer-top">
-                        <div class="panel-heading">
-                            {{ 'views.api.get_user_form.services'|trans}}
-                        </div>
-                        <div class="panel-body">
-
-                            <div id="mbh-results-services-table-wrapper">
-                            <table id="mbh-results-services-table" class="table table-striped table-hover">
-                                <thead>
-                                    <tr>
-                                        {% if hotels|length > 1 %}
-                                        <th id="mbh-results-table-services-th-hotel">{{ 'views.api.getResultsTable.hotel'|trans({}, 'MBHOnlineBundle') }}</th>
-                                        {% endif %}
-                                        <th id="mbh-results-table-services-th-service"> {{ 'views.api.getResultsTable.service_type'|trans({}, 'MBHOnlineBundle') }}</th>
-                                        <th id="mbh-results-table-services-th-price" class="mbh-right">{{ 'views.api.getResultsTable.price'|trans({}, 'MBHOnlineBundle') }}</th>
-                                        <th id="mbh-results-table-services-th-amount">{{ 'views.api.getResultsTable.amount'|trans({}, 'MBHOnlineBundle') }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-
-
-                                    {% for service in services %}
-                                    <tr>
-                                        {% if hotels|length > 1 %}
-                                            <td class="mbh-left"><span class="mbh-results-services-hotel" data-id="{{ service.category.hotel.id }}">{{ service.category.hotel.fullTitle }}</span></td>
-                                        {% endif %}
-                                        <td class="mbh-left">
-                                            <span class="mbh-results-services-name" data-id="{{ service.id }}">{{ service.fullTitle }}<br><small>{{ service.description }}</small></span></td>
-                                        <td class="mbh-right">
+        <div class="row">
+            <div class="col-sm-9">
+                {% if services|length %}
+                    <div id="mbh-results-services-wrapper">
+                        <div class="panel panel-primary spacer-top">
+                            <div class="panel-heading">
+                                {{ 'views.api.get_user_form.services'|trans}}
+                            </div>
+                            <div class="panel-body">
+                                <div id="mbh-results-services-table-wrapper">
+                                    <div class="mbh-results-services-table">
+                                        {% for service in services %}
+                                            <div class="row">
+                                                {% if hotels|length > 1 %}
+                                                    <div class="mbh-left col-sm-3"><span class="mbh-results-services-hotel" data-id="{{ service.category.hotel.id }}">{{ service.category.hotel.fullTitle }}</span></div>
+                                                {% endif %}
+                                                <div class="mbh-left col-sm-3">
+                                                    <span class="mbh-results-services-name" data-id="{{ service.id }}">{{ service.fullTitle }}<br><small>{{ service.description }}</small></span></div>
+                                                <div class="mbh-right col-sm-3">
                                             <span class="mbh-results-services-prices" data-value="{{ service.price }}">
                                                 {{ service.price|number_format ~ ' ' ~ currency()['text']|trans }}
-                                            </span><br>
-                                        </td>
-                                        <td>
-                                            <select class="mbh-results-services-count select2">
-                                                <option value="0" selected="selected">0</option>
-                                                {% for i in 1..100 %}
-                                                <option value="{{ i }}">{{ i }}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-        {% endif %}
-    <div class="panel panel-primary spacer-top">
-        <div class="panel-heading">
-            {{ 'views.api.getUserForm.enter_data_to_continue'|trans({}, 'MBHOnlineBundle') }}
-        </div>
-        <div class="panel-body">
-            <div id="mbh-user-form">
-                <form id="mbh-user-form-form" class="form-horizontal">
-
-                    <div class="mbh-user-form-row form-group">
-                        <label for="mbh-user-form-lastName" class="col-sm-2 control-label">{{ 'views.api.getUserForm.surname'|trans({}, 'MBHOnlineBundle') }}<sup>*</sup></label>
-                        <div class="col-sm-10">
-                        <input type="text" class="form-control input-sm" id="mbh-user-form-lastName" name="lastName" required value=""
-                                placeholder= {{ 'views.api.getUserForm.placeholder_surname'|trans({}, 'MBHOnlineBundle') }}>
-                        </div>
-                    </div>
-
-                    <div class="mbh-user-form-row form-group">
-                        <label for="mbh-user-form-firstName" class="col-sm-2 control-label">{{ 'views.api.getUserForm.name'|trans({}, 'MBHOnlineBundle') }} <sup>*</sup></label>
-                        <div class="col-sm-10">
-                        <input type="text" class="form-control input-sm" id="mbh-user-form-firstName" name="firstName" required value=""
-                                placeholder="{{ 'views.api.get_user_form.default_name'|trans }}">
-                        </div>
-                    </div>
-
-                    {% if config.requestPatronymic %}
-                        <div class="mbh-user-form-row form-group">
-                            <label for="mbh-user-form-patronymic" class="col-sm-2 control-label">{{ 'views.api.getUserForm.patronymic'|trans({}, 'MBHOnlineBundle') }}<sup>*</sup></label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control input-sm" id="mbh-user-form-patronymic" name="patronymic"
-                                       required value="" placeholder="{{ 'views.api.get_user_form.default_patronymic'|trans({}, 'MBHOnlineBundle') }}">
-                            </div>
-                        </div>
-                    {% endif %}
-
-                    <div class="mbh-user-form-row form-group">
-                        <label for="mbh-user-form-phone" class="col-sm-2 control-label">{{ 'views.api.getUserForm.phone'|trans({}, 'MBHOnlineBundle') }} <sup>*</sup></label>
-                        <div class="col-sm-10">
-                        <input type="tel" class="form-control input-sm" id="mbh-user-form-phone" name="phone" required value=""
-                                placeholder="7(925)3456512">
-                        </div>
-                    </div>
-
-                    <div class="mbh-user-form-row form-group">
-                        <label for="mbh-user-form-email" class="col-sm-2 control-label">
-                            {{ 'views.api.getUserForm.email'|trans({}, 'MBHOnlineBundle') }}
-                            {% if emailIsRequired %} <sup>*</sup>{% endif %}
-                        </label>
-                        <div class="col-sm-10">
-                            <input type="email"
-                                   class="form-control input-sm"
-                                   id="mbh-user-form-email"
-                                   name="email"
-                                   value=""
-                                   placeholder="{{ 'views.api.getUserForm.placeholder_email'|trans({}, 'MBHOnlineBundle') }}"
-                                    {% if emailIsRequired %} required{% endif %}>
-                        </div>
-                    </div>
-
-                    <div class="mbh-user-form-row form-group">
-                        <label for="mbh-user-form-birthday" class="col-sm-2 control-label">{{ 'views.api.getUserForm.birth_date'|trans({}, 'MBHOnlineBundle') }}</label>
-                        <div class="col-sm-10">
-                        <input type="text" class="form-control input-sm" id="mbh-user-form-birthday" name="birthday" value="" placeholder="27.08.1975">
-                        </div>
-                    </div>
-
-                    {% if config.requestInn %}
-                        <div class="mbh-user-form-row form-group">
-                            <label for="mbh-user-form-inn" class="col-sm-2 control-label">{{ 'views.api.getUserForm.inn'|trans({}, 'MBHOnlineBundle') }} <sup>*</sup></label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control input-sm" maxlength="12" id="mbh-user-form-inn" name="inn" required>
-                            </div>
-                        </div>
-                    {% endif %}
-
-                    {% if config.requestTouristDocumentNumber %}
-                        <div class="mbh-user-form-row form-group"  style="margin-bottom: 0">
-                            <label for="mbh-user-form-document-number" class="col-sm-2 control-label">{{ 'views.api.getUserForm.document_number'|trans({}, 'MBHOnlineBundle') }} <sup>*</sup></label>
-                            <div class="col-sm-10">
-                                <input style="margin-top: 26px;" type="text" class="form-control input-sm" id="mbh-user-form-document-number" name="documentNumber" required value="">
-                            </div>
-                        </div>
-                    {% endif %}
-                    <br>
-
-                    <div class="mbh-user-form-row form-group">
-                        <label for="mbh-user-form-note" class="col-sm-2 control-label">{{ 'views.api.getUserForm.comment'|trans({}, 'MBHOnlineBundle') }}</label>
-                        <div class="col-sm-10">
-                        <textarea id="mbh-user-form-note" class="form-control input-sm" name="note"></textarea>
-                        </div>
-                    </div>
-
-                    {% if config.personalDataPolicies is not empty %}
-                        <div id="personal-data-form-group" class="mbh-user-form-row form-group">
-                            <div class="col-sm-offset-2">
-                                <input type="checkbox" id="mbh-form-personal-data" required>&nbsp;<sup>*</sup>
-                                <div id="pers-data-text" style="display: inline-block;">
-                                    {{ 'views.api.getUserForm.personal_data_policies'|trans({url: config.personalDataPolicies}, 'MBHOnlineBundle')|raw}}
+                                            </span>
+                                                </div>
+                                                <div class="col-sm-3">
+                                                    <label>
+                                                        <select class="mbh-results-services-count select2">
+                                                            <option value="0" selected="selected">0</option>
+                                                            {% for i in 1..100 %}
+                                                                <option value="{{ i }}">{{ i }}</option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    {% endif %}
+                    </div>
+                {% endif %}
+                <div class="panel panel-primary spacer-top">
+                    <div class="panel-heading">
+                        {{ 'views.api.getUserForm.enter_data_to_continue'|trans({}, 'MBHOnlineBundle') }}
+                    </div>
+                    <div class="panel-body">
+                        <div id="mbh-user-form">
+                            <form id="mbh-user-form-form" class="form-horizontal">
 
-                    <div class="mbh-user-form-row form-group">
-                        <div class="col-sm-8 col-sm-offset-2">
-                            <sup>*</sup>{{ 'views.api.getUserForm.required_fields'|trans({}, 'MBHOnlineBundle') }}
+                                <div class="mbh-user-form-row form-group">
+                                    <label for="mbh-user-form-lastName" class="col-sm-2 control-label">{{ 'views.api.getUserForm.surname'|trans({}, 'MBHOnlineBundle') }}<sup>*</sup></label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control input-sm" id="mbh-user-form-lastName" name="lastName" required value=""
+                                               placeholder= {{ 'views.api.getUserForm.placeholder_surname'|trans({}, 'MBHOnlineBundle') }}>
+                                    </div>
+                                </div>
+
+                                <div class="mbh-user-form-row form-group">
+                                    <label for="mbh-user-form-firstName" class="col-sm-2 control-label">{{ 'views.api.getUserForm.name'|trans({}, 'MBHOnlineBundle') }} <sup>*</sup></label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control input-sm" id="mbh-user-form-firstName" name="firstName" required value=""
+                                               placeholder="{{ 'views.api.get_user_form.default_name'|trans }}">
+                                    </div>
+                                </div>
+
+                                {% if config.requestPatronymic %}
+                                    <div class="mbh-user-form-row form-group">
+                                        <label for="mbh-user-form-patronymic" class="col-sm-2 control-label">{{ 'views.api.getUserForm.patronymic'|trans({}, 'MBHOnlineBundle') }}<sup>*</sup></label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control input-sm" id="mbh-user-form-patronymic" name="patronymic"
+                                                   required value="" placeholder="{{ 'views.api.get_user_form.default_patronymic'|trans({}, 'MBHOnlineBundle') }}">
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                <div class="mbh-user-form-row form-group">
+                                    <label for="mbh-user-form-phone" class="col-sm-2 control-label">{{ 'views.api.getUserForm.phone'|trans({}, 'MBHOnlineBundle') }} <sup>*</sup></label>
+                                    <div class="col-sm-10">
+                                        <input type="tel" class="form-control input-sm" id="mbh-user-form-phone" name="phone" required value=""
+                                               placeholder="7(925)3456512">
+                                    </div>
+                                </div>
+
+                                <div class="mbh-user-form-row form-group">
+                                    <label for="mbh-user-form-email" class="col-sm-2 control-label">
+                                        {{ 'views.api.getUserForm.email'|trans({}, 'MBHOnlineBundle') }}
+                                        {% if emailIsRequired %} <sup>*</sup>{% endif %}
+                                    </label>
+                                    <div class="col-sm-10">
+                                        <input type="email"
+                                               class="form-control input-sm"
+                                               id="mbh-user-form-email"
+                                               name="email"
+                                               value=""
+                                               placeholder="{{ 'views.api.getUserForm.placeholder_email'|trans({}, 'MBHOnlineBundle') }}"
+                                                {% if emailIsRequired %} required{% endif %}>
+                                    </div>
+                                </div>
+
+                                <div class="mbh-user-form-row form-group">
+                                    <label for="mbh-user-form-birthday" class="col-sm-2 control-label">{{ 'views.api.getUserForm.birth_date'|trans({}, 'MBHOnlineBundle') }}</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control input-sm" id="mbh-user-form-birthday" name="birthday" value="" placeholder="27.08.1975">
+                                    </div>
+                                </div>
+
+                                {% if config.requestInn %}
+                                    <div class="mbh-user-form-row form-group">
+                                        <label for="mbh-user-form-inn" class="col-sm-2 control-label">{{ 'views.api.getUserForm.inn'|trans({}, 'MBHOnlineBundle') }} <sup>*</sup></label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control input-sm" maxlength="12" id="mbh-user-form-inn" name="inn" required>
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                {% if config.requestTouristDocumentNumber %}
+                                    <div class="mbh-user-form-row form-group"  style="margin-bottom: 0">
+                                        <label for="mbh-user-form-document-number" class="col-sm-2 control-label">{{ 'views.api.getUserForm.document_number'|trans({}, 'MBHOnlineBundle') }} <sup>*</sup></label>
+                                        <div class="col-sm-10">
+                                            <input style="margin-top: 26px;" type="text" class="form-control input-sm" id="mbh-user-form-document-number" name="documentNumber" required value="">
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                <br>
+
+                                <div class="mbh-user-form-row form-group">
+                                    <label for="mbh-user-form-note" class="col-sm-2 control-label">{{ 'views.api.getUserForm.comment'|trans({}, 'MBHOnlineBundle') }}</label>
+                                    <div class="col-sm-10">
+                                        <textarea id="mbh-user-form-note" class="form-control input-sm" name="note"></textarea>
+                                    </div>
+                                </div>
+
+                                {% if config.personalDataPolicies is not empty %}
+                                    <div id="personal-data-form-group" class="mbh-user-form-row form-group">
+                                        <div class="col-sm-offset-2">
+                                            <input type="checkbox" id="mbh-form-personal-data" required>&nbsp;<sup>*</sup>
+                                            <div id="pers-data-text" style="display: inline-block;">
+                                                {{ 'views.api.getUserForm.personal_data_policies'|trans({url: config.personalDataPolicies}, 'MBHOnlineBundle')|raw}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                <div class="mbh-user-form-row form-group">
+                                    <div class="col-sm-8 col-sm-offset-2">
+                                        <sup>*</sup>{{ 'views.api.getUserForm.required_fields'|trans({}, 'MBHOnlineBundle') }}
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
-                </form>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                {% include 'MBHOnlineBundle:ResultsForm:packageInfo.html.twig' with {'request': request} %}
             </div>
         </div>
-    </div>
 
         <div id="mbh-results-actions">
             <button id="mbh-user-form-previous" class="button btn btn-primary">

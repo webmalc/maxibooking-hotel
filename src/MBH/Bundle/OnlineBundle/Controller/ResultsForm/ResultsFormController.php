@@ -154,7 +154,10 @@ class ResultsFormController extends BaseController
                         $params,
                         UrlGeneratorInterface::ABSOLUTE_URL
                     ),
-                    'stepTwo' => $this->generateUrl('online_form_user_form', [], UrlGeneratorInterface::ABSOLUTE_URL),
+                    'stepTwo' => $this->generateUrl('online_form_user_form',
+                        $params,
+                        UrlGeneratorInterface::ABSOLUTE_URL
+                    ),
                     'stepThree' => $this->generateUrl(
                         'online_form_payment_type',
                         $params,
@@ -310,10 +313,10 @@ class ResultsFormController extends BaseController
             [
                 'defaultTariff' => $defaultTariff ?? null,
                 'facilityArray' => $facilityArray,
-                'results' => $results,
-                'config' => $this->container->getParameter('mbh.online.form'),
-                'hotels' => $hotels,
-                'formConfig' => $formConfig,
+                'results'       => $results,
+                'config'        => $this->container->getParameter('mbh.online.form'),
+                'hotels'        => $hotels,
+                'formConfig'    => $formConfig,
                 'tariffResults' => $tariffResults,
             ]
         );
@@ -321,31 +324,28 @@ class ResultsFormController extends BaseController
 
     /**
      * User form
-     * @Route("/results/user/form", name="online_form_user_form", options={"expose"=true})
+     * @Route("/results/user/form/{formConfigId}", name="online_form_user_form", options={"expose"=true})
+     * @ParamConverter(converter="form_config_converter")
      * @Method("POST")
      */
-    public function stepTwoAction(Request $request)
+    public function stepTwoAction(Request $request, FormConfig $formConfig)
     {
         $this->setLocaleByRequest();
         $requestJson = json_decode($request->getContent());
+
         if (property_exists($requestJson, 'locale')) {
             $this->setLocale($requestJson->locale);
         }
         $services = $hotels = [];
 
+        $repoHotel = $this->dm->getRepository('MBHHotelBundle:Hotel');
         foreach ($requestJson->packages as $data) {
-            $hotels[$data->hotel->id] = $this->dm->getRepository('MBHHotelBundle:Hotel')->findOneById($data->hotel->id);
+            $hotels[$data->hotel->id] = $repoHotel->findOneById($data->hotel->id);
         }
 
         /** @var Hotel $hotel */
         foreach ($hotels as $hotel) {
             $services = array_merge($services, $hotel->getServices(true, true));
-        }
-
-        $formConfig = $this->get(FormConfigManager::class)->findOneById($requestJson->formConfigId);
-
-        if ($formConfig === null || !$formConfig->isEnabled()) {
-            throw new NotFoundFormConfigException();
         }
 
         $emailIsRequired = false;
@@ -375,7 +375,7 @@ class ResultsFormController extends BaseController
      * @ParamConverter(converter="form_config_converter")
      * @Method("POST")
      */
-    public function getPaymentTypeAction(Request $request, FormConfig $formConfig)
+    public function stepThreeAction(Request $request, FormConfig $formConfig)
     {
         $requestJson = json_decode($request->getContent());
         if (property_exists($requestJson, 'locale')) {
@@ -383,13 +383,13 @@ class ResultsFormController extends BaseController
         }
 
         return $this->render(
-            '@MBHOnline/ResultsForm/getPaymentType.html.twig',
+            '@MBHOnline/ResultsForm/stepThree.html.twig',
             [
-                'config' => $this->container->getParameter('mbh.online.form'),
-                'formConfig' => $formConfig,
-                'clientConfig' => $this->clientConfig,
-                'request' => $requestJson,
-                'paymentSystems' => $this->getParameter('mbh.payment_systems')
+                'config'         => $this->container->getParameter('mbh.online.form'),
+                'formConfig'     => $formConfig,
+                'clientConfig'   => $this->clientConfig,
+                'request'        => $requestJson,
+                'paymentSystems' => $this->getParameter('mbh.payment_systems'),
             ]
         );
     }

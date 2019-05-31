@@ -78,7 +78,7 @@ MbhResultForm.prototype.calcTotal = function () {
     });
 };
 
-MbhResultForm.prototype.resultNextBtn = function () {
+MbhResultForm.prototype.prepareAndGoStepTwo = function () {
     var _this = this;
 
     jQuery('#mbh-results-next').click(function() {
@@ -98,12 +98,11 @@ MbhResultForm.prototype.resultNextBtn = function () {
         _this._requestParams.packages = [];
         _this._requestParams.services = [];
         _this._requestParams.locale = _this.getLocale();
-        _this._requestParams.formConfigId = _this.formConfigId;
         roomCount.each(function() {
             if (jQuery(this).val() > 0) {
                 var resultsContainer = jQuery(this).closest('.mbh-results-container'),
                     pricesLi = resultsContainer.find('ul.mbh-results-prices li:visible'),
-                    roomType = resultsContainer.find('span.mbh-results-roomType'),
+                    roomType = resultsContainer.find('span.mbh-results-room-type-name'),
                     hotel = resultsContainer.find('span.mbh-results-hotel'),
                     tariff = resultsContainer.find('span.mbh-results-tariff');
                 for (var i = 1; i <= jQuery(this).val(); i++) {
@@ -295,8 +294,7 @@ MbhResultForm.prototype.stepOne = function() {
 
             _this.wrapper.trigger('results-load-event');
 
-            // results next button and go step two
-            _this.resultNextBtn();
+            _this.prepareAndGoStepTwo();
         }
     });
 };
