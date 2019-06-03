@@ -104,7 +104,6 @@ class LogCutter
             fseek($fp, -self::STR_LENGTH * $page + $offset, SEEK_END);
             $this->setFpPos(ftell($fp));
             $content = fread($fp, self::STR_LENGTH);
-            var_dump($content);
             fclose($fp);
         }
 
