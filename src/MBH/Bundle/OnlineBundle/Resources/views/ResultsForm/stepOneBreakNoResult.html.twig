@@ -1,0 +1,7 @@
+<div id="mbh-results-global-wrapper" class="step-one">
+{% include 'MBHOnlineBundle:Api:tariffs.html.twig' with {'tariffResults': tariffResults} %}
+    <div class="mbh-results-error">
+        <i class="fa fa-exclamation-circle"> </i>
+        {{ 'views.api.getResultsTable.nothing_found_for_your_query'|trans({}, 'MBHOnlineBundle') }}
+    </div>
+</div>

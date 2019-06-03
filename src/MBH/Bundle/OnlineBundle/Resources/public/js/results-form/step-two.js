@@ -55,14 +55,18 @@ MbhResultForm.prototype.saveCookies = function () {
     });
 };
 
+MbhResultForm.prototype.changeStateNextBtn = function (state) {
+    this.nextButtonInStepTwo.prop('disabled', state);
+};
+
 MbhResultForm.prototype.validateUserForm = function () {
-    var inputs = jQuery('#mbh-user-form input:required'),
+    var _this = this,
+        inputs = jQuery('#mbh-user-form input:required'),
         validate = function() {
-            var nextButton = jQuery('#mbh-user-form-next');
-            nextButton.prop('disabled', false);
+            _this.changeStateNextBtn(false);
             inputs.each(function() {
                 if (!jQuery(this).val() || (this.type === 'checkbox' && !$(this).is(':checked'))) {
-                    nextButton.prop('disabled', true);
+                    _this.changeStateNextBtn(true);
                     return false;
                 }
             });
@@ -75,25 +79,33 @@ MbhResultForm.prototype.validateUserForm = function () {
 };
 
 MbhResultForm.prototype.validateUserFormEmail = function () {
+    var _this = this,
+        emailInput = jQuery('#mbh-user-form-email'),
+        emailIsRequired = emailInput.prop('required');
+
     var validateEmail = function () {
-        var emailInput = $('#mbh-user-form-email');
-        var nextButton = $('#mbh-user-form-next');
+
         if (emailInput.val() && !emailInput.val().match('^[a-z0-9._%+-]+@[a-z0-9._%+-]+\\.\\w{2,4}$')) {
-            nextButton.prop('disabled', true);
+            if (emailIsRequired) {
+                _this.changeStateNextBtn(true);
+            }
             emailInput.css('border', '1px solid red');
         } else {
-            nextButton.prop('disabled', false);
+            if (emailIsRequired) {
+                _this.changeStateNextBtn(false);
+            }
             emailInput.css('border', '');
         }
     };
     validateEmail();
-    $('#mbh-user-form-email').bind('propertychange change keyup input paste blur', function () {
+    emailInput.bind('propertychange change keyup input paste blur', function () {
         validateEmail();
     })
 };
 
 MbhResultForm.prototype.prepareAndGoStepThree = function () {
     var _this = this;
+    console.log(this._requestParams);
     jQuery('#mbh-user-form-next').click(function() {
         window.parent.postMessage({
             type: 'form-event',
@@ -103,7 +115,7 @@ MbhResultForm.prototype.prepareAndGoStepThree = function () {
 
         servicesCount.each(function() {
             if (jQuery(this).val() > 0) {
-                var tr = jQuery(this).closest('tr'),
+                var tr = jQuery(this).closest('.mbh-service-item'),
                     id = tr.find('span.mbh-results-services-name').attr('data-id');
                 _this._requestParams.services.push({
                     'id': id,
@@ -154,6 +166,8 @@ MbhResultForm.prototype.stepTwo = function() {
 
             _this.wrapper.trigger('user-form-load-event');
 
+            _this.nextButtonInStepTwo = jQuery('#mbh-user-form-next');
+
             _this.setSelect2();
 
             _this.prevData();
@@ -167,6 +181,8 @@ MbhResultForm.prototype.stepTwo = function() {
             _this.validateUserForm();
 
             _this.validateUserFormEmail();
+
+            _this._requestParams.useServices = document.querySelector('#mbh-package-info-total-services') !== null;
 
             _this.prepareAndGoStepThree();
         }

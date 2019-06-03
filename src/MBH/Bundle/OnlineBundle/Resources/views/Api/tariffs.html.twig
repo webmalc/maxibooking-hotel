@@ -1,4 +1,4 @@
-{% if results is not empty or app.request.query.get('tariff') is not null %}
+{% if tariffResults|length != 0 %}
     <div id="mbh-results-tariffs">
         <div class="panel panel-primary spacer-top">
             <div class="panel-heading">
@@ -11,7 +11,7 @@
                         <li>
                             <div class="mbh-results-tariff-wrapper">
                                 <div class="mbh-results-tariff-label">
-                                    {% if defaultTariff.id == tariff.id %}
+                                    {% if defaultTariff != null and defaultTariff.id == tariff.id %}
                                         <input type="radio" disabled checked>
                                         <span id="mbh-results-tariff-selected"
                                               data-id="{{ tariff.id }}">{{ tariff.fullTitle }}</span>

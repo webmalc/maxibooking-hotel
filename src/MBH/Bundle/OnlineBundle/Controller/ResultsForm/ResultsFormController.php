@@ -12,8 +12,6 @@ use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
-use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfigManager;
-use MBH\Bundle\OnlineBundle\Exception\FormConfig\NotFoundFormConfigException;
 use MBH\Bundle\OnlineBundle\Services\RenderPaymentButton;
 use MBH\Bundle\PackageBundle\Document\Order;
 
@@ -163,7 +161,11 @@ class ResultsFormController extends BaseController
                         $params,
                         UrlGeneratorInterface::ABSOLUTE_URL
                     ),
-                    'results' => $this->generateUrl('online_form_packages_create', [], UrlGeneratorInterface::ABSOLUTE_URL),
+                    'stepFour' => $this->generateUrl(
+                        'online_form_packages_create',
+                        $params,
+                        UrlGeneratorInterface::ABSOLUTE_URL
+                    ),
                 ],
             ]
         );
@@ -263,6 +265,20 @@ class ResultsFormController extends BaseController
             }
         }
 
+        if (count($tariffResults) === 0) {
+            return $this->render('@MBHOnline/ResultsForm/stepOneBreakNoTariff.html.twig');
+        }
+
+        if (count($results) === 0) {
+            return $this->render(
+                '@MBHOnline/ResultsForm/stepOneBreakNoResult.html.twig',
+                [
+                    'tariffResults' => $tariffResults,
+                    'defaultTariff' => $defaultTariff ?? null,
+                ]
+            );
+        }
+
         $hotels = [];
 
         // sort results
@@ -333,6 +349,10 @@ class ResultsFormController extends BaseController
         $this->setLocaleByRequest();
         $requestJson = json_decode($request->getContent());
 
+        if (count($requestJson->packages) === 0) {
+            return $this->render('@MBHOnline/ResultsForm/stepTwoBreak.html.twig');
+        }
+
         if (property_exists($requestJson, 'locale')) {
             $this->setLocale($requestJson->locale);
         }
@@ -357,6 +377,8 @@ class ResultsFormController extends BaseController
             $emailIsRequired = $this->clientConfig->getTinkoff()->isWithFiscalization();
         }
 
+        $requestJson->useServices = $services !== [];
+
         return $this->render(
             '@MBHOnline/ResultsForm/stepTwo.html.twig',
             [
@@ -378,6 +400,14 @@ class ResultsFormController extends BaseController
     public function stepThreeAction(Request $request, FormConfig $formConfig)
     {
         $requestJson = json_decode($request->getContent());
+
+        if (count($requestJson->packages) === 0
+            || count($requestJson->user) === 0
+            || ($formConfig->getPersonalDataPolicies() !== null && !$requestJson->isConfrmWithPersDataProcessing)
+        ) {
+            return $this->render('@MBHOnline/ResultsForm/stepThreeBreak.html.twig');
+        }
+
         if (property_exists($requestJson, 'locale')) {
             $this->setLocale($requestJson->locale);
         }
@@ -385,18 +415,22 @@ class ResultsFormController extends BaseController
         return $this->render(
             '@MBHOnline/ResultsForm/stepThree.html.twig',
             [
-                'config'         => $this->container->getParameter('mbh.online.form'),
-                'formConfig'     => $formConfig,
-                'clientConfig'   => $this->clientConfig,
-                'request'        => $requestJson,
-                'paymentSystems' => $this->getParameter('mbh.payment_systems'),
+                'config'            => $this->container->getParameter('mbh.online.form'),
+                'formConfig'        => $formConfig,
+                'clientConfig'      => $this->clientConfig,
+                'request'           => $requestJson,
+                'firstPackage'      => $requestJson->packages[0],
+                'paymentSystems'    => $this->getParameter('mbh.payment_systems'),
+                'onlyOneType'       => count($formConfig->getPaymentTypes()) === 1,
+                'onlyOneSystem'     => count($this->clientConfig->getPaymentSystems()) === 1,
             ]
         );
     }
 
     /**
      * Create packages
-     * @Route("/results/packages/create", name="online_form_packages_create", options={"expose"=true})
+     * @Route("/results/packages/create/{formConfigId}", name="online_form_packages_create", options={"expose"=true})
+     * @ParamConverter(converter="form_config_converter")
      * @Method("POST")
      * @param Request $request
      * @return JsonResponse
@@ -405,17 +439,16 @@ class ResultsFormController extends BaseController
      * @throws \Twig_Error_Runtime
      * @throws \Twig_Error_Syntax
      */
-    public function createPackagesAction(Request $request)
+    public function createPackagesAction(Request $request, FormConfig $formConfig)
     {
-//        $this->addAccessControlAllowOriginHeaders();
         $requestJson = json_decode($request->getContent());
 
         //Create packages
         $isWithCashCashDocument = $requestJson->paymentType !== FormConfig::PAYMENT_TYPE_IN_HOTEL
             || (substr($requestJson->paymentType, 0, strlen('by_receipt')) === FormConfig::PAYMENT_TYPE_BY_RECEIPT);
-        $order = $this->createPackages($requestJson, $isWithCashCashDocument);
+        $order = $this->createPackages($requestJson, $formConfig ,$isWithCashCashDocument);
 
-        if (empty($order)) {
+        if ($order === null) {
             return new JsonResponse(
                 [
                     'success' => false,
@@ -425,6 +458,7 @@ class ResultsFormController extends BaseController
                 ]
             );
         }
+
         $packages = iterator_to_array($order->getPackages());
         $this->sendNotifications($order);
 
@@ -469,13 +503,19 @@ class ResultsFormController extends BaseController
         }
         $this->dm->refresh($order->getFirstPackage());
 
-        return new JsonResponse(['success' => true,
-                                 'message' => $message,
-                                 'form' => $form,
-                                 'order' => $order->getJsonSerialized(),
-                                 'invoiceUrl' => $this->generateUrl('generate_invoice',
-                                     ['id' => $order->getFirstPackage()->getId()],
-                                     UrlGeneratorInterface::ABSOLUTE_URL)]);
+        return new JsonResponse(
+            [
+                'success'    => true,
+                'message'    => $message,
+                'form'       => $form,
+                'order'      => $order->getJsonSerialized(),
+                'invoiceUrl' =>
+                    $this->generateUrl(
+                        'generate_invoice',
+                        ['id' => $order->getFirstPackage()->getId()],
+                        UrlGeneratorInterface::ABSOLUTE_URL
+                    ),
+            ]);
     }
 
     /**
@@ -571,12 +611,11 @@ class ResultsFormController extends BaseController
     /**
      * @param StdClass $request
      * @param boolean $cash
-     * @return Order|boolean
      */
-    private function createPackages($request, $cash = false)
+    private function createPackages($request, FormConfig $formConfig,$cash = false): ?Order
     {
         if (!$this->container->get('mbh.online_payment_form.validator')->isValid($request)) {
-            return false;
+            return null;
         }
 
         $packageData = $servicesData = [];
@@ -616,7 +655,7 @@ class ResultsFormController extends BaseController
                     'status' => 'online',
                     'order_note' => $request->note,
                     'confirmed' => false,
-                    'onlineFormId' => $request->configId
+                    'onlineFormId' => $formConfig->getId()
                 ],
                 null,
                 null,
@@ -627,7 +666,7 @@ class ResultsFormController extends BaseController
                 dump($e->getMessage());
             };
 
-            return false;
+            return null;
         }
 
         return $order;

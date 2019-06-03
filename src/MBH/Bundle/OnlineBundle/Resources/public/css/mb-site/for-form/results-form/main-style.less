@@ -21,10 +21,7 @@ body {
       width: @size-screen-mid-width-tablet;
     }
 
-    //@media (min-width: @size-screen-min-width-desktop) {
-    //  width: @general-width-desktop-max;
-    //}
-
+    width: ~"calc(100vw - 30px)";
 
   }
 
@@ -40,12 +37,56 @@ body {
 
     .maxOuterBorders();
 
+    #mbh-package-info {
+      .mbh-package-info-wrapper {
+        .mbh-room-name {
+          .fontRobotoSlab();
+          font-size: 20px;
+          line-height: 24px;
+        }
+
+        .mbh-hotel-name {
+          color: @general_color;
+          font-size: 16px;
+          line-height: 20px;
+        }
+      }
+
+      .mbh-daterange {
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 24px;
+      }
+
+      .mbh-days-amount,
+      .mbh-package-amount,
+      .mbh-price-amount {
+        font-size: 16px;
+        line-height: 20px;
+      }
+
+      .mbh-days-amount {
+        #mbh-package-info-nights::before {
+          content: "/";
+        }
+      }
+
+      .mbh-price-amount {
+        .mbh-order-total {
+          border-top: 1px solid #A0A0A0;
+        }
+      }
+    }
+
     .step-info {
       margin-top: 25px;
+      margin-bottom: 15px;
       display: flex;
+      flex-wrap: wrap;
       .step-number-info {
         display: flex;
         align-items: center;
+        margin-bottom: 10px;
 
         &.active {
           .step-number {
@@ -81,9 +122,6 @@ body {
 
 // BEGIN TARIFFS
       #mbh-results-tariffs {
-
-        margin-top: 25px;
-
         .heightPanelHeading () {
           height: 52px;
         }
@@ -362,6 +400,10 @@ body {
 // END RESULT
     }
 
+    .step-two {
+
+    }
+
   }
 
   /* -------------------------- RESULTS ACTIONS -------------------------------- */
@@ -372,260 +414,52 @@ body {
     //position: fixed;
     //.maxOuterBorders();
   }
-  .mbh-results-total-sum {
-    font-size: 16px;
-    font-weight: bold;
-  }
+  //.mbh-results-total-sum {
+  //  font-size: 16px;
+  //  font-weight: bold;
+  //}
   /* -------------------------- USER FORM -------------------------------- */
-  .mbh-results-services-count {
-    width: 60px;
-  }
-  #mbh-user-form sup {
-    color: maroon;
-  }
-  #mbh-user-form-form label {
-    font-weight: bold;
-  }
-  #mbh-user-form-birthday, #mbh-user-form-arrival, #mbh-user-form-departure {
-    width: 100px;
-  }
+  //.mbh-results-services-count {
+  //  width: 60px;
+  //}
+  //#mbh-user-form sup {
+  //  color: maroon;
+  //}
+  //#mbh-user-form-form label {
+  //  font-weight: bold;
+  //}
+  //#mbh-user-form-birthday, #mbh-user-form-arrival, #mbh-user-form-departure {
+  //  width: 100px;
+  //}
   /* -------------------------- PAYMENT TYPE FORM -------------------------------- */
-  .mbh-payment-type-row {
-    margin-bottom: 5px;
-    padding: 5px;
-  }
-  .mbh-payment-type-row p {
-    font-size: 11px;
-    color: #7e747c;
-  }
-  .mbh-payment-type-row label {
-    font-size: 16px;
-    font-weight: normal;
-    margin-left: 6px;
-    cursor: pointer;
-  }
-  .hidden {
-    display: none !important;
-  }
+
+  //.mbh-payment-type-row {
+  //  margin-bottom: 5px;
+  //  padding: 5px;
+  //}
+  //.mbh-payment-type-row p {
+  //  font-size: 11px;
+  //  color: #7e747c;
+  //}
+  //.mbh-payment-type-row label {
+  //  font-size: 16px;
+  //  font-weight: normal;
+  //  margin-left: 6px;
+  //  cursor: pointer;
+  //}
+  //.hidden {
+  //  display: none !important;
+  //}
 
   /* -------------------------- PAY FORM -------------------------------- */
-  #mbh-results-pay-form-wrapper {
-    margin-top: 20px;
-    text-align: center;
-  }
-  #mbh-results-pay-form-button {
-    font-size: 21px;
-    margin: 0;
-    padding: 6px 10px;
-  }
 
-
-  //display: flex;
-  //flex-direction: column;
-  //align-items: center;
-  //
-  //background: #C4C4C4;
-  //
-  //.commonStyleFont();
-  //
-  //#mbh-results-wrapper {
-  //
-  //  .widthContainer() {
-  //    width: 100%;
-  //  }
-  //
-  //  .maxOuterBorders() {
-  //    box-sizing: border-box;
-  //
-  //    @media (min-width: @size-screen-max-width-mobile) {
-  //      width: @size-screen-max-width-mobile;
-  //    }
-  //
-  //    @media (min-width: @size-screen-mid-width-tablet) {
-  //      width: @size-screen-mid-width-tablet;
-  //    }
-  //
-  //    //@media (min-width: @size-screen-min-width-desktop) {
-  //    //  width: @general-width-desktop-max;
-  //    //}
-  //
-  //
-  //  }
-  //
-  //  .maxOuterBorders();
-  //
-  //  .step-first {
-  //    display: flex;
-  //    flex-direction: column;
-  //    justify-content: center;
-  //
-  //    #mbh-results-duration {
-  //      margin-top: 70px;
-  //      margin-bottom: 20px;
-  //      order: 2;
-  //
-  //      .fontRobotoSlab();
-  //      font-size: 32px;
-  //      line-height: 44px;
-  //
-  //      #mbh-result-response-info {
-  //        display: none;
-  //      }
-  //    }
-  //
-  //    #mbh-results-tariffs {
-  //
-  //      order: 1;
-  //
-  //      .heightPanelHeading () {
-  //        height: 52px;
-  //      }
-  //
-  //      .panel {
-  //        .panel-heading {
-  //          display: flex;
-  //          align-items: center;
-  //
-  //          .fontRobotoSlab();
-  //
-  //          font-size: 20px;
-  //          line-height: 24px;
-  //
-  //          background: #282828;
-  //          opacity: 0.7;
-  //
-  //          color: #FFFFFF;
-  //
-  //          padding-left: 25px;
-  //
-  //          .heightPanelHeading ();
-  //        }
-  //
-  //        .panel-body {
-  //          ul {
-  //            padding: 0;
-  //            margin: 0;
-  //            list-style: none;
-  //            background: #FFFFFF;
-  //
-  //            li {
-  //              border-bottom: 1px solid #A0A0A0;
-  //
-  //              .heightPanelHeading ();
-  //
-  //              .mbh-results-tariffs-label {
-  //
-  //                height: 100%;
-  //                display: flex;
-  //                align-items: center;
-  //                margin: 0;
-  //
-  //                font-size: 16px;
-  //                line-height: 24px;
-  //
-  //                input[type="radio"] {
-  //                  margin: 0 0 0 10px;
-  //
-  //                  .commonRadio() {
-  //                    content: '';
-  //                    position: absolute;
-  //                    border-radius: 50%;
-  //                    width: 18px;
-  //                    height: 18px;
-  //                    background: #FFFFFF;
-  //
-  //                    margin-top: -6px;
-  //                  }
-  //
-  //                  &:disabled {
-  //                    &:before {
-  //                      .commonRadio();
-  //                      border: 1px solid #DADADA;
-  //                    }
-  //
-  //                    &:checked {
-  //                      &:before {
-  //                        .commonRadio();
-  //                        border: 1px solid #0099FF;
-  //                      }
-  //
-  //                      &:after {
-  //                        .commonRadio();
-  //                        width: 10px;
-  //                        height: 10px;
-  //                        background: #0099FF;
-  //
-  //                        margin: -1px 5px 5px 5px;
-  //                      }
-  //                    }
-  //                  }
-  //
-  //                }
-  //
-  //                #mbh-results-tariffs-selected {
-  //                  margin-left: 15px;
-  //                }
-  //
-  //                a {
-  //                  text-decoration: none;
-  //                  padding-left: 35px;
-  //                  margin-left: -20px;
-  //                  z-index: 1;
-  //                }
-  //              }
-  //            }
-  //          }
-  //        }
-  //      }
-  //    }
-  //
-  //    #mbh-results-table-wrapper {
-  //      order: 3;
-  //
-  //      table#mbh-results-table {
-  //        width: 100%;
-  //        max-width: 100%;
-  //        margin-bottom: 21px;
-  //        border-collapse: collapse;
-  //        border-spacing: 0;
-  //
-  //        thead {
-  //          display: none;
-  //        }
-  //
-  //        tbody {
-  //          tr {
-  //            td {
-  //              &.mbh-left {
-  //                .mbh-results-tariff {
-  //                  display: none;
-  //                }
-  //
-  //                .mbh-results-image-wrapper {
-  //                  .main {
-  //                    width: 180px;
-  //                  }
-  //                }
-  //
-  //                ul.inline-facility {
-  //                  list-style: none;
-  //                  li {
-  //                    display: inline-block;
-  //                  }
-  //                }
-  //              }
-  //
-  //
-  //            }
-  //          }
-  //        }
-  //      }
-  //    }
-  //
-  //    #mbh-results-actions {
-  //      order: 4;
-  //    }
-  //  }
-  //
+  //#mbh-results-pay-form-wrapper {
+  //  margin-top: 20px;
+  //  text-align: center;
+  //}
+  //#mbh-results-pay-form-button {
+  //  font-size: 21px;
+  //  margin: 0;
+  //  padding: 6px 10px;
   //}
 }

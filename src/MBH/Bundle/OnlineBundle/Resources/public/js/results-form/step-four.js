@@ -2,7 +2,7 @@ MbhResultForm.prototype.stepFour = function() {
     var _this = this;
 
     jQuery.ajax({
-        url: this._urls.results,
+        url: this._urls.stepFour,
         type: 'POST',
         data: JSON.stringify(this._requestParams),
         dataType: 'json',
