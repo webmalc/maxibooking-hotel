@@ -6,7 +6,7 @@
 namespace MBH\Bundle\OnlineBundle\Services\ResultsForm;
 
 
-use MBH\Bundle\OnlineBundle\Lib\MBSite\StyleDataInterface;
+use MBH\Bundle\OnlineBundle\Interfaces\MBSite\StyleDataInterface;
 
 class MBSiteResultFormStyle
 {
@@ -26,6 +26,6 @@ class MBSiteResultFormStyle
 
     public function getMainStyle(): ?string
     {
-        return $this->styleData->getContent(self::FILE_NAME, self::FORM_NAME);
+        return $this->styleData->getStyleData(self::FILE_NAME, self::FORM_NAME);
     }
 }

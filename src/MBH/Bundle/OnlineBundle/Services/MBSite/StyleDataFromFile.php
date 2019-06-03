@@ -6,7 +6,7 @@
 namespace MBH\Bundle\OnlineBundle\Services\MBSite;
 
 
-use MBH\Bundle\OnlineBundle\Lib\MBSite\StyleDataInterface;
+use MBH\Bundle\OnlineBundle\Interfaces\MBSite\StyleDataInterface;
 use Symfony\Bridge\Monolog\Logger;
 
 class StyleDataFromFile implements StyleDataInterface
@@ -33,7 +33,7 @@ class StyleDataFromFile implements StyleDataInterface
         $this->dir = $rootDir . self::PREFIX_DIR;
     }
 
-    public function getContent(string $fileName, string $formName): ?string
+    public function getStyleData(string $fileName, string $formName): ?string
     {
         $pathToFile = $this->getDir() . $formName . '/' . $fileName;
 

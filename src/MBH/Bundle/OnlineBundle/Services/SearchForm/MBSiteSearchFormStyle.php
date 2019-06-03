@@ -6,7 +6,7 @@
 namespace MBH\Bundle\OnlineBundle\Services\SearchForm;
 
 
-use MBH\Bundle\OnlineBundle\Lib\MBSite\StyleDataInterface;
+use MBH\Bundle\OnlineBundle\Interfaces\MBSite\StyleDataInterface;
 
 class MBSiteSearchFormStyle
 {
@@ -43,6 +43,6 @@ class MBSiteSearchFormStyle
 
     private function getContent(string $file): ?string
     {
-        return $this->styleData->getContent($file, self::FORM_NAME);
+        return $this->styleData->getStyleData($file, self::FORM_NAME);
     }
 }

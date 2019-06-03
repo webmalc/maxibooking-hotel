@@ -10,7 +10,7 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\OnlineBundle\Document\PaymentFormConfig;
 use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
-use MBH\Bundle\OnlineBundle\Lib\MBSite\StyleDataInterface;
+use MBH\Bundle\OnlineBundle\Interfaces\MBSite\StyleDataInterface;
 
 class MBSitePaymentFormConfigData
 {
@@ -62,6 +62,6 @@ class MBSitePaymentFormConfigData
 
     private function getStyle(): ?string
     {
-        return $this->styleData->getContent(self::FILE_NAME, self::FORM_NAME);
+        return $this->styleData->getStyleData(self::FILE_NAME, self::FORM_NAME);
     }
 }
