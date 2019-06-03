@@ -1,0 +1,17 @@
+{% if pages > 1 %}
+    <nav class="text-center {{ class }}">
+        <ul class="pagination pagination-sm">
+            {% if page != 1 %}
+                <li class="pagination-link"><a onClick="history.go(-1)">prev</a></li>
+            {% else %}
+                <li class="pagination-link"><a>{{ "log.pagination.back"|trans }}</a></li>
+            {% endif %}
+            <li class="pagination-link active"><a>{{ page }}</a></li>
+            <li class="pagination-link">
+                <a href="{{ link }}?page={{ page + 1 }}{% if offset %}&offset={{ offset }}{% endif %}">
+                    {{ "log.pagination.forward"|trans }}
+                </a>
+            </li>
+        </ul>
+    </nav>
+{% endif %}
