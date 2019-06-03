@@ -6,6 +6,8 @@ MbhResultForm.prototype.togglePaymentSystemVisibility = function () {
     } else {
         $paymentSystemsBlock.hide();
     }
+
+    this.resize();
 };
 
 MbhResultForm.prototype.validateAndCalc = function () {

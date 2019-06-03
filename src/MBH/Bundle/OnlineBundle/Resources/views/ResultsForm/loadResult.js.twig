@@ -34,6 +34,11 @@ function addLoadEvent(func) {
 }
 
 function onLoadResultsLoad() {
+
+    if (mbhNewRbk !== undefined) {
+        mbhNewRbk.init();
+    }
+
     var useYaMetrics = typeof yaCounterId !== 'undefined';
     (function () {
         if (useYaMetrics) {

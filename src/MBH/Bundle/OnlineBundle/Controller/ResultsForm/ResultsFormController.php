@@ -439,7 +439,7 @@ class ResultsFormController extends BaseController
      * @throws \Twig_Error_Runtime
      * @throws \Twig_Error_Syntax
      */
-    public function createPackagesAction(Request $request, FormConfig $formConfig)
+    public function stepFourAction(Request $request, FormConfig $formConfig)
     {
         $requestJson = json_decode($request->getContent());
 

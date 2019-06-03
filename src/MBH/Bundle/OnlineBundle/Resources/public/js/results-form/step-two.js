@@ -105,7 +105,6 @@ MbhResultForm.prototype.validateUserFormEmail = function () {
 
 MbhResultForm.prototype.prepareAndGoStepThree = function () {
     var _this = this;
-    console.log(this._requestParams);
     jQuery('#mbh-user-form-next').click(function() {
         window.parent.postMessage({
             type: 'form-event',

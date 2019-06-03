@@ -95,8 +95,7 @@ class RenderPaymentButton
         $doc = $this->getClientConfig()->getPaymentSystemDocByName($paymentSystemName);
 
         /** @var Wrapper $paymentSystem */
-        $paymentSystem =
-            $this->getPaymentSystemWrapperFactory()->create($doc);
+        $paymentSystem = $this->getPaymentSystemWrapperFactory()->create($doc);
 
         $form = $this->getTwig()->render(
             'MBHClientBundle:PaymentSystem:' . $paymentSystemName . '.html.twig',

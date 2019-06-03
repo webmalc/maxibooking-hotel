@@ -69,7 +69,7 @@ MbhNewRbk.prototype.getIframe = function() {
 
 MbhNewRbk.prototype.init = function() {
     if (!this._init) {
-        this.addListener()
+        this.addListener();
         var wrapper = document.getElementById('mbh-results-wrapper');
         if (wrapper === null) {
             wrapper = document.getElementById('mbh-payment-form-wrapper');

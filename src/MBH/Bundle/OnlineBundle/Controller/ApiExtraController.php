@@ -27,13 +27,13 @@ class ApiExtraController extends Controller
      * Дле генерации необходимо передать packageId
      *
      * @param Request $request
-     * @Route("/newrbk_generate_invoice", name="online_form_api_newrbk_generate_invoice")
+     * @Route("/newrbk-generate-invoice", name="online_form_api_newrbk_generate_invoice")
      * @Method("POST")
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      */
     public function generateInvoiceAction(Request $request)
     {
-        $invoice = $this->get('MBH\Bundle\ClientBundle\Service\PaymentSystem\NewRbkInvoiceCreate');
+        $invoice = $this->get(\MBH\Bundle\ClientBundle\Service\PaymentSystem\NewRbkInvoiceCreate::class);
         $response = $invoice->getDataFromInvoice($request);
 
         return $this->json($response->arrayData());
@@ -42,7 +42,7 @@ class ApiExtraController extends Controller
     /**
      * Генерация ссылки на форму оплаты
      *
-     * @Route("/tinkoff/generate_link/{id}", name="online_form_api_tinkoff_generate_link")
+     * @Route("/tinkoff/generate-link/{id}", name="online_form_api_tinkoff_generate_link")
      * @param CashDocument $cashDocument
      * @return \Symfony\Component\HttpFoundation\RedirectResponse | array
      * @Template("@MBHOnline/paymentSystemError.html.twig")
@@ -91,7 +91,7 @@ class ApiExtraController extends Controller
     }
 
     /**
-     * @Route("/sberbank/generate_link/{id}", name="online_form_api_sberbank_generate_link")
+     * @Route("/sberbank/generate-link/{id}", name="online_form_api_sberbank_generate_link")
      * @param Request $request
      * @param CashDocument $cashDocument
      * @return \Symfony\Component\HttpFoundation\RedirectResponse | array
