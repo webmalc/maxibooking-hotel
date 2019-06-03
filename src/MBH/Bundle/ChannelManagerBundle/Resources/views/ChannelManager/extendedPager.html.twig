@@ -1,17 +1,21 @@
-{% if pages > 1 %}
-    <nav class="text-center {{ class }}">
+{% if pagination %}
+    <nav class="text-center accommodation-report-pagination">
         <ul class="pagination pagination-sm">
-            {% if page != 1 %}
-                <li class="pagination-link"><a onClick="history.go(-1)">prev</a></li>
-            {% else %}
-                <li class="pagination-link"><a>{{ "log.pagination.back"|trans }}</a></li>
+            {% if paramPage > 1 %}
+                <li class="pagination-link">
+                    <a href="{{ link }}?page={{ paramPage - 1 }}">{{ "log.pagination.back"|trans }}</a>
+                </li>
             {% endif %}
-            <li class="pagination-link active"><a>{{ page }}</a></li>
-            <li class="pagination-link">
-                <a href="{{ link }}?page={{ page + 1 }}{% if offset %}&offset={{ offset }}{% endif %}">
-                    {{ "log.pagination.forward"|trans }}
-                </a>
-            </li>
+            {% for pag in pagination %}
+                <li class="pagination-link{% if paramPage == pag %} active{% endif %}">
+                    <a href="{{ link }}?page={{ pag }}">{{ pag }}</a>
+                </li>
+            {% endfor %}
+            {% if paramPage < pagination|last %}
+                <li class="pagination-link">
+                    <a href="{{ link }}?page={{ paramPage + 1 }}">{{ "log.pagination.forward"|trans }}</a>
+                </li>
+            {% endif %}
         </ul>
     </nav>
 {% endif %}

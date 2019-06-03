@@ -51,7 +51,6 @@ class ChannelManagerController extends Controller
     {
         $channelManagerLogHandler = $this->container->get('mbh.channel_manager_logs_handler');
 
-        $offset = $request->get('offset', 0);
         $page = $request->get('page', 1);
 
         if ($request->getMethod() == 'POST') {
@@ -64,14 +63,14 @@ class ChannelManagerController extends Controller
 
             return $this->redirect($this->generateUrl('channel_manager_logs'));
         }
-        $data = $channelManagerLogHandler->getNext($page, $offset);
+        $data = $channelManagerLogHandler->getNext($page);
 
 
         return [
             'contentArray' => $data,
             'link' => $this->generateUrl('channel_manager_logs'),
             'page' => $page,
-            'offset' => $channelManagerLogHandler->getOffset($page, $offset)
+            'pagination' => $channelManagerLogHandler->getPaginationArray($page)
         ];
     }
 
