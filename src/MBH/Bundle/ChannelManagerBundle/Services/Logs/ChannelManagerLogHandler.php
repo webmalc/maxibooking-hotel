@@ -131,4 +131,14 @@ class ChannelManagerLogHandler
 
         return null;
     }
+
+    public function clearLogFile()
+    {
+        $file = $this->channelManagerHandler->getUrl();
+
+        if (file_exists($file) && is_readable($file)) {
+            $file = $this->channelManagerHandler->getUrl();
+            file_put_contents($file, '');
+        }
+    }
 }
