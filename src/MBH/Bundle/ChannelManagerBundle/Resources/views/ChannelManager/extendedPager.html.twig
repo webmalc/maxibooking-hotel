@@ -7,9 +7,15 @@
                 </li>
             {% endif %}
             {% for pag in pagination %}
-                <li class="pagination-link{% if paramPage == pag %} active{% endif %}">
-                    <a href="{{ link }}?page={{ pag }}">{{ pag }}</a>
-                </li>
+                {% if pag == '...' %}
+                    <li class="pagination-link">
+                        <a>{{ pag }}</a>
+                    </li>
+                {% else %}
+                    <li class="pagination-link{% if paramPage == pag %} active{% endif %}">
+                        <a href="{{ link }}?page={{ pag }}">{{ pag }}</a>
+                    </li>
+                {% endif %}
             {% endfor %}
             {% if paramPage < pagination|last %}
                 <li class="pagination-link">
