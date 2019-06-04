@@ -426,6 +426,7 @@ class HundredOneHotels extends Base
                 }
 
                 $this->notifyError(self::CHANNEL_MANAGER_TYPE, $errorMessages);
+                $this->log($errorMessages, 'error');
                 $result = false;
             }
 
