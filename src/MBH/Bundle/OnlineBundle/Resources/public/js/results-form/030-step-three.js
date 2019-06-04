@@ -1,13 +1,21 @@
 MbhResultForm.prototype.togglePaymentSystemVisibility = function () {
-    var selectedPaymentType = jQuery('.mbh-payment-types-radio:checked').val();
-    var $paymentSystemsBlock = $('#mbh-payment-systems');
-    if (this.paymentTypes.onlines.indexOf(selectedPaymentType) > -1) {
-        $paymentSystemsBlock.show();
-    } else {
-        $paymentSystemsBlock.hide();
-    }
+    var _this = this,
+        paymentSystemsBlock = document.querySelector('#mbh-payment-systems');
+        listPaymentRow = document.querySelectorAll('.mbh-payment-type-row');
 
-    this.resize();
+    listPaymentRow.forEach(function(wrapper) {
+        var input = wrapper.querySelector('.mbh-payment-types-radio');
+        wrapper.addEventListener('click', function() {
+            listPaymentRow.forEach(function(wrapperSecond){
+                wrapperSecond.classList.remove('selected');
+            });
+            input.checked = true;
+            paymentSystemsBlock.hidden = _this.paymentTypes.onlines.indexOf(input.value) === -1;
+
+            wrapper.classList.add('selected');
+            _this.resize();
+        })
+    });
 };
 
 MbhResultForm.prototype.validateAndCalc = function () {
@@ -41,7 +49,7 @@ MbhResultForm.prototype.validateAndCalc = function () {
                 sumHidden = parseInt(sumPackages, 10) + parseInt(totalServices, 10);
             }
 
-            if (type.val() === _this.paymentTypes.online.full || type.val() === _this.paymentTypes.receipt.full) {
+            if (type.val() === _this.paymentTypes.online.half || type.val() === _this.paymentTypes.receipt.half) {
                 sumPackages = Math.round(totalPackages / 2);
                 sum = total / 2;
                 sumHidden = total / 2;
@@ -55,10 +63,9 @@ MbhResultForm.prototype.validateAndCalc = function () {
     };
 
     validate();
-    jQuery('.mbh-payment-types-radio, #mbh-form-payment-system').change(function() {
+    jQuery('.mbh-payment-type-row').click(function() {
         validate();
         calc();
-        _this.togglePaymentSystemVisibility();
     });
 };
 
@@ -94,6 +101,8 @@ MbhResultForm.prototype.stepThree = function() {
             _this.wrapper.html(data);
 
             _this.resize();
+
+            _this.togglePaymentSystemVisibility();
 
             _this.addEventReloadPage('#mbh-payment-types-previous');
 

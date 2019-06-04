@@ -45,6 +45,12 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
     public const PAYMENT_TYPE_BY_RECEIPT_FIRST_DAY = 'by_receipt_first_day';
     public const PAYMENT_TYPE_BY_RECEIPT_HALF = 'by_receipt_half';
 
+    public const PAYMENT_TYPES_ONLINE_LIST = [
+        self::PAYMENT_TYPE_ONLINE_FULL,
+        self::PAYMENT_TYPE_ONLINE_FIRST_DAY,
+        self::PAYMENT_TYPE_ONLINE_HALF,
+    ];
+
     public const PAYMENT_TYPES_LIST = [
         self::PAYMENT_TYPE_IN_HOTEL,
         self::PAYMENT_TYPE_IN_OFFICE,

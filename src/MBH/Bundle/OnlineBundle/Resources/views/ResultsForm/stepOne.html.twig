@@ -112,7 +112,7 @@
                     </div>
 
                     <div class="room-count-selector">
-                        <div>
+                        <div class="room-count-selector-label">
                             {{ 'views.api.getResultsTable.rooms_amount'|trans({}, 'MBHOnlineBundle') }}
                         </div>
                         <label>
@@ -143,9 +143,9 @@
     </div>
 
     <div id="mbh-results-actions">
-            <span id="mbh-results-packages-total"> {{ 'views.api.getResultsTable.rooms'|trans({}, 'MBHOnlineBundle') }}
-                <span id="mbh-results-total-packages-sum" class="mbh-results-total-sum">0</span>&nbsp;<span
-                        class="mbh-results-total-sum">{{ currency().text|trans }}</span></span> &nbsp;
+        <span id="mbh-results-packages-total"> {{ 'views.api.getResultsTable.rooms'|trans({}, 'MBHOnlineBundle') }}
+            <span id="mbh-results-total-packages-sum" class="mbh-results-total-sum">0</span>&nbsp;<span
+                    class="mbh-results-total-sum">{{ currency().text|trans }}</span></span> &nbsp;
         <span id="mbh-results-services-total" style="display: none;"> {{ 'views.api.getResultsTable.services'|trans({}, 'MBHOnlineBundle') }}
                 <span id="mbh-results-total-services-sum" class="mbh-results-total-sum">0</span>&nbsp;<span
                     class="mbh-results-total-sum">{{ currency().text|trans }}</span></span> &nbsp;

@@ -25,6 +25,95 @@ body {
 
   }
 
+  .heightPanelHeading () {
+    height: 52px;
+  }
+
+  .commonRadio() {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    background: #FFFFFF;
+
+    margin-top: -3px;
+  }
+
+  .inputStyleRadio() {
+    &:before {
+      .commonRadio();
+      border: 1px solid #DADADA;
+    }
+
+    &:checked {
+      &:before {
+        .commonRadio();
+        border: 1px solid @general_color;
+      }
+
+      &:after {
+        .commonRadio();
+        width: 10px;
+        height: 10px;
+        background: @general_color;
+
+        margin-left: 4px;
+        margin-top: 1px;
+      }
+    }
+  }
+
+  .commonStylePanelBootstrap() {
+    .panel {
+      padding: 0;
+      border: none;
+
+      .panel-heading {
+        display: flex;
+        align-items: center;
+
+        border: unset;
+
+        .fontRobotoSlab();
+
+        font-size: 20px;
+        line-height: 24px;
+
+        background: #282828;
+        opacity: 0.7;
+
+        color: #FFFFFF;
+
+        .heightPanelHeading ();
+      }
+
+      .panel-body {
+        ul {
+          padding: 0;
+          margin: 0;
+          list-style: none;
+          background: #FFFFFF;
+
+          li {
+            border-bottom: 1px solid #A0A0A0;
+
+            input[type="radio"] {
+              margin: 0 0 0 10px;
+
+              &:disabled {
+                .inputStyleRadio();
+              }
+
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .commonStylePanelBootstrap();
+
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -33,17 +122,59 @@ body {
 
   .commonStyleFont();
 
+  .styleFontForSelect() {
+    font-size: 16px;
+    line-height: 28px;
+    text-align: center;
+  }
+
+  .styleForSelect2() {
+    width: 80px;
+    .styleFontForSelect();
+    a {
+      border-radius: unset;
+      height: 34px;
+
+      .select2-chosen {
+        margin-top: 4px;
+      }
+    }
+  }
+
+  .select2-drop {
+    .styleFontForSelect();
+  }
+
   #mbh-results-wrapper {
+    @indent_btn: 30px;
+    .marginLeftBtn() {
+      @media (min-width: 472px) {
+        margin: unset;
+        margin-left: @indent_btn;
+      }
+      order: 2;
+      margin: 5px 0 10px 0;
+    }
+
+    .marginRightBtn() {
+      @media (min-width: 472px) {
+        margin: unset;
+        margin-right: @indent_btn;
+      }
+      margin: 10px 0 5px 0;
+    }
 
     .maxOuterBorders();
 
     #mbh-package-info {
-
       @indent: 11px;
 
       .indentBottom() {
         margin-bottom: @indent;
       };
+
+      padding: 15px;
+      background-color: #FFFFFF;
 
       .mbh-package-info-wrapper {
         .indentBottom();
@@ -133,156 +264,115 @@ body {
       }
     }
 
+    #mbh-results-actions {
+      @media (min-width: 472px) {
+        flex-direction: row;
+        height: 78px;
+      }
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-wrap: wrap;
+
+      border: 1px solid @general_color;
+      background: #FFFFFF;
+
+      .btn-primary {
+        background-color: @general_color;
+        border-color: @general_color;
+      }
+    }
 
     .step-one {
 
-// BEGIN TARIFFS
-      #mbh-results-tariffs {
-        .heightPanelHeading () {
-          height: 52px;
+      #mbh-results-actions {
+        justify-content: flex-end;
+
+        #mbh-results-packages-total {
+          font-size: 16px;
+          line-height: 24px;
         }
 
-        .panel {
+        #mbh-results-total {
+          font-weight: bold;
+          font-size: 16px;
+          line-height: 24px;
+
+          .marginRightBtn();
+        }
+
+        #mbh-results-next {
+          .marginRightBtn();
+        }
+      }
+
+// BEGIN TARIFFS
+      #mbh-results-tariffs {
+
+        .panel-body {
           padding: 0;
-          border: none;
+        };
 
-          .panel-heading {
-            display: flex;
-            align-items: center;
+        .mbh-results-tariff-wrapper {
 
-            .fontRobotoSlab();
+          &.show-description {
 
-            font-size: 20px;
-            line-height: 24px;
+            background: @general_color_light;
+            .mbh-results-tariff-description {
+              display: block;
+            }
 
-            background: #282828;
-            opacity: 0.7;
-
-            color: #FFFFFF;
-
-            .heightPanelHeading ();
-          }
-
-          .panel-body {
-  // BEGIN LIST
-            padding: 0;
-            ul {
-              padding: 0;
-              margin: 0;
-              list-style: none;
-              background: #FFFFFF;
-
-              li {
-                border-bottom: 1px solid #A0A0A0;
-
-                .mbh-results-tariff-wrapper {
-
-                  &.show-description {
-
-                    background: @general_color_light;
-                    .mbh-results-tariff-description {
-                      display: block;
-                    }
-
-                    .mbh-results-tariff-label {
-                      .mbh-results-tariffs-description-toggle {
-                        background: @general_color_light;
-                      }
-                      #mbh-results-tariff-selected {
-                        font-weight: bold;
-                      }
-                    }
-                  }
-
-                  .mbh-results-tariff-label {
-                    .mbh-results-tariffs-description-toggle {
-                      border: none;
-                      background: #FFFFFF;
-
-                      font-style: italic;
-                      font-weight: normal;
-                      font-size: 16px;
-                      line-height: 24px;
-
-                      color: #737373;
-                    }
-
-
-                    .heightPanelHeading ();
-                    display: flex;
-                    align-items: center;
-                    margin: 0;
-
-                    font-size: 16px;
-                    line-height: 24px;
-
-                    #mbh-results-tariff-selected {
-                      margin-left: 15px;
-                    }
-
-                    a {
-                      text-decoration: none;
-                      padding-left: 35px;
-                      margin-left: -20px;
-                      z-index: 1;
-                    }
-
-                  // BEGIN RADIO
-                    input[type="radio"] {
-                      margin: 0 0 0 10px;
-
-                      .commonRadio() {
-                        content: '';
-                        position: absolute;
-                        border-radius: 50%;
-                        width: 18px;
-                        height: 18px;
-                        background: #FFFFFF;
-
-                        margin-top: -3px;
-                      }
-
-                      &:disabled {
-                        &:before {
-                          .commonRadio();
-                          border: 1px solid #DADADA;
-                        }
-
-                        &:checked {
-                          &:before {
-                            .commonRadio();
-                            border: 1px solid #0099FF;
-                          }
-
-                          &:after {
-                            .commonRadio();
-                            width: 10px;
-                            height: 10px;
-                            background: #0099FF;
-
-                            margin-left: 4px;
-                            margin-top: 1px;
-                          }
-                        }
-                      }
-
-                    }
-                  // END RADIO
-                  }
-
-                  .mbh-results-tariff-description {
-                    display: none;
-                    margin-left: 35px;
-                    padding-bottom: 5px;
-                    //font-size: 16px;
-                    //line-height: 24px;
-                  }
-
-                }
+            .mbh-results-tariff-label {
+              .mbh-results-tariffs-description-toggle {
+                background: @general_color_light;
+              }
+              #mbh-results-tariff-selected {
+                font-weight: bold;
               }
             }
-  // END LIST
           }
+
+          .mbh-results-tariff-label {
+            .mbh-results-tariffs-description-toggle {
+              border: none;
+              background: #FFFFFF;
+
+              font-style: italic;
+              font-weight: normal;
+              font-size: 16px;
+              line-height: 24px;
+
+              color: #737373;
+            }
+
+
+            .heightPanelHeading ();
+            display: flex;
+            align-items: center;
+            margin: 0;
+
+            font-size: 16px;
+            line-height: 24px;
+
+            #mbh-results-tariff-selected {
+              margin-left: 15px;
+            }
+
+            a {
+              text-decoration: none;
+              padding-left: 35px;
+              margin-left: -20px;
+              z-index: 1;
+            }
+          }
+
+          .mbh-results-tariff-description {
+            display: none;
+            margin-left: 35px;
+            padding-bottom: 5px;
+          }
+
         }
       }
 // END TARIFFS
@@ -348,7 +438,6 @@ body {
                   border: none;
 
                   font-style: italic;
-                  //font-weight: 500;
                   font-size: 16px;
                   line-height: 24px;
                 }
@@ -401,6 +490,15 @@ body {
 
             .room-count-selector {
               margin-top: 10px;
+
+              .room-count-selector-label {
+                font-size: 16px;
+                line-height: 28px;
+              }
+
+              .mbh-results-packages-count {
+                .styleForSelect2();
+              }
             }
 
             .room-amount {
@@ -408,6 +506,8 @@ body {
 
               font-size: 14px;
               line-height: 20px;
+
+              color: #737373;
             }
           }
   // END PRICE
@@ -417,6 +517,18 @@ body {
     }
 
     .step-two {
+      #mbh-results-actions {
+        justify-content: space-between;
+
+        #mbh-user-form-previous {
+          .marginLeftBtn();
+        }
+
+        #mbh-user-form-next {
+          .marginRightBtn();
+        }
+      }
+
       @media (max-width: @size-screen-max-width-mobile-minus-one) {
         .mbh-results-step-two-wrapper {
           display: flex;
@@ -428,88 +540,110 @@ body {
         }
       }
 
+      .mbh-results-services-and-user-form {
+        #mbh-results-services-wrapper {
+          .panel-body {
+            padding: 0;
+          }
 
-      #mbh-user-form {
-        .mbh-user-form-row {
-          label {
-            font-style: normal;
-            font-weight: normal;
-            font-size: 16px;
-            line-height: 20px;
+          .mbh-service-item {
+            &.row {
+              margin-right: unset;
+              margin-left: unset;
 
-            &[for="mbh-form-personal-data"] {
-              font-size: 14px;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            }
+
+            border-bottom: 1px solid #A0A0A0;
+            min-height: 56px;
+
+            .mbh-service-item-name {
+              font-weight: bold;
+              font-size: 16px;
+              line-height: 24px;
+            }
+
+            .mbh-service-item-price {
+              font-weight: 500;
+              font-size: 16px;
+              line-height: 24px;
+            }
+
+            .mbh-service-item-hotel {
+              .styleForSelect2();
             }
           }
         }
+        .mbh-results-form-user-container {
+          #mbh-user-form {
+            .mbh-user-form-row {
+              label {
+                font-style: normal;
+                font-weight: normal;
+                font-size: 16px;
+                line-height: 20px;
 
-        #personal-data-form-group {
-          .required-star {
-            margin-left: 2px;
-          }
-          #mbh-form-personal-data {
-            margin: 2px 0;
+                &[for="mbh-form-personal-data"] {
+                  font-size: 14px;
+                }
+              }
+            }
+
+            #personal-data-form-group {
+              .required-star {
+                margin-left: 2px;
+              }
+              #mbh-form-personal-data {
+                margin: 2px 0;
+              }
+            }
           }
         }
       }
     }
 
+    .step-three {
+      #mbh-results-actions {
+        justify-content: space-between;
+        #mbh-payment-types-previous {
+          .marginLeftBtn();
+        }
+        #mbh-payment-types-next {
+          .marginRightBtn();
+        }
+      }
+
+      #mbh-results-payment-form {
+        .panel-body {
+          padding-top: 0;
+          padding-bottom: 0;
+        }
+        .mbh-payment-type-row {
+          @media (max-width: 390px) {
+            display: flex;
+          }
+
+          &.selected {
+            background-color: @general_color_light;
+          }
+
+          border-bottom: 1px solid #A0A0A0;
+          padding: 15px 0;
+
+          .mbh-payment-types-radio {
+            .inputStyleRadio();
+          }
+
+          .mbh-payment-type-label {
+            font-style: normal;
+            font-weight: normal;
+            font-size: 16px;
+            line-height: 24px;
+          }
+        }
+      }
+    }
   }
-
-  /* -------------------------- RESULTS ACTIONS -------------------------------- */
-  #mbh-results-actions {
-    //margin: 20px 0;
-    //text-align: right;
-    //display: flex;
-    //position: fixed;
-    //.maxOuterBorders();
-  }
-  //.mbh-results-total-sum {
-  //  font-size: 16px;
-  //  font-weight: bold;
-  //}
-  /* -------------------------- USER FORM -------------------------------- */
-  //.mbh-results-services-count {
-  //  width: 60px;
-  //}
-  //#mbh-user-form sup {
-  //  color: maroon;
-  //}
-  //#mbh-user-form-form label {
-  //  font-weight: bold;
-  //}
-  //#mbh-user-form-birthday, #mbh-user-form-arrival, #mbh-user-form-departure {
-  //  width: 100px;
-  //}
-  /* -------------------------- PAYMENT TYPE FORM -------------------------------- */
-
-  //.mbh-payment-type-row {
-  //  margin-bottom: 5px;
-  //  padding: 5px;
-  //}
-  //.mbh-payment-type-row p {
-  //  font-size: 11px;
-  //  color: #7e747c;
-  //}
-  //.mbh-payment-type-row label {
-  //  font-size: 16px;
-  //  font-weight: normal;
-  //  margin-left: 6px;
-  //  cursor: pointer;
-  //}
-  //.hidden {
-  //  display: none !important;
-  //}
-
-  /* -------------------------- PAY FORM -------------------------------- */
-
-  //#mbh-results-pay-form-wrapper {
-  //  margin-top: 20px;
-  //  text-align: center;
-  //}
-  //#mbh-results-pay-form-button {
-  //  font-size: 21px;
-  //  margin: 0;
-  //  padding: 6px 10px;
-  //}
 }

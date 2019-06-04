@@ -412,17 +412,24 @@ class ResultsFormController extends BaseController
             $this->setLocale($requestJson->locale);
         }
 
+        $onlyOneType = count($formConfig->getPaymentTypes()) === 1;
+        $selectIsHidden = true;
+        if ($onlyOneType) {
+            $selectIsHidden = !in_array($formConfig->getPaymentTypes()[0], FormConfig::PAYMENT_TYPES_ONLINE_LIST);
+        }
+
         return $this->render(
             '@MBHOnline/ResultsForm/stepThree.html.twig',
             [
-                'config'            => $this->container->getParameter('mbh.online.form'),
-                'formConfig'        => $formConfig,
-                'clientConfig'      => $this->clientConfig,
-                'request'           => $requestJson,
-                'firstPackage'      => $requestJson->packages[0],
-                'paymentSystems'    => $this->getParameter('mbh.payment_systems'),
-                'onlyOneType'       => count($formConfig->getPaymentTypes()) === 1,
-                'onlyOneSystem'     => count($this->clientConfig->getPaymentSystems()) === 1,
+                'config'         => $this->container->getParameter('mbh.online.form'),
+                'formConfig'     => $formConfig,
+                'clientConfig'   => $this->clientConfig,
+                'request'        => $requestJson,
+                'firstPackage'   => $requestJson->packages[0],
+                'paymentSystems' => $this->getParameter('mbh.payment_systems'),
+                'onlyOneType'    => $onlyOneType,
+                'selectIsHidden' => $selectIsHidden,
+                'onlyOneSystem'  => count($this->clientConfig->getPaymentSystems()) === 1,
             ]
         );
     }
