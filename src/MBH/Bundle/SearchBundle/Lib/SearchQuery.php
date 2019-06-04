@@ -4,25 +4,27 @@
 namespace MBH\Bundle\SearchBundle\Lib;
 
 
+use DateTime;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Services\Cache\ErrorFilters\ErrorFilterLevelInterface;
+use MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataQueryInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class SearchQuery
  * @package MBH\Bundle\SearchBundle\Lib
  */
-class SearchQuery
+class SearchQuery implements DataQueryInterface
 {
     /**
-     * @var \DateTime
+     * @var DateTime
      * @Assert\NotNull()
      * @Assert\Date()
      */
     private $begin;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      * @Assert\NotNull()
      * @Assert\Date()
      */
@@ -34,13 +36,6 @@ class SearchQuery
      * @Assert\Type("string")
      */
     private $tariffId;
-
-    /**
-     * @var string
-     * @Assert\Type("string")
-     * @Assert\NotNull()
-     */
-    private $restrictionTariffId;
 
     /**
      * @var string
@@ -164,14 +159,7 @@ class SearchQuery
 
     public function getRestrictionTariffId(): ?string
     {
-        return $this->restrictionTariffId;
-    }
-
-    public function setRestrictionTariffId(string $restrictionTariffId): SearchQuery
-    {
-        $this->restrictionTariffId = $restrictionTariffId;
-
-        return $this;
+        throw new \Exception('Change to service');
     }
 
     /**
@@ -274,7 +262,7 @@ class SearchQuery
     /**
      * @return bool
      */
-    public function isRestrictionsWhereChecked(): bool
+    public function isRestrictionsAlreadyChecked(): bool
     {
         return $this->isRestrictionsWhereChecked;
     }
@@ -395,15 +383,13 @@ class SearchQuery
 
 
 
-    public static function createInstance(SearchConditions $conditions, \DateTime $begin, \DateTime $end, array $tariffRoomType): SearchQuery
+    public static function createInstance(SearchConditions $conditions, DateTime $begin, DateTime $end, array $tariffRoomType): SearchQuery
     {
         $searchQuery = new static();
         $searchQuery
             ->setBegin($begin)
             ->setEnd($end)
             ->setTariffId($tariffRoomType['tariffId'])
-            //** TODO: remove restrictionTariffId and create Service to Determine RestrictionTariff ??? */
-            ->setRestrictionTariffId($tariffRoomType['restrictionTariffId'])
             ->setRoomTypeId($tariffRoomType['roomTypeId'])
             ->setSearchConditions($conditions)
             ->setIgnoreRestrictions($conditions->isIgnoreRestrictions())

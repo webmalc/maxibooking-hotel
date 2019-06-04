@@ -11,6 +11,7 @@ use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\CalcHelperException;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -81,12 +82,9 @@ class CalcQuery
      */
     private $isStrictDuration = true;
 
-    /**
-     * @var bool
-     * @Assert\Type(type="bool")
-     * @Assert\NotNull()
-     */
-    private $isUseCategory;
+    /** @var SearchConditions */
+    private $conditions;
+
 
     public function __construct()
     {
@@ -380,26 +378,6 @@ class CalcQuery
         return $this;
     }
 
-    /**
-     * @return bool
-     */
-    public function isUseCategory(): bool
-    {
-        return $this->isUseCategory;
-    }
-
-    /**
-     * @param bool $isUseCategory
-     * @return CalcQuery
-     */
-    public function setIsUseCategory(bool $isUseCategory): CalcQuery
-    {
-        $this->isUseCategory = $isUseCategory;
-
-        return $this;
-    }
-
-
 
     public function getDuration(): int
     {
@@ -411,14 +389,14 @@ class CalcQuery
         return (clone $this->searchEnd)->modify('-1 day');
     }
 
-    public function getPriceTariffId(): string
-    {
-        if ($this->tariff->getParent() && $this->tariff->getChildOptions()->isInheritPrices()) {
-            return $this->tariff->getParent()->getId();
-        }
-
-        return $this->tariff->getId();
-    }
+//    public function getPriceTariffId(): string
+//    {
+//        if ($this->tariff->getParent() && $this->tariff->getChildOptions()->isInheritPrices()) {
+//            return $this->tariff->getParent()->getId();
+//        }
+//
+//        return $this->tariff->getId();
+//    }
 
     public function getMergingTariffId(): ?string
     {
@@ -442,59 +420,26 @@ class CalcQuery
         return $this->roomType->getId();
     }
 
-    public function isChildPrices(): bool
+
+
+
+    /**
+     * @return SearchConditions
+     */
+    public function getConditions(): SearchConditions
     {
-        if ($this->isUseCategory) {
-            if (null === $this->roomType->getCategory()) {
-                throw new CalcHelperException('Categories in use, but RoomType hasn\'t category');
-            }
-
-            return $this->roomType->getCategory()->getIsChildPrices();
-        }
-
-        return $this->roomType->getIsChildPrices();
+        return $this->conditions;
     }
 
-    public function isIndividualAdditionalPrices(): bool
+    /**
+     * @param SearchConditions $conditions
+     * @return CalcQuery
+     */
+    public function setSearchConditions(SearchConditions $conditions): CalcQuery
     {
-        if ($this->isUseCategory) {
-            if (null === $this->roomType->getCategory()) {
-                throw new CalcHelperException('Categories in use, but RoomType hasn\'t category');
-            }
+        $this->conditions = $conditions;
 
-            return $this->roomType->getCategory()->getIsIndividualAdditionalPrices();
-        }
-
-        return $this->roomType->getIsIndividualAdditionalPrices();
-    }
-
-    public function getCombinations(): array
-    {
-        $result = [];
-        $adults = $this->getActualAdults();
-        $children = $this->getActualChildren();
-        if ($adults === 0 && $children === 0) {
-            $this->isUseCategory ? $isChildPrices = $this->roomType->getCategory()->getIsChildPrices() : $isChildPrices = $this->roomType->getIsChildPrices();
-            $total = $this->roomType->getTotalPlaces();
-
-            $isChildPrices ? $additional = $this->roomType->getTotalPlaces() : $additional = $this->roomType->getAdditionalPlaces();
-            $isChildPrices ? $places = 1 : $places = $this->roomType->getPlaces();
-
-            for ($i = 1; $i <= $total; $i++) {
-                $result[] = ['adults' => $i, 'children' => 0];
-            }
-            for ($i = $places; $i <= $total; $i++) {
-                for ($k = 1; $k <= $additional; $k++) {
-                    if (($k + $i) && ($k + $i) <= $total) {
-                        $result[] = ['adults' => $i, 'children' => $k];
-                    }
-                }
-            }
-        } else {
-            $result = [0 => ['adults' => $adults, 'children' => $children]];
-        }
-
-        return $result;
+        return $this;
     }
 
 

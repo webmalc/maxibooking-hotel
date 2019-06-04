@@ -213,9 +213,8 @@ class RestrictionRepository extends DocumentRepository
     /**
      * @param SearchConditions $conditions
      * @param bool $isCaterory
-     * @return array
      */
-    public function getAllSearchPeriod(SearchConditions $conditions): array
+    public function getAllSearchPeriod(SearchConditions $conditions)
     {
         $qb = $this->createQueryBuilder();
         $restrictionTariffs = $conditions->getRestrictionTariffs();
@@ -244,7 +243,7 @@ class RestrictionRepository extends DocumentRepository
             ->field('date')->gte($conditions->getMaxBegin())
             ->field('date')->lte($conditions->getMaxEnd());
 
-        return $qb->hydrate(false)->getQuery()->toArray();
+        return $qb->hydrate(false)->getQuery()->execute();
     }
 }
 

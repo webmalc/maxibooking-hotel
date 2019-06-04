@@ -74,7 +74,6 @@ class PriceCacheFetchQuery extends BaseFetchQuery
         /** @var PriceCacheFetchQuery $fetchQuery */
         $fetchQuery = new self();
         $fetchQuery
-            ->setTariffId($calcQuery->getPriceTariffId())
             ->setRoomTypeId($calcQuery->getPriceRoomTypeId())
             ->setHash($calcQuery->getConditionHash())
             ->setBegin($calcQuery->getSearchBegin())

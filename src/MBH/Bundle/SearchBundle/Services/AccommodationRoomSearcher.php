@@ -8,39 +8,49 @@ use MBH\Bundle\SearchBundle\Lib\Data\PackageAccommodationFetchQuery;
 use MBH\Bundle\SearchBundle\Lib\Data\RoomFetchQuery;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Data\DataFetcherInterface;
+use MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataManager;
+use MBH\Bundle\SearchBundle\Services\Data\Fetcher\PackageAccommodationRawFetcher;
+use MBH\Bundle\SearchBundle\Services\Data\Fetcher\RoomRawFetcher;
 use MBH\Bundle\SearchBundle\Services\Data\PackageAccommodationFetcher;
 use MBH\Bundle\SearchBundle\Services\Data\RoomFetcher;
 
 class AccommodationRoomSearcher
 {
 
-    /** @var DataFetcherInterface|RoomFetcher */
-    private $roomFetcher;
-
-    /** @var DataFetcherInterface|PackageAccommodationFetcher */
-    private $packageAccommodationFetcher;
+    /**
+     * @var DataManager
+     */
+    private $dataManager;
 
     /**
      * AccommodationRoomSearcher constructor.
-     * @param DataFetcherInterface $roomFetcher
-     * @param DataFetcherInterface $packageAccommodationFetcher
+     * @param DataManager $dataManager
      */
-    public function __construct(DataFetcherInterface $roomFetcher, DataFetcherInterface $packageAccommodationFetcher)
+    public function __construct(DataManager $dataManager)
     {
-        $this->roomFetcher = $roomFetcher;
-        $this->packageAccommodationFetcher = $packageAccommodationFetcher;
+        $this->dataManager = $dataManager;
     }
 
 
     public function search(SearchQuery $searchQuery): array
     {
-        $packageAccommodationQuery = PackageAccommodationFetchQuery::createInstanceFromSearchQuery($searchQuery);
-        $packageAccommodations = $this->packageAccommodationFetcher->fetchNecessaryDataSet($packageAccommodationQuery);
-        $forExcludeRoomsIds = $this->findIntersectWithDates($searchQuery->getBegin(), $searchQuery->getEnd(), $packageAccommodations);
-        $roomQuery = RoomFetchQuery::createInstanceFromSearchQuery($searchQuery);
-        $allRooms = $this->roomFetcher->fetchNecessaryDataSet($roomQuery);
+//        $packageAccommodationQuery = PackageAccommodationFetchQuery::createInstanceFromSearchQuery($searchQuery);
+//        $packageAccommodations = $this->packageAccommodationFetcher->fetchNecessaryDataSet($packageAccommodationQuery);
+
+        $packageAccommodations = $this->dataManager->fetchData($searchQuery, PackageAccommodationRawFetcher::NAME);
+
+        $rooms = array_column($packageAccommodations, 'accommodation');
+        $busyRoomIds = array_map('\strval', array_column($rooms, '$id'));
+
+
+//        $roomQuery = RoomFetchQuery::createInstanceFromSearchQuery($searchQuery);
+//        $allRooms = $this->roomFetcher->fetchNecessaryDataSet($roomQuery);
+
+        $allRooms = $this->dataManager->fetchData($searchQuery, RoomRawFetcher::NAME);
+
+
         $allRoomsIds = array_map('\strval', array_column($allRooms, '_id'));
-        $accommodationRoomsIds = array_diff($allRoomsIds, $forExcludeRoomsIds);
+        $accommodationRoomsIds = array_diff($allRoomsIds, $busyRoomIds);
         $accommodationRooms = array_filter($allRooms, function ($room) use ($accommodationRoomsIds) {
             return \in_array((string)$room['_id'], $accommodationRoomsIds, true);
         });
@@ -49,20 +59,4 @@ class AccommodationRoomSearcher
 
     }
 
-    private function findIntersectWithDates(\DateTime $searchBegin, \DateTime $searchEnd, array $packageAccommodations): array
-    {
-        $intersected = [];
-        foreach ($packageAccommodations as $dateKey => $accommodations) {
-            [$beginKey, $endKey] = explode('_', $dateKey);
-            $accommodationBegin = new \DateTime($beginKey);
-            $accommodationEnd = new \DateTime($endKey);
-            if ($accommodationBegin < $searchEnd && $accommodationEnd > $searchBegin) {
-                $rooms = array_column($accommodations, 'accommodation');
-                $roomsIds = array_map('\strval', array_column($rooms, '$id'));
-                $intersected[] = $roomsIds;
-            }
-        }
-
-        return empty($intersected) ? $intersected : array_merge(...$intersected);
-    }
 }

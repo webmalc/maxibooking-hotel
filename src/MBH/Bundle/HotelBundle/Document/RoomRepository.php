@@ -134,7 +134,7 @@ class RoomRepository extends AbstractBaseRepository
             ->hydrate(false)
             ->getQuery()
             ->execute()
-            ->toArray();
+            ->toArray(false);
 
         if ($grouped) {
             foreach ($rawRooms as $rawRoom) {

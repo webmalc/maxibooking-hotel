@@ -6,23 +6,30 @@ namespace MBH\Bundle\SearchBundle\Services\Calc;
 
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\PriceBundle\Document\TariffRepository;
-use MBH\Bundle\SearchBundle\Lib\Data\PriceCacheFetchQuery;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\PriceCachesMergerException;
-use MBH\Bundle\SearchBundle\Services\Data\PriceCacheFetcher;
+use MBH\Bundle\SearchBundle\Services\Data\ActualChildOptionDeterminer;
+use MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataManager;
+use MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataQueries\DataQuery;
+use MBH\Bundle\SearchBundle\Services\Data\Fetcher\PriceCacheRawFetcher;
 
 class PriceCachesMerger
 {
     /** @var TariffRepository */
     private $tariffRepository;
 
-    /** @var PriceCacheFetcher */
-    private $priceCacheFetcher;
+    /** @var DataManager */
+    private $dataManager;
+    /**
+     * @var ActualChildOptionDeterminer
+     */
+    private $childOptionDeterminer;
 
 
-    public function __construct(TariffRepository $tariffRepository, PriceCacheFetcher $priceCacheFetcher)
+    public function __construct(TariffRepository $tariffRepository, DataManager $dataManager, ActualChildOptionDeterminer $childOptionDeterminer)
     {
         $this->tariffRepository = $tariffRepository;
-        $this->priceCacheFetcher = $priceCacheFetcher;
+        $this->dataManager = $dataManager;
+        $this->childOptionDeterminer = $childOptionDeterminer;
     }
 
 
@@ -66,7 +73,7 @@ class PriceCachesMerger
     private function mergePriceCaches(array $mainCaches, array $auxiliaryCaches): array
     {
         $merged = $mainCaches + $auxiliaryCaches;
-        uasort($merged, function ($cache1, $cache2) {
+        uasort($merged, static function ($cache1, $cache2) {
             return $cache1['data']['date'] <=> $cache2['data']['date'];
         });
 
@@ -91,16 +98,19 @@ class PriceCachesMerger
 
     private function getPriceTariffPriceCaches(CalcQuery $calcQuery): array
     {
-        $priceCaches = $this->getRawPriceCaches($calcQuery, $calcQuery->getPriceTariffId());
+        $currentTariff = $calcQuery->getTariff()->getId();
+        $priceTariff = $this->childOptionDeterminer->getActualPriceTariff($currentTariff);
+        $priceCaches = $this->getRawPriceCaches($calcQuery, $priceTariff);
 
-        return $this->preparePriceCacheReturn($priceCaches, $calcQuery->getTariff()->getId());
+        return $this->preparePriceCacheReturn($priceCaches, $currentTariff);
     }
 
 
     private function getMergingTariffPriceCaches(CalcQuery $calcQuery): array
     {
         if ($mergingTariffId = $calcQuery->getMergingTariffId()) {
-            $priceCaches = $this->getRawPriceCaches($calcQuery, $mergingTariffId);
+            $priceTariff = $this->childOptionDeterminer->getActualPriceTariff($mergingTariffId);
+            $priceCaches = $this->getRawPriceCaches($calcQuery, $priceTariff);
 
             return $this->preparePriceCacheReturn($priceCaches, $mergingTariffId);
         }
@@ -127,13 +137,23 @@ class PriceCachesMerger
     private function getRawPriceCaches(CalcQuery $calcQuery, string $searchingTariffId): array
     {
 //        //** TODO тут проверить можно лимит на тариф, но! Взрослые дети ? Возможно стоит создавать несколько CalcQuery ? тогда не понять как делать проверку на restrictions */
-        $fetchQuery = PriceCacheFetchQuery::createInstanceFromCalcQuery($calcQuery);
-        $fetchQuery->setTariffId($searchingTariffId);
-        return $this->priceCacheFetcher->fetchNecessaryDataSet($fetchQuery);
+//        $fetchQuery = PriceCacheFetchQuery::createInstanceFromCalcQuery($calcQuery);
+//        $fetchQuery->setTariffId($searchingTariffId);
+        /** TODO: Arch problem... need refactor in searchResultComposer */
+        $dataQuery = new DataQuery();
+        $dataQuery->setSearchConditions($calcQuery->getConditions());
+        $dataQuery->setBegin($calcQuery->getSearchBegin());
+        $dataQuery->setEnd($calcQuery->getSearchEnd());
+        $dataQuery->setSearchHash($calcQuery->getConditionHash());
+        $dataQuery->setTariffId($searchingTariffId);
+        $dataQuery->setRoomTypeId($calcQuery->getRoomType()->getId());
+
+        return $this->dataManager->fetchData($dataQuery, PriceCacheRawFetcher::NAME);
     }
 
     private function preparePriceCacheReturn(array $caches, string $tariffId): array
     {
+        @trigger_error('There is server determite price tariff exists, so refactor this crap.');
         return [
             'searchTariffId' => $tariffId,
             'caches' => $caches

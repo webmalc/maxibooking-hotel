@@ -5,7 +5,10 @@ use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use MBH\Bundle\BaseBundle\Lib\AbstractFixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\AdditionalRoomTypeData;
+use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\HotelData;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
@@ -35,6 +38,7 @@ class AdditionalRoomCacheData extends AbstractFixture implements OrderedFixtureI
         $hotels = $manager->getRepository('MBHHotelBundle:Hotel')->findAll();
 
         foreach ($hotels as $hotelNumber => $hotel) {
+
             foreach (self::DATA as $roomKey => $numberOfRooms) {
                 /** @var RoomType $roomType */
                 $roomType = $this->getReference($roomKey . '/' . $hotelNumber);
@@ -47,6 +51,45 @@ class AdditionalRoomCacheData extends AbstractFixture implements OrderedFixtureI
                     $manager->persist($cache);
                 }
             }
+        }
+
+        $manager->flush();
+
+        /** Quotas */
+        /** @var Hotel $hotel */
+        $hotel = $manager->getRepository(Hotel::class)->findOneBy(['fullTitle' => 'Отель Волга']);
+        /** @var RoomType $roomType */
+        $roomType = $manager
+            ->getRepository(RoomType::class)
+            ->createQueryBuilder()
+            ->field('fullTitle')->equals(AdditionalRoomTypeData::THREE_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'])
+            ->field('hotel')->references($hotel)
+            ->getQuery()
+            ->getSingleResult()
+        ;
+        /** @var Tariff $tariff */
+        $tariff = $manager
+            ->getRepository(Tariff::class)
+            ->createQueryBuilder()
+            ->field('fullTitle')->equals(AdditionalTariffData::UP_TARIFF_NAME)
+            ->field('hotel')->references($hotel)
+            ->getQuery()
+            ->getSingleResult()
+        ;
+
+        $begin = new \DateTime('midnight +2 days');
+        $end = new \DateTime('midnight +4 days');
+        $period = new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end);
+        foreach ($period as $day) {
+            $cache = new RoomCache();
+            $cache->setRoomType($roomType)
+                ->setHotel($hotel)
+                ->setDate($day)
+                ->setTariff($tariff)
+                ->setTotalRooms(8)
+            ;
+
+            $manager->persist($cache);
         }
 
         $manager->flush();

@@ -11,10 +11,13 @@ use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\AdditionalRoomTypeData;
 use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\RoomTypeCategoryData;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
+use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PriceBundle\DataFixtures\MongoDB\AdditionalTariffData;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Lib\Data\PriceCacheFetchQuery;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\DataFetchQueryException;
 use MBH\Bundle\SearchBundle\Services\Calc\CalcQuery;
+use MBH\Bundle\SearchBundle\Services\Data\Fetcher\PriceCacheRawFetcher;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
 class PriceCacheFetcherTest extends SearchWebTestCase
@@ -23,20 +26,17 @@ class PriceCacheFetcherTest extends SearchWebTestCase
     /**
      * @param $data
      * @dataProvider priceCachesDataProvider
+     * @throws DataFetchQueryException
      */
     public function testFetchNecessaryDataSet($data): void
     {
-
-
         $searchQuery = $this->createSearchQuery($data);
         $searchQuery->setAdults(1);
 
-        if ($data['isCategory']) {
-            $clientConfigRepo = $this->createMock(ClientConfigRepository::class);
-            $clientConfig = $this->createMock(ClientConfig::class);
-            $clientConfig->expects($this->any())->method('getUseRoomTypeCategory')->willReturn(true);
-            $clientConfigRepo->expects($this->any())->method('fetchConfig')->willReturn($clientConfig);
-            $this->getContainer()->set('mbh_search.client_config_repository', $clientConfigRepo);
+        if ($isUseCategory = $data['isCategory']) {
+            $roomTypeManger = $this->createMock(RoomTypeManager::class);
+            $roomTypeManger->useCategories = $isUseCategory;
+            $this->getContainer()->set('mbh.hotel.room_type_manager', $roomTypeManger);
         }
 
         $conditions = $searchQuery->getSearchConditions();
@@ -53,7 +53,6 @@ class PriceCacheFetcherTest extends SearchWebTestCase
             ->setSearchEnd($searchQuery->getEnd())
             ->setActualAdults($occupancies->getAdults())
             ->setActualChildren($occupancies->getChildren())
-            ->setIsUseCategory($isCategory)
             ->setTariff($tariff)
             ->setRoomType($roomType)
             ->setConditionHash($searchQuery->getSearchHash())
@@ -64,8 +63,9 @@ class PriceCacheFetcherTest extends SearchWebTestCase
         ;
 
 
-        $fetchQuery = PriceCacheFetchQuery::createInstanceFromCalcQuery($calcQuery);
-        $actual = $this->getContainer()->get('mbh_search.price_cache_fetcher')->fetchNecessaryDataSet($fetchQuery);
+//        $fetchQuery = PriceCacheFetchQuery::createInstanceFromCalcQuery($calcQuery);
+//        $actual = $this->getContainer()->get('mbh_search.price_cache_fetcher')->fetchNecessaryDataSet($fetchQuery);
+        $actual = $this->getContainer()->get('mbh_search.data_manager')->fetchData($searchQuery, PriceCacheRawFetcher::NAME);
 
         $expected = $data['expected'];
         $expectedCount = $expected['count'];

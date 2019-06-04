@@ -10,8 +10,10 @@ use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\ClientConfigRepository;
 use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\AdditionalRoomTypeData;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PriceBundle\DataFixtures\MongoDB\AdditionalTariffData;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\PriceCachesMergerException;
 use MBH\Bundle\SearchBundle\Services\Calc\CalcQuery;
 use MBH\Bundle\SearchBundle\Services\Calc\PriceCachesMerger;
@@ -53,15 +55,23 @@ class PriceCachesMergerTest extends SearchWebTestCase
         $isCategory = $data['isCategory'] ?? false;
 
         $calcQuery = new CalcQuery();
+        $searchConditions = new SearchConditions();
+        $searchConditions
+            ->setAdditionalBegin(0)
+            ->setAdditionalEnd(0)
+            ->setBegin($begin)
+            ->setEnd($end)
+        ;
         $calcQuery
             ->setTariff($searchTariff)
             ->setRoomType($searchRoomType)
             ->setSearchBegin($begin)
             ->setSearchEnd($end)
-            ->setIsUseCategory($isCategory)
             ->setConditionHash(uniqid('prefix', true))
             ->setConditionMaxBegin($calcQuery->getSearchBegin())
-            ->setConditionMaxEnd($calcQuery->getSearchEnd());
+            ->setConditionMaxEnd($calcQuery->getSearchEnd())
+            ->setSearchConditions($searchConditions)
+        ;
 
         if ($data['expectException']) {
             $this->expectException(PriceCachesMergerException::class);
@@ -72,7 +82,10 @@ class PriceCachesMergerTest extends SearchWebTestCase
             $clientConfig = $this->createMock(ClientConfig::class);
             $clientConfig->expects($this->any())->method('getUseRoomTypeCategory')->willReturn(true);
             $clientConfigRepo->expects($this->any())->method('fetchConfig')->willReturn($clientConfig);
+            $roomTypeManger = $this->createMock(RoomTypeManager::class);
+            $roomTypeManger->useCategories = $isCategory;
             $this->getContainer()->set('mbh_search.client_config_repository', $clientConfigRepo);
+            $this->getContainer()->set('mbh.hotel.room_type_manager', $roomTypeManger);
         }
 
         $service = $this->getContainer()->get('mbh_search.price_caches_merger');

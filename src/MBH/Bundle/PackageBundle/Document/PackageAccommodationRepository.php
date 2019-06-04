@@ -104,7 +104,7 @@ class PackageAccommodationRepository extends DocumentRepository
             ->hydrate(false)
             ->getQuery()
             ->execute()
-            ->toArray();
+            ->toArray(false);
 
         return $result;
     }

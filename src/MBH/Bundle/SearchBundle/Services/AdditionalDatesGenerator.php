@@ -67,7 +67,6 @@ class AdditionalDatesGenerator
     {
         $currentDuration = (int) $begin->diff($end)->format('%a');
 
-
         return (($searchedDuration + self::DURATION_DELTA) >= $currentDuration) && ($currentDuration >= ($searchedDuration - self::DURATION_DELTA));
     }
 }

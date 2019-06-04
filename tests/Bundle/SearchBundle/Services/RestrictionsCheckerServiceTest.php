@@ -8,6 +8,7 @@ use MBH\Bundle\SearchBundle\Lib\DataHolder;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionsCheckerException;
 use MBH\Bundle\SearchBundle\Lib\Restrictions\RestrictionsCheckerInterface;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
+use MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataManager;
 use MBH\Bundle\SearchBundle\Services\Data\RestrictionsFetcher;
 use MBH\Bundle\SearchBundle\Services\RestrictionsCheckerService;
 
@@ -25,8 +26,8 @@ class RestrictionsCheckerServiceTest extends WebTestCase
 
     public function testCheckSuccessOrFail(): void
     {
-        $dataHolder = $this->createMock(RestrictionsFetcher::class);
-        $dataHolder->expects($this->once())->method('fetchNecessaryDataSet')->willReturn([1, 2, 4]);
+        $dataHolder = $this->createMock(DataManager::class);
+        $dataHolder->expects($this->once())->method('fetchData')->willReturn([1, 2, 4]);
 
         $checker = $this->createMock(RestrictionsCheckerInterface::class);
         $checker->expects($this->once())->method('check')->willReturn(true);
@@ -41,24 +42,19 @@ class RestrictionsCheckerServiceTest extends WebTestCase
             ->setEnd(new \DateTime())
             ->setRoomTypeId('fake')
             ->setTariffId('fake')
-            ->setRestrictionTariffId('fake')
-
         ;
 
-        $conditions = $this->createMock(SearchConditions::class);
-        $conditions->expects($this->once())->method('getMaxBegin')->willReturn(new \DateTime());
-        $conditions->expects($this->once())->method('getMaxEnd')->willReturn(new \DateTime());
-        $searchQuery->setSearchConditions($conditions);
+
         $actual = $service->check($searchQuery);
         $this->assertTrue($actual);
-        $this->assertTrue($searchQuery->isRestrictionsWhereChecked());
+        $this->assertTrue($searchQuery->isRestrictionsAlreadyChecked());
 
     }
 
     public function testCheckFail(): void
     {
-        $dataHolder = $this->createMock(RestrictionsFetcher::class);
-        $dataHolder->expects($this->once())->method('fetchNecessaryDataSet')->willReturn([1, 2, 4]);
+        $dataHolder = $this->createMock(DataManager::class);
+        $dataHolder->expects($this->once())->method('fetchData')->willReturn([1, 2, 4]);
 
         $checker = $this->createMock(RestrictionsCheckerInterface::class);
         $message = 'Error when check';
@@ -77,15 +73,9 @@ class RestrictionsCheckerServiceTest extends WebTestCase
             ->setBegin($begin)
             ->setEnd($end)
             ->setTariffId($tariff)
-            ->setRestrictionTariffId($tariff)
             ->setRoomTypeId($roomType)
             ->setSearchHash(uniqid('test', false))
         ;
-
-        $conditions = $this->createMock(SearchConditions::class);
-        $conditions->expects($this->once())->method('getMaxBegin')->willReturn($begin);
-        $conditions->expects($this->once())->method('getMaxEnd')->willReturn($end);
-        $searchQuery->setSearchConditions($conditions);
 
         $actual = $service->check($searchQuery);
         $this->assertFalse($actual);
@@ -106,8 +96,8 @@ class RestrictionsCheckerServiceTest extends WebTestCase
 
     public function testAlreadyChecked(): void
     {
-        $dataHolder = $this->createMock(RestrictionsFetcher::class);
-        $dataHolder->expects($this->never())->method('fetchNecessaryDataSet');
+        $dataHolder = $this->createMock(DataManager::class);
+        $dataHolder->expects($this->never())->method('fetchData');
 
         $checker = $this->createMock(RestrictionsCheckerInterface::class);
         $checker->expects($this->never())->method('check');
@@ -119,6 +109,6 @@ class RestrictionsCheckerServiceTest extends WebTestCase
         $searchQuery->setRestrictionsWhereChecked();
         $actual = $service->check($searchQuery);
         $this->assertTrue($actual);
-        $this->assertTrue($searchQuery->isRestrictionsWhereChecked());
+        $this->assertTrue($searchQuery->isRestrictionsAlreadyChecked());
     }
 }

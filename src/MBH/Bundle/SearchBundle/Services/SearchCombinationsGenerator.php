@@ -204,28 +204,10 @@ class SearchCombinationsGenerator
                     'roomTypeId' => $roomType,
                     'tariffId' => $tariff['id'],
                     'tariff' => $tariff['rawTariff'],
-                    'restrictionTariffId' => $this->determineRestrictionTariffId($tariff['rawTariff'])
                 ];
             }
         }
 
         return $values;
     }
-
-    private function determineRestrictionTariffId(array $rawTariff): string
-    {
-        $tariff = $this->dataHolder->getFetchedTariff((string)$rawTariff['_id']);
-        if ($tariff) {
-            if ($tariff->getParent() && $tariff->getChildOptions() && $tariff->getChildOptions()->isInheritRestrictions()) {
-                $restrictionTariffId = $tariff->getParent()->getId();
-            } else {
-                $restrictionTariffId = $tariff->getId();
-            }
-
-            return $restrictionTariffId;
-        }
-
-        throw new SearchQueryGeneratorException('No tariff for restriction');
-    }
-
 }

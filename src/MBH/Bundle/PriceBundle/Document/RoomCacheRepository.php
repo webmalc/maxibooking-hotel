@@ -277,7 +277,7 @@ class RoomCacheRepository extends DocumentRepository
         $rawRoomTypeId = $roomTypeId ? [$roomTypeId] : [];
         $qb = $this->fetchQueryBuilder($begin, $end, null, $rawRoomTypeId, false);
 
-        return $qb->hydrate(false)->getQuery()->execute()->toArray();
+        return $qb->hydrate(false)->getQuery()->execute()->toArray(false);
     }
 
     /**

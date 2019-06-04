@@ -23,6 +23,7 @@ abstract class AbstractDataFetcher implements DataFetcherInterface
 
     public function fetchNecessaryDataSet(DataFetchQueryInterface $fetchQuery): array
     {
+        throw new \Exception('Change service to new');
         $result = $this->holder->get($fetchQuery);
         if (null === $result) {
             $data = $this->getData($fetchQuery);
