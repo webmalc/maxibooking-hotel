@@ -442,6 +442,9 @@ jQuery(document).ready(function() {
 
                             // validate user form
                             (function() {
+                                var validateEmail = function () {
+                                    return $('#mbh-user-form-email').val().match('^[a-z0-9._%+-]+@[a-z0-9._%+-]+\\.\\w{2,4}$');
+                                }
 
                                 var inputs = jQuery('#mbh-user-form input:required'),
                                     validate = function() {
@@ -453,30 +456,23 @@ jQuery(document).ready(function() {
                                                 return false;
                                             }
                                         });
-                                        return true;
+                                        if ($('#mbh-user-form-email').val()) {
+                                            if (!validateEmail()) {
+                                                nextButton.prop('disabled', true);
+                                                $('#mbh-user-form-email').css('border', '1px solid red');
+                                                return false;
+                                            } else {
+                                                $('#mbh-user-form-email').css('border', '');
+                                                return true;
+                                            }
+                                        }
                                     };
                                 validate();
                                 inputs.bind("propertychange change click keyup input paste", function() {
                                     validate();
                                 })
-                            }());
-
-                            // validate user form email
-                            (function () {
-                                var validateEmail = function () {
-                                    var emailInput = $('#mbh-user-form-email');
-                                    var nextButton = $('#mbh-user-form-next');
-                                    if (emailInput.val() && !emailInput.val().match('^[a-z0-9._%+-]+@[a-z0-9._%+-]+\\.\\w{2,4}$')) {
-                                        nextButton.prop('disabled', true);
-                                        emailInput.css('border', '1px solid red');
-                                    } else {
-                                        nextButton.prop('disabled', false);
-                                        emailInput.css('border', '');
-                                    }
-                                }
-                                validateEmail();
                                 $('#mbh-user-form-email').bind('propertychange change keyup input paste blur', function () {
-                                    validateEmail();
+                                    validate();
                                 })
                             }());
 
