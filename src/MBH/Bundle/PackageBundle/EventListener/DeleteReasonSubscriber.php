@@ -49,7 +49,7 @@ class DeleteReasonSubscriber implements EventSubscriber
             ->findBy(['isDefault' => true, 'id' => ['$ne' => $reason->getId()]]);
         foreach ($defaultReasons as $defaultReason) {
             $defaultReason->setIsDefault(false);
-            $dm->getUnitOfWork()->computeChangeSet($meta, $defaultReasons);
+            $dm->getUnitOfWork()->computeChangeSet($meta, $defaultReason);
         }
     }
 }
