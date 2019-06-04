@@ -94,13 +94,13 @@ MbhResultForm.prototype.saveCookies = function () {
     });
 };
 
-MbhResultForm.prototype.changeStateNextBtn = function (state) {
-    this.nextButtonInStepTwo.prop('disabled', state);
+MbhResultForm.prototype.changeStateNextBtn = function (isDisabled) {
+    this.nextButtonInStepTwo.prop('disabled', isDisabled);
 };
 
 MbhResultForm.prototype.validateUserForm = function () {
     var _this = this,
-        $inputs = jQuery('#mbh-user-form input:required'),
+        $inputs = jQuery('#mbh-user-form-form input:required'),
         $emailInput = jQuery('#mbh-user-form-email'),
         validateEmail = function () {
             return $emailInput.val().match('^[a-z0-9._%+-]+@[a-z0-9._%+-]+\\.\\w{2,4}$');
@@ -115,16 +115,20 @@ MbhResultForm.prototype.validateUserForm = function () {
             });
             if ($emailInput.val()) {
                 if (!validateEmail()) {
-                    _this.changeStateNextBtn(false);
+                    _this.changeStateNextBtn(true);
                     $emailInput.css('border', '1px solid red');
                     return false;
                 } else {
                     $emailInput.css('border', '');
                     return true;
                 }
+            } else {
+                $emailInput.css('border', '');
             }
         };
 
+
+    console.log($inputs);
     validate();
     $inputs.bind("propertychange change click keyup input paste", function() {
         validate();

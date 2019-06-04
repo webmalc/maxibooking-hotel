@@ -96,6 +96,7 @@ body #mbh-results-wrapper {
 body #mbh-results-wrapper #mbh-package-info {
   padding: 15px;
   background-color: #FFFFFF;
+  margin-bottom: 10px;
 }
 body #mbh-results-wrapper #mbh-package-info .mbh-package-info-wrapper {
   margin-bottom: 11px;
@@ -276,9 +277,17 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-conta
   margin-bottom: 5px;
   text-align: center;
 }
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .main-image img {
+  max-width: 155px;
+  max-height: 155px;
+}
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .list-small-image {
   display: flex;
   justify-content: space-between;
+}
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .list-small-image img {
+  max-height: 50px;
+  max-width: 50px;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-room-type-name-wrapper {
   font-family: 'Roboto Slab', serif;
@@ -356,6 +365,41 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-conta
   line-height: 20px;
   color: #737373;
 }
+@media (max-width: 831px) {
+  body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container {
+    display: flex;
+    flex-direction: column;
+  }
+  body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container {
+    order: 1;
+    margin-bottom: 15px;
+  }
+  body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper {
+    margin-bottom: 15px;
+    order: 2;
+    padding-left: 0;
+    padding-right: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .main-image {
+    width: 300px;
+    margin: auto;
+    margin-bottom: 10px;
+  }
+  body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .main-image img {
+    max-width: 300px;
+    max-height: 300px;
+  }
+  body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .list-small-image {
+    margin: auto;
+    width: 300px;
+  }
+  body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-price-container {
+    order: 3;
+  }
+}
 body #mbh-results-wrapper .step-two #mbh-results-actions {
   justify-content: space-between;
 }
@@ -424,20 +468,34 @@ body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form #mbh-res
 body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form #mbh-results-services-wrapper .mbh-service-item .mbh-service-item-hotel a .select2-chosen {
   margin-top: 4px;
 }
-body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form .mbh-results-form-user-container #mbh-user-form .mbh-user-form-row label {
+body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form .mbh-results-form-user-container #mbh-user-form-wrapper .mbh-user-form-row label {
   font-style: normal;
   font-weight: normal;
   font-size: 16px;
   line-height: 20px;
 }
-body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form .mbh-results-form-user-container #mbh-user-form .mbh-user-form-row label[for="mbh-form-personal-data"] {
+body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form .mbh-results-form-user-container #mbh-user-form-wrapper .mbh-user-form-row label[for="mbh-form-personal-data"] {
   font-size: 14px;
 }
-body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form .mbh-results-form-user-container #mbh-user-form #personal-data-form-group .required-star {
-  margin-left: 2px;
+body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form .mbh-results-form-user-container #mbh-user-form-wrapper #personal-data-form-group .required-star {
+  margin-right: 3px;
 }
-body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form .mbh-results-form-user-container #mbh-user-form #personal-data-form-group #mbh-form-personal-data {
-  margin: 2px 0;
+body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form .mbh-results-form-user-container #mbh-user-form-wrapper #personal-data-form-group #mbh-form-personal-data {
+  margin: 0 3px;
+}
+@media (max-width: 520px) {
+  body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form .mbh-results-form-user-container #mbh-user-form-wrapper #personal-data-form-group .col-xs-12 {
+    display: flex;
+    align-items: center;
+  }
+  body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form .mbh-results-form-user-container #mbh-user-form-wrapper #personal-data-form-group .col-xs-12 input {
+    width: 35px;
+    height: 35px;
+  }
+  body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form .mbh-results-form-user-container #mbh-user-form-wrapper #personal-data-form-group .col-xs-12 label {
+    margin-left: 15px;
+    margin-bottom: unset;
+  }
 }
 body #mbh-results-wrapper .step-three #mbh-results-actions {
   justify-content: space-between;

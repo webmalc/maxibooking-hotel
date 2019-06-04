@@ -52,7 +52,7 @@
                     {{ 'views.api.getUserForm.enter_data_to_continue'|trans({}, 'MBHOnlineBundle') }}
                 </div>
                 <div class="panel-body">
-                    <div id="mbh-user-form">
+                    <div id="mbh-user-form-wrapper">
                         <form id="mbh-user-form-form" class="form-horizontal">
 
                             <div class="mbh-user-form-row form-group">
@@ -163,7 +163,7 @@
 
                             {% if config.personalDataPolicies is not empty %}
                                 <div id="personal-data-form-group" class="mbh-user-form-row form-group">
-                                    <div class="col-sm-12">
+                                    <div class="col-xs-12 col-sm-12">
                                         <span class="required-star text-danger">*</span>
                                         <input type="checkbox" id="mbh-form-personal-data" required>
                                         <label for="mbh-form-personal-data">
@@ -174,7 +174,7 @@
                             {% endif %}
 
                             <div class="mbh-user-form-row form-group">
-                                <div class="col-sm-12">
+                                <div class="col-xs-12 col-sm-12">
                                     <span class="required-star text-danger">*</span>
                                     {{ 'views.api.getUserForm.required_fields'|trans({}, 'MBHOnlineBundle') }}
                                 </div>

@@ -175,6 +175,7 @@ body {
 
       padding: 15px;
       background-color: #FFFFFF;
+      margin-bottom: 10px;
 
       .mbh-package-info-wrapper {
         .indentBottom();
@@ -398,10 +399,20 @@ body {
             .main-image {
               margin-bottom: 5px;
               text-align: center;
+
+              img {
+                max-width: 155px;
+                max-height: 155px;
+              }
             }
             .list-small-image {
               display: flex;
               justify-content: space-between;
+
+              img {
+                max-height: 50px;
+                max-width: 50px;
+              }
             }
           }
   // END IMAGE
@@ -511,6 +522,43 @@ body {
             }
           }
   // END PRICE
+          @media (max-width: @size-screen-mid-width-tablet-minus-one) {
+            display: flex;
+            flex-direction: column;
+
+            .mbh-results-description-container {
+              order: 1;
+              margin-bottom: 15px;
+            }
+            .mbh-results-image-wrapper {
+              margin-bottom: 15px;
+              order: 2;
+              padding-left: 0;
+              padding-right: 0;
+
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+
+              .main-image {
+                width: 300px;
+                margin: auto;
+                margin-bottom: 10px;
+                img {
+                  max-width: 300px;
+                  max-height: 300px;
+                }
+              }
+
+              .list-small-image {
+                margin: auto;
+                width: 300px;
+              }
+            }
+            .mbh-results-price-container {
+              order: 3;
+            }
+          }
         }
       }
 // END RESULT
@@ -577,7 +625,7 @@ body {
           }
         }
         .mbh-results-form-user-container {
-          #mbh-user-form {
+          #mbh-user-form-wrapper {
             .mbh-user-form-row {
               label {
                 font-style: normal;
@@ -593,10 +641,27 @@ body {
 
             #personal-data-form-group {
               .required-star {
-                margin-left: 2px;
+                margin-right: 3px;
               }
               #mbh-form-personal-data {
-                margin: 2px 0;
+                margin: 0 3px;
+              }
+
+              @media (max-width: 520px) {
+                .col-xs-12 {
+                  display: flex;
+                  align-items: center;
+
+                  input {
+                    width: 35px;
+                    height: 35px;
+                  }
+
+                  label {
+                    margin-left: 15px;
+                    margin-bottom: unset;
+                  }
+                }
               }
             }
           }
