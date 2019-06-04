@@ -3,10 +3,13 @@
 namespace MBH\Bundle\HotelBundle\Document;
 
 use Doctrine\MongoDB\ArrayIterator;
+use Doctrine\ODM\MongoDB\Cursor;
 use MBH\Bundle\BaseBundle\Document\AbstractBaseRepository;
 use MBH\Bundle\BaseBundle\Lib\QueryCriteriaInterface;
 use MBH\Bundle\BaseBundle\Service\Cache;
 use MBH\Bundle\PackageBundle\Document\Package;
+use MBH\Bundle\PackageBundle\Document\PackageAccommodation;
+use MBH\Bundle\SearchBundle\Document\SearchConditions;
 
 /**
  * Class RoomRepository
@@ -107,7 +110,7 @@ class RoomRepository extends AbstractBaseRepository
         }
 
         // rooms
-        $qb = $this->createQueryBuilder('r')
+        $qb = $this->createQueryBuilder()
             ->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc'])
         ;
         if ($hotelRoomTypes) {
@@ -124,6 +127,30 @@ class RoomRepository extends AbstractBaseRepository
         }
 
         return $groupedRooms;
+    }
+
+    public function fetchRawAllRoomsByRoomType(array $roomTypeIds = [], bool $grouped = false)
+    {
+        $qb = $this->createQueryBuilder();
+        if (\count($roomTypeIds)) {
+            $qb->field('roomType.id')->in($roomTypeIds);
+        }
+        $rawRooms = $qb
+            ->field('isEnabled')->equals(true)
+            ->select(['id', 'fullTitle', 'roomType'])
+            ->hydrate(false)
+            ->getQuery()
+            ->execute()
+            ->toArray(false);
+
+        if ($grouped) {
+            foreach ($rawRooms as $rawRoom) {
+                $groupedRooms[(string)$rawRoom['roomType']['$id']][] = $rawRoom;
+            }
+            return $groupedRooms;
+        }
+
+        return $rawRooms;
     }
 
 
@@ -148,7 +175,7 @@ class RoomRepository extends AbstractBaseRepository
         $grouped = false,
         Cache $memcached = null
     ) {
-    
+
         if ($memcached) {
             $cache = $memcached->get('accommodation_rooms', func_get_args());
             if ($cache !== false) {
@@ -186,7 +213,7 @@ class RoomRepository extends AbstractBaseRepository
         };
 
         // rooms
-        $qb = $this->createQueryBuilder('r')->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc'])
+        $qb = $this->createQueryBuilder()->sort(['roomType.id' => 'asc', 'fullTitle' => 'asc'])
              ->field('isEnabled')->equals(true)
              ->inToArray('roomType.id', $hotelRoomTypes)
              ->notInNotEmpty('id', $ids)
@@ -242,7 +269,7 @@ class RoomRepository extends AbstractBaseRepository
         array $sort = null,
         Cache $cache = null
     ) {
-    
+
         if ($cache) {
             $cacheEntry = $cache->get('rooms_fetch', func_get_args());
             if ($cacheEntry !== false) {
@@ -294,7 +321,7 @@ class RoomRepository extends AbstractBaseRepository
         array $sort = null
     ) {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $qb = $this->createQueryBuilder('s');
+        $qb = $this->createQueryBuilder();
 
         // hotel
         if ($hotel) {
@@ -365,7 +392,7 @@ class RoomRepository extends AbstractBaseRepository
     public function fetchFloors()
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $qb = $this->createQueryBuilder('s');
+        $qb = $this->createQueryBuilder();
         $docs = $qb->distinct('floor')
             ->getQuery()
             ->execute();
@@ -380,6 +407,7 @@ class RoomRepository extends AbstractBaseRepository
      * @param bool $includeWithoutStatuses
      * @param bool $isOnlyEnabled
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function getNumberOfRoomsByRoomTypeIds($statusIds = null, $includeWithoutStatuses = true, $isOnlyEnabled = false)
     {
@@ -414,35 +442,7 @@ class RoomRepository extends AbstractBaseRepository
         return $result;
     }
 
-    /**
-     * @param array $roomTypeIds
-     * @param bool $grouped
-     * @return mixed
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     */
-    public function fetchRawAllRoomsByRoomType(array $roomTypeIds = [], bool $grouped = false)
-    {
-        $qb = $this->createQueryBuilder();
-        if (\count($roomTypeIds)) {
-            $qb->field('roomType.id')->in($roomTypeIds);
-        }
-        $rawRooms = $qb
-            ->field('isEnabled')->equals(true)
-            ->select(['id', 'fullTitle', 'roomType'])
-            ->hydrate(false)
-            ->getQuery()
-            ->execute()
-            ->toArray();
 
-        if ($grouped) {
-            foreach ($rawRooms as $rawRoom) {
-                $groupedRooms[(string)$rawRoom['roomType']['$id']][] = $rawRoom;
-            }
-            return $groupedRooms;
-        }
-
-        return $rawRooms;
-    }
 
     /**
      * @param Hotel|null $hotel

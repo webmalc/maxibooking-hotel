@@ -6,8 +6,8 @@ namespace MBH\Bundle\SearchBundle\Services\Search;
 
 use Liip\ImagineBundle\Templating\Helper\FilterHelper;
 use MBH\Bundle\HotelBundle\Document\Room;
+use function count;
 use MBH\Bundle\HotelBundle\Document\RoomType;
-use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PackageBundle\Lib\SearchCalculateEvent;
 use MBH\Bundle\PriceBundle\Document\Tariff;
@@ -26,7 +26,8 @@ use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\AccommodationRoomSearcher;
 use MBH\Bundle\SearchBundle\Services\Calc\CalcQuery;
 use MBH\Bundle\SearchBundle\Services\Calc\Calculation;
-use MBH\Bundle\SearchBundle\Services\Data\RoomCacheFetcher;
+use MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataManager;
+use MBH\Bundle\SearchBundle\Services\Data\Fetcher\RoomCacheRawFetcher;
 use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher;
 use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminer;
 use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminerEvent;
@@ -37,16 +38,11 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class SearchResultComposer
 {
-    /** @var RoomTypeManager */
-    private $roomManager;
-
     /** @var Calculation */
     private $calculation;
 
-    private $limitChecker;
-
-    /** @var RoomCacheFetcher */
-    private $roomCacheFetcher;
+    /** @var DataManager */
+    private $dataManager;
 
     /** @var SharedDataFetcher */
     private $sharedDataFetcher;
@@ -74,19 +70,17 @@ class SearchResultComposer
 
     /**
      * SearchResultComposer constructor.
-     * @param RoomTypeManager $roomManager
      * @param Calculation $calculation
-     * @param SearchLimitChecker $limitChecker
-     * @param RoomCacheFetcher $roomCacheFetcher
+     * @param DataManager $dataManager
      * @param SharedDataFetcher $sharedDataFetcher
      * @param AccommodationRoomSearcher $roomSearcher
+     * @param OccupancyDeterminer $determiner
      * @param EventDispatcherInterface $dispatcher
      */
     public function __construct(
-        RoomTypeManager $roomManager,
+
         Calculation $calculation,
-        SearchLimitChecker $limitChecker,
-        RoomCacheFetcher $roomCacheFetcher,
+        DataManager $dataManager,
         SharedDataFetcher $sharedDataFetcher,
         AccommodationRoomSearcher $roomSearcher,
         OccupancyDeterminer $determiner,
@@ -98,10 +92,8 @@ class SearchResultComposer
 
 )
     {
-        $this->roomManager = $roomManager;
         $this->calculation = $calculation;
-        $this->limitChecker = $limitChecker;
-        $this->roomCacheFetcher = $roomCacheFetcher;
+        $this->dataManager = $dataManager;
         $this->sharedDataFetcher = $sharedDataFetcher;
         $this->accommodationRoomSearcher = $roomSearcher;
         $this->determiner = $determiner;
@@ -109,7 +101,6 @@ class SearchResultComposer
         $this->filterHelper = $filterHelper;
         $this->packages = $packages;
         $this->router = $router;
-
         $this->onlineOptions = $onlineOptions;
     }
 
@@ -202,7 +193,7 @@ class SearchResultComposer
 
         $accommodationRooms = $this->accommodationRoomSearcher->search($searchQuery);
         $resultAccommodationRooms = [];
-        if (!\count($accommodationRooms)) {
+        if (!count($accommodationRooms)) {
             foreach ($accommodationRooms as $accommodationRoom) {
                 $resultAccommodationRoom = new ResultRoom();
                 $resultAccommodationRoom
@@ -276,7 +267,6 @@ class SearchResultComposer
             ->setTariff($tariff)
             ->setActualAdults($actualAdults)
             ->setActualChildren($actualChildren)
-            ->setIsUseCategory($this->roomManager->useCategories)
             //** TODO: Уточнить по поводу Promotion */
             /*->setPromotion()*/
             /** TODO: Это все необязательные поля, нужны исключительно для dataHolder чтоб получить все данные сразу */
@@ -288,6 +278,8 @@ class SearchResultComposer
                 ->setConditionMaxBegin($conditions->getMaxBegin())
                 ->setConditionMaxEnd($conditions->getMaxEnd())
                 ->setConditionHash($conditions->getSearchHash());
+
+            $calcQuery->setSearchConditions($conditions);
         }
 
 
@@ -295,21 +287,14 @@ class SearchResultComposer
     }
 
 
-    /**
-     * @param SearchQuery $searchQuery
-     * @return int
-     * @throws SearchResultComposerException
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     */
     private function getMinCacheValue(SearchQuery $searchQuery): int
     {
-        $roomCacheFetchQuery = RoomCacheFetchQuery::createInstanceFromSearchQuery($searchQuery);
-        $roomCaches = $this->roomCacheFetcher->fetchNecessaryDataSet($roomCacheFetchQuery);
+        $roomCaches = $this->dataManager->fetchData($searchQuery, RoomCacheRawFetcher::NAME);
 
         //** TODO: Когда станет понятно на каком этапе отсекать лимиты, тут переделать. */
         $mainRoomCaches = array_filter(
             $roomCaches,
-            function ($roomCache) {
+            static function ($roomCache) {
                 $isMainRoomCache = !array_key_exists('tariff', $roomCache) || null === $roomCache['tariff'];
 
                 return $isMainRoomCache && $roomCache['leftRooms'] > 0;
@@ -320,7 +305,7 @@ class SearchResultComposer
         $min = min(array_column($mainRoomCaches, 'leftRooms'));
 
         $duration = $searchQuery->getDuration();
-        if ($min < 1 || \count($mainRoomCaches) !== $duration) {
+        if ($min < 1 || count($mainRoomCaches) !== $duration) {
             throw new SearchResultComposerException('Error! RoomCaches count not equal duration.');
         }
 

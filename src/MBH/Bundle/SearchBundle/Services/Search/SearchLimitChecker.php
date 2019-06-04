@@ -4,6 +4,7 @@
 namespace MBH\Bundle\SearchBundle\Services\Search;
 
 
+use DateTime;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
@@ -15,17 +16,20 @@ use MBH\Bundle\PriceBundle\Document\RestrictionRepository;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\DataFetchQueryException;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Data\RoomCacheFetchQuery;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\RoomCacheLimitException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\RoomTypePopulationException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchLimitCheckerException;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\TariffLimitException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\WindowsCheckLimitException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultRoom;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
-use MBH\Bundle\SearchBundle\Services\Data\RoomCacheFetcher;
+use MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataManager;
+use MBH\Bundle\SearchBundle\Services\Data\Fetcher\RoomCacheRawFetcher;
 use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher;
 use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcherInterface;
 use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminer;
@@ -44,12 +48,14 @@ class SearchLimitChecker
     /** @var SharedDataFetcherInterface */
     private $sharedDataFetcher;
 
-    /** @var RoomCacheFetcher */
-    private $roomCacheFetcher;
     /**
      * @var OccupancyDeterminer
      */
     private $determiner;
+    /**
+     * @var DataManager
+     */
+    private $dataManager;
 
 
     /**
@@ -57,29 +63,29 @@ class SearchLimitChecker
      * @param ClientConfigRepository $configRepository
      * @param DocumentManager $documentManager
      * @param SharedDataFetcher $sharedDataFetcher
-     * @param RoomCacheFetcher $roomCacheFetcher
      * @param OccupancyDeterminer $determiner
+     * @param DataManager $dataManager
      */
     public function __construct(
         ClientConfigRepository $configRepository,
         DocumentManager $documentManager,
         SharedDataFetcher $sharedDataFetcher,
-        RoomCacheFetcher $roomCacheFetcher,
-        OccupancyDeterminer $determiner
+        OccupancyDeterminer $determiner,
+        DataManager $dataManager
 )
     {
         $this->clientConfig = $configRepository->fetchConfig();
         $this->dm = $documentManager;
         $this->sharedDataFetcher = $sharedDataFetcher;
-        $this->roomCacheFetcher = $roomCacheFetcher;
         $this->determiner = $determiner;
+        $this->dataManager = $dataManager;
     }
 
 
     /**
      * @param SearchQuery $searchQuery
      * @throws TariffLimitException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
+     * @throws SharedFetcherException
      */
     public function checkDateLimit(SearchQuery $searchQuery): void
     {
@@ -88,7 +94,7 @@ class SearchLimitChecker
 
         $tariffBegin = $tariff->getBegin();
         $tariffEnd = $tariff->getEnd();
-        $now = new \DateTime('now midnight');
+        $now = new DateTime('now midnight');
         $isTariffNotYetStarted = $isTariffAlreadyEnded = false;
         if (null !== $tariffBegin) {
             $isTariffNotYetStarted = $tariffBegin > $now;
@@ -107,7 +113,7 @@ class SearchLimitChecker
     /**
      * @param SearchQuery $searchQuery
      * @throws SearchLimitCheckerException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
+     * @throws SharedFetcherException
      */
     public function checkTariffConditions(SearchQuery $searchQuery): void
     {
@@ -145,12 +151,16 @@ class SearchLimitChecker
      * @param SearchQuery $searchQuery
      * @return array
      * @throws RoomCacheLimitException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
+     * @throws SharedFetcherException
+     * @throws DataFetchQueryException
      */
     public function checkRoomCacheLimit(SearchQuery $searchQuery): array
     {
-        $roomCacheQuery = RoomCacheFetchQuery::createInstanceFromSearchQuery($searchQuery);
-        $roomCaches = $this->roomCacheFetcher->fetchNecessaryDataSet($roomCacheQuery);
+//        $roomCacheQuery = RoomCacheFetchQuery::createInstanceFromSearchQuery($searchQuery);
+//        $roomCaches = $this->roomCacheFetcher->fetchNecessaryDataSet($roomCacheQuery);
+
+        $roomCaches = $this->dataManager->fetchData($searchQuery, RoomCacheRawFetcher::NAME);
+
         $currentTariffId = $searchQuery->getTariffId();
         $duration = $searchQuery->getDuration();
 
@@ -158,7 +168,7 @@ class SearchLimitChecker
 
         $roomCachesWithNoQuotas = array_filter(
             $roomCaches,
-            function ($roomCache) {
+            static function ($roomCache) {
                 $isMainRoomCache = !array_key_exists('tariff', $roomCache) || null === $roomCache['tariff'];
 
                 return $isMainRoomCache && $roomCache['leftRooms'] > 0;
@@ -171,7 +181,7 @@ class SearchLimitChecker
 
         //** TODO: need to check roomcache quotas inheritance. Some service ? */
         $roomCacheWithQuotasNoLeftRooms = array_filter($roomCaches,
-            function ($roomCache) use ($currentTariff) {
+            static function ($roomCache) use ($currentTariff) {
                 $isQuotedCache = array_key_exists('tariff', $roomCache) && (string)$roomCache['tariff']['$id'] === $currentTariff->getId();
 
                 return $isQuotedCache && $roomCache['leftRooms'] <= 0;
@@ -191,7 +201,7 @@ class SearchLimitChecker
      * @return Room
      * @throws WindowsCheckLimitException
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
+     * @throws SharedFetcherException
      */
     public function checkWindows(Result $result, SearchQuery $searchQuery): Room
     {

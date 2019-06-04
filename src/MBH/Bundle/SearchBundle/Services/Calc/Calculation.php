@@ -30,18 +30,23 @@ class Calculation
     /** @var int */
     private $priceRoundSign;
 
+    /** @var CalculationHelper */
+    private $calculationHelper;
+
 
     /**
      * Calculation constructor.
      * @param PriceCachesMerger $merger
      * @param SharedDataFetcher $sharedDataFetcher
+     * @param CalculationHelper $calculationHelper
      * @param int $priceRoundSign
      */
-    public function __construct(PriceCachesMerger $merger, SharedDataFetcher $sharedDataFetcher, int $priceRoundSign)
+    public function __construct(PriceCachesMerger $merger, SharedDataFetcher $sharedDataFetcher, CalculationHelper $calculationHelper, int $priceRoundSign)
     {
         $this->priceCacheMerger = $merger;
         $this->sharedDataFetcher = $sharedDataFetcher;
         $this->priceRoundSign = $priceRoundSign;
+        $this->calculationHelper = $calculationHelper;
     }
 
 
@@ -72,7 +77,14 @@ class Calculation
     private function getPrices(array $priceCaches, CalcQuery $calcQuery): array
     {
         $prices = [];
-        foreach ($calcQuery->getCombinations() as $combination) {
+        $combinations = $this->calculationHelper
+            ->getCombinations(
+                $calcQuery->getActualAdults(),
+                $calcQuery->getActualChildren(),
+                $calcQuery->getRoomType()
+            );
+
+        foreach ($combinations as $combination) {
             try {
                 $combinationPrices = $this->getPriceForCombination($combination, $priceCaches, $calcQuery);
                 $prices[$combination['adults'] . '_' . $combination['children']] = [
@@ -138,7 +150,7 @@ class Calculation
         foreach ($priceCaches as $cacheData) {
             $rawPriceCache = $cacheData['data'];
             $multiPrices = ($addsAdults + $addsChildren) > 1;
-            $isIndividualPrices = $calcQuery->isIndividualAdditionalPrices();
+            $isIndividualPrices = $this->calculationHelper->isIndividualAdditionalPrices($calcQuery->getRoomType());
 
             $mainAdultPrice = $this->getMainAdultsPrice($rawPriceCache, $calcQuery, $mainAdults, $all);
             $mainChildrenPrice = $this->getMainChildrenPrice($rawPriceCache, $calcQuery, $mainChildren, $all, $promotion);
@@ -198,7 +210,7 @@ class Calculation
     {
         $price = 0;
         $childPrice = $rawPriceCache['price'];
-        if (($rawPriceCache['childPrice'] ?? null) && $calcQuery->isChildPrices()) {
+        if (($rawPriceCache['childPrice'] ?? null) && $this->calculationHelper->isChildPrices($calcQuery->getRoomType())) {
             $childPrice = $rawPriceCache['childPrice'];
         }
         if ($promotion && $childrenDiscount = $promotion->getChildrenDiscount()) {

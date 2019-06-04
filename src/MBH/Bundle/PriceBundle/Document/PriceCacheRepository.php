@@ -179,4 +179,6 @@ class PriceCacheRepository extends DocumentRepository
 
         return $qb->field('isEnabled')->equals(true)->hydrate(false)->sort(['date' => 'asc'])->getQuery()->execute()->toArray();
     }
+
+
 }

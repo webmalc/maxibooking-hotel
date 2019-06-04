@@ -8,9 +8,11 @@ use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\ClientBundle\Document\ClientConfigRepository;
 use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\AdditionalRoomTypeData;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PriceBundle\DataFixtures\MongoDB\AdditionalTariffData;
 use MBH\Bundle\PriceBundle\Document\Promotion;
+use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\PriceCachesMergerException;
 use MBH\Bundle\SearchBundle\Services\Calc\CalcQuery;
 use Tests\Bundle\SearchBundle\NamesLibrary;
@@ -62,9 +64,16 @@ class CalculationTest extends SearchWebTestCase
                 ->setActualAdults($variant['adults'])
                 ->setActualChildren($variant['children'])
                 ->setPromotion($fakePromotion)
-                ->setIsUseCategory($isUseCategory)
                 ->setConditionHash(uniqid('', false))
             ;
+            $searchConditions = new SearchConditions();
+            $searchConditions
+                ->setBegin($begin)
+                ->setEnd($end);
+
+            $calcQuery->setSearchConditions($searchConditions);
+
+
 
             if ($data['isExpectException'] ?? null) {
                 $this->expectException($data['expectedException']);
@@ -72,10 +81,14 @@ class CalculationTest extends SearchWebTestCase
             if ($isUseCategory) {
                 $clientConfigRepo = $this->createMock(ClientConfigRepository::class);
                 $clientConfig = $this->createMock(ClientConfig::class);
-                $clientConfig->expects($this->any())->method('getUseRoomTypeCategory')->willReturn(true);
-                $clientConfig->expects($this->any())->method('getPriceRoundSign')->willReturn(2);
+                $clientConfig->method('getPriceRoundSign')->willReturn(2);
                 $this->getContainer()->set('mbh_search.client_config_repository', $clientConfigRepo);
-                $clientConfigRepo->expects($this->any())->method('fetchConfig')->willReturn($clientConfig);
+                $clientConfigRepo->method('fetchConfig')->willReturn($clientConfig);
+
+                $roomTypeManger = $this->createMock(RoomTypeManager::class);
+                $roomTypeManger->useCategories = $isUseCategory;
+                $this->getContainer()->set('mbh.hotel.room_type_manager', $roomTypeManger);
+
             }
 
             $actual = $this->getContainer()->get('mbh_search.calculation')->calcPrices($calcQuery);

@@ -11,7 +11,7 @@ use Tests\Bundle\SearchBundle\SearchWebTestCase;
 class SearcherTest extends SearchWebTestCase
 {
     /** @dataProvider dataProvider */
-    public function testSearch($data)
+    public function testSearch($data): void
     {
         $searchQueries = $this->createSearchQueries($data['conditions']);
 
@@ -27,14 +27,14 @@ class SearcherTest extends SearchWebTestCase
             $this->assertInstanceOf(Result::class, $actualSearchResult);
         }
 
-        $actualResults = array_filter($actual, function ($result) {
+        $actualResults = array_filter($actual, static function ($result) {
             /** @var Result $result */
             return $result->getStatus() === 'ok';
         });
 
         $this->assertCount($expected['okResult'], $actualResults);
 
-        $actualErrors = array_filter($actual, function ($result) {
+        $actualErrors = array_filter($actual, static function ($result) {
             /** @var Result $result */
             return $result->getStatus() === 'error';
         });
@@ -56,6 +56,8 @@ class SearcherTest extends SearchWebTestCase
                     'adults' => 1,
                     'children' => 1,
                     'childrenAges' => [5],
+                    'additionalBegin' => 0,
+                    'additionalEnd' => 0
                 ],
                 'expected' => [
                     'resultsCount' => 5,
@@ -67,9 +69,32 @@ class SearcherTest extends SearchWebTestCase
 
             ]
         ];
+        yield [
+
+            [
+                'conditions' => [
+                    'beginOffset' => 2,
+                    'endOffset' => 4,
+                    'tariffFullTitle' => '',
+                    'roomTypeFullTitle' => 'Люкс',
+                    'hotelFullTitle' => 'Отель Волга',
+                    'adults' => 1,
+                    'children' => 1,
+                    'childrenAges' => [5],
+                    'additionalBegin' => 1,
+                    'additionalEnd' => 1
+                ],
+                'expected' => [
+                    'resultsCount' => 40,
+                    'totalPrice' => 4400,
+                    'okResult' => 6,
+                    'errorResult' => 34
+
+                ]
+
+            ]
+        ];
     }
-
-
 
 
 }

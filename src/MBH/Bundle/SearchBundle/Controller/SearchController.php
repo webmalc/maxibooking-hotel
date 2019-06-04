@@ -193,6 +193,9 @@ class SearchController extends Controller
         $config = $this->get('doctrine.odm.mongodb.document_manager')->getRepository(ClientConfig::class)->findOneBy([]);
         /** @var ClientConfig $config */
         $begin = $config->getBeginDate();
+        if (!$begin) {
+            $begin = new \DateTime('midnight');
+        }
         $end = (clone $begin)->modify('+7 days');
 
         return $this->render('@MBHSearch/Search/searcher.html.twig', [

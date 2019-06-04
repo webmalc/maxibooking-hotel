@@ -159,8 +159,8 @@ abstract class SearchWebTestCase extends WebTestCase
         $conditions
             ->setBegin($begin)
             ->setEnd($end)
-            ->setAdditionalBegin(0)
-            ->setAdditionalEnd(0)
+            ->setAdditionalBegin($data['additionalBegin'] ?? 0)
+            ->setAdditionalEnd($data['additionalEnd'] ?? 0)
             ->setSearchHash($searchHash)
             ->setTariffs($searchTariff)
             ->setRoomTypes($searchRoomType)
