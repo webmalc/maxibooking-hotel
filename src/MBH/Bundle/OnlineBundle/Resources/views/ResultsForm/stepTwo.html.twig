@@ -3,8 +3,8 @@
 <div id="mbh-results-global-wrapper" class="step-two">
     {% include 'MBHOnlineBundle:ResultsForm:stepInfo.html.twig' with {'stepNumber': 2} %}
 
-    <div class="row">
-        <div class="col-sm-8">
+    <div class="row mbh-results-step-two-wrapper">
+        <div class="col-xs-12 col-sm-8 mbh-results-services-and-user-form">
             {% if services|length %}
                 <div id="mbh-results-services-wrapper">
                     <div class="panel panel-primary spacer-top">
@@ -17,19 +17,19 @@
                                     {% for service in services %}
                                         <div class="row mbh-service-item">
                                             {% if hotels|length > 1 %}
-                                                <div class="mbh-left col-sm-3">
+                                                <div class="mbh-service-item-hotel col-xs-3 col-sm-3">
                                                     <span class="mbh-results-services-hotel" data-id="{{ service.category.hotel.id }}">{{ service.category.hotel.fullTitle }}</span>
                                                 </div>
                                             {% endif %}
-                                            <div class="mbh-left col-sm-3">
+                                            <div class="mbh-service-item-name col-xs-3 col-sm-3">
                                                 <span class="mbh-results-services-name" data-id="{{ service.id }}">{{ service.fullTitle }}<br><small>{{ service.description }}</small></span>
                                             </div>
-                                            <div class="mbh-right col-sm-3">
+                                            <div class="mbh-service-item-price col-xs-3 col-sm-3">
                                                 <span class="mbh-results-services-prices" data-value="{{ service.price }}">
                                                     {{ service.price|number_format ~ ' ' ~ currency()['text']|trans }}
                                                 </span>
                                             </div>
-                                            <div class="col-sm-3">
+                                            <div class="mbh-service-item-hotel col-xs-3 col-sm-3">
                                                 <label>
                                                     <select class="mbh-results-services-count select2">
                                                         <option value="0" selected="selected">0</option>
@@ -184,7 +184,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-4">
+        <div class="col-xs-12 col-sm-4">
             {% include 'MBHOnlineBundle:ResultsForm:packageInfo.html.twig' with {'request': request} %}
         </div>
     </div>

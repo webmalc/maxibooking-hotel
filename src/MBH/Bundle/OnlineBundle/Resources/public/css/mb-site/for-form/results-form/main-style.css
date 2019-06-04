@@ -30,6 +30,9 @@ body #mbh-results-wrapper {
     width: 832px;
   }
 }
+body #mbh-results-wrapper #mbh-package-info .mbh-package-info-wrapper {
+  margin-bottom: 11px;
+}
 body #mbh-results-wrapper #mbh-package-info .mbh-package-info-wrapper .mbh-room-name {
   font-family: 'Roboto Slab', serif;
   font-size: 20px;
@@ -40,21 +43,30 @@ body #mbh-results-wrapper #mbh-package-info .mbh-package-info-wrapper .mbh-hotel
   font-size: 16px;
   line-height: 20px;
 }
-body #mbh-results-wrapper #mbh-package-info .mbh-daterange {
+body #mbh-results-wrapper #mbh-package-info .mbh-group-info {
+  margin-bottom: 11px;
+}
+body #mbh-results-wrapper #mbh-package-info .mbh-group-info .mbh-daterange {
   font-weight: 500;
   font-size: 16px;
   line-height: 24px;
 }
-body #mbh-results-wrapper #mbh-package-info .mbh-days-amount,
-body #mbh-results-wrapper #mbh-package-info .mbh-package-amount,
-body #mbh-results-wrapper #mbh-package-info .mbh-price-amount {
+body #mbh-results-wrapper #mbh-package-info .mbh-group-info .mbh-days-amount,
+body #mbh-results-wrapper #mbh-package-info .mbh-group-info .mbh-package-amount {
   font-size: 16px;
   line-height: 20px;
 }
-body #mbh-results-wrapper #mbh-package-info .mbh-days-amount #mbh-package-info-nights::before {
+body #mbh-results-wrapper #mbh-package-info .mbh-group-info .mbh-days-amount #mbh-package-info-nights::before {
   content: "/";
 }
+body #mbh-results-wrapper #mbh-package-info .mbh-price-amount {
+  font-size: 16px;
+  line-height: 20px;
+  margin-bottom: 10px;
+}
 body #mbh-results-wrapper #mbh-package-info .mbh-price-amount .mbh-order-total {
+  margin-top: 11px;
+  padding-top: 11px;
   border-top: 1px solid #A0A0A0;
 }
 body #mbh-results-wrapper .step-info {
@@ -273,4 +285,28 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-conta
   margin-top: 10px;
   font-size: 14px;
   line-height: 20px;
+}
+@media (max-width: 731px) {
+  body #mbh-results-wrapper .step-two .mbh-results-step-two-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+  body #mbh-results-wrapper .step-two .mbh-results-step-two-wrapper .mbh-results-services-and-user-form {
+    order: 2;
+  }
+}
+body #mbh-results-wrapper .step-two #mbh-user-form .mbh-user-form-row label {
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 20px;
+}
+body #mbh-results-wrapper .step-two #mbh-user-form .mbh-user-form-row label[for="mbh-form-personal-data"] {
+  font-size: 14px;
+}
+body #mbh-results-wrapper .step-two #mbh-user-form #personal-data-form-group .required-star {
+  margin-left: 2px;
+}
+body #mbh-results-wrapper .step-two #mbh-user-form #personal-data-form-group #mbh-form-personal-data {
+  margin: 2px 0;
 }

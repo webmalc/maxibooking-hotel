@@ -15,18 +15,20 @@
 {#            </div>#}
         </div>
     {% endfor %}
-    <div class="mbh-daterange">
-        {{ 'views.api.getPaymentType.dates'|trans({}, 'MBHOnlineBundle') }}
-        <strong>{{ request.begin }} - {{ request.end }}.</strong>
-    </div>
-    <div class="mbh-days-amount">
-        {{ 'views.api.getPaymentType.days_and_nights'|trans({}, 'MBHOnlineBundle') }}
-        <span id="mbh-package-info-days">{{ request.days }}</span>
-        <span id="mbh-package-info-nights">{{ request.nights }}</span>
-    </div>
-    <div class="mbh-package-amount">
-        {{ 'views.api.getPaymentType.nomerov'|trans({}, 'MBHOnlineBundle') }}
-        <span>{{ request.packages|length }}</span>
+    <div class="mbh-group-info">
+        <div class="mbh-daterange">
+            {{ 'views.api.getPaymentType.dates'|trans({}, 'MBHOnlineBundle') }}
+            <strong>{{ request.begin }} - {{ request.end }}.</strong>
+        </div>
+        <div class="mbh-days-amount">
+            {{ 'views.api.getPaymentType.days_and_nights'|trans({}, 'MBHOnlineBundle') }}
+            <span id="mbh-package-info-days">{{ request.days }}</span>
+            <span id="mbh-package-info-nights">{{ request.nights }}</span>
+        </div>
+        <div class="mbh-package-amount">
+            {{ 'views.api.getPaymentType.nomerov'|trans({}, 'MBHOnlineBundle') }}
+            <span>{{ request.packages|length }}</span>
+        </div>
     </div>
     <div class="mbh-price-amount">
         {% if request.useServices %}
@@ -38,7 +40,7 @@
         {% endif %}
         <div class="mbh-package-total">
             {{ 'views.api.getPaymentType.nomera'|trans({}, 'MBHOnlineBundle') }}
-            <span id="mbh-package-info-total-packages">{{ request.totalPackages }}</span>
+            <span id="mbh-package-info-total-packages" data-value="{{ request.totalPackagesRaw }}">{{ request.totalPackages }}</span>
             <span class="mbh-results-total-sum">{{ currency().text|trans }}</span>
         </div>
         <div class="mbh-order-total">

@@ -1,3 +1,18 @@
+MbhResultForm.prototype.priceSeparator = function (amount) {
+    amount = String(amount);
+    if (amount.length <= 3) {
+        return amount;
+    } else if (amount.length <= 6) {
+        return amount.replace(/(\d{3}$)/, ",$1");
+    } else if (amount.length <= 9) {
+        return (amount.replace(/(\d{3})(\d{3}$)/, ",$1,$2")).replace(/(^(,))/, "");
+    } else if (amount.length <= 12) {
+        return (amount.replace(/(\d{3})(\d{3})(\d{3}$)/, ",$1,$2,$3")).replace(/(^(,))/, "");
+    } else {
+        return (amount.replace(/(\d)(\d{3})(\d{3})(\d{3}$)/, "$1,$2,$3,$4")).replace(/(^(,))/, "");
+    }
+};
+
 MbhResultForm.prototype.waiting = function() {
     this.wrapper.html('<div class="mbh-results-info alert alert-info"><i class="fa fa-spinner fa-spin"></i> ' + this._waitingText + '</div>');
 };

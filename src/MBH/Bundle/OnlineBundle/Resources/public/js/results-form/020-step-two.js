@@ -4,6 +4,45 @@ MbhResultForm.prototype.getPackageInfo = function () {
     };
 };
 
+MbhResultForm.prototype.calcServices = function () {
+
+    var totalServiceTemp,
+        _this = this,
+        totalService = document.querySelector('#mbh-package-info-total-services'),
+        totalSumElement = document.querySelector('#mbh-package-info-total'),
+        totalPackage = +document.querySelector('#mbh-package-info-total-packages').dataset.value;
+
+    this.serviceListData = {};
+
+    var calc = function() {
+         totalServiceTemp = 0;
+
+        for (serviceId in _this.serviceListData) {
+            totalServiceTemp += _this.serviceListData[serviceId].price * _this.serviceListData[serviceId].amount;
+        }
+
+        totalService.innerHTML = _this.priceSeparator(totalServiceTemp);
+        totalSumElement.innerHTML = _this.priceSeparator(totalPackage + totalServiceTemp);
+    };
+
+    document.querySelectorAll('.mbh-service-item').forEach(function(service) {
+        var serviceId = service.querySelector('.mbh-results-services-name').dataset.id;
+        var price = service.querySelector('.mbh-results-services-prices').dataset.value;
+
+        _this.serviceListData[serviceId] = {
+            price : +price,
+            amount: 0
+        };
+
+        // jq for select2
+        jQuery(service).find('.mbh-results-services-count').on('change', function() {
+            _this.serviceListData[serviceId].amount = +this.value;
+            calc();
+        });
+    });
+
+};
+
 MbhResultForm.prototype.prevData = function () {
     var prevUser = jQuery.cookie('mbh.user');
     if (prevUser) {
@@ -61,45 +100,34 @@ MbhResultForm.prototype.changeStateNextBtn = function (state) {
 
 MbhResultForm.prototype.validateUserForm = function () {
     var _this = this,
-        inputs = jQuery('#mbh-user-form input:required'),
+        $inputs = jQuery('#mbh-user-form input:required'),
+        $emailInput = jQuery('#mbh-user-form-email'),
+        validateEmail = function () {
+            return $emailInput.val().match('^[a-z0-9._%+-]+@[a-z0-9._%+-]+\\.\\w{2,4}$');
+        },
         validate = function() {
             _this.changeStateNextBtn(false);
-            inputs.each(function() {
-                if (!jQuery(this).val() || (this.type === 'checkbox' && !$(this).is(':checked'))) {
+            $inputs.each(function() {
+                if (!jQuery(this).val() || (this.type === 'checkbox' && !jQuery(this).is(':checked'))) {
                     _this.changeStateNextBtn(true);
                     return false;
                 }
             });
-            return true;
+            if ($emailInput.val()) {
+                if (!validateEmail()) {
+                    _this.changeStateNextBtn(false);
+                    $emailInput.css('border', '1px solid red');
+                    return false;
+                } else {
+                    $emailInput.css('border', '');
+                    return true;
+                }
+            }
         };
+
     validate();
-    inputs.bind("propertychange change click keyup input paste", function() {
+    $inputs.bind("propertychange change click keyup input paste", function() {
         validate();
-    })
-};
-
-MbhResultForm.prototype.validateUserFormEmail = function () {
-    var _this = this,
-        emailInput = jQuery('#mbh-user-form-email'),
-        emailIsRequired = emailInput.prop('required');
-
-    var validateEmail = function () {
-
-        if (emailInput.val() && !emailInput.val().match('^[a-z0-9._%+-]+@[a-z0-9._%+-]+\\.\\w{2,4}$')) {
-            if (emailIsRequired) {
-                _this.changeStateNextBtn(true);
-            }
-            emailInput.css('border', '1px solid red');
-        } else {
-            if (emailIsRequired) {
-                _this.changeStateNextBtn(false);
-            }
-            emailInput.css('border', '');
-        }
-    };
-    validateEmail();
-    emailInput.bind('propertychange change keyup input paste blur', function () {
-        validateEmail();
     })
 };
 
@@ -110,40 +138,36 @@ MbhResultForm.prototype.prepareAndGoStepThree = function () {
             type: 'form-event',
             purpose: 'contacts'
         }, "*");
-        servicesCount = jQuery('select.mbh-results-services-count');
 
-        servicesCount.each(function() {
-            if (jQuery(this).val() > 0) {
-                var tr = jQuery(this).closest('.mbh-service-item'),
-                    id = tr.find('span.mbh-results-services-name').attr('data-id');
-                _this._requestParams.services.push({
-                    'id': id,
-                    'amount': jQuery(this).val()
-                });
-            }
-        });
         _this._requestParams.user = _this.getUser();
         _this._requestParams = jQuery.extend(_this._requestParams, _this.getPackageInfo());
 
         var totalServices = 0;
-        servicesCount.each(function() {
-            if (jQuery(this).val() > 0) {
-                var tr = jQuery(this).closest('tr'),
-                    span = tr.find('span.mbh-results-services-prices');
-                if (span.length) {
-                    totalServices += parseInt(span.attr('data-value')) * jQuery(this).val();
-                }
+
+        var service;
+        for (var serviceId in _this.serviceListData) {
+            service = _this.serviceListData[serviceId];
+            if (service.amount > 0) {
+                _this._requestParams.services.push({
+                    id: serviceId,
+                    amount: service.amount
+                });
+
+                totalServices += service.amount * service.price
             }
-        });
+        }
+
+
         var total = parseInt(_this._requestParams.total.replace(/,/g, ''));
 
         total += totalServices;
         _this._requestParams.total = String(total);
         _this._requestParams.totalServices = String(totalServices);
 
-        var $personalDataCheckbox = $('#mbh-form-personal-data');
+        var $personalDataCheckbox = jQuery('#mbh-form-personal-data');
         _this._requestParams.isConfrmWithPersDataProcessing
             = $personalDataCheckbox.length === 1 && $personalDataCheckbox.is(':checked');
+
         _this.waiting();
 
         _this.stepThree();
@@ -171,6 +195,8 @@ MbhResultForm.prototype.stepTwo = function() {
 
             _this.prevData();
 
+            _this.calcServices();
+
             jQuery('#mbh-user-form-birthday').mask("99.99.9999");
 
             _this.addEventReloadPage('#mbh-user-form-previous');
@@ -178,8 +204,6 @@ MbhResultForm.prototype.stepTwo = function() {
             _this.saveCookies();
 
             _this.validateUserForm();
-
-            _this.validateUserFormEmail();
 
             _this._requestParams.useServices = document.querySelector('#mbh-package-info-total-services') !== null;
 
