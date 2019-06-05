@@ -54,7 +54,11 @@ class PackageAccommodationRawFetcher implements DataRawFetcherInterface
         return array_filter($data, function ($packageAccommodation) use ($begin, $end, $roomTypeId) {
             $accommodationBegin = Helper::convertMongoDateToDate($packageAccommodation['begin']);
             $accommodationEnd = Helper::convertMongoDateToDate($packageAccommodation['end']);
-            $accommodationRoomTypeId = $this->sharedDataFetcher->getRoomTypeIdOfRoomId((string)$packageAccommodation['accommodation']['$id']);
+            $accommodationRoom = $packageAccommodation['accommodation']['$id'] ?? null;
+            $accommodationRoomTypeId = null;
+            if ($accommodationRoom) {
+                $accommodationRoomTypeId = $this->sharedDataFetcher->getRoomTypeIdOfRoomId((string)$accommodationRoom);
+            }
 
             $datesMatch = $accommodationBegin < $end && $accommodationEnd > $begin;
             $roomTypeMatch = $accommodationRoomTypeId === $roomTypeId;
