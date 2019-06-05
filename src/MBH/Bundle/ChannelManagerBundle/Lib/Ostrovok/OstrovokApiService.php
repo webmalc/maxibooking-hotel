@@ -2,6 +2,8 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok;
 
+use GuzzleHttp\Client as Guzzle;
+
 /**
  * Class OstrovokApiService
  * @package MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok
@@ -26,6 +28,9 @@ class OstrovokApiService
      */
     protected $private_token;
 
+    /**@var Guzzle */
+    protected $client;
+
     /**
      * OstrovokApiService constructor.
      * @param array $config
@@ -34,6 +39,7 @@ class OstrovokApiService
     {
         $this->auth_token = $config['ostrovok']['username'];
         $this->private_token = $config['ostrovok']['password'];
+        $this->client = new Guzzle();
     }
 
     /**
@@ -98,19 +104,21 @@ class OstrovokApiService
      * @param array $data
      * @return mixed|string
      * @throws OstrovokApiServiceException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     private function callGet($api_method, array $data)
     {
         $data['token'] = $this->auth_token;
         $data['limits'] = self::LIMIT;
         $data['sign'] = $this->getSignature($data, $this->private_token);
-        $request = self::API_URL . $api_method . '?' . http_build_query($data) . '&';
 
-        $response = file_get_contents($request);
-        if (!$response) {
-            throw new OstrovokApiServiceException('No returned request in callGet Method '.get_class($this));
-        }
-        $response = json_decode($response, true);
+        $response = $this->client->request(
+            'GET',
+            self::API_URL . $api_method,
+            ['query' => $data]
+        );
+
+        $response = json_decode($response->getBody(), true);
         $this->checkErrors($response);
         return $response;
     }
@@ -132,6 +140,7 @@ class OstrovokApiService
      * @param array $data
      * @param array $get_data
      * @return mixed
+     * @throws OstrovokApiServiceException
      */
     private function callPOST($api_method, array $data, array $get_data = array())
     {
@@ -194,6 +203,8 @@ class OstrovokApiService
     /**
      * @param array $data
      * @return mixed|string
+     * @throws OstrovokApiServiceException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function getHotels(array $data = array())
     {
@@ -203,6 +214,8 @@ class OstrovokApiService
     /**
      * @param array $data
      * @return mixed
+     * @throws OstrovokApiServiceException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function getRoomCategories(array $data = array())
     {
@@ -214,6 +227,8 @@ class OstrovokApiService
     /**
      * @param array $data
      * @return mixed|string
+     * @throws OstrovokApiServiceException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function getMealPlans(array $data = array())
     {
@@ -225,6 +240,8 @@ class OstrovokApiService
     /**
      * @param array $data
      * @return mixed|string
+     * @throws OstrovokApiServiceException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function getOrders(array $data = array())
     {
@@ -234,6 +251,8 @@ class OstrovokApiService
     /**
      * @param array $data
      * @return mixed
+     * @throws OstrovokApiServiceException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function getBookings(array $data = array())
     {
@@ -246,6 +265,8 @@ class OstrovokApiService
      * @param $plan_date_end_at
      * @param array $data
      * @return mixed|string
+     * @throws OstrovokApiServiceException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function getRNA($plan_date_start_at, $plan_date_end_at, array $data = array())
     {
@@ -258,6 +279,8 @@ class OstrovokApiService
      * @param array $data
      * @param bool $byKey
      * @return array
+     * @throws OstrovokApiServiceException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function getOccupancies(array $data = array(), bool $byKey = false)
     {
@@ -281,6 +304,7 @@ class OstrovokApiService
      * @param bool $onlyParent
      * @return array
      * @throws OstrovokApiServiceException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function getRatePlans(array $data = array(), $isShowDeleted = false, $onlyParent = true)
     {
@@ -315,6 +339,7 @@ class OstrovokApiService
     /**
      * @param array $data
      * @return mixed
+     * @throws OstrovokApiServiceException
      */
     public function createRNA(array $data = array())
     {
@@ -326,6 +351,7 @@ class OstrovokApiService
      * @param null $room_category
      * @param array $rate_plan_params
      * @return mixed
+     * @throws OstrovokApiServiceException
      */
     public function createRatePlan($hotel = null, $room_category = null, array $rate_plan_params)
     {
@@ -345,6 +371,7 @@ class OstrovokApiService
      * @param null $room_category
      * @param array $rate_plan_params
      * @return mixed
+     * @throws OstrovokApiServiceException
      */
     public function updateRatePlan($id, $hotel = null, $room_category = null, array $rate_plan_params = array())
     {

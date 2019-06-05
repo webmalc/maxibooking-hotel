@@ -49,33 +49,28 @@ class ChannelManagerController extends Controller
      */
     public function logsAction(Request $request)
     {
-        $content = null;
+        $channelManagerLogHandler = $this->container->get('mbh.channel_manager_logs_handler');
 
-        $file = $this->container->get('mbh.channelmanager.logger_handler')->getUrl();
+        $page = $request->get('page', 1);
 
-        if (file_exists($file) && is_readable($file)) {
-            if ($request->getMethod() == 'POST') {
-                file_put_contents($file, '');
+        if ($request->getMethod() == 'POST') {
+            $channelManagerLogHandler->clearLogFile();
 
-                $this->addFlash(
-                    'success',
-                    $this->get('translator')->trans('controller.channel_manager_controller.logs_clear_successful')
-                );
+            $this->addFlash(
+                'success',
+                $this->get('translator')->trans('controller.channel_manager_controller.logs_clear_successful')
+            );
 
-                return $this->redirect($this->generateUrl('channel_manager_logs'));
-            }
-
-            ob_start();
-            passthru('tail -2000 ' . escapeshellarg($file));
-            $content = trim(preg_replace('/==>.*<==/', '', ob_get_clean()));
+            return $this->redirect($this->generateUrl('channel_manager_logs'));
         }
+        $data = $channelManagerLogHandler->getNext($page);
+
 
         return [
-            'content' => str_replace(
-                PHP_EOL,
-                '<br><br>',
-                htmlentities(implode("\n", array_reverse(explode("\n", $content))), ENT_SUBSTITUTE, "UTF-8")
-            )
+            'contentArray' => $data,
+            'link' => $this->generateUrl('channel_manager_logs'),
+            'page' => $page,
+            'pagination' => $channelManagerLogHandler->getPaginationArray($page)
         ];
     }
 

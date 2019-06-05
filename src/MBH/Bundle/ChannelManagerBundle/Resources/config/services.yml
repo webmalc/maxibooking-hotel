@@ -190,3 +190,7 @@ services:
         class: MBH\Bundle\ChannelManagerBundle\Services\Airbnb\AirbnbPackageInfo
         arguments: ['@service_container']
         shared: false
+
+    mbh.channel_manager_logs_handler:
+        class: MBH\Bundle\ChannelManagerBundle\Services\Logs\ChannelManagerLogHandler
+        arguments: ['@mbh.channelmanager.logger_handler']

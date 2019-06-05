@@ -419,6 +419,17 @@ class HundredOneHotels extends Base
             $this->log($serviceOrders);
             $serviceOrders = json_decode($serviceOrders, true);
 
+            if (!$this->checkResponse($serviceOrders)) {
+                $errorMessages = '';
+                foreach ($serviceOrders['errors'] as $error) {
+                    $errorMessages .= $error['message'] . PHP_EOL;
+                }
+
+                $this->notifyError(self::CHANNEL_MANAGER_TYPE, $errorMessages);
+                $this->log($errorMessages, 'error');
+                $result = false;
+            }
+
             $tariffs = $this->getTariffs($config, true);
             $roomTypes = $this->getRoomTypes($config, true);
 
