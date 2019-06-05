@@ -102,6 +102,8 @@ MbhResultForm.prototype.stepThree = function() {
 
             _this.resize();
 
+            _this.scrollToTopIframe();
+
             _this.togglePaymentSystemVisibility();
 
             _this.addEventReloadPage('#mbh-payment-types-previous');

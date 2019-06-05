@@ -1,3 +1,11 @@
+MbhResultForm.prototype.paymentBtnEvent = function () {
+    document.querySelector('#mbh-online-payment-btn').addEventListener('click' , function(evt) {
+        setTimeout(function() {
+            evt.target.disabled = true;
+        }, 1000);
+    })
+};
+
 MbhResultForm.prototype.stepFour = function() {
     var _this = this;
 
@@ -11,15 +19,15 @@ MbhResultForm.prototype.stepFour = function() {
             if (data.success) {
                 _this.wrapper.trigger('booking-result-load-event');
                 jQuery.removeCookie('mbh.package');
-
-                _this.wrapper.html('<div class="mbh-results-info alert alert-info"><i class="fa fa-check-circle-o"></i> ' + data.message + '</div>');
-
-                if (data.form) {
-                    _this.wrapper.append(data.form);
-                }
-            } else {
-                _this.wrapper.html('<div class="mbh-results-error alert alert-danger"><i class="fa fa-exclamation-circle"></i> ' + data.message + '</div>');
             }
+
+            _this.wrapper.html(data.html);
+
+            _this.resize();
+
+            _this.scrollToTopIframe();
+
+            _this.paymentBtnEvent();
         }
     });
 };

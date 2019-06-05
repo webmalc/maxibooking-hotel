@@ -7,12 +7,6 @@
             <div class="mbh-hotel-name">
                 {{ package.hotel.title }}
             </div>
-{#            <div class="mbh-guest-amount">#}
-{#                ({{ package.adults }}+{{ package.children }})#}
-{#            </div>#}
-{#            <div class="mbh-price">#}
-{#                {{ package.price|number_format(2) }}&nbsp;{{ currency().text|trans }}#}
-{#            </div>#}
         </div>
     {% endfor %}
     <div class="mbh-group-info">
@@ -45,12 +39,10 @@
         </div>
         <div class="mbh-order-total">
             {{ 'views.api.getPaymentType.order_result'|trans({}, 'MBHOnlineBundle') }}
-            <strong>
             <span class="mbh-results-total-sum">
                 <span id="mbh-package-info-total">{{ request.total }}</span>
                 {{ currency().text|trans }}
             </span>
-            </strong>
         </div>
     </div>
 

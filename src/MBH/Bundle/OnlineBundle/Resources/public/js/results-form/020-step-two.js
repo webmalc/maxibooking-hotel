@@ -127,8 +127,6 @@ MbhResultForm.prototype.validateUserForm = function () {
             }
         };
 
-
-    console.log($inputs);
     validate();
     $inputs.bind("propertychange change click keyup input paste", function() {
         validate();
@@ -189,7 +187,10 @@ MbhResultForm.prototype.stepTwo = function() {
         crossDomain: true,
         success: function(data) {
             _this.wrapper.html(data);
+
             _this.resize();
+
+            _this.scrollToTopIframe();
 
             _this.wrapper.trigger('user-form-load-event');
 

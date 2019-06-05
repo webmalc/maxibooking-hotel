@@ -67,7 +67,7 @@ controller.apiController.your_reservations_numbers: 'Номера ваших б�
 controller.apiController.room_reservation_made_success: 'Номер успешно забронирован.'
 controller.apiController.your_reservation_number: 'Номер вашей брони'
 controller.apiController.thank_you: 'Большое спасибо. '
-controller.apiController.we_will_call_you_back_soon: ' Мы свяжемся с Вами в ближайшее время.<br>'
+controller.apiController.we_will_call_you_back_soon: ' Мы свяжемся с Вами в ближайшее время.'
 controller.apiController.your_order_number: 'Номер вашего заказа: '
 controller.formController.settings_saved_success: 'Настройки успешно сохранены.'
 controller.formController.frame_sizes_changed: 'Изменены значения размеров онлайн-формы.  Обновите код формы на сайте.'

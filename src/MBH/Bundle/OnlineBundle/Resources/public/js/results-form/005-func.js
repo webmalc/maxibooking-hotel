@@ -13,6 +13,15 @@ MbhResultForm.prototype.priceSeparator = function (amount) {
     }
 };
 
+MbhResultForm.prototype.scrollToTopIframe = function () {
+    if (isMobileDevice) {
+        window.parent.postMessage({
+            type: 'mbh',
+            action: 'scrollToTopIframe'
+        }, "*");
+    }
+};
+
 MbhResultForm.prototype.waiting = function() {
     this.wrapper.html('<div class="mbh-results-info alert alert-info"><i class="fa fa-spinner fa-spin"></i> ' + this._waitingText + '</div>');
 };

@@ -82,7 +82,8 @@
     <script defer src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
     <script defer src="//cdnjs.cloudflare.com/ajax/libs/fancybox/3.0.47/jquery.fancybox.min.js"></script>
     {% block scripts %}
-        {% javascripts filter='?uglifyjs2'
+        {% javascripts filter='uglifyjs2'
+            '@MBHBaseBundle/Resources/public/js/first/010-nativ-func.js'
             '@MBHOnlineBundle/Resources/public/js/results-form/*'
         %}
             <script defer type="text/javascript" src="{{ absolute_url(asset_url) }}"></script>

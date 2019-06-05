@@ -411,6 +411,7 @@ body #mbh-results-wrapper .step-two #mbh-results-actions #mbh-user-form-previous
   body #mbh-results-wrapper .step-two #mbh-results-actions #mbh-user-form-previous {
     margin: unset;
     margin-left: 30px;
+    order: unset;
   }
 }
 body #mbh-results-wrapper .step-two #mbh-results-actions #mbh-user-form-next {
@@ -508,6 +509,7 @@ body #mbh-results-wrapper .step-three #mbh-results-actions #mbh-payment-types-pr
   body #mbh-results-wrapper .step-three #mbh-results-actions #mbh-payment-types-previous {
     margin: unset;
     margin-left: 30px;
+    order: unset;
   }
 }
 body #mbh-results-wrapper .step-three #mbh-results-actions #mbh-payment-types-next {
@@ -574,4 +576,20 @@ body #mbh-results-wrapper .step-three #mbh-results-payment-form .mbh-payment-typ
   font-weight: normal;
   font-size: 16px;
   line-height: 24px;
+}
+body #mbh-results-wrapper .step-three #mbh-results-payment-form #mbh-payment-systems {
+  padding-top: 15px;
+}
+body #mbh-results-wrapper .step-three #mbh-results-payment-form #mbh-payment-systems label {
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 24px;
+}
+body #mbh-results-wrapper .step-four {
+  margin-bottom: 15px;
+}
+body #mbh-results-wrapper .step-four .btn-info {
+  margin-top: 15px;
+  background-color: #0099ff;
+  border-color: #0099ff;
 }

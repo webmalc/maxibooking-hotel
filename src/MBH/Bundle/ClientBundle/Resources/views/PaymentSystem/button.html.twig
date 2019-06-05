@@ -1,1 +1,3 @@
-<button {{ data.disabled is defined and data.disabled ? 'disabled' }} class="btn btn-{{ data.disabled is defined and data.disabled ? 'danger' : 'info' }} {{ data.buttonClasses is defined ? data.buttonClasses }}"><i class="fa fa-cc-visa"></i>&nbsp;{{ data.buttonText is defined ? data.buttonText : 'order.cash.short_pay'|trans({}, 'MBHPackageBundle') }}</button>
+<button id="mbh-online-payment-btn" {{ data.disabled is defined and data.disabled ? 'disabled' }} class="btn btn-{{ data.disabled is defined and data.disabled ? 'danger' : 'info' }} {{ data.buttonClasses is defined ? data.buttonClasses }}">
+    <i class="fa fa-cc-visa"></i>&nbsp;{{ data.buttonText is defined ? data.buttonText : 'order.cash.short_pay'|trans({}, 'MBHPackageBundle') }}
+</button>

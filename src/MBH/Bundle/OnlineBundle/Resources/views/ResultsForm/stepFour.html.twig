@@ -1,0 +1,17 @@
+<div id="mbh-results-global-wrapper" class="step-four">
+    {% include 'MBHOnlineBundle:ResultsForm:stepInfo.html.twig' with {'stepNumber': 3} %}
+    <div class="panel panel-primary spacer-top">
+        <div class="panel-heading">
+            {{ 'controller.apiController.thank_you'| trans }}
+        </div>
+        <div class="panel-body">
+            <div>{{ roomStr | trans }}</div>
+            <div>{{ 'controller.apiController.we_will_call_you_back_soon' | trans }}</div>
+            <div>{{ 'controller.apiController.your_order_number' | trans }}: {{ orderId }}</div>
+            <div>{{ packageStr | trans }}: {{ packages }}</div>
+            {% if form != null %}
+                {{ form | raw }}
+            {% endif %}
+        </div>
+    </div>
+</div>

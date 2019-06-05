@@ -453,15 +453,13 @@ class ResultsFormController extends BaseController
         //Create packages
         $isWithCashCashDocument = $requestJson->paymentType !== FormConfig::PAYMENT_TYPE_IN_HOTEL
             || (substr($requestJson->paymentType, 0, strlen('by_receipt')) === FormConfig::PAYMENT_TYPE_BY_RECEIPT);
-        $order = $this->createPackages($requestJson, $formConfig ,$isWithCashCashDocument);
+        $order = $this->createPackages($requestJson, $formConfig , $isWithCashCashDocument);
 
         if ($order === null) {
             return new JsonResponse(
                 [
                     'success' => false,
-                    'message' => $this->get('translator')->trans(
-                        'controller.apiController.reservation_error_occured_refresh_page_and_try_again'
-                    ),
+                    'html'    => $this->renderView('@MBHOnline/ResultsForm/stepFourBreak.html.twig'),
                 ]
             );
         }
@@ -473,56 +471,66 @@ class ResultsFormController extends BaseController
             $this->setLocale($requestJson->locale);
         }
 
-        /** @var Translator $translator */
-        $translator = $this->get('translator');
-        if (count($packages) > 1) {
-            $roomStr = $translator->trans('controller.apiController.reservations_made_success');
-            $packageStr = $translator->trans('controller.apiController.your_reservations_numbers');
+        if ($requestJson->paymentType === FormConfig::PAYMENT_TYPE_IN_HOTEL || !$this->clientConfig->getPaymentSystems()) {
+            $form = null;
+        } elseif (in_array($requestJson->paymentType,FormConfig::PAYMENT_TYPES_ONLINE_LIST)) {
+            $form =
+                $this
+                    ->get(RenderPaymentButton::class)
+                    ->create(
+                        $requestJson->paymentSystem,
+                        $requestJson->total,
+                        $order,
+                        $order->getCashDocuments()[0]
+                    );
         } else {
-            $roomStr = $translator->trans('controller.apiController.room_reservation_made_success');
-            $packageStr = $translator->trans('controller.apiController.your_reservation_number');
+            $form =
+                $this
+                    ->container
+                    ->get('twig')
+                    ->render(
+                        '@MBHClient/PaymentSystem/invoice.html.twig',
+                        [
+                            'packageId' => current($packages)->getId(),
+                        ]
+                    );
         }
-        $message = $translator->trans('controller.apiController.thank_you').$roomStr.$translator->trans(
-                'controller.apiController.we_will_call_you_back_soon'
-            );
-        $message .= $translator->trans('controller.apiController.your_order_number').$order->getId().'. ';
-        $message .= $packageStr.': '.implode(', ', $packages).'.';
 
-        if ($requestJson->paymentType === FormConfig::PAYMENT_TYPE_IN_HOTEL
-            || !$this->clientConfig || !$this->clientConfig->getPaymentSystems()
-        ) {
-            $form = false;
-        } elseif (in_array(
-            $requestJson->paymentType,
-            [
-                FormConfig::PAYMENT_TYPE_BY_RECEIPT_FULL,
-                FormConfig::PAYMENT_TYPE_BY_RECEIPT_HALF,
-                FormConfig::PAYMENT_TYPE_BY_RECEIPT_FIRST_DAY
-            ]
-        ))
-        {
-            $form = $this->container->get('twig')->render('@MBHClient/PaymentSystem/invoice.html.twig', [
-                'packageId' => current($packages)->getId(),
-            ]);
-        } else {
-            $form = $this->get(RenderPaymentButton::class)
-                ->create($requestJson->paymentSystem, $requestJson->total, $order, $order->getCashDocuments()[0]);
-        }
         $this->dm->refresh($order->getFirstPackage());
+
+        if (count($packages) > 1) {
+            $roomStr = 'controller.apiController.reservations_made_success';
+            $packageStr = 'controller.apiController.your_reservations_numbers';
+        } else {
+            $roomStr = 'controller.apiController.room_reservation_made_success';
+            $packageStr = 'controller.apiController.your_reservation_number';
+        }
 
         return new JsonResponse(
             [
                 'success'    => true,
-                'message'    => $message,
-                'form'       => $form,
+                'html'       =>
+                    $this->renderView(
+                        '@MBHOnline/ResultsForm/stepFour.html.twig',
+                        [
+                            'roomStr'    => $roomStr,
+                            'packageStr' => $packageStr,
+                            'orderId'    => $order->getId(),
+                            'packages'   => implode(', ', $packages),
+                            'form'       => $form,
+                        ]
+                    ),
                 'order'      => $order->getJsonSerialized(),
                 'invoiceUrl' =>
                     $this->generateUrl(
                         'generate_invoice',
-                        ['id' => $order->getFirstPackage()->getId()],
+                        [
+                            'id' => $order->getFirstPackage()->getId(),
+                        ],
                         UrlGeneratorInterface::ABSOLUTE_URL
                     ),
-            ]);
+            ]
+        );
     }
 
     /**
