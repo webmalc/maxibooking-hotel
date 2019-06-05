@@ -5,7 +5,7 @@
 
 {% block scripts %}
     {{ parent() }}
-    {% javascripts filter='?uglifyjs2'
+    {% javascripts filter='uglifyjs2'
     '@MBHPackageBundle/Resources/public/js/dynamicSales/*' %}
     <script type="text/javascript" src="{{ asset_url }}"></script>
     {% endjavascripts %}
