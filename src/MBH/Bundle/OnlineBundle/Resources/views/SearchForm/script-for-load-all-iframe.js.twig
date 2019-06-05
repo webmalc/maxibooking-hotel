@@ -1,3 +1,4 @@
+{% wrapinline %}
 var isMobileDevice = (function() {
     var isMobile = /Mobi/.test(navigator.userAgent);
     if (isMobile) {
@@ -401,3 +402,4 @@ OnLoadFormLoad.prototype.hideWaitingSpinner = function (_this) {
 
 var onLoadFormLoad = new OnLoadFormLoad();
 addLoadEvent(onLoadFormLoad.exec());
+{% endwrapinline %}
