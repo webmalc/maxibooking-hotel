@@ -58,7 +58,7 @@ body .panel .panel-body ul li input[type="radio"]:disabled:checked:before {
   height: 18px;
   background: #FFFFFF;
   margin-top: -3px;
-  border: 1px solid #0099ff;
+  border: 1px solid var(--main);
 }
 body .panel .panel-body ul li input[type="radio"]:disabled:checked:after {
   content: '';
@@ -70,7 +70,7 @@ body .panel .panel-body ul li input[type="radio"]:disabled:checked:after {
   margin-top: -3px;
   width: 10px;
   height: 10px;
-  background: #0099ff;
+  background: var(--main);
   margin-left: 4px;
   margin-top: 1px;
 }
@@ -106,7 +106,7 @@ body #mbh-results-wrapper #mbh-package-info .mbh-package-info-wrapper .mbh-room-
   line-height: 24px;
 }
 body #mbh-results-wrapper #mbh-package-info .mbh-package-info-wrapper .mbh-hotel-name {
-  color: #0099ff;
+  color: var(--main);
   font-size: 16px;
   line-height: 20px;
 }
@@ -148,7 +148,7 @@ body #mbh-results-wrapper .step-info .step-number-info {
   margin-bottom: 10px;
 }
 body #mbh-results-wrapper .step-info .step-number-info.active .step-number {
-  background: #0099ff;
+  background: var(--main);
 }
 body #mbh-results-wrapper .step-info .step-number-info .step-number {
   font-size: 16px;
@@ -172,7 +172,7 @@ body #mbh-results-wrapper #mbh-results-actions {
   flex-direction: column;
   align-items: center;
   flex-wrap: wrap;
-  border: 1px solid #0099ff;
+  border: 1px solid var(--main);
   background: #FFFFFF;
 }
 @media (min-width: 472px) {
@@ -182,8 +182,8 @@ body #mbh-results-wrapper #mbh-results-actions {
   }
 }
 body #mbh-results-wrapper #mbh-results-actions .btn-primary {
-  background-color: #0099ff;
-  border-color: #0099ff;
+  background-color: var(--main);
+  border-color: var(--main);
 }
 body #mbh-results-wrapper .step-one #mbh-results-actions {
   justify-content: flex-end;
@@ -217,13 +217,13 @@ body #mbh-results-wrapper .step-one #mbh-results-tariffs .panel-body {
   padding: 0;
 }
 body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wrapper.show-description {
-  background: #c3ebff;
+  background: var(--mainlight);
 }
 body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wrapper.show-description .mbh-results-tariff-description {
   display: block;
 }
 body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wrapper.show-description .mbh-results-tariff-label .mbh-results-tariffs-description-toggle {
-  background: #c3ebff;
+  background: var(--mainlight);
 }
 body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wrapper.show-description .mbh-results-tariff-label #mbh-results-tariff-selected {
   font-weight: bold;
@@ -534,7 +534,7 @@ body #mbh-results-wrapper .step-three #mbh-results-payment-form .mbh-payment-typ
   }
 }
 body #mbh-results-wrapper .step-three #mbh-results-payment-form .mbh-payment-type-row.selected {
-  background-color: #c3ebff;
+  background-color: var(--mainlight);
 }
 body #mbh-results-wrapper .step-three #mbh-results-payment-form .mbh-payment-type-row .mbh-payment-types-radio:before {
   content: '';
@@ -554,7 +554,7 @@ body #mbh-results-wrapper .step-three #mbh-results-payment-form .mbh-payment-typ
   height: 18px;
   background: #FFFFFF;
   margin-top: -3px;
-  border: 1px solid #0099ff;
+  border: 1px solid var(--main);
 }
 body #mbh-results-wrapper .step-three #mbh-results-payment-form .mbh-payment-type-row .mbh-payment-types-radio:checked:after {
   content: '';
@@ -566,7 +566,7 @@ body #mbh-results-wrapper .step-three #mbh-results-payment-form .mbh-payment-typ
   margin-top: -3px;
   width: 10px;
   height: 10px;
-  background: #0099ff;
+  background: var(--main);
   margin-left: 4px;
   margin-top: 1px;
 }
@@ -589,6 +589,6 @@ body #mbh-results-wrapper .step-four {
 }
 body #mbh-results-wrapper .step-four .btn-info {
   margin-top: 15px;
-  background-color: #0099ff;
-  border-color: #0099ff;
+  background-color: var(--main);
+  border-color: var(--main);
 }

@@ -72,8 +72,15 @@ class MBSiteFormConfigDataService
 
     private function addResultStyle(FormConfig $formConfig, SiteConfig $siteConfig): void
     {
+        $css = sprintf(
+            ":root {--main: %s; --mainlight: %s;}\n%s",
+            $siteConfig->getThemeColors()['main'],
+            $siteConfig->getThemeColors()['mainlight'],
+            $this->resultStyleHolder->getMainStyle()
+        );
+
         $formConfig
-            ->setResultFormCss($this->resultStyleHolder->getMainStyle());
+            ->setResultFormCss($css);
     }
 
     private function addSearchStyle(FormConfig $formConfig, SiteConfig $siteConfig): void
