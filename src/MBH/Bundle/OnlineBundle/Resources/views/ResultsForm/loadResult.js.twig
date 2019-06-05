@@ -120,10 +120,11 @@ function onLoadResultsLoad() {
     resultsIframe.src = configResults.results_url + url;
 
     resultsWrapper.append(resultsIframe);
+    resultsWrapper.querySelector('a').style.display = 'none';
 
-    var resize = function () {
-        resultsIframe.style.height = resultsIframe.contentWindow.document.body.scrollHeight + 'px';
-    };
+    {#var resize = function () {#}
+    {#    resultsIframe.style.height = resultsIframe.contentWindow.document.body.scrollHeight + 'px';#}
+    {#};#}
     var processMessage = function (e) {
         if (e.data.type !== 'mbh') {
             return;

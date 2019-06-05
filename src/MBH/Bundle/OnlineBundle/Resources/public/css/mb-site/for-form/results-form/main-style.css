@@ -94,7 +94,6 @@ body #mbh-results-wrapper {
   }
 }
 body #mbh-results-wrapper #mbh-package-info {
-  padding: 15px;
   background-color: #FFFFFF;
   margin-bottom: 10px;
 }
@@ -260,7 +259,7 @@ body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wra
   margin-left: 35px;
   padding-bottom: 5px;
 }
-body #mbh-results-wrapper .step-one #mbh-results-duration {
+body #mbh-results-wrapper .step-one #mbh-results-duration h3 {
   font-family: 'Roboto Slab', serif;
   font-size: 32px;
   line-height: 44px;

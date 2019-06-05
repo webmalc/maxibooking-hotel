@@ -1,54 +1,85 @@
-#mbh-results-wrapper {
-  width: auto;
-  height: auto;
-  padding: 10px 20px;
-  overflow: auto;
-}
-
-.spacer-top {
-  margin-top: 10px;
-}
-
-.spacer-left-sm {
-  margin-left: 5px;
+body {
+  display: flex;
+  flex-direction: column;
 }
 
 #mbh-result-response-info {
   display: none;
 }
 
-.mbh-right {
-  text-align: right;
+/* ---------------------- Package Info ------------ */
+#mbh-package-info {
+  @indent: 11px;
+
+  .indentBottom() {
+    margin-bottom: @indent;
+  };
+
+  background-color: #FFFFFF;
+  margin-bottom: 10px;
+
+  .mbh-package-info-wrapper {
+    .indentBottom();
+    .mbh-room-name {
+      font-size: 20px;
+      line-height: 24px;
+    }
+
+    .mbh-hotel-name {
+      font-size: 16px;
+      line-height: 20px;
+    }
+  }
+
+  .mbh-group-info {
+    .mbh-daterange {
+      font-weight: 500;
+      font-size: 16px;
+      line-height: 24px;
+    }
+
+    .mbh-days-amount,
+    .mbh-package-amount {
+      font-size: 16px;
+      line-height: 20px;
+    }
+
+    .mbh-days-amount {
+      #mbh-package-info-nights::before {
+        content: "/";
+      }
+    }
+  }
+
+  .mbh-price-amount {
+    font-size: 16px;
+    line-height: 20px;
+    margin-bottom: 10px;
+
+    .mbh-order-total {
+      margin-top: @indent;
+      padding-top: @indent;
+    }
+  }
 }
 
-.mbh-left {
-  text-align: left;
-}
 
-.mbh-center {
-  text-align: center;
-}
-
-.mbh-results-packages-count {
-  width: 50px;
-}
-
-.select2-container a {
-  text-decoration: none !important;
-  color: #949494 !important;
-}
 /* ----------- STEP -------- */
 
 .step-info {
   margin-top: 25px;
   display: flex;
+  flex-wrap: wrap;
+
   .step-number-info {
     display: flex;
     align-items: center;
 
-    &.active {
+    margin-bottom: 15px;
+
+    &:not(.active) {
       .step-number {
-        background: #f67a00;
+        background: #BDBDBD;
       }
     }
 
@@ -60,7 +91,6 @@
 
       width: 40px;
       height: 40px;
-      background: #BDBDBD;
       color: #FFFFFF;
     }
 
@@ -162,27 +192,68 @@
 
 #mbh-results-list-wrapper {
   .mbh-results-container {
+    &:nth-of-type(odd) {
+      background-color: lightgrey;
+    }
+
+    border-bottom: 1px solid lightgrey;
+
     margin: 10px 0;
     padding: 5px 0;
-    background: #FFFFFF;
+    //background: #FFFFFF;
 
+  // BEGIN IMG
     .mbh-results-image-wrapper {
       .main-image {
         margin-bottom: 5px;
         text-align: center;
-      }
 
+        img {
+          max-width: 155px;
+          max-height: 155px;
+        }
+      }
       .list-small-image {
         display: flex;
         justify-content: space-between;
+
+        img {
+          max-height: 50px;
+          max-width: 50px;
+        }
       }
     }
 
-    .mbh-results-description-container {
-      .mbh-results-room-type-name-wrapper {
+    @media (max-width: 767px) {
+      .mbh-results-image-wrapper {
+        margin-bottom: 15px;
+        order: 2;
+        padding-left: 0;
+        padding-right: 0;
 
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        .main-image {
+          width: 300px;
+          margin: auto;
+          margin-bottom: 10px;
+          img {
+            max-width: 300px;
+            max-height: 300px;
+          }
+        }
+
+        .list-small-image {
+          margin: auto;
+          width: 300px;
+        }
       }
-
+    }
+  // END IMG
+  // BEGIN DESCRIPTION
+    .mbh-results-description-container {
       .mbh-results-hotel-and-tariff-wrapper {
         span + span {
           margin-left: 5px;
@@ -206,7 +277,6 @@
 
       .mbh-results-room-type-description-container {
         .mbh-results-room-type-description-wrapper {
-
           .mbh-results-room-type-description-toggle {
             background: #FFFFFF;
             border: none;
@@ -227,6 +297,76 @@
         }
       }
     }
+  // END DESCRIPTION
+  // BEGIN PRICE
+    .mbh-results-price-container {
+      > * {
+        text-align: center;
+      }
+      .price {
+        .mbh-results-prices {
+        }
+      }
+
+      .nights {
+
+      }
+
+      .room-count-selector {
+        margin-top: 10px;
+
+        .room-count-selector-label {
+          font-size: 16px;
+          line-height: 28px;
+        }
+
+        .mbh-results-packages-count {
+          width: 80px;
+        }
+      }
+
+      .room-amount {
+      }
+    }
+  // END PRICE
+    @media (max-width: 767px) {
+      display: flex;
+      flex-direction: column;
+
+      .mbh-results-description-container {
+        order: 1;
+        margin-bottom: 15px;
+      }
+      .mbh-results-image-wrapper {
+        margin-bottom: 15px;
+        order: 2;
+        padding-left: 0;
+        padding-right: 0;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        .main-image {
+          width: 300px;
+          margin: auto;
+          margin-bottom: 10px;
+          img {
+            max-width: 300px;
+            max-height: 300px;
+          }
+        }
+
+        .list-small-image {
+          margin: auto;
+          width: 300px;
+        }
+      }
+      .mbh-results-price-container {
+        order: 3;
+      }
+    }
+
   }
 }
 
@@ -254,90 +394,46 @@
 }
 
 /* -------------------------- SERVICES -------------------------------- */
-.mbh-results-services-name small {
-  font-size: 11px;
-  color: #7e747c;
-}
-
 .mbh-results-services-name {
   font-size: 15px;
-}
 
-.mbh-results-services-per-service {
-  font-size: 11px;
-  color: #7e747c;
+  small {
+    font-size: 11px;
+    color: #7e747c;
+  }
 }
 
 .mbh-results-services-prices {
   font-size: 16px;
 }
 
-#mbh-results-table-services-th-price {
-  width: 120px;
-}
-
-#mbh-results-table-services-th-amount {
-  width: 80px;
-}
-
 /* -------------------------- RESULTS ACTIONS -------------------------------- */
 #mbh-results-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin: 20px 0;
-  text-align: right;
+  //text-align: right;
+
+  .mbh-results-total-sum {
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  button {
+    order: 2;
+  }
+
+  @media (max-width: 420px) {
+    button + button {
+      order: 1;
+    }
+  }
 }
 
-.mbh-results-total-sum {
-  font-size: 16px;
-  font-weight: bold;
-}
-
-/* -------------------------- USER FORM -------------------------------- */
-.mbh-results-services-count {
-  width: 60px;
-}
-
-#mbh-user-form sup {
-  color: maroon;
-}
-
-#mbh-user-form-form label {
-  font-weight: bold;
-}
-
-#mbh-user-form-birthday, #mbh-user-form-arrival, #mbh-user-form-departure {
-  width: 100px;
-}
-
-/* -------------------------- PAYMENT TYPE FORM -------------------------------- */
-.mbh-payment-type-row {
-  margin-bottom: 5px;
-  padding: 5px;
-}
-
-.mbh-payment-type-row p {
-  font-size: 11px;
-  color: #7e747c;
-}
-
-.mbh-payment-type-row label {
-  font-size: 16px;
-  font-weight: normal;
-  margin-left: 6px;
-  cursor: pointer;
-}
-
-.hidden {
-  display: none !important;
-}
-
-/* -------------------------- PAY FORM -------------------------------- */
-#mbh-results-pay-form-wrapper {
-  margin-top: 20px;
-  text-align: center;
-}
-
-#mbh-results-pay-form-button {
-  font-size: 21px;
-  margin: 0;
-  padding: 6px 10px;
+/* ------- STEP FOUR --------- */
+.step-four {
+  .btn {
+    margin-top: 15px;
+  }
 }

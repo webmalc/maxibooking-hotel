@@ -1,5 +1,11 @@
 MbhResultForm.prototype.paymentBtnEvent = function () {
-    document.querySelector('#mbh-online-payment-btn').addEventListener('click' , function(evt) {
+    var btn = document.querySelector('#mbh-online-payment-btn');
+
+    if (btn === null) {
+        return;
+    }
+
+    btn.addEventListener('click' , function(evt) {
         setTimeout(function() {
             evt.target.disabled = true;
         }, 1000);

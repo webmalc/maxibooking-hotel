@@ -10,9 +10,11 @@
             <span id="mbh-results-duration-days">{{ results|first.days }}</span>
             <span id="mbh-results-duration-nights">{{ results|first.nights }}</span>
         </div>
-        {{ 'views.api.getResultsTable.hotel_rooms_for'|trans({}, 'MBHOnlineBundle') }}
-        {{ 'from'|trans }}
-        <span id="mbh-results-duration-begin">{{ results|first.begin|date('d.m.Y') }}</span> {{ 'to'|trans }} <span id="mbh-results-duration-end">{{ results|first.end|date('d.m.Y') }}</span>
+        <h3>
+            {{ 'views.api.getResultsTable.hotel_rooms_for'|trans({}, 'MBHOnlineBundle') }}
+            {{ 'from'|trans }}
+            <span id="mbh-results-duration-begin">{{ results|first.begin|date('d.m.Y') }}</span> {{ 'to'|trans }} <span id="mbh-results-duration-end">{{ results|first.end|date('d.m.Y') }}</span>
+        </h3>
     </div>
 
     <div id="mbh-results-list-wrapper">

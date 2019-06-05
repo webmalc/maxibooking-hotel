@@ -1,53 +1,55 @@
-<div id="mbh-package-info">
-    {% for package in request.packages %}
-        <div class="mbh-package-info-wrapper">
-            <div class="mbh-room-name">
-                {{ package.roomType.title }}
+<div id="mbh-package-info" class="panel panel-primary">
+    <div class="panel-body">
+        {% for package in request.packages %}
+            <div class="mbh-package-info-wrapper">
+                <div class="mbh-room-name">
+                    {{ package.roomType.title }}
+                </div>
+                <div class="mbh-hotel-name">
+                    {{ package.hotel.title }}
+                </div>
             </div>
-            <div class="mbh-hotel-name">
-                {{ package.hotel.title }}
+        {% endfor %}
+        <div class="mbh-group-info">
+            <div class="mbh-daterange">
+                {{ 'views.api.getPaymentType.dates'|trans({}, 'MBHOnlineBundle') }}
+                <strong>{{ request.begin }} - {{ request.end }}.</strong>
+            </div>
+            <div class="mbh-days-amount">
+                {{ 'views.api.getPaymentType.days_and_nights'|trans({}, 'MBHOnlineBundle') }}
+                <span id="mbh-package-info-days">{{ request.days }}</span>
+                <span id="mbh-package-info-nights">{{ request.nights }}</span>
+            </div>
+            <div class="mbh-package-amount">
+                {{ 'views.api.getPaymentType.nomerov'|trans({}, 'MBHOnlineBundle') }}
+                <span>{{ request.packages|length }}</span>
             </div>
         </div>
-    {% endfor %}
-    <div class="mbh-group-info">
-        <div class="mbh-daterange">
-            {{ 'views.api.getPaymentType.dates'|trans({}, 'MBHOnlineBundle') }}
-            <strong>{{ request.begin }} - {{ request.end }}.</strong>
-        </div>
-        <div class="mbh-days-amount">
-            {{ 'views.api.getPaymentType.days_and_nights'|trans({}, 'MBHOnlineBundle') }}
-            <span id="mbh-package-info-days">{{ request.days }}</span>
-            <span id="mbh-package-info-nights">{{ request.nights }}</span>
-        </div>
-        <div class="mbh-package-amount">
-            {{ 'views.api.getPaymentType.nomerov'|trans({}, 'MBHOnlineBundle') }}
-            <span>{{ request.packages|length }}</span>
-        </div>
-    </div>
-    <div class="mbh-price-amount">
-        {% if request.useServices %}
-            <div class="mbh-services-total">
-                <span>{{ 'views.api.getPaymentType.services'|trans({}, 'MBHOnlineBundle') }}</span>
-                <span id="mbh-package-info-total-services">{{ request.totalServices }}</span>
+        <div class="mbh-price-amount">
+            {% if request.useServices %}
+                <div class="mbh-services-total">
+                    <span>{{ 'views.api.getPaymentType.services'|trans({}, 'MBHOnlineBundle') }}</span>
+                    <span id="mbh-package-info-total-services">{{ request.totalServices }}</span>
+                    <span class="mbh-results-total-sum">{{ currency().text|trans }}</span>
+                </div>
+            {% endif %}
+            <div class="mbh-package-total">
+                {{ 'views.api.getPaymentType.nomera'|trans({}, 'MBHOnlineBundle') }}
+                <span id="mbh-package-info-total-packages" data-value="{{ request.totalPackagesRaw }}">{{ request.totalPackages }}</span>
                 <span class="mbh-results-total-sum">{{ currency().text|trans }}</span>
             </div>
-        {% endif %}
-        <div class="mbh-package-total">
-            {{ 'views.api.getPaymentType.nomera'|trans({}, 'MBHOnlineBundle') }}
-            <span id="mbh-package-info-total-packages" data-value="{{ request.totalPackagesRaw }}">{{ request.totalPackages }}</span>
-            <span class="mbh-results-total-sum">{{ currency().text|trans }}</span>
-        </div>
-        <div class="mbh-order-total">
-            {{ 'views.api.getPaymentType.order_result'|trans({}, 'MBHOnlineBundle') }}
-            <span class="mbh-results-total-sum">
+            <div class="mbh-order-total">
+                {{ 'views.api.getPaymentType.order_result'|trans({}, 'MBHOnlineBundle') }}
+                <span class="mbh-results-total-sum">
                 <span id="mbh-package-info-total">{{ request.total }}</span>
                 {{ currency().text|trans }}
             </span>
+            </div>
         </div>
-    </div>
 
-    {% if request.tariff is defined %}
-        {{ 'views.api.getPaymentType.tariff'|trans({}, 'MBHOnlineBundle') }} <strong>{{ request.tariff.title }}</strong>
-    {% endif %}
-    <span id="mbh-package-info-total-hidden" style="display: none;">{{ request.total }}</span>
+        {% if request.tariff is defined %}
+            {{ 'views.api.getPaymentType.tariff'|trans({}, 'MBHOnlineBundle') }} <strong>{{ request.tariff.title }}</strong>
+        {% endif %}
+        <span id="mbh-package-info-total-hidden" style="display: none;">{{ request.total }}</span>
+    </div>
 </div>
