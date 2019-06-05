@@ -8,6 +8,7 @@ use Liip\ImagineBundle\Templating\Helper\FilterHelper;
 use MBH\Bundle\HotelBundle\Document\Room;
 use function count;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PackageBundle\Lib\SearchCalculateEvent;
 use MBH\Bundle\PriceBundle\Document\Tariff;
@@ -67,6 +68,10 @@ class SearchResultComposer
      * @var array
      */
     private $onlineOptions;
+    /**
+     * @var RoomTypeManager
+     */
+    private $roomManager;
 
     /**
      * SearchResultComposer constructor.
@@ -88,7 +93,8 @@ class SearchResultComposer
         FilterHelper $filterHelper,
         Packages $packages,
         HttpFoundationExtension $router,
-        array $onlineOptions
+        array $onlineOptions,
+        RoomTypeManager $roomManager
 
 )
     {
@@ -102,6 +108,7 @@ class SearchResultComposer
         $this->packages = $packages;
         $this->router = $router;
         $this->onlineOptions = $onlineOptions;
+        $this->roomManager = $roomManager;
     }
 
 

@@ -177,7 +177,7 @@ class PriceCacheRepository extends DocumentRepository
     {
         $qb = $this->fetchQueryBuilder($begin, $end, null, $roomTypeIds, $tariffIds, $isUseCategory);
 
-        return $qb->field('isEnabled')->equals(true)->hydrate(false)->sort(['date' => 'asc'])->getQuery()->execute()->toArray();
+        return $qb->field('isEnabled')->equals(true)->hydrate(false)->sort(['date' => 'asc'])->getQuery()->execute();
     }
 
 

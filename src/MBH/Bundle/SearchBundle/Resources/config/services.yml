@@ -227,6 +227,7 @@ services:
             - '@assets.packages'
             - '@twig.extension.httpfoundation'
             - '%online_booking%'
+            - '@mbh.hotel.room_type_manager'
 
 # async receive results
     mbh_search.asycn_search:
@@ -381,6 +382,13 @@ services:
         factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
         arguments:
             - MBH\Bundle\PackageBundle\Document\Package
+
+    #Грязный хак. Т.к. с  основной веткой через черрипик, постоянно гемморой по поводу этого репозитория
+    mbh_search.package_accommodation_repository:
+      class: MBH\Bundle\PackageBundle\Document\PackageRepository
+      factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
+      arguments:
+        - MBH\Bundle\PackageBundle\Document\Package
 
     mbh_search.search_conditions_repository:
         class: MBH\Bundle\SearchBundle\Document\SearchConditionsRepository

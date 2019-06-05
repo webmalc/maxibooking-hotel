@@ -5,11 +5,17 @@ namespace MBH\Bundle\SearchBundle\Services\Data\Fetcher;
 
 
 use DateTime;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\PackageBundle\Document\PackageAccommodationRepository;
+use MBH\Bundle\PackageBundle\Document\PackageRepository;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\DataManagerException;
 use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher;
 
+/**
+ * Class PackageAccommodationRawFetcher
+ * @package MBH\Bundle\SearchBundle\Services\Data\Fetcher
+ */
 class PackageAccommodationRawFetcher implements DataRawFetcherInterface
 {
 
@@ -17,7 +23,7 @@ class PackageAccommodationRawFetcher implements DataRawFetcherInterface
     public const NAME = 'packageAccommodationFetcher';
 
 
-    /** @var PackageAccommodationRepository */
+    /** @var PackageRepository */
     private $repository;
     /**
      * @var SharedDataFetcher
@@ -26,16 +32,22 @@ class PackageAccommodationRawFetcher implements DataRawFetcherInterface
 
     /**
      * PackageAccommodationRawFetcher constructor.
-     * @param PackageAccommodationRepository $repository
+     * @param PackageRepository $repository
      * @param SharedDataFetcher $sharedDataFetcher
      */
-    public function __construct(PackageAccommodationRepository $repository, SharedDataFetcher $sharedDataFetcher)
+    public function __construct(PackageRepository $repository, SharedDataFetcher $sharedDataFetcher)
     {
         $this->repository = $repository;
         $this->sharedDataFetcher = $sharedDataFetcher;
     }
 
 
+    /**
+     * @param DataQueryInterface $dataQuery
+     * @return array
+     * @throws DataManagerException
+     * @throws MongoDBException
+     */
     public function getRawData(DataQueryInterface $dataQuery): array
     {
         $conditions = $dataQuery->getSearchConditions();
@@ -49,6 +61,14 @@ class PackageAccommodationRawFetcher implements DataRawFetcherInterface
         return $this->repository->getRawAccommodationByPeriod($maxBegin, $maxEnd);
     }
 
+    /**
+     * @param DateTime $begin
+     * @param DateTime $end
+     * @param string $tariffId
+     * @param string $roomTypeId
+     * @param array $data
+     * @return array
+     */
     public function getExactData(DateTime $begin, DateTime $end, string $tariffId, string $roomTypeId, array $data): array
     {
         return array_filter($data, function ($packageAccommodation) use ($begin, $end, $roomTypeId) {
@@ -64,6 +84,9 @@ class PackageAccommodationRawFetcher implements DataRawFetcherInterface
         });
     }
 
+    /**
+     * @return string
+     */
     public function getName(): string
     {
         return static::NAME;
