@@ -198,7 +198,8 @@ class SearchResultComposer
         }
         $resultConditions = ResultConditions::createInstance($conditions);
 
-        $accommodationRooms = $this->accommodationRoomSearcher->search($searchQuery);
+//        $accommodationRooms = $this->accommodationRoomSearcher->search($searchQuery);
+        $accommodationRooms = [];
         $resultAccommodationRooms = [];
         if (!count($accommodationRooms)) {
             foreach ($accommodationRooms as $accommodationRoom) {
