@@ -7,6 +7,8 @@ use MBH\Bundle\BaseBundle\EventListener\OnRemoveSubscriber\Relationship;
 use MBH\Bundle\BillingBundle\Lib\Model\BillingProperty;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\OnlineBundle\Document\SiteConfig;
+use MBH\Bundle\PackageBundle\Lib\DeleteException;
 use MBH\Bundle\PriceBundle\Document\Service;
 use MBH\Bundle\PriceBundle\Document\ServiceCategory;
 use MBH\Bundle\PriceBundle\Document\Tariff;
@@ -97,11 +99,30 @@ class HotelManager
 
         $siteConfig = $this->container->get('mbh.site_manager')->getSiteConfig();
         if (!is_null($siteConfig)) {
-            $siteConfig->getHotels()->remove($hotel);
+            $this->removeHotelFromSiteConfig($siteConfig, $hotel);
         }
         $dm->flush();
 
         return [];
+    }
+
+    private function removeHotelFromSiteConfig(SiteConfig $siteConfig, Hotel $hotel)
+    {
+        $hotelsArray = $siteConfig->getHotels()->toArray();
+        $keys = [];
+        for ($i = 0; $i < count($hotelsArray); ++$i) {
+            if ($hotelsArray[$i]->getId() === $hotel->getId()) {
+                $keys[] = $i;
+            }
+        }
+        if (count($keys) > 1) {
+            throw new DeleteException('Incredible unexpected situation');
+        }
+        if (count($keys) === 1) {
+            unset($hotelsArray[array_shift($keys)]);
+            sort($hotelsArray);
+            $siteConfig->setHotels($hotelsArray);
+        }
     }
 
     /**
