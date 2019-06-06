@@ -31,11 +31,15 @@ class DataFetcher implements DataFetcherInterface
     public function fetch(DataQueryInterface $dataQuery): array
     {
         $hash = $dataQuery->getSearchHash();
-        if (!$this->redis->has($hash)) {
-            $data = $this->fetchData($dataQuery);
-            $this->redis->set($hash, $data, self::REDIS_TIME_TTL);
-        } else {
-            $data = $this->redis->get($hash);
+        if (!($data = $this->data[$hash] ?? null)) {
+            if (!$this->redis->has($hash)) {
+                $data = $this->fetchData($dataQuery);
+                $this->redis->set($hash, $data, self::REDIS_TIME_TTL);
+            } else {
+                $data = $this->redis->get($hash);
+            }
+
+            $this->data[$hash] = $data;
         }
 
         return $this->getExactData($dataQuery, $data);
@@ -61,5 +65,9 @@ class DataFetcher implements DataFetcherInterface
         return $this->rawFetcher->getName();
     }
 
+    public function cleanMemoryData(string $hash): void
+    {
+        unset($this->data[$hash]);
+    }
 
 }
