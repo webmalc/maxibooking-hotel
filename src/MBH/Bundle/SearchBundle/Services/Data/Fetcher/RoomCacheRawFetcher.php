@@ -12,7 +12,7 @@ use MBH\Bundle\SearchBundle\Services\Data\ActualChildOptionDeterminer;
 
 class RoomCacheRawFetcher implements DataRawFetcherInterface
 {
-    /** @var string  */
+    /** @var string */
     public const NAME = 'roomCacheFetcher';
 
     /** @var RoomCacheRepository */
@@ -26,8 +26,10 @@ class RoomCacheRawFetcher implements DataRawFetcherInterface
      * RoomCacheRawFetcher constructor.
      * @param RoomCacheRepository $roomCacheRepository
      */
-    public function __construct(RoomCacheRepository $roomCacheRepository, ActualChildOptionDeterminer $actualChildOptionDeterminer)
-    {
+    public function __construct(
+        RoomCacheRepository $roomCacheRepository,
+        ActualChildOptionDeterminer $actualChildOptionDeterminer
+    ) {
         $this->roomCacheRepository = $roomCacheRepository;
         $this->actualChildOptionDeterminer = $actualChildOptionDeterminer;
     }
@@ -36,66 +38,62 @@ class RoomCacheRawFetcher implements DataRawFetcherInterface
     {
         $conditions = $dataQuery->getSearchConditions();
         if (!$conditions) {
-            throw new DataManagerException('Critical Error in %s fetcher. No SearchConditions in SearchQuery', __CLASS__);
+            throw new DataManagerException(
+                'Critical Error in %s fetcher. No SearchConditions in SearchQuery', __CLASS__
+            );
         }
 
-        return $this->roomCacheRepository->fetchRaw($conditions->getMaxBegin(), $conditions->getMaxEnd());
+        $rawData = $this->roomCacheRepository->fetchRaw($conditions->getMaxBegin(), $conditions->getMaxEnd());
+        $data = [];
+        foreach ($rawData as $rawRoomCache) {
+            $roomTypeIdKey = (string)$rawRoomCache['roomType']['$id'];
+            $dateKey = Helper::convertMongoDateToDate($rawRoomCache['date'])->format('d-m-Y');
+            $data[$roomTypeIdKey][$dateKey][] = $rawRoomCache;
+        }
+
+        return $data;
     }
 
-    public function getExactData(DateTime $begin, DateTime $end, string $tariffId, string $roomTypeId, array $data): array
-    {
+    public function getExactData(
+        DateTime $begin,
+        DateTime $end,
+        string $tariffId,
+        string $roomTypeId,
+        array $data
+    ): array {
+
         $tariffId = $this->actualChildOptionDeterminer->getActualRoomTariff($tariffId);
+        $roomCaches = [];
+        $groupedRoomCaches = $data[$roomTypeId] ?? [];
 
-        $allFiltered =  array_filter($data, static function ($priceCache) use ($begin, $end, $tariffId, $roomTypeId) {
-            $date = Helper::convertMongoDateToDate($priceCache['date']);
-            /** Pay attention, $date < $end   */
-            $isDateMatch = $begin <= $date && $date < $end;
-            $isRoomTypeMatch = (string)$priceCache['roomType']['$id'] === $roomTypeId;
+        foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
+            /** @var \DateTime $day */
+            $dayRoomCaches = $groupedRoomCaches[$day->format('d-m-Y')] ?? null;
+            if (is_array($dayRoomCaches)) {
+                $roomCaches[] = array_reduce(
+                    $dayRoomCaches,
+                    static function ($carry, $roomCache) use ($tariffId) {
+                        if (null === $carry && !isset($roomCache['tariff'])) {
+                            $carry = $roomCache;
+                        }
+                        if (isset($roomCache['tariff']) && (string)$roomCache['tariff']['$id'] === $tariffId) {
+                            $carry = $roomCache;
+                        }
 
-            $priceCacheTariff = $priceCache['tariff'] ?? null;
+                        return $carry;
+                    }
+                );
+            }
 
-            $isTariffMatch = null ===  $priceCacheTariff || (string)$priceCacheTariff['$id'] === $tariffId;
+        }
 
-            return $isDateMatch && $isRoomTypeMatch && $isTariffMatch;
-        });
-
-
-
-        return $this->mergeQuotedRoomCaches($allFiltered, $tariffId);
+        return $roomCaches;
     }
+
 
     public function getName(): string
     {
         return self::NAME;
     }
-
-    private function mergeQuotedRoomCaches(array $roomCaches, string $tariffId): array
-    {
-        $dateGrouped = [];
-        foreach ($roomCaches as $roomCache) {
-            $date = Helper::convertMongoDateToDate($roomCache['date']);
-            $dateGrouped[$date->format('d.m.Y')][] = $roomCache;
-        }
-
-        $result = [];
-        foreach ($dateGrouped as $group) {
-            $amount = count($group);
-            if ($amount === 1) {
-                $result[] = reset($group);
-            } elseif ($amount === 2) {
-                $filteredCaches = array_filter($group, function ($roomCache) use ($tariffId){
-                    $tariff = $roomCache['tariff'] ?? null;
-
-                    return $tariff ? (string)$tariff['$id'] === $tariffId : false;
-                });
-                $result[] = array_merge(...$filteredCaches);
-            } else {
-                throw new DataManagerException('Room Cache amount more than can be in normal work!');
-            }
-        }
-
-        return $result;
-    }
-
 
 }
