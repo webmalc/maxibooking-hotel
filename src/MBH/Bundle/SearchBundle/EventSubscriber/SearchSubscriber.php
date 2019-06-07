@@ -44,7 +44,7 @@ class SearchSubscriber implements EventSubscriberInterface
     {
         $conditions = $event->getSearchConditions();
         $hash = $conditions->getSearchHash();
-        $this->client->set($hash, $hash, 'EX', 120);
+        $this->client->set($hash, $hash, 'EX', 1800);
         $this->client->sadd(SearchEvent::SEARCH_ASYNC_END, [$hash]);
     }
 

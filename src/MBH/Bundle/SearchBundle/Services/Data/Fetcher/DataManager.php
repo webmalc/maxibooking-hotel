@@ -46,15 +46,13 @@ class DataManager
     {
         $hashes = $this->client->smembers(SearchEvent::SEARCH_ASYNC_END);
         if (count($hashes)) {
-            foreach ($hashes as $hash) {
-                if (!$searchHash = $this->client->get($hash)) {
-                    $this->client->srem($hash, SearchEvent::SEARCH_ASYNC_END);
-                } else {
-                    foreach ($this->fetchersMap as $fetcher) {
-                        $fetcher->cleanMemoryData($searchHash);
+            foreach ($hashes as $hashKey) {
+                $hash = $this->client->get($hashKey);
+                    if ($hash) {
+                        foreach ($this->fetchersMap as $fetcher) {
+                            $fetcher->cleanMemoryData($hash);
+                        }
                     }
-                }
-
             }
         }
 
