@@ -8,6 +8,7 @@ use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Document\SearchResultCacheItem;
 use MBH\Bundle\SearchBundle\Form\RoomTypesType;
 use MBH\Bundle\SearchBundle\Form\SearchConditionsType;
+use MBH\Bundle\SearchBundle\Lib\Events\SearchEvent;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\AsyncResultReceiverException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\GroupingFactoryException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\RoomTypesTypeException;
@@ -103,6 +104,9 @@ class SearchController extends Controller
             $answer = new JsonResponse($json, 200, [], true);
         } catch (AsyncResultReceiverException $exception) {
             $answer = new JsonResponse(['results' => [], 'message' => $exception->getMessage()], 204);
+            $event = new SearchEvent();
+            $event->setSearchConditions($conditions);
+            $this->get('event_dispatcher')->dispatch(SearchEvent::SEARCH_ASYNC_END, $event);
         }
 
         return $answer;

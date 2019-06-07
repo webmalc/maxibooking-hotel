@@ -16,33 +16,26 @@ class RoomRawFetcher implements DataRawFetcherInterface
 
     /** @var RoomRepository */
     private $roomRepository;
-    /**
-     * @var SharedDataFetcher
-     */
-    private $sharedDataFetcher;
 
     /**
      * RoomRawFetcher constructor.
      * @param RoomRepository $roomRepository
      * @param SharedDataFetcher $sharedDataFetcher
      */
-    public function __construct(RoomRepository $roomRepository, SharedDataFetcher $sharedDataFetcher)
+    public function __construct(RoomRepository $roomRepository)
     {
         $this->roomRepository = $roomRepository;
-        $this->sharedDataFetcher = $sharedDataFetcher;
     }
 
 
     public function getRawData(DataQueryInterface $dataQuery): array
     {
-        return $this->roomRepository->fetchRawAllRoomsByRoomType();
+        return $this->roomRepository->fetchRawAllRoomsByRoomType([], true);
     }
 
     public function getExactData(DateTime $begin, DateTime $end, string $tariffId, string $roomTypeId, array $data): array
     {
-        return array_filter($data, function ($room) use ($roomTypeId){
-            return $roomTypeId === $this->sharedDataFetcher->getRoomTypeIdOfRoomId((string)$room['_id']);
-        });
+        return $data[$roomTypeId] ?? [];
     }
 
     public function getName(): string

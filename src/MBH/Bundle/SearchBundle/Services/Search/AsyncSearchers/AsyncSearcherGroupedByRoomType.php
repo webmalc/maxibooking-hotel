@@ -9,6 +9,7 @@ use MBH\Bundle\SearchBundle\Document\SearchConditionsRepository;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\ConsumerSearchException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
+use MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataManager;
 use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupByRoomType;
 use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupInterface;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStoreInterface;
@@ -30,6 +31,10 @@ class AsyncSearcherGroupedByRoomType implements AsyncSearcherInterface
 
     /** @var AsyncSearchDecisionMakerInterface */
     private $decisionMaker;
+    /**
+     * @var DataManager
+     */
+    private $dataManager;
 
     /**
      * ConsumerSearch constructor.
@@ -37,18 +42,22 @@ class AsyncSearcherGroupedByRoomType implements AsyncSearcherInterface
      * @param AsyncResultStoreInterface $resultStore
      * @param SearcherFactory $searcherFactory
      * @param AsyncSearchDecisionMakerInterface $decisionMaker
+     * @param DataManager $dataManager
      */
     public function __construct(
         SearchConditionsRepository $conditionsRepository,
         AsyncResultStoreInterface $resultStore,
         SearcherFactory $searcherFactory,
-        AsyncSearchDecisionMakerInterface $decisionMaker)
+        AsyncSearchDecisionMakerInterface $decisionMaker,
+        DataManager  $dataManager
+    )
 
     {
         $this->conditionsRepository = $conditionsRepository;
         $this->asyncResultStore = $resultStore;
         $this->searcherFactory = $searcherFactory;
         $this->decisionMaker = $decisionMaker;
+        $this->dataManager = $dataManager;
     }
 
 
@@ -99,7 +108,13 @@ class AsyncSearcherGroupedByRoomType implements AsyncSearcherInterface
         $dm->detach($conditions);
         $dm->flush();
         $dm->clear();
+        $this->clearTemporaryData();
 
+    }
+
+    private function clearTemporaryData(): void
+    {
+        $this->dataManager->cleanMemoryData();
     }
 
 }

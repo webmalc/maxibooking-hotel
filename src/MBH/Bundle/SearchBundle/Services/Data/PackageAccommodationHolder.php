@@ -7,6 +7,7 @@ namespace MBH\Bundle\SearchBundle\Services\Data;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\SearchBundle\Lib\Data\DataFetchQueryInterface;
 use MBH\Bundle\SearchBundle\Lib\Data\PackageAccommodationFetchQuery;
+use MongoDate;
 
 class PackageAccommodationHolder implements DataHolderInterface
 {
@@ -56,13 +57,12 @@ class PackageAccommodationHolder implements DataHolderInterface
         $this->data[$hash] = $accommodationGroupedByRoomType;
     }
 
-    private function createAccommodationDateKey(\MongoDate $begin, \MongoDate $end): string
+    private function createAccommodationDateKey(MongoDate $begin, MongoDate $end): string
     {
-        $key = Helper::convertMongoDateToDate($begin)->format('d-m-Y');
-        $key .= '_';
-        $key .= Helper::convertMongoDateToDate($end)->format('d-m-Y');
+        $keyBegin = Helper::convertMongoDateToDate($begin)->format('d-m-Y');
+        $keyEnd = Helper::convertMongoDateToDate($end)->format('d-m-Y');
 
-        return $key;
+        return sprintf('%s_%s', $keyBegin, $keyEnd);
     }
 
 }

@@ -8,6 +8,7 @@ use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\AdditionalRoomTypeData;
 use MBH\Bundle\PriceBundle\DataFixtures\MongoDB\AdditionalTariffData;
 use MBH\Bundle\SearchBundle\Lib\Data\RoomCacheFetchQuery;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\DataFetchQueryException;
 use MBH\Bundle\SearchBundle\Services\Data\Fetcher\RoomCacheRawFetcher;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
@@ -15,6 +16,7 @@ class RoomCacheFetcherTest extends SearchWebTestCase
 {
     /** @dataProvider roomCacheDataProvider
      * @param $data
+     * @throws DataFetchQueryException
      */
     public function testFetchNecessaryDataSet($data): void
     {
@@ -40,6 +42,24 @@ class RoomCacheFetcherTest extends SearchWebTestCase
 
     public function roomCacheDataProvider(): iterable
     {
+        yield [
+            [
+                'beginOffset' => 0,
+                'endOffset' => 5,
+                'tariffFullTitle' => AdditionalTariffData::CHILD_UP_TARIFF_NAME,
+                'roomTypeFullTitle' => AdditionalRoomTypeData::THREE_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
+                'hotelFullTitle' => 'Отель Волга',
+                'expected' => [
+                    0 => null,
+                    1 => null,
+                    2 => 8,
+                    3 => 8,
+                    4 => 12
+                ],
+            ]
+        ];
+
+
         yield [
             [
                 'beginOffset' => 0,
@@ -74,22 +94,6 @@ class RoomCacheFetcherTest extends SearchWebTestCase
             ]
         ];
 
-        yield [
-            [
-                'beginOffset' => 0,
-                'endOffset' => 5,
-                'tariffFullTitle' => AdditionalTariffData::CHILD_UP_TARIFF_NAME,
-                'roomTypeFullTitle' => AdditionalRoomTypeData::THREE_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
-                'hotelFullTitle' => 'Отель Волга',
-                'expected' => [
-                    0 => null,
-                    1 => null,
-                    2 => 8,
-                    3 => 8,
-                    4 => 12
-                ],
-            ]
-        ];
 
         yield [
             [

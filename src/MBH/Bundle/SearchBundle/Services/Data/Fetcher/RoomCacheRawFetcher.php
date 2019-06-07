@@ -25,6 +25,7 @@ class RoomCacheRawFetcher implements DataRawFetcherInterface
     /**
      * RoomCacheRawFetcher constructor.
      * @param RoomCacheRepository $roomCacheRepository
+     * @param ActualChildOptionDeterminer $actualChildOptionDeterminer
      */
     public function __construct(
         RoomCacheRepository $roomCacheRepository,

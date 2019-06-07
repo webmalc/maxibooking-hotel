@@ -6,18 +6,18 @@ namespace MBH\Bundle\SearchBundle\Services\Search;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
+use MBH\Bundle\SearchBundle\Lib\Events\SearchEvent;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
-use MBH\Bundle\SearchBundle\Lib\Result\DayGroupSearchQuery;
-use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\QueryGroups\AsyncQueryGroupInterface;
 use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupCreator;
 use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupInterface;
 use MBH\Bundle\SearchBundle\Services\RestrictionsCheckerService;
 use MBH\Bundle\SearchBundle\Services\SearchConditionsCreator;
-use MBH\Bundle\SearchBundle\Services\FinalSearchResultsBuilder;
 use MBH\Bundle\SearchBundle\Services\SearchCombinationsGenerator;
 use OldSound\RabbitMqBundle\RabbitMq\ProducerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class Search
 {
@@ -48,6 +48,10 @@ class Search
 
     /** @var QueryGroupCreator */
     private $queryGroupCreator;
+    /**
+     * @var EventDispatcher
+     */
+    private $dispatcher;
 
     /**
      * Search constructor.
@@ -59,6 +63,7 @@ class Search
      * @param ProducerInterface $producer
      * @param FinalSearchResultsAnswerManager $builder
      * @param QueryGroupCreator $groupCreator
+     * @param EventDispatcherInterface $dispatcher
      */
     public function __construct(
         RestrictionsCheckerService $restrictionsChecker,
@@ -68,7 +73,8 @@ class Search
         SearchCombinationsGenerator $queryGenerator,
         ProducerInterface $producer,
         FinalSearchResultsAnswerManager $builder,
-        QueryGroupCreator $groupCreator
+        QueryGroupCreator $groupCreator,
+        EventDispatcherInterface $dispatcher
     )
     {
         $this->restrictionChecker = $restrictionsChecker;
@@ -79,6 +85,7 @@ class Search
         $this->producer = $producer;
         $this->resultsBuilder = $builder;
         $this->queryGroupCreator = $groupCreator;
+        $this->dispatcher = $dispatcher;
     }
 
 
@@ -99,7 +106,12 @@ class Search
         bool $isCreateAnswer = false
     )
     {
+        $event = new SearchEvent();
         $conditions = $this->createSearchConditions($data);
+
+        $event->setSearchConditions($conditions);
+        $this->dispatcher->dispatch(SearchEvent::SEARCH_SYNC_START, $event);
+
         $searchCombinations = $this->combinationsGenerator->generate($conditions);
         $searchQueries = $searchCombinations->createSearchQueries($conditions);
 
@@ -121,6 +133,7 @@ class Search
             $grouping
         );
 
+        $this->dispatcher->dispatch(SearchEvent::SEARCH_SYNC_END, $event);
 
         return $results;
     }

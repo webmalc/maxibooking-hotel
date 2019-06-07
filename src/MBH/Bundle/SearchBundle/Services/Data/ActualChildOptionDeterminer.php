@@ -57,7 +57,7 @@ class ActualChildOptionDeterminer
         $tariff = $this->sharedData->getFetchedTariff($tariffId);
 
         if ($tariff->getParent() && $tariff->getChildOptions()->$fieldName()) {
-            return $tariff->getParent()->getId();
+            $tariffId = $this->getActualField($tariff->getParent()->getId(), $fieldName);
         }
 
         return $tariffId;
