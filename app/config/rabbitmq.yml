@@ -39,7 +39,6 @@ old_sound_rabbit_mq:
         connection:       default
         exchange_options: {name: 'async_search', type: direct}
 
-
       warm_up_search:
           connection:       default
           exchange_options: {name: 'warm_up_search', type: direct}
@@ -78,7 +77,7 @@ old_sound_rabbit_mq:
         queue_options:    {name: 'async_search'}
         callback:         mbh_search.asycn_search
         graceful_max_execution:
-          timeout: 3600
+          timeout: 1800
           exit_code: 10
 
 

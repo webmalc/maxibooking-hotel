@@ -164,7 +164,14 @@ class Search
                 'searchQueriesGroup' => serialize($queryGroup)
             ];
             $msgBody = json_encode($message);
-            $this->producer->publish($msgBody, '', ['priority' => $queryGroup->getQueuePriority()]);
+            $this->producer->publish(
+                $msgBody,
+                '',
+                [
+                    'priority' => $queryGroup->getQueuePriority(),
+                    'expiration' => 30000
+                ]
+            );
         }
 
         $conditions->setExpectedResultsCount($countQueries);
