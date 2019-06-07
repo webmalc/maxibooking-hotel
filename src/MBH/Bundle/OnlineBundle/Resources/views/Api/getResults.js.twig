@@ -38,7 +38,7 @@ jQuery(document).ready(function() {
         window.parent.postMessage({
             type: 'mbh',
             action: 'resize',
-            height: $('body').height()
+            height: jQuery('body').height()
         }, "*");
     };
 
@@ -175,7 +175,7 @@ jQuery(document).ready(function() {
                         }
                     });
                     if (document.body.scrollHeight > screen.height) {
-                        $('.fancybox').fancybox({
+                        jQuery('.fancybox').fancybox({
                             'afterLoad': function () {
                                 var fancyTopOffset = screen.height / 2 - frameOffset - document.body.scrollHeight / 2;
                                 var offsetLimit = document.body.scrollHeight / 2 - screen.height / 2 + 30;
@@ -184,7 +184,7 @@ jQuery(document).ready(function() {
                                 } else if (fancyTopOffset * (-1) > offsetLimit) {
                                     fancyTopOffset = (-1) * offsetLimit;
                                 }
-                                $('.fancybox-placeholder').css('top', fancyTopOffset);
+                                jQuery('.fancybox-placeholder').css('top', fancyTopOffset);
                             }
                         });
                     }
@@ -442,36 +442,66 @@ jQuery(document).ready(function() {
 
                             // validate user form
                             (function() {
+                                var phone = jQuery('#mbh-user-form-phone');
+                                var email = jQuery('#mbh-user-form-email');
+                                var name = jQuery('#mbh-user-form-firstName');
+                                var lastName = jQuery('#mbh-user-form-lastName');
+                                var inputs = jQuery('#mbh-user-form input:required, #mbh-user-form-email');
+
                                 var validateEmail = function () {
-                                    return $('#mbh-user-form-email').val().match('^[a-z0-9._%+-]+@[a-z0-9._%+-]+\\.\\w{2,4}$');
+                                    if (email.val() && !email.val().match('^[a-z0-9._%+-]+@[a-z0-9._%+-]+\\.\\w{2,4}$')) {
+                                        email.css('border', '1px solid red');
+                                        return false;
+                                    } else {
+                                        email.css('border', '');
+                                        return true;
+                                    }
+                                }
+                                var validatePhone = function () {
+                                    if (!phone.val().match('^([1-9]{1}|\\+)[0-9]{4,16}$')) {
+                                        phone.css('border', '1px solid red');
+                                        return false;
+                                    } else {
+                                        phone.css('border', '');
+                                        return true;
+                                    }
+                                }
+                                var validateName = function () {
+                                    if (!name.val()) {
+                                        name.css('border', '1px solid red');
+                                        return false;
+                                    } else {
+                                        name.css('border', '');
+                                        return true;
+                                    }
+                                }
+                                var validateLastName = function () {
+                                    if (!lastName.val()) {
+                                        lastName.css('border', '1px solid red');
+                                        return false;
+                                    } else {
+                                        lastName.css('border', '');
+                                        return true;
+                                    }
                                 }
 
-                                var inputs = jQuery('#mbh-user-form input:required'),
-                                    validate = function() {
-                                        var nextButton = jQuery('#mbh-user-form-next');
+                                var validate = function() {
+                                    var nextButton = jQuery('#mbh-user-form-next');
+                                    nextButton.prop('disabled', true);
+
+                                    var emailRes = validateEmail();
+                                    var nameRes = validateName();
+                                    var lastNameRes = validateLastName();
+                                    var phoneRes = validatePhone();
+
+                                    if (emailRes && nameRes && lastNameRes && phoneRes) {
                                         nextButton.prop('disabled', false);
-                                        inputs.each(function() {
-                                            if (!jQuery(this).val() || (this.type == 'checkbox' && !$(this).is(':checked'))) {
-                                                nextButton.prop('disabled', true);
-                                                return false;
-                                            }
-                                        });
-                                        if ($('#mbh-user-form-email').val()) {
-                                            if (!validateEmail()) {
-                                                nextButton.prop('disabled', true);
-                                                $('#mbh-user-form-email').css('border', '1px solid red');
-                                                return false;
-                                            } else {
-                                                $('#mbh-user-form-email').css('border', '');
-                                                return true;
-                                            }
-                                        }
-                                    };
+                                    }
+                                };
+
                                 validate();
-                                inputs.bind("propertychange change click keyup input paste", function() {
-                                    validate();
-                                })
-                                $('#mbh-user-form-email').bind('propertychange change keyup input paste blur', function () {
+
+                                inputs.bind("propertychange change click keyup input paste blur", function() {
                                     validate();
                                 })
                             }());
@@ -513,7 +543,7 @@ jQuery(document).ready(function() {
                                 requestParams.total = String(total);
                                 requestParams.totalServices = String(totalServices);
 
-                                var $personalDataCheckbox = $('#mbh-form-personal-data');
+                                var $personalDataCheckbox = jQuery('#mbh-form-personal-data');
                                 requestParams.isConfrmWithPersDataProcessing
                                     = $personalDataCheckbox.length == 1 && $personalDataCheckbox.is(':checked');
                                 requestParams.configId = "{{ configId }}";
@@ -573,7 +603,7 @@ jQuery(document).ready(function() {
                                             }
                                             var togglePaymentSystemVisibility = function () {
                                                 var selectedPaymentType = jQuery('.mbh-payment-types-radio:checked').val();
-                                                var $paymentSystemsBlock = $('#mbh-payment-systems');
+                                                var $paymentSystemsBlock = jQuery('#mbh-payment-systems');
                                                 if (onlinePaymentTypes.indexOf(selectedPaymentType) > -1) {
                                                     $paymentSystemsBlock.show();
                                                 } else {
