@@ -10,6 +10,7 @@ use MBH\Bundle\SearchBundle\Document\SearchConditionsRepository;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\ConsumerSearchException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
+use MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataManager;
 use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupByRoomType;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStore;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncSearchers\AsyncSearchDecisionMakerInterface;
@@ -67,7 +68,9 @@ class AsyncSearcherGroupedByRoomTypeTest extends SearchWebTestCase
         $group = new QueryGroupByRoomType();
         $group->setSearchQueries([clone $searchQuery, clone $searchQuery, clone $searchQuery]);
 
-        $search = new AsyncSearcherGroupedByRoomType($conditionsRepository, $resultStore, $searcherFactory, $decisionMaker);
+        $dataManager = $this->createMock(DataManager::class);
+
+        $search = new AsyncSearcherGroupedByRoomType($conditionsRepository, $resultStore, $searcherFactory, $decisionMaker, $dataManager);
         $search->search('fakeConditionsId', $group);
         $search->search('fakeConditionsId', $group);
 

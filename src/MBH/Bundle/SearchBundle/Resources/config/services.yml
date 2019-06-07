@@ -110,6 +110,7 @@ services:
             - '@mbh_search.async_result_store'
             - '@mbh_search.searcher_factory'
             - '@mbh_search.room_type_search_decision_maker'
+            - '@mbh_search.data_manager'
 
     mbh_search.room_type_search_decision_maker:
         class: MBH\Bundle\SearchBundle\Services\Search\AsyncSearchers\RoomTypeSearchDecisionMaker
@@ -185,6 +186,7 @@ services:
             - '@old_sound_rabbit_mq.async_search_producer'
             - '@mbh_search.results_answer_manager'
             - '@mbh_search.query_group_creator'
+            - '@event_dispatcher'
 
     mbh_search.accommodation_room_searcher:
         class: MBH\Bundle\SearchBundle\Services\AccommodationRoomSearcher
@@ -212,7 +214,6 @@ services:
         arguments:
             - '@mbh_search.tariff_repository'
             - '@mbh_search.data_manager'
-            - '@mbh_search.actual_child_option_determiner'
 
     mbh_search.result_composer:
         class: MBH\Bundle\SearchBundle\Services\Search\SearchResultComposer
@@ -599,6 +600,8 @@ services:
 #Fetchers!
     mbh_search.data_manager:
         class: MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataManager
+        arguments:
+            - '@snc_redis.clean_client'
         calls:
             - [addFetcher, ['@mbh_search.price_cache_fetcher']]
             - [addFetcher, ['@mbh_search.restrictions_fetcher']]
@@ -674,7 +677,7 @@ services:
         class: MBH\Bundle\SearchBundle\Services\Data\Fetcher\RoomRawFetcher
         public: false
         arguments:
-          ['@mbh_search.room_repository', '@mbh_search.shared_data_fetcher']
+          ['@mbh_search.room_repository']
 
 
     mbh_search.actual_child_option_determiner:
@@ -779,6 +782,14 @@ services:
         class: MBH\Bundle\SearchBundle\EventSubscriber\InvalidateEventSubscriber
         tags:
             - {name: kernel.event_subscriber, event: invalidator.key.invalidate }
+
+    mbh_search.search.event.subscriber:
+        arguments:
+            - '@mbh_search.data_manager'
+            - '@snc_redis.clean_client'
+        class: MBH\Bundle\SearchBundle\EventSubscriber\SearchSubscriber
+        tags:
+            - {name: kernel.event_subscriber }
 
 #compare command
     mbh_search.compare.command:

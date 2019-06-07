@@ -108,6 +108,24 @@ class PriceCacheFetcherTest extends SearchWebTestCase
 
     public function priceCachesDataProvider(): iterable
     {
+
+        yield [
+            [
+                'isCategory' => false,
+                'beginOffset' => 6,
+                'endOffset' => 11,
+                'tariffFullTitle' => AdditionalTariffData::CHILD_UP_TARIFF_NAME,
+                'roomTypeFullTitle' => AdditionalRoomTypeData::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
+                'hotelFullTitle' => 'Отель Волга',
+                'expected' => [
+                    'count' => 3,
+                    'TariffName' => AdditionalTariffData::UP_TARIFF_NAME,
+                    'RoomType' => AdditionalRoomTypeData::TWO_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
+                    'RoomTypeCategory' => null
+                ]
+            ]
+        ];
+
         yield [
             [
                 'isCategory' => false,
@@ -124,6 +142,9 @@ class PriceCacheFetcherTest extends SearchWebTestCase
                 ]
             ]
         ];
+
+
+
         yield [
             [
                 'isCategory' => true,

@@ -8,13 +8,16 @@ use Symfony\Component\Cache\Simple\AbstractCache;
 
 class DataFetcher implements DataFetcherInterface
 {
-    protected const REDIS_TIME_TTL = 300;
+    protected const REDIS_TIME_TTL = 120;
 
     /** @var AbstractCache */
     private $redis;
 
     /** @var DataRawFetcherInterface */
     private $rawFetcher;
+
+    /** @var array */
+    private $data;
 
     /**
      * AbstractDataFetcher constructor.
@@ -65,9 +68,17 @@ class DataFetcher implements DataFetcherInterface
         return $this->rawFetcher->getName();
     }
 
+    //** TODO: Временный костыль для очистки памяти пока не придет что то вменяемое. */
     public function cleanMemoryData(string $hash): void
     {
-        unset($this->data[$hash]);
+        if (isset($this->data[$hash])) {
+            unset($this->data[$hash]);
+        }
+
+        if ($this->redis->has($hash)) {
+            $this->redis->deleteItem($hash);
+        }
+
     }
 
 }

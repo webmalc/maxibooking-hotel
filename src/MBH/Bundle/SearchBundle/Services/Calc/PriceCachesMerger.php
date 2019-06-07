@@ -19,17 +19,11 @@ class PriceCachesMerger
 
     /** @var DataManager */
     private $dataManager;
-    /**
-     * @var ActualChildOptionDeterminer
-     */
-    private $childOptionDeterminer;
 
-
-    public function __construct(TariffRepository $tariffRepository, DataManager $dataManager, ActualChildOptionDeterminer $childOptionDeterminer)
+    public function __construct(TariffRepository $tariffRepository, DataManager $dataManager)
     {
         $this->tariffRepository = $tariffRepository;
         $this->dataManager = $dataManager;
-        $this->childOptionDeterminer = $childOptionDeterminer;
     }
 
 
@@ -116,8 +110,7 @@ class PriceCachesMerger
     private function getPriceTariffPriceCaches(CalcQuery $calcQuery): array
     {
         $currentTariff = $calcQuery->getTariff()->getId();
-        $priceTariff = $this->childOptionDeterminer->getActualPriceTariff($currentTariff);
-        $priceCaches = $this->getRawPriceCaches($calcQuery, $priceTariff);
+        $priceCaches = $this->getRawPriceCaches($calcQuery, $currentTariff);
 
         return $this->preparePriceCacheReturn($priceCaches, $currentTariff);
     }
@@ -126,8 +119,7 @@ class PriceCachesMerger
     private function getMergingTariffPriceCaches(CalcQuery $calcQuery): array
     {
         if ($mergingTariffId = $calcQuery->getMergingTariffId()) {
-            $priceTariff = $this->childOptionDeterminer->getActualPriceTariff($mergingTariffId);
-            $priceCaches = $this->getRawPriceCaches($calcQuery, $priceTariff);
+            $priceCaches = $this->getRawPriceCaches($calcQuery, $mergingTariffId);
 
             return $this->preparePriceCacheReturn($priceCaches, $mergingTariffId);
         }
@@ -175,7 +167,7 @@ class PriceCachesMerger
 
     private function preparePriceCacheReturn(array $caches, string $tariffId): array
     {
-        @trigger_error('There is server determite price tariff exists, so refactor this crap.');
+        @trigger_error('There is server determine price tariff exists, so refactor this crap.');
         return [
             'searchTariffId' => $tariffId,
             'caches' => $caches

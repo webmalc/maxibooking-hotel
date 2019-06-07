@@ -58,7 +58,17 @@ class PackageAccommodationRawFetcher implements DataRawFetcherInterface
         $maxBegin = $conditions->getMaxBegin();
         $maxEnd = $conditions->getMaxEnd();
 
-        return $this->repository->getRawAccommodationByPeriod($maxBegin, $maxEnd);
+        $data =  $this->repository->getRawAccommodationByPeriod($maxBegin, $maxEnd);
+
+        $accommodationGroupedByRoomType = [];
+        foreach ($data as $packageAccommodation) {
+            $roomId = (string)$packageAccommodation['accommodation']['$id'];
+            $roomTypeId = $this->sharedDataFetcher->getRoomTypeIdOfRoomId($roomId);
+            $accommodationDateKey = $this->createAccommodationDateKey($packageAccommodation['begin'], $packageAccommodation['end']);
+            $accommodationGroupedByRoomType[$roomTypeId][$accommodationDateKey][] = $packageAccommodation;
+        }
+
+        return $accommodationGroupedByRoomType;
     }
 
     /**
@@ -71,21 +81,20 @@ class PackageAccommodationRawFetcher implements DataRawFetcherInterface
      */
     public function getExactData(DateTime $begin, DateTime $end, string $tariffId, string $roomTypeId, array $data): array
     {
-        return array_filter($data, function ($packageAccommodation) use ($begin, $end, $roomTypeId) {
-            $accommodationBegin = Helper::convertMongoDateToDate($packageAccommodation['begin']);
-            $accommodationEnd = Helper::convertMongoDateToDate($packageAccommodation['end']);
-            $accommodationRoom = $packageAccommodation['accommodation']['$id'] ?? null;
-            $accommodationRoomTypeId = null;
-            if ($accommodationRoom) {
-                $accommodationRoomTypeId = $this->sharedDataFetcher->getRoomTypeIdOfRoomId((string)$accommodationRoom);
+        $groupedAccommodations = $data[$roomTypeId] ?? [];
+        $result = [];
+        foreach ($groupedAccommodations as $datesKey => $accommodations) {
+            ['begin' => $accBegin , 'end' => $accEnd] = $this->splitKeyToDates($datesKey);
+            if ($accBegin < $end && $accEnd > $begin) {
+                $result[] = $accommodations;
             }
+        }
 
-            $datesMatch = $accommodationBegin < $end && $accommodationEnd > $begin;
-            $roomTypeMatch = $accommodationRoomTypeId === $roomTypeId;
+        if (count($result)) {
+            $result = array_merge(...$result);
+        }
 
-            return $datesMatch && $roomTypeMatch;
-
-        });
+        return $result;
     }
 
     /**
@@ -94,6 +103,24 @@ class PackageAccommodationRawFetcher implements DataRawFetcherInterface
     public function getName(): string
     {
         return static::NAME;
+    }
+
+    private function splitKeyToDates(string $key)
+    {
+        [$begin, $end] = explode('_', $key);
+
+        return [
+            'begin' => new DateTime(sprintf('%s midnight', $begin)),
+            'end' => new DateTime(sprintf('%s midnight', $end))
+        ];
+    }
+
+    private function createAccommodationDateKey(\MongoDate $begin, \MongoDate $end): string
+    {
+        $keyBegin = Helper::convertMongoDateToDate($begin)->format('d-m-Y');
+        $keyEnd = Helper::convertMongoDateToDate($end)->format('d-m-Y');
+
+        return sprintf('%s_%s', $keyBegin, $keyEnd);
     }
 
 }

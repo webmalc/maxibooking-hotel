@@ -4,12 +4,28 @@
 namespace MBH\Bundle\SearchBundle\Services\Data\Fetcher;
 
 
+use MBH\Bundle\SearchBundle\Lib\Events\SearchEvent;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\DataFetchQueryException;
+use Predis\Client;
+
 
 class DataManager
 {
     /** @var DataFetcherInterface[] */
     private $fetchersMap = [];
+
+    /** @var Client */
+    private $client;
+
+    /**
+     * DataManager constructor.
+     * @param Client $client
+     */
+    public function __construct(Client $client)
+    {
+        $this->client = $client;
+    }
+
 
     public function addFetcher(DataFetcherInterface $fetcher): void
     {
@@ -25,4 +41,23 @@ class DataManager
 
         return $fetcher->fetch($searchQuery);
     }
+
+    public function cleanMemoryData(): void
+    {
+        $hashes = $this->client->smembers(SearchEvent::SEARCH_ASYNC_END);
+        if (count($hashes)) {
+            foreach ($hashes as $hash) {
+                if (!$searchHash = $this->client->get($hash)) {
+                    $this->client->srem($hash, SearchEvent::SEARCH_ASYNC_END);
+                } else {
+                    foreach ($this->fetchersMap as $fetcher) {
+                        $fetcher->cleanMemoryData($searchHash);
+                    }
+                }
+
+            }
+        }
+
+    }
+
 }

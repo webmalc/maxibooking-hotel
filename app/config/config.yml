@@ -289,6 +289,14 @@ snc_redis:
             dsn: '%mbh_redis%'
             options:
                 prefix: 'search_results_'
+
+        search_clean:
+          type: predis
+          alias: clean
+          dsn: '%mbh_redis%'
+          options:
+            prefix: 'search_clean_'
+
         cache_search_results:
             type: predis
             alias: cache_results

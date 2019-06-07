@@ -4,6 +4,9 @@
 namespace MBH\Bundle\SearchBundle\Services\Data\Fetcher;
 
 
+use function count;
+use DateInterval;
+use DatePeriod;
 use DateTime;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
@@ -15,9 +18,6 @@ class PriceCacheRawFetcher implements DataRawFetcherInterface
 {
     public const NAME = 'priceCacheFetcher';
 
-    /** @var RoomTypeManager */
-    private $roomTypeManager;
-
     /** @var PriceCacheRepository */
     private $priceCacheRepository;
 
@@ -25,6 +25,12 @@ class PriceCacheRawFetcher implements DataRawFetcherInterface
      * @var ActualChildOptionDeterminer
      */
     private $actualChildOptionDeterminer;
+
+    /** @var bool */
+    private $isUseCategory;
+
+    /** @var string */
+    private $roomTypeField;
 
     /**
      * PriceCacheRawFetcher constructor.
@@ -34,7 +40,8 @@ class PriceCacheRawFetcher implements DataRawFetcherInterface
      */
     public function __construct(RoomTypeManager $roomTypeManager, PriceCacheRepository $priceCacheRepository, ActualChildOptionDeterminer $actualChildOptionDeterminer)
     {
-        $this->roomTypeManager = $roomTypeManager;
+        $this->isUseCategory =  $roomTypeManager->useCategories;
+        $this->roomTypeField = $roomTypeManager->useCategories ? 'roomTypeCategory' : 'roomType';
         $this->priceCacheRepository = $priceCacheRepository;
         $this->actualChildOptionDeterminer = $actualChildOptionDeterminer;
     }
@@ -49,38 +56,65 @@ class PriceCacheRawFetcher implements DataRawFetcherInterface
 
         $begin = $conditions->getMaxBegin();
         $end = $conditions->getMaxEnd();
-        $isUseCategory = $this->roomTypeManager->useCategories;
 
-        $cursor = $this->priceCacheRepository->fetchRawPeriod($begin, $end, [], [], $isUseCategory);
+        $cursor = $this->priceCacheRepository->fetchRawPeriod($begin, $end, [], [], $this->isUseCategory);
 
-        return $cursor->toArray(false);
+        $priceCaches =  $cursor->toArray(false);
+        $data = [];
+        foreach ($priceCaches as $priceCache) {
+            $priceSetKey = $this->createPriceCacheSetKey($priceCache);
+            $dateTimeKey = Helper::convertMongoDateToDate($priceCache['date'])->format('d-m-Y');
+            $data[$priceSetKey][$dateTimeKey] = $priceCache;
+        }
+
+        return $data;
+
     }
 
     public function getExactData(DateTime $begin, DateTime $end, string $tariffId, string $roomTypeId, array $data): array
     {
-        $tariffId = $this->actualChildOptionDeterminer->getActualPriceTariff($tariffId);
-        if ($this->roomTypeManager->useCategories) {
-            $roomTypeField = 'roomTypeCategory';
-            $roomTypeId = $this->actualChildOptionDeterminer->getActualCategoryId($roomTypeId);
-        } else {
-            $roomTypeField = 'roomType';
+        $roomTypeId = $this->getActualRoomTypeId($roomTypeId);
+        $tariffId = $this->getActualTariffId($tariffId);
+
+        $groupedPriceCaches = $data[$roomTypeId.'_'.$tariffId] ?? [];
+        $priceCaches = [];
+        if (count($groupedPriceCaches)) {
+            foreach (new DatePeriod($begin, DateInterval::createFromDateString('1 day'), $end) as $day) {
+                /** @var \DateTime $day */
+                $dateKey = $day->format('d-m-Y');
+                $priceCache = $groupedPriceCaches[$dateKey] ?? null;
+                if ($priceCache) {
+                    $priceCaches[] = $priceCache;
+                }
+            }
         }
 
-        return array_filter($data, static function ($priceCache) use ($begin, $end, $tariffId, $roomTypeId, $roomTypeField) {
-            $date = Helper::convertMongoDateToDate($priceCache['date']);
-            /** Pay attention, $date < $end   */
-            $isDateMatch = $begin <= $date && $date < $end;
-            $isRoomTypeMatch = (string)$priceCache[$roomTypeField]['$id'] === $roomTypeId;
-            $isTariffMatch = (string)$priceCache['tariff']['$id'] === $tariffId;
-
-            return $isDateMatch && $isRoomTypeMatch && $isTariffMatch;
-        });
+        return $priceCaches;
     }
 
 
     public function getName(): string
     {
         return static::NAME;
+    }
+
+    private function getActualRoomTypeId(string $roomTypeId): string
+    {
+        if ($this->isUseCategory) {
+            $roomTypeId = $this->actualChildOptionDeterminer->getActualCategoryId($roomTypeId);
+        }
+
+        return $roomTypeId;
+    }
+
+    private function getActualTariffId(string $tariffId): string
+    {
+        return $this->actualChildOptionDeterminer->getActualPriceTariff($tariffId);
+    }
+
+    private function createPriceCacheSetKey(array $priceCache): string
+    {
+        return  $priceCache[$this->roomTypeField]['$id'] . '_' . $priceCache['tariff']['$id'];
     }
 
 }
