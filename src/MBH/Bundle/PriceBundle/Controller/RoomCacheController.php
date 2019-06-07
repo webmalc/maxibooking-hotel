@@ -343,7 +343,7 @@ class RoomCacheController extends Controller implements CheckHotelControllerInte
             $invalidateData = [
                 'begin' => $data['begin'],
                 'end' => $data['end'],
-                'roomTypeIds' => Helper::toIds($data['roomTypes']->toAarray()),
+                'roomTypeIds' => Helper::toIds($data['roomTypes']->toArray()),
                 'type' => InvalidateQuery::ROOM_CACHE_GENERATOR
             ];
             $cacheInvalidate = $this->get('mbh_search.invalidate_queue_creator');
