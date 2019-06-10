@@ -3,6 +3,9 @@
 namespace MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok;
 
 use GuzzleHttp\Client as Guzzle;
+use Monolog\Logger;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
 
 /**
  * Class OstrovokApiService
@@ -31,15 +34,20 @@ class OstrovokApiService
     /**@var Guzzle */
     protected $client;
 
+    /**@var Logger */
+    protected $log;
+
     /**
      * OstrovokApiService constructor.
      * @param array $config
+     * @param ContainerInterface $container
      */
-    public function __construct(array $config)
+    public function __construct(array $config, ContainerInterface $container)
     {
         $this->auth_token = $config['ostrovok']['username'];
         $this->private_token = $config['ostrovok']['password'];
         $this->client = new Guzzle();
+        $this->log = $container->get('mbh.channelmanager.logger');
     }
 
     /**
@@ -112,13 +120,17 @@ class OstrovokApiService
         $data['limits'] = self::LIMIT;
         $data['sign'] = $this->getSignature($data, $this->private_token);
 
+        $this->log->addInfo('Expedia callGet request uri: ' . self::API_URL . $api_method . '; data: '. serialize(['query' => $data]) .'');
+
         $response = $this->client->request(
             'GET',
             self::API_URL . $api_method,
             ['query' => $data]
         );
 
-        $response = json_decode($response->getBody(), true);
+        $this->log->addInfo('Expedia callGet response data: '. $response->getBody()->getContents() .'');
+
+        $response = json_decode($response->getBody()->getContents(), true);
         $this->checkErrors($response);
         return $response;
     }
