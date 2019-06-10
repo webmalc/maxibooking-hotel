@@ -15,6 +15,7 @@ use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupInterface;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStoreInterface;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStore;
 use MBH\Bundle\SearchBundle\Services\Search\SearcherFactory;
+use Monolog\Logger;
 
 class AsyncSearcherGroupedByRoomType implements AsyncSearcherInterface
 {
@@ -35,6 +36,10 @@ class AsyncSearcherGroupedByRoomType implements AsyncSearcherInterface
      * @var DataManager
      */
     private $dataManager;
+    /**
+     * @var Logger
+     */
+    private $logger;
 
     /**
      * ConsumerSearch constructor.
@@ -43,13 +48,15 @@ class AsyncSearcherGroupedByRoomType implements AsyncSearcherInterface
      * @param SearcherFactory $searcherFactory
      * @param AsyncSearchDecisionMakerInterface $decisionMaker
      * @param DataManager $dataManager
+     * @param Logger $logger
      */
     public function __construct(
         SearchConditionsRepository $conditionsRepository,
         AsyncResultStoreInterface $resultStore,
         SearcherFactory $searcherFactory,
         AsyncSearchDecisionMakerInterface $decisionMaker,
-        DataManager  $dataManager
+        DataManager  $dataManager,
+        Logger $logger
     )
 
     {
@@ -58,6 +65,7 @@ class AsyncSearcherGroupedByRoomType implements AsyncSearcherInterface
         $this->searcherFactory = $searcherFactory;
         $this->decisionMaker = $decisionMaker;
         $this->dataManager = $dataManager;
+        $this->logger = $logger;
     }
 
 
@@ -81,8 +89,14 @@ class AsyncSearcherGroupedByRoomType implements AsyncSearcherInterface
         }
 
         if (!$this->decisionMaker->isNeedSearch($conditions, $searchQueryGroup)) {
+            $this->logger->debug(
+                sprintf('Hashed %s no need search,add fake result in pid=%s', $conditions->getSearchHash(), getmypid())
+            );
             $this->asyncResultStore->addFakeReceivedCount($conditions->getSearchHash(), $searchQueryGroup->countQueries());
         } else {
+            $this->logger->debug(
+                sprintf('Hashed %s start async search  pid=%s', $conditions->getSearchHash(), getmypid())
+            );
             $searcher = $this->searcherFactory->getSearcher($conditions->isUseCache());
             $searchQueries = $searchQueryGroup->getSearchQueries();
             $founded = false;

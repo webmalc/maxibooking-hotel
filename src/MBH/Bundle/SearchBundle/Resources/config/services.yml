@@ -111,6 +111,7 @@ services:
             - '@mbh_search.searcher_factory'
             - '@mbh_search.room_type_search_decision_maker'
             - '@mbh_search.data_manager'
+            - '@mbh_search.data_fetch.logger'
 
     mbh_search.room_type_search_decision_maker:
         class: MBH\Bundle\SearchBundle\Services\Search\AsyncSearchers\RoomTypeSearchDecisionMaker

@@ -63,22 +63,22 @@ class DataFetcher implements DataFetcherInterface
                 $this->redis->set($hash, $data, self::REDIS_TIME_TTL);
                 if ($data === null) {
                     $this->logger->debug(
-                        sprintf('Fetched data hashed %s from %s is null inside %s fetcher', $hash, 'fetchData method', $this->getName())
+                        sprintf('Fetched data hashed %s from %s is null inside %s fetcher pid=%s', $hash, 'FETCHDATA method', $this->getName(), getmypid())
                     );
                 }
             } else {
                 $data = $this->redis->get($hash);
                 $this->logger->debug(
-                    sprintf('Fetched data hashed %s from %s is null inside %s fetcher', $hash, 'REDIS', $this->getName())
+                    sprintf('Fetched data hashed %s from %s is null inside %s fetcher pid=%s', $hash, 'REDIS', $this->getName(), getmygid())
                 );
             }
             $this->data[$hash] = $data;
         } else {
-            $this->logger->debug(sprintf('Data hashed %s from memory inside %s fetcher', $hash, $this->getName()));
+            $this->logger->debug(sprintf('Data hashed %s from memory inside %s fetcher pid=%s', $hash, $this->getName(), getmygid()));
         }
 
         if ($data === null) {
-            $message = sprintf('Data hashed %s is null, but at least empty array expected in %s fetcher', $hash, $this->getName());
+            $message = sprintf('Data hashed %s is null, but at least empty array expected in %s fetcher pid=%s', $hash, $this->getName(), getmygid());
             $this->logger->critical($message);
             throw new AsyncDataFetcherException($message);
         }
