@@ -45,6 +45,11 @@ class DataFetcher implements DataFetcherInterface
             $this->data[$hash] = $data;
         }
 
+        if ($data === null) {
+            var_dump($dataQuery);
+            $data = [];
+        }
+
         return $this->getExactData($dataQuery, $data);
     }
 
