@@ -15,9 +15,9 @@ views.api.form.online_reservation_system: 'система онлайн брон�
 views.api.getPaymentType.dates: 'Даты:'
 views.api.getPaymentType.days_and_nights: 'Дни/ночи:'
 views.api.getPaymentType.nomerov: 'Количество номеров:'
-views.api.getPaymentType.order_result: 'Заказ на сумму:'
+views.api.getPaymentType.order_result: 'Общая стоимость:'
 views.api.getPaymentType.nomera: 'Проживание:'
-views.api.getPaymentType.services: 'Услуги:'
+views.api.getPaymentType.services: 'Дополнительные услуги:'
 views.api.getPaymentType.tariff: 'Тариф:'
 views.api.getPaymentType.choose_payment_way: 'Выберите способ оплаты'
 views.api.getPaymentType.payment_fine: 'Оплата по прибытию в гостиницу на стойке размещения'
@@ -43,7 +43,7 @@ views.api.getResultsTable.price_per: 'Цена за'
 views.api.getResultsTable.day: День
 views.api.getResultsTable.rooms: 'Номера:'
 views.api.getResultsTable.services: 'Услуги:'
-views.api.getResultsTable.result: 'Итого:'
+views.api.getResultsTable.result: 'Всего:'
 views.api.getResultsTable.facilities: Удобства
 views.api.getResultsTable.continue: Продолжить
 views.api.getResultsTable.nothing_found_for_your_query: 'По вашему запросу ничего не найдено.'

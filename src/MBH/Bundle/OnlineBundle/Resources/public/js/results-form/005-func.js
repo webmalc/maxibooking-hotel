@@ -3,13 +3,13 @@ MbhResultForm.prototype.priceSeparator = function (amount) {
     if (amount.length <= 3) {
         return amount;
     } else if (amount.length <= 6) {
-        return amount.replace(/(\d{3}$)/, ",$1");
+        return amount.replace(/(\d{3}$)/, " $1");
     } else if (amount.length <= 9) {
-        return (amount.replace(/(\d{3})(\d{3}$)/, ",$1,$2")).replace(/(^(,))/, "");
+        return (amount.replace(/(\d{3})(\d{3}$)/, " $1 $2"));
     } else if (amount.length <= 12) {
-        return (amount.replace(/(\d{3})(\d{3})(\d{3}$)/, ",$1,$2,$3")).replace(/(^(,))/, "");
+        return (amount.replace(/(\d{3})(\d{3})(\d{3}$)/, " $1 $2 $3"));
     } else {
-        return (amount.replace(/(\d)(\d{3})(\d{3})(\d{3}$)/, "$1,$2,$3,$4")).replace(/(^(,))/, "");
+        return (amount.replace(/(\d)(\d{3})(\d{3})(\d{3}$)/, "$1 $2 $3 $4"));
     }
 };
 
@@ -44,7 +44,7 @@ MbhResultForm.prototype.searchDataInit = function() {
         url: '',
         init: function () {
             var urlData = window.location.search.replace('?', '');
-            if (urlData == ''){
+            if (urlData === ''){
                 urlData = window.sessionStorage.getItem('MBHSearchData');
             }
             this.url = urlData == null ? '': urlData;

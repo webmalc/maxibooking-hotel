@@ -145,6 +145,8 @@ body {
     .styleFontForSelect();
   }
 
+
+
   #mbh-results-wrapper {
     @indent_btn: 30px;
     .marginLeftBtn() {
@@ -177,6 +179,10 @@ body {
       background-color: #FFFFFF;
       margin-bottom: 10px;
 
+      .row {
+        margin-bottom: 5px;
+      }
+
       .mbh-package-info-wrapper {
         .indentBottom();
         .mbh-room-name {
@@ -195,7 +201,7 @@ body {
       .mbh-group-info {
         .indentBottom();
         .mbh-daterange {
-          font-weight: 500;
+          font-weight: bold;
           font-size: 16px;
           line-height: 24px;
         }
@@ -219,9 +225,15 @@ body {
         margin-bottom: 10px;
 
         .mbh-order-total {
+          font-weight: bold;
           margin-top: @indent;
           padding-top: @indent;
           border-top: 1px solid #A0A0A0;
+        }
+
+        i.fa {
+          margin-left: 3px;
+          font-size: 0.8em;
         }
       }
     }
@@ -279,9 +291,22 @@ body {
       border: 1px solid @general_color;
       background: #FFFFFF;
 
+      z-index: 20;
+
       .btn-primary {
         background-color: @general_color;
         border-color: @general_color;
+      }
+    }
+
+    .mbh-results-step-wrapper {
+      @media (min-width: @size-screen-mid-width-tablet) {
+        .col-sm-8 {
+          width: 530px;
+        }
+        .col-sm-4 {
+          width: 332px;
+        }
       }
     }
 
@@ -290,10 +315,17 @@ body {
       #mbh-results-actions {
         justify-content: flex-end;
 
-        #mbh-results-packages-total {
-          font-size: 16px;
-          line-height: 24px;
+        @media (max-width: @size-screen-max-width-mobile-minus-one) {
+          height: 55px;
+          width: ~"calc(100vw - 30px)";
+          position: fixed;
+          bottom: 0;
         }
+
+        //#mbh-results-packages-total {
+        //  font-size: 16px;
+        //  line-height: 24px;
+        //}
 
         #mbh-results-total {
           font-weight: bold;
@@ -392,6 +424,9 @@ body {
       }
 // BEGIN RESULT
       #mbh-results-list-wrapper {
+        @media (max-width: @size-screen-max-width-mobile-minus-one) {
+          margin-bottom: 60px;
+        }
         .mbh-results-container {
           margin: 10px 0;
           padding: 5px 0;
@@ -488,6 +523,9 @@ body {
                 line-height: 44px;
 
                 color: #4F4F4F;
+                i.fa {
+                  font-size: .7em;
+                }
               }
             }
 
@@ -580,7 +618,7 @@ body {
       }
 
       @media (max-width: @size-screen-max-width-mobile-minus-one) {
-        .mbh-results-step-two-wrapper {
+        .mbh-results-step-wrapper {
           display: flex;
           flex-direction: column;
 

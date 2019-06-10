@@ -17,7 +17,7 @@
         </h3>
     </div>
 
-    <div id="mbh-results-list-wrapper">
+    <section id="mbh-results-list-wrapper">
         <input type="hidden" id="mbh-form-locale" value="{{ app.request.locale }}">
         {% set isSingleResult = results|length == 1 %}
         {% for result in results %}
@@ -104,8 +104,10 @@
                     <div class="price">
                         {% for priceTourists, price  in result.prices %}
                             <ul class="mbh-results-prices">
-                                <li data-value="{{ price }}"
-                                    class="{{ priceTourists }}">{{ price|number_format }} {{ currency().text|trans }}
+                                <li data-value="{{ price }}" class="{{ priceTourists }}">
+                                    {{ price | number_format(null, null, ' ', ' ') }}
+                                    <i class="{{ currency().icon }}"></i>
+                                </li>
                             </ul>
                         {% endfor %}
                     </div>
@@ -142,22 +144,30 @@
                 </div>
             </div>
         {% endfor %}
-    </div>
+    </section>
 
-    <div id="mbh-results-actions">
-        <span id="mbh-results-packages-total"> {{ 'views.api.getResultsTable.rooms'|trans({}, 'MBHOnlineBundle') }}
-            <span id="mbh-results-total-packages-sum" class="mbh-results-total-sum">0</span>&nbsp;<span
-                    class="mbh-results-total-sum">{{ currency().text|trans }}</span></span> &nbsp;
-        <span id="mbh-results-services-total" style="display: none;"> {{ 'views.api.getResultsTable.services'|trans({}, 'MBHOnlineBundle') }}
-                <span id="mbh-results-total-services-sum" class="mbh-results-total-sum">0</span>&nbsp;<span
-                    class="mbh-results-total-sum">{{ currency().text|trans }}</span></span> &nbsp;
-        <span id="mbh-results-total">{{ 'views.api.getResultsTable.result'|trans({}, 'MBHOnlineBundle') }}
-                <span id="mbh-results-total-sum" class="mbh-results-total-sum">0</span>&nbsp;<span
-                    class="mbh-results-total-sum">{{ currency().text|trans }}</span></span>
+    <section id="mbh-results-actions">
+        <div id="mbh-results-total-packages-sum" class="mbh-results-total-sum" style="display: none">0</div>
+        <div id="mbh-results-package-info-container">
+            <div class="mbh-package-info-amount-room-and-guest">
+                <span class="room-amount"></span>
+                <span class="guest-amount"></span>
+            </div>
+            <div class="mbh-package-info-date">
+                <span class="begin">{{ results|first.begin|date('d.m.Y') }}</span>
+                <span>{{ 'to'|trans }}</span>
+                <span class="end">{{ results|first.end|date('d.m.Y') }}</span>
+            </div>
+        </div>
+        <div id="mbh-results-total">
+            <span class="mbh-results-total-text">{{ 'views.api.getResultsTable.result'|trans({}, 'MBHOnlineBundle') }}</span>
+            <span id="mbh-results-total-sum" class="mbh-results-total-sum">0</span>
+            <span class="mbh-results-total-sum">{{ currency().text|trans }}</span>
+        </div>
         <button id="mbh-results-next"
                 class="button btn btn-primary spacer-left-sm"> {{ 'views.api.getResultsTable.continue'|trans({}, 'MBHOnlineBundle') }}
             <small><i class="fa fa-chevron-right "></i></small>
         </button>
-    </div>
+    </section>
 </div>
 {% endspaceless %}

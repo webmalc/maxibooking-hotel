@@ -1,3 +1,41 @@
+MbhResultForm.prototype.fixedBtnBooking = function() {
+    var resultAction,
+        modFrameTopOffset,
+        coordsResultAction;
+
+    window['mbhFixedBtnBooking'] = function (event) {
+        if (!isMobileDevice && event.data.type !== 'onScroll') {
+            return;
+        }
+
+        resultAction = document.querySelector('#mbh-results-actions');
+
+        if (resultAction === null) {
+            return;
+        }
+
+        if (event.data.frameTopOffset > 0) {
+            return;
+        }
+
+        coordsResultAction = 0;
+
+        modFrameTopOffset = event.data.frameTopOffset * -1;
+
+        if ((document.body.scrollHeight - screen.height) > modFrameTopOffset) {
+            coordsResultAction = event.data.frameBottomOffset - screen.height;
+        }
+
+        resultAction.style.bottom = coordsResultAction + 'px';
+    };
+
+    window.addEventListener('message', mbhFixedBtnBooking);
+};
+
+MbhResultForm.prototype.removeEventFixedBtnBooking = function () {
+    window.removeEventListener('message', mbhFixedBtnBooking);
+};
+
 MbhResultForm.prototype.descriptionToggle = function () {
     var _this = this;
 
@@ -18,6 +56,7 @@ MbhResultForm.prototype.setFancyBoxOffset = function() {
             frameOffset = parentWindowData.frameTopOffset;
         }
     });
+
     if (document.body.scrollHeight > screen.height) {
         $('.fancybox').fancybox({
             'afterLoad': function () {
@@ -35,11 +74,15 @@ MbhResultForm.prototype.setFancyBoxOffset = function() {
 };
 
 MbhResultForm.prototype.calcTotal = function () {
-    var $totalPackagesElement = jQuery('#mbh-results-total-packages-sum');
+    var roomCountSelect = 0,
+        $totalPackagesElement = jQuery('#mbh-results-total-packages-sum'),
+        $packageInfoContainerRoom = jQuery('#mbh-results-package-info-container').find('.room-amount'),
+        $packageInfoContainerGuest = jQuery('#mbh-results-package-info-container').find('.guest-amount');
 
     var calc = function() {
+        roomCountSelect = 0;
+
         var totalPackages = 0,
-            totalServices = 0,
             nextButton = jQuery('#mbh-results-next'),
             roomCount = jQuery('select.mbh-results-packages-count:not(.hidden), input.mbh-results-packages-count[type=checkbox]:checked');
 
@@ -48,6 +91,7 @@ MbhResultForm.prototype.calcTotal = function () {
             if (jQuery(this).val() > 0) {
                 var priceContainer = jQuery(this).closest('.mbh-results-price-container'),
                     li = priceContainer.find('ul.mbh-results-prices li:visible');
+                roomCountSelect += parseInt(jQuery(this).val());
                 if (li.length) {
                     totalPackages += parseInt(li.attr('data-value')) * jQuery(this).val();
                 }
@@ -59,11 +103,12 @@ MbhResultForm.prototype.calcTotal = function () {
         $totalPackagesElement.data('value', totalPackages);
         $totalPackagesElement.html(totalPackages).digits();
 
-
-        jQuery('#mbh-results-total-services-sum').html(totalServices).digits();
         if (totalPackages > 0) {
             nextButton.prop('disabled', false);
         }
+
+
+        $packageInfoContainerRoom.text(roomCountSelect);
     };
     calc();
 
@@ -80,8 +125,10 @@ MbhResultForm.prototype.prepareAndGoStepTwo = function () {
             type: 'form-event',
             purpose: 'rooms'
         }, "*");
-        var
-            $totalPackagedSum = jQuery('#mbh-results-total-packages-sum'),
+
+        _this.removeEventFixedBtnBooking();
+
+        var $totalPackagedSum = jQuery('#mbh-results-total-packages-sum'),
             roomCount = jQuery('select.mbh-results-packages-count:not(.hidden), input.mbh-results-packages-count[type=checkbox]:checked');
         _this._requestParams.begin = jQuery('#mbh-results-duration-begin').text();
         _this._requestParams.end = jQuery('#mbh-results-duration-end').text();
@@ -90,7 +137,7 @@ MbhResultForm.prototype.prepareAndGoStepTwo = function () {
         _this._requestParams.total = jQuery('#mbh-results-total-sum').text();
         _this._requestParams.totalPackages = $totalPackagedSum.text();
         _this._requestParams.totalPackagesRaw = $totalPackagedSum.data('value');
-        _this._requestParams.totalServices = jQuery('#mbh-results-total-services-sum').text();
+        _this._requestParams.totalServices = 0;
         _this._requestParams.packages = [];
         _this._requestParams.services = [];
         _this._requestParams.locale = _this.getLocale();
@@ -104,7 +151,7 @@ MbhResultForm.prototype.prepareAndGoStepTwo = function () {
                 for (var i = 1; i <= jQuery(this).val(); i++) {
                     if (pricesLi.length) {
 
-                        var tourists = resultsContainer.find('select.mbh-results-tourists-select').val().split('_')
+                        var tourists = resultsContainer.find('select.mbh-results-tourists-select').val().split('_');
 
                         _this._requestParams.packages.push({
                             'price': parseInt(pricesLi.attr('data-value')),
@@ -160,25 +207,6 @@ MbhResultForm.prototype.tablePrices = function () {
     this.setFancyBoxOffset();
 };
 
-MbhResultForm.prototype.colorizeTr = function () {
-    var show = function() {
-        var selected = jQuery('select.mbh-results-packages-count, input.mbh-results-packages-count[type=checkbox]:checked').filter(function() {
-            return parseInt(jQuery(this).val(), 10) > 0;
-        });
-        jQuery('#mbh-results-table').find('tr').removeClass('mbh-result-selected-tr warning');
-        if (selected.length) {
-            selected.each(function() {
-                jQuery(this).closest('tr').addClass('mbh-result-selected-tr warning');
-
-            });
-        }
-    };
-    show();
-    jQuery('.mbh-results-packages-count').change(function() {
-        show();
-    });
-};
-
 MbhResultForm.prototype.tariffsAction = function () {
     var tariffsWrapper = jQuery('#mbh-results-tariffs');
 
@@ -222,6 +250,8 @@ MbhResultForm.prototype.stepOne = function() {
 
             _this.resize();
 
+            _this.fixedBtnBooking();
+
             _this.setSelect2();
 
             _this.descriptionToggle();
@@ -229,8 +259,6 @@ MbhResultForm.prototype.stepOne = function() {
             _this.tariffsAction();
 
             _this.tablePrices();
-
-            _this.colorizeTr();
 
             _this.calcTotal();
 

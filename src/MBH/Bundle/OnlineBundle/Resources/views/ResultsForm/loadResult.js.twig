@@ -163,12 +163,21 @@ function onLoadResultsLoad() {
         window.attachEvent("onmessage", processMessage);
         window.attachEvent("onmessage", processMetricMessage);
     }
-    window.onscroll = function () {
-        if (resultsIframe !== null && resultsIframe.contentWindow) {
-            var frameTopOffset = resultsIframe.getBoundingClientRect().top;
-            resultsIframe.contentWindow.postMessage({type: 'onScroll', frameTopOffset: frameTopOffset}, '*');
+
+    window.addEventListener('scroll', function () {
+        if (resultsIframe === null || !resultsIframe.contentWindow) {
+            return;
         }
-    }
+
+        resultsIframe.contentWindow.postMessage(
+            {
+                type: 'onScroll',
+                frameTopOffset: resultsIframe.getBoundingClientRect().top,
+                frameBottomOffset: resultsIframe.getBoundingClientRect().bottom
+            },
+            '*'
+        );
+    });
 }
 addLoadEvent(onLoadResultsLoad);
 {% endwrapinline %}

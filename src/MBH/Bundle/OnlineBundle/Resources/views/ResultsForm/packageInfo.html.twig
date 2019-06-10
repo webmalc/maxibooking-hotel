@@ -11,39 +11,55 @@
             </div>
         {% endfor %}
         <div class="mbh-group-info">
-            <div class="mbh-daterange">
-                {{ 'views.api.getPaymentType.dates'|trans({}, 'MBHOnlineBundle') }}
-                <strong>{{ request.begin }} - {{ request.end }}.</strong>
+            <div class="row mbh-daterange">
+                <div class="col-sm-12">
+                    {{ 'views.api.getPaymentType.dates'|trans({}, 'MBHOnlineBundle') }}
+                    {{ request.begin }} - {{ request.end }}.
+                </div>
             </div>
-            <div class="mbh-days-amount">
-                {{ 'views.api.getPaymentType.days_and_nights'|trans({}, 'MBHOnlineBundle') }}
-                <span id="mbh-package-info-days">{{ request.days }}</span>
-                <span id="mbh-package-info-nights">{{ request.nights }}</span>
+            <div class="row mbh-days-amount">
+                <div class="col-sm-12">
+                    {{ 'views.api.getPaymentType.days_and_nights'|trans({}, 'MBHOnlineBundle') }}
+                    <span id="mbh-package-info-days">{{ request.days }}</span>
+                    <span id="mbh-package-info-nights">{{ request.nights }}</span>
+                </div>
             </div>
-            <div class="mbh-package-amount">
-                {{ 'views.api.getPaymentType.nomerov'|trans({}, 'MBHOnlineBundle') }}
-                <span>{{ request.packages|length }}</span>
+            <div class="row mbh-package-amount">
+                <div class="col-sm-12">
+                    {{ 'views.api.getPaymentType.nomerov'|trans({}, 'MBHOnlineBundle') }}
+                    <span>{{ request.packages|length }}</span>
+                </div>
             </div>
         </div>
         <div class="mbh-price-amount">
             {% if request.useServices %}
-                <div class="mbh-services-total">
-                    <span>{{ 'views.api.getPaymentType.services'|trans({}, 'MBHOnlineBundle') }}</span>
-                    <span id="mbh-package-info-total-services">{{ request.totalServices }}</span>
-                    <span class="mbh-results-total-sum">{{ currency().text|trans }}</span>
+                <div class="row mbh-services-total">
+                    <div class="col-xs-7 col-sm-7">
+                        <span>{{ 'views.api.getPaymentType.services'|trans({}, 'MBHOnlineBundle') }}</span>
+                    </div>
+                    <div class="col-xs-5 col-sm-5 text-right">
+                        <span id="mbh-package-info-total-services">{{ request.totalServices }}</span>
+                        <span class="mbh-results-total-sum"><i class="{{ currency().icon }}"></i></span>
+                    </div>
                 </div>
             {% endif %}
-            <div class="mbh-package-total">
-                {{ 'views.api.getPaymentType.nomera'|trans({}, 'MBHOnlineBundle') }}
-                <span id="mbh-package-info-total-packages" data-value="{{ request.totalPackagesRaw }}">{{ request.totalPackages }}</span>
-                <span class="mbh-results-total-sum">{{ currency().text|trans }}</span>
+            <div class="row mbh-package-total">
+                <div class="col-xs-7 col-sm-7">
+                    {{ 'views.api.getPaymentType.nomera'|trans({}, 'MBHOnlineBundle') }}
+                </div>
+                <div class="col-xs-5 col-sm-5 text-right">
+                    <span id="mbh-package-info-total-packages" data-value="{{ request.totalPackagesRaw }}">{{ request.totalPackages }}</span>
+                    <span class="mbh-results-total-sum"><i class="{{ currency().icon }}"></i></span>
+                </div>
             </div>
-            <div class="mbh-order-total">
-                {{ 'views.api.getPaymentType.order_result'|trans({}, 'MBHOnlineBundle') }}
-                <span class="mbh-results-total-sum">
-                <span id="mbh-package-info-total">{{ request.total }}</span>
-                {{ currency().text|trans }}
-            </span>
+            <div class="row mbh-order-total">
+                <div class="col-xs-7 col-sm-7">
+                    {{ 'views.api.getPaymentType.order_result'|trans({}, 'MBHOnlineBundle') }}
+                </div>
+                <div class="col-xs-5 col-sm-5 text-right">
+                    <span id="mbh-package-info-total">{{ request.total }}</span>
+                    <span class="mbh-results-total-sum"><i class="{{ currency().icon }}"></i></span>
+                </div>
             </div>
         </div>
 
