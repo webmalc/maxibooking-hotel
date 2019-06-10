@@ -80,3 +80,4 @@ parameters:
 
   dev_delivery_addresses: ['info@maxi-booking.ru']
   mbh_dynamic_sale_period: 90
+  data_fetch_log_level: 200

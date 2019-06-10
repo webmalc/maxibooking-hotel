@@ -6,7 +6,9 @@ namespace MBH\Bundle\SearchBundle\Services\Data\Fetcher;
 
 use MBH\Bundle\SearchBundle\Lib\Events\SearchEvent;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\DataFetchQueryException;
+use Monolog\Logger;
 use Predis\Client;
+use Psr\Log\LoggerInterface;
 
 
 class DataManager
@@ -17,13 +19,18 @@ class DataManager
     /** @var Client */
     private $client;
 
+    /** @var LoggerInterface */
+    private $logger;
+
     /**
      * DataManager constructor.
      * @param Client $client
+     * @param Logger $logger
      */
-    public function __construct(Client $client)
+    public function __construct(Client $client, Logger $logger)
     {
         $this->client = $client;
+        $this->logger = $logger;
     }
 
 
@@ -50,6 +57,9 @@ class DataManager
                 $hash = $this->client->get($hashKey);
                     if ($hash) {
                         foreach ($this->fetchersMap as $fetcher) {
+                            $this->logger->debug(
+                                sprintf('CleanMemory hash= %s in fetcher = %s', $hash, $fetcher->getName())
+                            );
                             $fetcher->cleanMemoryData($hash);
                         }
                     }

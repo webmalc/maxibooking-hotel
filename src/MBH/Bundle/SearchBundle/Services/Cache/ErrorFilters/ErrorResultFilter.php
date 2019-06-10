@@ -24,13 +24,17 @@ class ErrorResultFilter implements ErrorResultFilterInterface
 
     public const ROOM_POPULATION = 32;
 
+    public const ASYNC_DATA_FETCHER = 64;
+
     public const ALL =
         self::WINDOWS
         | self:: ROOM_CACHE
         | self::PRICE_CACHE
         | self::RESTRICTION
         | self::TARIFF_LIMIT
-        | self::ROOM_POPULATION;
+        | self::ROOM_POPULATION
+        | self::ASYNC_DATA_FETCHER
+    ;
 
     /**
      * @param Result $result
