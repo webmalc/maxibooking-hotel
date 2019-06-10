@@ -273,8 +273,6 @@ class Ostrovok extends Base
                 } catch (\GuzzleHttp\Exception\RequestException $e) {
                     $this->log($e->getResponse()->getBody()->getContents(), 'error');
                     $this->notifyError(self::CHANNEL_MANAGER_TYPE, $e->getResponse()->getBody()->getContents());
-
-                    continue;
                 }
 
                 $rooms = $config->getRooms()->toArray();
@@ -487,8 +485,6 @@ class Ostrovok extends Base
             } catch (\GuzzleHttp\Exception\RequestException $e) {
                 $this->log($e->getResponse()->getBody()->getContents(), 'error');
                 $this->notifyError(self::CHANNEL_MANAGER_TYPE, $e->getResponse()->getBody()->getContents());
-
-                continue;
             }
 
             $this->log('There are ' . count($bookings) . ' total ' . $date);
@@ -799,8 +795,6 @@ class Ostrovok extends Base
         } catch (\GuzzleHttp\Exception\RequestException $e) {
             $this->log($e->getResponse()->getBody()->getContents(), 'error');
             $this->notifyError(self::CHANNEL_MANAGER_TYPE, $e->getResponse()->getBody()->getContents());
-
-            return $rooms;
         }
 
 
