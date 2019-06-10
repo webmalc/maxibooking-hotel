@@ -94,9 +94,17 @@ class PromotionController extends BaseController
      * @Route("/{id}/delete", name="promotion_delete")
      * @Security("is_granted('ROLE_PROMOTION_DELETE')")
      * @ParamConverter(class="MBH\Bundle\PriceBundle\Document\Promotion")
+     * @param Promotion $promotion
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function deleteAction(Promotion $promotion)
     {
-        return $this->deleteEntity($promotion->getId(), Promotion::class, 'promotions');
+        if ($this->container->get('mbh.promotion.helper')->tryToHandlePromotionRelations($promotion)) {
+            return $this->deleteEntity($promotion->getId(), Promotion::class, 'promotions');
+        } else {
+            $this->addFlash('error', $this->get('translator')->trans('promotion.controller.delete.error'));
+            return $this->redirectToRoute('promotions');
+        }
     }
 }
