@@ -602,7 +602,6 @@ services:
         class: MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataManager
         arguments:
             - '@snc_redis.clean_client'
-            - '@mbh_search.data_fetch.logger'
         calls:
             - [addFetcher, ['@mbh_search.price_cache_fetcher']]
             - [addFetcher, ['@mbh_search.restrictions_fetcher']]
@@ -802,8 +801,8 @@ services:
 
     mbh_search.search.event.subscriber:
         arguments:
-            - '@mbh_search.data_manager'
             - '@snc_redis.clean_client'
+            - '@mbh_search.data_fetch.logger'
         class: MBH\Bundle\SearchBundle\EventSubscriber\SearchSubscriber
         tags:
             - {name: kernel.event_subscriber }

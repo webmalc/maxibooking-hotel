@@ -19,18 +19,13 @@ class DataManager
     /** @var Client */
     private $client;
 
-    /** @var LoggerInterface */
-    private $logger;
-
     /**
      * DataManager constructor.
      * @param Client $client
-     * @param Logger $logger
      */
-    public function __construct(Client $client, Logger $logger)
+    public function __construct(Client $client)
     {
         $this->client = $client;
-        $this->logger = $logger;
     }
 
 
@@ -57,9 +52,6 @@ class DataManager
                 $hash = $this->client->get($hashKey);
                     if ($hash) {
                         foreach ($this->fetchersMap as $fetcher) {
-                            $this->logger->debug(
-                                sprintf('CleanMemory hash= %s in fetcher = %s', $hash, $fetcher->getName())
-                            );
                             $fetcher->cleanMemoryData($hash);
                         }
                     }
