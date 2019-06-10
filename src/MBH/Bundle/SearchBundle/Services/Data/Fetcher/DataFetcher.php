@@ -78,7 +78,7 @@ class DataFetcher implements DataFetcherInterface
         }
 
         if ($data === null) {
-            $message = 'Data is null, but at least empty array expected';
+            $message = sprintf('Data hashed %s is null, but at least empty array expected', $hash);
             $this->logger->critical($message);
             throw new AsyncDataFetcherException($message);
         }
