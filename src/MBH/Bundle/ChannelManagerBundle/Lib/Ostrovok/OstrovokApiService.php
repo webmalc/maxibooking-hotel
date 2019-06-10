@@ -119,18 +119,16 @@ class OstrovokApiService
         $data['token'] = $this->auth_token;
         $data['limits'] = self::LIMIT;
         $data['sign'] = $this->getSignature($data, $this->private_token);
+        $request = self::API_URL . $api_method . '?' . http_build_query($data) . '&';
+        $this->log->addInfo('Expedia callGet request uri: ' . self::API_URL . $api_method . '; data: '. $request .'');
+        $response = file_get_contents($request);
+        if (!$response) {
+            throw new OstrovokApiServiceException('No returned request in callGet Method '.get_class($this));
+        }
 
-        $this->log->addInfo('Expedia callGet request uri: ' . self::API_URL . $api_method . '; data: '. serialize(['query' => $data]) .'');
+        $this->log->addInfo('Expedia callGet response data: '. $response .'');
 
-        $response = $this->client->request(
-            'GET',
-            self::API_URL . $api_method,
-            ['query' => $data]
-        );
-
-        $this->log->addInfo('Expedia callGet response data: '. $response->getBody()->getContents() .'');
-
-        $response = json_decode($response->getBody()->getContents(), true);
+        $response = json_decode($response, true);
         $this->checkErrors($response);
         return $response;
     }
