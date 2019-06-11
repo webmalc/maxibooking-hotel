@@ -1,13 +1,12 @@
 <?php
-/**
- * Created by PhpStorm.
- * Date: 13.06.18
- */
 
 namespace MBH\Bundle\OnlineBundle\Services\PaymentForm;
 
 
-class SearchFormResult implements \JsonSerializable
+use JsonSerializable;
+use Symfony\Component\Translation\TranslatorInterface;
+
+class SearchFormResult implements JsonSerializable
 {
     /**
      * @var bool
@@ -24,12 +23,10 @@ class SearchFormResult implements \JsonSerializable
      */
     private $orderId;
 
-    /**
-     * @var \Symfony\Component\Translation\DataCollectorTranslator
-     */
+
     private $translator;
 
-    public function __construct(\Symfony\Component\Translation\DataCollectorTranslator $translator)
+    public function __construct(TranslatorInterface $translator)
     {
         $this->translator = $translator;
     }
