@@ -255,6 +255,7 @@ body #mbh-results-wrapper .step-one #mbh-results-actions #mbh-results-total {
   font-size: 16px;
   line-height: 24px;
   margin: 10px 0 5px 0;
+  margin-bottom: 13px;
 }
 @media (min-width: 472px) {
   body #mbh-results-wrapper .step-one #mbh-results-actions #mbh-results-total {
