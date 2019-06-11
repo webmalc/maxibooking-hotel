@@ -94,7 +94,7 @@ class MBSiteFormConfigDataService
         $formConfig
             ->setAdditionalFormFrameWidth('251px')
             ->setAdditionalFormFrameHeight('auto')
-            ->setCalendarFrameHeight('230px')
+            ->setCalendarFrameHeight('200px')
             ->setCalendarFrameWidth('235px')
             ->setCss($css)
             ->setCalendarCss($this->searchStyleHolder->getStyleCalendar())
