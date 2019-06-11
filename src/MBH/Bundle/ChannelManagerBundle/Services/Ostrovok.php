@@ -47,8 +47,6 @@ class Ostrovok extends Base
      */
     const URL = 'https://ostrovok.ru';
 
-    const CHANNEL_MANAGER_TYPE = 'Ostrovok';
-
     const SERVICES = [
         1 => 'Buffet breakfast',
         2 => 'Continental breakfast',
@@ -106,15 +104,7 @@ class Ostrovok extends Base
         $result = $result && $this->sendApiRequest($rna_request_data, __METHOD__);
         $rna_request_data = [];
 
-        $rate_plans = [];
-        try {
-            //Цены
-            $rate_plans = $this->apiBrowser->getRatePlans(['hotel' => $hotelId]);
-        } catch (\GuzzleHttp\Exception\RequestException $e) {
-            $this->log($e->getResponse()->getBody()->getContents(), 'error');
-            $this->notifyError(self::CHANNEL_MANAGER_TYPE, $e->getResponse()->getBody()->getContents());
-        }
-
+        $rate_plans = $this->apiBrowser->getRatePlans(['hotel' => $hotelId]);
         $data = [];
         foreach ($rate_plans as $rate_plan) {
             if ($rate_plan['parent']) {
@@ -268,13 +258,7 @@ class Ostrovok extends Base
             $data = [];
             /** @var ChannelManagerConfigInterface $config */
             foreach ($this->getConfig() as $config) {
-                try {
-                    $allOccupancies = $this->apiBrowser->getOccupancies(['hotel' => $config->getHotelId()], true);
-                } catch (\GuzzleHttp\Exception\RequestException $e) {
-                    $this->log($e->getResponse()->getBody()->getContents(), 'error');
-                    $this->notifyError(self::CHANNEL_MANAGER_TYPE, $e->getResponse()->getBody()->getContents());
-                }
-
+                $allOccupancies = $this->apiBrowser->getOccupancies(['hotel' => $config->getHotelId()], true);
                 $rooms = $config->getRooms()->toArray();
                 if (null !== $roomType) {
                     $rooms = array_filter($rooms, function ($room) use ($roomType) {
@@ -477,16 +461,10 @@ class Ostrovok extends Base
         $date = (new \DateTime('yesterday midnight'))->format('Y-m-d');
         /** @var ChannelManagerConfigInterface $config */
         foreach ($this->getConfig() as $config) {
-            try {
-                $bookings = $this->apiBrowser->getBookings([
-                    'hotel' => $config->getHotelId(),
-                    'modified_at_start_at' => $date
-                ]);
-            } catch (\GuzzleHttp\Exception\RequestException $e) {
-                $this->log($e->getResponse()->getBody()->getContents(), 'error');
-                $this->notifyError(self::CHANNEL_MANAGER_TYPE, $e->getResponse()->getBody()->getContents());
-            }
-
+            $bookings = $this->apiBrowser->getBookings([
+                'hotel' => $config->getHotelId(),
+                'modified_at_start_at' => $date
+            ]);
             $this->log('There are ' . count($bookings) . ' total ' . $date);
             if (!$bookings) {
                 continue;
@@ -744,14 +722,7 @@ class Ostrovok extends Base
      */
     public function pullTariffs(ChannelManagerConfigInterface $config)
     {
-        $rate_plans = [];
-        try {
-            $rate_plans = $this->apiBrowser->getRatePlans(['hotel' => $config->getHotelId()]);
-        } catch (\GuzzleHttp\Exception\RequestException $e) {
-            $this->log($e->getResponse()->getBody()->getContents(), 'error');
-            $this->notifyError(self::CHANNEL_MANAGER_TYPE, $e->getResponse()->getBody()->getContents());
-        }
-
+        $rate_plans = $this->apiBrowser->getRatePlans(['hotel' => $config->getHotelId()]);
         $rooms = $this->pullRooms($config);
 
         $rates = [];
@@ -788,17 +759,9 @@ class Ostrovok extends Base
     public function pullRooms(ChannelManagerConfigInterface $config)
     {
         $data = ['hotel' => $config->getHotelId()];
+        $room_categories = $this->apiBrowser->getRoomCategories($data);
+
         $rooms = [];
-
-        try {
-            $room_categories = $this->apiBrowser->getRoomCategories($data);
-        } catch (\GuzzleHttp\Exception\RequestException $e) {
-            $this->log($e->getResponse()->getBody()->getContents(), 'error');
-            $this->notifyError(self::CHANNEL_MANAGER_TYPE, $e->getResponse()->getBody()->getContents());
-        }
-
-
-
         foreach ($room_categories as $room_category) {
             $rooms[$room_category['id']] = $room_category['name'];
         }
@@ -843,14 +806,7 @@ class Ostrovok extends Base
     private function getRatePlansArray($hotelId): array
     {
         $result = [];
-        $ratePlans = [];
-        try {
-            $ratePlans = $this->apiBrowser->getRatePlans(['hotel' => $hotelId]);
-        } catch (\GuzzleHttp\Exception\RequestException $e) {
-            $this->log($e->getResponse()->getBody()->getContents(), 'error');
-            $this->notifyError(self::CHANNEL_MANAGER_TYPE, $e->getResponse()->getBody()->getContents());
-        }
-
+        $ratePlans = $this->apiBrowser->getRatePlans(['hotel' => $hotelId]);
         foreach ($ratePlans as $ratePlan) {
             $result[$ratePlan['id']] = $ratePlan;
         }
