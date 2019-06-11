@@ -112,23 +112,30 @@ class OstrovokApiService
      * @param array $data
      * @return mixed|string
      * @throws OstrovokApiServiceException
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     private function callGet($api_method, array $data)
     {
         $data['token'] = $this->auth_token;
         $data['limits'] = self::LIMIT;
         $data['sign'] = $this->getSignature($data, $this->private_token);
-        $request = self::API_URL . $api_method . '?' . http_build_query($data) . '&';
-        $this->log->addInfo('Expedia callGet request uri: ' . self::API_URL . $api_method . '; data: '. $request .'');
-        $response = file_get_contents($request);
-        if (!$response) {
+
+        $this->log->addInfo(
+            'Ostrovok callGet request uri: ' . self::API_URL . $api_method . '; data: '. json_encode(['query' => $data])
+        );
+        try {
+            $response = $this->client->request(
+                'GET',
+                self::API_URL . $api_method,
+                ['query' => $data]
+            );
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            $this->log->addError($e->getResponse()->getBody()->getContents());
             throw new OstrovokApiServiceException('No returned request in callGet Method '.get_class($this));
         }
 
-        $this->log->addInfo('Expedia callGet response data: '. $response .'');
+        $this->log->addInfo('Ostrovok callGet response data: '. $response->getBody()->getContents() .'');
 
-        $response = json_decode($response, true);
+        $response = json_decode($response->getBody()->getContents(), true);
         $this->checkErrors($response);
         return $response;
     }
