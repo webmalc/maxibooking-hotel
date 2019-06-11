@@ -82,8 +82,7 @@ MbhResultForm.prototype.calcTotal = function () {
         roomCountSelect = 0,
         amountGuest = 0,
         $totalPackagesElement = jQuery('#mbh-results-total-packages-sum'),
-        $packageInfoContainer = jQuery('#mbh-results-package-info-container'),
-        packageInfoTempText;
+        $packageInfoContainer = jQuery('#mbh-results-package-info-container');
 
     this.$packageInfoContainerRoom = $packageInfoContainer.find('.room-amount');
     this.$packageInfoContainerRoomText = $packageInfoContainer.find('.room-text');

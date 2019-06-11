@@ -475,9 +475,16 @@ body {
               margin-bottom: 5px;
               text-align: center;
 
-              img {
+              background-color: @general_color_light;
+
+              height: 120px;
+
+              a {
+                display: block;
                 width: 100%;
                 height: 100%;
+                background-size: cover;
+                background-position: center;
               }
             }
             .list-small-image {
@@ -683,6 +690,10 @@ body {
             .mbh-results-image-wrapper {
               margin-bottom: 15px;
               order: 2;
+
+              .main-image {
+                height: 250px;
+              }
             }
             .mbh-results-price-container {
               order: 3;

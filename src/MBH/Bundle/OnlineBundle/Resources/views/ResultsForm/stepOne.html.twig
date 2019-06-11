@@ -26,15 +26,15 @@
                     <div class="main-image">
                         {% if result.roomType.mainImage is not empty %}
                             {% set image = result.roomType.getMainImage %}
-                            <a href="{{ asset(vich_uploader_asset(image, 'imageFile') | imagine_filter('scaler')) }}"
-                               class="fancybox" data-fancybox="group-{{ result.roomType.id }}">
-                                <img class="main" src="{{ asset(vich_uploader_asset(image, 'imageFile') | imagine_filter('size_500x500')) }}">
+                            <a href="{{ asset(vich_uploader_asset(image, 'imageFile') | imagine_filter('size_1980x1280')) }}"
+                               class="fancybox" data-fancybox="group-{{ result.roomType.id }}"
+                               style="background-image: url('{{ asset(vich_uploader_asset(image, 'imageFile') | imagine_filter('size_500x500')) }}')">
                             </a>
                         {% endif %}
                     </div>
                     <div class="list-small-image">
                         {% for image in result.roomType.onlineImagesByPriority if not image.isMain %}
-                            <a href="{{ asset(vich_uploader_asset(image, 'imageFile')|imagine_filter('scaler')) }}"
+                            <a href="{{ asset(vich_uploader_asset(image, 'imageFile')|imagine_filter('size_1980x1280')) }}"
                                class="fancybox" data-fancybox="group-{{ result.roomType.id }}">
                                 <img src="{{ asset(vich_uploader_asset(image, 'imageFile') | imagine_filter('thumb_155x155')) }}">
                             </a>
@@ -90,9 +90,9 @@
                         {% if result.roomType.description is not empty %}
                         {% set desc = result.roomType.description | striptags %}
                             <div class="mbh-results-room-type-description-wrapper">
-                                {% if desc|length > 80 %}
+                                {% if desc|length > 75 %}
                                     <div class="mbh-results-room-type-description description-small">
-                                        {{ desc|slice(0, 80) ~ '...' }}
+                                        {{ desc|slice(0, 75) ~ '...' }}
                                     </div>
                                     <div class="mbh-results-room-type-description description-full">
                                         {{ desc }}

@@ -339,10 +339,15 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-conta
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .main-image {
   margin-bottom: 5px;
   text-align: center;
+  background-color: var(--mainlight);
+  height: 120px;
 }
-body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .main-image img {
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .main-image a {
+  display: block;
   width: 100%;
   height: 100%;
+  background-size: cover;
+  background-position: center;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .list-small-image a {
   margin-right: 7px;
@@ -515,6 +520,9 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-conta
   body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper {
     margin-bottom: 15px;
     order: 2;
+  }
+  body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .main-image {
+    height: 250px;
   }
   body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-price-container {
     order: 3;
