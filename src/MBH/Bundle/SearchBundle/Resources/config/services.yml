@@ -111,7 +111,6 @@ services:
             - '@mbh_search.searcher_factory'
             - '@mbh_search.room_type_search_decision_maker'
             - '@mbh_search.data_manager'
-            - '@mbh_search.data_fetch.logger'
 
     mbh_search.room_type_search_decision_maker:
         class: MBH\Bundle\SearchBundle\Services\Search\AsyncSearchers\RoomTypeSearchDecisionMaker
@@ -236,13 +235,15 @@ services:
         class: MBH\Bundle\SearchBundle\RabbitMQ\AsyncSearchConsumer
         calls:
             - [addSearcher, ['queryGroupByRoomType', '@mbh_search.async_searcher_grouped_by_room_type']]
+        arguments:
+          ['@mbh_search.data_fetch.logger']
 
     mbh_search.warm_up_search:
         class: MBH\Bundle\SearchBundle\RabbitMQ\WarmUpConsumer
         arguments:
             - '@mbh_search.warm_up_cache_searcher'
             - '@mbh_search.search_conditions_repository'
-            - '@mbh_search.garbage_collector'
+#            - '@mbh_search.garbage_collector'
 
 
     mbh_search.invalidate_consumer:
@@ -497,57 +498,58 @@ services:
         parent: 'mbh_search.abstract_combinations'
 
     ##REDIS_Caches
-    mbh_search.redis:
-        class: Symfony\Component\Cache\Adapter\RedisAdapter
-        factory: ['Symfony\Component\Cache\Adapter\RedisAdapter', createConnection]
-        arguments: ['%mbh_redis%']
+    #TODO: remove all redis?
+#    mbh_search.redis:
+#        class: Symfony\Component\Cache\Adapter\RedisAdapter
+#        factory: ['Symfony\Component\Cache\Adapter\RedisAdapter', createConnection]
+#        arguments: ['%mbh_redis%']
 
-    mbh_search.room_cache_redis_cache:
-        class: Symfony\Component\Cache\Simple\RedisCache
-        arguments:
-            - '@mbh_search.redis'
-            - 'room_caches'
+#    mbh_search.room_cache_redis_cache:
+#        class: Symfony\Component\Cache\Simple\RedisCache
+#        arguments:
+#            - '@mbh_search.redis'
+#            - 'room_caches'
+#
+#    mbh_search.restrictions_redis_cache:
+#        class: Symfony\Component\Cache\Simple\RedisCache
+#        arguments:
+#            - '@mbh_search.redis'
+#            - 'restrictions'
+#
+#    mbh_search.rooms_redis_cache:
+#        class: Symfony\Component\Cache\Simple\RedisCache
+#        arguments:
+#            - '@mbh_search.redis'
+#            - 'rooms'
+#
+#    mbh_search.package_accommodation_redis_cache:
+#        class: Symfony\Component\Cache\Simple\RedisCache
+#        arguments:
+#            - '@mbh_search.redis'
+#            - 'package_accommodations'
+#
+#    mbh_search.price_cache_redis_cache:
+#        class: Symfony\Component\Cache\Simple\RedisCache
+#        arguments:
+#            - '@mbh_search.redis'
+#            - 'price_caches'
 
-    mbh_search.restrictions_redis_cache:
-        class: Symfony\Component\Cache\Simple\RedisCache
-        arguments:
-            - '@mbh_search.redis'
-            - 'restrictions'
-
-    mbh_search.rooms_redis_cache:
-        class: Symfony\Component\Cache\Simple\RedisCache
-        arguments:
-            - '@mbh_search.redis'
-            - 'rooms'
-
-    mbh_search.package_accommodation_redis_cache:
-        class: Symfony\Component\Cache\Simple\RedisCache
-        arguments:
-            - '@mbh_search.redis'
-            - 'package_accommodations'
-
-    mbh_search.price_cache_redis_cache:
-        class: Symfony\Component\Cache\Simple\RedisCache
-        arguments:
-            - '@mbh_search.redis'
-            - 'price_caches'
-
-    mbh_search.search_result_redis_cache:
-        class: Symfony\Component\Cache\Simple\RedisCache
-        arguments:
-            - '@mbh_search.redis'
-            - 'search_results'
-
-    mbh_search.garbage_collector:
-        deprecated: 'The "%service_id%" service is deprecated. Remove IT!'
-        class: MBH\Bundle\SearchBundle\Services\GarbageCollector\GarbageCollector
-        calls:
-            - [addClient, ['@mbh_search.room_cache_redis_cache']]
-            - [addClient, ['@mbh_search.restrictions_redis_cache']]
-            - [addClient, ['@mbh_search.rooms_redis_cache']]
-            - [addClient, ['@mbh_search.package_accommodation_redis_cache']]
-            - [addClient, ['@mbh_search.price_cache_redis_cache']]
-            - [addClient, ['@mbh_search.search_result_redis_cache']]
+#    mbh_search.search_result_redis_cache:
+#        class: Symfony\Component\Cache\Simple\RedisCache
+#        arguments:
+#            - '@mbh_search.redis'
+#            - 'search_results'
+#
+#    mbh_search.garbage_collector:
+#        deprecated: 'The "%service_id%" service is deprecated. Remove IT!'
+#        class: MBH\Bundle\SearchBundle\Services\GarbageCollector\GarbageCollector
+#        calls:
+#            - [addClient, ['@mbh_search.room_cache_redis_cache']]
+#            - [addClient, ['@mbh_search.restrictions_redis_cache']]
+#            - [addClient, ['@mbh_search.rooms_redis_cache']]
+#            - [addClient, ['@mbh_search.package_accommodation_redis_cache']]
+#            - [addClient, ['@mbh_search.price_cache_redis_cache']]
+#            - [addClient, ['@mbh_search.search_result_redis_cache']]
 
 ##Fetchers
     mbh_search.shared_data_fetcher:
@@ -615,41 +617,36 @@ services:
         class: MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataFetcher
         public: false
         arguments:
-            - '@mbh_search.price_cache_redis_cache'
+            - '@snc_redis.data_fetcher_client'
             - '@mbh_search.price_cache_raw_fetcher'
-            - '@mbh_search.data_fetch.logger'
+
     mbh_search.restrictions_fetcher:
         class: MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataFetcher
         public: false
         arguments:
-            - '@mbh_search.restrictions_redis_cache'
+            - '@snc_redis.data_fetcher_client'
             - '@mbh_search.restriction_raw_fetcher'
-            - '@mbh_search.data_fetch.logger'
 
     mbh_search.room_cache_fetcher:
         class: MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataFetcher
         public: false
         arguments:
-            - '@mbh_search.room_cache_redis_cache'
+            - '@snc_redis.data_fetcher_client'
             - '@mbh_search.room_cache_raw_fetcher'
-            - '@mbh_search.data_fetch.logger'
 
     mbh_search.room_fetcher:
         class: MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataFetcher
         public: false
         arguments:
-            - '@mbh_search.rooms_redis_cache'
+            - '@snc_redis.data_fetcher_client'
             - '@mbh_search.room_raw_fetcher'
-            - '@mbh_search.data_fetch.logger'
 
     mbh_search.package_accommodation_fetcher:
         class: MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataFetcher
         public: false
         arguments:
-            - '@mbh_search.package_accommodation_redis_cache'
+            - '@snc_redis.data_fetcher_client'
             - '@mbh_search.package_accommodation_raw_fetcher'
-            - '@mbh_search.data_fetch.logger'
-
 
     mbh_search.price_cache_raw_fetcher:
         class: MBH\Bundle\SearchBundle\Services\Data\Fetcher\PriceCacheRawFetcher
@@ -803,7 +800,6 @@ services:
     mbh_search.search.event.subscriber:
         arguments:
             - '@snc_redis.clean_client'
-            - '@mbh_search.data_fetch.logger'
         class: MBH\Bundle\SearchBundle\EventSubscriber\SearchSubscriber
         tags:
             - {name: kernel.event_subscriber }

@@ -7,6 +7,8 @@ namespace MBH\Bundle\SearchBundle\Services\Search;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Events\SearchEvent;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\GroupingFactoryException;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\QueryGroupException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
 use MBH\Bundle\SearchBundle\Services\QueryGroups\AsyncQueryGroupInterface;
@@ -75,8 +77,7 @@ class Search
         FinalSearchResultsAnswerManager $builder,
         QueryGroupCreator $groupCreator,
         EventDispatcherInterface $dispatcher
-    )
-    {
+    ) {
         $this->restrictionChecker = $restrictionsChecker;
         $this->searcherFactory = $factory;
         $this->dm = $documentManager;
@@ -97,15 +98,14 @@ class Search
      * @return mixed
      * @throws SearchConditionException
      * @throws SearchQueryGeneratorException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\GroupingFactoryException
+     * @throws GroupingFactoryException
      */
     public function searchSync(
         array $data,
         $grouping = null,
         bool $isCreateJson = false,
         bool $isCreateAnswer = false
-    )
-    {
+    ) {
         $event = new SearchEvent();
         $conditions = $this->createSearchConditions($data);
 
@@ -144,24 +144,38 @@ class Search
      * @return string
      * @throws SearchConditionException
      * @throws SearchQueryGeneratorException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\QueryGroupException
+     * @throws QueryGroupException
      */
     public function searchAsync(array $data): string
     {
 
         $conditions = $this->createSearchConditions($data);
         $searchCombinations = $this->combinationsGenerator->generate($conditions);
-        $queryGroups = $this->queryGroupCreator->createQueryGroups($conditions, $searchCombinations, 'QueryGroupByRoomType');
+        $queryGroups = $this->queryGroupCreator->createQueryGroups(
+            $conditions,
+            $searchCombinations,
+            'QueryGroupByRoomType'
+        );
 
         $conditionsId = $conditions->getId();
-        $countQueries = 0;
+        $countQueries = array_reduce(
+            $queryGroups,
+            static function ($carry, $queryGroup) {
+                /** @var AsyncQueryGroupInterface $queryGroup */
+                return $carry + $queryGroup->countQueries();
+            }
+        );
+
+        $conditions->setExpectedResultsCount($countQueries);
+        $this->dm->persist($conditions);
+        $this->dm->flush($conditions);
+
         /** @var AsyncQueryGroupInterface|QueryGroupInterface $queryGroup */
         foreach ($queryGroups as $queryGroup) {
             $queryGroup->unsetConditions();
-            $countQueries += $queryGroup->countQueries();
             $message = [
                 'conditionsId' => $conditionsId,
-                'searchQueriesGroup' => serialize($queryGroup)
+                'searchQueriesGroup' => serialize($queryGroup),
             ];
             $msgBody = json_encode($message);
             $this->producer->publish(
@@ -169,14 +183,10 @@ class Search
                 '',
                 [
                     'priority' => $queryGroup->getQueuePriority(),
-                    'expiration' => 30000
+                    'expiration' => 60000
                 ]
             );
         }
-
-        $conditions->setExpectedResultsCount($countQueries);
-        $this->dm->persist($conditions);
-        $this->dm->flush($conditions);
 
         return $conditions->getId();
     }

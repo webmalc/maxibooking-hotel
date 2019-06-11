@@ -3,13 +3,18 @@
 
 namespace MBH\Bundle\SearchBundle\Services\Search;
 
+use Doctrine\ODM\MongoDB\MongoDBException;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\DataFetchQueryException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionLimitException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearcherException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\RestrictionsCheckerService;
 use MBH\Bundle\SearchBundle\Validator\Constraints\ChildrenAgesSameAsChildren;
+use Psr\SimpleCache\InvalidArgumentException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class Searcher implements SearcherInterface
@@ -44,11 +49,12 @@ class Searcher implements SearcherInterface
      * TODO: Надобно сделать сервис проверки лимитов и под каждый лимит отдельный класс как в restrictions например.
      * @param SearchQuery $searchQuery
      * @return Result
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
-     * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws SearcherException
+     * @throws MongoDBException
+     * @throws DataFetchQueryException
+     * @throws SearchResultComposerException
+     * @throws SharedFetcherException
+     * @throws InvalidArgumentException
      */
     public function search(SearchQuery $searchQuery): Result
     {

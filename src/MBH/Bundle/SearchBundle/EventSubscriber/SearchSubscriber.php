@@ -16,23 +16,17 @@ class SearchSubscriber implements EventSubscriberInterface
      * @var Client
      */
     private $client;
-    /**
-     * @var Logger
-     */
-    private $logger;
 
     /**
      * SearchSubscriber constructor.
      * @param Client $client
-     * @param Logger $logger
      */
-    public function __construct(Client $client, Logger $logger)
+    public function __construct(Client $client)
     {
         $this->client = $client;
-        $this->logger = $logger;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             SearchEvent::SEARCH_ASYNC_END => [
@@ -48,10 +42,6 @@ class SearchSubscriber implements EventSubscriberInterface
         $hash = $conditions->getSearchHash();
         $this->client->set($hash, $hash, 'EX', 1800);
         $this->client->sadd(SearchEvent::SEARCH_ASYNC_END, [$hash]);
-        $this->logger->debug(
-            sprintf('CleanMemory hash=%s added to redis ', $hash)
-        );
-
     }
 
 

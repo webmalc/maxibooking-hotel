@@ -4,6 +4,8 @@
 namespace MBH\Bundle\SearchBundle\Services\Search\AsyncSearchers;
 
 
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Document\SearchConditionsRepository;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\ConsumerSearchException;
@@ -15,7 +17,9 @@ use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupInterface;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStoreInterface;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStore;
 use MBH\Bundle\SearchBundle\Services\Search\SearcherFactory;
-use Monolog\Logger;
+use Predis\CommunicationException;
+use Predis\Response\ServerException;
+use Predis\Transaction\AbortedMultiExecException;
 
 class AsyncSearcherGroupedByRoomType implements AsyncSearcherInterface
 {
@@ -36,10 +40,6 @@ class AsyncSearcherGroupedByRoomType implements AsyncSearcherInterface
      * @var DataManager
      */
     private $dataManager;
-    /**
-     * @var Logger
-     */
-    private $logger;
 
     /**
      * ConsumerSearch constructor.
@@ -48,15 +48,13 @@ class AsyncSearcherGroupedByRoomType implements AsyncSearcherInterface
      * @param SearcherFactory $searcherFactory
      * @param AsyncSearchDecisionMakerInterface $decisionMaker
      * @param DataManager $dataManager
-     * @param Logger $logger
      */
     public function __construct(
         SearchConditionsRepository $conditionsRepository,
         AsyncResultStoreInterface $resultStore,
         SearcherFactory $searcherFactory,
         AsyncSearchDecisionMakerInterface $decisionMaker,
-        DataManager  $dataManager,
-        Logger $logger
+        DataManager  $dataManager
     )
 
     {
@@ -65,7 +63,6 @@ class AsyncSearcherGroupedByRoomType implements AsyncSearcherInterface
         $this->searcherFactory = $searcherFactory;
         $this->decisionMaker = $decisionMaker;
         $this->dataManager = $dataManager;
-        $this->logger = $logger;
     }
 
 
@@ -73,8 +70,11 @@ class AsyncSearcherGroupedByRoomType implements AsyncSearcherInterface
      * @param string $conditionsId
      * @param QueryGroupInterface $searchQueryGroup
      * @throws ConsumerSearchException
-     * @throws \Doctrine\ODM\MongoDB\LockException
-     * @throws \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @throws LockException
+     * @throws MappingException
+     * @throws CommunicationException
+     * @throws ServerException
+     * @throws AbortedMultiExecException
      */
     public function search(string $conditionsId, QueryGroupInterface $searchQueryGroup): void
     {
@@ -89,14 +89,8 @@ class AsyncSearcherGroupedByRoomType implements AsyncSearcherInterface
         }
 
         if (!$this->decisionMaker->isNeedSearch($conditions, $searchQueryGroup)) {
-            $this->logger->debug(
-                sprintf('Hashed %s no need search,add fake result in pid=%s', $conditions->getSearchHash(), getmypid())
-            );
             $this->asyncResultStore->addFakeReceivedCount($conditions->getSearchHash(), $searchQueryGroup->countQueries());
         } else {
-            $this->logger->debug(
-                sprintf('Hashed %s start async search  pid=%s', $conditions->getSearchHash(), getmypid())
-            );
             $searcher = $this->searcherFactory->getSearcher($conditions->isUseCache());
             $searchQueries = $searchQueryGroup->getSearchQueries();
             $founded = false;
@@ -111,10 +105,10 @@ class AsyncSearcherGroupedByRoomType implements AsyncSearcherInterface
                 }
 
             }
+
             if ($founded) {
                 $this->decisionMaker->markFoundedResults($conditions, $searchQueryGroup);
             }
-
         }
 
         $dm = $this->conditionsRepository->getDocumentManager();

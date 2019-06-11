@@ -5,9 +5,8 @@ namespace MBH\Bundle\SearchBundle\Services\Data\Fetcher;
 
 
 use MBH\Bundle\SearchBundle\Lib\Exceptions\AsyncDataFetcherException;
-use Monolog\Logger;
+use Predis\Client;
 use Psr\SimpleCache\InvalidArgumentException;
-use Symfony\Component\Cache\Simple\AbstractCache;
 
 /**
  * Class DataFetcher
@@ -20,30 +19,26 @@ class DataFetcher implements DataFetcherInterface
      */
     protected const REDIS_TIME_TTL = 120;
 
-    /** @var AbstractCache */
-    private $redis;
-
     /** @var DataRawFetcherInterface */
     private $rawFetcher;
 
     /** @var array */
     private $data;
+
     /**
-     * @var Logger
+     * @var Client
      */
-    private $logger;
+    private $client;
 
     /**
      * AbstractDataFetcher constructor.
-     * @param AbstractCache $redis
+     * @param Client $client
      * @param DataRawFetcherInterface $rawFetcher
-     * @param Logger $logger
      */
-    public function __construct(AbstractCache $redis, DataRawFetcherInterface $rawFetcher,  Logger $logger)
+    public function __construct(Client $client, DataRawFetcherInterface $rawFetcher)
     {
-        $this->redis = $redis;
+        $this->client = $client;
         $this->rawFetcher = $rawFetcher;
-        $this->logger = $logger;
     }
 
 
@@ -56,32 +51,27 @@ class DataFetcher implements DataFetcherInterface
     public function fetch(DataQueryInterface $dataQuery): array
     {
         $hash = $dataQuery->getSearchHash();
-
+        $key = $this->createKey($hash);
         if (!($data = $this->data[$hash] ?? null)) {
-            if (!$this->redis->has($hash)) {
+            if (!$this->client->exists($key)) {
                 $data = $this->fetchData($dataQuery);
-                $this->redis->set($hash, $data, self::REDIS_TIME_TTL);
-                if ($data === null) {
-                    $this->logger->debug(
-                        sprintf('Fetched data hashed %s from %s is null inside %s fetcher pid=%s', $hash, 'FETCHDATA method', $this->getName(), getmypid())
-                    );
+                /** @noinspection NotOptimalIfConditionsInspection */
+                if (!$this->client->exists($key)) {
+                    $this->client->transaction()->set($key, serialize($data), 'EX', static::REDIS_TIME_TTL)->exec();
                 }
+
             } else {
-                $data = $this->redis->get($hash);
-                $this->logger->debug(
-                    sprintf('Fetched data hashed %s from %s is null inside %s fetcher pid=%s', $hash, 'REDIS', $this->getName(), getmygid())
-                );
+
+                $data = unserialize($this->client->get($key), ['allowed_classes' => true]);
+
             }
             $this->data[$hash] = $data;
-        } else {
-            $this->logger->debug(sprintf('Data hashed %s from memory inside %s fetcher pid=%s', $hash, $this->getName(), getmygid()));
         }
 
-        if ($data === null) {
-            $message = sprintf('Data hashed %s is null, but at least empty array expected in %s fetcher pid=%s', $hash, $this->getName(), getmygid());
-            $this->logger->critical($message);
-            throw new AsyncDataFetcherException($message);
-        }
+//        if ($data === null) {
+//            $message = sprintf('%s. %s Received from all resources are NULL. PID %u', $name, $hash, getmypid());
+//            throw new AsyncDataFetcherException($message);
+//        }
 
         return $this->getExactData($dataQuery, $data);
     }
@@ -129,10 +119,15 @@ class DataFetcher implements DataFetcherInterface
             unset($this->data[$hash]);
         }
 
-        if ($this->redis->has($hash)) {
-            $this->redis->deleteItem($hash);
+        if ($this->client->exists($key = $this->createKey($hash))) {
+            $this->client->del([$key]);
         }
 
+    }
+
+    private function createKey(string $hash): string
+    {
+        return $this->getName().$hash;
     }
 
 }
