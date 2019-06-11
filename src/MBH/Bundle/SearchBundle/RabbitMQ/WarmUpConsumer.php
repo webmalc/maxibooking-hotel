@@ -40,11 +40,11 @@ class WarmUpConsumer implements ConsumerInterface
      * @param SearcherInterface $cacheSearcher
      * @param SearchConditionsRepository $conditionsRepository
      */
-    public function __construct(SearcherInterface $cacheSearcher, SearchConditionsRepository $conditionsRepository, GarbageCollector $collector)
+    public function __construct(SearcherInterface $cacheSearcher, SearchConditionsRepository $conditionsRepository/*, GarbageCollector $collector*/)
     {
         $this->warmUpCacheSearcher = $cacheSearcher;
         $this->searchConditionRepository = $conditionsRepository;
-        $this->collector = $collector;
+//        $this->collector = $collector;
     }
 
     /**

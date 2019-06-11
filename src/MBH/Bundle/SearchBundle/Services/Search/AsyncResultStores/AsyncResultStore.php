@@ -4,6 +4,7 @@
 namespace MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores;
 
 
+use function count;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\AsyncResultReceiverException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\GroupingFactoryException;
@@ -26,7 +27,6 @@ class AsyncResultStore implements AsyncResultStoreInterface
      * @var FinalSearchResultsAnswerManager
      */
     private $finalResultsBuilder;
-
 
     /**
      * ResultRedisStore constructor.
@@ -81,13 +81,15 @@ class AsyncResultStore implements AsyncResultStoreInterface
         $hash = $conditions->getSearchHash();
 
         $expectedResults = $conditions->getExpectedResultsCount();
-        $receivedCount = (int)$this->cache->get('received'.$hash) + (int)$this->cache->get('received_fake'.$hash);
+        $redisReceived = (int)$this->cache->get($this->createReceivedKey($hash));
+        $redisReceivedFake = (int)$this->cache->get($this->createFakeKey($hash));
+        $receivedCount = $redisReceived + $redisReceivedFake;
 
         if ($expectedResults === $receivedCount) {
             throw new AsyncResultReceiverException('All results were taken.');
         }
 
-        if (null !== $receivedCount && $receivedCount > $expectedResults) {
+        if ((null !== $receivedCount) && ($receivedCount > $expectedResults)) {
             throw new AsyncResultReceiverException('Some error! Taken results more than Expected!');
         }
 
@@ -98,14 +100,18 @@ class AsyncResultStore implements AsyncResultStoreInterface
             $keysForDelete[] = $key;
             $this->cache->srem($hash, $key);
         }
-        if (\count($keysForDelete)) {
+        if (count($keysForDelete)) {
             $received = $this->cache->del($keysForDelete);
 
         }
 
-        $this->cache->set('received'.$hash, $receivedCount + $received);
+        //**  */
+        $this->cache->transaction()->incrby($this->createReceivedKey($hash), $received)->exec();
+        //**  */
+
         $results = array_map([$this->serializer, 'decodeJsonToArray'], $results);
 
+        //** вынести в отдельный сервис для формирования результатов ? */
         $results = $this->finalResultsBuilder->createAnswer(
             $results,
             $conditions->getErrorLevel(),
@@ -119,12 +125,23 @@ class AsyncResultStore implements AsyncResultStoreInterface
 
     /**
      * @param string $hash
-     * @param int $number
+     * @param int $amount
      */
-    public function addFakeReceivedCount(string $hash, int $number): void
+    public function addFakeReceivedCount(string $hash, int $amount): void
     {
-        $fakeReceived = $this->cache->get('received_fake'.$hash);
-        $this->cache->set('received_fake'.$hash, (int)$fakeReceived + $number, 'EX', self::EXPIRE_TIME);
+        $key = $this->createFakeKey($hash);
+        $this->cache->transaction()->incrby($key, $amount)->exec();
+
+    }
+
+    private function createReceivedKey($hash): string
+    {
+        return 'received'.$hash;
+    }
+
+    private function createFakeKey(string $hash): string
+    {
+        return 'received_fake'.$hash;
     }
 
 }

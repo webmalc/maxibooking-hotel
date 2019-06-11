@@ -397,4 +397,10 @@ snc_redis:
             options:
                 prefix: 'cache_search_results_'
 
+        cache_data_fetcher:
+            type: predis
+            alias: data_fetcher
+            dsn: '%mbh_redis%'
+            options:
+                prefix: 'cache_data_fetcher_'
 
