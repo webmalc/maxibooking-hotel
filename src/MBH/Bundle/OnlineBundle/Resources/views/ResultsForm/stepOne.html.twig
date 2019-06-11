@@ -47,12 +47,12 @@
                                   data-id="{{ result.roomType.id }}">{{ result.roomType.localeTitle(app.request.locale) }}</span>
                     </div>
                     <div class="mbh-results-hotel-and-tariff-wrapper">
-                            <span class="mbh-results-hotel"
+                            <span class="mbh-results-hotel text-primary"
                                   data-id="{{ result.roomType.hotel.id }}">{{ result.roomType.hotel.fullTitle }}</span>
                         <span class="mbh-results-tariff"
                               data-id="{{ result.tariff.id }}">{{ result.tariff.fullTitle }}</span>
                     </div>
-                    <div>
+                    <div class="mbh-results-select-guest">
                         <select class="mbh-results-tourists-select select2{% if result.prices|length == 1 %} hidden{% endif %}">
                             {% for priceTourists, price  in result.prices %}
                                 {% set arr = priceTourists|split('_') %}
@@ -158,21 +158,34 @@
 
     <section id="mbh-results-actions">
         <div id="mbh-results-total-packages-sum" class="mbh-results-total-sum" style="display: none">0</div>
-        <div id="mbh-results-package-info-container">
-            <div class="mbh-package-info-amount-room-and-guest">
-                <span class="room-amount"></span>
-                <span class="guest-amount"></span>
+        <div id="mbh-results-package-info-container" class="hidden-xs">
+            <div class="mbh-package-info-icon-shopping-cart text-primary">
+                <i class="fa fa-shopping-cart fa-2x"></i>
             </div>
+            <div class="mbh-package-info-amount-room-and-guest">
+                <div class="room-wrapper">
+                    <span class="room-amount">0</span>
+                    <span class="room-text">{{ 'views.api.step_one.result_actions.room.none' | trans({}, 'MBHOnlineBundle') }}</span>
+                </div>
+                <div class="separator">,</div>
+                <div class="guest-wrapper">
+                    <span class="guest-amount">0</span>
+                    <span class="guest-text">{{ 'views.api.step_one.result_actions.guest.none' | trans({}, 'MBHOnlineBundle') }}</span>
+                </div>
+            </div>
+            <div class="separator">|</div>
             <div class="mbh-package-info-date">
+                <span>{{ 'from'|trans }}</span>
                 <span class="begin">{{ results|first.begin|date('d.m.Y') }}</span>
                 <span>{{ 'to'|trans }}</span>
                 <span class="end">{{ results|first.end|date('d.m.Y') }}</span>
             </div>
         </div>
+        <div style="flex-grow: 2"></div>
         <div id="mbh-results-total">
             <span class="mbh-results-total-text">{{ 'views.api.getResultsTable.result'|trans({}, 'MBHOnlineBundle') }}</span>
             <span id="mbh-results-total-sum" class="mbh-results-total-sum">0</span>
-            <span class="mbh-results-total-sum">{{ currency().text|trans }}</span>
+            <i class="{{ currency().icon }}"></i>
         </div>
         <button id="mbh-results-next"
                 class="button btn btn-primary spacer-left-sm"> {{ 'views.api.getResultsTable.continue'|trans({}, 'MBHOnlineBundle') }}

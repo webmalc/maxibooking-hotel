@@ -78,23 +78,43 @@ MbhResultForm.prototype.setFancyBoxOffset = function() {
 };
 
 MbhResultForm.prototype.calcTotal = function () {
-    var roomCountSelect = 0,
+    var _this = this,
+        roomCountSelect = 0,
+        amountGuest = 0,
         $totalPackagesElement = jQuery('#mbh-results-total-packages-sum'),
-        $packageInfoContainerRoom = jQuery('#mbh-results-package-info-container').find('.room-amount'),
-        $packageInfoContainerGuest = jQuery('#mbh-results-package-info-container').find('.guest-amount');
+        $packageInfoContainer = jQuery('#mbh-results-package-info-container'),
+        packageInfoTempText;
+
+    this.$packageInfoContainerRoom = $packageInfoContainer.find('.room-amount');
+    this.$packageInfoContainerRoomText = $packageInfoContainer.find('.room-text');
+    this.$packageInfoContainerGuest = $packageInfoContainer.find('.guest-amount');
+    this.$packageInfoContainerGuestText = $packageInfoContainer.find('.guest-text');
 
     var calc = function() {
         roomCountSelect = 0;
+        amountGuest = 0;
 
         var totalPackages = 0,
             nextButton = jQuery('#mbh-results-next'),
             roomCount = jQuery('select.mbh-results-packages-count:not(.hidden), input.mbh-results-packages-count[type=checkbox]:checked');
+
+        var $selectGuest;
 
         nextButton.prop('disabled', true);
         roomCount.each(function() {
             if (jQuery(this).val() > 0) {
                 var priceContainer = jQuery(this).closest('.mbh-results-price-container'),
                     li = priceContainer.find('ul.mbh-results-prices li:visible');
+
+                $selectGuest = jQuery(this).closest('.mbh-results-container').find('select.mbh-results-tourists-select');
+
+                amountGuest += $selectGuest.val()
+                                .split('_')
+                                .map(function(value) { return parseInt(value); })
+                                .reduce(function(previousValue, currentValue) {
+                                    return previousValue + currentValue;
+                                });
+
                 roomCountSelect += parseInt(jQuery(this).val());
                 if (li.length) {
                     totalPackages += parseInt(li.attr('data-value')) * jQuery(this).val();
@@ -111,14 +131,31 @@ MbhResultForm.prototype.calcTotal = function () {
             nextButton.prop('disabled', false);
         }
 
-
-        $packageInfoContainerRoom.text(roomCountSelect);
+        _this.dataRoomAndGuestAfterCalc(roomCountSelect, amountGuest);
     };
     calc();
 
     jQuery('.mbh-results-tourists-select, .mbh-results-packages-count').on('click change', function() {
         calc();
     });
+};
+
+MbhResultForm.prototype.textForPackageInfo = function (amount, entity) {
+    if (amount === 1) {
+        return this._text.stepOne.packageInfo[entity].one;
+    } else if (amount > 1 && amount <= 4) {
+        return this._text.stepOne.packageInfo[entity].many;
+    }
+
+    return this._text.stepOne.packageInfo[entity].other;
+};
+
+MbhResultForm.prototype.dataRoomAndGuestAfterCalc = function (amountRoom, amountGuest) {
+    this.$packageInfoContainerRoom.text(amountRoom);
+    this.$packageInfoContainerRoomText.text(this.textForPackageInfo(amountRoom, 'room'));
+
+    this.$packageInfoContainerGuest.text(amountGuest);
+    this.$packageInfoContainerGuestText.text(this.textForPackageInfo(amountGuest, 'guest'));
 };
 
 MbhResultForm.prototype.prepareAndGoStepTwo = function () {

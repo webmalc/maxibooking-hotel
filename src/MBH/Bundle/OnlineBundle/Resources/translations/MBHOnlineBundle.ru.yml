@@ -34,7 +34,7 @@ views.api.getResultsTable.room_cache_count: 'В наличии'
 views.api.getResultsTable.guests: Гости
 views.api.getResultsTable.price: Цена
 views.api.getResultsTable.rooms_amount: 'Количество номеров'
-views.api.getResultsTable.room_description: 'Описание номера'
+views.api.getResultsTable.room_description: 'Подробнее о номере'
 views.api.getResultsTable.room_price: 'Цена за номер'
 views.api.getResultsTable.hotel: Отель
 views.api.getResultsTable.service_type: 'Тип услуги'
@@ -43,10 +43,18 @@ views.api.getResultsTable.price_per: 'Цена за'
 views.api.getResultsTable.day: День
 views.api.getResultsTable.rooms: 'Номера:'
 views.api.getResultsTable.services: 'Услуги:'
-views.api.getResultsTable.result: 'Всего:'
+views.api.getResultsTable.result: 'Всего'
 views.api.getResultsTable.facilities: Удобства
 views.api.getResultsTable.continue: Продолжить
 views.api.getResultsTable.nothing_found_for_your_query: 'По вашему запросу ничего не найдено.'
+
+views.api.step_one.result_actions.room.other: номеров
+views.api.step_one.result_actions.room.one: номер
+views.api.step_one.result_actions.room.many: номера
+views.api.step_one.result_actions.guest.other: гостей
+views.api.step_one.result_actions.guest.one: гость
+views.api.step_one.result_actions.guest.many: гостя
+
 views.api.getUserForm.enter_data_to_continue: 'Заполните данные для продолжения'
 views.api.getUserForm.surname: Фамилия
 views.api.getUserForm.placeholder_surname: Иванов

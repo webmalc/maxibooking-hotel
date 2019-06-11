@@ -277,6 +277,10 @@ body {
       }
     }
 
+    .text-primary {
+      color: @general_color;
+    }
+
     #mbh-results-actions {
       @media (min-width: 472px) {
         flex-direction: row;
@@ -296,6 +300,19 @@ body {
       .btn-primary {
         background-color: @general_color;
         border-color: @general_color;
+      }
+
+      #mbh-results-total {
+        .mbh-results-total-text {
+          font-size: 14px;
+          .textUppercase();
+        }
+
+        .mbh-results-total-sum {
+          font-size: 18px;
+          .textUppercase();
+          margin: 0 0.3em;
+        }
       }
     }
 
@@ -322,10 +339,33 @@ body {
           bottom: 0;
         }
 
-        //#mbh-results-packages-total {
-        //  font-size: 16px;
-        //  line-height: 24px;
-        //}
+        #mbh-results-package-info-container {
+          display: flex;
+          margin-left: 30px;
+
+          > div {
+            display: flex;
+            align-items: center;
+            .fontSize16LineHeight();
+            margin: 0 0.3em;
+          }
+
+          .separator {
+            margin: 0 0.3em;
+          }
+
+          .mbh-package-info-amount-room-and-guest {
+
+            span + span {
+              margin-left: 0.3em;
+            }
+          }
+          .mbh-package-info-date {
+            span + span {
+              margin-left: 0.3em;
+            }
+          }
+        }
 
         #mbh-results-total {
           font-weight: bold;
@@ -449,10 +489,6 @@ body {
                   margin-left: 0;
                 }
 
-                //&:last-of-type {
-                //  margin-right: 0;
-                //}
-
                 @media (max-width: 374px) {
                   &:nth-of-type(4) {
                     margin-right: 0;
@@ -511,7 +547,7 @@ body {
   // BEGIN DESCRIPTION
           .mbh-results-description-container {
             > div {
-              margin-bottom: 5px;
+              margin-bottom: 8px;
             }
 
             .mbh-results-room-type-name-wrapper {
@@ -523,11 +559,14 @@ body {
             .mbh-results-hotel-and-tariff-wrapper {
               .mbh-results-hotel {
                 .fontSize16LineHeight();
-                color: @general_color;
               }
               span + span {
                 margin-left: 5px;
               }
+            }
+
+            .mbh-results-select-guest {
+              .styleForSelect2();
             }
 
             .facility-wrapper {
