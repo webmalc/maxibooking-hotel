@@ -40,7 +40,11 @@ MbhResultForm.prototype.descriptionToggle = function () {
     var _this = this;
 
     document.querySelectorAll('.mbh-results-room-type-description-wrapper').forEach(function(wrapper) {
-        wrapper.querySelector('button').addEventListener('click', function(ev) {
+        var btn = wrapper.querySelector('button');
+        if (btn === null) {
+            return;
+        }
+        btn.addEventListener('click', function(ev) {
             this.children[0].classList.toggle('fa-angle-down');
             wrapper.classList.toggle('show-description');
             _this.resize();

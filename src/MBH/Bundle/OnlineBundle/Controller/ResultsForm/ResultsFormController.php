@@ -205,7 +205,7 @@ class ResultsFormController extends BaseController
         }
 
         $requestedHotel = $dm->getRepository('MBHHotelBundle:Hotel')->find($request->get('hotel'));
-        if (!is_null($requestedHotel)) {
+        if ($requestedHotel !== null) {
             $hotels = in_array($requestedHotel, $hotels) ? [$requestedHotel] : [];
         }
         foreach ($hotels as $hotel) {
@@ -220,7 +220,8 @@ class ResultsFormController extends BaseController
         $requestedRoomTypeId = $request->get('roomType');
         if (!empty($requestedRoomTypeId)) {
             $requestedRoomType = $this->dm->find(RoomType::class, $requestedRoomTypeId);
-            if (!is_null($requestedRoomType)) {
+
+            if ($requestedRoomType !== null) {
                 $query->addRoomTypeId($requestedRoomTypeId);
             } else {
                 $query->availableRoomTypes = [];
