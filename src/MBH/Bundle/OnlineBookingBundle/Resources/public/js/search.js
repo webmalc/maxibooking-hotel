@@ -103,19 +103,35 @@ RoomTypeRow.prototype.handleChartData = function (data) {
 };
 
 RoomTypeRow.prototype.fancyInit = function () {
-    var fancies = this.$row
+    // Because jquery v.1.12 azovsky.ru
+    // var fancies = this.$row
+    //     .find('.fancybox')
+    //     .fancybox()
+    //     .each(function () {
+    //         $(this).on('click', function (e) {
+    //             e.stopPropagation();
+    //         });
+    //     });
+    //
+    // this.$row
+    //     .find(".imghotel")
+    //     .on('click', function () {
+    //         $(fancies[0]).click();
+    //     });
+
+    this.$row
         .find('.fancybox')
-        .fancybox()
         .each(function () {
-            $(this).on('click', function (e) {
-                e.stopPropagation();
-            });
+            $(this).fancybox()
+                .on('click', function (e) {
+                    e.stopPropagation();
+                });
         });
 
     this.$row
         .find(".imghotel")
-        .on('click', function () {
-            $(fancies[0]).click();
+        .on('click', function (e) {
+            $.fancybox.open($('.fancybox', $(this)));
         });
 };
 
