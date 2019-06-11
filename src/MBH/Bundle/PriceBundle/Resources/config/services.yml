@@ -122,3 +122,7 @@ services:
       class: MBH\Bundle\PriceBundle\Services\PriceCacheRepositoryFilter
       arguments:
           - '@doctrine.odm.mongodb.document_manager'
+
+  mbh.promotion.helper:
+      class: MBH\Bundle\PriceBundle\Services\PromotionHelper
+      arguments: ['@mbh.helper', '@doctrine.odm.mongodb.document_manager']

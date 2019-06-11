@@ -115,7 +115,7 @@ services:
 
     ostrovok_api_service:
         class: MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok\OstrovokApiService
-        arguments: ['%mbh.channelmanager.services%']
+        arguments: ['%mbh.channelmanager.services%', '@service_container']
 
     mbh_bundle_channel_manager.lib_ostrovok.ostrovok_data_generator:
         class: MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok\OstrovokDataGenerator

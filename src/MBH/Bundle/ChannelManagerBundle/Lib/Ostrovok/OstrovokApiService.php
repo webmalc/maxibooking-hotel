@@ -3,6 +3,9 @@
 namespace MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok;
 
 use GuzzleHttp\Client as Guzzle;
+use Monolog\Logger;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
 
 /**
  * Class OstrovokApiService
@@ -31,15 +34,20 @@ class OstrovokApiService
     /**@var Guzzle */
     protected $client;
 
+    /**@var Logger */
+    protected $log;
+
     /**
      * OstrovokApiService constructor.
      * @param array $config
+     * @param ContainerInterface $container
      */
-    public function __construct(array $config)
+    public function __construct(array $config, ContainerInterface $container)
     {
         $this->auth_token = $config['ostrovok']['username'];
         $this->private_token = $config['ostrovok']['password'];
         $this->client = new Guzzle();
+        $this->log = $container->get('mbh.channelmanager.logger');
     }
 
     /**
@@ -104,7 +112,6 @@ class OstrovokApiService
      * @param array $data
      * @return mixed|string
      * @throws OstrovokApiServiceException
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     private function callGet($api_method, array $data)
     {
@@ -112,13 +119,23 @@ class OstrovokApiService
         $data['limits'] = self::LIMIT;
         $data['sign'] = $this->getSignature($data, $this->private_token);
 
-        $response = $this->client->request(
-            'GET',
-            self::API_URL . $api_method,
-            ['query' => $data]
+        $this->log->addInfo(
+            'Ostrovok callGet request uri: ' . self::API_URL . $api_method . '; data: '. json_encode(['query' => $data])
         );
+        try {
+            $response = $this->client->request(
+                'GET',
+                self::API_URL . $api_method,
+                ['query' => $data]
+            );
+        } catch (\GuzzleHttp\Exception\RequestException $e) {
+            $this->log->addError($e->getResponse()->getBody()->getContents());
+            throw new OstrovokApiServiceException('No returned request in callGet Method '.get_class($this));
+        }
 
-        $response = json_decode($response->getBody(), true);
+        $this->log->addInfo('Ostrovok callGet response data: '. $response->getBody()->getContents() .'');
+
+        $response = json_decode($response->getBody()->getContents(), true);
         $this->checkErrors($response);
         return $response;
     }
