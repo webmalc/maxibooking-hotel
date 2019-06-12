@@ -80,7 +80,9 @@ MbhResultForm.prototype.setFancyBoxOffset = function() {
 MbhResultForm.prototype.calcTotal = function () {
     var _this = this,
         roomCountSelect = 0,
+        tempRoomCount,
         amountGuest = 0,
+        tempAmountGuest;
         $totalPackagesElement = jQuery('#mbh-results-total-packages-sum'),
         $packageInfoContainer = jQuery('#mbh-results-package-info-container');
 
@@ -101,22 +103,27 @@ MbhResultForm.prototype.calcTotal = function () {
 
         nextButton.prop('disabled', true);
         roomCount.each(function() {
+            tempRoomCount = 0;
+            tempAmountGuest = 0;
             if (jQuery(this).val() > 0) {
                 var priceContainer = jQuery(this).closest('.mbh-results-price-container'),
                     li = priceContainer.find('ul.mbh-results-prices li:visible');
 
                 $selectGuest = jQuery(this).closest('.mbh-results-container').find('select.mbh-results-tourists-select');
 
-                amountGuest += $selectGuest.val()
-                                .split('_')
-                                .map(function(value) { return parseInt(value); })
-                                .reduce(function(previousValue, currentValue) {
-                                    return previousValue + currentValue;
-                                });
+                tempRoomCount = parseInt(jQuery(this).val());
+                tempAmountGuest = $selectGuest.val()
+                                    .split('_')
+                                    .map(function(value) { return parseInt(value); })
+                                    .reduce(function(previousValue, currentValue) {
+                                        return previousValue + currentValue;
+                                    });
 
-                roomCountSelect += parseInt(jQuery(this).val());
+                amountGuest += tempRoomCount * tempAmountGuest;
+
+                roomCountSelect += tempRoomCount;
                 if (li.length) {
-                    totalPackages += parseInt(li.attr('data-value')) * jQuery(this).val();
+                    totalPackages += parseInt(li.attr('data-value')) * tempRoomCount;
                 }
             }
         });
