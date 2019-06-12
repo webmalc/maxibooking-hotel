@@ -297,6 +297,9 @@ body #mbh-results-wrapper .step-info .step-number-info .step-title {
   font-size: 16px;
   line-height: 24px;
 }
+body #mbh-results-wrapper .bg-primary {
+  background-color: var(--mainlight);
+}
 body #mbh-results-wrapper .text-primary {
   color: var(--main);
 }
@@ -458,7 +461,6 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-conta
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .main-image {
   margin-bottom: 5px;
   text-align: center;
-  background-color: var(--mainlight);
   height: 120px;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .main-image a {

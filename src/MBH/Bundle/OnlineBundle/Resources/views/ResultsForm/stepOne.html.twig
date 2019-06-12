@@ -23,7 +23,7 @@
         {% for result in results %}
             <div class="row mbh-results-container">
                 <div class="col-xs-12 col-sm-3 mbh-results-image-wrapper">
-                    <div class="main-image">
+                    <div class="main-image bg-primary">
                         {% if result.roomType.mainImage is not empty %}
                             {% set image = result.roomType.getMainImage %}
                             <a href="{{ asset(vich_uploader_asset(image, 'imageFile') | imagine_filter('size_1980x1280')) }}"

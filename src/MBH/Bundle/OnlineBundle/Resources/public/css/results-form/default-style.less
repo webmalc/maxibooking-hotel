@@ -56,6 +56,10 @@ body {
     line-height: 20px;
     margin-bottom: 10px;
 
+    .fa {
+      margin-left: 0.3em;
+    }
+
     .mbh-order-total {
       margin-top: @indent;
       padding-top: @indent;
@@ -200,7 +204,6 @@ body {
 
     margin: 10px 0;
     padding: 5px 0;
-    //background: #FFFFFF;
 
   // BEGIN IMG
     .mbh-results-image-wrapper {
@@ -208,49 +211,79 @@ body {
         margin-bottom: 5px;
         text-align: center;
 
-        img {
-          max-width: 155px;
-          max-height: 155px;
+        height: 120px;
+
+        a {
+          display: block;
+          width: 100%;
+          height: 100%;
+          background-size: cover;
+          background-position: center;
         }
       }
       .list-small-image {
-        display: flex;
-        justify-content: space-between;
 
-        img {
-          max-height: 50px;
-          max-width: 50px;
-        }
-      }
-    }
+        a {
+          margin-right: 7px;
+          margin-left: 7px;
 
-    @media (max-width: 767px) {
-      .mbh-results-image-wrapper {
-        margin-bottom: 15px;
-        order: 2;
-        padding-left: 0;
-        padding-right: 0;
+          &:first-of-type {
+            margin-left: 0;
+          }
 
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
+          @media (max-width: 374px) {
+            &:nth-of-type(4) {
+              margin-right: 0;
+            }
+            &:nth-of-type(n+5) {
+              display: none;
+            }
+          }
 
-        .main-image {
-          width: 300px;
-          margin: auto;
-          margin-bottom: 10px;
+          @media (min-width: 375px) and (max-width: 439px){
+            &:nth-of-type(5) {
+              margin-right: 0;
+            }
+            &:nth-of-type(n+6) {
+              display: none;
+            }
+          }
+
+          @media (min-width: 440px) and (max-width: 549px){
+            &:nth-of-type(6) {
+              margin-right: 0;
+            }
+            &:nth-of-type(n+7) {
+              display: none;
+            }
+          }
+
+          @media (min-width: 550px) and (max-width: 831px){
+            &:nth-of-type(7) {
+              margin-right: 0;
+            }
+            &:nth-of-type(n+8) {
+              display: none;
+            }
+          }
+
+          @media (min-width: 832px) {
+            &:nth-of-type(3) {
+              margin-right: 0;
+            }
+            &:nth-of-type(n+4) {
+              display: none;
+            }
+          }
+
           img {
-            max-width: 300px;
-            max-height: 300px;
+            height: 50px;
+            width: 50px;
           }
         }
-
-        .list-small-image {
-          margin: auto;
-          width: 300px;
-        }
       }
     }
+
   // END IMG
   // BEGIN DESCRIPTION
     .mbh-results-description-container {
@@ -308,10 +341,6 @@ body {
         }
       }
 
-      .nights {
-
-      }
-
       .room-count-selector {
         margin-top: 10px;
 
@@ -340,26 +369,9 @@ body {
       .mbh-results-image-wrapper {
         margin-bottom: 15px;
         order: 2;
-        padding-left: 0;
-        padding-right: 0;
-
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
 
         .main-image {
-          width: 300px;
-          margin: auto;
-          margin-bottom: 10px;
-          img {
-            max-width: 300px;
-            max-height: 300px;
-          }
-        }
-
-        .list-small-image {
-          margin: auto;
-          width: 300px;
+          height: 250px;
         }
       }
       .mbh-results-price-container {
@@ -413,11 +425,41 @@ body {
   justify-content: space-between;
   align-items: center;
   margin: 20px 0;
-  //text-align: right;
 
-  .mbh-results-total-sum {
-    //font-size: 16px;
-    //font-weight: bold;
+  #mbh-results-package-info-container {
+    display: flex;
+
+    > div {
+      display: flex;
+      align-items: center;
+      margin: 0 0.3em;
+    }
+
+    .separator {
+      margin: 0 0.3em;
+    }
+
+    .mbh-package-info-amount-room-and-guest {
+
+      span + span {
+        margin-left: 0.3em;
+      }
+    }
+    .mbh-package-info-date {
+      span + span {
+        margin-left: 0.3em;
+      }
+    }
+  }
+
+  #mbh-results-total {
+    margin: 0 0.3em;
+    .mbh-results-total-sum {
+      margin-right: 0.3em;
+    }
+    span + span {
+      margin-left: 0.3em;
+    }
   }
 
   button {
