@@ -1,6 +1,7 @@
 @import "../common-style.mixin";
 
-.importFont();
+.importFontRoboto();
+.importFontRobotoSlab();
 
 @general_color: var(--main);
 @general_color_light: var(--mainlight);
@@ -116,6 +117,7 @@ body {
     }
   }
 
+  .commonStyleFont();
   .commonStylePanelBootstrap();
 
   display: flex;
@@ -123,8 +125,6 @@ body {
   align-items: center;
 
   background: #F2F2F2;
-
-  .commonStyleFont();
 
   .styleFontForSelect() {
     .fontSize16LineHeight(28px);
@@ -541,8 +541,6 @@ body {
                     display: none;
                   }
                 }
-
-
 
                 img {
                   height: 50px;

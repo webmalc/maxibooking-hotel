@@ -1,17 +1,16 @@
 @import "../common-style.mixin";
-.importFont();
+.importFontRoboto();
 
 #mbh-body-search-iframe {
-
     @row-width-desktop: 180px;
     @row-width-tablet: 130px;
     @row-width-mobile: 240px;
 
     @ident-row: 7px;
 
-    margin: 0;
-
     .commonStyleFont();
+
+    margin: 0;
 
     display: flex;
     justify-content: center;
@@ -24,6 +23,10 @@
 
     height: 280px;
 
+    input {
+        font-family: inherit;
+    }
+
     #mbh-form-wrapper {
         display: flex;
         flex-direction: column;
@@ -35,7 +38,6 @@
         form#mbh-form {
             display: flex;
             justify-content: center;
-
 
             @media (min-width: @size-screen-max-width-mobile) {
                 width: @row-width-desktop*2 + @row-width-tablet*2 + (@ident-row*2)*3;
@@ -116,7 +118,6 @@
                     .textUppercase();
                 }
             }
-
 
             #mbh-form-submit {
                 justify-content: center;
