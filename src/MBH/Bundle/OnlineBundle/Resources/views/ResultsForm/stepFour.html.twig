@@ -4,11 +4,11 @@
         <div class="panel-heading">
             {{ 'controller.apiController.thank_you'| trans }}
         </div>
-        <div class="panel-body">
-            <div>{{ roomStr | trans }}</div>
-            <div>{{ 'controller.apiController.we_will_call_you_back_soon' | trans }}</div>
-            <div>{{ 'controller.apiController.your_order_number' | trans }}: {{ orderId }}</div>
-            <div>{{ packageStr | trans }}: {{ packages }}</div>
+        <div class="panel-body mbh-results-success-booking">
+            <div class="text-success">{{ roomStr | trans }}</div>
+            <div class="text-back-soon">{{ 'controller.apiController.we_will_call_you_back_soon' | trans }}</div>
+            <div class="text-order-number">{{ 'controller.apiController.your_order_number' | trans }}: {{ orderId }}</div>
+            <div class="text-package-number">{{ packageStr | trans }}: {{ packages }}</div>
             {% if form != null %}
                 {{ form | raw }}
             {% endif %}

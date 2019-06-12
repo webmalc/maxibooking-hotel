@@ -160,7 +160,7 @@ MbhResultForm.prototype.prepareAndGoStepThree = function () {
         }
 
 
-        var total = parseInt(_this._requestParams.total.replace(/,/g, ''));
+        var total = parseInt(_this._requestParams.total.replace(/\s/g, ''));
 
         total += totalServices;
         _this._requestParams.total = String(total);

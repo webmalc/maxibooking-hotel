@@ -835,8 +835,23 @@ body #mbh-results-wrapper .step-three #mbh-results-payment-form #mbh-payment-sys
 body #mbh-results-wrapper .step-four {
   margin-bottom: 15px;
 }
+body #mbh-results-wrapper .step-four .mbh-results-success-booking > div {
+  margin-bottom: 5px;
+}
+body #mbh-results-wrapper .step-four .mbh-results-success-booking .text-success {
+  font-family: 'Roboto Slab', serif;
+  font-size: 20px;
+  line-height: 24px;
+}
+body #mbh-results-wrapper .step-four .mbh-results-success-booking .text-back-soon,
+body #mbh-results-wrapper .step-four .mbh-results-success-booking .text-order-number,
+body #mbh-results-wrapper .step-four .mbh-results-success-booking .text-package-number {
+  font-size: 16px;
+  line-height: 24px;
+}
 body #mbh-results-wrapper .step-four .btn-info {
   margin-top: 15px;
   background-color: var(--main);
   border-color: var(--main);
+  white-space: unset;
 }

@@ -857,10 +857,29 @@ body {
     .step-four {
       margin-bottom: 15px;
 
+      .mbh-results-success-booking {
+        > div {
+          margin-bottom: 5px;
+        }
+        .text-success {
+          .fontRobotoSlab();
+          font-size: 20px;
+          line-height: 24px;
+        }
+
+        .text-back-soon,
+        .text-order-number,
+        .text-package-number {
+          .fontSize16LineHeight();
+        }
+      }
+
       .btn-info {
         margin-top: 15px;
         background-color: @general_color;
         border-color: @general_color;
+
+        white-space: unset;
       }
     }
   }
