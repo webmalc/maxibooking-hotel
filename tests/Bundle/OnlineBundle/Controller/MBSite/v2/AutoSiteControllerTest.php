@@ -19,6 +19,7 @@ class AutoSiteControllerTest extends WebTestCase
     private const URL_ROOM_TYPES = 'room-types';
     private const URL_MIN_PRICES = 'min-prices';
     private const URL_FACILITIES_DATA = 'facilities-data';
+    private const URL_PERSONAL_DATA_POLICIES = 'personal-data-policies';
 
     private const KEY_RESPONSE_SUCCESS = 'success';
     private const KEY_RESPONSE_DATA = 'data';
@@ -50,6 +51,7 @@ class AutoSiteControllerTest extends WebTestCase
         yield self::URL_ROOM_TYPES => [$this->addPrefix(self::URL_ROOM_TYPES), true];
         yield self::URL_MIN_PRICES => [$this->addPrefix(self::URL_MIN_PRICES), true];
         yield self::URL_FACILITIES_DATA => [$this->addPrefix(self::URL_FACILITIES_DATA), false];
+        yield self::URL_PERSONAL_DATA_POLICIES => [$this->addPrefix(self::URL_PERSONAL_DATA_POLICIES), false];
     }
 
     /**

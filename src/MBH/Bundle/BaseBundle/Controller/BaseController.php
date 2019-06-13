@@ -191,7 +191,7 @@ class BaseController extends Controller
 
     protected function setLocaleByRequest()
     {
-        $request = $this->get('request_stack')->getCurrentRequest();
+        $request = $this->getRequest();
         $locale = $request->get('locale');
         if ($locale) {
             $this->setLocale($locale);
@@ -202,7 +202,7 @@ class BaseController extends Controller
 
     protected function setLocale($locale)
     {
-        $request = $this->get('request_stack')->getCurrentRequest();
+        $request = $this->getRequest();
         $request->setLocale($locale);
         $this->get('translator')->setLocale($request->getLocale());
     }

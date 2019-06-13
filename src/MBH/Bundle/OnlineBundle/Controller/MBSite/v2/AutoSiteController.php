@@ -87,7 +87,7 @@ class AutoSiteController extends BaseController implements CheckSiteManagerInter
     }
 
     /**
-     * @Route("/personal-data-policies", name="mb_site_api_v2_pers-data-policies")
+     * @Route("/personal-data-policies", name="mb_site_api_v2_pers_data_policies")
      * @SWG\Get(
      *     path="/management/online/api/v2/personal-data-policies",
      *     produces={"application/json"},
