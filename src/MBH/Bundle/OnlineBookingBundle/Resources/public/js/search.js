@@ -118,21 +118,6 @@ RoomTypeRow.prototype.fancyInit = function () {
         .on('click', function () {
             $(fancies[0]).click();
         });
-
-    // this.$row
-    //     .find('.fancybox')
-    //     .each(function () {
-    //         $(this).fancybox()
-    //             .on('click', function (e) {
-    //                 e.stopPropagation();
-    //             });
-    //     });
-    //
-    // this.$row
-    //     .find(".imghotel")
-    //     .on('click', function (e) {
-    //         $.fancybox.open($('.fancybox', $(this)));
-    //     });
 };
 
 RoomTypeRow.prototype.getChartOptions = function () {

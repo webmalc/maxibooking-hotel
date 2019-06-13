@@ -47,9 +47,10 @@ class RoomCacheRawFetcher implements DataRawFetcherInterface
         $rawData = $this->roomCacheRepository->fetchRaw($conditions->getMaxBegin(), $conditions->getMaxEnd());
         $data = [];
         foreach ($rawData as $rawRoomCache) {
-            $roomTypeIdKey = (string)$rawRoomCache['roomType']['$id'];
+//            $roomTypeIdKey = (string)$rawRoomCache['roomType']['$id'];
             $dateKey = Helper::convertMongoDateToDate($rawRoomCache['date'])->format('d-m-Y');
-            $data[$roomTypeIdKey][$dateKey][] = $rawRoomCache;
+//            $data[$roomTypeIdKey][$dateKey][] = $rawRoomCache;
+            $data[$dateKey][] = $rawRoomCache;
         }
 
         return $data;
@@ -65,29 +66,28 @@ class RoomCacheRawFetcher implements DataRawFetcherInterface
 
         $tariffId = $this->actualChildOptionDeterminer->getActualRoomTariff($tariffId);
         $roomCaches = [];
-        $groupedRoomCaches = $data[$roomTypeId] ?? [];
+//        $groupedRoomCaches = $data[$roomTypeId] ?? [];
 
         foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
             /** @var \DateTime $day */
-            $dayRoomCaches = $groupedRoomCaches[$day->format('d-m-Y')] ?? null;
+            $dayRoomCaches = $data[$day->format('d-m-Y')] ?? null;
             if (is_array($dayRoomCaches)) {
-                $roomCaches[] = array_reduce(
+                $roomCaches[] = array_filter(
                     $dayRoomCaches,
-                    static function ($carry, $roomCache) use ($tariffId) {
-                        if (null === $carry && !isset($roomCache['tariff'])) {
-                            $carry = $roomCache;
-                        }
-                        if (isset($roomCache['tariff']) && (string)$roomCache['tariff']['$id'] === $tariffId) {
-                            $carry = $roomCache;
-                        }
+                    static function ($roomCache) use ($tariffId, $roomTypeId) {
+                        $isPureRoomCache = null === ($roomCache['tariff'] ?? null);
+                        $isQuotedRoomCache = $tariffId === ($roomCache['tariff'] ?? null);
+                        $isRoomTypedRoomCache = $roomTypeId === (string)$roomCache['roomType']['$id'];
 
-                        return $carry;
+                        return ($isPureRoomCache || $isQuotedRoomCache) && $isRoomTypedRoomCache;
                     }
                 );
             }
 
         }
-
+        if (is_array($roomCaches)) {
+            $roomCaches = array_merge(...$roomCaches);
+        }
         return $roomCaches;
     }
 
