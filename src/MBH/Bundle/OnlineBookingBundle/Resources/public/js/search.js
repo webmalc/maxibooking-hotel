@@ -104,35 +104,35 @@ RoomTypeRow.prototype.handleChartData = function (data) {
 
 RoomTypeRow.prototype.fancyInit = function () {
     // Because jquery v.1.12 azovsky.ru
-    // var fancies = this.$row
-    //     .find('.fancybox')
-    //     .fancybox()
-    //     .each(function () {
-    //         $(this).on('click', function (e) {
-    //             e.stopPropagation();
-    //         });
-    //     });
-    //
-    // this.$row
-    //     .find(".imghotel")
-    //     .on('click', function () {
-    //         $(fancies[0]).click();
-    //     });
-
-    this.$row
+    var fancies = this.$row
         .find('.fancybox')
+        .fancybox()
         .each(function () {
-            $(this).fancybox()
-                .on('click', function (e) {
-                    e.stopPropagation();
-                });
+            $(this).on('click', function (e) {
+                e.stopPropagation();
+            });
         });
 
     this.$row
         .find(".imghotel")
-        .on('click', function (e) {
-            $.fancybox.open($('.fancybox', $(this)));
+        .on('click', function () {
+            $(fancies[0]).click();
         });
+
+    // this.$row
+    //     .find('.fancybox')
+    //     .each(function () {
+    //         $(this).fancybox()
+    //             .on('click', function (e) {
+    //                 e.stopPropagation();
+    //             });
+    //     });
+    //
+    // this.$row
+    //     .find(".imghotel")
+    //     .on('click', function (e) {
+    //         $.fancybox.open($('.fancybox', $(this)));
+    //     });
 };
 
 RoomTypeRow.prototype.getChartOptions = function () {
