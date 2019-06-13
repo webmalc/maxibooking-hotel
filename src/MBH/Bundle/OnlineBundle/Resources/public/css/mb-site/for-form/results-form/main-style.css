@@ -442,8 +442,12 @@ body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wra
 }
 body #mbh-results-wrapper .step-one #mbh-results-duration h3 {
   font-family: 'Roboto Slab', serif;
-  font-size: 32px;
-  line-height: 44px;
+}
+@media (min-width: 732px) {
+  body #mbh-results-wrapper .step-one #mbh-results-duration h3 {
+    font-size: 32px;
+    line-height: 44px;
+  }
 }
 body #mbh-results-wrapper .step-one #mbh-results-duration #mbh-result-response-info {
   display: none;
@@ -541,6 +545,7 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-conta
   font-size: 16px;
   line-height: 28px;
   text-align: center;
+  text-align: unset;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-select-guest a {
   border-radius: unset;
@@ -548,6 +553,9 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-conta
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-select-guest a .select2-chosen {
   margin-top: 4px;
+}
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-select-guest .select2:not(.hidden) {
+  text-align: center;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .facility-wrapper ul.inline-facility {
   list-style: none;
@@ -561,6 +569,7 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-conta
   margin-top: 5px;
   background: #FFFFFF;
   border: none;
+  padding: unset;
   font-style: italic;
   font-weight: 500;
   font-size: 16px;

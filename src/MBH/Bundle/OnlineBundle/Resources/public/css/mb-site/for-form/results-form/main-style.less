@@ -11,8 +11,8 @@ body {
     width: ~"calc(100vw - 30px)";
   }
 
-  .fontSize16LineHeight(@_line-height: 24px) {
-    font-size: 16px;
+  .fontSizeLineHeight(@_font-size: 16px, @_line-height: 24px) {
+    font-size: @_font-size;
     line-height: @_line-height;
   }
 
@@ -82,8 +82,7 @@ body {
 
         .fontRobotoSlab();
 
-        font-size: 20px;
-        line-height: 24px;
+        .fontSizeLineHeight(20px, 24px);
 
         background: #282828;
         opacity: 0.7;
@@ -127,7 +126,7 @@ body {
   background: #F2F2F2;
 
   .styleFontForSelect() {
-    .fontSize16LineHeight(28px);
+    .fontSizeLineHeight(16px, 28px);
     text-align: center;
   }
 
@@ -193,13 +192,12 @@ body {
         .indentBottom();
         .mbh-room-name {
           .fontRobotoSlab();
-          font-size: 20px;
-          line-height: 24px;
+          .fontSizeLineHeight(20px, 24px);
         }
 
         .mbh-hotel-name {
           color: @general_color;
-          .fontSize16LineHeight(20px);
+          .fontSizeLineHeight(16px, 20px);
         }
       }
 
@@ -207,12 +205,12 @@ body {
         .indentBottom();
         .mbh-daterange {
           font-weight: bold;
-          .fontSize16LineHeight();
+          .fontSizeLineHeight();
         }
 
         .mbh-days-amount,
         .mbh-package-amount {
-          .fontSize16LineHeight(20px);
+          .fontSizeLineHeight(16px, 20px);
         }
 
         .mbh-days-amount {
@@ -223,7 +221,7 @@ body {
       }
 
       .mbh-price-amount {
-        .fontSize16LineHeight(20px);
+        .fontSizeLineHeight(16px, 20px);
         margin-bottom: 10px;
 
         .mbh-order-total {
@@ -257,7 +255,7 @@ body {
         }
 
         .step-number {
-          .fontSize16LineHeight(16px);
+          .fontSizeLineHeight(16px, 16px);
 
           display: flex;
           justify-content: center;
@@ -272,7 +270,7 @@ body {
         .step-title {
           margin-left: 18px;
           margin-right: 18px;
-          .fontSize16LineHeight();
+          .fontSizeLineHeight();
         }
       }
     }
@@ -350,7 +348,7 @@ body {
           > div {
             display: flex;
             align-items: center;
-            .fontSize16LineHeight();
+            .fontSizeLineHeight();
             margin: 0 0.3em;
           }
 
@@ -373,7 +371,7 @@ body {
 
         #mbh-results-total {
           font-weight: bold;
-          .fontSize16LineHeight();
+          .fontSizeLineHeight();
 
           .marginRightBtn();
           margin-bottom: 13px;
@@ -417,7 +415,7 @@ body {
 
               font-style: italic;
               font-weight: normal;
-              .fontSize16LineHeight();
+              .fontSizeLineHeight();
 
               color: #737373;
             }
@@ -428,7 +426,7 @@ body {
             align-items: center;
             margin: 0;
 
-            .fontSize16LineHeight();
+            .fontSizeLineHeight();
 
             #mbh-results-tariff-selected {
               margin-left: 15px;
@@ -456,8 +454,10 @@ body {
 
         h3 {
           .fontRobotoSlab();
-          font-size: 32px;
-          line-height: 44px;
+
+          @media (min-width: @size-screen-max-width-mobile) {
+            .fontSizeLineHeight(32px, 44px);
+          }
         }
 
         #mbh-result-response-info {
@@ -560,13 +560,12 @@ body {
 
             .mbh-results-room-type-name-wrapper {
               .fontRobotoSlab();
-              font-size: 20px;
-              line-height: 24px;
+              .fontSizeLineHeight(20px, 24px);
             }
 
             .mbh-results-hotel-and-tariff-wrapper {
               .mbh-results-hotel {
-                .fontSize16LineHeight();
+                .fontSizeLineHeight();
               }
               span + span {
                 margin-left: 5px;
@@ -575,6 +574,11 @@ body {
 
             .mbh-results-select-guest {
               .styleForSelect2();
+              text-align: unset;
+
+              .select2:not(.hidden) {
+                text-align: center;
+              }
             }
 
             .facility-wrapper {
@@ -595,10 +599,11 @@ body {
                   margin-top: 5px;
                   background: #FFFFFF;
                   border: none;
+                  padding: unset;
 
                   font-style: italic;
                   font-weight: 500;
-                  .fontSize16LineHeight();
+                  .fontSizeLineHeight();
                 }
 
 
@@ -621,7 +626,7 @@ body {
                     display: none;
                   }
 
-                  .fontSize16LineHeight();
+                  .fontSizeLineHeight();
                 }
               }
             }
@@ -639,8 +644,7 @@ body {
                 list-style-type: none;
 
                 .fontRobotoSlab();
-                font-size: 32px;
-                line-height: 44px;
+                .fontSizeLineHeight(32px, 44px);
 
                 color: #4F4F4F;
                 i.fa {
@@ -650,7 +654,7 @@ body {
             }
 
             .nights {
-              .fontSize16LineHeight(28px);
+              .fontSizeLineHeight(16px, 28px);
 
               text-align: center;
 
@@ -661,7 +665,7 @@ body {
               margin-top: 10px;
 
               .room-count-selector-label {
-                .fontSize16LineHeight(28px);
+                .fontSizeLineHeight(16px, 28px);
               }
 
               .mbh-results-packages-count {
@@ -672,8 +676,7 @@ body {
             .room-amount {
               margin-top: 10px;
 
-              font-size: 14px;
-              line-height: 20px;
+              .fontSizeLineHeight(14px, 20px);
 
               color: #737373;
             }
@@ -749,12 +752,12 @@ body {
 
             .mbh-service-item-name {
               font-weight: bold;
-              .fontSize16LineHeight();
+              .fontSizeLineHeight();
             }
 
             .mbh-service-item-price {
               font-weight: 500;
-              .fontSize16LineHeight();
+              .fontSizeLineHeight();
             }
 
             .mbh-service-item-hotel {
@@ -768,7 +771,7 @@ body {
               label {
                 font-style: normal;
                 font-weight: normal;
-                .fontSize16LineHeight(20px);
+                .fontSizeLineHeight(16px, 20px);
 
                 &[for="mbh-form-personal-data"] {
                   font-size: 14px;
@@ -841,7 +844,7 @@ body {
           .mbh-payment-type-label {
             font-style: normal;
             font-weight: normal;
-            .fontSize16LineHeight();
+            .fontSizeLineHeight();
           }
         }
 
@@ -850,7 +853,7 @@ body {
 
           label {
             font-weight: normal;
-            .fontSize16LineHeight();
+            .fontSizeLineHeight();
           }
         }
       }
@@ -865,14 +868,13 @@ body {
         }
         .text-success {
           .fontRobotoSlab();
-          font-size: 20px;
-          line-height: 24px;
+          .fontSizeLineHeight(20px, 24px);
         }
 
         .text-back-soon,
         .text-order-number,
         .text-package-number {
-          .fontSize16LineHeight();
+          .fontSizeLineHeight();
         }
       }
 
