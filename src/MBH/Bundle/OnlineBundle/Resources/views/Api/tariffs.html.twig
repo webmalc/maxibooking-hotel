@@ -11,16 +11,21 @@
                         <li>
                             <div class="mbh-results-tariff-wrapper">
                                 <div class="mbh-results-tariff-label">
+                                    <div class="col-xs-1 col-sm-1 text-center">
                                     {% if defaultTariff != null and defaultTariff.id == tariff.id %}
                                         <input type="radio" disabled checked>
+                                    </div>
+                                    <div class="col-xs-11 col-sm-11">
                                         <span id="mbh-results-tariff-selected"
                                               data-id="{{ tariff.id }}">{{ tariff.fullTitle }}</span>
                                     {% else %}
                                         {% set href = app.request.query.all|merge({'tariff': tariff.id })|url_encode %}
                                         <input type="radio" disabled>
+                                    </div>
+                                    <div class="col-xs-11 col-sm-11">
                                         <a href="?{{ href }}">{{ tariff.fullTitle }}</a>
                                     {% endif %}
-                                    {% if tariff.isDefault %}&nbsp;
+                                    {% if tariff.isDefault %}
                                         <small>{{ 'views.api.tariffs.base_tariff'|trans({}, 'MBHOnlineBundle') }}</small>
                                     {% endif %}
                                     {% if app.request.query.get('hotel') is same as('') %} -
@@ -29,10 +34,11 @@
                                     {% if issetDescription %}
                                         <button class="mbh-results-tariffs-description-toggle">{{ 'views.api.tariffs.tariff.description.show'|trans({}, 'MBHOnlineBundle') }}</button>
                                     {% endif %}
+                                    {% if issetDescription %}
+                                        <div class="mbh-results-tariff-description">{{ tariff.description | striptags }}</div>
+                                    {% endif %} {% set counter = counter + 1 %}
+                                    </div>
                                 </div>
-                                {% if issetDescription %}
-                                    <div class="mbh-results-tariff-description">{{ tariff.description | striptags }}</div>
-                                {% endif %} {% set counter = counter + 1 %}
                             </div>
                         </li>
                     {% endfor %}

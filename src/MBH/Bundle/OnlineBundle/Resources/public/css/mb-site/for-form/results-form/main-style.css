@@ -156,9 +156,6 @@ body .panel .panel-body ul {
 body .panel .panel-body ul li {
   border-bottom: 1px solid #A0A0A0;
 }
-body .panel .panel-body ul li input[type="radio"] {
-  margin: 0 0 0 10px;
-}
 body .panel .panel-body ul li input[type="radio"]:disabled:before {
   content: '';
   position: absolute;
@@ -403,11 +400,18 @@ body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wra
 body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wrapper.show-description .mbh-results-tariff-description {
   display: block;
 }
+body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wrapper.show-description .mbh-results-tariff-label {
+  height: unset;
+  padding: 5px 0;
+}
 body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wrapper.show-description .mbh-results-tariff-label .mbh-results-tariffs-description-toggle {
   background: var(--mainlight);
 }
 body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wrapper.show-description .mbh-results-tariff-label #mbh-results-tariff-selected {
   font-weight: bold;
+}
+body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wrapper .col-xs-11 > *:not(.mbh-results-tariff-description) {
+  margin-right: 0.3em;
 }
 body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wrapper .mbh-results-tariff-label {
   height: 52px;
@@ -424,21 +428,15 @@ body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wra
   font-weight: normal;
   font-size: 16px;
   line-height: 24px;
+  padding: unset;
   color: #737373;
-}
-body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wrapper .mbh-results-tariff-label #mbh-results-tariff-selected {
-  margin-left: 15px;
 }
 body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wrapper .mbh-results-tariff-label a {
   text-decoration: none;
-  padding-left: 35px;
-  margin-left: -20px;
   z-index: 1;
 }
 body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wrapper .mbh-results-tariff-description {
   display: none;
-  margin-left: 35px;
-  padding-bottom: 5px;
 }
 body #mbh-results-wrapper .step-one #mbh-results-duration h3 {
   font-family: 'Roboto Slab', serif;

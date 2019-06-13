@@ -120,13 +120,17 @@ body {
   }
 
   ul {
-    padding: 0 15px;
+    padding: unset;
     list-style-type: none;
     margin: 0;
   }
 
-  .mbh-results-tariff-wrapper {
+  .panel-body {
+    padding: unset;
+  }
 
+  .mbh-results-tariff-wrapper {
+    margin: 5px 0;
     &.show-description {
 
       .mbh-results-tariff-description {
@@ -142,10 +146,18 @@ body {
       }
     }
 
+    .col-xs-11 {
+      > *:not(.mbh-results-tariff-description) {
+        margin-right: 0.3em;
+      }
+    }
+
     .mbh-results-tariff-label {
       .mbh-results-tariffs-description-toggle {
         border: none;
         background: #FFFFFF;
+
+        padding: unset;
         font-size: 12px;
       }
 
@@ -154,25 +166,17 @@ body {
       align-items: center;
       margin: 0;
 
-      font-size: 16px;
-      line-height: 24px;
-
       #mbh-results-tariff-selected {
-        margin-left: 15px;
       }
 
       a {
         text-decoration: none;
-        padding-left: 35px;
-        margin-left: -20px;
         z-index: 1;
       }
     }
 
     .mbh-results-tariff-description {
       display: none;
-      margin-left: 35px;
-      padding-bottom: 5px;
     }
 
   }
@@ -420,11 +424,60 @@ body {
 }
 
 /* -------------------------- RESULTS ACTIONS -------------------------------- */
+.step-one {
+  #mbh-results-actions {
+    @media (max-width: 767px) {
+      width: 100%;
+      height: 55px;
+      position: fixed;
+      bottom: 0;
+    }
+
+    border: 1px solid lightgrey;
+    background: #FFFFFF;
+
+    #mbh-results-package-info-container {
+      display: flex;
+      margin-left: 30px;
+
+      > div {
+        display: flex;
+        align-items: center;
+        margin: 0 0.3em;
+      }
+
+      .separator {
+        margin: 0 0.3em;
+      }
+
+      .mbh-package-info-amount-room-and-guest {
+
+        span + span {
+          margin-left: 0.3em;
+        }
+      }
+
+      .mbh-package-info-date {
+        span + span {
+          margin-left: 0.3em;
+        }
+      }
+    }
+  }
+}
+
+
 #mbh-results-actions {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin: 20px 0;
+
+  button:last-of-type {
+    margin-right: 30px;
+  }
+
+  padding: 5px 0;
 
   #mbh-results-package-info-container {
     display: flex;
