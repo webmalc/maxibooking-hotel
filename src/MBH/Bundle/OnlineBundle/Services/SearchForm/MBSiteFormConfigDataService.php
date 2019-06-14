@@ -67,7 +67,21 @@ class MBSiteFormConfigDataService
         if ($siteConfig !== null) {
             $this->addSearchStyle($formConfig, $siteConfig);
             $this->addResultStyle($formConfig, $siteConfig);
+            $this->addStepOneButtonStyle($formConfig, $siteConfig);
         }
+    }
+
+    private function addStepOneButtonStyle(FormConfig $formConfig, SiteConfig $siteConfig): void
+    {
+        $css = sprintf(
+            ":root {--main: %s; --mainlight: %s;}\n%s",
+            $siteConfig->getThemeColors()['main'],
+            $siteConfig->getThemeColors()['mainlight'],
+            $this->resultStyleHolder->getStepOneButtonStyle()
+        );
+
+        $formConfig
+            ->setResultStepOneButtonCss($css);
     }
 
     private function addResultStyle(FormConfig $formConfig, SiteConfig $siteConfig): void

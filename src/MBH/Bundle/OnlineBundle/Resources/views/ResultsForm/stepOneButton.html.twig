@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>Maxibooking</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.css">
     {% block styles %}
         {% if formConfig.theme %}
             <link rel="stylesheet" href="{{ formConfig.theme }}">
@@ -13,17 +14,15 @@
             {% endstylesheets %}
         {% endif %}
     {% endblock %}
-    <style>
-        #mbh-results-actions {
-            width: 832px;
-            display: flex;
-            background-color: #fff;
-        }
-
-        #mbh-results-package-info-container {
-            display: flex;
-        }
-    </style>
+    {# kludge #}
+    {% if kludgeTheme != null %}
+        <link rel="stylesheet" href="{{ kludgeTheme }}">
+    {% endif %}
+    {% if formConfig.resultStepOneButtonCss is not empty %}
+        <style>
+            {{ formConfig.resultStepOneButtonCss |raw}}
+        </style>
+    {% endif %}
     <script>
         function StepOneButton() {
             this._text = {

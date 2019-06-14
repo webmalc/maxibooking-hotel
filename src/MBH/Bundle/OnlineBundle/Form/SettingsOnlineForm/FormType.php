@@ -202,6 +202,15 @@ class FormType extends AbstractType implements DecorationTypeInterface
                     'required' => false,
                     'help'     => 'form.formType.css_help',
                     'attr'     => ['rows' => 60],
+                ])
+            ->add('resultStepOneButtonCss',
+                TextareaType::class,
+                [
+                    'group'    => 'form.formType.css',
+                    'label'    => 'form.formType.result_step_one_button_css.label',
+                    'required' => false,
+                    'help'     => 'form.formType.css_help',
+                    'attr'     => ['rows' => 60],
                 ]);
 
         $builder

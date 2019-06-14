@@ -261,6 +261,13 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
      */
+    private $resultStepOneButtonCss;
+
+    /**
+     * @var string | null
+     * @Gedmo\Versioned
+     * @ODM\Field(type="string")
+     */
     private $additionalFormCss;
 
     /**
@@ -329,6 +336,24 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
     public function setResultFormCss(?string $resultFormCss): self
     {
         $this->resultFormCss = $resultFormCss;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getResultStepOneButtonCss(): ?string
+    {
+        return $this->resultStepOneButtonCss;
+    }
+
+    /**
+     * @param string|null $resultStepOneButtonCss
+     */
+    public function setResultStepOneButtonCss(?string $resultStepOneButtonCss): self
+    {
+        $this->resultStepOneButtonCss = $resultStepOneButtonCss;
 
         return $this;
     }

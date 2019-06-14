@@ -12,7 +12,8 @@ class MBSiteResultFormStyle
 {
     private const FORM_NAME = 'results-form';
 
-    private const FILE_NAME = 'main-style.css';
+    private const MAIN_FILE = 'main-style.css';
+    private const STEP_ONE_BUTTON_FILE = 'step-one-button.css';
 
     /**
      * @var StyleDataInterface
@@ -26,6 +27,11 @@ class MBSiteResultFormStyle
 
     public function getMainStyle(): ?string
     {
-        return $this->styleData->getStyleData(self::FILE_NAME, self::FORM_NAME);
+        return $this->styleData->getStyleData(self::MAIN_FILE, self::FORM_NAME);
+    }
+
+    public function getStepOneButtonStyle(): ?string
+    {
+        return $this->styleData->getStyleData(self::STEP_ONE_BUTTON_FILE, self::FORM_NAME);
     }
 }

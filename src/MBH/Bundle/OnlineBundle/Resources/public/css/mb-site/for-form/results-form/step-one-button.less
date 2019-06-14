@@ -1,0 +1,81 @@
+@import "../common-style.mixin";
+
+.importFontRoboto();
+body {
+  .commonStyleFont();
+
+  .maxOuterBorders();
+
+  .replaceStyleBootstrap();
+
+  #mbh-results-actions {
+
+    @media (min-width: 472px) {
+      flex-direction: row;
+      height: 78px;
+    }
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+
+    align-items: center;
+    flex-wrap: wrap;
+
+    border: 1px solid @general_color;
+    background: #FFFFFF;
+
+
+    @media (max-width: @size-screen-max-width-mobile-minus-one) {
+      .widthWithCalc();
+      height: 55px;
+      //position: fixed;
+      //bottom: 0;
+    }
+
+    #mbh-results-package-info-container {
+      display: flex;
+      margin-left: 30px;
+
+      > div {
+        display: flex;
+        align-items: center;
+        .fontSizeLineHeight();
+        margin: 0 0.3em;
+      }
+
+      .separator {
+        margin: 0 0.3em;
+      }
+
+      .mbh-package-info-amount-room-and-guest {
+
+        span + span {
+          margin-left: 0.3em;
+        }
+      }
+      .mbh-package-info-date {
+        span + span {
+          margin-left: 0.3em;
+        }
+      }
+    }
+
+    #mbh-results-next {
+      .marginRightBtn();
+    }
+
+    #mbh-results-total {
+      .mbh-results-total-text {
+        font-size: 14px;
+        .textUppercase();
+      }
+
+      .mbh-results-total-sum {
+        font-size: 18px;
+        .textUppercase();
+        margin: 0 0.3em;
+      }
+    }
+  }
+}

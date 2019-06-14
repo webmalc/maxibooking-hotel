@@ -121,7 +121,7 @@ class ResultsFormController extends BaseController
     {
         $this->setLocaleByRequest();
 
-        $kludgeTheme = false;
+        $kludgeTheme = null;
 
         if ($formConfig->isForMbSite()) {
             $kludgeTheme = FormConfig::THEMES['cosmo'];
@@ -147,10 +147,17 @@ class ResultsFormController extends BaseController
     {
         $this->setLocaleByRequest();
 
+        $kludgeTheme = null;
+
+        if ($formConfig->isForMbSite()) {
+            $kludgeTheme = FormConfig::THEMES['cosmo'];
+        }
+
         return $this->render(
             '@MBHOnline/ResultsForm/stepOneButton.html.twig',
             [
-                'formConfig' => $formConfig
+                'formConfig' => $formConfig,
+                'kludgeTheme'=> $kludgeTheme
             ]
         );
     }

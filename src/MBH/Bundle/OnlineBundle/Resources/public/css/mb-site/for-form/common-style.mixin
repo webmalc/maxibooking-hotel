@@ -154,6 +154,8 @@
 @size-screen-mid-width-tablet-minus-one: 831px;
 @size-screen-max-width-mobile-minus-one: 731px;
 
+@general_color: var(--main);
+@general_color_light: var(--mainlight);
 
 .commonStyleFont() {
   font-family: 'Roboto', sans-serif;
@@ -180,3 +182,60 @@
   letter-spacing: 0.05em;
 }
 
+.widthWithCalc() {
+  width: ~"calc(100vw - 30px)";
+}
+
+.fontSizeLineHeight(@_font-size: 16px, @_line-height: 24px) {
+  font-size: @_font-size;
+  line-height: @_line-height;
+}
+
+.maxOuterBorders() {
+  box-sizing: border-box;
+
+  @media (min-width: @size-screen-max-width-mobile) {
+    width: @size-screen-max-width-mobile;
+  }
+
+  @media (min-width: @size-screen-mid-width-tablet) {
+    width: @size-screen-mid-width-tablet;
+  }
+
+  .widthWithCalc();
+}
+
+@indent_btn: 30px;
+
+.marginLeftBtn() {
+  @media (min-width: 472px) {
+    margin: unset;
+    margin-left: @indent_btn;
+    order: unset;
+  }
+  order: 2;
+  margin: 5px 0 10px 0;
+}
+
+.marginRightBtn() {
+  @media (min-width: 472px) {
+    margin: unset;
+    margin-right: @indent_btn;
+  }
+  margin: 10px 0 5px 0;
+}
+
+.replaceStyleBootstrap() {
+  .bg-primary {
+    background-color: @general_color_light;
+  }
+
+  .text-primary {
+    color: @general_color;
+  }
+
+  .btn-primary {
+    background-color: @general_color;
+    border-color: @general_color;
+  }
+}

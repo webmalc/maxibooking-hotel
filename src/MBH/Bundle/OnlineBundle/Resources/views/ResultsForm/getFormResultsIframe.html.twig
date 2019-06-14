@@ -23,7 +23,7 @@
         {% endif %}
     {% endblock %}
     {# kludge #}
-    {% if kludgeTheme != false %}
+    {% if kludgeTheme != null %}
         <link rel="stylesheet" href="{{ kludgeTheme }}">
     {% endif %}
     {% if formConfig.resultFormCss is not empty %}
