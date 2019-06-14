@@ -34,20 +34,12 @@ class AccommodationRoomSearcher
 
     public function search(SearchQuery $searchQuery): array
     {
-//        $packageAccommodationQuery = PackageAccommodationFetchQuery::createInstanceFromSearchQuery($searchQuery);
-//        $packageAccommodations = $this->packageAccommodationFetcher->fetchNecessaryDataSet($packageAccommodationQuery);
-
         $packageAccommodations = $this->dataManager->fetchData($searchQuery, PackageAccommodationRawFetcher::NAME);
 
         $rooms = array_column($packageAccommodations, 'accommodation');
         $busyRoomIds = array_map('\strval', array_column($rooms, '$id'));
 
-
-//        $roomQuery = RoomFetchQuery::createInstanceFromSearchQuery($searchQuery);
-//        $allRooms = $this->roomFetcher->fetchNecessaryDataSet($roomQuery);
-
         $allRooms = $this->dataManager->fetchData($searchQuery, RoomRawFetcher::NAME);
-
 
         $allRoomsIds = array_map('\strval', array_column($allRooms, '_id'));
         $accommodationRoomsIds = array_diff($allRoomsIds, $busyRoomIds);

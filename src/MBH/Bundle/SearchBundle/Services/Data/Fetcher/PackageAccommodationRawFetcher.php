@@ -61,11 +61,10 @@ class PackageAccommodationRawFetcher implements DataRawFetcherInterface
         $data =  $this->repository->getRawAccommodationByPeriod($maxBegin, $maxEnd);
 
         $accommodationGroupedByRoomType = [];
-        foreach ($data as $packageAccommodation) {
-            $roomId = (string)$packageAccommodation['accommodation']['$id'];
-            $roomTypeId = $this->sharedDataFetcher->getRoomTypeIdOfRoomId($roomId);
-            $accommodationDateKey = $this->createAccommodationDateKey($packageAccommodation['begin'], $packageAccommodation['end']);
-            $accommodationGroupedByRoomType[$roomTypeId][$accommodationDateKey][] = $packageAccommodation;
+        foreach ($data as $package) {
+            $roomTypeId = (string)$package['roomType']['$id'];
+            $accommodationDateKey = $this->createAccommodationDateKey($package['begin'], $package['end']);
+            $accommodationGroupedByRoomType[$roomTypeId][$accommodationDateKey][] = $package;
         }
 
         return $accommodationGroupedByRoomType;

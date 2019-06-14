@@ -198,13 +198,15 @@ class SearchResultComposer
         }
         $resultConditions = ResultConditions::createInstance($conditions);
 
-        $accommodationRooms = $this->accommodationRoomSearcher->search($searchQuery);
+        // Убираем для азовского размещения при начальном поиске. /
+//        $accommodationRooms = $this->accommodationRoomSearcher->search($searchQuery);
+        $accommodationRooms = [];
         $resultAccommodationRooms = [];
-        if (!count($accommodationRooms)) {
+        if (count($accommodationRooms)) {
             foreach ($accommodationRooms as $accommodationRoom) {
                 $resultAccommodationRoom = new ResultRoom();
                 $resultAccommodationRoom
-                    ->setId((string)$accommodationRoom['id'])
+                    ->setId((string)$accommodationRoom['_id'])
                     ->setName($accommodationRoom['fullTitle'] ?? $accommodationRoom['title'] ?? '');
                 $resultAccommodationRooms[] = $resultAccommodationRoom;
             }
