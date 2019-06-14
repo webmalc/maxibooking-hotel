@@ -99,6 +99,13 @@ class ResultsFormController extends BaseController
                 'config'         => $formConfig,
                 'paymentSystems' => $clientConfig->getPaymentSystems(),
                 'successUrl'     => $clientConfig->getSuccessUrl(),
+                'url'            => [
+                    'stepOneButton' => $this->generateUrl(
+                        'online_form_step_one_button',
+                        ['formConfigId' => $formConfig->getId()],
+                        UrlGeneratorInterface::ABSOLUTE_URL
+                    )
+                ]
             ],
             $response
         );
@@ -126,6 +133,24 @@ class ResultsFormController extends BaseController
                 'formId'     => $formConfig->getId(),
                 'formConfig' => $formConfig,
                 'kludgeTheme'=> $kludgeTheme
+            ]
+        );
+    }
+
+    /**
+     * @Route("/results/step-one-button/{formConfigId}", name="online_form_step_one_button")
+     * Method("GET")
+     * @Cache(expires="tomorrow", public=true)
+     * @ParamConverter(converter="form_config_converter")
+     */
+    public function stepOneButton(FormConfig $formConfig)
+    {
+        $this->setLocaleByRequest();
+
+        return $this->render(
+            '@MBHOnline/ResultsForm/stepOneButton.html.twig',
+            [
+                'formConfig' => $formConfig
             ]
         );
     }

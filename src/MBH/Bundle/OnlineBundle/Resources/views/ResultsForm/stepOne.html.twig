@@ -156,41 +156,6 @@
         {% endfor %}
     </section>
 
-    <section id="mbh-results-actions">
-        <div id="mbh-results-total-packages-sum" class="mbh-results-total-sum" style="display: none">0</div>
-        <div id="mbh-results-package-info-container" class="hidden-xs">
-            <div class="mbh-package-info-icon-shopping-cart text-primary">
-                <i class="fa fa-shopping-cart fa-2x"></i>
-            </div>
-            <div class="mbh-package-info-amount-room-and-guest">
-                <div class="room-wrapper">
-                    <span class="room-amount">0</span>
-                    <span class="room-text">{{ 'views.api.step_one.result_actions.room.none' | trans({}, 'MBHOnlineBundle') }}</span>
-                </div>
-                <div class="separator">,</div>
-                <div class="guest-wrapper">
-                    <span class="guest-amount">0</span>
-                    <span class="guest-text">{{ 'views.api.step_one.result_actions.guest.none' | trans({}, 'MBHOnlineBundle') }}</span>
-                </div>
-            </div>
-            <div class="separator">|</div>
-            <div class="mbh-package-info-date">
-                <span>{{ 'from'|trans }}</span>
-                <span class="begin">{{ results|first.begin|date('d.m.Y') }}</span>
-                <span>{{ 'to'|trans }}</span>
-                <span class="end">{{ results|first.end|date('d.m.Y') }}</span>
-            </div>
-        </div>
-        <div style="flex-grow: 2"></div>
-        <div id="mbh-results-total">
-            <span class="mbh-results-total-text">{{ 'views.api.getResultsTable.result'|trans({}, 'MBHOnlineBundle') }}</span>
-            <span id="mbh-results-total-sum" class="mbh-results-total-sum">0</span>
-            <i class="{{ currency().icon }}"></i>
-        </div>
-        <button id="mbh-results-next"
-                class="button btn btn-primary spacer-left-sm"> {{ 'views.api.getResultsTable.continue'|trans({}, 'MBHOnlineBundle') }}
-            <small><i class="fa fa-chevron-right "></i></small>
-        </button>
-    </section>
+    <div id="mbh-results-total-packages-sum" class="mbh-results-total-sum" style="display: none">0</div>
 </div>
 {% endspaceless %}

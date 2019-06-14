@@ -16,7 +16,7 @@
         {% if formConfig.theme %}
             <link rel="stylesheet" href="{{ formConfig.theme }}">
             {% stylesheets filter='cssrewrite, uglifycss'
-                '@MBHOnlineBundle/Resources/public/css/results-form/*'
+                '@MBHOnlineBundle/Resources/public/css/results-form/main-form.less'
             %}
                 <link rel="stylesheet" href="{{ absolute_url(asset_url) }}"/>
             {% endstylesheets %}
@@ -62,20 +62,6 @@
                 tariffDesc: {
                     show: '{{ 'views.api.tariffs.tariff.description.show'|trans({}, 'MBHOnlineBundle') }}',
                     hide: '{{ 'views.api.tariffs.tariff.description.hide'|trans({}, 'MBHOnlineBundle') }}'
-                },
-                stepOne: {
-                    packageInfo: {
-                        room: {
-                            other: '{{ 'views.api.step_one.result_actions.room.other' | trans({}, 'MBHOnlineBundle') }}',
-                            one: '{{ 'views.api.step_one.result_actions.room.one' | trans({}, 'MBHOnlineBundle') }}',
-                            many: '{{ 'views.api.step_one.result_actions.room.many' | trans({}, 'MBHOnlineBundle') }}'
-                        },
-                        guest: {
-                            other: '{{ 'views.api.step_one.result_actions.guest.other' | trans({}, 'MBHOnlineBundle') }}',
-                            one: '{{ 'views.api.step_one.result_actions.guest.one' | trans({}, 'MBHOnlineBundle') }}',
-                            many: '{{ 'views.api.step_one.result_actions.guest.many' | trans({}, 'MBHOnlineBundle') }}'
-                        }
-                    }
                 }
             };
 
@@ -110,9 +96,9 @@
             });
         </script>
     {% endif %}
+    <script defer type="text/javascript" src="{{ url('online_form_results', {formConfigId: formId}) }}"></script>
 </head>
 <body>
     <div id="mbh-results-wrapper"></div>
-    <script defer type="text/javascript" src="{{ url('online_form_results', {formConfigId: formId}) }}"></script>
 </body>
 </html>
