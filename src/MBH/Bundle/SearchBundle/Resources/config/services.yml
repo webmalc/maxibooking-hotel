@@ -238,6 +238,11 @@ services:
         arguments:
           ['@mbh_search.data_fetch.logger']
 
+    mbh_search.batch_asycn_search:
+        class: MBH\Bundle\SearchBundle\RabbitMQ\AsyncSearchBatchConsumer
+        arguments:
+            - '@mbh_search.async_searcher_grouped_by_room_type'
+
     mbh_search.warm_up_search:
         class: MBH\Bundle\SearchBundle\RabbitMQ\WarmUpConsumer
         arguments:
