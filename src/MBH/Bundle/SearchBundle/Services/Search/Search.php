@@ -183,7 +183,7 @@ class Search
                 '',
                 [
                     'priority' => $queryGroup->getQueuePriority(),
-                    'expiration' => 60000
+                    'expiration' => 120000
                 ]
             );
         }
