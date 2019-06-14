@@ -449,7 +449,9 @@ jQuery(document).ready(function() {
                                 var inputs = jQuery('#mbh-user-form input:required, #mbh-user-form-email');
 
                                 var validateEmail = function () {
-                                    if (email.val() && !email.val().match('^[a-z0-9._%+-]+@[a-z0-9._%+-]+\\.\\w{2,4}$')) {
+                                    if ((email.val() || email.prop("required")) &&
+                                        !email.val().match('^[a-z0-9._%+-]+@[a-z0-9._%+-]+\\.\\w{2,4}$')) {
+
                                         email.css('border', '1px solid red');
                                         return false;
                                     } else {
