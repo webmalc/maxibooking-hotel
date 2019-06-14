@@ -531,47 +531,6 @@ services:
             - '@mbh_search.room_type_repository'
             - '@mbh_search.room_repository'
 
-#    mbh_search.room_cache_fetcher:
-#        class: MBH\Bundle\SearchBundle\Services\Data\RoomCacheFetcher
-#        arguments:
-#            - '@mbh_search.room_cache_holder'
-#            - '@mbh_search.shared_data_fetcher'
-#            - '@mbh_search.room_cache_repository'
-#            - '@mbh_search.room_cache_redis_cache'
-
-#    mbh_search.restrictions_fetcher:
-#        class: MBH\Bundle\SearchBundle\Services\Data\RestrictionsFetcher
-#        arguments:
-#            - '@mbh_search.restrictions_holder'
-#            - '@mbh_search.shared_data_fetcher'
-#            - '@mbh_search.restriction_repository'
-#            - '@mbh_search.restrictions_redis_cache'
-
-#    mbh_search.room_fetcher:
-#        class: MBH\Bundle\SearchBundle\Services\Data\RoomFetcher
-#        arguments:
-#            - '@mbh_search.room_holder'
-#            - '@mbh_search.shared_data_fetcher'
-#            - '@mbh_search.room_repository'
-#            - '@mbh_search.rooms_redis_cache'
-
-#    mbh_search.package_accommodation_fetcher:
-#        class: MBH\Bundle\SearchBundle\Services\Data\PackageAccommodationFetcher
-#        arguments:
-#            - '@mbh_search.package_accommodation_holder'
-#            - '@mbh_search.shared_data_fetcher'
-#            - '@mbh_search.package_accommodation_repository'
-#            - '@mbh_search.package_accommodation_redis_cache'
-
-#    mbh_search.price_cache_fetcher:
-#        class: MBH\Bundle\SearchBundle\Services\Data\PriceCacheFetcher
-#        arguments:
-#            - '@mbh_search.price_cache_holder'
-#            - '@mbh_search.shared_data_fetcher'
-#            - '@mbh_search.price_cache_repository'
-#            - '@mbh_search.client_config_repository'
-#            - '@mbh_search.price_cache_redis_cache'
-
 #Fetchers!
     mbh_search.data_manager:
         class: MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataManager
@@ -722,7 +681,7 @@ services:
 
     mbh_search.data_fetch_logger_handler:
         class: Monolog\Handler\StreamHandler
-        arguments: ["%kernel.logs_dir%/%kernel.environment%.data.fetch.log", '%data_fetch_log_level%']
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.data.fetch.log", 200]
         public: false
 
     mbh_search.data_fetch.logger:

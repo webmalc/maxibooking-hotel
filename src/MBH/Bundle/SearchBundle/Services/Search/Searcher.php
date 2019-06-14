@@ -3,9 +3,14 @@
 
 namespace MBH\Bundle\SearchBundle\Services\Search;
 
+use function count;
+use Doctrine\ODM\MongoDB\MongoDBException;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\DataFetchQueryException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionLimitException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearcherException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\RestrictionsCheckerService;
@@ -44,11 +49,11 @@ class Searcher implements SearcherInterface
      * TODO: Надобно сделать сервис проверки лимитов и под каждый лимит отдельный класс как в restrictions например.
      * @param SearchQuery $searchQuery
      * @return Result
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
-     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @throws MongoDBException
+     * @throws SearchResultComposerException
      * @throws SearcherException
+     * @throws SharedFetcherException
+     * @throws DataFetchQueryException
      */
     public function search(SearchQuery $searchQuery): Result
     {
@@ -58,10 +63,10 @@ class Searcher implements SearcherInterface
             if (!$conditions) {
                 throw new SearcherException('There is a problem in SearchQuery. No conditions. ');
             }
-            if (!\count($errors) && !$conditions->isThisWarmUp()) {
+            if (!count($errors) && !$conditions->isThisWarmUp()) {
                 $errors = $this->validator->validate($searchQuery, new ChildrenAgesSameAsChildren());
             }
-            if (\count($errors)) {
+            if (count($errors)) {
                 /** @var string $errors */
                 throw new SearcherException('There is a problem in SearchQuery. '. $errors);
             }

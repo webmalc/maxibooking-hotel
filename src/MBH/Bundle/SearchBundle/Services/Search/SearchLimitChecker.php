@@ -154,9 +154,6 @@ class SearchLimitChecker
      */
     public function checkRoomCacheLimit(SearchQuery $searchQuery): array
     {
-//        $roomCacheQuery = RoomCacheFetchQuery::createInstanceFromSearchQuery($searchQuery);
-//        $roomCaches = $this->roomCacheFetcher->fetchNecessaryDataSet($roomCacheQuery);
-
         $roomCaches = $this->dataManager->fetchData($searchQuery, RoomCacheRawFetcher::NAME);
 
         $currentTariffId = $searchQuery->getTariffId();

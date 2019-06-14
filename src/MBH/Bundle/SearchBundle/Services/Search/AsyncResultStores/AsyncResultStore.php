@@ -130,7 +130,7 @@ class AsyncResultStore implements AsyncResultStoreInterface
     public function addFakeReceivedCount(string $hash, int $amount): void
     {
         $key = $this->createFakeKey($hash);
-        $this->cache->transaction()->incrby($key, $amount)->exec();
+        $this->cache->transaction()->incrby($key, $amount)->expire($key, static::EXPIRE_TIME)->exec();
 
     }
 
