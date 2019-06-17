@@ -99,7 +99,7 @@ class SharedDataFetcher implements SharedDataFetcherInterface
         }
         $object = $this->data[$objectName][$objectId] ?? null;
         if ($object === null) {
-            throw new SharedFetcherException('There is no %s in %s!', $objectName, __CLASS__);
+            throw new SharedFetcherException(sprintf('There is no %s in %s!', $objectName, __CLASS__));
         }
 
         return $object;

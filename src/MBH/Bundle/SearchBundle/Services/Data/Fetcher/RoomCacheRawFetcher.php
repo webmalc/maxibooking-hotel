@@ -72,8 +72,11 @@ class RoomCacheRawFetcher implements DataRawFetcherInterface
                 $roomCaches[] = array_filter(
                     $dayRoomCaches,
                     static function ($roomCache) use ($tariffId, $roomTypeId) {
+                        $isQuotedRoomCache = false;
                         $isPureRoomCache = null === ($roomCache['tariff'] ?? null);
-                        $isQuotedRoomCache = $tariffId === ($roomCache['tariff'] ?? null);
+                        if (!$isPureRoomCache) {
+                            $isQuotedRoomCache = $tariffId === (string)$roomCache['tariff']['$id'];
+                        }
                         $isRoomTypedRoomCache = $roomTypeId === (string)$roomCache['roomType']['$id'];
 
                         return ($isPureRoomCache || $isQuotedRoomCache) && $isRoomTypedRoomCache;
