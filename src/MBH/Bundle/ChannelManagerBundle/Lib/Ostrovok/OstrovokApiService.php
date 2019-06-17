@@ -133,9 +133,11 @@ class OstrovokApiService
             throw new OstrovokApiServiceException('No returned request in callGet Method '.get_class($this));
         }
 
-        $this->log->addInfo('Ostrovok callGet response data: '. $response->getBody()->getContents() .'');
+        $responseData = $response->getBody()->getContents();
 
-        $response = json_decode($response->getBody()->getContents(), true);
+        $this->log->addInfo('Ostrovok callGet response data: '. $responseData .'');
+
+        $response = json_decode($responseData, true);
         $this->checkErrors($response);
         return $response;
     }

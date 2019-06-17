@@ -49,11 +49,11 @@ class HundredOneHotels extends Base
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
-     * @param RoomType $roomType
+     * @param RoomType|null $paramRoomType
      * @return boolean
      * @throw \Exception
      */
-    public function updateRooms(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    public function updateRooms(\DateTime $begin = null, \DateTime $end = null, RoomType $paramRoomType = null)
     {
         $result = true;
         $begin = $this->getDefaultBegin($begin);
@@ -75,7 +75,7 @@ class HundredOneHotels extends Base
                 $begin,
                 $end,
                 $config->getHotel(),
-                $roomType ? [$roomType->getId()] : [],
+                $paramRoomType ? [$paramRoomType->getId()] : [],
                 null,
                 true
             );
@@ -117,11 +117,12 @@ class HundredOneHotels extends Base
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
-     * @param RoomType $roomType
+     * @param RoomType|null $paramRoomType
      * @return boolean
+     * @throws \Throwable
      * @throw \Exception
      */
-    public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $paramRoomType = null)
     {
         $result = true;
         $begin = $this->getDefaultBegin($begin);
@@ -141,13 +142,13 @@ class HundredOneHotels extends Base
             $roomTypes = $this->getRoomTypes($config, true);
             //$priceCaches array [roomTypeId][tariffId][date => PriceCache]
             $priceCacheFilter = $this->container->get('mbh.price_cache_repository_filter');
-            $priceCachesCallback = function () use ($begin, $end, $config, $roomType, $priceCacheFilter) {
+            $priceCachesCallback = function () use ($begin, $end, $config, $paramRoomType, $priceCacheFilter) {
                 $filtered = $priceCacheFilter->filterFetch(
                     $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
                         $begin,
                         $end,
                         $config->getHotel(),
-                        $this->getRoomTypeArray($roomType),
+                        $this->getRoomTypeArray($paramRoomType),
                         [],
                         true
                     )
@@ -221,11 +222,12 @@ class HundredOneHotels extends Base
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
-     * @param RoomType $roomType
+     * @param RoomType|null $paramRoomType
      * @return boolean
+     * @throws \Throwable
      * @throw \Exception
      */
-    public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $paramRoomType = null)
     {
         $result = true;
         $begin = $this->getDefaultBegin($begin);
@@ -244,18 +246,18 @@ class HundredOneHotels extends Base
                 $begin,
                 $end,
                 $config->getHotel(),
-                $roomType ? [$roomType->getId()] : [],
+                $paramRoomType ? [$paramRoomType->getId()] : [],
                 [],
                 true
             );
             $priceCacheFilter = $this->container->get('mbh.price_cache_repository_filter');
-            $priceCachesCallback = function () use ($begin, $end, $config, $roomType, $priceCacheFilter) {
+            $priceCachesCallback = function () use ($begin, $end, $config, $paramRoomType, $priceCacheFilter) {
                 $filtered = $priceCacheFilter->filterFetch(
                     $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
                         $begin,
                         $end,
                         $config->getHotel(),
-                        $roomType ? [$roomType->getId()] : [],
+                        $paramRoomType ? [$paramRoomType->getId()] : [],
                         [],
                         true
                     )
