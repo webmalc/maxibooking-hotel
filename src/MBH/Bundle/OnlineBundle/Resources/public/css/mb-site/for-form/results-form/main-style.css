@@ -715,6 +715,11 @@ body #mbh-results-wrapper .step-three #mbh-results-payment-form .mbh-payment-typ
   border-bottom: 1px solid #A0A0A0;
   padding: 15px 0;
 }
+body #mbh-results-wrapper .step-three #mbh-results-payment-form .mbh-payment-type-row .mbh-payment-type-row-total {
+  font-size: 16px;
+  line-height: 24px;
+  margin-bottom: 7px;
+}
 @media (max-width: 390px) {
   body #mbh-results-wrapper .step-three #mbh-results-payment-form .mbh-payment-type-row {
     display: flex;

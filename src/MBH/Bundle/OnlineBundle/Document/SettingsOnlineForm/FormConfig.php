@@ -268,7 +268,7 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
      * @Gedmo\Versioned
      * @ODM\Field(type="integer")
      */
-    private $stepOneButtonHeight = 80;
+    private $stepOneButtonHeight = 55;
 
     /**
      * @var string | null

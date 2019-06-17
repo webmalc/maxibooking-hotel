@@ -1,0 +1,52 @@
+#mbh-results-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  height: inherit;
+
+  border: 1px solid lightgrey;
+  background: #FFFFFF;
+
+  #mbh-results-package-info-container {
+    display: flex;
+    margin-left: 30px;
+
+    > div {
+      display: flex;
+      align-items: center;
+      margin: 0 0.3em;
+    }
+
+    .separator {
+      margin: 0 0.3em;
+    }
+
+    .mbh-package-info-amount-room-and-guest {
+
+      span + span {
+        margin-left: 0.3em;
+      }
+    }
+
+    .mbh-package-info-date {
+      span + span {
+        margin-left: 0.3em;
+      }
+    }
+  }
+
+  #mbh-results-total {
+    margin: 0 0.3em;
+    .mbh-results-total-sum {
+      margin-right: 0.3em;
+    }
+    span + span {
+      margin-left: 0.3em;
+    }
+  }
+
+  #mbh-results-next {
+    margin-right: 30px;
+  }
+}

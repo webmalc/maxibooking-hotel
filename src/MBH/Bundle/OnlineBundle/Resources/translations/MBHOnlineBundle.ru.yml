@@ -48,6 +48,10 @@ views.api.getResultsTable.facilities: Удобства
 views.api.getResultsTable.continue: Продолжить
 views.api.getResultsTable.nothing_found_for_your_query: 'По вашему запросу ничего не найдено.'
 
+views.api.step_info.one: 'Тарифы и номера'
+views.api.step_info.two: 'Персональные данные и услуги'
+views.api.step_info.three: 'Оплата'
+
 views.api.step_one.result_actions.room.other: номеров
 views.api.step_one.result_actions.room.one: номер
 views.api.step_one.result_actions.room.many: номера

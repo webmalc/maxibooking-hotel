@@ -1,14 +1,14 @@
 <section class="step-info">
     <div class="step-number-info{{ stepNumber == 1 ? ' active': '' }}">
         <div class="step-number bg-primary">1</div>
-        <div class="step-title">Тарифы и услуги</div>
+        <div class="step-title">{{ 'views.api.step_info.one' | trans({}, 'MBHOnlineBundle') }}</div>
     </div>
     <div class="step-number-info{{ stepNumber == 2 ? ' active': '' }}">
         <div class="step-number bg-primary">2</div>
-        <div class="step-title">Персональные данные</div>
+        <div class="step-title">{{ 'views.api.step_info.two' | trans({}, 'MBHOnlineBundle') }}</div>
     </div>
     <div class="step-number-info{{ stepNumber == 3 ? ' active': '' }}">
         <div class="step-number bg-primary">3</div>
-        <div class="step-title">Оплата заказа</div>
+        <div class="step-title">{{ 'views.api.step_info.three' | trans({}, 'MBHOnlineBundle') }}</div>
     </div>
 </section>

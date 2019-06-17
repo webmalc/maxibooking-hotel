@@ -161,6 +161,7 @@ OnLoadResultsLoad.prototype.createButtonForStepOne = function () {
     var _this = this;
 
     setInterval(function() {
+        _this._stepOneButtonIframe.style.maxWidth = _this._stepOneButtonWrapper.clientWidth + 'px';
         _this._stepOneButtonWrapperCoordsY = parseInt(_this._stepOneButtonWrapper.offsetTop) - parseInt(screen.availHeight) + heightButton
     }, 1000);
 };

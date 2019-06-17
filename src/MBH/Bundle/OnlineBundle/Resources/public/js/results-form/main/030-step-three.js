@@ -86,6 +86,12 @@ MbhResultForm.prototype.prepareAndGoStepFour = function () {
     });
 };
 
+MbhResultForm.prototype.prettyTotalSum = function() {
+    document.querySelectorAll('#mbh-package-info-total').forEach(function(element) {
+       element.innerHTML = this.priceSeparator(element.innerHTML);
+    }, this);
+};
+
 MbhResultForm.prototype.stepThree = function() {
     var _this = this;
 
@@ -101,6 +107,8 @@ MbhResultForm.prototype.stepThree = function() {
             _this.wrapper.html(data);
 
             _this.resize();
+
+            _this.prettyTotalSum();
 
             _this.scrollToTopIframe();
 

@@ -81,6 +81,7 @@ class MBSiteFormConfigDataService
         );
 
         $formConfig
+            ->setStepOneButtonHeight(80)
             ->setStepOneButtonCss($css);
     }
 
