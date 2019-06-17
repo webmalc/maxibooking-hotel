@@ -161,6 +161,8 @@ MbhResultForm.prototype.prepareAndGoStepTwo = function () {
                 }
             });
 
+            _this.sendPostMessage('hideStepOneButton');
+
             _this.waiting();
 
             _this.stepTwo()
@@ -225,12 +227,7 @@ MbhResultForm.prototype.tariffsAction = function () {
 };
 
 MbhResultForm.prototype.sendDataStepOneButton = function (action, data) {
-    window.parent.postMessage({
-        type: 'mbh',
-        target: 'stepOneButton',
-        action: action,
-        data: data
-    }, '*')
+    this.sendPostMessage(action, data, 'stepOneButton');
 };
 
 MbhResultForm.prototype.stepOne = function() {
@@ -250,6 +247,8 @@ MbhResultForm.prototype.stepOne = function() {
                 begin: jQuery('#mbh-results-duration-begin').text(),
                 end: jQuery('#mbh-results-duration-end').text()
             });
+
+            _this.sendPostMessage('showStepOneButton');
 
             _this.setSelect2();
 

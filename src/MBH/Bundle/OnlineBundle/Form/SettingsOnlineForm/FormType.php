@@ -11,6 +11,7 @@ use MBH\Bundle\OnlineBundle\Form\PaymentTypesType;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -194,7 +195,8 @@ class FormType extends AbstractType implements DecorationTypeInterface
             ->add($this->frameHeight($builder))
             ->add($this->css($builder, 'form.formType.search_form_css.label'));
         $builder
-            ->add('resultFormCss',
+            ->add(
+                'resultFormCss',
                 TextareaType::class,
                 [
                     'group'    => 'form.formType.css',
@@ -202,16 +204,29 @@ class FormType extends AbstractType implements DecorationTypeInterface
                     'required' => false,
                     'help'     => 'form.formType.css_help',
                     'attr'     => ['rows' => 60],
-                ])
-            ->add('resultStepOneButtonCss',
+                ]
+            )
+            ->add(
+                'stepOneButtonCss',
                 TextareaType::class,
                 [
                     'group'    => 'form.formType.css',
                     'label'    => 'form.formType.result_step_one_button_css.label',
                     'required' => false,
-                    'help'     => 'form.formType.css_help',
+                    'help'     => 'form.formType.result_step_one_button_css.help',
                     'attr'     => ['rows' => 60],
-                ]);
+                ]
+            )
+            ->add(
+                'stepOneButtonHeight',
+                IntegerType::class,
+                [
+                    'group'    => 'form.formType.css',
+                    'label'    => 'form.formType.result_step_one_button_height.label',
+                    'required' => false,
+                    'help'     => 'form.formType.result_step_one_button_height.help',
+                ]
+            );
 
         $builder
             ->add($this->isHorizontal($builder))

@@ -2,12 +2,18 @@ MbhResultForm.prototype.priceSeparator = function (amount) {
     return mbhFuncPriceSeparator(amount);
 };
 
+MbhResultForm.prototype.sendPostMessage = function (action, data, target) {
+    window.parent.postMessage({
+        type: 'mbh',
+        action: action,
+        data: data || null,
+        target: target || null
+    }, "*");
+};
+
 MbhResultForm.prototype.scrollToTopIframe = function () {
     if (isMobileDevice) {
-        window.parent.postMessage({
-            type: 'mbh',
-            action: 'scrollToTopIframe'
-        }, "*");
+        this.sendPostMessage('scrollToTopIframe');
     }
 };
 
@@ -44,11 +50,7 @@ MbhResultForm.prototype.searchDataInit = function() {
 };
 
 MbhResultForm.prototype.resize = function() {
-    window.parent.postMessage({
-        type: 'mbh',
-        action: 'resize',
-        height: jQuery('body').height()
-    }, "*");
+    this.sendPostMessage('resize', {height: jQuery('body').height()});
 };
 
 MbhResultForm.prototype.addEventReloadPage = function(selector) {

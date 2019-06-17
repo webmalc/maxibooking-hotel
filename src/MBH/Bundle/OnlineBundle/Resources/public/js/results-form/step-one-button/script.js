@@ -21,8 +21,6 @@ StepOneButton.prototype.processMessage = function(e) {
         return;
     }
 
-    console.log(e.data);
-
     if (e.data.action === 'selectPackage') {
         this.changeVariables(e.data.data);
 

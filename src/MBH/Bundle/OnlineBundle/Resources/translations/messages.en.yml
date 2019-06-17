@@ -69,6 +69,10 @@ form.formType.theme_label: Theme
 form.formType.resultsUrl_label: 'Result page'
 form.formType.resultsUrl_help: 'Search result page URL'
 form.formType.result_form_css.label: 'Result form CSS'
+form.formType.result_step_one_button_css.label: 'CSS'
+form.formType.result_step_one_button_css.help: 'CSS for the floating button in the first step'
+form.formType.result_step_one_button_height.label: 'Block height with button'
+form.formType.result_step_one_button_height.help: ''
 onlinebundle.resources.views.all_hotels: 'All hotels'
 mbhonlinebundle.form.invitedtouristtype.mister: Mr.
 mbhonlinebundle.form.invitedtouristtype.mistress: Mrs.

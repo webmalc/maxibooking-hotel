@@ -261,7 +261,14 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
      * @Gedmo\Versioned
      * @ODM\Field(type="string")
      */
-    private $resultStepOneButtonCss;
+    private $stepOneButtonCss;
+
+    /**
+     * @var string | null
+     * @Gedmo\Versioned
+     * @ODM\Field(type="integer")
+     */
+    private $stepOneButtonHeight = 80;
 
     /**
      * @var string | null
@@ -343,17 +350,35 @@ class FormConfig extends Base implements DecorationInterface, DecorationDataInte
     /**
      * @return string|null
      */
-    public function getResultStepOneButtonCss(): ?string
+    public function getStepOneButtonCss(): ?string
     {
-        return $this->resultStepOneButtonCss;
+        return $this->stepOneButtonCss;
     }
 
     /**
-     * @param string|null $resultStepOneButtonCss
+     * @param string|null $stepOneButtonCss
      */
-    public function setResultStepOneButtonCss(?string $resultStepOneButtonCss): self
+    public function setStepOneButtonCss(?string $stepOneButtonCss): self
     {
-        $this->resultStepOneButtonCss = $resultStepOneButtonCss;
+        $this->stepOneButtonCss = $stepOneButtonCss;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getStepOneButtonHeight(): ?string
+    {
+        return $this->stepOneButtonHeight;
+    }
+
+    /**
+     * @param string|null $stepOneButtonHeight
+     */
+    public function setStepOneButtonHeight(?string $stepOneButtonHeight): self
+    {
+        $this->stepOneButtonHeight = $stepOneButtonHeight;
 
         return $this;
     }

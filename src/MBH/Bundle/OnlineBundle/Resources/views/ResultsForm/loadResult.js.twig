@@ -27,7 +27,10 @@ function addLoadEvent(func) {
 }
 
 function OnLoadResultsLoad() {
-    this._stepOneButtonUrl = '{{ url.stepOneButton }}';
+    this._stepOneButton = {
+        url: '{{ url.stepOneButton }}',
+        height: {{ config.stepOneButtonHeight }}
+    };
 };
 
 OnLoadResultsLoad.prototype.metrics = function() {
@@ -92,10 +95,10 @@ OnLoadResultsLoad.prototype.metrics = function() {
     var processMetricMessage = function (e) {
         if (e.data.type === 'form-event') {
             var purposeType = e.data.purpose;
-            if (yaCounterId !== undefined) {
+            if (typeof yaCounterId !== 'undefined') {
                 window[yaCounterObjName].reachGoal(purposeType);
             }
-            if (googleCounterId !== undefined) {
+            if (typeof googleCounterId !== 'undefined') {
                 ga('send', 'event', purposeType, 'click');
             }
         }
@@ -132,16 +135,19 @@ OnLoadResultsLoad.prototype.createResultIframe = function() {
 };
 
 OnLoadResultsLoad.prototype.createButtonForStepOne = function () {
-    var divWrapper = document.createElement('div');
+    var divWrapper = document.createElement('div'),
+        heightButton = this._stepOneButton.height;
+
     divWrapper.id = 'mbh-results-step-one-button-wrapper';
-    divWrapper.style.height = '80px';
+    divWrapper.style.height = heightButton + 'px';
+    divWrapper.style.marginBottom = '5px';
+    divWrapper.style.display = 'none';
 
     var iframe = document.createElement('iframe');
-    iframe.src = this._stepOneButtonUrl;
+    iframe.src = this._stepOneButton.url;
     iframe.width = '100%';
-    iframe.height = '80px';
+    iframe.height = heightButton + 'px';
     iframe.style.border = 'none';
-    {#iframe.style.display = 'none';#}
     iframe.style.position = 'fixed';
     iframe.style.bottom = 0;
     iframe.scrolling = 'no';
@@ -152,11 +158,10 @@ OnLoadResultsLoad.prototype.createButtonForStepOne = function () {
     this._stepOneButtonWrapper = divWrapper;
     this._resultsWrapper.appendChild(divWrapper);
 
-
     var _this = this;
 
     setInterval(function() {
-        _this._stepOneButtonWrapperCoordsY = parseInt(_this._stepOneButtonWrapper.offsetTop) - parseInt(screen.availHeight) + 80
+        _this._stepOneButtonWrapperCoordsY = parseInt(_this._stepOneButtonWrapper.offsetTop) - parseInt(screen.availHeight) + heightButton
     }, 1000);
 };
 
@@ -192,7 +197,7 @@ OnLoadResultsLoad.prototype.processMessage = function(e) {
         return;
     }
 
-    if (e.data.target !== undefined) {
+    if (e.data.target !== null) {
         var target = null;
 
         switch (e.data.target) {
@@ -211,12 +216,24 @@ OnLoadResultsLoad.prototype.processMessage = function(e) {
         return;
     }
 
+    if (e.data.action === 'showStepOneButton') {
+        this.toggleVisibleStepOneButton();
+
+        return;
+    }
+
+    if (e.data.action === 'hideStepOneButton') {
+        this.toggleVisibleStepOneButton();
+
+        return;
+    }
+
     if (e.data.action === 'resize') {
         this._resultsIframe = document.getElementById('mbh-results-iframe');
         if (this._resultsIframe === null) {
             return;
         }
-        this._resultsIframe.style.height = e.data.height > 300 ? e.data.height + 'px' : '300px';
+        this._resultsIframe.style.height = e.data.data.height > 300 ? e.data.data.height + 'px' : '300px';
 
         return;
     }
@@ -228,6 +245,16 @@ OnLoadResultsLoad.prototype.processMessage = function(e) {
         }
 
         window.scrollTo(0, this._resultsIframe.offsetTop);
+    }
+};
+
+OnLoadResultsLoad.prototype.toggleVisibleStepOneButton = function () {
+    if (this._iframeWithButtonIsHidden) {
+        this._stepOneButtonWrapper.style.display = 'block';
+        this._iframeWithButtonIsHidden = false;
+    } else {
+        this._stepOneButtonWrapper.style.display = 'none';
+        this._iframeWithButtonIsHidden = true;
     }
 };
 
@@ -261,6 +288,7 @@ OnLoadResultsLoad.prototype.exec = function() {
     this._resultsWrapper.querySelector('a').style.display = 'none';
 
     var _this = this;
+    this._iframeWithButtonIsHidden = true;
 
     window.addEventListener("message", function(ev) {
         _this.processMessage(ev)

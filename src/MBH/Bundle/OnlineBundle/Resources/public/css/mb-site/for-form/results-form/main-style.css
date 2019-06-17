@@ -385,11 +385,6 @@ body #mbh-results-wrapper .step-one #mbh-results-duration h3 {
 body #mbh-results-wrapper .step-one #mbh-results-duration #mbh-result-response-info {
   display: none;
 }
-@media (max-width: 731px) {
-  body #mbh-results-wrapper .step-one #mbh-results-list-wrapper {
-    margin-bottom: 60px;
-  }
-}
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container {
   margin: 10px 0;
   padding: 5px 0;

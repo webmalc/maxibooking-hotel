@@ -8,7 +8,7 @@ var elements = [
     type: 'css'
   },
   {
-    elementId: 'mbh_bundle_onlinebundle_form_type_resultStepOneButtonCss',
+    elementId: 'mbh_bundle_onlinebundle_form_type_stepOneButtonCss',
     type: 'css'
   },
   {

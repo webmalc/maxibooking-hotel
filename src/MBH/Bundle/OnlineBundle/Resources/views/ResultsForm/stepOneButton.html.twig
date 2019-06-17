@@ -4,6 +4,11 @@
     <meta charset="utf-8">
     <title>Maxibooking</title>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.css">
+    <style>
+        body {
+            height: {{ formConfig.stepOneButtonHeight ~ 'px'}};
+        }
+    </style>
     {% block styles %}
         {% if formConfig.theme %}
             <link rel="stylesheet" href="{{ formConfig.theme }}">
@@ -18,9 +23,9 @@
     {% if kludgeTheme != null %}
         <link rel="stylesheet" href="{{ kludgeTheme }}">
     {% endif %}
-    {% if formConfig.resultStepOneButtonCss is not empty %}
+    {% if formConfig.stepOneButtonCss is not empty %}
         <style>
-            {{ formConfig.resultStepOneButtonCss |raw}}
+            {{ formConfig.stepOneButtonCss |raw}}
         </style>
     {% endif %}
     <script>

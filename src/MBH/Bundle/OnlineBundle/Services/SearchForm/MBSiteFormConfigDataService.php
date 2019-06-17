@@ -81,7 +81,7 @@ class MBSiteFormConfigDataService
         );
 
         $formConfig
-            ->setResultStepOneButtonCss($css);
+            ->setStepOneButtonCss($css);
     }
 
     private function addResultStyle(FormConfig $formConfig, SiteConfig $siteConfig): void

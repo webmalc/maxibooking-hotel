@@ -97,6 +97,10 @@ form.formType.template: Шаблоны
 form.formType.template_label: 'Шаблон формы'
 form.formType.template_help: 'Шаблон формы поиска'
 form.formType.result_form_css.label: 'CSS для формы с результатами'
+form.formType.result_step_one_button_css.label: 'CSS'
+form.formType.result_step_one_button_css.help: 'CSS для "плавающей" кнопки на первом шаге'
+form.formType.result_step_one_button_height.label: 'Высота блока с кнопкой'
+form.formType.result_step_one_button_height.help: ''
 onlinebundle.resources.views.hotels: Отели
 onlinebundle.resources.views.room_types: 'Типы номеров'
 onlinebundle.resources.views.guests: Гости
