@@ -111,9 +111,10 @@ body #mbh-results-actions {
   box-sizing: border-box;
   width: calc(100vw - 30px);
   display: flex;
-  justify-content: flex-end;
-  height: inherit;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
+  height: inherit;
   border: 1px solid var(--main);
   background: #FFFFFF;
 }
@@ -125,6 +126,12 @@ body #mbh-results-actions {
 @media (min-width: 832px) {
   body #mbh-results-actions {
     width: 832px;
+  }
+}
+@media (min-width: 472px) {
+  body #mbh-results-actions {
+    flex-direction: row;
+    justify-content: flex-end;
   }
 }
 body #mbh-results-actions #mbh-results-package-info-container {
@@ -150,6 +157,17 @@ body #mbh-results-actions #mbh-results-package-info-container .mbh-package-info-
 body #mbh-results-actions #mbh-results-next {
   margin-left: 20px;
   margin-right: 30px;
+  border: 1px solid var(--main);
+}
+@media (max-width: 471px) {
+  body #mbh-results-actions #mbh-results-next {
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+}
+body #mbh-results-actions #mbh-results-next:hover {
+  background-color: #FFFFFF;
+  color: #4F4F4F;
 }
 body #mbh-results-actions #mbh-results-total .mbh-results-total-text {
   font-size: 14px;

@@ -15,12 +15,17 @@ body {
     .maxOuterBorders();
 
     display: flex;
-    justify-content: flex-end;
-
-    height: inherit;
+    flex-direction: column;
+    justify-content: center;
 
     align-items: center;
 
+    @media (min-width: 472px) {
+      flex-direction: row;
+      justify-content: flex-end;
+    }
+
+    height: inherit;
     border: 1px solid @general_color;
     background: #FFFFFF;
 
@@ -53,8 +58,19 @@ body {
     }
 
     #mbh-results-next {
+      @media (max-width: 471px) {
+        margin-top: 5px;
+        margin-bottom: 5px;
+      }
       margin-left: 20px;
       margin-right: 30px;
+
+      border: 1px solid @general_color;
+
+      &:hover {
+        background-color: #FFFFFF;
+        color: #4F4F4F;
+      }
     }
 
     #mbh-results-total {
