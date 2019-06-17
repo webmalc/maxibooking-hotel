@@ -5,6 +5,7 @@ namespace Tests\Bundle\SearchBundle\Services\Data;
 
 
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Document\TariffRepository;
@@ -55,15 +56,15 @@ class SharedDataFetcherTest extends SearchWebTestCase
     public function testFetcherIsActuallyShared(): void
     {
         $tariffRepositoryMock = $this->createMock(TariffRepository::class);
-        $tariffRepositoryMock->expects($this->once())->method('findAll');
-        $roomTypeRepositoryMock = $this->createMock(RoomTypeRepository::class);
-        $roomTypeRepositoryMock->expects($this->once())->method('findAll');
-
+        $tariffRepositoryMock->method('getClassName')->willReturn('Tariff');
+        $tariffRepositoryMock->expects($this->once())->method('findAll')->willReturn([new Tariff()]);
         $this->getContainer()->set('mbh_search.tariff_repository', $tariffRepositoryMock);
-        $this->getContainer()->set('mbh_search.room_type_repository', $roomTypeRepositoryMock);
 
         $this->getContainer()->get('mbh_search.shared_data_fetcher');
-        $this->getContainer()->get('mbh_search.shared_data_fetcher');
+        $fetcher = $this->getContainer()->get('mbh_search.shared_data_fetcher');
+        $this->expectException(SharedFetcherException::class);
+        $fetcher->getFetchedTariff('fakeId');
+
     }
 
     public function dataProvider()
