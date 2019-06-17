@@ -12,6 +12,7 @@ views.api.form.btn_find_room.label: 'Find room'
 views.api.form.find_room.shot: Find
 views.api.form.children_ages.label: 'Children age'
 views.api.form.online_reservation_system: 'online booking system'
+views.api.form.additionl_form.close_button: Close
 views.api.getPaymentType.dates: 'Date:'
 views.api.getPaymentType.days_and_nights: 'Days/nights:'
 views.api.getPaymentType.nomerov: 'Rooms total:'

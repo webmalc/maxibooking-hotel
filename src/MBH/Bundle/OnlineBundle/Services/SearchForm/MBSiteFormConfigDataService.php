@@ -106,6 +106,13 @@ class MBSiteFormConfigDataService
             $this->searchStyleHolder->getStyleSearchForm()
         );
 
+        $cssAdditionalForm = sprintf(
+            ":root {--main: %s; --mainlight: %s;}\n%s",
+            $siteConfig->getThemeColors()['main'],
+            $siteConfig->getThemeColors()['mainlight'],
+            $this->searchStyleHolder->getStyleAdditionalForm()
+        );
+
         $formConfig
             ->setAdditionalFormFrameWidth('251px')
             ->setAdditionalFormFrameHeight('auto')
@@ -113,7 +120,7 @@ class MBSiteFormConfigDataService
             ->setCalendarFrameWidth('235px')
             ->setCss($css)
             ->setCalendarCss($this->searchStyleHolder->getStyleCalendar())
-            ->setAdditionalFormCss($this->searchStyleHolder->getStyleAdditionalForm());
+            ->setAdditionalFormCss($cssAdditionalForm);
     }
 
 }

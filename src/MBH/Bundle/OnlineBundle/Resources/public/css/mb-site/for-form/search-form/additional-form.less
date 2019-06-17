@@ -7,6 +7,10 @@ body {
     margin: 0;
     background: #fff;
 
+    select {
+        font-family: inherit;
+    }
+
     .mbh-form-row {
         display: flex;
         align-items: baseline;
@@ -42,7 +46,7 @@ body {
         width: 100px;
         height: 32px;
         background: #fff;
-        border: 1px solid #0099FF;
+        border: 1px solid @general_color;
     }
 
     .mbh-btn-stepper {
@@ -51,7 +55,7 @@ body {
 
         background: #FFFFFF;
 
-        border: 1px solid #0099FF;
+        border: 1px solid @general_color;
         box-sizing: border-box;
     }
 
@@ -81,6 +85,18 @@ body {
         margin-bottom: 4px;
 
         background: #fff;
-        border: 1px solid #0099FF;
+        border: 1px solid @general_color;
+    }
+
+    .close-button {
+        button {
+            width: 100%;
+            height: 32px;
+            border: none;
+            background: @general_color;
+            color: #FFFFFF;
+            font-family: inherit;
+            .textUppercase();
+        }
     }
 }

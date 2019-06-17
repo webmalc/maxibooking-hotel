@@ -233,6 +233,13 @@ AdditionalForm.prototype.exec = function() {
 
     this.listenerPostMessage();
     this.wrapperAddListener();
+
+    document.querySelector('.close-button button').addEventListener('click', function(e) {
+        window.parent.postMessage({
+            type: 'mbh',
+            action: 'hideAdditionalForm'
+        }, "*");
+    });
 };
 
 window.addEventListener('load', function(ev) {

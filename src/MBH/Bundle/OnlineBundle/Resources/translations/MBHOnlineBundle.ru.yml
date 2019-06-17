@@ -12,6 +12,7 @@ views.api.form.guest.label: Гости
 views.api.form.btn_find_room.label: 'Найти номер'
 views.api.form.find_room.shot: 'Найти'
 views.api.form.online_reservation_system: 'система онлайн бронирования'
+views.api.form.additionl_form.close_button: Закрыть
 views.api.getPaymentType.dates: 'Даты:'
 views.api.getPaymentType.days_and_nights: 'Дни/ночи:'
 views.api.getPaymentType.nomerov: 'Количество номеров:'
