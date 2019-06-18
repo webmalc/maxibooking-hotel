@@ -98,7 +98,7 @@ class Builder implements ContainerAwareInterface
                     || $checker->isGranted('ROLE_PACKAGE_EDIT_ALL'))) {
                 $rootItem
                     ->addChild('Reset totalOverwrite value', [
-                        'route' => 'reset_total_overwrite_value',
+                        'route' => 'package_unlock',
                         'routeParameters' => ['id' => $package->getId()],
                         'label' => $translator->trans('package.action.resetTotalOverwrite', [], 'MBHPackageBundle'),
                     ])
