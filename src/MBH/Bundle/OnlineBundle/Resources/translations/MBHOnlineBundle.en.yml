@@ -112,6 +112,6 @@ views.api.getUserForm.patronymic: 'Middle Name'
 views.api.getUserForm.inn: KIP
 views.api.get_user_form.default_patronymic: James
 views.api.getUserForm.document_number: 'ID/Passport number'
-views.api.getUserForm.personal_data_policies: 'Confirm that I have read <a target="_blank" href="url">Data Policy/a> and agree with the terms.'
+views.api.getUserForm.personal_data_policies: 'Confirm that I have read <a target="_blank" href="url">Data Policy</a> and agree with the terms.'
 views.form.index.edit_templates: 'Template tweaking'
 views.form.analytics: Analytics

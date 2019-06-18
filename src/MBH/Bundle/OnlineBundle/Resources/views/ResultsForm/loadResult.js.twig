@@ -4,14 +4,6 @@
 {% include '@MBHClient/PaymentSystem/newRbk/script_for_online_form.js.twig' %}
 {% endif %}
 
-var mbhResults = {results_url: "{{ url('online_form_results_iframe', {formConfigId: config.id}) }}"};
-
-if (typeof(mbh) !== 'undefined') {
-  var configResults = mbh;
-} else if (typeof(mbhResults) !== 'undefined') {
-  var configResults = mbhResults;
-}
-
 function addLoadEvent(func) {
   var oldonload = window.onload;
   if (typeof window.onload != 'function') {
@@ -31,6 +23,8 @@ function OnLoadResultsLoad() {
         url: '{{ url.stepOneButton }}',
         height: {{ config.stepOneButtonHeight }}
     };
+
+    this._iframeUrl = '{{ url('online_form_results_iframe', {formConfigId: config.id}) }}';
 };
 
 OnLoadResultsLoad.prototype.metrics = function() {
@@ -113,11 +107,11 @@ OnLoadResultsLoad.prototype.initUrl = function () {
     if (urlIndex !== -1) {
         url = window.location.href.slice(urlIndex);
     }
-    if (configResults.results_url.indexOf('?') > -1) {
+    if (this._iframeUrl.indexOf('?') > -1) {
         url = url.replace('?', '&');
     }
 
-    this._url = url;
+    this._searchParamsFromUrl = url;
 };
 
 OnLoadResultsLoad.prototype.createResultIframe = function() {
@@ -127,8 +121,7 @@ OnLoadResultsLoad.prototype.createResultIframe = function() {
     resultsIframe.scrolling = 'no';
     resultsIframe.style.border = 'none';
     resultsIframe.height = '300';
-    resultsIframe.src = configResults.results_url + this._url;
-
+    resultsIframe.src = this._iframeUrl + this._searchParamsFromUrl;
 
     this._resultsIframe = resultsIframe;
     this._resultsWrapper.appendChild(resultsIframe);
@@ -144,7 +137,8 @@ OnLoadResultsLoad.prototype.createButtonForStepOne = function () {
     divWrapper.style.display = 'none';
 
     var iframe = document.createElement('iframe');
-    iframe.src = this._stepOneButton.url;
+    iframe.id = 'mbh-results-step-one-button-iframe';
+    iframe.src = this._stepOneButton.url + this._searchParamsFromUrl;
     iframe.width = '100%';
     iframe.height = heightButton + 'px';
     iframe.style.border = 'none';
@@ -218,13 +212,13 @@ OnLoadResultsLoad.prototype.processMessage = function(e) {
     }
 
     if (e.data.action === 'showStepOneButton') {
-        this.toggleVisibleStepOneButton();
+        this.toggleVisibleStepOneButton(true);
 
         return;
     }
 
     if (e.data.action === 'hideStepOneButton') {
-        this.toggleVisibleStepOneButton();
+        this.toggleVisibleStepOneButton(false);
 
         return;
     }
@@ -249,13 +243,11 @@ OnLoadResultsLoad.prototype.processMessage = function(e) {
     }
 };
 
-OnLoadResultsLoad.prototype.toggleVisibleStepOneButton = function () {
-    if (this._iframeWithButtonIsHidden) {
+OnLoadResultsLoad.prototype.toggleVisibleStepOneButton = function (isNeedShow) {
+    if (isNeedShow) {
         this._stepOneButtonWrapper.style.display = 'block';
-        this._iframeWithButtonIsHidden = false;
     } else {
         this._stepOneButtonWrapper.style.display = 'none';
-        this._iframeWithButtonIsHidden = true;
     }
 };
 
@@ -289,7 +281,6 @@ OnLoadResultsLoad.prototype.exec = function() {
     this._resultsWrapper.querySelector('a').style.display = 'none';
 
     var _this = this;
-    this._iframeWithButtonIsHidden = true;
 
     window.addEventListener("message", function(ev) {
         _this.processMessage(ev)
