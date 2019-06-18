@@ -337,8 +337,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      */
     public function resetTotalOverwriteValue(Package $package)
     {
-        $package->setTotalOverwrite(0);
-        $package->getOrder()->setTotalOverwrite(0);
+        $package->setTotalOverwrite(null);
+        $package->setIsLocked(false);
+        $package->getOrder()->setTotalOverwrite(null);
         $this->dm->flush();
         $this->addFlash(
             'success',
