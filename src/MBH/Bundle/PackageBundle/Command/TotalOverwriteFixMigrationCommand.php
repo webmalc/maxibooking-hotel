@@ -37,6 +37,12 @@ class TotalOverwriteFixMigrationCommand extends ContainerAwareCommand
             foreach ($packages as $package) {
                 $output->writeln('Resetting totalOverride for ' . $package->getId() . ' package');
                 $package->setTotalOverwrite(null);
+                if ($package->getOrder()) {
+                    $output->writeln(
+                        'Resetting totalOverride for ' . $package->getOrder()->getId() . ' order'
+                    );
+                    $package->getOrder()->setTotalOverwrite(null);
+                }
             }
             $dm->flush();
 
