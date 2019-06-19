@@ -11,6 +11,8 @@ use MBH\Bundle\PackageBundle\Lib\AddressInterface;
 use MBH\Bundle\UserBundle\DataFixtures\MongoDB\UserData;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Twig\TwigFilter;
+use Twig\TwigFunction;
 
 class Extension extends \Twig_Extension
 {
@@ -233,6 +235,22 @@ class Extension extends \Twig_Extension
         return $this->container->get('mbh.currency')->info();
     }
 
+    public function currencySymbolWithPrice(string $price, string $wrapperId = null, string $wrapperTag = 'span'): string
+    {
+        return $this->container->get('mbh.currency')->symbolWithPrice($price, $wrapperId, $wrapperTag);
+    }
+
+    public function resultNumberFormat(float $price): string
+    {
+        $decimals = 1;
+
+        if (ceil($price) === $price) {
+            $decimals = 0;
+        }
+
+        return number_format($price, $decimals, '.', ' ');
+    }
+
     /**
      * @return ClientConfig
      */
@@ -298,6 +316,7 @@ class Extension extends \Twig_Extension
             'initial' => new \Twig_SimpleFilter('initial', [$this, 'initial']),
             'str_to_date' => new \Twig_SimpleFilter('str_to_date', [$this, 'stringToDate']),
             'clear_adjacent_whitespace' => new \Twig_SimpleFilter('clear_adjacent_whitespace', [$this, 'clearAdjacentWhitespace']),
+            'result_number_format' => new TwigFilter('result_number_format', [$this, 'resultNumberFormat']),
         ];
     }
 
@@ -469,31 +488,34 @@ class Extension extends \Twig_Extension
      */
     public function getFunctions()
     {
+        $options = ['is_safe' => ['html']];
+
         return [
-            'currency'                => new \Twig_SimpleFunction('currency', [$this, 'currency'], ['is_safe' => ['html']]),
-            'user_cash'               => new \Twig_SimpleFunction('user_cash', [$this, 'cashDocuments'], ['is_safe' => ['html']]),
-            'client_config'           => new \Twig_SimpleFunction('client_config', [$this, 'getClientConfig']),
-            'filter_begin_date'       => new \Twig_SimpleFunction('filter_begin_date', [$this, 'getFilterBeginDate']),
-            'currentWorkShift'        => new \Twig_SimpleFunction('currentWorkShift', [$this, 'currentWorkShift']),
-            'mbh_timezone_offset_get' => new \Twig_SimpleFunction('mbh_timezone_offset_get', [$this, 'timezoneOffsetGet'], ['is_safe' => ['html']]),
-            'get_authority_organ'     => new \Twig_SimpleFunction('get_authority_organ', [$this, 'getAuthorityOrganById'], ['is_safe' => ['html']]),
-            'get_country'             => new \Twig_SimpleFunction('get_country', [$this, 'getCountryByTld'], ['is_safe' => ['html']]),
-            'get_region'              => new \Twig_SimpleFunction('get_region', [$this, 'getRegionById'], ['is_safe' => ['html']]),
-            'get_city'                => new \Twig_SimpleFunction('get_city', [$this, 'getCityById'], ['is_safe' => ['html']]),
-            'get_client'              => new \Twig_SimpleFunction('get_client', [$this, 'getClient'], ['is_safe' => ['html']]),
-            'is_russian_client'       => new \Twig_SimpleFunction('is_russian_client', [$this, 'isRussianClient'], ['is_safe' => ['html']]),
-            'get_service'             => new \Twig_SimpleFunction('get_service', [$this, 'getBillingService'], ['is_safe' => ['html']]),
-            'get_current_hotel'       => new \Twig_SimpleFunction('get_current_hotel', [$this, 'getCurrentHotel'], ['is_safe' => ['html']]),
-            'get_front_settings'      => new \Twig_SimpleFunction('get_front_settings', [$this, 'getSettingsDataForFrontend'], ['is_safe' => ['html']]),
-            'get_imperial_city'       => new \Twig_SimpleFunction('get_imperial_city', [$this, 'getImperialAddressCity'], ['is_safe' => ['html']]),
-            'get_imperial_street'     => new \Twig_SimpleFunction('get_imperial_street', [$this, 'getImperialAddressStreet'], ['is_safe' => ['html']]),
-            'get_twig_data'           => new \Twig_SimpleFunction('get_twig_data', [$this, 'getTwigData'], ['is_safe' => ['html']]),
-            'get_field_name'          => new \Twig_SimpleFunction('get_field_name', [$this, 'getFieldTitleByName'], ['is_safe' => ['html']]),
-            'is_mb_user'              => new \Twig_SimpleFunction('is_mb_user', [$this, 'isMBUser'], ['is_safe' => ['html']]),
-            'get_properties'          => new \Twig_SimpleFunction('get_properties', [$this, 'getMethodsForTemplate'], ['is_safe' => ['html']]),
-            'get_guide_article_url'   => new \Twig_SimpleFunction('get_guide_article_url', [$this, 'getGuideArticleUrl'], ['is_safe' => ['html']]),
-            'get_cash_price'          => new \Twig_SimpleFunction('get_cash_price', [$this, 'getCashPrice'], ['is_safe' => ['html']]),
-            'get_cashless_price'      => new \Twig_SimpleFunction('get_cashless_price', [$this, 'getCashlessPrice'], ['is_safe' => ['html']])
+            'currency'                   => new TwigFunction('currency', [$this, 'currency'], $options),
+            'currency_symbol_with_price' => new TwigFunction('currency_symbol_with_price', [$this, 'currencySymbolWithPrice'], $options),
+            'user_cash'                  => new TwigFunction('user_cash', [$this, 'cashDocuments'], $options),
+            'client_config'              => new TwigFunction('client_config', [$this, 'getClientConfig']),
+            'filter_begin_date'          => new TwigFunction('filter_begin_date', [$this, 'getFilterBeginDate']),
+            'currentWorkShift'           => new TwigFunction('currentWorkShift', [$this, 'currentWorkShift']),
+            'mbh_timezone_offset_get'    => new TwigFunction('mbh_timezone_offset_get', [$this, 'timezoneOffsetGet'], $options),
+            'get_authority_organ'        => new TwigFunction('get_authority_organ', [$this, 'getAuthorityOrganById'], $options),
+            'get_country'                => new TwigFunction('get_country', [$this, 'getCountryByTld'], $options),
+            'get_region'                 => new TwigFunction('get_region', [$this, 'getRegionById'], $options),
+            'get_city'                   => new TwigFunction('get_city', [$this, 'getCityById'], $options),
+            'get_client'                 => new TwigFunction('get_client', [$this, 'getClient'], $options),
+            'is_russian_client'          => new TwigFunction('is_russian_client', [$this, 'isRussianClient'], $options),
+            'get_service'                => new TwigFunction('get_service', [$this, 'getBillingService'], $options),
+            'get_current_hotel'          => new TwigFunction('get_current_hotel', [$this, 'getCurrentHotel'], $options),
+            'get_front_settings'         => new TwigFunction('get_front_settings', [$this, 'getSettingsDataForFrontend'], $options),
+            'get_imperial_city'          => new TwigFunction('get_imperial_city', [$this, 'getImperialAddressCity'], $options),
+            'get_imperial_street'        => new TwigFunction('get_imperial_street', [$this, 'getImperialAddressStreet'], $options),
+            'get_twig_data'              => new TwigFunction('get_twig_data', [$this, 'getTwigData'], $options),
+            'get_field_name'             => new TwigFunction('get_field_name', [$this, 'getFieldTitleByName'], $options),
+            'is_mb_user'                 => new TwigFunction('is_mb_user', [$this, 'isMBUser'], $options),
+            'get_properties'             => new TwigFunction('get_properties', [$this, 'getMethodsForTemplate'], $options),
+            'get_guide_article_url'      => new TwigFunction('get_guide_article_url', [$this, 'getGuideArticleUrl'], $options),
+            'get_cash_price'             => new TwigFunction('get_cash_price', [$this, 'getCashPrice'], $options),
+            'get_cashless_price'         => new TwigFunction('get_cashless_price', [$this, 'getCashlessPrice'], $options)
         ];
     }
 

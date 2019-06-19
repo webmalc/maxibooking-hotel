@@ -18,11 +18,20 @@ MbhResultForm.prototype.togglePaymentSystemVisibility = function () {
     });
 };
 
+MbhResultForm.prototype.copyPriceToPay = function (element) {
+    document.querySelector('#total-to-pay').innerHTML = element.querySelector('.price-wrapper').innerText;
+};
+
+MbhResultForm.prototype.checkSelectedPaymentType = function () {
+  var _this = this;
+
+  document.querySelectorAll('.mbh-payment-type-row.selected').forEach(function(element) {
+      _this.copyPriceToPay(element);
+  });
+};
+
 MbhResultForm.prototype.validateAndCalc = function () {
-    var _this = this,
-        total = this._requestParams.total.replace(/,/g, ''),
-        totalPackages = this._requestParams.totalPackages.replace(/,/g, ''),
-        totalServices = this._requestParams.totalServices.replace(/,/g, '');
+    var _this = this;
 
     var validate = function() {
         var $selectedPaymentType = jQuery('.mbh-payment-types-radio:checked');
@@ -33,50 +42,21 @@ MbhResultForm.prototype.validateAndCalc = function () {
         jQuery('#mbh-payment-types-next').prop('disabled', isFormNotValid);
     };
 
-    var calc = function() {
-        var type = jQuery('.mbh-payment-types-radio:checked'),
-            totalWrapper = jQuery('#mbh-package-info-total'),
-            totalHidden = jQuery('#mbh-package-info-total-hidden'),
-            totalPackagesWrapper = jQuery('#mbh-package-info-total-packages'),
-            sum = total,
-            sumHidden = total,
-            sumPackages = totalPackages;
-
-        if (type.length) {
-            if (type.val() === _this.paymentTypes.online.firstDay || type.val() === _this.paymentTypes.receipt.firstDay) {
-                sumPackages = Math.round(totalPackages / _this._requestParams.nights);
-                sum = parseInt(totalPackages, 10) + parseInt(totalServices, 10);
-                sumHidden = parseInt(sumPackages, 10) + parseInt(totalServices, 10);
-            }
-
-            if (type.val() === _this.paymentTypes.online.half || type.val() === _this.paymentTypes.receipt.half) {
-                sumPackages = Math.round(totalPackages / 2);
-                sum = total / 2;
-                sumHidden = total / 2;
-            }
-        }
-
-        totalWrapper.html(sum);
-        totalHidden.html(sumHidden);
-        totalPackagesWrapper.html(sumPackages);
-
-    };
-
     validate();
     jQuery('.mbh-payment-type-row').click(function() {
         validate();
-        calc();
+        _this.copyPriceToPay(this);
     });
 };
 
 MbhResultForm.prototype.prepareAndGoStepFour = function () {
     var _this = this;
-    jQuery('#mbh-payment-types-next').click(function() {
+    document.querySelector('#mbh-payment-types-next').addEventListener('click', function() {
         window.parent.postMessage({
             type: 'form-event',
             purpose: 'choose'
         }, "*");
-        _this._requestParams.total = jQuery('#mbh-package-info-total-hidden').text();
+        _this._requestParams.totalToPay = document.querySelector('#total-to-pay').innerHTML.replace(/\s/g,'');
         _this._requestParams.paymentType = jQuery('.mbh-payment-types-radio:checked').val();
         _this._requestParams.paymentSystem = jQuery('#mbh-form-payment-system').val();
 
@@ -84,12 +64,6 @@ MbhResultForm.prototype.prepareAndGoStepFour = function () {
 
         _this.stepFour();
     });
-};
-
-MbhResultForm.prototype.prettyTotalSum = function() {
-    document.querySelectorAll('#mbh-package-info-total').forEach(function(element) {
-       element.innerHTML = this.priceSeparator(element.innerHTML);
-    }, this);
 };
 
 MbhResultForm.prototype.stepThree = function() {
@@ -108,7 +82,7 @@ MbhResultForm.prototype.stepThree = function() {
 
             _this.resize();
 
-            _this.prettyTotalSum();
+            _this.checkSelectedPaymentType();
 
             _this.scrollToTopIframe();
 

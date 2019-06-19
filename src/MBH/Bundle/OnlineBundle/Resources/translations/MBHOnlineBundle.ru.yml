@@ -60,6 +60,8 @@ views.api.step_one.result_actions.guest.other: гостей
 views.api.step_one.result_actions.guest.one: гость
 views.api.step_one.result_actions.guest.many: гостя
 
+views.api.result.packages_info.total_to_pay: 'К оплате:'
+
 views.api.getUserForm.enter_data_to_continue: 'Заполните данные для продолжения'
 views.api.getUserForm.surname: Фамилия
 views.api.getUserForm.placeholder_surname: Иванов

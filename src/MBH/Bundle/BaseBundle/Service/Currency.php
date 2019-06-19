@@ -2,26 +2,55 @@
 
 namespace MBH\Bundle\BaseBundle\Service;
 
+use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use MBH\Bundle\ClientBundle\Service\ClientConfigManager;
 
 /**
  * Currency service
  */
 class Currency
 {
-    /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface
-     */
-    protected $container;
 
     /**
-     * @param ContainerInterface $container
+     * @var DocumentManager
      */
-    public function __construct(ContainerInterface $container)
+    private $dm;
+
+    /**
+     * @var ClientConfig
+     */
+    private $clientConfig;
+
+    /**
+     * @var array
+     */
+    private $currencyDataList;
+
+    /**
+     * @var array
+     */
+    private $currencyData;
+
+    /**
+     * @var string
+     */
+    private $template;
+
+    public function __construct(
+        DocumentManager $documentManager,
+        ClientConfigManager $clientConfigManager,
+        array $currencyDataList
+    )
     {
-        $this->container = $container;
+        $this->dm = $documentManager;
+        $this->clientConfig = $clientConfigManager->fetchConfig();
+        $this->currencyDataList = $currencyDataList;
+
+        $this->currencyData = $currencyDataList[$this->clientConfig->getCurrency()];
+
+        $this->generateTemplate();
     }
 
     /**
@@ -32,8 +61,7 @@ class Currency
      */
     public function get($code, \DateTime $date)
     {
-        $dm = $this->container->get('doctrine_mongodb');
-        $repo = $dm->getRepository('MBHBaseBundle:Currency');
+        $repo = $this->dm->getRepository('MBHBaseBundle:Currency');
         $currency = $repo->findOneBy([
             'date' => $date, 'code' => $code
         ]);
@@ -57,8 +85,7 @@ class Currency
      */
     public function codes()
     {
-        $dm = $this->container->get('doctrine_mongodb');
-        $codes = $dm->getRepository('MBHBaseBundle:Currency')
+        $codes = $this->dm->getRepository('MBHBaseBundle:Currency')
             ->createQueryBuilder()
             ->distinct('code')
             ->sort('code', -1)
@@ -100,20 +127,49 @@ class Currency
         $date ?: $date = new \DateTime('midnight');
         $currency = $this->get($code, $date);
 
-        /** @var ClientConfig $clientConfig */
-        $clientConfig = $this->container->get('mbh.client_config_manager')->fetchConfig();
-
-        return round(($amount / $currency->getRatio()) * $clientConfig->getCurrencyRatioFix(), 2);
+        return round(($amount / $currency->getRatio()) * $this->clientConfig->getCurrencyRatioFix(), 2);
     }
 
     /**
      * @return array
      */
-    public function info()
+    public function info(bool $forMBSite = false): array
     {
-        /** @var ClientConfig $clientConfig */
-        $clientConfig = $this->container->get('mbh.client_config_manager')->fetchConfig();
+        if ($forMBSite) {
+            return [
+                'symbol' =>  $this->currencyData['symbol'] ??  $this->currencyData['text'],
+                'side'   =>  $this->currencyData['side']
+            ];
+        }
 
-        return $this->container->getParameter('mbh.currency.data')[$clientConfig->getCurrency()];
+        return $this->currencyData;
+    }
+
+    public function symbolWithPrice(string $price, string $wrapperId = null, string $wrapperTag = 'span'): string
+    {
+        if ($wrapperId !== null) {
+            $wrapperId = sprintf('id="%s"', $wrapperId);
+        }
+
+        $formatPrice = sprintf('<%1$s %2$s class="price-wrapper">%3$s</%1$s>', $wrapperTag, $wrapperId, $price);
+
+        return sprintf($this->template, $formatPrice);
+    }
+
+    private function generateTemplate(): void
+    {
+        $data = $this->currencyData;
+
+        $symbol = '<span class="currency-symbol %s">%s</span>';
+
+        if ($data['side'] === 'left') {
+            $first = sprintf($symbol, 'currency-symbol-first',$data['symbol']);
+            $second = '%s';
+        } else {
+            $first = '%s';
+            $second = sprintf($symbol, 'currency-symbol-second',$data['symbol']);;
+        }
+
+        $this->template = sprintf('%s%s', $first, $second);
     }
 }

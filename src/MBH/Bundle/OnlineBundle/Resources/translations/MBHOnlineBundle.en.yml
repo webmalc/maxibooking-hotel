@@ -59,6 +59,8 @@ views.api.step_one.result_actions.guest.other: гостей
 views.api.step_one.result_actions.guest.one: гость
 views.api.step_one.result_actions.guest.many: гостя
 
+views.api.result.packages_info.total_to_pay: 'Total to pay:'
+
 views.api.getUserForm.enter_data_to_continue: 'Fill required fields to proceed'
 views.api.getUserForm.surname: 'Last Name'
 views.api.getUserForm.placeholder_surname: Smith

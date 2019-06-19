@@ -8,6 +8,12 @@
         body {
             height: {{ formConfig.stepOneButtonHeight ~ 'px'}};
         }
+        .currency-symbol-first {
+            margin-right: 0.3em;
+        }
+        .currency-symbol-second {
+            margin-left: 0.3em;
+        }
     </style>
     {% block styles %}
         {% if formConfig.theme %}
@@ -84,8 +90,7 @@
     <div style="flex-grow: 2"></div>
     <div id="mbh-results-total">
         <span class="mbh-results-total-text">{{ 'views.api.getResultsTable.result'|trans({}, 'MBHOnlineBundle') }}</span>
-        <span id="mbh-results-total-sum" class="mbh-results-total-sum">0</span>
-        <i class="{{ currency().icon }}"></i>
+        {{ currency_symbol_with_price(0, 'mbh-results-total-sum') }}
     </div>
     <button id="mbh-results-next"
             class="button btn btn-primary spacer-left-sm"> {{ 'views.api.getResultsTable.continue'|trans({}, 'MBHOnlineBundle') }}

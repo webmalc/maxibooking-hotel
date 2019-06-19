@@ -386,9 +386,6 @@ class ResultsFormController extends BaseController
             return $this->render('@MBHOnline/ResultsForm/stepTwoBreak.html.twig');
         }
 
-        if (property_exists($requestJson, 'locale')) {
-            $this->setLocale($requestJson->locale);
-        }
         $services = $hotels = [];
 
         $repoHotel = $this->dm->getRepository('MBHHotelBundle:Hotel');
@@ -416,6 +413,7 @@ class ResultsFormController extends BaseController
             '@MBHOnline/ResultsForm/stepTwo.html.twig',
             [
                 'request'         => $requestJson,
+                'dataPackageInfo' => (array) $requestJson->dataPackageInfo,
                 'services'        => $services,
                 'hotels'          => $hotels,
                 'config'          => $formConfig,
@@ -458,6 +456,7 @@ class ResultsFormController extends BaseController
                 'formConfig'     => $formConfig,
                 'clientConfig'   => $this->clientConfig,
                 'request'        => $requestJson,
+                'dataPackageInfo'=> (array) $requestJson->dataPackageInfo,
                 'firstPackage'   => $requestJson->packages[0],
                 'paymentSystems' => $this->getParameter('mbh.payment_systems'),
                 'onlyOneType'    => $onlyOneType,
@@ -512,7 +511,7 @@ class ResultsFormController extends BaseController
                     ->get(RenderPaymentButton::class)
                     ->create(
                         $requestJson->paymentSystem,
-                        $requestJson->total,
+                        $requestJson->totalToPay,
                         $order,
                         $order->getCashDocuments()[0]
                     );
@@ -707,7 +706,7 @@ class ResultsFormController extends BaseController
                 ],
                 null,
                 null,
-                $cash ? ['total' => (float)$request->total] : null
+                $cash ? ['total' => (float)$request->totalToPay] : null
             );
         } catch (\Exception $e) {
             if ($this->container->get('kernel')->getEnvironment() === \AppKernel::ENV_DEV) {

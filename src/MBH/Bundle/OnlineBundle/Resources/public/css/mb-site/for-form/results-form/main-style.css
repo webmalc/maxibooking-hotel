@@ -219,6 +219,12 @@ body #mbh-results-wrapper #mbh-package-info {
 body #mbh-results-wrapper #mbh-package-info .row {
   margin-bottom: 5px;
 }
+body #mbh-results-wrapper #mbh-package-info .row .col-xs-7 {
+  padding: 0 0 0 12px;
+}
+body #mbh-results-wrapper #mbh-package-info .row .col-xs-5 {
+  padding: 0 12px 0 0;
+}
 body #mbh-results-wrapper #mbh-package-info .mbh-package-info-wrapper {
   margin-bottom: 11px;
 }
@@ -325,6 +331,9 @@ body #mbh-results-wrapper #mbh-results-actions {
   body #mbh-results-wrapper .mbh-results-step-wrapper .col-sm-4 {
     width: 332px;
   }
+}
+body #mbh-results-wrapper .step-one .currency-symbol {
+  font-size: 28px;
 }
 body #mbh-results-wrapper .step-one #mbh-results-tariffs .panel-body {
   padding: 0;

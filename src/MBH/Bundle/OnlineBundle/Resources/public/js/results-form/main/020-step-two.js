@@ -6,11 +6,11 @@ MbhResultForm.prototype.getPackageInfo = function () {
 
 MbhResultForm.prototype.calcServices = function () {
 
-    var totalServiceTemp,
-        _this = this,
-        totalService = document.querySelector('#mbh-package-info-total-services'),
+    var _this = this,
+        totalServiceTemp,
+        totalServiceElement = document.querySelector('#mbh-package-info-total-services'),
         totalSumElement = document.querySelector('#mbh-package-info-total'),
-        totalPackage = +document.querySelector('#mbh-package-info-total-packages').dataset.value;
+        totalPackage = Number(document.querySelector('#mbh-package-info-total-packages').innerHTML.replace(/\s/g, ''));
 
     this.serviceListData = {};
 
@@ -21,8 +21,8 @@ MbhResultForm.prototype.calcServices = function () {
             totalServiceTemp += _this.serviceListData[serviceId].price * _this.serviceListData[serviceId].amount;
         }
 
-        totalService.innerHTML = _this.priceSeparator(totalServiceTemp);
-        totalSumElement.innerHTML = _this.priceSeparator(totalPackage + totalServiceTemp);
+        totalServiceElement.innerHTML = _this.priceSeparator(totalServiceTemp.toFixed(1));
+        totalSumElement.innerHTML = _this.priceSeparator((totalPackage + totalServiceTemp).toFixed(1));
     };
 
     document.querySelectorAll('.mbh-service-item').forEach(function(service) {
@@ -30,7 +30,7 @@ MbhResultForm.prototype.calcServices = function () {
         var price = service.querySelector('.mbh-results-services-prices').dataset.value;
 
         _this.serviceListData[serviceId] = {
-            price : +price,
+            price : Number(price),
             amount: 0
         };
 
@@ -159,12 +159,11 @@ MbhResultForm.prototype.prepareAndGoStepThree = function () {
             }
         }
 
-
-        var total = parseInt(_this._requestParams.total.replace(/\s/g, ''));
+        var total = _this._requestParams.total;
 
         total += totalServices;
-        _this._requestParams.total = String(total);
-        _this._requestParams.totalServices = String(totalServices);
+        _this._requestParams.total = total;
+        _this._requestParams.totalServices = totalServices;
 
         var $personalDataCheckbox = jQuery('#mbh-form-personal-data');
         _this._requestParams.isConfrmWithPersDataProcessing

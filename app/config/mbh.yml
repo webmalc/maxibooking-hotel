@@ -11,17 +11,17 @@ parameters:
     #currencies. key ISO 4217.
     # (при добавлении нужено название валюты с ключем form.clientConfigType.currency.options.{key})
     mbh.currency.data:
-      usd: {text: '$', small: '¢', icon: 'fa fa-usd'}
-      eur: {text: '€', small: '¢', icon: 'fa fa-eur'}
-      rub: {text: 'currency.rub.text', small: 'currency.rub.small', icon: 'fa fa-ruble'}
-      uah: {text: 'currency.uah.text', small: 'currency.uah.small', icon: 'fa fa-money'}
-      kzt: {text: 'currency.kzt.text', small: 'currency.kzt.small', icon: 'fa fa-money'}
-      uzs: {text: 'currency.uzs.text', small: 'currency.uzs.small', icon: 'fa fa-money'}
-      gel: {text: 'Lari', small: 't', icon: 'fa fa-money'}
-      inr: {text: '₹', small: 'paisa', icon: 'fa fa-inr'}
-      pln: {text: 'zł', small: 'gr', icon: 'fa fa-money'}
-      tbh: {text: '฿', small: 'satang', icon: 'fa fa-money'}
-      idr: {text: 'currency.idr.text', small: 'currency.idr.small', icon: 'fa fa-money'}
+      usd: {text: '$', small: '¢', icon: 'fa fa-usd', side: left}
+      eur: {text: '€', small: '¢', icon: 'fa fa-eur', side: left}
+      rub: {text: 'currency.rub.text', small: 'currency.rub.small', icon: 'fa fa-ruble', side: left, symbol: '₽'}
+      uah: {text: 'currency.uah.text', small: 'currency.uah.small', icon: 'fa fa-money', side: left, symbol: '₴'}
+      kzt: {text: 'currency.kzt.text', small: 'currency.kzt.small', icon: 'fa fa-money', side: left, symbol: '₸'}
+      uzs: {text: 'currency.uzs.text', small: 'currency.uzs.small', icon: 'fa fa-money', side: left, symbol: 'UZS'}
+      gel: {text: 'Lari', small: 't', icon: 'fa fa-money', side: left, symbol: '₾'}
+      inr: {text: '₹', small: 'paisa', icon: 'fa fa-inr', side: left}
+      pln: {text: 'zł', small: 'gr', icon: 'fa fa-money', side: left}
+      tbh: {text: '฿', small: 'satang', icon: 'fa fa-money', side: left}
+      idr: {text: 'currency.idr.text', small: 'currency.idr.small', icon: 'fa fa-money', side: left, symbol: 'Rp'}
 
     # ReCaptcha
     mbh.recaptcha:

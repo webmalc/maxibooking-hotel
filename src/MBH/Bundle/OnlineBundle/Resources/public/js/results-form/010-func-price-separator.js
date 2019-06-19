@@ -1,14 +1,23 @@
 function mbhFuncPriceSeparator (amount) {
     amount = String(amount);
-    if (amount.length <= 3) {
-        return amount;
-    } else if (amount.length <= 6) {
-        return amount.replace(/(\d{3}$)/, " $1");
-    } else if (amount.length <= 9) {
-        return (amount.replace(/(\d{3})(\d{3}$)/, " $1 $2"));
-    } else if (amount.length <= 12) {
-        return (amount.replace(/(\d{3})(\d{3})(\d{3}$)/, " $1 $2 $3"));
+
+    var splitNumber = amount.split('.'),
+        lengthInteger = splitNumber[0].length;
+
+    if (lengthInteger <= 3) {
+    } else if (lengthInteger <= 6) {
+        splitNumber[0] = splitNumber[0].replace(/(\d{3}$)/, " $1");
+    } else if (lengthInteger <= 9) {
+        splitNumber[0] = splitNumber[0].replace(/(\d{3})(\d{3}$)/, " $1 $2");
+    } else if (lengthInteger <= 12) {
+        splitNumber[0] = splitNumber[0].replace(/(\d{3})(\d{3})(\d{3}$)/, " $1 $2 $3");
     } else {
-        return (amount.replace(/(\d)(\d{3})(\d{3})(\d{3}$)/, "$1 $2 $3 $4"));
+        splitNumber[0] = splitNumber[0].replace(/(\d)(\d{3})(\d{3})(\d{3}$)/, "$1 $2 $3 $4");
     }
+
+    if (typeof splitNumber[1] !== 'undefined' &&  parseInt(splitNumber[1]) === 0) {
+        return splitNumber[0];
+    }
+
+    return splitNumber.join('.');
 };

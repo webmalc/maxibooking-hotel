@@ -62,7 +62,10 @@ services:
 
     mbh.currency:
             class: MBH\Bundle\BaseBundle\Service\Currency
-            arguments: ['@service_container']
+            arguments:
+                - '@doctrine_mongodb.odm.document_manager'
+                - '@mbh.client_config_manager'
+                - '%mbh.currency.data%'
 
     mbh.helper:
             class: MBH\Bundle\BaseBundle\Service\Helper

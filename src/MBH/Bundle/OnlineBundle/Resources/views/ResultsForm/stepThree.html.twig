@@ -15,7 +15,7 @@
                     <div class="panel-body">
                         <div id="mbh-payment-types" data-tariff="{{ firstPackage.tariff.id }}">
                             {% for paymentType in formConfig.paymentTypes %}
-                                <div class="row mbh-payment-type-row{{ onlyOneSystem ? ' selected' : '' }}" data-type="{{ paymentType }}">
+                                <div class="row mbh-payment-type-row{{ onlyOneType ? ' selected' : '' }}" data-type="{{ paymentType }}">
                                     <div class="col-xs-1 col-sm-1">
                                         <input {% if onlyOneType %}checked style="display:none;"{% endif %}
                                                type="radio"
@@ -27,31 +27,31 @@
                                     <div class="col-xs-11 col-sm-11">
                                         <label for="{{ paymentType }}_radio" class="mbh-payment-type-label">{{ ('payment_types.' ~ paymentType)|trans }}</label>
                                         {% if paymentType == constant('MBH\\Bundle\\OnlineBundle\\Document\\SettingsOnlineForm\\FormConfig::PAYMENT_TYPE_IN_HOTEL')%}
-                                            <div class="mbh-payment-type-row-total">{{ request.total| number_format(null, null, ' ', ' ') }} <i class="{{ currency().icon }}"></i></div>
+                                            <div class="mbh-payment-type-row-total">{{ currency_symbol_with_price(request.total | result_number_format) }}</div>
                                             <p> {{ 'views.api.getPaymentType.payment_fine'|trans({}, 'MBHOnlineBundle') }}</p>
                                         {% endif %}
                                         {% if paymentType == constant('MBH\\Bundle\\OnlineBundle\\Document\\SettingsOnlineForm\\FormConfig::PAYMENT_TYPE_BY_RECEIPT_FULL') %}
-                                            <div class="mbh-payment-type-row-total">{{ request.total | number_format(null, null, ' ', ' ') }} <i class="{{ currency().icon }}"></i></div>
+                                            <div class="mbh-payment-type-row-total">{{ currency_symbol_with_price(request.total | result_number_format) }}</div>
                                             <p> {{ 'views.api.getPaymentType.reservation_guarantee_whole_sum'|trans({}, 'MBHOnlineBundle') }}</p>
                                         {% endif %}
                                         {% if paymentType == constant('MBH\\Bundle\\OnlineBundle\\Document\\SettingsOnlineForm\\FormConfig::PAYMENT_TYPE_BY_RECEIPT_FIRST_DAY') %}
-                                            <div class="mbh-payment-type-row-total">{{ (request.total|replace({',': ''})/request.nights)|round|number_format(null, null, ' ', ' ') }} <i class="{{ currency().icon }}"></i></div>
+                                            <div class="mbh-payment-type-row-total">{{ currency_symbol_with_price((request.total/request.nights) | result_number_format) }}</div>
                                             <p> {{ 'views.api.getPaymentType.reservation_guarantee_first_night'|trans({}, 'MBHOnlineBundle') }}</p>
                                         {% endif %}
                                         {% if paymentType == constant('MBH\\Bundle\\OnlineBundle\\Document\\SettingsOnlineForm\\FormConfig::PAYMENT_TYPE_BY_RECEIPT_HALF') %}
-                                            <div class="mbh-payment-type-row-total">{{ (request.total|replace({',': ''})/2)|round|number_format(null, null, ' ', ' ') }} <i class="{{ currency().icon }}"></i></div>
+                                            <div class="mbh-payment-type-row-total">{{ currency_symbol_with_price((request.total/2)| result_number_format) }}</div>
                                             <p> {{ 'views.api.getPaymentType.reservation_guarantee_half'|trans({}, 'MBHOnlineBundle') }}</p>
                                         {% endif %}
                                         {% if paymentType == constant('MBH\\Bundle\\OnlineBundle\\Document\\SettingsOnlineForm\\FormConfig::PAYMENT_TYPE_ONLINE_FULL') %}
-                                            <div class="mbh-payment-type-row-total">{{ request.total | number_format(null, null, ' ', ' ')}} <i class="{{ currency().icon }}"></i></div>
+                                            <div class="mbh-payment-type-row-total">{{ currency_symbol_with_price(request.total | result_number_format) }}</div>
                                             <p> {{ 'views.api.getPaymentType.reservation_guarantee_whole_sum'|trans({}, 'MBHOnlineBundle') }}</p>
                                         {% endif %}
                                         {% if paymentType == constant('MBH\\Bundle\\OnlineBundle\\Document\\SettingsOnlineForm\\FormConfig::PAYMENT_TYPE_ONLINE_FIRST_DAY') %}
-                                            <div class="mbh-payment-type-row-total">{{ (request.total|replace({',': ''})/request.nights)|round|number_format(null, null, ' ', ' ') }} <i class="{{ currency().icon }}"></i></div>
+                                            <div class="mbh-payment-type-row-total">{{ currency_symbol_with_price((request.total/request.nights) | result_number_format) }}</div>
                                             <p> {{ 'views.api.getPaymentType.reservation_guarantee_first_night'|trans({}, 'MBHOnlineBundle') }}</p>
                                         {% endif %}
                                         {% if paymentType == constant('MBH\\Bundle\\OnlineBundle\\Document\\SettingsOnlineForm\\FormConfig::PAYMENT_TYPE_ONLINE_HALF') %}
-                                            <div class="mbh-payment-type-row-total">{{ (request.total|replace({',': ''})/2)|round|number_format(null, null, ' ', ' ') }} <i class="{{ currency().icon }}"></i></div>
+                                            <div class="mbh-payment-type-row-total">{{ currency_symbol_with_price((request.total/2) | result_number_format) }}</div>
                                             <p> {{ 'views.api.getPaymentType.reservation_guarantee_half'|trans({}, 'MBHOnlineBundle') }}</p>
                                         {% endif %}
                                     </div>
@@ -76,7 +76,7 @@
             </div>
         </div>
         <div class="col-sm-4">
-            {% include 'MBHOnlineBundle:ResultsForm:packageInfo.html.twig' with {'request': request} %}
+            {% include 'MBHOnlineBundle:ResultsForm:packageInfo.html.twig' with {'request': request, 'stepNumber': 3} %}
         </div>
     </div>
     <div id="mbh-results-actions">

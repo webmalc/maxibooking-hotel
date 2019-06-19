@@ -26,7 +26,7 @@
                                             </div>
                                             <div class="mbh-service-item-price col-xs-3 col-sm-3">
                                                 <span class="mbh-results-services-prices" data-value="{{ service.price }}">
-                                                    {{ service.price|number_format ~ ' ' ~ currency()['text']|trans }}
+                                                    {{ currency_symbol_with_price(service.price | result_number_format) }}
                                                 </span>
                                             </div>
                                             <div class="mbh-service-item-hotel col-xs-3 col-sm-3">

@@ -41,11 +41,10 @@ MbhResultForm.prototype.setFancyBoxOffset = function() {
 
 MbhResultForm.prototype.calcTotal = function () {
     var _this = this,
-        roomCountSelect = 0,
         tempRoomCount,
-        amountGuest = 0,
-        tempAmountGuest;
-        $totalPackagesElement = jQuery('#mbh-results-total-packages-sum');
+        tempAmountGuest,
+        roomCountSelect = 0,
+        amountGuest = 0;
 
     var calc = function() {
         roomCountSelect = 0;
@@ -79,18 +78,17 @@ MbhResultForm.prototype.calcTotal = function () {
 
                 roomCountSelect += tempRoomCount;
                 if (li.length) {
-                    totalPackages += parseInt(li.attr('data-value')) * tempRoomCount;
+                    totalPackages += Number(li.attr('data-value')) * tempRoomCount;
                 }
             }
         });
 
-        $totalPackagesElement.data('value', totalPackages);
-        $totalPackagesElement.html(totalPackages).digits();
+        _this._totalPackage = Number(totalPackages.toFixed(1));
 
         _this.sendDataStepOneButton('selectPackage', {
             amountRoom: roomCountSelect,
             amountGuest: amountGuest,
-            totalPackage: totalPackages
+            totalPackage: _this._totalPackage
         });
     };
     calc();
@@ -114,18 +112,17 @@ MbhResultForm.prototype.prepareAndGoStepTwo = function () {
                 purpose: 'rooms'
             }, "*");
 
-            var $totalPackagedSum = jQuery('#mbh-results-total-packages-sum'),
-                roomCount = jQuery('select.mbh-results-packages-count:not(.hidden), input.mbh-results-packages-count[type=checkbox]:checked');
+            var roomCount = jQuery('select.mbh-results-packages-count:not(.hidden), input.mbh-results-packages-count[type=checkbox]:checked');
             _this._requestParams.begin = jQuery('#mbh-results-duration-begin').text();
             _this._requestParams.end = jQuery('#mbh-results-duration-end').text();
             _this._requestParams.days = jQuery('#mbh-results-duration-days').text();
             _this._requestParams.nights = jQuery('#mbh-results-duration-nights').text();
-            _this._requestParams.total = $totalPackagedSum.text();
-            _this._requestParams.totalPackages = $totalPackagedSum.text();
-            _this._requestParams.totalPackagesRaw = $totalPackagedSum.data('value');
+            _this._requestParams.total = _this._totalPackage;
+            _this._requestParams.totalPackages = _this._totalPackage;
             _this._requestParams.totalServices = 0;
             _this._requestParams.packages = [];
             _this._requestParams.services = [];
+            _this._requestParams.dataPackageInfo = {};
             _this._requestParams.locale = _this.getLocale();
             roomCount.each(function() {
                 if (jQuery(this).val() > 0) {
@@ -137,17 +134,32 @@ MbhResultForm.prototype.prepareAndGoStepTwo = function () {
                     for (var i = 1; i <= jQuery(this).val(); i++) {
                         if (pricesLi.length) {
 
-                            var tourists = resultsContainer.find('select.mbh-results-tourists-select').val().split('_');
+                            var tourists = resultsContainer.find('select.mbh-results-tourists-select').val().split('_'),
+                                roomTypeId = roomType.attr('data-id'),
+                                roomTitle = roomType.text(),
+                                hotelTitle = hotel.text();
+
+                            if (typeof _this._requestParams.dataPackageInfo[roomTypeId] === 'undefined') {
+                                _this._requestParams.dataPackageInfo[roomTypeId] = {
+                                    count: 1,
+                                    package: {
+                                        roomTitle: roomTitle,
+                                        hotelTitle: hotelTitle
+                                    }
+                                }
+                            } else {
+                                _this._requestParams.dataPackageInfo[roomTypeId].count++;
+                            }
 
                             _this._requestParams.packages.push({
-                                'price': parseInt(pricesLi.attr('data-value')),
+                                'price': Number(pricesLi.attr('data-value')),
                                 'roomType': {
-                                    id: roomType.attr('data-id'),
-                                    'title': roomType.text()
+                                    id: roomTypeId,
+                                    'title': roomTitle
                                 },
                                 'hotel': {
                                     id: hotel.attr('data-id'),
-                                    'title': hotel.text()
+                                    'title': hotelTitle
                                 },
                                 'tariff': {
                                     id: tariff.attr('data-id'),
@@ -232,6 +244,7 @@ MbhResultForm.prototype.sendDataStepOneButton = function (action, data) {
 
 MbhResultForm.prototype.stepOne = function() {
     var _this = this;
+    this._totalPackage = 0;
 
     jQuery.ajax({
         url: this._urls.stepOne,

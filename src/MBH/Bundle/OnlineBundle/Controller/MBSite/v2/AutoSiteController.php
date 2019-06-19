@@ -48,7 +48,7 @@ class AutoSiteController extends BaseController implements CheckSiteManagerInter
                 ],
                 'formConfig'           => new FormConfigDecoratorForMBSite($formConfig, $this->get(DataForSearchForm::class)),
                 'keyWords'             => $siteConfig->getKeyWords(),
-                'currency'             => $this->clientConfig->getCurrency(),
+                'currency'             => $this->get('mbh.currency')->info(true),
                 'languages'            => $this->clientConfig->getLanguages(),
                 'defaultLang'          => $this->getParameter('locale'),
                 'colorTheme'           => $siteConfig->getThemeColors(),
