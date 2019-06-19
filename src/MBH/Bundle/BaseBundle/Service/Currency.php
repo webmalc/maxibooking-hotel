@@ -158,18 +158,22 @@ class Currency
 
     private function generateTemplate(): void
     {
-        $data = $this->currencyData;
-
-        $symbol = '<span class="currency-symbol %s">%s</span>';
-
-        if ($data['side'] === 'left') {
-            $first = sprintf($symbol, 'currency-symbol-first',$data['symbol']);
+        if ($this->currencyData['side'] === 'left') {
+            $first = $this->stringWithSymbol(true);
             $second = '%s';
         } else {
             $first = '%s';
-            $second = sprintf($symbol, 'currency-symbol-second',$data['symbol']);
+            $second = $this->stringWithSymbol(false);
         }
 
         $this->template = sprintf('%s%s', $first, $second);
+    }
+
+    private function stringWithSymbol(bool $isFirst = true): string
+    {
+        $symbol = $this->currencyData['symbol'] ?? $this->currencyData['text'];
+        $cssClass = $isFirst ? 'currency-symbol-first' : 'currency-symbol-second';
+
+        return sprintf('<span class="currency-symbol %s">%s</span>', $cssClass, $symbol);
     }
 }

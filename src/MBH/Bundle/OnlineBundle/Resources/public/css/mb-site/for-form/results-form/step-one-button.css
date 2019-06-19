@@ -169,8 +169,12 @@ body #mbh-results-actions #mbh-results-next:hover {
   background-color: #FFFFFF;
   color: #4F4F4F;
 }
+body #mbh-results-actions #mbh-results-total {
+  display: flex;
+}
 body #mbh-results-actions #mbh-results-total .mbh-results-total-text {
   font-size: 14px;
+  margin-right: 0.3em;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }

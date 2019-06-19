@@ -540,8 +540,10 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-conta
   line-height: 44px;
   color: #4F4F4F;
 }
-body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-price-container .price .mbh-results-prices i.fa {
-  font-size: .7em;
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-price-container .price .mbh-results-prices li {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-price-container .nights {
   font-size: 16px;
