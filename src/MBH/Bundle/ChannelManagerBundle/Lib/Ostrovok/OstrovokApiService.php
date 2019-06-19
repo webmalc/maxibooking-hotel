@@ -182,6 +182,11 @@ class OstrovokApiService
         $get_data['sign'] = $this->getSignature($signature_data, $this->private_token);
 
         $final_url = self::API_URL . $api_method . '?' . http_build_query($get_data);
+
+        $this->log->addInfo(
+            'Ostrovok ' . $type . ' request uri: ' . $final_url . '; data: '. json_encode($data)
+        );
+
         $curl = curl_init($final_url);
 
         $data_json = json_encode($data);
@@ -194,9 +199,13 @@ class OstrovokApiService
             'Content-Length: ' . \strlen($data_json),
         ));
 
-        $response = json_decode(curl_exec($curl), true);
+        $curlRawResponse = curl_exec($curl);
+
+        $response = json_decode($curlRawResponse, true);
         $curlInfo = curl_getinfo($curl);
         curl_close($curl);
+
+        $this->log->addInfo('Ostrovok ' . $type . ' response data: '. $curlRawResponse .'');
 
         if (!$response) {
             throw new OstrovokApiServiceException('Some error in ostrovok api service. ' . json_encode($curlInfo));
