@@ -167,7 +167,7 @@ class Currency
             $second = '%s';
         } else {
             $first = '%s';
-            $second = sprintf($symbol, 'currency-symbol-second',$data['symbol']);;
+            $second = sprintf($symbol, 'currency-symbol-second',$data['symbol']);
         }
 
         $this->template = sprintf('%s%s', $first, $second);
