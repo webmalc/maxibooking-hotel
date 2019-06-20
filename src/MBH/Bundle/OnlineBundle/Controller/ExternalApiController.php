@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\OnlineBundle\Controller;
 
-use Doctrine\ODM\MongoDB\MongoDBException;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
 use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\CashBundle\Document\CashDocument;
@@ -192,92 +191,6 @@ class ExternalApiController extends BaseController
         return $responseCompiler
             ->setData($responseData)
             ->getResponse();
-    }
-
-    /**
-     * @Method("GET")
-     * @SWG\Get(
-     *     path="/management/online/api/organization",
-     *     produces={"application/json"},
-     *     @SWG\Response(response="200", description="Return organization data"),
-     *     @SWG\Parameter(name="onlineFormId", in="query", type="string", required=true, description="Id of the online form"),
-     *     @SWG\Parameter(name="hotelId", in="query", type="string", required=false, description="Hotel id"),
-     *     @SWG\Parameter(name="locale", in="query", type="string", required=false, description="Locale of the response"),
-     * )
-     * @Route("/organization")
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function getOrganizationByHotelAction(Request $request)
-    {
-        $requestHandler = $this->get('mbh.api_handler');
-        $responseCompiler = $this->get('mbh.api_response_compiler');
-        $billingApi = $this->get('mbh.billing.api');
-        $queryData = $request->query;
-        $this->setLocaleByRequest();
-
-        $this->getFormConfigAndAddOriginHeader($queryData, $requestHandler, $responseCompiler);
-
-        if (!$responseCompiler->isSuccessful()) {
-            return $responseCompiler->getResponse();
-        }
-        $responseData = [];
-
-        $qb = $this->dm->getRepository('MBHPackageBundle:Organization')->createQueryBuilder();
-
-        try {
-            $organizationData = $qb->field('hotels.id')->in([(string)$queryData->get('hotelId')])
-                ->select('name', 'inn', 'countryTld', 'index', 'cityId', 'street', 'house', 'phone', 'email')
-                ->exclude('_id')
-                ->hydrate(false)
-                ->getQuery()
-                ->execute()
-                ->toArray();
-        } catch (MongoDBException $e) {
-            $responseCompiler->addErrorMessage('Hotel not found');
-
-            return $responseCompiler->getResponse();
-        }
-
-        if (count($organizationData)) {
-            if (isset($organizationData[0]['cityId']) && isset($organizationData[0]['countryTld'])) {
-                try {
-                    $organizationData[0]['city'] = $billingApi->getCityById($organizationData[0]['cityId'])->getName();
-                    $organizationData[0]['country'] = $billingApi->getCountryByTld($organizationData[0]['countryTld'])->getName();
-                } catch (\Throwable $e) {
-                    if ($e instanceof \RuntimeException || $e instanceof \InvalidArgumentException) {
-                        //cityID is set but not found in billing
-                        $notifier = $this->get('mbh.notifier');
-                        $message = $notifier::createMessage();
-                        $message
-                            ->setText('notifier.online.city_not_found.message')
-                            ->setFrom('online')
-                            ->setSubject('notifier.online.city_not_found.message')
-                            ->setType('danger')
-                            ->setCategory('notification')
-                            ->setAutohide(false)
-                            ->setMessageType(NotificationType::ERROR);
-                        //send to backend
-                        try {
-                            $notifier->setMessage($message)->notify();
-                        } catch (\Throwable $e) {
-                        }
-                    } else {
-                        throw $e;
-                    }
-                }
-                unset($organizationData[0]['cityId']);
-                unset($organizationData[0]['countryTld']);
-            }
-
-            $hotelData['organization'] = $organizationData[0];
-            $responseData['organization'] = $hotelData['organization'];
-            $responseCompiler->setData($responseData);
-        } else {
-            $responseCompiler->addErrorMessage('Hotel not found');
-        }
-
-        return $responseCompiler->getResponse();
     }
 
     /**

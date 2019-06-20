@@ -2,7 +2,9 @@
 
 namespace MBH\Bundle\OnlineBundle\Controller\MBSite\v2;
 
+use Doctrine\ODM\MongoDB\MongoDBException;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
+use MBH\Bundle\BaseBundle\Document\NotificationType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
@@ -66,7 +68,7 @@ class AutoSiteController extends BaseController implements CheckSiteManagerInter
     /**
      * @Route("/additional-content/{hotelId}", name="mb_site_api_v2_additional_content")
      * @SWG\Get(
-     *     path="/management/online/api/v2/additional-content",
+     *     path="/management/online/api/v2/additional-content/{hotelId}",
      *     produces={"application/json"},
      *     @SWG\Response(response="200", description="Return link for social networking services, aggregator serveces"),
      * )
@@ -138,6 +140,67 @@ class AutoSiteController extends BaseController implements CheckSiteManagerInter
         }
 
         return $responseCompiler->setData($responseData);
+    }
+
+    /**
+     * @Method("GET")
+     * @SWG\Get(
+     *     path="/management/online/api/mb-site/organization-by-hotel/{hotelId}",
+     *     produces={"application/json"},
+     *     @SWG\Response(response="200", description="Return organization data"),
+     * )
+     * @Route("/organization-by-hotel/{hotelId}" , name="mb_site_api_v2_organization_by_hotel")
+     * @param Request $request
+     */
+    public function organizationByHotelAction(ApiResponseCompiler $responseCompiler, Hotel $hotel)
+    {
+        $this->setLocaleByRequest();
+
+        $organization = $hotel->getOrganization();
+
+        if ($organization === null ) {
+            return $responseCompiler->addErrorMessage('Hotel organization not found.');
+        }
+
+        $organizationData = [
+            'name'    => $organization->getName(),
+            'inn'     => $organization->getInn(),
+            'index'   => $organization->getIndex(),
+            'street'  => $organization->getStreet(),
+            'house'   => $organization->getHouse(),
+            'phone'   => $organization->getPhone(),
+            'email'   => $organization->getEmail(),
+            'city'    => null,
+            'country' => null,
+        ];
+
+        if (!empty($organization->getCityId()) && !empty($organization->getCountryTld())) {
+            $billingApi = $this->get('mbh.billing.api');
+
+            try {
+                $organizationData['city'] = $billingApi->getCityById($organization->getCityId())->getName();
+                $organizationData['country'] = $billingApi->getCountryByTld($organization->getCountryTld())->getName();
+            } catch (\RuntimeException | \InvalidArgumentException  $e) {
+                //cityID is set but not found in billing
+                $notifier = $this->get('mbh.notifier');
+                $message = $notifier::createMessage();
+                $message
+                    ->setText('notifier.online.city_not_found.message')
+                    ->setFrom('online')
+                    ->setSubject('notifier.online.city_not_found.message')
+                    ->setType('danger')
+                    ->setCategory('notification')
+                    ->setAutohide(false)
+                    ->setMessageType(NotificationType::ERROR);
+                //send to backend
+                try {
+                    $notifier->setMessage($message)->notify();
+                } catch (\Throwable $e) {
+                }
+            }
+        }
+
+        return  $responseCompiler->setData([$organizationData]);
     }
 
     /**
