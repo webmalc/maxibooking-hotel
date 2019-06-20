@@ -28,22 +28,19 @@ class CollectHotelData extends MbSiteData
      */
     private $locale;
 
+    public function __construct(BillingApi $billingApi, UploaderHelper $uploaderHelper, CacheManager $cacheManager)
+    {
+        $this->billingApi = $billingApi;
+        parent::__construct($uploaderHelper, $cacheManager);
+    }
+
+
     /**
      * @param Hotel $hotel
      */
     public function setHotel(Hotel $hotel): self
     {
         $this->hotel = $hotel;
-
-        return $this;
-    }
-
-    /**
-     * @param BillingApi $billingApi
-     */
-    public function setBillingApi(BillingApi $billingApi): self
-    {
-        $this->billingApi = $billingApi;
 
         return $this;
     }

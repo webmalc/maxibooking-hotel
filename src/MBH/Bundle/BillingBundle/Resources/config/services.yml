@@ -131,3 +131,7 @@ services:
             - '@serializer'
             - '@mbh.form_data_handler'
             - '@kernel'
+
+    MBH\Bundle\BillingBundle\Service\BillingExceptionHandler:
+        arguments:
+            - '@mbh.notifier'

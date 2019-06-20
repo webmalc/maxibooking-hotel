@@ -2,9 +2,9 @@
 
 namespace MBH\Bundle\OnlineBundle\Controller\MBSite\v2;
 
-use Doctrine\ODM\MongoDB\MongoDBException;
 use MBH\Bundle\BaseBundle\Controller\BaseController;
-use MBH\Bundle\BaseBundle\Document\NotificationType;
+use MBH\Bundle\BillingBundle\Exception\EmptyResponseBillingException;
+use MBH\Bundle\BillingBundle\Service\BillingExceptionHandler;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
 use MBH\Bundle\OnlineBundle\Document\SiteConfig;
@@ -123,9 +123,7 @@ class AutoSiteController extends BaseController implements CheckSiteManagerInter
 
         /** @var CollectHotelData $collectHotelData */
         $collectHotelData = $this->get(CollectHotelData::class);
-        $collectHotelData
-            ->setBillingApi($this->get('mbh.billing.api'))
-            ->setLocale($request->getLocale());
+        $collectHotelData->setLocale($request->getLocale());
 
         /** @var Hotel $hotel */
         foreach ($formConfig->getHotels() as $hotel) {
@@ -180,23 +178,8 @@ class AutoSiteController extends BaseController implements CheckSiteManagerInter
             try {
                 $organizationData['city'] = $billingApi->getCityById($organization->getCityId())->getName();
                 $organizationData['country'] = $billingApi->getCountryByTld($organization->getCountryTld())->getName();
-            } catch (\RuntimeException | \InvalidArgumentException  $e) {
-                //cityID is set but not found in billing
-                $notifier = $this->get('mbh.notifier');
-                $message = $notifier::createMessage();
-                $message
-                    ->setText('notifier.online.city_not_found.message')
-                    ->setFrom('online')
-                    ->setSubject('notifier.online.city_not_found.message')
-                    ->setType('danger')
-                    ->setCategory('notification')
-                    ->setAutohide(false)
-                    ->setMessageType(NotificationType::ERROR);
-                //send to backend
-                try {
-                    $notifier->setMessage($message)->notify();
-                } catch (\Throwable $e) {
-                }
+            } catch (EmptyResponseBillingException $e) {
+                $this->get(BillingExceptionHandler::class)->sendNotifier($e, $hotel);
             }
         }
 

@@ -160,8 +160,13 @@ services:
         tags:
             - {name: request.param_converter, converter: payment_form_config_converter}
 
-    MBH\Bundle\OnlineBundle\Services\MBSite\v2\:
-        resource: '%kernel.root_dir%/../src/MBH/Bundle/OnlineBundle/Services/MBSite/v2/*'
+    MBH\Bundle\OnlineBundle\Services\MBSite\v2\CollectHotelData:
+        arguments:
+            - '@mbh.billing.api'
+            - '@vich_uploader.templating.helper.uploader_helper'
+            - '@liip_imagine.cache.manager'
+
+    MBH\Bundle\OnlineBundle\Services\MBSite\v2\CollectRoomTypeData:
         arguments:
             - '@vich_uploader.templating.helper.uploader_helper'
             - '@liip_imagine.cache.manager'

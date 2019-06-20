@@ -7,6 +7,8 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\RequestOptions;
 use MBH\Bundle\BaseBundle\Lib\Exception;
+use MBH\Bundle\BillingBundle\Exception\EndpointBillingException;
+use MBH\Bundle\BillingBundle\Exception\EmptyResponseBillingException;
 use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\BillingBundle\Lib\Model\ClientAuth;
 use MBH\Bundle\BillingBundle\Lib\Model\ClientPayer;
@@ -685,8 +687,8 @@ class BillingApi
     private function getBillingEntityById($endpointSettings, $id, $locale = null)
     {
         $endpoint = $endpointSettings['endpoint'];
-        if (is_null($id)) {
-            throw new \InvalidArgumentException('Endpoint "' . $endpoint . '": ID is not specified');
+        if ($id === null) {
+            throw new EndpointBillingException($endpoint);
         }
 
         if (!isset($this->loadedEntities[$endpoint][$id])) {
@@ -833,6 +835,6 @@ class BillingApi
         /** @var RequestException $exception */
         $message = $exception->getMessage();
         $this->logErrorResponse($message, $url, []);
-        throw new \RuntimeException('Can not get data by url ' . $url);
+        throw new EmptyResponseBillingException($url);
     }
 }
