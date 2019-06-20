@@ -46,7 +46,7 @@ abstract class AbstractCombinations implements CombinationInterface
 
         $filteredCombinations = array_filter(
             $combinations,
-            function ($variant) {
+            static function ($variant) {
                 return $variant['children'] <= self::MAX_CHILDREN_RESTRICTION && $variant['adults'] <= self::MAX_ADULTS_RESTRICTIONS;
             }
         );
