@@ -66,7 +66,6 @@ class RoomCacheRawFetcher implements DataRawFetcherInterface
 
         $tariffId = $this->actualChildOptionDeterminer->getActualRoomTariff($tariffId);
         $roomCaches = [];
-//        $groupedRoomCaches = $data[$roomTypeId] ?? [];
 
         foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), $end) as $day) {
             /** @var \DateTime $day */
@@ -88,7 +87,7 @@ class RoomCacheRawFetcher implements DataRawFetcherInterface
             }
 
         }
-        if (is_array($roomCaches)) {
+        if (is_array($roomCaches) && !empty($roomCaches)) {
             $roomCaches = array_merge(...$roomCaches);
         }
         return $roomCaches;
