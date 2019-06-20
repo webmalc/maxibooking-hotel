@@ -7,6 +7,7 @@ use MBH\Bundle\BaseBundle\Lib\Exception;
 use MBH\Bundle\BaseBundle\Lib\Searchable;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
+use MBH\Bundle\ClientBundle\Lib\FMSDictionaries;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig;
 use MBH\Bundle\PackageBundle\Document\DocumentRelation;
@@ -418,6 +419,8 @@ class OrderManager implements Searchable
         if ($config->isRequestTouristDocumentNumber()) {
             $documentRelation = new DocumentRelation();
             $documentRelation->setNumber($touristRawData['documentNumber']);
+            $documentRelation->setType(FMSDictionaries::RUSSIAN_PASSPORT_ID);
+            $documentRelation->setRelation('owner');
             $tourist->setDocumentRelation($documentRelation);
         }
         if ($config->isRequestPatronymic()) {
