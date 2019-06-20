@@ -141,7 +141,7 @@ class Tariff extends Base implements ConditionsInterface
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0, max=18)
      */
@@ -150,7 +150,17 @@ class Tariff extends Base implements ConditionsInterface
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
+     * @Assert\Type(type="numeric")
+     * @Assert\Range(min=0, max=6)
+     */
+    protected $maxInfants;
+
+
+    /**
+     * @var int
+     * @Gedmo\Versioned
+     * @ODM\Field(type="integer")
      * @Assert\Type(type="numeric")
      * @Assert\Range(min=0, max=18)
      */
@@ -159,7 +169,7 @@ class Tariff extends Base implements ConditionsInterface
     /**
      * @var int
      * @Gedmo\Versioned
-     * @ODM\Integer()
+     * @ODM\Field(type="integer")
      * @Assert\Type(type="numeric")
      * @ODM\Index()
      */
@@ -457,6 +467,27 @@ class Tariff extends Base implements ConditionsInterface
     {
         return $this->childAge;
     }
+
+    /**
+     * @return int
+     */
+    public function getMaxInfants(): ?int
+    {
+        return $this->maxInfants;
+    }
+
+    /**
+     * @param int $maxInfants
+     * @return Tariff
+     */
+    public function setMaxInfants(?int $maxInfants): Tariff
+    {
+        $this->maxInfants = $maxInfants;
+
+        return $this;
+    }
+
+
 
     /**
      * Set infantAge

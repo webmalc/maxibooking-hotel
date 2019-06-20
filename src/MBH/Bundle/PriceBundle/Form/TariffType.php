@@ -158,6 +158,15 @@ class TariffType extends AbstractType
                     'help' => 'price.form.what_age_is_client_considered_child'
                 ]
             )
+            ->add('maxInfants', ChoiceType::class, [
+                'label' => 'Макс. количество инфантов',
+                'group' => 'configuration',
+                'required' => false,
+                'multiple' => false,
+                'choices' => range(0,4),
+                'attr' => array('class' => 'input-xxs plain-html'),
+                'help' => 'Максимальное количество инфантов, остальные считаются детьми.'
+            ])
             ->add(
                 'infantAge', InvertChoiceType::class,
                 [

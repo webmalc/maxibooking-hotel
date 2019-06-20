@@ -22,7 +22,8 @@ abstract class AbstractDeterminer implements OccupancyDeterminerInterface
             throw new OccupancyDeterminerException('ChildrenAges and children not the same value!');
         }
 
-        $maxInfants = $roomType->getMaxInfants();
+
+        $maxInfants = min($roomType->getMaxInfants(), $tariff->getMaxInfants() ?? $roomType->getMaxInfants());
         $infantAge = $tariff->getInfantAge();
         $childAge = $tariff->getChildAge();
 
@@ -43,4 +44,5 @@ abstract class AbstractDeterminer implements OccupancyDeterminerInterface
     abstract protected function getActualChildren(int $childAge, int $infantAge, array $actualChildrenAges): int;
 
     abstract protected function getActualInfants(int $infantAge, array $actualChildrenAges): int;
+
 }
