@@ -135,6 +135,8 @@ class OstrovokApiService
 
         $responseData = $response->getBody()->getContents();
 
+        $this->log->addInfo('Ostrovok callGet response data: '. $responseData .'');
+
         $response = json_decode($responseData, true);
         $this->checkErrors($response);
         return $response;
@@ -202,8 +204,6 @@ class OstrovokApiService
         $response = json_decode($curlRawResponse, true);
         $curlInfo = curl_getinfo($curl);
         curl_close($curl);
-
-        $this->log->addInfo('Ostrovok ' . $type . ' response data: '. $curlRawResponse .'');
 
         if (!$response) {
             throw new OstrovokApiServiceException('Some error in ostrovok api service. ' . json_encode($curlInfo));
