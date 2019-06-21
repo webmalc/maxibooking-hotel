@@ -4,18 +4,16 @@
 namespace MBH\Bundle\SearchBundle\Services;
 
 
+use function count;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
-use MBH\Bundle\SearchBundle\Lib\Result\DayGroupSearchQuery;
-use MBH\Bundle\SearchBundle\Lib\SearchQuery;
-use MBH\Bundle\SearchBundle\Lib\SearchQueryHelper;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException;
 use MBH\Bundle\SearchBundle\Lib\DataHolder;
-use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupCreator;
-use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupInterface;
+use MBH\Bundle\SearchBundle\Services\Data\HotelInSearchDeterminer;
 use MBH\Bundle\SearchBundle\Services\Search\SearchCombinations;
 
 class SearchCombinationsGenerator
@@ -26,16 +24,24 @@ class SearchCombinationsGenerator
     /** @var DataHolder */
     private $dataHolder;
 
-    public function __construct(AdditionalDatesGenerator $generator, DataHolder $contentHolder)
+    /** @var HotelInSearchDeterminer */
+    private $hotelInSearchDeterminer;
+
+    public function __construct(AdditionalDatesGenerator $generator, DataHolder $contentHolder,
+        Data\HotelInSearchDeterminer $hotelInSearchDeterminer
+    )
     {
         $this->addDatesGenerator = $generator;
         $this->dataHolder = $contentHolder;
+        $this->hotelInSearchDeterminer = $hotelInSearchDeterminer;
     }
 
     /**
      * @param SearchConditions $conditions
      * @return SearchCombinations
+     * @throws MongoDBException
      * @throws SearchQueryGeneratorException
+     * @throws SharedFetcherException
      */
     public function generate(SearchConditions $conditions): SearchCombinations
     {
@@ -58,7 +64,9 @@ class SearchCombinationsGenerator
     /**
      * @param SearchConditions $conditions
      * @return array
+     * @throws MongoDBException
      * @throws SearchQueryGeneratorException
+     * @throws SharedFetcherException
      */
     private function getTariffRoomTypesCombinations(SearchConditions $conditions): array
     {
@@ -80,7 +88,9 @@ class SearchCombinationsGenerator
      * @param array $roomTypeGroupedByHotelId
      * @param array $tariffsGroupedByHotelId
      * @return array
+     * @throws MongoDBException
      * @throws SearchQueryGeneratorException
+     * @throws SharedFetcherException
      */
     private function combineTariffWithRoomType(
         array $roomTypeGroupedByHotelId,
@@ -91,7 +101,7 @@ class SearchCombinationsGenerator
         $tariffHotelIdsKeys = array_keys($tariffsGroupedByHotelId);
         $sharedHotelKeys = array_intersect($roomTypeHotelIdsKeys, $tariffHotelIdsKeys);
 
-        $hotelInSearch = $this->dataHolder->getHotelIdsInSearch();
+        $hotelInSearch = $this->hotelInSearchDeterminer->getHotelIdsInSearch();
         $sharedHotelKeys = array_intersect($sharedHotelKeys, $hotelInSearch);
 
         if (empty($sharedHotelKeys)) {
@@ -108,7 +118,7 @@ class SearchCombinationsGenerator
         }
 
         $result = [];
-        if (\count($combined)) {
+        if (count($combined)) {
             $result = array_merge(...$combined);
         }
 
@@ -121,13 +131,13 @@ class SearchCombinationsGenerator
      * @param array $hotelIds
      * @param bool $isOnline
      * @return array
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException
+     * @throws SearchQueryGeneratorException
      */
     private function getTariffs(array $rawTariffIds, array $hotelIds, bool $isOnline): array
     {
         $tariffs = [];
         /** Priority to Tariff even if hotels exists */
-        if (\count($rawTariffIds)) {
+        if (count($rawTariffIds)) {
             $hotelIds = [];
         }
         try {
@@ -162,7 +172,7 @@ class SearchCombinationsGenerator
     {
         $roomTypeIds = [];
         /** Prior to roomType even hotel is defined */
-        if (\count($rawRoomTypeIds)) {
+        if (count($rawRoomTypeIds)) {
             $hotelIds = [];
         }
 
@@ -193,7 +203,8 @@ class SearchCombinationsGenerator
         // т.к. у нас появляются merged тарифы, настройки будем брать из них. значит это убирать
         // так же остается вопрос с restrictionTariffId ибо нужно будет брать restrictions взависимости
         // от того какой тариф мы получаем потом в mergedPriceCache
-        //
+        // updt: Был введен сервис определения нужных тарифов в нужный момент.
+        // посмотреть на предмет убрать этот rawTariff
         // */
 
         $values = [];
