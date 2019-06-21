@@ -8,9 +8,10 @@ namespace Tests\Bundle\BaseBundle\Twig\Extension;
 
 
 use MBH\Bundle\BaseBundle\Twig\Extension;
+use Twig\Test\IntegrationTestCase;
 
 
-class IntegrationTest extends \Twig_Test_IntegrationTestCase
+class IntegrationTest extends IntegrationTestCase
 {
     public function getExtensions()
     {

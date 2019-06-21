@@ -17,6 +17,7 @@ class BaseControllerTest extends WebTestCase
         'mb_site_api_v2_min_prices',
         'mb_site_api_v2_facilities_data',
         'mb_site_api_v2_pers_data_policies',
+        'mb_site_api_v2_organization_by_hotel',
     ];
 
     private const SEARCH_FORM = [

@@ -1,0 +1,19 @@
+--TEST--
+"result_number_format" filter
+--TEMPLATE--
+{{ first | result_number_format }}
+{{ second | result_number_format }}
+{{ three | result_number_format }}
+{{ four | result_number_format }}
+--DATA--
+return [
+    'first' => '2000',
+    'second' => '2000.56',
+    'three' => '2000.54',
+    'four' => '200',
+]
+--EXPECT--
+2 000
+2 000.6
+2 000.5
+200

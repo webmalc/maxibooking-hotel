@@ -2,6 +2,7 @@
 namespace MBH\Bundle\BaseBundle\Twig;
 
 use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Service\CurrencySymbol;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\BillingBundle\Lib\Model\Country;
@@ -237,7 +238,7 @@ class Extension extends \Twig_Extension
 
     public function currencySymbolWithPrice(string $price, string $wrapperId = null, string $wrapperTag = 'span'): string
     {
-        return $this->container->get('mbh.currency')->symbolWithPrice($price, $wrapperId, $wrapperTag);
+        return $this->container->get(CurrencySymbol::class)->symbolWithPrice($price, $wrapperId, $wrapperTag);
     }
 
     public function resultNumberFormat(float $price): string
