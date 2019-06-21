@@ -4,6 +4,7 @@ services:
         arguments:
             - '@mbh_search.additional_days_generator'
             - '@mbh_search.data_holder'
+            - '@mbh_search.data.hotel_in_search_determiner'
 
     mbh_search.query_group_creator:
         class: MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupCreator
@@ -528,13 +529,22 @@ services:
 #            - [addClient, ['@mbh_search.price_cache_redis_cache']]
 #            - [addClient, ['@mbh_search.search_result_redis_cache']]
 
-##Fetchers
+    mbh_search.data.hotel_in_search_determiner:
+        class: MBH\Bundle\SearchBundle\Services\Data\HotelInSearchDeterminer
+        arguments:
+            - '@mbh_search.hotel_repository'
+            - '@mbh.hotel.selector'
+            - '@mbh_search.shared_data_fetcher'
+
+
+    ##Fetchers
     mbh_search.shared_data_fetcher:
         class: MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher
         arguments:
             - '@mbh_search.tariff_repository'
             - '@mbh_search.room_type_repository'
             - '@mbh_search.room_repository'
+            - '@mbh_search.hotel_repository'
 
 #Fetchers!
     mbh_search.data_manager:

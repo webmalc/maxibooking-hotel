@@ -6,6 +6,9 @@ namespace MBH\Bundle\SearchBundle\Services\Data;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Service\HotelSelector;
+use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\HotelRepository;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomRepository;
 use MBH\Bundle\HotelBundle\Document\RoomType;
@@ -34,22 +37,42 @@ class SharedDataFetcher implements SharedDataFetcherInterface
      * @var RoomRepository
      */
     private $roomRepository;
+    /**
+     * @var HotelRepository
+     */
+    private $hotelRepository;
+
+    /** @var HotelSelector */
+    private $hotelSelector;
 
     /**
      * SharedDataFetcher constructor.
      * @param TariffRepository $tariffRepository
      * @param RoomTypeRepository $roomTypeRepository
      * @param RoomRepository $roomRepository
+     * @param HotelRepository $hotelRepository
      */
     public function __construct(
         TariffRepository $tariffRepository,
         RoomTypeRepository $roomTypeRepository,
-        RoomRepository $roomRepository
+        RoomRepository $roomRepository,
+        HotelRepository $hotelRepository
     ) {
 
         $this->tariffRepository = $tariffRepository;
         $this->roomTypeRepository = $roomTypeRepository;
         $this->roomRepository = $roomRepository;
+        $this->hotelRepository = $hotelRepository;
+    }
+
+    /**
+     * @param string $hotelId
+     * @return Hotel
+     * @throws SharedFetcherException
+     */
+    public function getFetchedHotel(string $hotelId): Hotel
+    {
+        return $this->getObject($this->hotelRepository, $hotelId);
     }
 
     /**
@@ -72,6 +95,8 @@ class SharedDataFetcher implements SharedDataFetcherInterface
         return $this->getObject($this->roomTypeRepository, $roomTypeId);
     }
 
+
+
     /**
      * @param string $roomId
      * @return string
@@ -87,7 +112,7 @@ class SharedDataFetcher implements SharedDataFetcherInterface
     /**
      * @param ObjectRepository $repository
      * @param string $objectId
-     * @return RoomType|Tariff|Room
+     * @return RoomType|Tariff|Room|Hotel
      * @throws SharedFetcherException
      */
     private function getObject(ObjectRepository $repository, string $objectId)
@@ -117,4 +142,6 @@ class SharedDataFetcher implements SharedDataFetcherInterface
     }
 
     //** TODO: Реализовать методы для замены dataHolder который использует  только генератор searchQuery */
+
+
 }
