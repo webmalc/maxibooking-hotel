@@ -29,7 +29,7 @@ class SearchControllerTest extends SearchWebTestCase
         $response = $this->client->getResponse();
         $json = $response->getContent();
         if ($isResultExpected) {
-            $this->assertTrue($response->isSuccessful(), 'status code = '.$response->getStatusCode());
+            $this->assertTrue($response->isSuccessful(), 'status code = ' . $response->getStatusCode());
             $this->assertJson($json);
             $answer = json_decode($json, true);
             $this->assertCount($grouping ? 6 : 8, $answer['results']['success']);
@@ -71,7 +71,7 @@ class SearchControllerTest extends SearchWebTestCase
         $response = $this->client->getResponse();
         $json = $response->getContent();
         if ($result) {
-            $this->assertTrue($response->isSuccessful());
+            $this->assertTrue($response->isSuccessful(), 'status code = ' . $response->getStatusCode());
             $this->assertJson($json);
             $answer = json_decode($json, true);
             $this->assertArrayHasKey('conditionsId', $answer);
@@ -115,15 +115,11 @@ class SearchControllerTest extends SearchWebTestCase
             sleep(1);
             $this->client->request(
                 'GET',
-                '/search/async/results/' . $conditionsId.'/roomType',
-                [],
-                [],
-                [],
-                null
+                '/search/async/results/' . $conditionsId . '/roomType'
             );
             $response = $this->client->getResponse();
             $count++;
-        } while (204 !== $response->getStatusCode() && $count < 5);
+        } while (204 !== $response->getStatusCode() && $count < 10);
 
         $this->assertEquals(204, $response->getStatusCode());
     }

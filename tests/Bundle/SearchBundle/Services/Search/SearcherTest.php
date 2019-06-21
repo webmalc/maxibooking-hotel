@@ -45,6 +45,19 @@ class SearcherTest extends SearchWebTestCase
 
     public function dataProvider(): iterable
     {
+        $mockResults1 = [];
+        $mockResults1 = array_merge($mockResults1, $this->resultGenerate(1, 'ok'));
+        $mockResults1 = array_merge($mockResults1, $this->resultGenerate(3, 'error'));
+        $mockResults1 = array_merge($mockResults1, $this->resultGenerate(1, null));
+
+
+        $mockResults2 = [];
+        $mockResults2 = array_merge($mockResults2, $this->resultGenerate(6, 'ok'));
+        $mockResults2 = array_merge($mockResults2, $this->resultGenerate(30, 'error'));
+        $mockResults2 = array_merge($mockResults2, $this->resultGenerate(4, null));
+
+
+
         yield [
             [
                 'conditions' => [
@@ -61,11 +74,13 @@ class SearcherTest extends SearchWebTestCase
                 ],
                 'expected' => [
                     'resultsCount' => 5,
+                    'resultsNull' => 1,
                     'totalPrice' => 4400,
                     'okResult' => 1,
                     'errorResult' => 4
 
-                ]
+                ],
+                'mockResults' => $mockResults1
 
             ]
         ];
@@ -86,15 +101,33 @@ class SearcherTest extends SearchWebTestCase
                 ],
                 'expected' => [
                     'resultsCount' => 40,
+                    'resultsNull' => 4,
                     'totalPrice' => 4400,
                     'okResult' => 6,
                     'errorResult' => 34
 
-                ]
+                ],
+                'mockResults' => $mockResults2
 
             ]
         ];
     }
+
+    private function resultGenerate(int $amount, ?string $status): array
+    {
+        $result = [];
+        for ($i = 1; $i <= $amount; $i++ ) {
+            if (null === $status) {
+                $result[] = null;
+            } else {
+                $result[] = (new Result())->setStatus($status);
+            }
+
+        }
+
+        return $result;
+    }
+
 
 
 }
