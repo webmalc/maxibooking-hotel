@@ -6,7 +6,6 @@ namespace MBH\Bundle\SearchBundle\Services\Data;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use MBH\Bundle\BaseBundle\Document\Base;
-use MBH\Bundle\BaseBundle\Service\HotelSelector;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\HotelRepository;
 use MBH\Bundle\HotelBundle\Document\Room;
@@ -41,9 +40,6 @@ class SharedDataFetcher implements SharedDataFetcherInterface
      * @var HotelRepository
      */
     private $hotelRepository;
-
-    /** @var HotelSelector */
-    private $hotelSelector;
 
     /**
      * SharedDataFetcher constructor.
