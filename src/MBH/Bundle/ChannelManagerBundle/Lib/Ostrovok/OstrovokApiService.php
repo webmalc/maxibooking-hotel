@@ -120,7 +120,7 @@ class OstrovokApiService
         $data['sign'] = $this->getSignature($data, $this->private_token);
 
         $this->log->addInfo(
-            'Ostrovok callGet request uri: ' . self::API_URL . $api_method . '; data: '. json_encode(['query' => $data])
+            'Ostrovok callGet request uri: ' . self::API_URL . $api_method . '; data: '. json_encode(['query' => $data], JSON_UNESCAPED_UNICODE)
         );
         try {
             $response = $this->client->request(
@@ -134,8 +134,6 @@ class OstrovokApiService
         }
 
         $responseData = $response->getBody()->getContents();
-
-        $this->log->addInfo('Ostrovok callGet response data: '. $responseData .'');
 
         $response = json_decode($responseData, true);
         $this->checkErrors($response);
