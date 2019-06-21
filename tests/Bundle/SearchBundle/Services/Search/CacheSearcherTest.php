@@ -17,16 +17,10 @@ class CacheSearcherTest extends SearcherTest
         $searchQueries = $this->createSearchQueries($data['conditions']);
         $searchCache = $this->createMock(SearchCacheInterface::class);
         $searchCache
-            ->expects($this->exactly(5))->method('searchInCache')
-            ->willReturn(
-                (new Result())->setStatus('ok'),
-                (new Result())->setStatus('error'),
-                null,
-                (new Result())->setStatus('error'),
-                (new Result())->setStatus('error')
-            );
+            ->expects($this->exactly($data['expected']['resultsCount']))->method('searchInCache')
+            ->willReturn(...$data['mockResults']);
 
-        $searchCache->expects($this->exactly(1))->method('saveToCache')->willReturnCallback(function ($expectedResult) {
+        $searchCache->expects($this->exactly($data['expected']['resultsNull']))->method('saveToCache')->willReturnCallback(function ($expectedResult) {
             $this->assertInstanceOf(Result::class, $expectedResult);
         });
 
@@ -39,23 +33,23 @@ class CacheSearcherTest extends SearcherTest
             $actual[] = $searcher->search($searchQuery);
         }
 
-        $this->assertCount(5, $actual);
+        $this->assertCount($data['expected']['resultsCount'], $actual);
         foreach ($actual as $result) {
             $this->assertInstanceOf(Result::class, $result);
         }
 
-        $actualResults = array_filter($actual, function ($result) {
+        $actualResults = array_filter($actual, static function ($result) {
             /** @var Result $result */
             return $result->getStatus() === 'ok';
         });
 
-        $actualErrors = array_filter($actual, function ($result) {
+        $actualErrors = array_filter($actual, static function ($result) {
             /** @var Result $result */
             return $result->getStatus() === 'error';
         });
 
-        $this->assertCount(1, $actualResults);
-        $this->assertCount(4, $actualErrors);
+        $this->assertCount($data['expected']['okResult'], $actualResults);
+        $this->assertCount($data['expected']['errorResult'], $actualErrors);
     }
 
     /** @dataProvider dataProvider */
@@ -63,12 +57,12 @@ class CacheSearcherTest extends SearcherTest
     {
         $searchQueries = $this->createSearchQueries($data['conditions']);
         $searchCache = $this->createMock(SearchCacheInterface::class);
-        $searchCache->expects($this->exactly(5))->method('searchInCache')->willReturnCallback(function ($expectedSearchQuery) {
+        $searchCache->expects($this->exactly($data['expected']['resultsCount']))->method('searchInCache')->willReturnCallback(function ($expectedSearchQuery) {
             $this->assertInstanceOf(SearchQuery::class, $expectedSearchQuery);
 
             return null;
         });
-        $searchCache->expects($this->exactly(5))->method('saveToCache')->willReturnCallback(function ($expectedResult) {
+        $searchCache->expects($this->exactly($data['expected']['resultsCount']))->method('saveToCache')->willReturnCallback(function ($expectedResult) {
             $this->assertInstanceOf(Result::class, $expectedResult);
         });
 
@@ -81,23 +75,23 @@ class CacheSearcherTest extends SearcherTest
             $actual[] = $searcher->search($searchQuery);
         }
 
-        $this->assertCount(5, $actual);
+        $this->assertCount($data['expected']['resultsCount'], $actual);
         foreach ($actual as $result) {
             $this->assertInstanceOf(Result::class, $result);
         }
 
-        $actualResults = array_filter($actual, function ($result) {
+        $actualResults = array_filter($actual, static function ($result) {
             /** @var Result $result */
             return $result->getStatus() === 'ok';
         });
 
-        $actualErrors = array_filter($actual, function ($result) {
+        $actualErrors = array_filter($actual, static function ($result) {
             /** @var Result $result */
             return $result->getStatus() === 'error';
         });
 
-        $this->assertCount(1, $actualResults);
-        $this->assertCount(4, $actualErrors);
+        $this->assertCount($data['expected']['okResult'], $actualResults);
+        $this->assertCount($data['expected']['errorResult'], $actualErrors);
     }
 
 }
