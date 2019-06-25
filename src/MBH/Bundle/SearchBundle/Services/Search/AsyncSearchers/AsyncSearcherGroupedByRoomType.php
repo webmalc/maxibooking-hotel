@@ -88,7 +88,7 @@ class AsyncSearcherGroupedByRoomType implements AsyncSearcherInterface
             throw new ConsumerSearchException('Error! Can not find SearchConditions for search in consumerSearch');
         }
 
-        if (!$this->decisionMaker->isNeedSearch($conditions, $searchQueryGroup)) {
+        if (false && !$this->decisionMaker->isNeedSearch($conditions, $searchQueryGroup)) {
             $this->asyncResultStore->addFakeReceivedCount($conditions->getSearchHash(), $searchQueryGroup->countQueries());
         } else {
             $searcher = $this->searcherFactory->getSearcher($conditions->isUseCache());

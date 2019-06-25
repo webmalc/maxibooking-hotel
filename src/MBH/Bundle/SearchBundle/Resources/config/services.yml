@@ -236,13 +236,12 @@ services:
         class: MBH\Bundle\SearchBundle\RabbitMQ\AsyncSearchConsumer
         calls:
             - [addSearcher, ['queryGroupByRoomType', '@mbh_search.async_searcher_grouped_by_room_type']]
-        arguments:
-          ['@mbh_search.data_fetch.logger']
 
     mbh_search.batch_asycn_search:
         class: MBH\Bundle\SearchBundle\RabbitMQ\AsyncSearchBatchConsumer
         arguments:
             - '@mbh_search.async_searcher_grouped_by_room_type'
+            - '@mbh_search.consumer.logger'
 
     mbh_search.warm_up_search:
         class: MBH\Bundle\SearchBundle\RabbitMQ\WarmUpConsumer
@@ -763,17 +762,16 @@ services:
             - [pushHandler, ['@mbh_search.save_cache_logger_handler']]
 
 
-    mbh_search.data_fetch_logger_handler:
+    mbh_search.consumer_logger_handler:
         class: Monolog\Handler\StreamHandler
-        arguments: ["%kernel.logs_dir%/%kernel.environment%.data.fetch.log", '%data_fetch_log_level%']
+        arguments: ["%kernel.logs_dir%/%kernel.environment%.consumer.log", 100 ]
         public: false
 
-    mbh_search.data_fetch.logger:
+    mbh_search.consumer.logger:
         class: Monolog\Logger
         arguments: ['data_fetch']
         calls:
-            - [pushHandler, ['@mbh_search.data_fetch_logger_handler']]
-
+            - [pushHandler, ['@mbh_search.consumer_logger_handler']]
 
     mbh_search.compare_logger_handler:
         class: Monolog\Handler\StreamHandler
