@@ -73,12 +73,12 @@
                 {% if is_russian_client() %}
                     <li>
                         <button type="button" data-system="kontur" class="btn btn-warning navbar-btn fms-export-button"><i
-                                    class="fa fa-upload" aria-hidden="true"></i>&nbsp;Контур ФМС
+                                    class="fa fa-upload" aria-hidden="true"></i>&nbsp;{{ 'mbhpackagebundle.view.tourist.buttons.kontur_fms'|trans }}
                         </button>
                     </li>
                     <li>
                         <button type="button" data-system="sbis" class="btn btn-warning navbar-btn fms-export-button {{ not hasMyOrganization ? 'disabled'}}"  {{ hasMyOrganization ? '' : 'data-toggle="tooltip" title="Для выгрузки необходимо заполнить данные об огранизации"' }}>
-                            <i class="fa fa-upload" aria-hidden="true"></i>&nbsp;СБИС ФМС
+                            <i class="fa fa-upload" aria-hidden="true"></i>&nbsp;{{ 'mbhpackagebundle.view.tourist.buttons.sbis_fms'|trans }}
                         </button>
                     </li>
                 {% endif %}
@@ -95,10 +95,10 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        <h4 class="modal-title">Подтверждение выгрузки</h4>
+                        <h4 class="modal-title">{{ 'mbhpackagebundle.view.tourist.buttons.fms.confirmation'|trans }}</h4>
                     </div>
                     <div class="modal-body" id="fms-export-confirmation">
-                        Количество выгружаемых в ФМС туристов слишком большое.
+                        {{ 'mbhpackagebundle.view.tourist.buttons.fms.confirmation.text'|trans }}.
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline pull-right" data-dismiss="modal"><i
