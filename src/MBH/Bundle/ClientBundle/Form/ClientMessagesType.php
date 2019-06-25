@@ -59,13 +59,9 @@ class ClientMessagesType extends AbstractType
                     'query_builder' => function (DocumentRepository $repository) {
                         return $repository
                             ->createQueryBuilder()
-                            ->field('owner')
-                            ->in(
-                                [
-                                    NotificationType::OWNER_CLIENT,
-                                    NotificationType::OWNER_ALL,
-                                ]
-                            );
+                            ->addOr($repository->createQueryBuilder()->expr()->field('owner')->in([NotificationType::OWNER_CLIENT, NotificationType::OWNER_ALL,]))
+                            ->addOr($repository->createQueryBuilder()->expr()->field('type')->equals('channel_manager_order'))
+                            ;
                     },
                     'choice_label' => function (NotificationType $type) {
                         return 'notifier.config.label.' . $type->getType();

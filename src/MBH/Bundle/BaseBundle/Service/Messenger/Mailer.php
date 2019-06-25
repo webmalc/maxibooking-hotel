@@ -169,6 +169,7 @@ class Mailer implements \SplObserver, MailerInterface
                 'In ' . __FUNCTION__ . '. Trying to send email to following recipients: ' . $recipientsStr . '' . PHP_EOL
             );
         } elseif (!$this->canISentToClient($data['messageType'])) {
+            $recipients = [];
             $this->logger->alert("There is no recipient client according mailer restrictions");
         }
 
