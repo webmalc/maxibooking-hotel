@@ -13,18 +13,13 @@ class TemplatePricesGenerator
     /**@var DocumentManager */
     private $dm;
 
-    /**@var ContainerInterface */
-    private $container;
-
     /**
      * TemplatePricesGenerator constructor.
      * @param DocumentManager $dm
-     * @param ContainerInterface $container
      */
-    public function __construct(DocumentManager $dm, ContainerInterface $container)
+    public function __construct(DocumentManager $dm)
     {
         $this->dm = $dm;
-        $this->container = $container;
     }
 
     /**
@@ -41,7 +36,7 @@ class TemplatePricesGenerator
         $price = 0;
         /** @var CashDocument $cacheDocument */
         foreach ($cacheDocuments as $cacheDocument) {
-            if (in_array($cacheDocument->getMethod(), $methods)) {
+            if (in_array($cacheDocument->getMethod(), $methods, true)) {
                 $price += $cacheDocument->getTotal();
             }
         }

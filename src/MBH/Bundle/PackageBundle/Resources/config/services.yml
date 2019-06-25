@@ -262,3 +262,8 @@ services:
     mbh.template_prices_generator:
         class: MBH\Bundle\PackageBundle\Services\TemplatePricesGenerator
         arguments: ['@doctrine.odm.mongodb.document_manager', '@service_container']
+
+    mbh.tourist_filter_form:
+        class: MBH\Bundle\PackageBundle\Form\TouristFilterForm
+        arguments: ['@translator']
+        tags: [form.type]
