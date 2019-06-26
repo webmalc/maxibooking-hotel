@@ -32,6 +32,7 @@ class MailerCommand extends ContainerAwareCommand
         $helper = $this->getContainer()->get('mbh.helper');
         $notifier = $this->getContainer()->get('mbh.notifier.mailer');
         $router = $this->getContainer()->get('router');
+        $clientConfig = $this->getContainer()->get('mbh.client_config_manager')->fetchConfig();
 
         if (!$this->dm->getFilterCollection()->isEnabled('softdeleteable')) {
             $this->dm->getFilterCollection()->enable('softdeleteable');
@@ -101,7 +102,9 @@ class MailerCommand extends ContainerAwareCommand
         }
 
         //begin tomorrow users
-        if (count($packages)) {
+        if (count($packages)
+            && $clientConfig->isNotificationTypeExists(NotificationType::ARRIVAL_TYPE)
+        ) {
             foreach ($packages as $package) {
                 $payer = $package->getOrder()->getPayer();
                 if (!$payer || !$payer->getEmail()) {
@@ -143,8 +146,10 @@ class MailerCommand extends ContainerAwareCommand
             ->field('end')->lt($now)
             ->getQuery()
             ->execute();
-        ;
-        if (count($packages)) {
+
+        if (count($packages)
+            && $clientConfig->isNotificationTypeExists(NotificationType::FEEDBACK_TYPE)
+        ) {
             /** @var Package $package */
             foreach ($packages as $package) {
                 $order = $package->getOrder();
