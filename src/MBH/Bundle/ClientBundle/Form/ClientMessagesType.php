@@ -56,17 +56,23 @@ class ClientMessagesType extends AbstractType
                     'required' => false,
                     'multiple' => true,
                     'class' => NotificationType::class,
-                    'query_builder' => function (DocumentRepository $repository) {
-                        return $repository
-                            ->createQueryBuilder()
-                            ->addOr($repository->createQueryBuilder()->expr()->field('owner')->in([NotificationType::OWNER_CLIENT, NotificationType::OWNER_ALL,]))
-                            ->addOr($repository->createQueryBuilder()->expr()->field('type')->equals('channel_manager_order'))
-                            ;
+                    'query_builder' => static function (DocumentRepository $repository) {
+                        $qb = $repository->createQueryBuilder();
+
+                        return $qb
+                            ->addOr(
+                                $qb->expr()->field('owner')
+                                    ->in([NotificationType::OWNER_CLIENT, NotificationType::OWNER_ALL,])
+                            )
+                            ->addOr(
+                                $qb->expr()->field('type')
+                                    ->equals(NotificationType::CHANNEL_MANAGER_TYPE)
+                            );
                     },
-                    'choice_label' => function (NotificationType $type) {
+                    'choice_label' => static function (NotificationType $type) {
                         return 'notifier.config.label.' . $type->getType();
                     },
-                    'choice_attr' => function (NotificationType $type) {
+                    'choice_attr' => static function (NotificationType $type) {
                         return ['title' => 'notifier.config.title.' . $type->getType()];
                     },
                     'choice_translation_domain' => true
