@@ -15,6 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Twig\Error\RuntimeError;
 
 /**
  * Mailer service
@@ -152,7 +153,7 @@ class Mailer implements \SplObserver, MailerInterface
      * @return bool
      * @throws \Exception
      */
-    public function send(array $recipients, array $data, $template = null)
+    public function send(array $recipients, array $data, $template = null): bool
     {
         if (empty($recipients)) {
             $recipients = $this->getSystemRecipients(
@@ -169,11 +170,12 @@ class Mailer implements \SplObserver, MailerInterface
                 'In ' . __FUNCTION__ . '. Trying to send email to following recipients: ' . $recipientsStr . '' . PHP_EOL
             );
         } elseif (!$this->canISentToClient($data['messageType'])) {
-            $recipients = [];
             $this->logger->alert("There is no recipient client according mailer restrictions");
+
+            return true;
         }
 
-        (empty($data['subject'])) ? $data['subject'] = $this->params['subject'] : $data['subject'];
+        empty($data['subject']) ? $data['subject'] = $this->params['subject'] : $data['subject'];
         $message = new \Swift_Message();
         $template = $template ?: $this->params['template'];
 
@@ -203,7 +205,7 @@ class Mailer implements \SplObserver, MailerInterface
                 $transParams['%hotel%'] = $hotel->getName();
             }
 
-            if ($recipient->getCommunicationLanguage() && $recipient->getCommunicationLanguage() != $this->locale) {
+            if ($recipient->getCommunicationLanguage() && $recipient->getCommunicationLanguage() !== $this->locale) {
                 $translator->setLocale($recipient->getCommunicationLanguage());
                 $data['isSomeLanguage'] = false;
                 /** @var Hotel $hotel */
@@ -220,7 +222,7 @@ class Mailer implements \SplObserver, MailerInterface
             $data['transParams'] = array_merge($transParams, $data['transParams']);
             try {
                 $body = $this->twig->render($template, $data);
-            } catch (\Twig_Error_Runtime $e) {
+            } catch (RuntimeError $e) {
                 throw new MailerNotificationException("Can not render twig! ".$e->getMessage());
             }
 
@@ -281,7 +283,8 @@ class Mailer implements \SplObserver, MailerInterface
         }
 
         if (!count($recipients)) {
-            if (in_array($messageType, NotificationTypeData::getStuffOwnerTypes()) || in_array($messageType, NotificationTypeData::getErrorOwnerTypes())) {
+            if (in_array($messageType, NotificationTypeData::getStuffOwnerTypes(), true)
+                || in_array($messageType, NotificationTypeData::getErrorOwnerTypes(), true)) {
                 $recipients = [$this->dm->getRepository('MBHUserBundle:User')->findOneBy(['username' => 'mb'])];
             } else {
                 $error = 'Failed to send email. There is not a single recipient. Message type: '. $messageType .' ';
@@ -298,12 +301,14 @@ class Mailer implements \SplObserver, MailerInterface
      * @param $template
      * @return mixed
      * @throws MailerNotificationException
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\SyntaxError
      */
     public function addImages($data, \Swift_Message $message, $template)
     {
         try {
             $renderedTemplate = $this->twig->render($template, $data);
-        } catch (\Twig_Error_Runtime $e) {
+        } catch (RuntimeError $e) {
             throw new MailerNotificationException("Fail to render Twig in addImages method.".$e->getMessage());
         }
         $crawler = new Crawler($renderedTemplate);
@@ -347,8 +352,8 @@ class Mailer implements \SplObserver, MailerInterface
 
     /**
      * Send an email to a user to confirm the password reset.
-     *
      * @param UserInterface $user
+     * @throws \Exception
      */
     public function sendResettingEmailMessage(UserInterface $user)
     {
@@ -387,7 +392,7 @@ class Mailer implements \SplObserver, MailerInterface
     private function canISentToClient(string $notificationType): bool
     {
         $result = true;
-        if (in_array($notificationType, NotificationType::getSystemNotificationTypes())) {
+        if (in_array($notificationType, NotificationType::getSystemNotificationTypes(), true)) {
             return true;
         }
         /** @var ClientConfig $clientConfig */
@@ -410,7 +415,7 @@ class Mailer implements \SplObserver, MailerInterface
             $notifierErrorCounter = $this->dm
                 ->getRepository('MBHBaseBundle:NotifierErrorCounter')
                 ->findOneBy(['notificationId' => $message->getMessageIdentifier()]);
-            if (is_null($notifierErrorCounter)) {
+            if ($notifierErrorCounter === null) {
                 $notifierErrorCounter = (new NotifierErrorCounter())->setNotificationId($message->getMessageIdentifier());
                 $this->dm->persist($notifierErrorCounter);
             }
