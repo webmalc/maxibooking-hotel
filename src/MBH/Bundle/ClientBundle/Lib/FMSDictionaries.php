@@ -3,7 +3,7 @@
 namespace MBH\Bundle\ClientBundle\Lib;
 
 use MBH\Bundle\BaseBundle\Service\CsvReader;
-use Symfony\Component\Translation\DataCollectorTranslator;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class FMSDictionaries
 {
@@ -13,10 +13,10 @@ class FMSDictionaries
     /** @var  CsvReader */
     private $csvReader;
 
-    /** @var DataCollectorTranslator */
+    /** @var TranslatorInterface */
     private $translator;
 
-    public function __construct(CsvReader $csvReader, DataCollectorTranslator $translator) {
+    public function __construct(CsvReader $csvReader, TranslatorInterface $translator) {
         $this->csvReader = $csvReader;
         $this->translator = $translator;
     }

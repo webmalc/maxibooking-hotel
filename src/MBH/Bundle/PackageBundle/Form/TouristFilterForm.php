@@ -12,14 +12,14 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Translation\DataCollectorTranslator;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class TouristFilterForm extends AbstractType
 {
-    /** @var DataCollectorTranslator */
+    /** @var TranslatorInterface */
     protected $trans;
 
-    public function __construct(DataCollectorTranslator $trans)
+    public function __construct(TranslatorInterface $trans)
     {
         $this->trans = $trans;
     }
