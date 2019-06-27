@@ -2,7 +2,7 @@
 
 namespace MBH\Bundle\VegaBundle\Service;
 
-use Symfony\Component\Translation\DataCollectorTranslator;
+use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -14,10 +14,10 @@ class DictionaryProvider
 {
     private $cache;
 
-    /** @var DataCollectorTranslator */
+    /** @var TranslatorInterface */
     private $translator;
 
-    public function __construct(DataCollectorTranslator $translator)
+    public function __construct(TranslatorInterface $translator)
     {
         $this->translator = $translator;
     }
