@@ -43,4 +43,29 @@ class TemplatePricesGenerator
 
         return $price === 0 ? null : $price;
     }
+
+    /**
+     * @param Order $order
+     * @return float|null
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function getPrepayment(Order $order): ?float
+    {
+        $cacheDocuments = $this->dm->getRepository(CashDocument::class)
+            ->createQueryBuilder()
+            ->field('order.id')->equals($order->getId())
+            ->field('isPaid')->equals(true)
+            ->field('paidDate')->exists(true)
+            ->sort('paidDate', 'asc')
+            ->hydrate(false)
+            ->getQuery()
+            ->execute()
+            ->toArray();
+
+        if (\count($cacheDocuments) > 1) {
+            return array_shift($cacheDocuments)['total'];
+        }
+
+        return null;
+    }
 }
