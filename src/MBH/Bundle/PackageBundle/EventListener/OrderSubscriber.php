@@ -128,7 +128,6 @@ class OrderSubscriber implements EventSubscriber
         $this->translator = $this->container->get('translator');
         $dm = $args->getDocumentManager();
         $uow = $dm->getUnitOfWork();
-        $clientConfig = $this->container->get('mbh.client_config_manager')->fetchConfig();
 
         $entities = array_merge(
             $uow->getScheduledDocumentUpdates()
@@ -137,7 +136,7 @@ class OrderSubscriber implements EventSubscriber
         foreach ($entities as $entity) {
 
             if ($entity instanceof Order) {
-
+                $clientConfig = $this->container->get('mbh.client_config_manager')->fetchConfig();
                 //send emails to payer
                 if (isset($uow->getDocumentChangeSet($entity)['confirmed'])
                     && $entity->getConfirmed()
