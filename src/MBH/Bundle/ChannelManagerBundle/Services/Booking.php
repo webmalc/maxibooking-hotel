@@ -368,7 +368,7 @@ class Booking extends Base
                             $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
                                 'price' => $this->currencyConvertFromRub($config, $calculator->getPriceWithTariffPromotionDiscount($info->getPrice(), $info->getTariff())),
                                 'price1' => $price1,
-                                'closed' => false
+                                'closed' => (!$info->getIsEnabled() || $info->getCancelDate() === null) ? true : false
                             ];
                         } else {
                             $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
