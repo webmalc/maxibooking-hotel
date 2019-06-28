@@ -286,7 +286,7 @@ class Booking extends Base
                 ]
             );
 
-            $this->log(sprintf('send request: %s', $request));
+            $this->log(sprintf('updateRooms send request: %s', $request));
 
             $sendResult = $this->send(static::BASE_URL.'availability', $request, null, true);
 
@@ -396,7 +396,7 @@ class Booking extends Base
                 ]
             );
 
-            $this->log(sprintf('send request: %s', $request));
+            $this->log(sprintf('updatePrices send request: %s', $request));
 
             $sendResult = $this->send(static::BASE_URL.'availability', $request, null, true);
 
@@ -518,7 +518,7 @@ class Booking extends Base
                 ]
             );
 
-            $this->log(sprintf('send request: %s', $request));
+            $this->log(sprintf('updateRestrictions send request: %s', $request));
 
             $sendResult = $this->send(static::BASE_URL.'availability', $request, null, true);
 
