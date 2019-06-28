@@ -14,8 +14,8 @@ use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 
 class OstrovokExtendedTest extends ChannelManagerServiceTestCase
 {
-    const OST_HOTEL_ID1 = 101;
-    const OST_HOTEL_ID2 = 202;
+    protected const OST_HOTEL_ID1 = 101;
+    protected const OST_HOTEL_ID2 = 202;
 
     /**@var ContainerInterface */
     private $container;
@@ -58,7 +58,7 @@ class OstrovokExtendedTest extends ChannelManagerServiceTestCase
         return new OstrovokConfig();
     }
 
-    protected function initConfig($isDefault)
+    protected function initConfig($isDefault): void
     {
         $hotelId = $isDefault
             ? $this->getServiceHotelIdByIsDefault(true)
@@ -114,7 +114,7 @@ class OstrovokExtendedTest extends ChannelManagerServiceTestCase
         return $isDefault ? [257008, 261630] : [296710, 296715];
     }
 
-    protected function mockApiBrowser()
+    protected function mockApiBrowser($flag): void
     {
         $mock = \Mockery::mock(OstrovokApiService::class)->makePartial();
 
@@ -157,23 +157,96 @@ class OstrovokExtendedTest extends ChannelManagerServiceTestCase
             return $rate_plans;
         });
 
-        $mock->shouldReceive("updateRNA")->andReturnUsing(function (...$data) {
-            $this->assertEquals((array)json_decode($this->getRequestData(), true), $data[0]);
+        $mock->shouldReceive('updateRNA')->andReturnUsing(function (...$data) use ($flag) {
+            switch ($flag) {
+                case 0:
+                    $this->assertEquals((array)json_decode($this->getRequestData(), true), $data[0]);
+                    break;
+                case 1:
+                    $this->assertEquals((array)json_decode($this->getRatePlansPutData(), true), $data[0]);
+                    break;
+            }
 
             return [];
+        });
+
+        $callableRatePlanData = $this->getUpdateRatePlansPutRequest();
+
+        $mock->shouldReceive('updateRatePlan')->andReturnUsing(function (...$data) use ($callableRatePlanData) {
+            $this->assertEquals((array)json_decode($callableRatePlanData(), true), $data);
         });
 
         $this->container->set('ostrovok_api_service', $mock);
     }
 
-    public function testUpdatePrices()
+    public function testUpdatePrices(): void
     {
-        $this->mockApiBrowser();
+        $this->mockApiBrowser(0);
         $ost = new Ostrovok($this->container);
         $ost->updatePrices($this->startDate, $this->endDate);
     }
 
-    protected function getRequestData()
+    public function testUpdateRestrictions(): void
+    {
+        $this->mockApiBrowser(1);
+        $ost = new Ostrovok($this->container);
+        $ost->updateRestrictions($this->startDate, $this->endDate);
+    }
+
+    protected function getUpdateRatePlansPutRequest(): callable
+    {
+        $num = -1;
+
+        $arr = [
+            '[629788,' . self::OST_HOTEL_ID1 . ',257008,{"advance":null,"last_minute":null,"free_nights":null,"discount":null,
+            "discount_unit":null,"meal_plan":null,"meal_plan_cost":null,"meal_plan_available":false,
+            "meal_plan_included":null,"cancellation_available":true,"cancellation_lead_time":480,
+            "cancellation_penalty_nights":null,"deposit_available":true,"deposit_returnable":true,
+            "deposit_rate":50,"deposit_unit":1,"no_show_rate":50,"no_show_unit":1,"plan_date_start_at":null,
+            "plan_date_end_at":null,"booking_date_start_at":null,"booking_date_end_at":null,"min_stay_arrival":null,
+            "max_stay_arrival":null,"min_stay_through":3,"max_stay_through":null,"status":"P",
+            "name":"\u0421\u0442\u0430\u043d\u0434\u0430\u0440\u0442\u043d\u044b\u0439 \u0442\u0430\u0440\u0438\u0444",
+            "description":"","external_id":null,"id":629788,"room_category":257008,"hotel":271728830}]'
+            ,
+            '[647512,' . self::OST_HOTEL_ID1 . ',261630,{"advance":null,"last_minute":null,"free_nights":null,"discount":null,
+            "discount_unit":null,"meal_plan":null,"meal_plan_cost":null,"meal_plan_available":false,
+            "meal_plan_included":null,"cancellation_available":true,"cancellation_lead_time":480,
+            "cancellation_penalty_nights":null,"deposit_available":false,"deposit_returnable":true,
+            "deposit_rate":50,"deposit_unit":1,"no_show_rate":50,"no_show_unit":1,"plan_date_start_at":null,
+            "plan_date_end_at":null,"booking_date_start_at":null,"booking_date_end_at":null,"min_stay_arrival":null,
+            "max_stay_arrival":null,"min_stay_through":3,"max_stay_through":null,"status":"P",
+            "name":"\u0421\u0442\u0430\u043d\u0434\u0430\u0440\u0442\u043d\u044b\u0439 \u0442\u0430\u0440\u0438\u0444",
+            "description":"","external_id":null,"id":647512,"room_category":261630,"hotel":271728830}]'
+            ,
+            '[790780,' . self::OST_HOTEL_ID2 . ',296710,{"advance":null,"last_minute":null,"free_nights":null,"discount":null,
+            "discount_unit":null,"meal_plan":null,"meal_plan_cost":null,"meal_plan_available":false,
+            "meal_plan_included":null,"cancellation_available":true,"cancellation_lead_time":24,
+            "cancellation_penalty_nights":1,"deposit_available":true,"deposit_returnable":true,
+            "deposit_rate":15,"deposit_unit":1,"no_show_rate":1,"no_show_unit":3,"plan_date_start_at":null,
+            "plan_date_end_at":null,"booking_date_start_at":null,"booking_date_end_at":null,"min_stay_arrival":null,
+            "max_stay_arrival":null,"min_stay_through":null,"max_stay_through":null,"status":"P",
+            "name":"\u0421\u0442\u0430\u043d\u0434\u0430\u0440\u0442\u043d\u044b\u0439 \u0442\u0430\u0440\u0438\u0444",
+            "description":"","external_id":null,"id":790780,"room_category":296710,"hotel":380171626}]'
+            ,
+            '[790798,' . self::OST_HOTEL_ID2 . ',296715,{"advance":null,"last_minute":null,"free_nights":null,"discount":null,
+            "discount_unit":null,"meal_plan":null,"meal_plan_cost":null,"meal_plan_available":false,
+            "meal_plan_included":null,"cancellation_available":true,"cancellation_lead_time":24,
+            "cancellation_penalty_nights":1,"deposit_available":true,"deposit_returnable":true,"deposit_rate":15,
+            "deposit_unit":1,"no_show_rate":1,"no_show_unit":3,"plan_date_start_at":null,"plan_date_end_at":null,
+            "booking_date_start_at":null,"booking_date_end_at":null,"min_stay_arrival":null,"max_stay_arrival":null,
+            "min_stay_through":null,"max_stay_through":null,"status":"P",
+            "name":"\u0421\u0442\u0430\u043d\u0434\u0430\u0440\u0442\u043d\u044b\u0439 \u0442\u0430\u0440\u0438\u0444",
+            "description":"","external_id":null,"id":790798,"room_category":296715,"hotel":380171626}]'
+        ];
+
+        return static function () use (&$num, $arr) {
+            $num++;
+
+            return $arr[$num];
+        };
+    }
+
+    protected function getRequestData(): string
     {
         $dateStart = $this->startDate->format('Y-m-d');
         $dateEnd = $this->endDate->format('Y-m-d');
@@ -181,7 +254,7 @@ class OstrovokExtendedTest extends ChannelManagerServiceTestCase
         return '{
                   "occupancies": [
                     {
-                      "hotel": 101,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
                       "price": 1200,
                       "occupancy": 668236,
                       "room_category": 257008,
@@ -191,7 +264,7 @@ class OstrovokExtendedTest extends ChannelManagerServiceTestCase
                       "format": "json"
                     },
                     {
-                      "hotel": 101,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
                       "price": 2100,
                       "occupancy": 668237,
                       "room_category": 257008,
@@ -201,7 +274,7 @@ class OstrovokExtendedTest extends ChannelManagerServiceTestCase
                       "format": "json"
                     },
                     {
-                      "hotel": 101,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
                       "price": 0,
                       "occupancy": 668238,
                       "room_category": 257008,
@@ -211,7 +284,7 @@ class OstrovokExtendedTest extends ChannelManagerServiceTestCase
                       "format": "json"
                     },
                     {
-                      "hotel": 101,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
                       "price": 0,
                       "occupancy": 668239,
                       "room_category": 257008,
@@ -221,7 +294,7 @@ class OstrovokExtendedTest extends ChannelManagerServiceTestCase
                       "format": "json"
                     },
                     {
-                      "hotel": 101,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
                       "price": 0,
                       "occupancy": 668240,
                       "room_category": 257008,
@@ -231,7 +304,7 @@ class OstrovokExtendedTest extends ChannelManagerServiceTestCase
                       "format": "json"
                     },
                     {
-                      "hotel": 101,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
                       "price": 0,
                       "occupancy": 668241,
                       "room_category": 257008,
@@ -241,7 +314,7 @@ class OstrovokExtendedTest extends ChannelManagerServiceTestCase
                       "format": "json"
                     },
                     {
-                      "hotel": 101,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
                       "price": 1500,
                       "occupancy": 681796,
                       "room_category": 261630,
@@ -251,7 +324,7 @@ class OstrovokExtendedTest extends ChannelManagerServiceTestCase
                       "format": "json"
                     },
                     {
-                      "hotel": 101,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
                       "price": 1500,
                       "occupancy": 681797,
                       "room_category": 261630,
@@ -261,7 +334,7 @@ class OstrovokExtendedTest extends ChannelManagerServiceTestCase
                       "format": "json"
                     },
                     {
-                      "hotel": 101,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
                       "price": 2500,
                       "occupancy": 681798,
                       "room_category": 261630,
@@ -271,7 +344,7 @@ class OstrovokExtendedTest extends ChannelManagerServiceTestCase
                       "format": "json"
                     },
                     {
-                      "hotel": 101,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
                       "price": 0,
                       "occupancy": 681799,
                       "room_category": 261630,
@@ -281,7 +354,7 @@ class OstrovokExtendedTest extends ChannelManagerServiceTestCase
                       "format": "json"
                     },
                     {
-                      "hotel": 202,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
                       "price": 1200,
                       "occupancy": 784372,
                       "room_category": 296710,
@@ -291,7 +364,7 @@ class OstrovokExtendedTest extends ChannelManagerServiceTestCase
                       "format": "json"
                     },
                     {
-                      "hotel": 202,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
                       "price": 2100,
                       "occupancy": 784373,
                       "room_category": 296710,
@@ -301,7 +374,7 @@ class OstrovokExtendedTest extends ChannelManagerServiceTestCase
                       "format": "json"
                     },
                     {
-                      "hotel": 202,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
                       "price": 0,
                       "occupancy": 784374,
                       "room_category": 296710,
@@ -311,7 +384,7 @@ class OstrovokExtendedTest extends ChannelManagerServiceTestCase
                       "format": "json"
                     },
                     {
-                      "hotel": 202,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
                       "price": 0,
                       "occupancy": 784375,
                       "room_category": 296710,
@@ -321,7 +394,7 @@ class OstrovokExtendedTest extends ChannelManagerServiceTestCase
                       "format": "json"
                     },
                     {
-                      "hotel": 202,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
                       "price": 1500,
                       "occupancy": 784384,
                       "room_category": 296715,
@@ -331,7 +404,7 @@ class OstrovokExtendedTest extends ChannelManagerServiceTestCase
                       "format": "json"
                     },
                     {
-                      "hotel": 202,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
                       "price": 1500,
                       "occupancy": 784385,
                       "room_category": 296715,
@@ -341,7 +414,7 @@ class OstrovokExtendedTest extends ChannelManagerServiceTestCase
                       "format": "json"
                     },
                     {
-                      "hotel": 202,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
                       "price": 2500,
                       "occupancy": 784386,
                       "room_category": 296715,
@@ -351,7 +424,7 @@ class OstrovokExtendedTest extends ChannelManagerServiceTestCase
                       "format": "json"
                     },
                     {
-                      "hotel": 202,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
                       "price": 0,
                       "occupancy": 784387,
                       "room_category": 296715,
@@ -361,7 +434,7 @@ class OstrovokExtendedTest extends ChannelManagerServiceTestCase
                       "format": "json"
                     },
                     {
-                      "hotel": 202,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
                       "price": 0,
                       "occupancy": 784388,
                       "room_category": 296715,
@@ -371,7 +444,7 @@ class OstrovokExtendedTest extends ChannelManagerServiceTestCase
                       "format": "json"
                     },
                     {
-                      "hotel": 202,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
                       "price": 0,
                       "occupancy": 784389,
                       "room_category": 296715,
@@ -384,7 +457,1123 @@ class OstrovokExtendedTest extends ChannelManagerServiceTestCase
                 }';
     }
 
-    protected function getRatePlans($isDefault)
+    protected function dateIncClosure(): callable
+    {
+        $date = (clone $this->startDate);
+
+        return static function() use (&$date) {
+            $date->modify('+1 day');
+
+            return $date->format('Y-m-d');
+        };
+    }
+
+    protected function getRatePlansPutData(): string
+    {
+        $dateStart = $this->startDate->format('Y-m-d');
+        $dateEnd = $this->endDate->format('Y-m-d');
+
+        $date1 = $this->dateIncClosure();
+        $date2 = $this->dateIncClosure();
+        $date3 = $this->dateIncClosure();
+        $date4 = $this->dateIncClosure();
+
+        return '{
+                  "rate_plans": [
+                    { 
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "' . $dateStart . '",
+                      "plan_date_end_at": "' . $dateEnd . '",
+                      "room_category": 257008,
+                      "rate_plan": 629788,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": null,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "' . $dateStart . '",
+                      "plan_date_end_at": "' . $dateStart . '",
+                      "room_category": 261630,
+                      "rate_plan": 647512,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date1().'",
+                      "plan_date_end_at": "'.$date2().'",
+                      "room_category": 261630,
+                      "rate_plan": 647512,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date1().'",
+                      "plan_date_end_at": "'.$date2().'",
+                      "room_category": 261630,
+                      "rate_plan": 647512,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date1().'",
+                      "plan_date_end_at": "'.$date2().'",
+                      "room_category": 261630,
+                      "rate_plan": 647512,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date1().'",
+                      "plan_date_end_at": "'.$date2().'",
+                      "room_category": 261630,
+                      "rate_plan": 647512,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date1().'",
+                      "plan_date_end_at": "'.$date2().'",
+                      "room_category": 261630,
+                      "rate_plan": 647512,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date1().'",
+                      "plan_date_end_at": "'.$date2().'",
+                      "room_category": 261630,
+                      "rate_plan": 647512,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date1().'",
+                      "plan_date_end_at": "'.$date2().'",
+                      "room_category": 261630,
+                      "rate_plan": 647512,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date1().'",
+                      "plan_date_end_at": "'.$date2().'",
+                      "room_category": 261630,
+                      "rate_plan": 647512,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date1().'",
+                      "plan_date_end_at": "'.$date2().'",
+                      "room_category": 261630,
+                      "rate_plan": 647512,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date1().'",
+                      "plan_date_end_at": "'.$date2().'",
+                      "room_category": 261630,
+                      "rate_plan": 647512,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date1().'",
+                      "plan_date_end_at": "'.$date2().'",
+                      "room_category": 261630,
+                      "rate_plan": 647512,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date1().'",
+                      "plan_date_end_at": "'.$date2().'",
+                      "room_category": 261630,
+                      "rate_plan": 647512,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date1().'",
+                      "plan_date_end_at": "'.$date2().'",
+                      "room_category": 261630,
+                      "rate_plan": 647512,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date1().'",
+                      "plan_date_end_at": "'.$date2().'",
+                      "room_category": 261630,
+                      "rate_plan": 647512,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date1().'",
+                      "plan_date_end_at": "'.$date2().'",
+                      "room_category": 261630,
+                      "rate_plan": 647512,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date1().'",
+                      "plan_date_end_at": "'.$date2().'",
+                      "room_category": 261630,
+                      "rate_plan": 647512,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date1().'",
+                      "plan_date_end_at": "'.$date2().'",
+                      "room_category": 261630,
+                      "rate_plan": 647512,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date1().'",
+                      "plan_date_end_at": "'.$date2().'",
+                      "room_category": 261630,
+                      "rate_plan": 647512,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date1().'",
+                      "plan_date_end_at": "'.$date2().'",
+                      "room_category": 261630,
+                      "rate_plan": 647512,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date1().'",
+                      "plan_date_end_at": "'.$date2().'",
+                      "room_category": 261630,
+                      "rate_plan": 647512,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date1().'",
+                      "plan_date_end_at": "'.$date2().'",
+                      "room_category": 261630,
+                      "rate_plan": 647512,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date1().'",
+                      "plan_date_end_at": "'.$date2().'",
+                      "room_category": 261630,
+                      "rate_plan": 647512,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date1().'",
+                      "plan_date_end_at": "'.$date2().'",
+                      "room_category": 261630,
+                      "rate_plan": 647512,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date1().'",
+                      "plan_date_end_at": "'.$date2().'",
+                      "room_category": 261630,
+                      "rate_plan": 647512,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date1().'",
+                      "plan_date_end_at": "'.$date2().'",
+                      "room_category": 261630,
+                      "rate_plan": 647512,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date1().'",
+                      "plan_date_end_at": "'.$date2().'",
+                      "room_category": 261630,
+                      "rate_plan": 647512,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date1().'",
+                      "plan_date_end_at": "'.$date2().'",
+                      "room_category": 261630,
+                      "rate_plan": 647512,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date1().'",
+                      "plan_date_end_at": "'.$date2().'",
+                      "room_category": 261630,
+                      "rate_plan": 647512,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date1().'",
+                      "plan_date_end_at": "'.$date2().'",
+                      "room_category": 261630,
+                      "rate_plan": 647512,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "' . $dateEnd . '",
+                      "plan_date_end_at": "' . $dateEnd . '",
+                      "room_category": 261630,
+                      "rate_plan": 647512,
+                      "hotel": ' . self::OST_HOTEL_ID1 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "' . $dateStart . '",
+                      "plan_date_end_at": "' . $dateEnd . '",
+                      "room_category": 296710,
+                      "rate_plan": 790780,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": null,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "' . $dateStart . '",
+                      "plan_date_end_at": "' . $dateStart . '",
+                      "room_category": 296715,
+                      "rate_plan": 790798,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date3().'",
+                      "plan_date_end_at": "'.$date4().'",
+                      "room_category": 296715,
+                      "rate_plan": 790798,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date3().'",
+                      "plan_date_end_at": "'.$date4().'",
+                      "room_category": 296715,
+                      "rate_plan": 790798,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date3().'",
+                      "plan_date_end_at": "'.$date4().'",
+                      "room_category": 296715,
+                      "rate_plan": 790798,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date3().'",
+                      "plan_date_end_at": "'.$date4().'",
+                      "room_category": 296715,
+                      "rate_plan": 790798,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date3().'",
+                      "plan_date_end_at": "'.$date4().'",
+                      "room_category": 296715,
+                      "rate_plan": 790798,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date3().'",
+                      "plan_date_end_at": "'.$date4().'",
+                      "room_category": 296715,
+                      "rate_plan": 790798,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date3().'",
+                      "plan_date_end_at": "'.$date4().'",
+                      "room_category": 296715,
+                      "rate_plan": 790798,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date3().'",
+                      "plan_date_end_at": "'.$date4().'",
+                      "room_category": 296715,
+                      "rate_plan": 790798,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date3().'",
+                      "plan_date_end_at": "'.$date4().'",
+                      "room_category": 296715,
+                      "rate_plan": 790798,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date3().'",
+                      "plan_date_end_at": "'.$date4().'",
+                      "room_category": 296715,
+                      "rate_plan": 790798,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date3().'",
+                      "plan_date_end_at": "'.$date4().'",
+                      "room_category": 296715,
+                      "rate_plan": 790798,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date3().'",
+                      "plan_date_end_at": "'.$date4().'",
+                      "room_category": 296715,
+                      "rate_plan": 790798,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date3().'",
+                      "plan_date_end_at": "'.$date4().'",
+                      "room_category": 296715,
+                      "rate_plan": 790798,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date3().'",
+                      "plan_date_end_at": "'.$date4().'",
+                      "room_category": 296715,
+                      "rate_plan": 790798,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date3().'",
+                      "plan_date_end_at": "'.$date4().'",
+                      "room_category": 296715,
+                      "rate_plan": 790798,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date3().'",
+                      "plan_date_end_at": "'.$date4().'",
+                      "room_category": 296715,
+                      "rate_plan": 790798,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date3().'",
+                      "plan_date_end_at": "'.$date4().'",
+                      "room_category": 296715,
+                      "rate_plan": 790798,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date3().'",
+                      "plan_date_end_at": "'.$date4().'",
+                      "room_category": 296715,
+                      "rate_plan": 790798,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date3().'",
+                      "plan_date_end_at": "'.$date4().'",
+                      "room_category": 296715,
+                      "rate_plan": 790798,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date3().'",
+                      "plan_date_end_at": "'.$date4().'",
+                      "room_category": 296715,
+                      "rate_plan": 790798,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date3().'",
+                      "plan_date_end_at": "'.$date4().'",
+                      "room_category": 296715,
+                      "rate_plan": 790798,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date3().'",
+                      "plan_date_end_at": "'.$date4().'",
+                      "room_category": 296715,
+                      "rate_plan": 790798,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date3().'",
+                      "plan_date_end_at": "'.$date4().'",
+                      "room_category": 296715,
+                      "rate_plan": 790798,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date3().'",
+                      "plan_date_end_at": "'.$date4().'",
+                      "room_category": 296715,
+                      "rate_plan": 790798,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date3().'",
+                      "plan_date_end_at": "'.$date4().'",
+                      "room_category": 296715,
+                      "rate_plan": 790798,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date3().'",
+                      "plan_date_end_at": "'.$date4().'",
+                      "room_category": 296715,
+                      "rate_plan": 790798,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date3().'",
+                      "plan_date_end_at": "'.$date4().'",
+                      "room_category": 296715,
+                      "rate_plan": 790798,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date3().'",
+                      "plan_date_end_at": "'.$date4().'",
+                      "room_category": 296715,
+                      "rate_plan": 790798,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "'.$date3().'",
+                      "plan_date_end_at": "'.$date4().'",
+                      "room_category": 296715,
+                      "rate_plan": 790798,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    },
+                    {
+                      "disable_flexible": false,
+                      "last_minute": null,
+                      "advance": null,
+                      "plan_date_start_at": "' . $dateEnd . '",
+                      "plan_date_end_at": "' . $dateEnd . '",
+                      "room_category": 296715,
+                      "rate_plan": 790798,
+                      "hotel": ' . self::OST_HOTEL_ID2 . ',
+                      "min_stay_arrival": null,
+                      "max_stay_arrival": null,
+                      "min_stay_through": 3,
+                      "max_stay_through": null,
+                      "closed_on_arrival": false,
+                      "closed_on_departure": false,
+                      "format": "json"
+                    }
+                  ]
+                }
+                ';
+    }
+
+    protected function getRatePlans($isDefault): string
     {
         $data = $isDefault
             ?
@@ -1066,7 +2255,7 @@ class OstrovokExtendedTest extends ChannelManagerServiceTestCase
         return $data;
     }
 
-    protected function getOccupanciesResponseData($isDefault)
+    protected function getOccupanciesResponseData($isDefault): string
     {
         $data = $isDefault
             ?
