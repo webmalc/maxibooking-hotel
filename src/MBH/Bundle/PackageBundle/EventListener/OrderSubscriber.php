@@ -140,7 +140,6 @@ class OrderSubscriber implements EventSubscriber
                 //send emails to payer
                 if (isset($uow->getDocumentChangeSet($entity)['confirmed'])
                     && $entity->getConfirmed()
-                    && $clientConfig->isSendMailAtPaymentConfirmation()
                 ) {
 
                     if ($entity->getPayer() && $entity->getPayer()->getEmail()) {
