@@ -7,28 +7,24 @@ use MBH\Bundle\ChannelManagerBundle\Document\BookingConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\BookingRoom;
 use MBH\Bundle\ChannelManagerBundle\Document\Service;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService as Base;
-use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerServiceInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
-use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerOverview;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\CreditCard;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PackageBundle\Document\PackageService;
-use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PriceBundle\Document\PriceCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Services\PriceCacheRepositoryFilter;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use MBH\Bundle\HotelBundle\Document\Hotel;
 
 /**
  *  ChannelManager service
  */
-class Booking extends Base implements ChannelManagerServiceInterface
+class Booking extends Base
 {
     const UNAVAIBLE_PRICES = [
         'isPersonPrice' => false,
@@ -148,7 +144,13 @@ class Booking extends Base implements ChannelManagerServiceInterface
             ['config' => $config, 'params' => $this->params]
         );
 
+        /** @var \SimpleXMLElement $response */
         $response = $this->sendXml(static::BASE_URL . 'roomrates', $request);
+
+        try{
+            $this->log('pullTariffs response for ' . $config->getHotelId() . ' hotelID: ' . $response->asXML());
+        } catch (\Throwable $e) {
+        }
 
         if (!$this->hasErrorNode($response)) {
             foreach ($response->room as $room) {
