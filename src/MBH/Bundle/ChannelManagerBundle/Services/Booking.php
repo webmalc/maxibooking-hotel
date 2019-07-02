@@ -313,6 +313,7 @@ class Booking extends Base
 
         // iterate hotels
         foreach ($this->getConfig() as $config) {
+            $data = [];
             /** @var BookingConfig $config */
             $roomTypes = $this->getRoomTypes($config);
             $tariffs = $this->getTariffs($config, true);
@@ -365,10 +366,11 @@ class Booking extends Base
                             if ($info->getSinglePrice() && (!($bookingRoom instanceOf BookingRoom) || $bookingRoom->getRoomType()->getIsSinglePlacement())) {
                                 $price1 = $this->currencyConvertFromRub($config, $calculator->getPriceWithTariffPromotionDiscount($info->getSinglePrice(), $info->getTariff()));
                             }
+                            $price = $this->currencyConvertFromRub($config, $calculator->getPriceWithTariffPromotionDiscount($info->getPrice(), $info->getTariff()));
                             $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
-                                'price' => $this->currencyConvertFromRub($config, $calculator->getPriceWithTariffPromotionDiscount($info->getPrice(), $info->getTariff())),
+                                'price' => $price,
                                 'price1' => $price1,
-                                'closed' => false
+                                'closed' => $price === (float)0 ? true : false
                             ];
                         } else {
                             $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
