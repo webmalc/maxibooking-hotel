@@ -187,8 +187,19 @@ class HundredOneHotels extends Base
                             /** @var PriceCache $currentDatePriceCache */
                             $occupantCount = $serviceTariffs[$serviceTariffId]['occupantCount'];
                             $currentDatePriceCache = $priceCaches[$roomTypeId][$syncPricesTariffId][$day->format('d.m.Y')];
-                            $priceFinal = $calc->calcPrices($currentDatePriceCache->getRoomType(), $tariff, $day, $day,
-                                $occupantCount);
+                            $priceFinal = $calc->calcPrices(
+                                $currentDatePriceCache->getRoomType(),
+                                $tariff,
+                                $day,
+                                $day,
+                                $occupantCount,
+                                0,
+                                null,
+                                false,
+                                null,
+                                true,
+                                false
+                            );
                             $currentDatePrice = isset($priceFinal[$occupantCount . '_0']) ? $priceFinal[$occupantCount . '_0']['total'] : 0;
                         } else {
                             $currentDatePrice = 0;
