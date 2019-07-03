@@ -32,6 +32,8 @@ class BookingTest extends ChannelManagerServiceTestCase
 
     private $datum = true;
 
+    private $second = false;
+
     protected function getServiceHotelIdByIsDefault(bool $isDefault): int
     {
         return $isDefault ? self::OST_HOTEL_ID1 : self::OST_HOTEL_ID2;
@@ -70,8 +72,12 @@ class BookingTest extends ChannelManagerServiceTestCase
             ->makePartial();
 
         $mock->shouldReceive('send')->andReturnUsing(function(...$data) {
-           $this->assertEquals($this->getUpdatePricesRequestData($this->datum), $data[1]);
-           $this->datum = false;
+            $this->assertEquals(
+                str_replace([' ', PHP_EOL], '', $this->getUpdatePricesRequestData($this->datum)),
+                str_replace([' ', PHP_EOL], '', $data[1])
+            );
+
+           $this->datum = !$this->datum;
 
            return 1;
         });
@@ -118,6 +124,9 @@ class BookingTest extends ChannelManagerServiceTestCase
 
         $cm = $this->container->get('mbh.channelmanager.booking');
         $cm->updatePrices($this->startDate, $this->endDate);
+        $this->second = true;
+        $this->unsetPriceCache($date->modify('+1 days'), false);
+        $cm->updatePrices($this->startDate, $this->endDate);
     }
 
     protected function getUpdatePricesRequestData($isNotDefaultHotel): string
@@ -128,6 +137,9 @@ class BookingTest extends ChannelManagerServiceTestCase
         $date4 = clone $this->startDate;
         $date5 = clone $this->startDate;
         $date6 = clone $this->startDate;
+
+        $secondClosed = $this->second ? 1 : 0;
+        $secondPrice = $this->second ? PHP_EOL : '<price>1200</price>';
 
         return $isNotDefaultHotel !== true
             ?
@@ -465,10 +477,10 @@ class BookingTest extends ChannelManagerServiceTestCase
                                                                 <date value="'.$date4->modify('+1 days')->format('Y-m-d').'">
                         <rate id="ID1"/>
 
-                                                    <price>1200</price>
+                                                    ' . $secondPrice . '
                         
                         
-                        <closed>0</closed>
+                        <closed>' . $secondClosed . '</closed>
                     </date>
                                                                 <date value="'.$date4->modify('+1 days')->format('Y-m-d').'">
                         <rate id="ID1"/>
