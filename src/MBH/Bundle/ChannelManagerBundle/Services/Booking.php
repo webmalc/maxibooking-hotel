@@ -248,6 +248,7 @@ class Booking extends Base
 
         // iterate hotels
         foreach ($this->getConfig() as $config) {
+            $data = [];
             $roomTypes = $this->getRoomTypes($config);
             $roomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
                 $begin,
@@ -425,6 +426,7 @@ class Booking extends Base
 
         // iterate hotels
         foreach ($this->getConfig() as $config) {
+            $data = [];
             $roomTypes = $this->getRoomTypes($config);
             $tariffs = $this->getTariffs($config, true);
             $serviceTariffs = $this->pullTariffs($config);
