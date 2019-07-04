@@ -8,8 +8,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
     && apt-get -y --no-install-recommends install  \
     php-memcached php-memcache php-redis php-xdebug acl \
-    php7.3-bcmath php7.3-bz2 php7.3-gd php-imagick php7.3-intl php-mongodb php-ssh2 php-yaml php-zmq \
-    fish supervisor \
+    php7.3-bcmath php7.3-bz2 php7.3-gd php-imagick php7.3-intl php-mongodb php-ssh2 php-yaml php-zmq  &&\
+    apt-get -y install fish supervisor && \
     curl -sL https://deb.nodesource.com/setup_9.x -o /tmp/nodesource_setup.sh && \
     bash /tmp/nodesource_setup.sh && \
     apt-get -y install gcc g++ make && \
