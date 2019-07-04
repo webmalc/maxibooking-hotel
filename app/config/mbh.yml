@@ -22,6 +22,7 @@ parameters:
       pln: {text: 'zł', small: 'gr', icon: 'fa fa-money'}
       tbh: {text: '฿', small: 'satang', icon: 'fa fa-money'}
       idr: {text: 'currency.idr.text', small: 'currency.idr.small', icon: 'fa fa-money'}
+      gbp: {text: '£', small: 'p', icon: 'fa fa-gbp'}
 
     # ReCaptcha
     mbh.recaptcha:
