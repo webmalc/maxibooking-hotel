@@ -204,8 +204,21 @@ class HundredOneHotels extends Base
                         } else {
                             $currentDatePrice = 0;
                         }
-                        $requestFormatter->addDoubleParamCondition($day, $requestFormatter::PRICES, $serviceRoomTypeId,
-                            $serviceTariffId, $currentDatePrice);
+                        $requestFormatter->addSingleParamCondition(
+                            $day,
+                            $requestFormatter::CLOSED,
+                            $serviceRoomTypeId,
+                            $currentDatePrice === 0 ? 1 : 0
+                        );
+                        if ($currentDatePrice !== 0) {
+                            $requestFormatter->addDoubleParamCondition(
+                                $day,
+                                $requestFormatter::PRICES,
+                                $serviceRoomTypeId,
+                                $serviceTariffId,
+                                $currentDatePrice
+                            );
+                        }
                     }
                 }
             }
