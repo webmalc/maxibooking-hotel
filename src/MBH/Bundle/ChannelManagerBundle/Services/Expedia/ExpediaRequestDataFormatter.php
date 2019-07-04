@@ -71,8 +71,8 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
         $priceCalculator = $this->container->get('mbh.calculation');
         $periodsCompiler = $this->container->get('mbh.periods_compiler');
         $localCurrency = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()->getCurrency();
-        $compareArraysCallback = function ($first, $second) {
-            if (is_null($first) && is_null($second)) {
+        $compareArraysCallback = static function ($first, $second) {
+            if ($first === null && $second === null) {
                 return true;
             }
 
@@ -101,9 +101,21 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                 $calculatedPricesByDates = [];
                 /** @var PriceCache $price */
                 foreach ($pricesByDates as $date => $price) {
-                    $calculatedPricesByDates[$date] = is_null($price)
+                    $calculatedPricesByDates[$date] = (($price === null) || $price->getPrice() === (float)0)
                         ? null
-                        : $priceCalculator->calcPrices($price->getRoomType(), $price->getTariff(), $price->getDate(), $price->getDate());
+                        : $priceCalculator->calcPrices(
+                            $price->getRoomType(),
+                            $price->getTariff(),
+                            $price->getDate(),
+                            $price->getDate(),
+                            0,
+                            0,
+                            null,
+                            false,
+                            null,
+                            true,
+                            false
+                        );
                 }
 
                 $periodsData = $periodsCompiler->getPeriodsByCallback($begin, $end, $calculatedPricesByDates, $compareArraysCallback, 'Y-m-d');
@@ -124,7 +136,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                     $hasPriceList = false;
                     $priceList = [];
                     $priceData = $periodData['data'];
-                    if (!is_null($priceData)) {
+                    if ($priceData !== null) {
                         $hasPriceList = is_array($priceData) && count($priceData) > 0;
                         $priceList = $priceData;
                     }

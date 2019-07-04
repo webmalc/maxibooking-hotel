@@ -8,6 +8,7 @@ use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
 use MBH\Bundle\ChannelManagerBundle\Services\Expedia\Expedia;
 use MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaRequestDataFormatter;
 use MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaRequestFormatter;
+use MBH\Bundle\PriceBundle\Document\PriceCache;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 
@@ -37,6 +38,8 @@ class ExpediaUpdateRoomsTest  extends ChannelManagerServiceTestCase
 
     /**@var ExpediaRequestFormatter */
     private $requestFormatter;
+
+    private $datum = true;
 
     public static function setUpBeforeClass()
     {
@@ -118,6 +121,64 @@ class ExpediaUpdateRoomsTest  extends ChannelManagerServiceTestCase
         $this->assertEquals(self::EXPEDIA_UPDATE_ROOMS_API_URL, $requestDataFormatterArray[1]->getUrl());
     }
 
+    protected function setMock()
+    {
+        $mock = \Mockery::mock(Expedia::class, [$this->container])->shouldAllowMockingProtectedMethods()
+            ->makePartial();
+
+        $mock->shouldReceive('sendRequestAndGetResponse')->andReturnUsing(function (...$data) {
+            $this->assertEquals(
+                str_replace([' ', PHP_EOL], '', $this->getUpdatePricesRequestData($this->datum)),
+                str_replace([' ', PHP_EOL], '', $data[0]->getRequestData())
+            );
+
+            $this->datum = !$this->datum;
+        });
+
+        $mock->shouldReceive('checkResponse')->andReturnTrue();
+
+        $mock->shouldReceive('pullTariffs')->andReturnUsing(function() {
+            $serviceTariffs['ID1']['readonly'] = false;
+            $serviceTariffs['ID1']['is_child_rate'] = false;
+            $serviceTariffs['ID1']['rooms'] = $this->getServiceRoomIds($this->datum);
+
+            return $serviceTariffs;
+        });
+
+        $this->container->set('mbh.channelmanager.expedia', $mock);
+    }
+
+    protected function unsetPriceCache(\DateTime $date, $type = true): void
+    {
+        /** @var PriceCache $pc */
+        $pc = $this->dm->getRepository(PriceCache::class)->findOneBy([
+            'hotel.id' => $this->getHotelByIsDefault(true)->getId(),
+            'roomType.id' => $this->getHotelByIsDefault(true)->getRoomTypes()[0]->getId(),
+            'tariff.id' => $this->getHotelByIsDefault(true)->getBaseTariff()->getId(),
+            'date' => $date
+        ]);
+
+        if ($type) {
+            $pc->setCancelDate(new \DateTime(), true);
+        } else {
+            $pc->setPrice(0);
+        }
+
+        $this->dm->persist($pc);
+        $this->dm->flush();
+    }
+
+    public function testUpdatePrices()
+    {
+        $date = clone $this->startDate;
+        $this->unsetPriceCache($date->modify('+4 days'));
+        $this->unsetPriceCache($date->modify('+1 days'), false);
+        $this->setMock();
+        $cm = $this->container->get('mbh.channelmanager.expedia');
+
+        $cm->updatePrices($this->startDate, $this->endDate);
+    }
+
     /** @depends testFormatUpdateRoomsRequest */
     public function testUpdateRooms()
     {
@@ -160,4 +221,125 @@ class ExpediaUpdateRoomsTest  extends ChannelManagerServiceTestCase
             "</AvailRateUpdate></AvailRateUpdateRQ>\n";
         }
     }
+
+    private function getUpdatePricesRequestData($isDefaultHotel)
+    {
+        $begin = clone $this->startDate;
+        $end = clone $this->endDate;
+
+        return $isDefaultHotel
+            ? '<?xml version="1.0"?>
+<AvailRateUpdateRQ xmlns="http://www.expediaconnect.com/EQC/AR/2011/06">
+   <Authentication username="EQCMaxibooking" password="" />
+   <Hotel id="' . self::EXPEDIA_HOTEL_ID1 . '" />
+   <AvailRateUpdate>
+      <DateRange from="'.$begin->format('Y-m-d').'" to="'.(clone $begin)->modify('+3 days')->format('Y-m-d').'" />
+      <RoomType id="def_room1">
+         <RatePlan id="ID1" closed="false">
+            <Rate currency="RUB">
+               <PerOccupancy rate="1200" occupancy="1" />
+               <PerOccupancy rate="2100" occupancy="2" />
+            </Rate>
+         </RatePlan>
+      </RoomType>
+   </AvailRateUpdate>
+   <AvailRateUpdate>
+      <DateRange from="'.(clone $begin)->modify('+4 days')->format('Y-m-d').'" to="'.(clone $begin)->modify('+4 days')->format('Y-m-d').'" />
+      <RoomType id="def_room1">
+         <RatePlan id="ID1" closed="true">
+            <Rate currency="RUB" />
+         </RatePlan>
+      </RoomType>
+   </AvailRateUpdate>
+   <AvailRateUpdate>
+      <DateRange from="'.(clone $begin)->modify('+5 days')->format('Y-m-d').'" to="'.(clone $begin)->modify('+5 days')->format('Y-m-d').'" />
+      <RoomType id="def_room1">
+         <RatePlan id="ID1" closed="true">
+            <Rate currency="RUB" />
+         </RatePlan>
+      </RoomType>
+   </AvailRateUpdate>
+   <AvailRateUpdate>
+      <DateRange from="'.(clone $begin)->modify('+6 days')->format('Y-m-d').'" to="'.$end->format('Y-m-d').'" />
+      <RoomType id="def_room1">
+         <RatePlan id="ID1" closed="false">
+            <Rate currency="RUB">
+               <PerOccupancy rate="1200" occupancy="1" />
+               <PerOccupancy rate="2100" occupancy="2" />
+            </Rate>
+         </RatePlan>
+      </RoomType>
+   </AvailRateUpdate>
+   <AvailRateUpdate>
+      <DateRange from="'.$begin->format('Y-m-d').'" to="'.$end->format('Y-m-d').'" />
+      <RoomType id="def_room2">
+         <RatePlan id="ID1" closed="false">
+            <Rate currency="RUB">
+               <PerOccupancy rate="1500" occupancy="1" />
+               <PerOccupancy rate="1500" occupancy="2" />
+               <PerOccupancy rate="2500" occupancy="3" />
+            </Rate>
+         </RatePlan>
+      </RoomType>
+   </AvailRateUpdate>
+   <AvailRateUpdate>
+      <DateRange from="'.$begin->format('Y-m-d').'" to="'.$end->format('Y-m-d').'" />
+      <RoomType id="def_room3">
+         <RatePlan id="ID1" closed="false">
+            <Rate currency="RUB">
+               <PerOccupancy rate="2200" occupancy="1" />
+               <PerOccupancy rate="2200" occupancy="2" />
+               <PerOccupancy rate="2200" occupancy="3" />
+               <PerOccupancy rate="3700" occupancy="4" />
+               <PerOccupancy rate="5200" occupancy="5" />
+            </Rate>
+         </RatePlan>
+      </RoomType>
+   </AvailRateUpdate>
+</AvailRateUpdateRQ>'
+            :
+            '<?xml version="1.0"?>
+<AvailRateUpdateRQ xmlns="http://www.expediaconnect.com/EQC/AR/2011/06">
+   <Authentication username="EQCMaxibooking" password="" />
+   <Hotel id="' . self::EXPEDIA_HOTEL_ID2 . '" />
+   <AvailRateUpdate>
+      <DateRange from="'.$begin->format('Y-m-d').'" to="'.$end->format('Y-m-d').'" />
+      <RoomType id="not_def_room1">
+         <RatePlan id="ID1" closed="false">
+            <Rate currency="RUB">
+               <PerOccupancy rate="1200" occupancy="1" />
+               <PerOccupancy rate="2100" occupancy="2" />
+            </Rate>
+         </RatePlan>
+      </RoomType>
+   </AvailRateUpdate>
+   <AvailRateUpdate>
+      <DateRange from="'.$begin->format('Y-m-d').'" to="'.$end->format('Y-m-d').'" />
+      <RoomType id="not_def_room2">
+         <RatePlan id="ID1" closed="false">
+            <Rate currency="RUB">
+               <PerOccupancy rate="1500" occupancy="1" />
+               <PerOccupancy rate="1500" occupancy="2" />
+               <PerOccupancy rate="2500" occupancy="3" />
+            </Rate>
+         </RatePlan>
+      </RoomType>
+   </AvailRateUpdate>
+   <AvailRateUpdate>
+      <DateRange from="'.$begin->format('Y-m-d').'" to="'.$end->format('Y-m-d').'" />
+      <RoomType id="not_def_room3">
+         <RatePlan id="ID1" closed="false">
+            <Rate currency="RUB">
+               <PerOccupancy rate="2200" occupancy="1" />
+               <PerOccupancy rate="2200" occupancy="2" />
+               <PerOccupancy rate="2200" occupancy="3" />
+               <PerOccupancy rate="3700" occupancy="4" />
+               <PerOccupancy rate="5200" occupancy="5" />
+            </Rate>
+         </RatePlan>
+      </RoomType>
+   </AvailRateUpdate>
+</AvailRateUpdateRQ>';
+    }
+
 }
