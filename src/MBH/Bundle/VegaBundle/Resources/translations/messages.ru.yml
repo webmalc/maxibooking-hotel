@@ -164,5 +164,5 @@ housepart.structure: 'СТРОЕНИЕ'
 housepart.building: 'ЗДАНИЕ'
 
 #dict_type_sv.yml
-dict_type_sv.owner: 'ВЛАДЕЛЕЦ'
-dict_type_sv.inscribed: 'ВПИСАН'
+dict_type_sv.owner: 'Владелец документа'
+dict_type_sv.inscribed: 'Вписан в документ'

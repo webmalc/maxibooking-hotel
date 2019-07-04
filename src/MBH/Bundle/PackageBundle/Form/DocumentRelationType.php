@@ -44,7 +44,7 @@ class DocumentRelationType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $dictTypes = array_keys($this->dictionaryProvider->getDictTypes());
+        $dictTypes = $this->dictionaryProvider->getDictTypes();
         $passportDocTypeId = 103008;
 
         //main
