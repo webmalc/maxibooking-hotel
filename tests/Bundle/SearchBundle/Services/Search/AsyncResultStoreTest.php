@@ -28,8 +28,8 @@ class AsyncResultStoreTest extends SearchWebTestCase
         $searchResult2 = $this->getData($hash, 'error', ErrorResultFilter::WINDOWS);
 
         $service = $this->getContainer()->get('mbh_search.async_result_store');
-        $service->store($searchResult1,  $conditions);
-        $service->store($searchResult2,  $conditions);
+        $service->storeInStock($searchResult1,  $conditions);
+        $service->storeInStock($searchResult2,  $conditions);
 
         $key1 = $searchResult1->getId();
         $key2 = $searchResult2->getId();
@@ -63,12 +63,12 @@ class AsyncResultStoreTest extends SearchWebTestCase
         ;
 
         $asyncCache->flushall();
-        $service->store($searchResult1, $conditions);
-        $service->store($searchResult3, $conditions);
-        $actualResult1 = $service->receive($conditions);
+        $service->storeInStock($searchResult1, $conditions);
+        $service->storeInStock($searchResult3, $conditions);
+        $actualResult1 = $service->receiveFromStock($conditions);
         $actualResult1 = array_merge(...array_values($actualResult1));
-        $service->store($searchResult2, $conditions);
-        $actualResult2 = $service->receive($conditions);
+        $service->storeInStock($searchResult2, $conditions);
+        $actualResult2 = $service->receiveFromStock($conditions);
         $actualResult2 = array_merge(...array_values($actualResult2));
 
 
@@ -112,7 +112,7 @@ class AsyncResultStoreTest extends SearchWebTestCase
 
         $conditions = new SearchConditions();
         $conditions->setSearchHash('fakeHash');
-        $service->store($result, $conditions);
+        $service->storeInStock($result, $conditions);
 
         $key = $result['id'];
         $ttl = $cache->ttl($key);
@@ -120,7 +120,7 @@ class AsyncResultStoreTest extends SearchWebTestCase
 
         $hash = $conditions->getSearchHash();
 
-        $service->addFakeReceivedCount($hash, 1);
+        $service->addFakeToStock($hash, 1);
 
         $key = 'received_fake' . $hash;
         $ttl = $cache->ttl($key);

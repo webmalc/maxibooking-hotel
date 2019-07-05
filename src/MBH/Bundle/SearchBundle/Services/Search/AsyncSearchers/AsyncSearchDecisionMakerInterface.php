@@ -12,4 +12,6 @@ interface AsyncSearchDecisionMakerInterface
     public function isNeedSearch(SearchConditions $conditions, QueryGroupInterface $group): bool;
 
     public function markFoundedResults(SearchConditions $conditions, QueryGroupInterface $group): void;
+
+    public function canIStoreInStock(SearchConditions $conditions, QueryGroupInterface $group): bool;
 }

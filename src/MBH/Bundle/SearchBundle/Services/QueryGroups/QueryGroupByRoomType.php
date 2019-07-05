@@ -6,7 +6,7 @@ namespace MBH\Bundle\SearchBundle\Services\QueryGroups;
 
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 
-class QueryGroupByRoomType implements QueryGroupInterface, AsyncQueryGroupInterface
+class QueryGroupByRoomType implements QueryGroupInterface, AsyncQueryGroupInterface, SearchNecessarilyInterface
 {
     public const QUERY_GROUP_BY_ROOM_TYPE = 'queryGroupByRoomType';
 
@@ -19,9 +19,13 @@ class QueryGroupByRoomType implements QueryGroupInterface, AsyncQueryGroupInterf
     /** @var string */
     private $roomTypeId;
 
+    /** @var bool  */
+    private $isMainGroup = false;
+
     public function unsetConditions(): void
     {
-        array_map(function (SearchQuery $query) {
+        array_map(
+            static function (SearchQuery $query) {
             $query->unsetConditions();
         }, $this->searchQueries);
     }
@@ -86,7 +90,17 @@ class QueryGroupByRoomType implements QueryGroupInterface, AsyncQueryGroupInterf
         return self::QUERY_GROUP_BY_ROOM_TYPE;
     }
 
+    public function setGroupIsMain(bool $isMainGroup): QueryGroupByRoomType
+    {
+        $this->isMainGroup = $isMainGroup;
 
+        return $this;
+    }
+
+    public function isSearchNecessarily(): bool
+    {
+        return $this->isMainGroup;
+    }
 
 
 }
