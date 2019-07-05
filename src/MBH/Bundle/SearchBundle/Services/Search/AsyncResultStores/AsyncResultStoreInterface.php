@@ -9,8 +9,8 @@ use MBH\Bundle\SearchBundle\Lib\Result\ResultCacheablesInterface;
 
 interface AsyncResultStoreInterface
 {
-    public function store($result, SearchConditions $conditions):  void;
+    public function storeInStock($result, SearchConditions $conditions):  void;
 
-    public function receive(SearchConditions $conditions);
+    public function receiveFromStock(SearchConditions $conditions);
 
 }

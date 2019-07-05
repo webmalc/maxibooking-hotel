@@ -4,6 +4,9 @@
 namespace MBH\Bundle\SearchBundle\Services\Search\AsyncSearchers;
 
 
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use function is_array;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Document\SearchConditionsRepository;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\ConsumerSearchException;
@@ -12,6 +15,7 @@ use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataManager;
 use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupByRoomType;
 use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupInterface;
+use MBH\Bundle\SearchBundle\Services\QueryGroups\SearchNecessarilyInterface;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStoreInterface;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStore;
 use MBH\Bundle\SearchBundle\Services\Search\SearcherFactory;
@@ -49,10 +53,8 @@ class AsyncSearcherGroupedByRoomType implements AsyncSearcherInterface
         AsyncResultStoreInterface $resultStore,
         SearcherFactory $searcherFactory,
         AsyncSearchDecisionMakerInterface $decisionMaker,
-        DataManager  $dataManager
-    )
-
-    {
+        DataManager $dataManager
+    ) {
         $this->conditionsRepository = $conditionsRepository;
         $this->asyncResultStore = $resultStore;
         $this->searcherFactory = $searcherFactory;
@@ -65,8 +67,11 @@ class AsyncSearcherGroupedByRoomType implements AsyncSearcherInterface
      * @param string $conditionsId
      * @param QueryGroupInterface $searchQueryGroup
      * @throws ConsumerSearchException
-     * @throws \Doctrine\ODM\MongoDB\LockException
-     * @throws \Doctrine\ODM\MongoDB\Mapping\MappingException
+     * @throws LockException
+     * @throws MappingException
+     * @throws CommunicationException
+     * @throws ServerException
+     * @throws AbortedMultiExecException
      */
     public function search(string $conditionsId, QueryGroupInterface $searchQueryGroup): void
     {
@@ -80,27 +85,22 @@ class AsyncSearcherGroupedByRoomType implements AsyncSearcherInterface
             throw new ConsumerSearchException('Error! Can not find SearchConditions for search in consumerSearch');
         }
 
-        if (!$this->decisionMaker->isNeedSearch($conditions, $searchQueryGroup)) {
-            $this->asyncResultStore->addFakeReceivedCount($conditions->getSearchHash(), $searchQueryGroup->countQueries());
-        } else {
+        if ($this->decisionMaker->isNeedSearch($conditions, $searchQueryGroup)) {
             $searcher = $this->searcherFactory->getSearcher($conditions->isUseCache());
             $searchQueries = $searchQueryGroup->getSearchQueries();
-            $founded = false;
+            $results = [];
             foreach ($searchQueries as $searchQuery) {
                 /** @var SearchQuery $searchQuery */
                 $searchQuery->setSearchConditions($conditions);
-                $result = $searcher->search($searchQuery);
-                $this->asyncResultStore->store($result, $conditions);
-                if (($result instanceof Result && $result->getStatus() === 'ok')
-                    || (\is_array($result) && $result['status'] === 'ok')) {
-                    $founded = true;
-                }
-
+                $results[] = $searcher->search($searchQuery);
             }
-            if ($founded) {
-                $this->decisionMaker->markFoundedResults($conditions, $searchQueryGroup);
-            }
+            $this->storeResults($results, $conditions, $searchQueryGroup);
 
+        } else {
+            $this->asyncResultStore->addFakeToStock(
+                $conditions->getSearchHash(),
+                $searchQueryGroup->countQueries()
+            );
         }
 
         $dm = $this->conditionsRepository->getDocumentManager();
@@ -115,6 +115,29 @@ class AsyncSearcherGroupedByRoomType implements AsyncSearcherInterface
     private function clearTemporaryData(): void
     {
         $this->dataManager->cleanMemoryData();
+    }
+
+    private function storeResults(array $results, SearchConditions $conditions, QueryGroupInterface $queryGroup)
+    {
+        $founded = false;
+        foreach ($results as $result) {
+            if (($result instanceof Result && $result->getStatus() === 'ok')
+                || (is_array($result) && $result['status'] === 'ok')) {
+                $founded = true;
+            }
+
+        }
+        if ($founded) {
+            $this->decisionMaker->markFoundedResults($conditions, $queryGroup);
+        }
+        if ($this->decisionMaker->canIStoreInStock($conditions, $queryGroup)) {
+            foreach ($results as $result) {
+                $this->asyncResultStore->storeInStock($result, $conditions);
+            }
+        } else {
+            $this->asyncResultStore->addFakeToStock($conditions->getSearchHash(), count($results));
+        }
+
     }
 
 }

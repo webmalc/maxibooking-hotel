@@ -38,6 +38,7 @@ class RoomTypeQueryGroupFactory implements QueryGroupFactoryInterface
                 $group
                     ->setRoomTypeId($combinationByRoomTypeId)
                     ->setQueuePriority($isMainGroup ? 10 : 1)
+                    ->setGroupIsMain($isMainGroup)
                     ->setSearchQueries($queries)
                 ;
 

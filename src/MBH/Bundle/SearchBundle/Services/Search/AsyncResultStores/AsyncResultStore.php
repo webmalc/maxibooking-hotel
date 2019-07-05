@@ -44,7 +44,7 @@ class AsyncResultStore implements AsyncResultStoreInterface
         $this->finalResultsBuilder = $resultsBuilder;
     }
 
-    public function store($result, SearchConditions $conditions): void
+    public function storeInStock($result, SearchConditions $conditions): void
     {
         $hash = $conditions->getSearchHash();
         if ($result instanceof Result) {
@@ -69,7 +69,7 @@ class AsyncResultStore implements AsyncResultStoreInterface
      * @throws AsyncResultReceiverException
      * @throws GroupingFactoryException
      */
-    public function receive(
+    public function receiveFromStock(
         SearchConditions $conditions,
         $grouperName = null,
         bool $isCreateJson = false,
@@ -127,7 +127,7 @@ class AsyncResultStore implements AsyncResultStoreInterface
      * @param string $hash
      * @param int $amount
      */
-    public function addFakeReceivedCount(string $hash, int $amount): void
+    public function addFakeToStock(string $hash, int $amount): void
     {
         $key = $this->createFakeKey($hash);
         $this->cache->transaction()->incrby($key, $amount)->expire($key, static::EXPIRE_TIME)->exec();

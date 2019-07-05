@@ -100,7 +100,7 @@ class SearchController extends Controller
     {
         $receiver = $this->get('mbh_search.async_result_store');
         try {
-            $json = $receiver->receive($conditions, $grouping, true, true);
+            $json = $receiver->receiveFromStock($conditions, $grouping, true, true);
             $answer = new JsonResponse($json, 200, [], true);
         } catch (AsyncResultReceiverException $exception) {
             $answer = new JsonResponse(['results' => [], 'message' => $exception->getMessage()], 204);

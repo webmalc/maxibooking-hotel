@@ -2,6 +2,8 @@ imports:
     - { resource: config.yml }
     - { resource: security.yml }
 
+parameters:
+    router.request_context.base_url: null
 #doctrine:
 #    orm:
 #        metadata_cache_driver: apc
