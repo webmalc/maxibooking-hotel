@@ -9,7 +9,8 @@ RUN apt-get update \
     && apt-get -y --no-install-recommends install  \
     php-memcached php-memcache php-redis php-xdebug acl \
     php7.3-bcmath php7.3-bz2 php7.3-gd php-imagick php7.3-intl php-mongodb php-ssh2 php-yaml php-zmq  &&\
-    apt-get -y install fish supervisor && \
+    apt-get -y install fish supervisor vim && \
+    curl -sL http://gordalina.github.io/cachetool/downloads/cachetool.phar -o /usr/local/bin/cachetool && chmod +x /usr/local/bin/cachetool && \
     curl -sL https://deb.nodesource.com/setup_9.x -o /tmp/nodesource_setup.sh && \
     bash /tmp/nodesource_setup.sh && \
     apt-get -y install gcc g++ make && \
