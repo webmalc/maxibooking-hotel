@@ -7,28 +7,24 @@ use MBH\Bundle\ChannelManagerBundle\Document\BookingConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\BookingRoom;
 use MBH\Bundle\ChannelManagerBundle\Document\Service;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService as Base;
-use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerServiceInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
-use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerOverview;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\CreditCard;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PackageBundle\Document\PackageService;
-use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PriceBundle\Document\PriceCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Services\PriceCacheRepositoryFilter;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use MBH\Bundle\HotelBundle\Document\Hotel;
 
 /**
  *  ChannelManager service
  */
-class Booking extends Base implements ChannelManagerServiceInterface
+class Booking extends Base
 {
     const UNAVAIBLE_PRICES = [
         'isPersonPrice' => false,
@@ -148,7 +144,13 @@ class Booking extends Base implements ChannelManagerServiceInterface
             ['config' => $config, 'params' => $this->params]
         );
 
+        /** @var \SimpleXMLElement $response */
         $response = $this->sendXml(static::BASE_URL . 'roomrates', $request);
+
+        try{
+            $this->log('pullTariffs response for ' . $config->getHotelId() . ' hotelID: ' . $response->asXML());
+        } catch (\Throwable $e) {
+        }
 
         if (!$this->hasErrorNode($response)) {
             foreach ($response->room as $room) {
@@ -246,6 +248,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
 
         // iterate hotels
         foreach ($this->getConfig() as $config) {
+            $data = [];
             $roomTypes = $this->getRoomTypes($config);
             $roomCaches = $this->dm->getRepository('MBHPriceBundle:RoomCache')->fetch(
                 $begin,
@@ -284,7 +287,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
                 ]
             );
 
-            $this->log(sprintf('send request: %s', $request));
+            $this->log(sprintf('updateRooms send request: %s', $request));
 
             $sendResult = $this->send(static::BASE_URL.'availability', $request, null, true);
 
@@ -311,6 +314,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
 
         // iterate hotels
         foreach ($this->getConfig() as $config) {
+            $data = [];
             /** @var BookingConfig $config */
             $roomTypes = $this->getRoomTypes($config);
             $tariffs = $this->getTariffs($config, true);
@@ -363,10 +367,11 @@ class Booking extends Base implements ChannelManagerServiceInterface
                             if ($info->getSinglePrice() && (!($bookingRoom instanceOf BookingRoom) || $bookingRoom->getRoomType()->getIsSinglePlacement())) {
                                 $price1 = $this->currencyConvertFromRub($config, $calculator->getPriceWithTariffPromotionDiscount($info->getSinglePrice(), $info->getTariff()));
                             }
+                            $price = $this->currencyConvertFromRub($config, $calculator->getPriceWithTariffPromotionDiscount($info->getPrice(), $info->getTariff()));
                             $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
-                                'price' => $this->currencyConvertFromRub($config, $calculator->getPriceWithTariffPromotionDiscount($info->getPrice(), $info->getTariff())),
+                                'price' => $price,
                                 'price1' => $price1,
-                                'closed' => false
+                                'closed' => $price === (float)0 ? true : false
                             ];
                         } else {
                             $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
@@ -394,7 +399,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
                 ]
             );
 
-            $this->log(sprintf('send request: %s', $request));
+            $this->log(sprintf('updatePrices send request: %s', $request));
 
             $sendResult = $this->send(static::BASE_URL.'availability', $request, null, true);
 
@@ -421,6 +426,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
 
         // iterate hotels
         foreach ($this->getConfig() as $config) {
+            $data = [];
             $roomTypes = $this->getRoomTypes($config);
             $tariffs = $this->getTariffs($config, true);
             $serviceTariffs = $this->pullTariffs($config);
@@ -516,7 +522,7 @@ class Booking extends Base implements ChannelManagerServiceInterface
                 ]
             );
 
-            $this->log(sprintf('send request: %s', $request));
+            $this->log(sprintf('updateRestrictions send request: %s', $request));
 
             $sendResult = $this->send(static::BASE_URL.'availability', $request, null, true);
 

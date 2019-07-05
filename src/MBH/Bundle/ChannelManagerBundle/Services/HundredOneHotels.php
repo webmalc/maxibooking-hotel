@@ -49,11 +49,11 @@ class HundredOneHotels extends Base
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
-     * @param RoomType $roomType
+     * @param RoomType|null $paramRoomType
      * @return boolean
      * @throw \Exception
      */
-    public function updateRooms(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    public function updateRooms(\DateTime $begin = null, \DateTime $end = null, RoomType $paramRoomType = null)
     {
         $result = true;
         $begin = $this->getDefaultBegin($begin);
@@ -75,7 +75,7 @@ class HundredOneHotels extends Base
                 $begin,
                 $end,
                 $config->getHotel(),
-                $roomType ? [$roomType->getId()] : [],
+                $paramRoomType ? [$paramRoomType->getId()] : [],
                 null,
                 true
             );
@@ -117,11 +117,12 @@ class HundredOneHotels extends Base
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
-     * @param RoomType $roomType
+     * @param RoomType|null $paramRoomType
      * @return boolean
+     * @throws \Throwable
      * @throw \Exception
      */
-    public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $paramRoomType = null)
     {
         $result = true;
         $begin = $this->getDefaultBegin($begin);
@@ -141,13 +142,13 @@ class HundredOneHotels extends Base
             $roomTypes = $this->getRoomTypes($config, true);
             //$priceCaches array [roomTypeId][tariffId][date => PriceCache]
             $priceCacheFilter = $this->container->get('mbh.price_cache_repository_filter');
-            $priceCachesCallback = function () use ($begin, $end, $config, $roomType, $priceCacheFilter) {
+            $priceCachesCallback = function () use ($begin, $end, $config, $paramRoomType, $priceCacheFilter) {
                 $filtered = $priceCacheFilter->filterFetch(
                     $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
                         $begin,
                         $end,
                         $config->getHotel(),
-                        $this->getRoomTypeArray($roomType),
+                        $this->getRoomTypeArray($paramRoomType),
                         [],
                         true
                     )
@@ -186,14 +187,38 @@ class HundredOneHotels extends Base
                             /** @var PriceCache $currentDatePriceCache */
                             $occupantCount = $serviceTariffs[$serviceTariffId]['occupantCount'];
                             $currentDatePriceCache = $priceCaches[$roomTypeId][$syncPricesTariffId][$day->format('d.m.Y')];
-                            $priceFinal = $calc->calcPrices($currentDatePriceCache->getRoomType(), $tariff, $day, $day,
-                                $occupantCount);
+                            $priceFinal = $calc->calcPrices(
+                                $currentDatePriceCache->getRoomType(),
+                                $tariff,
+                                $day,
+                                $day,
+                                $occupantCount,
+                                0,
+                                null,
+                                false,
+                                null,
+                                true,
+                                false
+                            );
                             $currentDatePrice = isset($priceFinal[$occupantCount . '_0']) ? $priceFinal[$occupantCount . '_0']['total'] : 0;
                         } else {
                             $currentDatePrice = 0;
                         }
-                        $requestFormatter->addDoubleParamCondition($day, $requestFormatter::PRICES, $serviceRoomTypeId,
-                            $serviceTariffId, $currentDatePrice);
+                        $requestFormatter->addSingleParamCondition(
+                            $day,
+                            $requestFormatter::CLOSED,
+                            $serviceRoomTypeId,
+                            $currentDatePrice === 0 ? 1 : 0
+                        );
+                        if ($currentDatePrice !== 0) {
+                            $requestFormatter->addDoubleParamCondition(
+                                $day,
+                                $requestFormatter::PRICES,
+                                $serviceRoomTypeId,
+                                $serviceTariffId,
+                                $currentDatePrice
+                            );
+                        }
                     }
                 }
             }
@@ -221,11 +246,12 @@ class HundredOneHotels extends Base
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
-     * @param RoomType $roomType
+     * @param RoomType|null $paramRoomType
      * @return boolean
+     * @throws \Throwable
      * @throw \Exception
      */
-    public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $paramRoomType = null)
     {
         $result = true;
         $begin = $this->getDefaultBegin($begin);
@@ -244,18 +270,18 @@ class HundredOneHotels extends Base
                 $begin,
                 $end,
                 $config->getHotel(),
-                $roomType ? [$roomType->getId()] : [],
+                $paramRoomType ? [$paramRoomType->getId()] : [],
                 [],
                 true
             );
             $priceCacheFilter = $this->container->get('mbh.price_cache_repository_filter');
-            $priceCachesCallback = function () use ($begin, $end, $config, $roomType, $priceCacheFilter) {
+            $priceCachesCallback = function () use ($begin, $end, $config, $paramRoomType, $priceCacheFilter) {
                 $filtered = $priceCacheFilter->filterFetch(
                     $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
                         $begin,
                         $end,
                         $config->getHotel(),
-                        $roomType ? [$roomType->getId()] : [],
+                        $paramRoomType ? [$paramRoomType->getId()] : [],
                         [],
                         true
                     )
@@ -416,6 +442,8 @@ class HundredOneHotels extends Base
             $requestFormatter->resetRequestData();
 
             $serviceOrders = $this->send(static::BASE_URL, $request, null, true);
+            $this->checkResponse($serviceOrders);
+
             $this->log($serviceOrders);
             $serviceOrders = json_decode($serviceOrders, true);
 

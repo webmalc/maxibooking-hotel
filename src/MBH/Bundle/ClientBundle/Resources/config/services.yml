@@ -83,7 +83,7 @@ services:
 
     mbh.fms_dictionaries:
         class: MBH\Bundle\ClientBundle\Lib\FMSDictionaries
-        arguments: ['@mbh.csv_reader']
+        arguments: ['@mbh.csv_reader', '@translator']
 
     mbh.client_config_manager:
         class: MBH\Bundle\ClientBundle\Service\ClientConfigManager

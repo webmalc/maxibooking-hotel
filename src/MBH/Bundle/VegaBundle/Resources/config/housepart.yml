@@ -1,9 +1,9 @@
 housepart:
-  house: ДОМ
-  litera_house: ЛИТЕРА ДОМА
-  flat: КВАРТИРА
-  litera_flat: ЛИТЕРА КВАРТИРЫ
-  corpus: КОРПУС
-  construction: СООРУЖЕНИЕ
-  structure: СТРОЕНИЕ
-  builing: ЗДАНИЕ
+  house: 'housepart.house'
+  litera_house: 'housepart.litera_house'
+  flat: 'housepart.flat'
+  litera_flat: 'housepart.litera_flat'
+  corpus: 'housepart.corpus'
+  construction: 'housepart.construction'
+  structure: 'housepart.structure'
+  building: 'housepart.building'

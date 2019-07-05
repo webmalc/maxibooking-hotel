@@ -13,18 +13,13 @@ class TemplatePricesGenerator
     /**@var DocumentManager */
     private $dm;
 
-    /**@var ContainerInterface */
-    private $container;
-
     /**
      * TemplatePricesGenerator constructor.
      * @param DocumentManager $dm
-     * @param ContainerInterface $container
      */
-    public function __construct(DocumentManager $dm, ContainerInterface $container)
+    public function __construct(DocumentManager $dm)
     {
         $this->dm = $dm;
-        $this->container = $container;
     }
 
     /**
@@ -41,11 +36,36 @@ class TemplatePricesGenerator
         $price = 0;
         /** @var CashDocument $cacheDocument */
         foreach ($cacheDocuments as $cacheDocument) {
-            if (in_array($cacheDocument->getMethod(), $methods)) {
+            if (in_array($cacheDocument->getMethod(), $methods, true)) {
                 $price += $cacheDocument->getTotal();
             }
         }
 
         return $price === 0 ? null : $price;
+    }
+
+    /**
+     * @param Order $order
+     * @return float|null
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function getPrepayment(Order $order): ?float
+    {
+        $cacheDocuments = $this->dm->getRepository(CashDocument::class)
+            ->createQueryBuilder()
+            ->field('order.id')->equals($order->getId())
+            ->field('isPaid')->equals(true)
+            ->field('paidDate')->exists(true)
+            ->sort('paidDate', 'asc')
+            ->hydrate(false)
+            ->getQuery()
+            ->execute()
+            ->toArray();
+
+        if (\count($cacheDocuments) > 1) {
+            return array_shift($cacheDocuments)['total'];
+        }
+
+        return null;
     }
 }

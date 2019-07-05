@@ -5,6 +5,7 @@ client.tabs.params: Parameters
 client.tabs.payment_system: 'Payment systems'
 views.documentTempalte.index: 'Document templates'
 views.documentTempalte.new: 'New document template'
+client.tabs.client_messages: 'Guests notifications'
 views.documentTempalte.edit: Edit
 documentTempalte.title: Name
 documentTempalte.enabled: Active
