@@ -213,7 +213,6 @@ class SearchController extends Controller
 
     /**
      * @Route("/price-check", name="search_price_check", options={"expose"=true}, defaults={"_format":"json"})
-     * @Security("is_granted('ROLE_SEARCH')")
      * @param Request $request
      * @return JsonResponse
      * @throws \Doctrine\ODM\MongoDB\LockException
