@@ -220,6 +220,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             //delete
             if (isset($prices['price']) && $prices['price'] === '') {
                 $priceCache->setCancelDate(new \DateTime(), true);
+                $dates[] = $priceCache->getDate();
                 $countRemove++;
                 continue;
             }
