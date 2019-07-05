@@ -130,7 +130,8 @@ class SpecialRepository extends DocumentRepository
 
         }
 
-        if (count($filter->getRoomTypes())) {
+        $filteredRoomTypes = $filter->getRoomTypes();
+        if (is_array($filteredRoomTypes) && count($filteredRoomTypes)) {
             $exp = $qb->expr();
             foreach ($filter->getRoomTypes() as $roomType) {
                 $exp->addOr($qb->expr()->field('roomTypes')->includesReferenceTo($roomType));
