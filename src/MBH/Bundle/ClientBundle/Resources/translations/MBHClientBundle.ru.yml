@@ -1,5 +1,6 @@
 views.clientConfig.index.editing: "редактирование"
 views.clientConfig.layout.parameters: "Параметры"
+views.searchConfig.layout.parameters: "Параметры поиска"
 client.tabs.params: 'Параметры'
 client.tabs.payment_system: 'Платежная система'
 client.tabs.auto_update: 'Автообновление'

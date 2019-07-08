@@ -19,7 +19,6 @@ use MBH\Bundle\SearchBundle\Services\Cache\ErrorFilters\ErrorResultFilter;
 use MBH\Bundle\SearchBundle\Validator\Constraints\ChildrenAgesSameAsChildren;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Gedmo\Mapping\Annotation as Gedmo;
 
 
 /**

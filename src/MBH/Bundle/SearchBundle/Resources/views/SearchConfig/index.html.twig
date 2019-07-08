@@ -1,0 +1,42 @@
+{% extends "MBHBaseBundle::page.html.twig" %}
+{% set title = 'views.searchConfig.layout.parameters'|trans({}, 'MBHClientBundle') %}
+{% set title_url = path('search_config') %}
+
+{% set small_title = 'views.clientConfig.index.editing'|trans({}, 'MBHClientBundle') %}
+{% set layout='tabs' %}
+
+{% block content %}
+
+    {% set menu = [
+        {'route': 'search_config', 'title': '<i class="fa fa-cog"></i> '~ 'client.tabs.params'|trans({}, 'MBHClientBundle')},
+    ]
+    %}
+
+    {% set active = 1 %}
+
+    <ul class="nav nav-tabs" role="tablist">
+        {% for item in menu %}
+            <li {% if loop.index == active %}class="active"{% endif %}>
+                <a {% if loop.index == active %}href="#home" role="tab" data-toggle="tab"{% else %}href="{{ path(item.route) }}"{% endif %}>{{item.title|raw}}</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <div class="tab-content">
+        <div class="tab-pane active" id="home">
+
+            {{ form_start(form, {'action': path('search_config'), 'attr': {'class': 'form-horizontal' }}) }}
+            {{ form_widget(form) }}
+            {% if is_granted('ROLE_CLIENT_CONFIG_EDIT') %}
+                {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close' : false} %}
+            {% endif %}
+            {{ form_end(form) }}
+
+            {% if entity %}
+                {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': entity, 'logs': logs} %}
+            {% endif %}
+
+        </div>
+    </div>
+
+{% endblock %}

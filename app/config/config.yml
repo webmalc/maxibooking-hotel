@@ -34,6 +34,7 @@ framework:
     http_method_override: true
     assets:
         json_manifest_path: '%kernel.project_dir%/web/build/manifest.json'
+    ide: "phpstorm://open?host_dir=%ide_project_host_dir%&docker_dir=%ide_project_docker_dir%&file=%%f&line=%%l"
 
 
 # Twig Configuration
