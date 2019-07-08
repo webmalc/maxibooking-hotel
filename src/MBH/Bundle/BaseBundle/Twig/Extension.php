@@ -139,6 +139,20 @@ class Extension extends \Twig_Extension
     }
 
     /**
+     * if there are more than one CashDocuments - returns first CashDocument's total
+     *
+     * @param \MBH\Bundle\ClientBundle\Service\DocumentSerialize\Order $order
+     * @return string
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function getCashPrepayment(\MBH\Bundle\ClientBundle\Service\DocumentSerialize\Order $order): string
+    {
+        $prepaymentPrice = $this->container->get('mbh.template_prices_generator')->getPrepayment($order);
+
+        return $prepaymentPrice === null ? '0.00' : (string)$prepaymentPrice;
+    }
+
+    /**
      * @param \MBH\Bundle\ClientBundle\Service\DocumentSerialize\Order $order
      * @return string
      */
@@ -516,7 +530,8 @@ class Extension extends \Twig_Extension
             'get_properties'             => new TwigFunction('get_properties', [$this, 'getMethodsForTemplate'], $options),
             'get_guide_article_url'      => new TwigFunction('get_guide_article_url', [$this, 'getGuideArticleUrl'], $options),
             'get_cash_price'             => new TwigFunction('get_cash_price', [$this, 'getCashPrice'], $options),
-            'get_cashless_price'         => new TwigFunction('get_cashless_price', [$this, 'getCashlessPrice'], $options)
+            'get_cashless_price'         => new TwigFunction('get_cashless_price', [$this, 'getCashlessPrice'], $options),
+            'get_prepayment_price'       => new TwigFunction('get_prepayment_price', [$this, 'getCashPrepayment'], $options)
         ];
     }
 

@@ -166,6 +166,14 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
 
         if (!empty($dates)) {
             list($minDate, $maxDate) = $this->helper->getMinAndMaxDates($dates);
+            try{
+                $this->container->get('mbh.channelmanager.logger')
+                    ->addInfo(
+                        'Start to updatePrices for dates: ' .
+                        $minDate->format('Y-m-d') . ' - ' . $maxDate->format('Y-m-d')
+                    );
+            } catch (\Throwable $e) {
+            }
             $this->get('mbh.channelmanager')->updatePricesInBackground($minDate, $maxDate);
         }
 
@@ -212,6 +220,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             //delete
             if (isset($prices['price']) && $prices['price'] === '') {
                 $priceCache->setCancelDate(new \DateTime(), true);
+                $dates[] = $priceCache->getDate();
                 $countRemove++;
                 continue;
             }

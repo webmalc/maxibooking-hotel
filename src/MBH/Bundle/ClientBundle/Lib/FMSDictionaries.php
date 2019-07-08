@@ -3,6 +3,7 @@
 namespace MBH\Bundle\ClientBundle\Lib;
 
 use MBH\Bundle\BaseBundle\Service\CsvReader;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class FMSDictionaries
 {
@@ -12,8 +13,12 @@ class FMSDictionaries
     /** @var  CsvReader */
     private $csvReader;
 
-    public function __construct(CsvReader $csvReader) {
+    /** @var TranslatorInterface */
+    private $translator;
+
+    public function __construct(CsvReader $csvReader, TranslatorInterface $translator) {
         $this->csvReader = $csvReader;
+        $this->translator = $translator;
     }
 
     /**
@@ -74,7 +79,7 @@ class FMSDictionaries
         return $this->csvReader->readByCallback($fileName, function($rowData, &$result, $rowNumber) use ($filterByActuality) {
             if ($rowNumber != 0 && (!$filterByActuality || $rowData[2] == 'Actual')) {
                 $key = intval($rowData[0]);
-                $result[$key] = $rowData[1];
+                $result[$key] = $this->translator->trans($rowData[1]);
             }
         });
     }

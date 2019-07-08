@@ -146,8 +146,9 @@ class Calculation
      * @param int $children
      * @param Promotion|null $promotion
      * @param bool $useCategories
-     * @param bool $useDuration
      * @param Special|null $special
+     * @param bool $useDuration
+     * @param bool $useMemcached
      * @return array|bool
      */
     public function calcPrices(
@@ -160,11 +161,12 @@ class Calculation
         Promotion $promotion = null,
         $useCategories = false,
         Special $special = null,
-        $useDuration = true
+        $useDuration = true,
+        $useMemcached = true
     ) {
         $originTariff = $tariff;
         $prices = [];
-        $memcached = $this->container->get('mbh.cache');
+        $useMemcached ? $memcached = $this->container->get('mbh.cache') : $memcached = null;
         $places = $roomType->getPlaces();
         $hotel = $roomType->getHotel();
         $useCategories ? $isChildPrices = $roomType->getCategory()->getIsChildPrices() : $isChildPrices = $roomType->getIsChildPrices();

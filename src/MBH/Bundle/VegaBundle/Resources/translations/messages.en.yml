@@ -8,7 +8,7 @@ vega_russian_passport: 'Russian Passport'
 vega_ussr_passports: 'USSR Passports'
 vega_passport_IG: 'Passport IG'
 vega_seaman: 'Passport of the Seaman'
-'vega_temporary_residence permit_IG': 'Temporary residence permit IG'
+vega_temporary_residence_permit_foreigner: 'Temporary residence permit IG'
 vega_predost_temporate_asylum: 'Сertificate of temporary asylum'
 vega_refugee: 'Refugee certificate'
 vega_birth_certificate: 'Birth certificate'
@@ -18,8 +18,8 @@ vega_refugee_certificate: 'Refugee certificate'
 vega_id_card_person_of_military: 'Military ID card'
 vega_residence_permit_stateless_persons: 'Stateless residence certificate'
 vega_military_id_soldier: 'Military ID'
-'vega_travel_passport biometrics': 'Travel biometric passport'
-'vega_temporary_residence permit stateless persons': 'Stateless persons temporary residence permit'
+vega_travel_passport_biometrics: 'Travel biometric passport'
+vega_temporary_residence_permit_stateless_persons: 'Stateless persons temporary residence permit'
 vega_migration_cart: 'Migration cart'
 vega_ig_arrival_notice: 'Stateless arrival notice'
 vega_return_certificate: 'Return certificate'
@@ -140,3 +140,28 @@ vegabundle.resources.views.KRASNODARSKY-KRY: 'Krasnodar region'
 vegabundle.resources.views.G-Krasnodar: Krasnodar
 vegabundle.resources.views.P-Belozerniy: Belozerniy
 vegabundle.service.c: since
+
+#tpscan.yml
+tpscan.notify_front: 'NOTICE - FRONT SIDE'
+tpscan.notify_back: 'NOTICE - BACK SIDE'
+tpscan.document: 'DOCUMENT'
+tpscan.visa: 'VISA'
+tpscan.residence_ig: 'RESIDENCE PERMIT OF A FOREIGN CITIZEN'
+tpscan.residence_lbg: 'RESIDENCE PERMIT OF A STATELESS PERSON'
+tpscan.temporary_accommodation_ig: 'PERMIT FOR TEMPORARY RESIDENCE OF A FOREIGN CITIZEN'
+tpscan.temporary_accommodation_lbg: 'PERMIT FOR TEMPORARY RESIDENCE OF A STATELESS PERSON'
+tpscan.migration_card: 'MIGRATION CARD'
+
+#housepart.yml
+housepart.house: 'HOUSE'
+housepart.litera_house: 'HOUSE LETTER'
+housepart.flat: 'FLAT'
+housepart.litera_flat: 'FLAT LETTER'
+housepart.corpus: 'HOUSING'
+housepart.construction: 'CONSTRUCTION'
+housepart.structure: 'STRUCTURE'
+housepart.building: 'BUILDING'
+
+#dict_type_sv.yml
+dict_type_sv.owner: 'Document owner'
+dict_type_sv.inscribed: 'Mentioned in the document'

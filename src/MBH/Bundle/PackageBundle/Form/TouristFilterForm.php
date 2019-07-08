@@ -12,9 +12,18 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Translation\TranslatorInterface;
 
 class TouristFilterForm extends AbstractType
 {
+    /** @var TranslatorInterface */
+    protected $trans;
+
+    public function __construct(TranslatorInterface $trans)
+    {
+        $this->trans = $trans;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -58,8 +67,8 @@ class TouristFilterForm extends AbstractType
                 [
                     'required' => false,
                     'choices'  => [
-                        TouristQueryCriteria::CITIZENSHIP_NATIVE  => 'Граждане РФ',
-                        TouristQueryCriteria::CITIZENSHIP_FOREIGN => 'Иностранные граждане',
+                        TouristQueryCriteria::CITIZENSHIP_NATIVE  => $this->trans->trans('tourist.filter.citizen.ru.type'),
+                        TouristQueryCriteria::CITIZENSHIP_FOREIGN => $this->trans->trans('tourist.filter.citizen.foreign.type'),
                     ],
                 ]
             )
