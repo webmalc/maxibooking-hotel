@@ -38,7 +38,8 @@ framework:
     cache:
         app: cache.adapter.redis
         default_redis_provider: "%mbh_redis%"
-    ide: "phpstorm://open?file=%%f&line=%%l"
+    ide: "phpstorm://open?host_dir=%ide_project_host_dir%&docker_dir=%ide_project_docker_dir%&file=%%f&line=%%l"
+
 
 # Twig Configuration
 twig:

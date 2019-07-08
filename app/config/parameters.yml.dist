@@ -82,3 +82,7 @@ parameters:
   billing_url: 'https://billing.maxi-booking.com'
   chromedriver_path: ''
   mail_log_level: 100
+
+  data_fetch_log_level: 200
+  ide_project_host_dir: ''
+  ide_project_docker_dir: ''
