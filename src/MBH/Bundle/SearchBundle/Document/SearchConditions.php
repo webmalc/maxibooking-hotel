@@ -166,7 +166,7 @@ class SearchConditions extends Base
      * @Assert\Type(type="int")
      * @ODM\Field(type="int")
      */
-    private $additionalResultsLimit = 1;
+    private $additionalResultsLimit;
 
 
     /**
@@ -554,7 +554,7 @@ class SearchConditions extends Base
     /**
      * @return int
      */
-    public function getAdditionalResultsLimit(): int
+    public function getAdditionalResultsLimit(): ?int
     {
         return $this->additionalResultsLimit;
     }

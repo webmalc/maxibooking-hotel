@@ -5,7 +5,6 @@ namespace MBH\Bundle\SearchBundle\Controller;
 
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
-use MBH\Bundle\SearchBundle\Document\SearchConfig;
 use MBH\Bundle\SearchBundle\Form\SearchConfigType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -26,10 +25,8 @@ class SearchConfigController extends BaseController
      */
     public function indexAction(Request $request)
     {
-        $searchConfig = $this->dm->getRepository(SearchConfig::class)->findOneBy([]);
-        if (!$searchConfig) {
-            $searchConfig = new SearchConfig();
-        }
+        $searchConfig = $this->get('mbh_search.search_config');
+
         $form = $this->createForm(SearchConfigType::class, $searchConfig);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {

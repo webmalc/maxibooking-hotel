@@ -10,6 +10,8 @@
          data-room-types="{{ roomTypes|json_encode(256) }}"
          data-access-cache="{{ is_granted('ROLE_ADMIN') ? 'true' : 'false'}}"
          data-access-async-search="{{ is_granted('ROLE_ASYNC_SEARCH') ? 'true' : 'false'}}"
+         data-positive-max-add-days="{{ positiveAddDaysLimit }}"
+         data-negative-max-add-days="{{ negativeAddDaysLimit }}"
     >
 
     </div>

@@ -5,6 +5,7 @@
 
 <script>
     import {mapState} from 'vuex';
+    import moment from 'moment';
 
     const options = {
         'dateLimit': 365,
@@ -38,8 +39,9 @@
                 "Декабрь"
             ],
             "firstDay": 1,
-            "startDate": this.begin,
-            "endDate": this.end
+            // "startDate": this.begin,
+            // "minDate": this.begin,
+            // "endDate": this.end
         }
     };
     export default {
@@ -51,6 +53,7 @@
         mounted() {
             options.startDate = moment(this.begin, 'DD.MM.YYYY');
             options.endDate = moment(this.end, 'DD.MM.YYYY');
+            options.minDate = moment(this.begin, 'DD.MM.YYYY');
             $('input[name="dates"]')
                 .daterangepicker(options)
                 .on('apply.daterangepicker', (ev, picker) => {

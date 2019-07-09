@@ -5,7 +5,8 @@ const state = {
     successes:{},
     errors: {},
     amount: 0,
-    specialsHtml: ''
+    specialsHtml: '',
+    time: ''
 };
 
 const minPriceInDays = (dayResults) => {
@@ -44,6 +45,10 @@ const mutations = {
             resultMerger(state.errors, errors);
         }
 
+        if (payload.results.hasOwnProperty('time')) {
+            state.time = payload.results.time;
+        }
+
 
     },
     clearResults(state) {
@@ -51,6 +56,7 @@ const mutations = {
         state.errors = {};
         state.amount = 0;
         state.specialsHtml = '';
+        state.time = '';
     },
     sortAllPrices(state) {
         for (let resultId in state.successes) {

@@ -9,14 +9,13 @@ use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
-use MBH\Bundle\BaseBundle\Validator\Constraints\Range;
 use Symfony\Component\Validator\Constraints as Assert;
 
 
 /**
  * Class SearchConfig
  * @package MBH\Bundle\SearchBundle\Document
- * @ODM\Document(collection="SearchConfig")
+ * @ODM\Document(collection="SearchConfig", repositoryClass="SearchConfigRepository")
  */
 class SearchConfig extends Base
 {

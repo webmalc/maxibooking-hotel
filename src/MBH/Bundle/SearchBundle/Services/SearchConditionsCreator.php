@@ -5,6 +5,7 @@ namespace MBH\Bundle\SearchBundle\Services;
 
 
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
+use MBH\Bundle\SearchBundle\Document\SearchConfig;
 use MBH\Bundle\SearchBundle\Form\SearchConditionsType;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use Symfony\Component\Form\Exception\AlreadySubmittedException;
@@ -15,14 +16,21 @@ class SearchConditionsCreator
 {
     /** @var FormFactory */
     private $formFactory;
+    /**
+     * @var SearchConfig
+     */
+    private $config;
+
 
     /**
      * SearchRequestReceiver constructor.
      * @param FormFactory $factory
+     * @param SearchConfig $config
      */
-    public function __construct(FormFactory $factory)
+    public function __construct(FormFactory $factory, SearchConfig $config)
     {
         $this->formFactory = $factory;
+        $this->config = $config;
     }
 
     /**
@@ -48,13 +56,16 @@ class SearchConditionsCreator
         if (!$conditionForm->isValid()) {
             throw new SearchConditionException('No valid SearchConditions data.'.$conditionForm->getErrors(true, false));
         }
-
+        /** @var SearchConditions $searchConditions */
         $searchConditions = $conditionForm->getData();
+        if (!$searchConditions->getAdditionalResultsLimit()) {
+            $searchConditions->setAdditionalResultsLimit($this->config->getRoomTypeResultsShowAmount());
+        }
         /** @var SearchConditions $searchConditions */
         $hash = uniqid('az_', true);
         $searchConditions->setSearchHash($hash);
 
-        return $conditionForm->getData();
+        return $searchConditions;
     }
 
 

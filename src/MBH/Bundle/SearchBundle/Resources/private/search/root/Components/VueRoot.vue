@@ -18,6 +18,9 @@
 
         <Status/>
         <ResultsWrapper :results="prioritySortedResults" />
+
+        <div class="time-spend" v-if="searchTime"><small>Время поиска: {{searchTime}}</small></div>
+
         <Specials />
         <!--<SearchErrors />-->
 
@@ -56,6 +59,9 @@
             },
             isDebug() {
                 return Boolean(this.$store.state.debug.isDebug);
+            },
+            searchTime() {
+                return this.$store.state.results.time;
             }
         },
         watch: {
@@ -110,4 +116,7 @@
 
 <style scoped>
     @import "~animate.css";
+    .time-spend {
+        text-align: right;
+    }
 </style>

@@ -183,6 +183,13 @@ class SearchConditionsType extends AbstractType
                 ]
             )
             ->add(
+                'additionalResultsLimit',
+                IntegerType::class,
+                [
+                    'required' => false
+                ]
+            )
+            ->add(
                 'isSpecialStrict',
                 CheckboxType::class,
                 [

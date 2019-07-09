@@ -23,13 +23,16 @@ services:
 
     mbh_search.search_condition_creator:
         class: MBH\Bundle\SearchBundle\Services\SearchConditionsCreator
-        arguments: ["@form.factory"]
+        arguments: ["@form.factory", '@mbh_search.search_config']
+
 
     mbh_search.additional_days_generator:
         class: MBH\Bundle\SearchBundle\Services\AdditionalDatesGenerator
+        arguments:
+            - '@mbh_search.search_config'
 
 
-# Restriction Block
+    # Restriction Block
     mbh_search.restrictions_checker_service:
         class: MBH\Bundle\SearchBundle\Services\RestrictionsCheckerService
         calls:
@@ -115,7 +118,7 @@ services:
 
     mbh_search.room_type_search_decision_maker:
         class: MBH\Bundle\SearchBundle\Services\Search\AsyncSearchers\RoomTypeSearchDecisionMaker
-        arguments: ['@snc_redis.cache_results_client']
+        arguments: ['@snc_redis.cache_results_client', '@mbh_search.search_config_service']
 
     mbh_search.searcher_factory:
         class: MBH\Bundle\SearchBundle\Services\Search\SearcherFactory
@@ -415,6 +418,12 @@ services:
       factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
       arguments:
             - MBH\Bundle\SearchBundle\Document\SearchResultCacheItem
+
+    mbh_search.search_search_config_repository:
+        class: MBH\Bundle\SearchBundle\Document\SearchConfigRepository
+        factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
+        arguments:
+            - MBH\Bundle\SearchBundle\Document\SearchConfig
 #
 # Блок работы с данными
     mbh_search.data_holder:
@@ -845,3 +854,11 @@ services:
         arguments:
             - '%slackToken%'
             - '%slackChannelId%'
+
+    mbh_search.search_config_service:
+        class: MBH\Bundle\SearchBundle\Services\SearchConfigService
+        arguments: ['@mbh_search.search_search_config_repository']
+
+    mbh_search.search_config:
+        class: MBH\Bundle\SearchBundle\Document\SearchConfig
+        factory: ["@mbh_search.search_config_service", getConfig]
