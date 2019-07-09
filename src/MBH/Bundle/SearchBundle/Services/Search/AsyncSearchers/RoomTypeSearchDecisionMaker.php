@@ -106,11 +106,17 @@ class RoomTypeSearchDecisionMaker implements AsyncSearchDecisionMakerInterface
 
         $storedKey = $this->getStoredInStackKey($conditions->getSearchHash(), $group->getRoomTypeId());
         $stored = (int)$this->cache->get($storedKey);
-        $result = $stored < $conditions->getAdditionalResultsLimit();
+
+        return ($stored < $conditions->getAdditionalResultsLimit())
+            || ($this->isMustDate($group) && $this->isShowNecessarilyDate);
+    }
+
+    public function markStoredInStockResult(SearchConditions $conditions, QueryGroupInterface $group): void
+    {
+        $storedKey = $this->getStoredInStackKey($conditions->getSearchHash(), $group->getRoomTypeId());
         $this->cache->incr($storedKey);
         $this->cache->expire($storedKey, self::EXPIRED);
 
-        return $result || ($this->isMustDate($group) && $this->isShowNecessarilyDate);
     }
 
     private function getStoredInStackKey(string $hash, string $roomTypeId): string

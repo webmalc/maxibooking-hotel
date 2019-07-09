@@ -22,6 +22,9 @@ class QueryGroupByRoomType implements QueryGroupInterface, AsyncQueryGroupInterf
     /** @var bool  */
     private $isMainGroup = false;
 
+    /** @var string */
+    private $groupDatePeriodKey;
+
     public function unsetConditions(): void
     {
         array_map(
@@ -100,6 +103,18 @@ class QueryGroupByRoomType implements QueryGroupInterface, AsyncQueryGroupInterf
     public function isSearchNecessarily(): bool
     {
         return $this->isMainGroup;
+    }
+
+    public function getGroupDatePeriodKey(): string
+    {
+        return $this->groupDatePeriodKey;
+    }
+
+    public function setGroupDatePeriodKey(string $key): QueryGroupByRoomType
+    {
+        $this->groupDatePeriodKey = $key;
+
+        return $this;
     }
 
 
