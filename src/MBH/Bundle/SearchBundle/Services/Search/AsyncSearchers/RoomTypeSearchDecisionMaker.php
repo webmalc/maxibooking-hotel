@@ -6,9 +6,11 @@ namespace MBH\Bundle\SearchBundle\Services\Search\AsyncSearchers;
 
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\AsyncResultReceiverException;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConfigException;
 use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupByRoomType;
 use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupInterface;
 use MBH\Bundle\SearchBundle\Services\QueryGroups\SearchNecessarilyInterface;
+use MBH\Bundle\SearchBundle\Services\SearchConfigService;
 use Predis\Client;
 
 /**
@@ -25,14 +27,28 @@ class RoomTypeSearchDecisionMaker implements AsyncSearchDecisionMakerInterface
 
     /** @var Client */
     private $cache;
+    /**
+     * @var int
+     */
+    private $resultsAmount;
+    /**
+     * @var bool
+     */
+    private $isShowNecessarilyDate;
+
 
     /**
      * RoomTypeSearchDecisionMaker constructor.
      * @param Client $cache
+     * @param SearchConfigService $configService
+     * @throws SearchConfigException
      */
-    public function __construct(Client $cache)
+    public function __construct(Client $cache, SearchConfigService $configService)
     {
         $this->cache = $cache;
+        $config = $configService->getConfig();
+        $this->resultsAmount = $config->getRoomTypeResultsShowAmount();
+        $this->isShowNecessarilyDate = $config->isMustShowNecessarilyDate();
     }
 
     /**
@@ -94,7 +110,7 @@ class RoomTypeSearchDecisionMaker implements AsyncSearchDecisionMakerInterface
         $this->cache->incr($storedKey);
         $this->cache->expire($storedKey, self::EXPIRED);
 
-        return $result || $this->isMustDate($group);
+        return $result || ($this->isMustDate($group) && $this->isShowNecessarilyDate);
     }
 
     private function getStoredInStackKey(string $hash, string $roomTypeId): string

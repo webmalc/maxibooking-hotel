@@ -5,6 +5,7 @@ namespace MBH\Bundle\SearchBundle\Services;
 
 
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
+use MBH\Bundle\SearchBundle\Document\SearchConfig;
 use MBH\Bundle\SearchBundle\Form\SearchConditionsType;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use Symfony\Component\Form\Exception\AlreadySubmittedException;
@@ -15,14 +16,21 @@ class SearchConditionsCreator
 {
     /** @var FormFactory */
     private $formFactory;
+    /**
+     * @var SearchConfig
+     */
+    private $config;
+
 
     /**
      * SearchRequestReceiver constructor.
      * @param FormFactory $factory
+     * @param SearchConfig $config
      */
-    public function __construct(FormFactory $factory)
+    public function __construct(FormFactory $factory, SearchConfig $config)
     {
         $this->formFactory = $factory;
+        $this->config = $config;
     }
 
     /**
@@ -34,6 +42,7 @@ class SearchConditionsCreator
     {
         try {
             $options = [];
+            /** Для прогрева кэша нужно включить эту опцию, в случае если используются категорию иначе не правильно отработает форма. */
             if ($data['isForceDisableCategory'] ?? null) {
                 $options['isForceDisableCategory'] = true;
                 $options['allow_extra_fields'] = true;
@@ -45,15 +54,18 @@ class SearchConditionsCreator
         }
 
         if (!$conditionForm->isValid()) {
-            throw new SearchConditionException('No valid SearchConditions data.'.$conditionForm->getErrors());
+            throw new SearchConditionException('No valid SearchConditions data.'.$conditionForm->getErrors(true, false));
         }
-
+        /** @var SearchConditions $searchConditions */
         $searchConditions = $conditionForm->getData();
-        /** @var SearchConditions $hash */
+        if (!$searchConditions->getAdditionalResultsLimit()) {
+            $searchConditions->setAdditionalResultsLimit($this->config->getRoomTypeResultsShowAmount());
+        }
+        /** @var SearchConditions $searchConditions */
         $hash = uniqid(\AppKernel::DEFAULT_CLIENT, true);
         $searchConditions->setSearchHash($hash);
 
-        return $conditionForm->getData();
+        return $searchConditions;
     }
 
 

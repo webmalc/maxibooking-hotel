@@ -138,13 +138,15 @@ class SearchConditionsType extends AbstractType
         $builder
             ->add(
                 'order',
-                NumberType::class,
+                IntegerType::class,
                 [
                     'required' => false,
+                    'mapped' => false,
                     'label' => false,
                     'attr' => [
                         'class' => 'input-xs only-int form-control input-sm',
                     ],
+                    'data' => $options['order']
                 ]
             )
             ->add(
@@ -180,6 +182,20 @@ class SearchConditionsType extends AbstractType
                 ]
             )
             ->add(
+                'additionalResultsLimit',
+                IntegerType::class,
+                [
+                    'required' => false
+                ]
+            )
+            ->add(
+                'isSpecialStrict',
+                CheckboxType::class,
+                [
+                    'required' => false,
+                ]
+            )
+            ->add(
                 'isForceBooking',
                 CheckboxType::class,
                 [
@@ -187,20 +203,28 @@ class SearchConditionsType extends AbstractType
                     'required' => false,
                 ]
             )
-            ->add('tourist', TextType::class, [
-                'label' => 'form.searchType.fio',
-                'required' => false,
-                'mapped' => false,
-                'attr' => [
-                    'placeholder' => 'form.orderTouristType.placeholder_fio',
-                    'style' => 'min-width: 350px !important; width: 350px !important;',
-                    'class' => 'findGuest'
+            ->add(
+                'tourist',
+                TextType::class,
+                [
+                    'label' => 'form.searchType.fio',
+                    'required' => false,
+                    'mapped' => false,
+                    'attr' => [
+                        'placeholder' => 'form.orderTouristType.placeholder_fio',
+                        'style' => 'min-width: 350px !important; width: 350px !important;',
+                        'class' => 'findGuest',
+                    ],
                 ]
-            ])
-            ->add('isUseCache', CheckboxType::class, [
-                'required' => false,
-                'label' => false
-            ])
+            )
+            ->add(
+                'isUseCache',
+                CheckboxType::class,
+                [
+                    'required' => false,
+                    'label' => false,
+                ]
+            )
             ->add(
                 'isOnline',
                 CheckboxType::class,
@@ -234,6 +258,7 @@ class SearchConditionsType extends AbstractType
                     'data_class' => SearchConditions::class,
                     'csrf_protection' => false,
                     'isForceDisableCategory' => false,
+                    'order' => null
                 ]
             );
     }

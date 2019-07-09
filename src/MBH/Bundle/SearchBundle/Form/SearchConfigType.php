@@ -20,7 +20,7 @@ class SearchConfigType extends AbstractType
                 'positivePackageLengthDelta',
                 IntegerType::class,
                 [
-                    'label' => 'Дельта + искомой брони.',
+                    'label' => '+&#916; длины искомой брони.',
                     'help' => 'Значение в днях дельты длины брони в сторону увеличения.',
                     'group' => 'Общая информация'
                 ]
@@ -29,7 +29,7 @@ class SearchConfigType extends AbstractType
                 'negativePackageLengthDelta',
                 IntegerType::class,
                 [
-                    'label' => 'Дельта - искомой брони.',
+                    'label' => '-&#916; длины искомой брони.',
                     'help' => 'Значение в днях дельты длины брони в сторону уменьшения.',
                     'group' => 'Общая информация'
                 ]

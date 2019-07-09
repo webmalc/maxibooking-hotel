@@ -170,16 +170,21 @@ class SearchController extends Controller
         $config = $this->get('doctrine.odm.mongodb.document_manager')->getRepository(ClientConfig::class)->findOneBy([]);
         /** @var ClientConfig $config */
         $begin = $config->getBeginDate();
-        if (!$begin) {
-            $begin = new \DateTime('midnight');
+        $now = new \DateTime('midnight');
+        if (!$begin || $begin < $now) {
+            $begin = clone $now;
         }
         $end = (clone $begin)->modify('+7 days');
+
+        $config = $this->get('mbh_search.search_config');
 
         return $this->render('@MBHSearch/Search/searcher.html.twig', [
             'order' => $orderId,
             'begin' => $begin,
             'end' => $end,
-            'roomTypes' => $choices
+            'roomTypes' => $choices,
+            'positiveAddDaysLimit' => $config->getPositiveMaxAdditionalSearchDaysAmount(),
+            'negativeAddDaysLimit' => $config->getNegativeMaxAdditionalSearchDaysAmount()
         ]);
     }
 

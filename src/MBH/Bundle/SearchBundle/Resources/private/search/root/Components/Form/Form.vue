@@ -16,12 +16,25 @@
         <div class="input ">
             <i class="fa fa-calendar-plus-o " title="" data-toggle="tooltip"
                data-original-title="Дополнительные дни до даты поиска."></i>&nbsp;
-            <input type="number" v-model="additionalBegin" class="input-xxs" min="0" :max="maxAdditionalDays" :disabled="!access.async_search">
+
+<!--            <input type="number" v-model="additionalBegin" class="input-xxs" min="0" :max="access.positiveDaysLimit" :disabled="!access.async_search">-->
+
+            <select class="plain-html input-xxs" v-model="additionalBegin" :disabled="!access.async_search">
+                <option :value="0">0</option>
+                <option v-for="index in access.positiveDaysLimit" :value="index">{{index}}</option>
+            </select>
+
         </div>
         <div class="input ">
             <i class="fa fa-calendar-plus-o " title="" data-toggle="tooltip"
                data-original-title="Дополнительные дни после даты поиска."></i>&nbsp;
-            <input type="number" v-model="additionalEnd" class="input-xxs" min="0" :max="maxAdditionalDays" :disabled="!access.async_search">
+
+<!--            <input type="number" v-model="additionalEnd" class="input-xxs" min="0" :max="access.negativeDaysLimit" :disabled="!access.async_search">-->
+            <select class="plain-html input-xxs" v-model="additionalEnd" :disabled="!access.async_search">
+                <option :value="0">0</option>
+                <option v-for="index in access.negativeDaysLimit" :value="index">{{index}}</option>
+            </select>
+
         </div>
 
         <div class="input"><i class="fa fa-male" title="" data-toggle="tooltip" data-original-title="Взрослые."></i>&nbsp;
@@ -97,7 +110,6 @@
             return {
                 maxAdults: 6,
                 maxChildren: 6,
-                maxAdditionalDays: 7,
             }
         },
         computed: {
@@ -106,7 +118,7 @@
                     return this.$store.state.form.additionalBegin
                 },
                 set(value) {
-                    value = Math.max(0, Math.min(Number(value), this.maxAdditionalDays));
+                    value = Math.max(0, Math.min(Number(value), this.access.positiveDaysLimit));
                     this.$store.commit('form/setAdditionalBegin', Number(value))
                 }
             },
@@ -115,7 +127,7 @@
                     return this.$store.state.form.additionalEnd
                 },
                 set(value) {
-                    value = Math.max(0, Math.min(Number(value), this.maxAdditionalDays));
+                    value = Math.max(0, Math.min(Number(value), this.access.negativeDaysLimit));
                     this.$store.commit('form/setAdditionalEnd', Number(value))
                 }
             },
@@ -172,7 +184,9 @@
             access() {
                 return {
                     cache: this.$store.state.access.cache,
-                    async_search: this.$store.state.access.async_search
+                    async_search: this.$store.state.access.async_search,
+                    positiveDaysLimit: this.$store.state.access.positiveMaxAddDates,
+                    negativeDaysLimit: this.$store.state.access.negativeMaxAddDates,
                 }
             }
 
