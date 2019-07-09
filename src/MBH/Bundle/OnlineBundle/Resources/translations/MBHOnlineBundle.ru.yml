@@ -12,7 +12,7 @@ views.api.form.guest.label: Гости
 views.api.form.btn_find_room.label: 'Найти номер'
 views.api.form.find_room.shot: 'Найти'
 views.api.form.online_reservation_system: 'система онлайн бронирования'
-views.api.form.additionl_form.close_button: Закрыть
+views.api.form.additionl_form.close_button: Выбрать
 views.api.getPaymentType.dates: 'Даты:'
 views.api.getPaymentType.days_and_nights: 'Дни/ночи:'
 views.api.getPaymentType.nomerov: 'Количество номеров:'
@@ -26,7 +26,7 @@ views.api.getPaymentType.reservation_guarantee_whole_sum: 'Гарантиров�
 views.api.getPaymentType.reservation_guarantee_first_night: 'Гарантированное бронирование, предоплата стоимости проживания первых суток до заезда в отель'
 views.api.getPaymentType.reservation_guarantee_half: 'Гарантированное бронирование, предоплата 50% всей стоимости проживания до заезда в отель'
 views.api.getPaymentType.payment_systems.label: 'Платежная система'
-views.api.getPaymentType.choose_other_rooms: 'Выбрать другие номера'
+views.api.getPaymentType.choose_other_rooms: Назад
 views.api.getPaymentType.reservate: Бронировать
 views.api.getPaymentType.reservation_error_try_again: 'Произошла ошибка во время бронирования. Обновите страницу и попробуйте еще раз.'
 views.api.getResultsTable.hotel_rooms_for: 'Номера в отеле '
@@ -79,7 +79,7 @@ views.api.getUserForm.check_out_time: 'Время отъезда'
 views.api.getUserForm.comment: Комментарий
 views.api.getUserForm.required_fields: '- поля обязательные для заполнения'
 views.api.getUserForm.personal_data_policies: 'С <a target="_blank" href="url">Политикой обработки персональных данных</a> ознакомлен'
-views.api.getUserForm.choose_other_rooms: 'Выбрать другие номера'
+views.api.getUserForm.choose_other_rooms: Назад
 views.api.getUserForm.continue: Продолжить
 views.api.getUserForm.reservation_error: 'Произошла ошибка во время бронирования.'
 views.api.getUserForm.refresh_page_and_try_again: 'Обновите страницу и попробуйте еще раз.'

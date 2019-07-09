@@ -100,16 +100,22 @@ class MBSiteFormConfigDataService
 
     private function addSearchStyle(FormConfig $formConfig, SiteConfig $siteConfig): void
     {
+        $colorMain = $siteConfig->getThemeColors()['main'];
+        $colorMainLight = $siteConfig->getThemeColors()['mainlight'];
+
+        $style = '#mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-logo-link-wrapper #mbh-logo-link:hover .svg-mb-logo {fill: %2$s;}';
+        $style .= '#mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-form-submit {background: %1$s;}\n%3$s';
         $css = sprintf(
-            "#mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-form-submit {background: %s;}\n%s",
-            $siteConfig->getThemeColors()['main'],
+            $style,
+            $colorMain,
+            $colorMainLight,
             $this->searchStyleHolder->getStyleSearchForm()
         );
 
         $cssAdditionalForm = sprintf(
             ":root {--main: %s; --mainlight: %s;}\n%s",
-            $siteConfig->getThemeColors()['main'],
-            $siteConfig->getThemeColors()['mainlight'],
+            $colorMain,
+            $colorMainLight,
             $this->searchStyleHolder->getStyleAdditionalForm()
         );
 

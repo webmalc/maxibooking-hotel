@@ -12,7 +12,7 @@ views.api.form.btn_find_room.label: 'Find room'
 views.api.form.find_room.shot: Find
 views.api.form.children_ages.label: 'Children age'
 views.api.form.online_reservation_system: 'online booking system'
-views.api.form.additionl_form.close_button: Close
+views.api.form.additionl_form.close_button: Choose
 views.api.getPaymentType.dates: 'Date:'
 views.api.getPaymentType.days_and_nights: 'Days/nights:'
 views.api.getPaymentType.nomerov: 'Rooms total:'
@@ -24,7 +24,7 @@ views.api.getPaymentType.choose_payment_way: 'Select payment method'
 views.api.getPaymentType.payment_fine: 'Pay on arrival at the reception desk (no fine for cancellation).'
 views.api.getPaymentType.reservation_guarantee_whole_sum: 'Guaranteed availability, full prepayment before arrival'
 views.api.getPaymentType.reservation_guarantee_first_night: 'Guaranteed availability, prepayment for the first night before arrival'
-views.api.getPaymentType.choose_other_rooms: 'Select other rooms'
+views.api.getPaymentType.choose_other_rooms: Back
 views.api.getPaymentType.reservate: Book
 views.api.getPaymentType.reservation_error_try_again: 'An error occured while booking. Please refresh a page and try again.'
 views.api.getResultsTable.hotel_rooms_for: 'Rooms for'
@@ -73,7 +73,7 @@ views.api.getUserForm.check_in_time: 'Check-in time'
 views.api.getUserForm.check_out_time: 'Check-out time'
 views.api.getUserForm.comment: Comment
 views.api.getUserForm.required_fields: '- required fields'
-views.api.getUserForm.choose_other_rooms: 'Select other rooms'
+views.api.getUserForm.choose_other_rooms: Back
 views.api.getUserForm.continue: Next
 views.api.getUserForm.reservation_error: 'An error occured during reservation process.'
 views.api.getUserForm.refresh_page_and_try_again: 'Please refresh the page and try again.'
