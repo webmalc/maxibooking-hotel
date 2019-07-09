@@ -14,4 +14,6 @@ interface QueryGroupInterface
     public function getQueuePriority(): int;
 
     public function getGroupName(): string;
+
+    public function getGroupDatePeriodKey(): string;
 }

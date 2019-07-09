@@ -25,7 +25,7 @@ class RoomTypeQueryGroupFactory implements QueryGroupFactoryInterface
         $roomTypeGroups = $this->createRoomTypeGroups($combinations->getTariffRoomTypeCombinations());
         $dates = $combinations->getDates();
         $groups = [];
-        foreach ($dates as $period) {
+        foreach ($dates as $periodKey => $period) {
             $begin = $period['begin'];
             $end = $period['end'];
             $isMainGroup = ($begin == $searchConditions->getBegin()) && ($end == $searchConditions->getEnd());
@@ -40,6 +40,7 @@ class RoomTypeQueryGroupFactory implements QueryGroupFactoryInterface
                     ->setQueuePriority($isMainGroup ? 10 : 1)
                     ->setGroupIsMain($isMainGroup)
                     ->setSearchQueries($queries)
+                    ->setGroupDatePeriodKey($periodKey)
                 ;
 
                 $groups[] = $group;

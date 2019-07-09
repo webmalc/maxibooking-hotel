@@ -15,7 +15,6 @@ use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataManager;
 use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupByRoomType;
 use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupInterface;
-use MBH\Bundle\SearchBundle\Services\QueryGroups\SearchNecessarilyInterface;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStoreInterface;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStore;
 use MBH\Bundle\SearchBundle\Services\Search\SearcherFactory;
@@ -23,6 +22,10 @@ use Predis\CommunicationException;
 use Predis\Response\ServerException;
 use Predis\Transaction\AbortedMultiExecException;
 
+/**
+ * Class AsyncSearcherGroupedByRoomType
+ * @package MBH\Bundle\SearchBundle\Services\Search\AsyncSearchers
+ */
 class AsyncSearcherGroupedByRoomType implements AsyncSearcherInterface
 {
 
@@ -36,7 +39,7 @@ class AsyncSearcherGroupedByRoomType implements AsyncSearcherInterface
      */
     private $searcherFactory;
 
-    /** @var AsyncSearchDecisionMakerInterface */
+    /** @var RoomTypeSearchDecisionMaker */
     private $decisionMaker;
     /**
      * @var DataManager
@@ -115,11 +118,20 @@ class AsyncSearcherGroupedByRoomType implements AsyncSearcherInterface
 
     }
 
+    /**
+     *
+     */
     private function clearTemporaryData(): void
     {
         $this->dataManager->cleanMemoryData();
     }
 
+    /**
+     * @param array $results
+     * @param SearchConditions $conditions
+     * @param QueryGroupInterface $queryGroup
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\AsyncResultReceiverException
+     */
     private function storeResults(array $results, SearchConditions $conditions, QueryGroupInterface $queryGroup)
     {
         $founded = false;
@@ -133,9 +145,14 @@ class AsyncSearcherGroupedByRoomType implements AsyncSearcherInterface
         if ($founded) {
             $this->decisionMaker->markFoundedResults($conditions, $queryGroup);
         }
+
+        /** canIStoreInStock вводится из-за одновременной синхронной работы консьюмеров  */
         if ($this->decisionMaker->canIStoreInStock($conditions, $queryGroup)) {
             foreach ($results as $result) {
                 $this->asyncResultStore->storeInStock($result, $conditions);
+            }
+            if ($founded) {
+                $this->decisionMaker->markStoredInStockResult($conditions, $queryGroup);
             }
         } else {
             $this->asyncResultStore->addFakeToStock($conditions->getSearchHash(), count($results));
