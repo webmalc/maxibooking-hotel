@@ -1,204 +1,215 @@
 @import "../common-style.mixin";
+
 .importFontRoboto();
 
 #mbh-body-search-iframe {
-    @row-width-desktop: 180px;
-    @row-width-tablet: 130px;
-    @row-width-mobile: 240px;
+  @row-width-desktop: 180px;
+  @row-width-tablet: 130px;
+  @row-width-mobile: 240px;
 
-    @ident-row: 7px;
+  @ident-row: 7px;
 
-    .commonStyleFont();
+  .commonStyleFont();
 
-    margin: 0;
+  margin: 0;
 
+  display: flex;
+  justify-content: center;
+
+  background: rgba(40, 40, 40, 0.75);
+
+  @media (min-width: @size-screen-max-width-mobile) {
+    height: 120px;
+  }
+
+  height: 280px;
+
+  input {
+    font-family: inherit;
+  }
+
+  &.booking-page {
+    #mbh-form-wrapper {
+      form#mbh-form {
+        @media (min-width: @size-screen-mid-width-tablet) {
+          width: 210px*4 + (@ident-row*2)*3;
+
+          .mbh-form-row {
+            &.mbh-form-additional-form-amount-guest-wrapper,
+            &#mbh-form-submit-wrapper {
+              width: 210px;
+            }
+
+            width: 210px;
+          }
+        }
+      }
+    }
+  }
+
+  #mbh-form-wrapper {
     display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
 
-    background: rgba(40, 40, 40, 0.75);
+    padding: 35px 0 10px;
 
-    @media (min-width: @size-screen-max-width-mobile) {
-        height: 120px;
-    }
+    form#mbh-form {
+      display: flex;
+      justify-content: center;
 
-    height: 280px;
+      @media (min-width: @size-screen-max-width-mobile) {
+        width: @row-width-desktop*2 + @row-width-tablet*2 + (@ident-row*2)*3;
+      }
 
-    input {
-        font-family: inherit;
-    }
+      @media (min-width: @size-screen-mid-width-tablet) {
+        width: @row-width-desktop*4 + (@ident-row*2)*3;
+      }
 
-    &.booking-page {
-        #mbh-form-wrapper {
-            form#mbh-form {
-                @media (min-width: @size-screen-mid-width-tablet) {
-                    width: 210px*4 + (@ident-row*2)*3;
+      width: 240px;
 
-                    .mbh-form-row {
-                        &.mbh-form-additional-form-amount-guest-wrapper,
-                        &#mbh-form-submit-wrapper {
-                            width: 210px;
-                        }
+      flex-wrap: wrap;
 
-                        width: 210px;
-                    }
-                }
-            }
+      #mbh-form-begin-wrapper::after,
+      #mbh-form-end-wrapper::after {
+        content: "";
+        width: 20px;
+        height: 20px;
+        background-image: url('/bundles/mbhonline/images/icon-calendar.svg');
+        background-repeat: no-repeat;
+        background-position: right;
+        margin-right: 10px;
+        margin-top: -1px;
+      }
+
+      @media (min-width: @size-screen-max-width-mobile) {
+        #mbh-form-begin-wrapper {
+          margin-right: @ident-row;
         }
-    }
 
-    #mbh-form-wrapper {
+        .mbh-form-additional-form-amount-guest-wrapper,
+        #mbh-form-end-wrapper {
+          margin: 0 @ident-row;
+        }
+
+        #mbh-form-submit-wrapper {
+          padding: unset;
+          margin-left: @ident-row;
+        }
+      }
+
+      @media (max-width: @size-screen-max-width-mobile-minus-one) {
+        & > :nth-child(-n+7):not(#mbh-form-submit-wrapper) {
+          margin-bottom: 16px;
+        }
+      }
+
+      .mbh-form-row {
         display: flex;
-        flex-direction: column;
+        justify-content: space-between;
         align-items: center;
-        justify-content: center;
 
-        padding: 35px 0 10px;
+        background: #ffffff;
 
-        form#mbh-form {
-            display: flex;
-            justify-content: center;
-
-            @media (min-width: @size-screen-max-width-mobile) {
-                width: @row-width-desktop*2 + @row-width-tablet*2 + (@ident-row*2)*3;
-            }
-
-            @media (min-width: @size-screen-mid-width-tablet) {
-                width: @row-width-desktop*4 + (@ident-row*2)*3;
-            }
-
-            width: 240px;
-
-            flex-wrap: wrap;
-
-            #mbh-form-begin-wrapper::after,
-            #mbh-form-end-wrapper::after {
-                content: "";
-                width: 20px;
-                height: 20px;
-                background-image: url('/bundles/mbhonline/images/icon-calendar.svg');
-                background-repeat: no-repeat;
-                background-position: right;
-                margin-right: 10px;
-                margin-top: -1px;
-            }
-
-            @media (min-width: @size-screen-max-width-mobile) {
-                #mbh-form-begin-wrapper {
-                    margin-right: @ident-row;
-                }
-
-                .mbh-form-additional-form-amount-guest-wrapper,
-                #mbh-form-end-wrapper {
-                    margin: 0 @ident-row;
-                }
-
-                #mbh-form-submit-wrapper {
-                    padding: unset;
-                    margin-left: @ident-row;
-                }
-            }
-
-            @media (max-width: @size-screen-max-width-mobile-minus-one) {
-                & > :nth-child(-n+7):not(#mbh-form-submit-wrapper) {
-                    margin-bottom: 16px;
-                }
-            }
-
-            .mbh-form-row {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-
-                background: #ffffff;
-
-                @media (min-width: @size-screen-max-width-mobile) {
-                    width: @row-width-desktop;
-                }
-
-                &.mbh-form-additional-form-amount-guest-wrapper,
-                &#mbh-form-submit-wrapper {
-                    @media (min-width: @size-screen-max-width-mobile){
-                        width: @row-width-tablet;
-                    }
-                    @media (min-width: @size-screen-mid-width-tablet){
-                        width: @row-width-desktop;
-                    }
-                }
-
-                width: @row-width-mobile;
-                height: 40px;
-
-                & > label {
-                    border-right: 1px solid #A0A0A0;
-                    height: 16px;
-                    width: 63px;
-                    text-align: center;
-
-                    .textUppercase();
-                }
-            }
-
-            #mbh-form-submit {
-                justify-content: center;
-                color: #FFFFFF;
-                width: 100%;
-                height: 100%;
-                border: none;
-
-                .textUppercase();
-            }
-
-            .mbh-form-additional-form-amount-guest-wrapper {
-                &::after {
-                    margin-right: 10px;
-                    content: "";
-                    width: 20px;
-                    height: 20px;
-                    background-image: url('/bundles/mbhonline/images/icon-person.svg');
-                    background-repeat: no-repeat;
-                    background-position: right;
-                }
-
-                .additional-input {
-                    background: #fff;
-                    border: none;
-                    text-align: center;
-                    padding: 0;
-                    @media (min-width: @size-screen-max-width-mobile) and (max-width: @size-screen-mid-width-tablet-minus-one){
-                        width: 30px;
-                    }
-
-                    width: 72px;
-
-                    -webkit-appearance: none;
-                    -moz-appearance: none;
-                    appearance: none;
-                }
-            }
-
-            #mbh-form-adults-children-clear,
-            #mbh-actions-wrapper {
-                display: none;
-                visibility: hidden;
-            }
-
-            #mbh-logo-link-wrapper {
-                margin: 10px 0 0 0;
-                width: 100%;
-                text-align: left;
-
-                .svg-mb-logo {
-                    fill: #fff;
-                }
-            }
-
-            .additional-input,
-            .mbh-calendar-input {
-                border: none;
-                text-align: center;
-                padding: 0;
-                width: 87px;
-            }
+        @media (min-width: @size-screen-max-width-mobile) {
+          width: @row-width-desktop;
         }
+
+        &.mbh-form-additional-form-amount-guest-wrapper,
+        &#mbh-form-submit-wrapper {
+          @media (min-width: @size-screen-max-width-mobile) {
+            width: @row-width-tablet;
+          }
+          @media (min-width: @size-screen-mid-width-tablet) {
+            width: @row-width-desktop;
+          }
+        }
+
+        width: @row-width-mobile;
+        height: 40px;
+
+        & > label {
+          border-right: 1px solid #A0A0A0;
+          height: 16px;
+          width: 63px;
+          text-align: center;
+
+          .textUppercase();
+        }
+      }
+
+      #mbh-form-submit {
+        justify-content: center;
+        color: #FFFFFF;
+        width: 100%;
+        height: 100%;
+        border: none;
+        background-color: var(--main);
+        .textUppercase();
+
+        .filterBrightnessOnHover();
+      }
+
+      .mbh-form-additional-form-amount-guest-wrapper {
+        &::after {
+          margin-right: 10px;
+          content: "";
+          width: 20px;
+          height: 20px;
+          background-image: url('/bundles/mbhonline/images/icon-person.svg');
+          background-repeat: no-repeat;
+          background-position: right;
+        }
+
+        .additional-input {
+          background: #fff;
+          border: none;
+          text-align: center;
+          padding: 0;
+          @media (min-width: @size-screen-max-width-mobile) and (max-width: @size-screen-mid-width-tablet-minus-one) {
+            width: 30px;
+          }
+
+          width: 72px;
+
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          appearance: none;
+        }
+      }
+
+      #mbh-form-adults-children-clear,
+      #mbh-actions-wrapper {
+        display: none;
+        visibility: hidden;
+      }
+
+      #mbh-logo-link-wrapper {
+        margin: 10px 0 0 0;
+        width: 100%;
+        text-align: left;
+
+        #mbh-logo-link {
+          .svg-mb-logo {
+            fill: #fff;
+          }
+
+          &:hover {
+            .svg-mb-logo {
+              fill: var(--mainlight);
+            }
+          }
+        }
+      }
+
+      .additional-input,
+      .mbh-calendar-input {
+        border: none;
+        text-align: center;
+        padding: 0;
+        width: 87px;
+      }
     }
+  }
 }

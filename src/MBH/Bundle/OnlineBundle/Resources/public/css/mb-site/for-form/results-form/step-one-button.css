@@ -115,6 +115,9 @@ body .btn-default {
   border-color: unset;
   background: #BDBDBD;
 }
+body .panel-heading {
+  padding: 15px 25px;
+}
 body #mbh-results-actions {
   box-sizing: border-box;
   width: calc(100vw - 30px);
@@ -174,8 +177,10 @@ body #mbh-results-actions #mbh-results-next {
   }
 }
 body #mbh-results-actions #mbh-results-next:hover {
-  background-color: #FFFFFF;
-  color: #4F4F4F;
+  background-color: var(--main);
+}
+body #mbh-results-actions #mbh-results-next:hover {
+  filter: brightness(120%);
 }
 body #mbh-results-actions #mbh-results-total {
   display: flex;

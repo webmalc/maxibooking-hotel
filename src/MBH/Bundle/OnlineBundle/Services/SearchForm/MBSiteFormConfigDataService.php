@@ -103,17 +103,17 @@ class MBSiteFormConfigDataService
         $colorMain = $siteConfig->getThemeColors()['main'];
         $colorMainLight = $siteConfig->getThemeColors()['mainlight'];
 
-        $style = '#mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-logo-link-wrapper #mbh-logo-link:hover .svg-mb-logo {fill: %2$s;}';
-        $style .= '#mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-form-submit {background: %1$s;}\n%3$s';
+        $format = ":root {--main: %s; --mainlight: %s;}\n%s";
+
         $css = sprintf(
-            $style,
+            $format,
             $colorMain,
             $colorMainLight,
             $this->searchStyleHolder->getStyleSearchForm()
         );
 
         $cssAdditionalForm = sprintf(
-            ":root {--main: %s; --mainlight: %s;}\n%s",
+            $format,
             $colorMain,
             $colorMainLight,
             $this->searchStyleHolder->getStyleAdditionalForm()

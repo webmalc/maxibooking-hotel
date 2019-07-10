@@ -116,6 +116,18 @@ body {
 
   .replaceStyleBootstrap();
 
+// --- NEXT BUTTON STYLE
+  #mbh-user-form-next,
+  #mbh-payment-types-next,
+  #mbh-online-payment-btn {
+    &:hover {
+      border-color: var(--main);
+      background-color: var(--main);
+    }
+
+    .filterBrightnessOnHover();
+  }
+
   .select2-drop {
     .styleFontForSelect();
   }
@@ -127,6 +139,7 @@ body {
   #mbh-results-wrapper {
     .maxOuterBorders(970px);
 
+// ----PACKAGE-INFO
     #mbh-package-info {
       @indent: 11px;
 
@@ -185,9 +198,7 @@ body {
         }
       }
     }
-
-
-
+// ----STEP-INFO
     .step-info {
       margin-top: 25px;
       margin-bottom: 65px;

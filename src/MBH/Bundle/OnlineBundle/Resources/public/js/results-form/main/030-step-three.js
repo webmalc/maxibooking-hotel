@@ -3,6 +3,10 @@ MbhResultForm.prototype.togglePaymentSystemVisibility = function () {
         paymentSystemsBlock = document.querySelector('#mbh-payment-systems');
         listPaymentRow = document.querySelectorAll('.mbh-payment-type-row');
 
+    if (paymentSystemsBlock.dataset.onlyOneSystem === '1') {
+        return;
+    }
+
     listPaymentRow.forEach(function(wrapper) {
         var input = wrapper.querySelector('.mbh-payment-types-radio');
         wrapper.addEventListener('click', function() {

@@ -210,8 +210,12 @@
   width: 100%;
   height: 100%;
   border: none;
+  background-color: var(--main);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+#mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-form-submit:hover {
+  filter: brightness(120%);
 }
 #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-additional-form-amount-guest-wrapper::after {
   margin-right: 10px;
@@ -247,8 +251,11 @@
   width: 100%;
   text-align: left;
 }
-#mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-logo-link-wrapper .svg-mb-logo {
+#mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-logo-link-wrapper #mbh-logo-link .svg-mb-logo {
   fill: #fff;
+}
+#mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-logo-link-wrapper #mbh-logo-link:hover .svg-mb-logo {
+  fill: var(--mainlight);
 }
 #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .additional-input,
 #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-calendar-input {

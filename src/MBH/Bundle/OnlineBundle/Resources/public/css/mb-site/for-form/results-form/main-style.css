@@ -211,6 +211,17 @@ body .btn-default {
 body .panel-heading {
   padding: 15px 25px;
 }
+body #mbh-user-form-next:hover,
+body #mbh-payment-types-next:hover,
+body #mbh-online-payment-btn:hover {
+  border-color: var(--main);
+  background-color: var(--main);
+}
+body #mbh-user-form-next:hover,
+body #mbh-payment-types-next:hover,
+body #mbh-online-payment-btn:hover {
+  filter: brightness(120%);
+}
 body .select2-drop {
   font-size: 16px;
   line-height: 28px;
