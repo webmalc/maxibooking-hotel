@@ -16,6 +16,7 @@ use MBH\Bundle\PackageBundle\Lib\SearchCalculateEvent;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\Document\Restriction;
 use MBH\Bundle\PriceBundle\Document\RestrictionRepository;
+use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Lib\SpecialFilter;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
@@ -343,37 +344,56 @@ class Search implements SearchInterface
                 }
             }
 
-            $adults = $query->adults;
-            $children = $query->children;
-            $infants = $query->infants;
-
-            //filter infants
-            if (!empty($query->childrenAges)) {
-                foreach ($query->childrenAges as $age) {
-                    if ($age <= $tariff->getInfantAge()) {
-                        $children -= 1;
-                        $infants += 1;
-                    }
-                }
-            }
-
-            //filter children
-            if (!empty($query->childrenAges)) {
-                foreach ($query->childrenAges as $age) {
-                    if ($age > $tariff->getChildAge()) {
-                        $children -= 1;
-                        $adults += 1;
-                    }
-                }
-            }
-
             foreach ($hotelArray as $roomTypeId => $caches) {
+
+                $adults = $query->adults;
+                $children = $query->children;
+                $infants = $query->infants;
+
+                /** Добавляем для по дсчета количества макс количества инфантов. */
+                $founded = 0;
+                $infantAge = $tariff->getInfantAge();
+                $maxInfants = $caches[0]->getRoomType()->getMaxInfants();
+                $childrenAges = $query->childrenAges;
+
+                array_walk($childrenAges, static function (&$age) use ($infantAge, $maxInfants, &$founded) {
+
+                    if (null !== $infantAge && $age <= $infantAge) {
+                        $founded++;
+                        if ($founded > $maxInfants) {
+                            $age = $infantAge + 1;
+                        }
+                    }
+                });
+
+
+                //filter infants
+                if (!empty($childrenAges)) {
+                    foreach ($childrenAges as $age) {
+                        if ($age <= $tariff->getInfantAge()) {
+                            $children -= 1;
+                            $infants += 1;
+                        }
+                    }
+                }
+
+                //filter children
+                if (!empty($childrenAges)) {
+                    foreach ($childrenAges as $age) {
+                        if ($age > $tariff->getChildAge()) {
+                            $children -= 1;
+                            $adults += 1;
+                        }
+                    }
+                }
+
+
                 $min = $cachesMin[$hotelId][$roomTypeId];
 
                 if (isset($tariffMin[$hotelId][$roomTypeId]) && $tariffMin[$hotelId][$roomTypeId] < $min) {
                     $min = $tariffMin[$hotelId][$roomTypeId];
                 }
-
+                /** @var RoomType $roomType */
                 $roomType = $caches[0]->getRoomType();
 
                 //TODO: Repair.
@@ -384,9 +404,15 @@ class Search implements SearchInterface
                     $roomType = $this->dm->getRepository('MBHHotelBundle:RoomType')->find($roomType->getId());
                 }
 
-                if ($caches[0]->getRoomType()->getTotalPlaces() < $adults + $children) {
+                if ($roomType->getTotalPlaces() < $adults + $children) {
                     continue;
                 }
+                /** Добавляем для азовского доп значение лимита на взрослых. 10.07.2019 */
+                $adultsLimit = $roomType->getMaxAdults();
+                if (null !==  $adultsLimit && $adultsLimit < $adults) {
+                    continue;
+                }
+
                 $useCategories = $query->isOnline && $this->config && $this->config->getUseRoomTypeCategory();
                 $result = new SearchResult();
                 $tourists = $roomType->getAdultsChildrenCombination($adults, $children, $this->manager->useCategories);

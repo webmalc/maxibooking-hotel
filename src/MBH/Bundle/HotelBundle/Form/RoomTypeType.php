@@ -133,12 +133,19 @@ class RoomTypeType extends AbstractType
                 'attr' => ['placeholder' => 'hotel', 'class' => 'spinner room-type-places'],
                 'help' => 'form.roomTypeType.room_additional_places_amount'
             ])
+            ->add('maxAdults', TextType::class, [
+                'label' => 'form.roomTypeType.max_adults',
+                'group' => 'form.roomTypeType.places',
+                'required' => false,
+                'attr' => ['placeholder' => 'adults', 'class' => 'spinner room-type-places'],
+                'help' => 'form.roomTypeType.max_adults'
+            ])
             ->add('maxInfants', TextType::class, [
                 'label' => 'form.roomTypeType.max_infants',
                 'group' => 'form.roomTypeType.places',
                 'required' => true,
-                'attr' => ['placeholder' => 'hotel', 'class' => 'spinner room-type-places'],
-                'help' => 'form.roomTypeType.room_additional_places_amount'
+                'attr' => ['placeholder' => 'maxiInfants', 'class' => 'spinner room-type-places'],
+                'help' => 'form.roomTypeType.max_infants'
             ])
         ;
 

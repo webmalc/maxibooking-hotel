@@ -160,6 +160,14 @@ class RoomType extends Base implements RoomTypeInterface
     protected $maxInfants = 3;
 
     /**
+     * @var @Gedmo\Versioned
+     * @ODM\Field(type="int", name="maxAdults")
+     * @Assert\Type(type="numeric")
+     * @Assert\GreaterThanOrEqual(1)
+     */
+    protected $maxAdults;
+
+    /**
      * @var string
      * @Gedmo\Versioned
      * @ODM\Field(type="string", name="roomSpace")
@@ -454,6 +462,27 @@ class RoomType extends Base implements RoomTypeInterface
 
         return $this;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getMaxAdults(): ?int
+    {
+        return $this->maxAdults;
+    }
+
+    /**
+     * @param mixed $maxAdults
+     * @return RoomType
+     */
+    public function setMaxAdults(?int $maxAdults): RoomType
+    {
+        $this->maxAdults = $maxAdults;
+
+        return $this;
+    }
+
+
 
 
     /**

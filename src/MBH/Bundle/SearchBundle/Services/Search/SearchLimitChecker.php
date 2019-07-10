@@ -145,6 +145,13 @@ class SearchLimitChecker
         if ($searchTotalPlaces > $roomTypeTotalPlaces) {
             throw new RoomTypePopulationException('RoomType total place less than need in query.');
         }
+
+        $searchAdults = $actualOccupancy->getAdults();
+        $adultsLimit = $roomType->getMaxAdults();
+
+        if (null !== $adultsLimit && $searchAdults > $adultsLimit) {
+            throw new RoomTypePopulationException('RoomType adults limit less than need in query.');
+        }
     }
 
     /**

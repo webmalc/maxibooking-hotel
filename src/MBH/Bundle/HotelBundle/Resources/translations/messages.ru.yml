@@ -139,6 +139,7 @@ form.roomTypeType.isIndividualAdditionalPrices: Индивидуальные ц�
 form.roomTypeType.isIndividualAdditionalPricesDesc:  Использовать ли разные цены для каждого дополнительнго места?
 form.roomTypeType.room_main_places_amount: Количество основных мест в номере
 form.roomTypeType.additional_places: Дополнительные места
+form.roomTypeType.max_adults: Максимальное количество взрослых. Уберите значение чтоб убрать ограничение.
 form.roomTypeType.max_infants: Максимальное количество инфантов
 form.roomTypeType.room_additional_places_amount: Количество дополнительных мест в номере
 form.roomTypeType.is_included: Включен?
