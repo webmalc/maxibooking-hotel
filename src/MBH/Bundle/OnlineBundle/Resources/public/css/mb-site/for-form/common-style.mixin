@@ -191,7 +191,7 @@
   line-height: @_line-height;
 }
 
-.maxOuterBorders() {
+.maxOuterBorders(@_width_for_result_page: @size-screen-mid-width-tablet) {
   box-sizing: border-box;
 
   @media (min-width: @size-screen-max-width-mobile) {
@@ -199,7 +199,7 @@
   }
 
   @media (min-width: @size-screen-mid-width-tablet) {
-    width: @size-screen-mid-width-tablet;
+    width: @_width_for_result_page;
   }
 
   .widthWithCalc();
@@ -226,6 +226,10 @@
 }
 
 .replaceStyleBootstrap() {
+  .btn {
+    .textUppercase();
+  }
+
   .bg-primary {
     background-color: @general_color_light;
   }
@@ -237,5 +241,14 @@
   .btn-primary {
     background-color: @general_color;
     border-color: @general_color;
+  }
+
+  .btn-default {
+    border-color: unset;
+    background: #BDBDBD;
+  }
+
+  .panel-heading {
+    padding: 15px 25px;
   }
 }

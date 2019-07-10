@@ -97,6 +97,10 @@ body {
   justify-content: center;
   background-color: unset;
 }
+body .btn {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
 body .bg-primary {
   background-color: var(--mainlight);
 }
@@ -106,6 +110,10 @@ body .text-primary {
 body .btn-primary {
   background-color: var(--main);
   border-color: var(--main);
+}
+body .btn-default {
+  border-color: unset;
+  background: #BDBDBD;
 }
 body #mbh-results-actions {
   box-sizing: border-box;
@@ -125,7 +133,7 @@ body #mbh-results-actions {
 }
 @media (min-width: 832px) {
   body #mbh-results-actions {
-    width: 832px;
+    width: 970px;
   }
 }
 @media (min-width: 472px) {

@@ -8,14 +8,19 @@
         body {
             height: {{ formConfig.stepOneButtonHeight ~ 'px'}};
         }
-        .currency-symbol-first {
-            margin-right: 0.3em;
-        }
-        .currency-symbol-second {
-            margin-left: 0.3em;
+
+        .currency-symbol {
+            position: relative;
+            top: 1px;
         }
     </style>
     {% block styles %}
+        {% stylesheets filter='cssrewrite, uglifycss'
+            '@MBHBaseBundle/Resources/public/css/currency-symbol/common.less'
+        %}
+            <link rel="stylesheet" href="{{ absolute_url(asset_url) }}"/>
+        {% endstylesheets %}
+
         {% if formConfig.theme %}
             <link rel="stylesheet" href="{{ formConfig.theme }}">
             {% stylesheets filter='cssrewrite, uglifycss'

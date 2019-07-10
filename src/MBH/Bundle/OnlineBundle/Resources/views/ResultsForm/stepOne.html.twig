@@ -22,7 +22,7 @@
         {% set isSingleResult = results|length == 1 %}
         {% for result in results %}
             <div class="row mbh-results-container">
-                <div class="col-xs-12 col-sm-3 mbh-results-image-wrapper">
+                <div class="col-xs-12 col-sm-4 mbh-results-image-wrapper">
                     <div class="main-image bg-primary">
                         {% if result.roomType.mainImage is not empty %}
                             {% set image = result.roomType.getMainImage %}
@@ -41,7 +41,7 @@
                         {% endfor %}
                     </div>
                 </div>
-                <div class="col-xs-12 col-sm-6 mbh-results-description-container">
+                <div class="col-xs-12 col-sm-5 mbh-results-description-container">
                     <div class="mbh-results-room-type-name-wrapper">
                             <span class="mbh-results-room-type-name"
                                   data-id="{{ result.roomType.id }}">{{ result.roomType.localeTitle(app.request.locale) }}</span>
@@ -53,14 +53,17 @@
                               data-id="{{ result.tariff.id }}">{{ result.tariff.fullTitle }}</span>
                     </div>
                     <div class="mbh-results-select-guest">
-                        <select class="mbh-results-tourists-select select2{% if result.prices|length == 1 %} hidden{% endif %}">
-                            {% for priceTourists, price  in result.prices %}
-                                {% set arr = priceTourists|split('_') %}
-                                <option value="{{ priceTourists }}">
-                                    {% if arr[0] %}{{ arr[0] }} {{ 'views.api.getResultsTable.number_of_adults'|trans}}{% endif %}{% if arr[1] and arr[0] %}+{% endif %}{% if arr[1] %}{{ arr[1] }} {{ 'views.api.getResultsTable.number_of_children'|trans}}{% endif %}
-                                </option>
-                            {% endfor %}
-                        </select>
+                        <div class="mbh-results-tourists-select-container{% if result.prices|length == 1 %} hidden{% endif %}">
+                            <label for="mbh-results-tourists-select">Гости:</label>
+                            <select id="mbh-results-tourists-select" class="mbh-results-tourists-select select2">
+                                {% for priceTourists, price  in result.prices %}
+                                    {% set arr = priceTourists|split('_') %}
+                                    <option value="{{ priceTourists }}">
+                                        {% if arr[0] %}{{ arr[0] }} {{ 'views.api.getResultsTable.number_of_adults'|trans}}{% endif %}{% if arr[1] and arr[0] %}+{% endif %}{% if arr[1] %}{{ arr[1] }} {{ 'views.api.getResultsTable.number_of_children'|trans}}{% endif %}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
                         {% if result.prices|length == 1 %}
                             {% for priceTourists, price  in result.prices %}
                                 {% set arr = priceTourists|split('_') %}
@@ -90,9 +93,9 @@
                         {% if result.roomType.description is not empty %}
                         {% set desc = result.roomType.description | striptags %}
                             <div class="mbh-results-room-type-description-wrapper">
-                                {% if desc|length > 75 %}
+                                {% if desc|length > 115 %}
                                     <div class="mbh-results-room-type-description description-small">
-                                        {{ desc|slice(0, 75) ~ '...' }}
+                                        {{ desc|slice(0, 115) ~ '...' }}
                                     </div>
                                     <div class="mbh-results-room-type-description description-full">
                                         {{ desc }}

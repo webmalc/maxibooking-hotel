@@ -190,6 +190,27 @@ body .panel .panel-body ul li input[type="radio"]:disabled:checked:after {
   margin-left: 4px;
   margin-top: 1px;
 }
+body .btn {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+body .bg-primary {
+  background-color: var(--mainlight);
+}
+body .text-primary {
+  color: var(--main);
+}
+body .btn-primary {
+  background-color: var(--main);
+  border-color: var(--main);
+}
+body .btn-default {
+  border-color: unset;
+  background: #BDBDBD;
+}
+body .panel-heading {
+  padding: 15px 25px;
+}
 body .select2-drop {
   font-size: 16px;
   line-height: 28px;
@@ -209,21 +230,12 @@ body #mbh-results-wrapper {
 }
 @media (min-width: 832px) {
   body #mbh-results-wrapper {
-    width: 832px;
+    width: 970px;
   }
 }
 body #mbh-results-wrapper #mbh-package-info {
   background-color: #FFFFFF;
   margin-bottom: 10px;
-}
-body #mbh-results-wrapper #mbh-package-info .row {
-  margin-bottom: 5px;
-}
-body #mbh-results-wrapper #mbh-package-info .row .col-xs-7 {
-  padding: 0 0 0 12px;
-}
-body #mbh-results-wrapper #mbh-package-info .row .col-xs-5 {
-  padding: 0 12px 0 0;
 }
 body #mbh-results-wrapper #mbh-package-info .mbh-package-info-wrapper {
   margin-bottom: 11px;
@@ -251,18 +263,18 @@ body #mbh-results-wrapper #mbh-package-info .mbh-group-info .mbh-package-amount 
   font-size: 16px;
   line-height: 20px;
 }
-body #mbh-results-wrapper #mbh-package-info .mbh-group-info .mbh-days-amount #mbh-package-info-nights::before {
-  content: "/";
+body #mbh-results-wrapper #mbh-package-info .mbh-group-info .mbh-package-info-label {
+  margin-right: 0.4em;
 }
 body #mbh-results-wrapper #mbh-package-info .mbh-price-amount {
   font-size: 16px;
   line-height: 20px;
-  margin-bottom: 10px;
 }
 body #mbh-results-wrapper #mbh-package-info .mbh-price-amount .mbh-order-total {
   font-weight: bold;
-  margin-top: 11px;
-  padding-top: 11px;
+}
+body #mbh-results-wrapper #mbh-package-info .mbh-price-amount .mbh-order-total-separator {
+  margin: 11px 0;
   border-top: 1px solid #A0A0A0;
 }
 body #mbh-results-wrapper #mbh-package-info .mbh-price-amount i.fa {
@@ -271,7 +283,7 @@ body #mbh-results-wrapper #mbh-package-info .mbh-price-amount i.fa {
 }
 body #mbh-results-wrapper .step-info {
   margin-top: 25px;
-  margin-bottom: 15px;
+  margin-bottom: 65px;
   display: flex;
   flex-wrap: wrap;
 }
@@ -300,16 +312,6 @@ body #mbh-results-wrapper .step-info .step-number-info .step-title {
   font-size: 16px;
   line-height: 24px;
 }
-body #mbh-results-wrapper .bg-primary {
-  background-color: var(--mainlight);
-}
-body #mbh-results-wrapper .text-primary {
-  color: var(--main);
-}
-body #mbh-results-wrapper .btn-primary {
-  background-color: var(--main);
-  border-color: var(--main);
-}
 body #mbh-results-wrapper #mbh-results-actions {
   display: flex;
   flex-direction: column;
@@ -322,14 +324,6 @@ body #mbh-results-wrapper #mbh-results-actions {
   body #mbh-results-wrapper #mbh-results-actions {
     flex-direction: row;
     height: 78px;
-  }
-}
-@media (min-width: 832px) {
-  body #mbh-results-wrapper .mbh-results-step-wrapper .col-sm-8 {
-    width: 530px;
-  }
-  body #mbh-results-wrapper .mbh-results-step-wrapper .col-sm-4 {
-    width: 332px;
   }
 }
 body #mbh-results-wrapper .step-one .currency-symbol {
@@ -354,7 +348,23 @@ body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wra
 body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wrapper.show-description .mbh-results-tariff-label #mbh-results-tariff-selected {
   font-weight: bold;
 }
-body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wrapper .col-xs-11 > *:not(.mbh-results-tariff-description) {
+body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wrapper .col-sm-1 {
+  margin-left: 10px;
+}
+@media (min-width: 520px) {
+  body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wrapper .col-sm-1,
+  body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wrapper .col-sm-11 {
+    padding-left: unset;
+  }
+  body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wrapper .col-sm-1 {
+    padding-right: unset;
+    margin-left: -10px;
+  }
+  body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wrapper .col-sm-11 {
+    margin-left: -10px;
+  }
+}
+body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wrapper .col-sm-11 > *:not(.mbh-results-tariff-description) {
   margin-right: 0.3em;
 }
 body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wrapper .mbh-results-tariff-label {
@@ -396,13 +406,18 @@ body #mbh-results-wrapper .step-one #mbh-results-duration #mbh-result-response-i
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container {
   margin: 10px 0;
-  padding: 5px 0;
+  padding: 10px 0;
   background: #FFFFFF;
+}
+@media (min-width: 520px) {
+  body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container {
+    padding: 20px 15px;
+  }
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .main-image {
   margin-bottom: 5px;
   text-align: center;
-  height: 120px;
+  height: 224px;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .main-image a {
   display: block;
@@ -451,10 +466,10 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-conta
   }
 }
 @media (min-width: 832px) {
-  body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .list-small-image a:nth-of-type(3) {
+  body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .list-small-image a:nth-of-type(4) {
     margin-right: 0;
   }
-  body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .list-small-image a:nth-of-type(n+4) {
+  body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .list-small-image a:nth-of-type(n+5) {
     display: none;
   }
 }
@@ -462,8 +477,13 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-conta
   height: 50px;
   width: 50px;
 }
+@media (min-width: 832px) {
+  body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .list-small-image a img {
+    width: 60px;
+  }
+}
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container > div {
-  margin-bottom: 8px;
+  margin-bottom: 15px;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-room-type-name-wrapper {
   font-family: 'Roboto Slab', serif;
@@ -477,8 +497,11 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-conta
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-hotel-and-tariff-wrapper span + span {
   margin-left: 5px;
 }
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-tourists-select-container label {
+  margin-right: .3em;
+  font-weight: normal;
+}
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-select-guest {
-  width: 80px;
   font-size: 16px;
   line-height: 28px;
   text-align: center;
@@ -507,6 +530,7 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-conta
   background: #FFFFFF;
   border: none;
   padding: unset;
+  outline: none;
   font-style: italic;
   font-weight: 500;
   font-size: 16px;
@@ -559,10 +583,10 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-conta
   line-height: 28px;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-price-container .room-count-selector .mbh-results-packages-count {
-  width: 80px;
   font-size: 16px;
   line-height: 28px;
   text-align: center;
+  width: 80px;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-price-container .room-count-selector .mbh-results-packages-count a {
   border-radius: unset;
@@ -632,19 +656,35 @@ body #mbh-results-wrapper .step-two #mbh-results-actions #mbh-user-form-next {
 body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form #mbh-results-services-wrapper .panel-body {
   padding: 0;
 }
+body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form #mbh-results-services-wrapper .mbh-service-item-header,
 body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form #mbh-results-services-wrapper .mbh-service-item {
-  border-bottom: 1px solid #A0A0A0;
-  min-height: 56px;
-}
-body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form #mbh-results-services-wrapper .mbh-service-item.row {
-  margin-right: unset;
-  margin-left: unset;
+  padding: 15px 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-bottom: 1px solid #A0A0A0;
+}
+body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form #mbh-results-services-wrapper .mbh-service-item-header.row,
+body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form #mbh-results-services-wrapper .mbh-service-item.row {
+  margin-right: unset;
+  margin-left: unset;
+}
+body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form #mbh-results-services-wrapper .mbh-service-item-header {
+  height: 48px;
+  font-size: 16px;
+  line-height: 24px;
+  color: #737373;
+}
+body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form #mbh-results-services-wrapper .mbh-service-item {
+  min-height: 56px;
 }
 body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form #mbh-results-services-wrapper .mbh-service-item .mbh-service-item-name {
   font-weight: bold;
+  font-size: 16px;
+  line-height: 24px;
+}
+body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form #mbh-results-services-wrapper .mbh-service-item .mbh-service-item-name small {
+  font-weight: normal;
   font-size: 16px;
   line-height: 24px;
 }
@@ -654,10 +694,10 @@ body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form #mbh-res
   line-height: 24px;
 }
 body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form #mbh-results-services-wrapper .mbh-service-item .mbh-service-item-hotel {
-  width: 80px;
   font-size: 16px;
   line-height: 28px;
   text-align: center;
+  text-align: right;
 }
 body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form #mbh-results-services-wrapper .mbh-service-item .mbh-service-item-hotel a {
   border-radius: unset;
@@ -666,7 +706,11 @@ body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form #mbh-res
 body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form #mbh-results-services-wrapper .mbh-service-item .mbh-service-item-hotel a .select2-chosen {
   margin-top: 4px;
 }
+body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form .mbh-results-form-user-container .panel-body {
+  padding: 36px 25px;
+}
 body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form .mbh-results-form-user-container #mbh-user-form-wrapper .mbh-user-form-row label {
+  text-align: left;
   font-style: normal;
   font-weight: normal;
   font-size: 16px;
@@ -680,6 +724,10 @@ body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form .mbh-res
 }
 body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form .mbh-results-form-user-container #mbh-user-form-wrapper #personal-data-form-group #mbh-form-personal-data {
   margin: 0 3px;
+  width: 20px;
+  height: 20px;
+  top: 4px;
+  position: relative;
 }
 @media (max-width: 520px) {
   body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form .mbh-results-form-user-container #mbh-user-form-wrapper #personal-data-form-group .col-xs-12 {
@@ -730,6 +778,16 @@ body #mbh-results-wrapper .step-three #mbh-results-payment-form .mbh-payment-typ
   font-size: 16px;
   line-height: 24px;
   margin-bottom: 7px;
+}
+body #mbh-results-wrapper .step-three #mbh-results-payment-form .mbh-payment-type-row .col-sm-1 {
+  margin-left: 10px;
+  margin-right: -10px;
+}
+body #mbh-results-wrapper .step-three #mbh-results-payment-form .mbh-payment-type-row .col-sm-11 {
+  padding-left: 0;
+}
+body #mbh-results-wrapper .step-three #mbh-results-payment-form .mbh-payment-type-row .col-sm-1.hidden + .col-sm-11 {
+  margin-left: 25px;
 }
 @media (max-width: 390px) {
   body #mbh-results-wrapper .step-three #mbh-results-payment-form .mbh-payment-type-row {

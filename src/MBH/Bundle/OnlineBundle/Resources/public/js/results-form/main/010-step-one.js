@@ -25,7 +25,7 @@ MbhResultForm.prototype.setFancyBoxOffset = function() {
 
     if (document.body.scrollHeight > screen.height) {
         $('.fancybox').fancybox({
-            'afterLoad': function () {
+            afterLoad: function () {
                 var fancyTopOffset = screen.height / 2 - frameOffset - document.body.scrollHeight / 2;
                 var offsetLimit = document.body.scrollHeight / 2 - screen.height / 2 + 30;
                 if (fancyTopOffset > offsetLimit) {
@@ -204,8 +204,6 @@ MbhResultForm.prototype.tablePrices = function () {
     jQuery('.mbh-results-tourists-select').each(function() {
         show(jQuery(this).closest('.mbh-results-container'));
     });
-
-    this.setFancyBoxOffset();
 };
 
 MbhResultForm.prototype.tariffsAction = function () {
@@ -270,6 +268,8 @@ MbhResultForm.prototype.stepOne = function() {
             _this.tariffsAction();
 
             _this.tablePrices();
+
+            _this.setFancyBoxOffset();
 
             _this.calcTotal();
 

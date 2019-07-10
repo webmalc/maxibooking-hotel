@@ -64,10 +64,10 @@ form.formType.reservation_payment_types_with_online_form: 'Типы оплаты
 controller.apiController.reservation_error_occured_refresh_page_and_try_again: 'Произошла ошибка во время бронирования. Обновите страницу и попробуйте еще раз.'
 controller.apiController.reservations_made_success: 'Номера успешно забронированы.'
 controller.apiController.your_reservations_numbers: 'Номера ваших броней'
-controller.apiController.room_reservation_made_success: 'Номер успешно забронирован.'
+controller.apiController.room_reservation_made_success: 'Оплата бронирования.'
 controller.apiController.your_reservation_number: 'Номер вашей брони'
-controller.apiController.thank_you: 'Большое спасибо. '
-controller.apiController.we_will_call_you_back_soon: ' Мы свяжемся с Вами в ближайшее время.'
+controller.apiController.thank_you: 'Поздравляем! Вы в шаге от того, что бы стать наших Гостем.'
+controller.apiController.we_will_call_you_back_soon: ' Для подтверждения бронирования нажмите на кнопку Оплатить.'
 controller.apiController.your_order_number: 'Номер вашего заказа: '
 controller.formController.settings_saved_success: 'Настройки успешно сохранены.'
 controller.formController.frame_sizes_changed: 'Изменены значения размеров онлайн-формы.  Обновите код формы на сайте.'
@@ -130,7 +130,7 @@ views.api.getResultsTable.number_of_children: рб.
 views.api.get_form_iframe.online_booking_system: 'система онлайн бронирования'
 views.api.notification: 'Новые брони из онлайн-формы'
 views.api.get_user_form.default_name: Иван
-views.api.get_user_form.services: Услуги
+views.api.get_user_form.services: 'Дополнительные услуги'
 views.poll.config.voting_code: 'Код голосования для вставки на сайт'
 payment_types.in_hotel: 'Оплата при заселении'
 payment_types.online_full: 'Онлайн оплата (100%)'

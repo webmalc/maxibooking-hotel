@@ -28,7 +28,7 @@ order.cash.are_you_sure_to_confirm_payment: 'Точно подтвердить �
 order.cash.are_you_sure_to_pay_payment: 'Точно оплатить платеж на сумму'
 order.cash.confirm: Подтвердить
 order.cash.pay: Подтвердить
-order.cash.short_pay: оплатить
+order.cash.short_pay: Оплатить
 order.cash.cash_documents_not_found: 'Кассовые документы не найдены.'
 package.edit.query: 'Подробности запроса'
 order.edit.order_editing: 'редактирование заказа #'

@@ -107,6 +107,18 @@
 #mbh-body-search-iframe input {
   font-family: inherit;
 }
+@media (min-width: 832px) {
+  #mbh-body-search-iframe.booking-page #mbh-form-wrapper form#mbh-form {
+    width: 882px;
+  }
+  #mbh-body-search-iframe.booking-page #mbh-form-wrapper form#mbh-form .mbh-form-row {
+    width: 210px;
+  }
+  #mbh-body-search-iframe.booking-page #mbh-form-wrapper form#mbh-form .mbh-form-row.mbh-form-additional-form-amount-guest-wrapper,
+  #mbh-body-search-iframe.booking-page #mbh-form-wrapper form#mbh-form .mbh-form-row#mbh-form-submit-wrapper {
+    width: 210px;
+  }
+}
 #mbh-body-search-iframe #mbh-form-wrapper {
   display: flex;
   flex-direction: column;

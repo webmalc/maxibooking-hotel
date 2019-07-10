@@ -181,6 +181,18 @@ OnLoadFormLoad.prototype.processMessage = function (e) {
     }
 };
 
+OnLoadFormLoad.prototype.pageIsBooking = function (pageIsBooking) {
+    var _this = this;
+    /** need ref */
+    this.searchIframe.onload = function(ev) {
+        _this.searchIframe.contentWindow.postMessage({
+            type: 'mbh',
+            action: 'currentPageIsBooking',
+            value: pageIsBooking
+        }, '*');
+    };
+};
+
 OnLoadFormLoad.prototype.showIframe = function (event, element) {
     var c = this.getCoords();
 

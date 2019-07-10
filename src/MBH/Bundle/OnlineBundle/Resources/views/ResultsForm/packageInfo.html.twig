@@ -20,14 +20,15 @@
             </div>
             <div class="row mbh-days-amount">
                 <div class="col-sm-12">
-                    {{ 'views.api.getPaymentType.days_and_nights'|trans({}, 'MBHOnlineBundle') }}
+                    <span class="mbh-package-info-label">{{ 'views.api.getPaymentType.days_and_nights'|trans({}, 'MBHOnlineBundle') }}</span>
                     <span id="mbh-package-info-days">{{ request.days }}</span>
+                    <span>/</span>
                     <span id="mbh-package-info-nights">{{ request.nights }}</span>
                 </div>
             </div>
             <div class="row mbh-package-amount">
                 <div class="col-sm-12">
-                    {{ 'views.api.getPaymentType.nomerov'|trans({}, 'MBHOnlineBundle') }}
+                    <span class="mbh-package-info-label">{{ 'views.api.getPaymentType.nomerov'|trans({}, 'MBHOnlineBundle') }}</span>
                     <span>{{ request.packages|length }}</span>
                 </div>
             </div>
@@ -51,6 +52,7 @@
                     {{ currency_symbol_with_price(request.totalPackages | result_number_format, 'mbh-package-info-total-packages') }}
                 </div>
             </div>
+            <div class="mbh-order-total-separator"></div>
             <div class="row mbh-order-total">
                 <div class="col-xs-7 col-sm-7">
                     {{ 'views.api.getPaymentType.order_result'|trans({}, 'MBHOnlineBundle') }}
@@ -60,6 +62,7 @@
                 </div>
             </div>
             {% if stepNumber is defined and stepNumber == 3 %}
+                <div class="mbh-order-total-separator"></div>
                 <div class="row mbh-order-total">
                     <div class="col-xs-7 col-sm-7">
                         {{ 'views.api.result.packages_info.total_to_pay'|trans({}, 'MBHOnlineBundle') }}

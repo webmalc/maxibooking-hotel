@@ -1,3 +1,6 @@
+input {
+  cursor: pointer;
+}
 /* roboto-300 - cyrillic_cyrillic-ext_latin */
 @font-face {
   font-family: 'Roboto';

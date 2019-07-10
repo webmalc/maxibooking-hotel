@@ -13,7 +13,7 @@ parameters:
     mbh.currency.data:
       usd: {text: '$', small: '¢', icon: 'fa fa-usd', side: left}
       eur: {text: '€', small: '¢', icon: 'fa fa-eur', side: left}
-      rub: {text: 'currency.rub.text', small: 'currency.rub.small', icon: 'fa fa-ruble', side: left, symbol: '₽'}
+      rub: {text: 'currency.rub.text', small: 'currency.rub.small', icon: 'fa fa-ruble', side: right, symbol: '₽'}
       uah: {text: 'currency.uah.text', small: 'currency.uah.small', icon: 'fa fa-money', side: left, symbol: '₴'}
       kzt: {text: 'currency.kzt.text', small: 'currency.kzt.small', icon: 'fa fa-money', side: left, symbol: '₸'}
       uzs: {text: 'currency.uzs.text', small: 'currency.uzs.small', icon: 'fa fa-money', side: left, symbol: 'UZS'}

@@ -14,22 +14,32 @@
                         <div class="panel-body">
                             <div id="mbh-results-services-table-wrapper">
                                 <div class="mbh-results-services-table">
+                                    {% set useFourCol = hotels|length > 1 %}
+                                    {% set numberCol = useFourCol ? 3 : 6 %}
+                                    <div class="row mbh-service-item-header">
+                                        {% if useFourCol %}
+                                            <div class="col-xs-3 col-sm-3">asfas</div>
+                                        {% endif %}
+                                        <div class="col-xs-{{ numberCol }} col-sm-{{ numberCol }}">Тип услуги</div>
+                                        <div class="col-xs-3 col-sm-3 text-right">Стомость</div>
+                                        <div class="col-xs-3 col-sm-3 text-right">Количество</div>
+                                    </div>
                                     {% for service in services %}
                                         <div class="row mbh-service-item">
-                                            {% if hotels|length > 1 %}
-                                                <div class="mbh-service-item-hotel col-xs-3 col-sm-3">
+                                            {% if useFourCol %}
+                                                <div class="mbh-service-item-hotel col-xs-{{ numberCol }} col-sm-{{ numberCol }}">
                                                     <span class="mbh-results-services-hotel" data-id="{{ service.category.hotel.id }}">{{ service.category.hotel.fullTitle }}</span>
                                                 </div>
                                             {% endif %}
-                                            <div class="mbh-service-item-name col-xs-3 col-sm-3">
+                                            <div class="mbh-service-item-name col-xs-{{ numberCol }} col-sm-{{ numberCol }}">
                                                 <span class="mbh-results-services-name" data-id="{{ service.id }}">{{ service.fullTitle }}<br><small>{{ service.description }}</small></span>
                                             </div>
-                                            <div class="mbh-service-item-price col-xs-3 col-sm-3">
+                                            <div class="mbh-service-item-price col-xs-3 col-sm-3 text-right">
                                                 <span class="mbh-results-services-prices" data-value="{{ service.price }}">
                                                     {{ currency_symbol_with_price(service.price | result_number_format) }}
                                                 </span>
                                             </div>
-                                            <div class="mbh-service-item-hotel col-xs-3 col-sm-3">
+                                            <div class="mbh-service-item-hotel col-xs-3 col-sm-3 text-right">
                                                 <label>
                                                     <select class="mbh-results-services-count select2">
                                                         <option value="0" selected="selected">0</option>
@@ -190,7 +200,7 @@
     </div>
 
     <div id="mbh-results-actions">
-        <button id="mbh-user-form-previous" class="button btn btn-primary">
+        <button id="mbh-user-form-previous" class="button btn btn-default">
             <small><i class="fa fa-chevron-left"></i></small>
             {{ 'views.api.getUserForm.choose_other_rooms'|trans({}, 'MBHOnlineBundle') }}
         </button>

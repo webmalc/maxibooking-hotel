@@ -35,6 +35,13 @@
 
     {% endif %}
 
+    <style>
+        #mbh-form-submit,
+        .form-group label,
+        .form-group input {
+            cursor: pointer;
+        }
+    </style>
     {% if formConfig.cssLibraries is defined and formConfig.cssLibraries is iterable %}
         {% for link in formConfig.cssLibraries %}
             <link rel="stylesheet" href="{{ link }}">

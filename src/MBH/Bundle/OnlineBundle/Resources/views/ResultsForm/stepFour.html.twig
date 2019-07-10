@@ -1,4 +1,5 @@
 <div id="mbh-results-global-wrapper" class="step-four">
+    {# is not error. stepNumber 3 #}
     {% include 'MBHOnlineBundle:ResultsForm:stepInfo.html.twig' with {'stepNumber': 3} %}
     <div class="panel panel-primary spacer-top">
         <div class="panel-heading">
@@ -7,8 +8,7 @@
         <div class="panel-body mbh-results-success-booking">
             <div class="text-success">{{ roomStr | trans }}</div>
             <div class="text-back-soon">{{ 'controller.apiController.we_will_call_you_back_soon' | trans }}</div>
-            <div class="text-order-number">{{ 'controller.apiController.your_order_number' | trans }}: {{ orderId }}</div>
-            <div class="text-package-number">{{ packageStr | trans }}: {{ packages }}</div>
+            <div class="text-order-number">{{ 'controller.apiController.your_order_number' | trans }} {{ orderId }}</div>
             {% if form != null %}
                 {{ form | raw }}
             {% endif %}

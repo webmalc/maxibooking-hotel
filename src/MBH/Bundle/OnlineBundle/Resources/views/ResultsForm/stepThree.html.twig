@@ -16,8 +16,8 @@
                         <div id="mbh-payment-types" data-tariff="{{ firstPackage.tariff.id }}">
                             {% for paymentType in formConfig.paymentTypes %}
                                 <div class="row mbh-payment-type-row{{ onlyOneType ? ' selected' : '' }}" data-type="{{ paymentType }}">
-                                    <div class="col-xs-1 col-sm-1">
-                                        <input {% if onlyOneType %}checked style="display:none;"{% endif %}
+                                    <div class="col-xs-1 col-sm-1{% if onlyOneType %} hidden{% endif %}">
+                                        <input {% if onlyOneType %}checked{% endif %}
                                                type="radio"
                                                class="mbh-payment-types-radio"
                                                name="paymentType"
@@ -59,7 +59,7 @@
                             {% endfor %}
                         </div>
 
-                        <div id="mbh-payment-systems" hidden="{{ selectIsHidden }}">
+                        <div id="mbh-payment-systems" hidden="{{ selectIsHidden }}" data-only-one-system="{{ onlyOneSystem }}">
                             <div class="mbh-form-row form-group">
                                 <label for="mbh-form-payment-system"> {{ 'views.api.getPaymentType.payment_systems.label'|trans({}, 'MBHOnlineBundle') }}</label>
                                 <select id="mbh-form-payment-system" class="form-control input-sm" name="payment-system">
@@ -80,7 +80,7 @@
         </div>
     </div>
     <div id="mbh-results-actions">
-        <button id="mbh-payment-types-previous" class="button btn btn-primary">
+        <button id="mbh-payment-types-previous" class="button btn btn-default">
             <small><i class="fa fa-chevron-left"></i></small>
             {{ 'views.api.getPaymentType.choose_other_rooms'|trans({}, 'MBHOnlineBundle') }}
         </button>

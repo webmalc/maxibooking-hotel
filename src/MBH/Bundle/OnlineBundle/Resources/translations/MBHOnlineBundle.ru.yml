@@ -29,13 +29,13 @@ views.api.getPaymentType.payment_systems.label: 'Платежная систем
 views.api.getPaymentType.choose_other_rooms: Назад
 views.api.getPaymentType.reservate: Бронировать
 views.api.getPaymentType.reservation_error_try_again: 'Произошла ошибка во время бронирования. Обновите страницу и попробуйте еще раз.'
-views.api.getResultsTable.hotel_rooms_for: 'Номера в отеле '
+views.api.getResultsTable.hotel_rooms_for: 'Доступные номера '
 views.api.getResultsTable.room_type: 'Тип размещения'
 views.api.getResultsTable.room_cache_count: 'В наличии'
 views.api.getResultsTable.guests: Гости
 views.api.getResultsTable.price: Цена
 views.api.getResultsTable.rooms_amount: 'Количество номеров'
-views.api.getResultsTable.room_description: 'Подробнее о номере'
+views.api.getResultsTable.room_description: 'Подробнее...'
 views.api.getResultsTable.room_price: 'Цена за номер'
 views.api.getResultsTable.hotel: Отель
 views.api.getResultsTable.service_type: 'Тип услуги'

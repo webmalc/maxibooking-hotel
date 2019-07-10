@@ -5,18 +5,11 @@
     <title>Maxibooking</title>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/select2/3.5.0/select2.css">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/fancybox/3.0.47/jquery.fancybox.css">
-    <style>
-        .currency-symbol-first {
-            margin-right: 0.3em;
-        }
-        .currency-symbol-second {
-            margin-left: 0.3em;
-        }
-    </style>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css">
     {% block styles %}
         {% stylesheets filter='cssrewrite, uglifycss'
             '@MBHBaseBundle/Resources/public/css/mbsuperfont/styles.less'
+            '@MBHBaseBundle/Resources/public/css/currency-symbol/common.less'
         %}
             <link rel="stylesheet" href="{{ absolute_url(asset_url) }}"/>
         {% endstylesheets %}
@@ -87,7 +80,7 @@
     <script defer src="//cdnjs.cloudflare.com/ajax/libs/select2/3.5.0/select2.min.js"></script>
     <script defer src="//cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.3.1/jquery.maskedinput.min.js"></script>
     <script defer src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
-    <script defer src="//cdnjs.cloudflare.com/ajax/libs/fancybox/3.0.47/jquery.fancybox.min.js"></script>
+    <script defer src="//cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
     {% block scripts %}
         {% javascripts filter='uglifyjs2'
             '@MBHBaseBundle/Resources/public/js/first/010-nativ-func.js'

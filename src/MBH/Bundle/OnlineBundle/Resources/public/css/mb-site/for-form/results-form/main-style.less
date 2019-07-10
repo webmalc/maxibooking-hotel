@@ -103,7 +103,6 @@ body {
   }
 
   .styleForSelect2() {
-    width: 80px;
     .styleFontForSelect();
     a {
       border-radius: unset;
@@ -115,17 +114,18 @@ body {
     }
   }
 
+  .replaceStyleBootstrap();
+
   .select2-drop {
     .styleFontForSelect();
   }
-
 
   .mbh-results-info-load {
     background-color: @general_color;
   }
 
   #mbh-results-wrapper {
-    .maxOuterBorders();
+    .maxOuterBorders(970px);
 
     #mbh-package-info {
       @indent: 11px;
@@ -136,17 +136,6 @@ body {
 
       background-color: #FFFFFF;
       margin-bottom: 10px;
-
-      .row {
-        margin-bottom: 5px;
-
-        .col-xs-7 {
-          padding: 0 0 0 12px;
-        }
-        .col-xs-5 {
-          padding: 0 12px 0 0;
-        }
-      }
 
       .mbh-package-info-wrapper {
         .indentBottom();
@@ -173,21 +162,20 @@ body {
           .fontSizeLineHeight(16px, 20px);
         }
 
-        .mbh-days-amount {
-          #mbh-package-info-nights::before {
-            content: "/";
-          }
+        .mbh-package-info-label {
+          margin-right: 0.4em;
         }
       }
 
       .mbh-price-amount {
         .fontSizeLineHeight(16px, 20px);
-        margin-bottom: 10px;
 
         .mbh-order-total {
           font-weight: bold;
-          margin-top: @indent;
-          padding-top: @indent;
+        }
+
+        .mbh-order-total-separator {
+          margin: @indent 0;
           border-top: 1px solid #A0A0A0;
         }
 
@@ -198,9 +186,11 @@ body {
       }
     }
 
+
+
     .step-info {
       margin-top: 25px;
-      margin-bottom: 15px;
+      margin-bottom: 65px;
       display: flex;
       flex-wrap: wrap;
       .step-number-info {
@@ -235,8 +225,6 @@ body {
       }
     }
 
-    .replaceStyleBootstrap();
-
     #mbh-results-actions {
       @media (min-width: 472px) {
         flex-direction: row;
@@ -250,17 +238,6 @@ body {
 
       border: 1px solid @general_color;
       background: #FFFFFF;
-    }
-
-    .mbh-results-step-wrapper {
-      @media (min-width: @size-screen-mid-width-tablet) {
-        .col-sm-8 {
-          width: 530px;
-        }
-        .col-sm-4 {
-          width: 332px;
-        }
-      }
     }
 
     .step-one {
@@ -296,7 +273,26 @@ body {
             }
           }
 
-          .col-xs-11 {
+          .col-sm-1 {
+            margin-left: 10px;
+          }
+          @media (min-width: 520px) {
+            .col-sm-1,
+            .col-sm-11 {
+              padding-left: unset;
+            }
+
+            .col-sm-1 {
+              padding-right: unset;
+              margin-left: -10px;
+            }
+
+            .col-sm-11 {
+              margin-left: -10px;
+            }
+          }
+
+          .col-sm-11 {
             > *:not(.mbh-results-tariff-description) {
               margin-right: 0.3em;
             }
@@ -355,7 +351,11 @@ body {
       #mbh-results-list-wrapper {
         .mbh-results-container {
           margin: 10px 0;
-          padding: 5px 0;
+
+          @media (min-width: 520px) {
+            padding: 20px 15px;
+          }
+          padding: 10px 0;
           background: #FFFFFF;
   // BEGIN IMAGE
           .mbh-results-image-wrapper {
@@ -363,7 +363,7 @@ body {
               margin-bottom: 5px;
               text-align: center;
 
-              height: 120px;
+              height: 224px;
 
               a {
                 display: block;
@@ -420,16 +420,20 @@ body {
                 }
 
                 @media (min-width: @size-screen-mid-width-tablet) {
-                  &:nth-of-type(3) {
+                  &:nth-of-type(4) {
                     margin-right: 0;
                   }
-                  &:nth-of-type(n+4) {
+                  &:nth-of-type(n+5) {
                     display: none;
                   }
                 }
 
                 img {
                   height: 50px;
+                  @media (min-width: @size-screen-mid-width-tablet) {
+                    width: 60px;
+                  }
+
                   width: 50px;
                 }
               }
@@ -439,7 +443,7 @@ body {
   // BEGIN DESCRIPTION
           .mbh-results-description-container {
             > div {
-              margin-bottom: 8px;
+              margin-bottom: 15px;
             }
 
             .mbh-results-room-type-name-wrapper {
@@ -453,6 +457,13 @@ body {
               }
               span + span {
                 margin-left: 5px;
+              }
+            }
+
+            .mbh-results-tourists-select-container {
+              label {
+                margin-right: .3em;
+                font-weight: normal;
               }
             }
 
@@ -484,6 +495,7 @@ body {
                   background: #FFFFFF;
                   border: none;
                   padding: unset;
+                  outline: none;
 
                   font-style: italic;
                   font-weight: 500;
@@ -557,6 +569,7 @@ body {
 
               .mbh-results-packages-count {
                 .styleForSelect2();
+                width: 80px;
               }
             }
 
@@ -624,22 +637,38 @@ body {
             padding: 0;
           }
 
+          .mbh-service-item-header,
           .mbh-service-item {
             &.row {
               margin-right: unset;
               margin-left: unset;
-
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
             }
 
+            padding: 15px 10px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             border-bottom: 1px solid #A0A0A0;
+          }
+
+          .mbh-service-item-header {
+            height: 48px;
+            .fontSizeLineHeight();
+            color: #737373;
+          }
+
+          .mbh-service-item {
             min-height: 56px;
 
             .mbh-service-item-name {
               font-weight: bold;
               .fontSizeLineHeight();
+
+              small {
+                font-weight: normal;
+                .fontSizeLineHeight();
+              }
             }
 
             .mbh-service-item-price {
@@ -649,13 +678,21 @@ body {
 
             .mbh-service-item-hotel {
               .styleForSelect2();
+              text-align: right;
             }
           }
         }
         .mbh-results-form-user-container {
+
+          .panel-body {
+            padding: 36px 25px;
+          }
+
           #mbh-user-form-wrapper {
             .mbh-user-form-row {
               label {
+                text-align: left;
+
                 font-style: normal;
                 font-weight: normal;
                 .fontSizeLineHeight(16px, 20px);
@@ -672,6 +709,10 @@ body {
               }
               #mbh-form-personal-data {
                 margin: 0 3px;
+                width: 20px;
+                height: 20px;
+                top: 4px;
+                position: relative;
               }
 
               @media (max-width: 520px) {
@@ -716,6 +757,19 @@ body {
           .mbh-payment-type-row-total {
             .fontSizeLineHeight();
             margin-bottom: 7px;
+          }
+
+          .col-sm-1 {
+            margin-left: 10px;
+            margin-right: -10px;
+          }
+
+          .col-sm-11 {
+            padding-left: 0;
+          }
+
+          .col-sm-1.hidden + .col-sm-11 {
+            margin-left: 25px;
           }
 
           @media (max-width: 390px) {

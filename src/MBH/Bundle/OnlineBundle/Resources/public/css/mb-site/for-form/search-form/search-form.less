@@ -27,6 +27,25 @@
         font-family: inherit;
     }
 
+    &.booking-page {
+        #mbh-form-wrapper {
+            form#mbh-form {
+                @media (min-width: @size-screen-mid-width-tablet) {
+                    width: 210px*4 + (@ident-row*2)*3;
+
+                    .mbh-form-row {
+                        &.mbh-form-additional-form-amount-guest-wrapper,
+                        &#mbh-form-submit-wrapper {
+                            width: 210px;
+                        }
+
+                        width: 210px;
+                    }
+                }
+            }
+        }
+    }
+
     #mbh-form-wrapper {
         display: flex;
         flex-direction: column;

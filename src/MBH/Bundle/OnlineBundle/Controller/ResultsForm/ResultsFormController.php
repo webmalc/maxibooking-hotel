@@ -530,13 +530,9 @@ class ResultsFormController extends BaseController
 
         $this->dm->refresh($order->getFirstPackage());
 
-        if (count($packages) > 1) {
-            $roomStr = 'controller.apiController.reservations_made_success';
-            $packageStr = 'controller.apiController.your_reservations_numbers';
-        } else {
-            $roomStr = 'controller.apiController.room_reservation_made_success';
-            $packageStr = 'controller.apiController.your_reservation_number';
-        }
+        $roomStr = count($packages) > 1
+            ? 'controller.apiController.reservations_made_success'
+            : 'controller.apiController.room_reservation_made_success';
 
         return new JsonResponse(
             [
@@ -546,9 +542,7 @@ class ResultsFormController extends BaseController
                         '@MBHOnline/ResultsForm/stepFour.html.twig',
                         [
                             'roomStr'    => $roomStr,
-                            'packageStr' => $packageStr,
                             'orderId'    => $order->getId(),
-                            'packages'   => implode(', ', $packages),
                             'form'       => $form,
                         ]
                     ),

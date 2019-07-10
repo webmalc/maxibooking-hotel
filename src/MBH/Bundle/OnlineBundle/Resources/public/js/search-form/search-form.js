@@ -111,6 +111,11 @@ SearchForm.prototype.processMessage = function(e) {
         return;
     }
 
+    if (e.data.action === 'currentPageIsBooking' && e.data.value === true) {
+        document.body.classList.add('booking-page');
+        return;
+    }
+
     this.additionalDataSetValueFromIframe(e);
 
     if (e.data.date && this.last) {
