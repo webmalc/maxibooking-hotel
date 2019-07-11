@@ -8,18 +8,21 @@ use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
 use MBH\Bundle\ChannelManagerBundle\Services\Expedia\Expedia;
 use MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaRequestDataFormatter;
 use MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaRequestFormatter;
-use MBH\Bundle\PriceBundle\Document\PriceCache;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 
-class ExpediaUpdateRoomsTest  extends ChannelManagerServiceTestCase
+class ExpediaTest  extends ChannelManagerServiceTestCase
 {
-    const EXPEDIA_HOTEL_ID1 = 123;
-    const EXPEDIA_HOTEL_ID2 = 321;
 
-    const EXPEDIA_UPDATE_ROOMS_API_URL = 'https://services.expediapartnercentral.com/eqc/ar';
-    const HEADERS = ['Content-Type: text/xml'];
-    const METHOD_NAME = 'POST';
+    protected const UPDATE_PRICES = 'updatePrices';
+    protected const UPDATE_RESTRICTIONS = 'updateRestrictions';
+
+    protected const EXPEDIA_HOTEL_ID1 = 123;
+    protected const EXPEDIA_HOTEL_ID2 = 321;
+
+    protected const EXPEDIA_UPDATE_ROOMS_API_URL = 'https://services.expediapartnercentral.com/eqc/ar';
+    protected const HEADERS = ['Content-Type: text/xml'];
+    protected const METHOD_NAME = 'POST';
 
     /**@var ContainerInterface */
     private $container;
@@ -121,11 +124,37 @@ class ExpediaUpdateRoomsTest  extends ChannelManagerServiceTestCase
         $this->assertEquals(self::EXPEDIA_UPDATE_ROOMS_API_URL, $requestDataFormatterArray[1]->getUrl());
     }
 
-    protected function setMock()
+    protected function setMock($method)
     {
         $mock = \Mockery::mock(Expedia::class, [$this->container])->shouldAllowMockingProtectedMethods()
             ->makePartial();
 
+        switch ($method) {
+            case self::UPDATE_PRICES:
+                $this->mockUpdatePricesSend($mock);
+                break;
+            case self::UPDATE_RESTRICTIONS:
+                $this->mockUpdateRestrictionsSend($mock);
+                break;
+        }
+
+        $mock->shouldReceive('checkResponse')->andReturnTrue();
+
+        $mock->shouldReceive('pullTariffs')->andReturnUsing(function() {
+            $serviceTariffs['ID1']['readonly'] = false;
+            $serviceTariffs['ID1']['is_child_rate'] = false;
+            $serviceTariffs['ID1']['rooms'] = $this->getServiceRoomIds($this->datum);
+            $serviceTariffs['ID1']['minLOSDefault'] = 1;
+            $serviceTariffs['ID1']['maxLOSDefault'] = 10;
+
+            return $serviceTariffs;
+        });
+
+        $this->container->set('mbh.channelmanager.expedia', $mock);
+    }
+
+    protected function mockUpdatePricesSend($mock): void
+    {
         $mock->shouldReceive('sendRequestAndGetResponse')->andReturnUsing(function (...$data) {
             $this->assertEquals(
                 str_replace([' ', PHP_EOL], '', $this->getUpdatePricesRequestData($this->datum)),
@@ -134,46 +163,38 @@ class ExpediaUpdateRoomsTest  extends ChannelManagerServiceTestCase
 
             $this->datum = !$this->datum;
         });
-
-        $mock->shouldReceive('checkResponse')->andReturnTrue();
-
-        $mock->shouldReceive('pullTariffs')->andReturnUsing(function() {
-            $serviceTariffs['ID1']['readonly'] = false;
-            $serviceTariffs['ID1']['is_child_rate'] = false;
-            $serviceTariffs['ID1']['rooms'] = $this->getServiceRoomIds($this->datum);
-
-            return $serviceTariffs;
-        });
-
-        $this->container->set('mbh.channelmanager.expedia', $mock);
     }
 
-    protected function unsetPriceCache(\DateTime $date, $type = true): void
+    protected function mockUpdateRestrictionsSend($mock): void
     {
-        /** @var PriceCache $pc */
-        $pc = $this->dm->getRepository(PriceCache::class)->findOneBy([
-            'hotel.id' => $this->getHotelByIsDefault(true)->getId(),
-            'roomType.id' => $this->getHotelByIsDefault(true)->getRoomTypes()[0]->getId(),
-            'tariff.id' => $this->getHotelByIsDefault(true)->getBaseTariff()->getId(),
-            'date' => $date
-        ]);
+        $mock->shouldReceive('sendRequestAndGetResponse')->andReturnUsing(function (...$data) {
+            $this->assertEquals(
+                str_replace([' ', PHP_EOL], '', $this->getUpdateRestrictionsRequestData($this->datum)),
+                str_replace([' ', PHP_EOL], '', $data[0]->getRequestData())
+            );
 
-        if ($type) {
-            $pc->setCancelDate(new \DateTime(), true);
-        } else {
-            $pc->setPrice(0);
-        }
-
-        $this->dm->persist($pc);
-        $this->dm->flush();
+            $this->datum = !$this->datum;
+        });
     }
 
-    public function testUpdatePrices()
+    public function testUpdateRestrictions(): void
     {
         $date = clone $this->startDate;
         $this->unsetPriceCache($date->modify('+4 days'));
         $this->unsetPriceCache($date->modify('+1 days'), false);
-        $this->setMock();
+        $this->setRestriction($date->modify('+1 days'));
+        $this->setMock(self::UPDATE_RESTRICTIONS);
+        $cm = $this->container->get('mbh.channelmanager.expedia');
+
+        $cm->updateRestrictions($this->startDate, $this->endDate);
+    }
+    public function testUpdatePrices(): void
+    {
+        $date = clone $this->startDate;
+        $this->unsetPriceCache($date->modify('+4 days'));
+        $this->unsetPriceCache($date->modify('+1 days'), false);
+        $this->setRestriction($date->modify('+1 days'));
+        $this->setMock(self::UPDATE_PRICES);
         $cm = $this->container->get('mbh.channelmanager.expedia');
 
         $cm->updatePrices($this->startDate, $this->endDate);
@@ -199,8 +220,9 @@ class ExpediaUpdateRoomsTest  extends ChannelManagerServiceTestCase
         $end = $this->endDate->format(ExpediaRequestDataFormatter::EXPEDIA_DEFAULT_DATE_FORMAT_STRING);
         $roomId = $this->getServiceRoomIds($isDefault);
 
-        if ($isDefault) {
-            return "<?xml version=\"1.0\"?>\n".
+        return $isDefault
+            ?
+            "<?xml version=\"1.0\"?>\n".
             "<AvailRateUpdateRQ xmlns=\"http://www.expediaconnect.com/EQC/AR/2011/06\"><Authentication username=\"EQC".
             "Maxibooking\" password=\"\"/><Hotel id=\"" . self::EXPEDIA_HOTEL_ID1 . "\"/><AvailRateUpdate><DateRange".
             " from=\"".$begin."\" to=\"".$end."\"/><RoomType id=\"" . $roomId[0] . "\" closed=\"false\"><Inventory".
@@ -208,9 +230,9 @@ class ExpediaUpdateRoomsTest  extends ChannelManagerServiceTestCase
             "\" to=\"".$end."\"/><RoomType id=\"". $roomId[1] ."\" closed=\"true\"><Inventory totalInventoryAvailable".
             "=\"0\"/></RoomType></AvailRateUpdate><AvailRateUpdate><DateRange from=\"".$begin."\" to=\"".$end."\"/>".
             "<RoomType id=\"". $roomId[2] ."\" closed=\"true\"><Inventory totalInventoryAvailable=\"0\"/></RoomType>".
-            "</AvailRateUpdate></AvailRateUpdateRQ>\n";
-        } else {
-            return "<?xml version=\"1.0\"?>\n".
+            "</AvailRateUpdate></AvailRateUpdateRQ>\n"
+            :
+            "<?xml version=\"1.0\"?>\n".
             "<AvailRateUpdateRQ xmlns=\"http://www.expediaconnect.com/EQC/AR/2011/06\"><Authentication username=\"EQC".
             "Maxibooking\" password=\"\"/><Hotel id=\"" . self::EXPEDIA_HOTEL_ID2 . "\"/><AvailRateUpdate><DateRange".
             " from=\"".$begin."\" to=\"".$end."\"/><RoomType id=\"" . $roomId[0] . "\" closed=\"true\"><Inventory".
@@ -219,7 +241,7 @@ class ExpediaUpdateRoomsTest  extends ChannelManagerServiceTestCase
             "=\"0\"/></RoomType></AvailRateUpdate><AvailRateUpdate><DateRange from=\"".$begin."\" to=\"".$end."\"/>".
             "<RoomType id=\"". $roomId[2] ."\" closed=\"true\"><Inventory totalInventoryAvailable=\"0\"/></RoomType>".
             "</AvailRateUpdate></AvailRateUpdateRQ>\n";
-        }
+
     }
 
     private function getUpdatePricesRequestData($isDefaultHotel)
@@ -244,7 +266,7 @@ class ExpediaUpdateRoomsTest  extends ChannelManagerServiceTestCase
       </RoomType>
    </AvailRateUpdate>
    <AvailRateUpdate>
-      <DateRange from="'.(clone $begin)->modify('+4 days')->format('Y-m-d').'" to="'.(clone $begin)->modify('+4 days')->format('Y-m-d').'" />
+      <DateRange from="'.(clone $begin)->modify('+4 days')->format('Y-m-d').'" to="'.(clone $begin)->modify('+6 days')->format('Y-m-d').'" />
       <RoomType id="def_room1">
          <RatePlan id="ID1" closed="true">
             <Rate currency="RUB" />
@@ -252,15 +274,7 @@ class ExpediaUpdateRoomsTest  extends ChannelManagerServiceTestCase
       </RoomType>
    </AvailRateUpdate>
    <AvailRateUpdate>
-      <DateRange from="'.(clone $begin)->modify('+5 days')->format('Y-m-d').'" to="'.(clone $begin)->modify('+5 days')->format('Y-m-d').'" />
-      <RoomType id="def_room1">
-         <RatePlan id="ID1" closed="true">
-            <Rate currency="RUB" />
-         </RatePlan>
-      </RoomType>
-   </AvailRateUpdate>
-   <AvailRateUpdate>
-      <DateRange from="'.(clone $begin)->modify('+6 days')->format('Y-m-d').'" to="'.$end->format('Y-m-d').'" />
+      <DateRange from="'.(clone $begin)->modify('+7 days')->format('Y-m-d').'" to="'.$end->format('Y-m-d').'" />
       <RoomType id="def_room1">
          <RatePlan id="ID1" closed="false">
             <Rate currency="RUB">
@@ -342,4 +356,95 @@ class ExpediaUpdateRoomsTest  extends ChannelManagerServiceTestCase
 </AvailRateUpdateRQ>';
     }
 
+    protected function getUpdateRestrictionsRequestData($isDefault): string
+    {
+        $begin = clone $this->startDate;
+        $end = clone $this->endDate;
+
+        return $isDefault
+            ?
+            '<?xml version="1.0"?>
+<AvailRateUpdateRQ xmlns="http://www.expediaconnect.com/EQC/AR/2011/06">
+   <Authentication username="EQCMaxibooking" password="" />
+   <Hotel id="123" />
+   <AvailRateUpdate>
+      <DateRange from="'.$begin->format('Y-m-d').'" to="'.(clone $begin)->modify('+3 days')->format('Y-m-d').'" />
+      <RoomType id="def_room1">
+         <RatePlan id="ID1" closed="false">
+            <Restrictions closedToArrival="false" closedToDeparture="false" minLOS="1" maxLOS="10" />
+         </RatePlan>
+      </RoomType>
+   </AvailRateUpdate>
+   <AvailRateUpdate>
+      <DateRange from="'.(clone $begin)->modify('+4 days')->format('Y-m-d').'" to="'.(clone $begin)->modify('+5 days')->format('Y-m-d').'" />
+      <RoomType id="def_room1">
+         <RatePlan id="ID1" closed="true">
+            <Restrictions closedToArrival="true" closedToDeparture="true" minLOS="1" maxLOS="10" />
+         </RatePlan>
+      </RoomType>
+   </AvailRateUpdate>
+   <AvailRateUpdate>
+      <DateRange from="'.(clone $begin)->modify('+6 days')->format('Y-m-d').'" to="'.(clone $begin)->modify('+6 days')->format('Y-m-d').'" />
+      <RoomType id="def_room1">
+         <RatePlan id="ID1" closed="true">
+            <Restrictions closedToArrival="true" closedToDeparture="true" minLOS="2" maxLOS="10" />
+         </RatePlan>
+      </RoomType>
+   </AvailRateUpdate>
+   <AvailRateUpdate>
+      <DateRange from="'.(clone $begin)->modify('+7 days')->format('Y-m-d').'" to="'.$end->format('Y-m-d').'" />
+      <RoomType id="def_room1">
+         <RatePlan id="ID1" closed="false">
+            <Restrictions closedToArrival="false" closedToDeparture="false" minLOS="1" maxLOS="10" />
+         </RatePlan>
+      </RoomType>
+   </AvailRateUpdate>
+   <AvailRateUpdate>
+      <DateRange from="'.$begin->format('Y-m-d').'" to="'.$end->format('Y-m-d').'" />
+      <RoomType id="def_room2">
+         <RatePlan id="ID1" closed="false">
+            <Restrictions closedToArrival="false" closedToDeparture="false" minLOS="3" maxLOS="10" />
+         </RatePlan>
+      </RoomType>
+   </AvailRateUpdate>
+   <AvailRateUpdate>
+      <DateRange from="'.$begin->format('Y-m-d').'" to="'.$end->format('Y-m-d').'" />
+      <RoomType id="def_room3">
+         <RatePlan id="ID1" closed="false">
+            <Restrictions closedToArrival="false" closedToDeparture="false" minLOS="2" maxLOS="10" />
+         </RatePlan>
+      </RoomType>
+   </AvailRateUpdate>
+</AvailRateUpdateRQ>'
+            :
+            '<?xml version="1.0"?>
+<AvailRateUpdateRQ xmlns="http://www.expediaconnect.com/EQC/AR/2011/06">
+   <Authentication username="EQCMaxibooking" password="" />
+   <Hotel id="321" />
+   <AvailRateUpdate>
+      <DateRange from="'.$begin->format('Y-m-d').'" to="'.$end->format('Y-m-d').'" />
+      <RoomType id="not_def_room1">
+         <RatePlan id="ID1" closed="false">
+            <Restrictions closedToArrival="false" closedToDeparture="false" minLOS="1" maxLOS="10" />
+         </RatePlan>
+      </RoomType>
+   </AvailRateUpdate>
+   <AvailRateUpdate>
+      <DateRange from="'.$begin->format('Y-m-d').'" to="'.$end->format('Y-m-d').'" />
+      <RoomType id="not_def_room2">
+         <RatePlan id="ID1" closed="false">
+            <Restrictions closedToArrival="false" closedToDeparture="false" minLOS="3" maxLOS="10" />
+         </RatePlan>
+      </RoomType>
+   </AvailRateUpdate>
+   <AvailRateUpdate>
+      <DateRange from="'.$begin->format('Y-m-d').'" to="'.$end->format('Y-m-d').'" />
+      <RoomType id="not_def_room3">
+         <RatePlan id="ID1" closed="false">
+            <Restrictions closedToArrival="false" closedToDeparture="false" minLOS="2" maxLOS="10" />
+         </RatePlan>
+      </RoomType>
+   </AvailRateUpdate>
+</AvailRateUpdateRQ>';
+    }
 }
