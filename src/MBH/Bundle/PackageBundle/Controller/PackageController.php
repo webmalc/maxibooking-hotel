@@ -115,7 +115,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
         );
         //created_by count
         $count['created_by'] = $repository->fetch(array_merge([
-                'createdBy' => $this->getUser()->getUsername()
+                'createdBy' => $this->getUser()->getUsername(),
+                'ownerId' => $this->getUser()->getId()
             ], $data)
         );
         //checkIn count

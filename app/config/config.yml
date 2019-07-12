@@ -199,11 +199,6 @@ knp_snappy:
         binary:     /usr/local/bin/h
         options:    []
 
-# IamPersistentMongoDBAclBundle Configuration
-dinhkhanh_mongo_db_acl:
-    acl_provider:
-        default_database: "%mongodb_database%"
-
 liip_imagine:
     resolvers:
         default:

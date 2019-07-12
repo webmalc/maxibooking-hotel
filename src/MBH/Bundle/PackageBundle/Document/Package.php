@@ -18,6 +18,8 @@ use MBH\Bundle\PackageBundle\Lib\PayerInterface;
 use MBH\Bundle\PackageBundle\Validator\Constraints as MBHValidator;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;
+use MBH\Bundle\UserBundle\Lib\OwnerInterface;
+use MBH\Bundle\UserBundle\Lib\OwnerTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
@@ -31,12 +33,13 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  * @ODM\Index(name="search_rt_del_end_begin", keys={"roomType"="asc", "deletedAt"="asc", "end"="asc", "begin"="asc"})
  * @ODM\Index(name="search_del_end_begin", keys={"deletedAt"="asc", "end"="asc", "begin"="asc"})
  */
-class Package extends Base implements \JsonSerializable
+class Package extends Base implements \JsonSerializable, OwnerInterface
 {
     use TimestampableDocument;
     use SoftDeleteableDocument;
     use BlameableDocument;
     use DeleteReasonTrait;
+    use OwnerTrait;
 
     public const ROOM_STATUS_OPEN = 'open';
     public const ROOM_STATUS_WAIT = 'wait'; //Не заехал

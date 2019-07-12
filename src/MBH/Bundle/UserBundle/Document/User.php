@@ -3,6 +3,7 @@
 namespace MBH\Bundle\UserBundle\Document;
 
 use Doctrine\Bundle\MongoDBBundle\Validator\Constraints\Unique as MongoDBUnique;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use FOS\UserBundle\Model\User as BaseUser;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -10,8 +11,10 @@ use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\BaseBundle\Service\Messenger\RecipientInterface;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\PackageBundle\Document\AddressObjectDecomposed;
 use MBH\Bundle\PackageBundle\Document\DocumentRelation;
+use MBH\Bundle\PackageBundle\Lib\HotelAccessibleInterface;
 use MBH\Bundle\UserBundle\Validator\Constraints as MBHValidator;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -24,7 +27,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @MongoDBUnique(fields="email", message="Такой e-mail уже зарегистрирован")
  * @MongoDBUnique(fields="username", message="Такой логин уже зарегистрирован")
  */
-class User extends BaseUser implements RecipientInterface
+class User extends BaseUser implements RecipientInterface, HotelAccessibleInterface
 {
     const ROLE_DEFAULT = 'ROLE_BASE_USER';
     const TWO_FACTOR_TYPES = ['email', 'google'];
@@ -135,6 +138,12 @@ class User extends BaseUser implements RecipientInterface
     protected $groups;
 
     /**
+     * @ODM\ReferenceMany(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel")
+     */
+    protected $hotels;
+
+
+    /**
      * @var boolean
      * @Gedmo\Versioned
      * @ODM\Boolean()
@@ -202,6 +211,7 @@ class User extends BaseUser implements RecipientInterface
     public function __construct()
     {
         parent::__construct();
+        $this->hotels = new ArrayCollection();
     }
 
     /**
@@ -589,4 +599,46 @@ class User extends BaseUser implements RecipientInterface
     {
         return self::TWO_FACTOR_TYPES;
     }
+
+    /** @return Hotel[]|void */
+    public function getAccessibleHotels(): ?iterable
+    {
+        return $this->hotels;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHotels()
+    {
+        return $this->hotels;
+    }
+
+    public function setHotels($hotels)
+    {
+        $this->hotels = $hotels;
+
+        return $this;
+    }
+
+    /**
+     * @param Hotel $hotel
+     * @return User
+     */
+    public function addHotel(Hotel $hotel): User
+    {
+        $this->hotels->add($hotel);
+
+        return $this;
+    }
+
+    public function removeHotel(Hotel $hotel): User
+    {
+        $this->hotels->removeElement($hotel);
+
+        return $this;
+    }
+
+
+
 }

@@ -254,26 +254,32 @@ class PackageRepository extends DocumentRepository
         // filter
         if (isset($criteria->filter)) {
             //live now
-            if ($criteria->filter == 'live_now') {
+            if ($criteria->filter === 'live_now') {
                 $queryBuilder->field('begin')->lte($now);
                 $queryBuilder->field('end')->gte($now);
             }
             // without accommodation
-            if ($criteria->filter == 'without_accommodation') {
+            if ($criteria->filter === 'without_accommodation') {
                 $queryBuilder->addOr($queryBuilder->expr()->field('accommodation')->exists(false));
                 $queryBuilder->addOr($queryBuilder->expr()->field('accommodation')->equals(null));
             }
 
             // live_between
-            if ($criteria->filter == 'live_between' && isset($criteria->liveBegin) && isset($criteria->liveEnd)) {
+            if ($criteria->filter === 'live_between' && isset($criteria->liveBegin) && isset($criteria->liveEnd)) {
                 $queryBuilder->field('begin')->lte($criteria->liveEnd);
                 $queryBuilder->field('end')->gte($criteria->liveBegin);
             }
         }
 
-        if (isset($criteria->createdBy)) {
-            $queryBuilder->field('createdBy')->equals($criteria->createdBy);
+        /** TODO: Updated to owner.id in 3.4 version */
+        if ($createdBy = $data['createdBy'] ?? null) {
+            $queryBuilder->addOr($queryBuilder->expr()->field('createdBy')->equals($createdBy));
+            $queryBuilder->addOr($queryBuilder->expr()->field('createdBy')->equals(null));
         }
+        if ($ownerId = $data['ownerId'] ?? null) {
+            $queryBuilder->addOr($queryBuilder->expr()->field('owner.id')->equals($ownerId));
+        }
+
 
         //query
         if (isset($criteria->query)) {

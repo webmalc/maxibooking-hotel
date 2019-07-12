@@ -41,9 +41,6 @@ services:
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
 
-    mongodb_acl_provider:
-            parent: doctrine_mongodb.odm.security.acl.provider
-
     mbh.twig.hotel_selector_extension:
         class: MBH\Bundle\BaseBundle\Twig\HotelSelectorExtension
         arguments: ['@service_container']
@@ -73,7 +70,7 @@ services:
             
     mbh.hotel.selector:
         class: MBH\Bundle\BaseBundle\Service\HotelSelector
-        arguments: ['@service_container']
+        arguments: ['@service_container', '@security.helper']
 
     mbh.currency:
             class: MBH\Bundle\BaseBundle\Service\Currency
@@ -226,3 +223,19 @@ services:
             - { name: knp_menu.menu_builder, method: mainMenu, alias: base_mainMenu }
             - { name: knp_menu.menu_builder, method: managementMenu, alias: base_managementMenu }
             - { name: knp_menu.menu_builder, method: createHotelMenu, alias: base_createHotelMenu }
+
+
+    mbh.secure.hotel_voter:
+      class: MBH\Bundle\BaseBundle\Security\HotelVoter
+      tags:
+        - { name: security.voter }
+
+    mbh.secure.package_voter:
+      class: MBH\Bundle\BaseBundle\Security\PackageVoter
+      tags:
+        - { name: security.voter }
+
+    mbh.service.acl_migratory:
+      class: MBH\Bundle\BaseBundle\Service\AclMigrate\AclMigratory
+      arguments: ['@doctrine.odm.mongodb.document_manager']
+

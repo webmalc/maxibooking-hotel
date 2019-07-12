@@ -3,6 +3,7 @@
 namespace MBH\Bundle\UserBundle\Form;
 
 use Doctrine\Bundle\MongoDBBundle\Form\Type\DocumentType;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -77,10 +78,9 @@ class UserType extends AbstractType
                 'group' => 'form.userType.settings',
                 'label' => 'form.userType.hotels',
                 'multiple' => true,
-                'mapped' => false,
+                'mapped' => true,
                 'required' => false,
-                'data' => $options['hotels'],
-                'class' => 'MBHHotelBundle:Hotel',
+                'class' => Hotel::class,
                 'choice_label' => 'name',
                 'help' => 'form.userType.hotels_user_has_access_to',
                 'attr' => array('class' => "chzn-select")
@@ -172,7 +172,6 @@ class UserType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => 'MBH\Bundle\UserBundle\Document\User',
-            'hotels' => [],
             'roles' => [],
             'isNew' => true
         ]);
