@@ -71,7 +71,6 @@ class ApiExtraController extends Controller
 
 
         $dataForLogger = ' Data response: ' . var_export($response, true);
-        $dataForLogger .= '. Data init: ' . json_encode($init, JSON_UNESCAPED_UNICODE);
 
         if ($response === null || $response->getErrorCode() !== '0') {
             $msg = 'at response from tinkoff: ';
@@ -120,7 +119,6 @@ class ApiExtraController extends Controller
         $response = $sbrfHelper->request($register, $sberbank->isEnvTest());
 
         $dataForLogger = ' Data response: ' . var_export($response, true);
-        $dataForLogger .= '. Data init: ' . json_encode($register, JSON_UNESCAPED_UNICODE);
 
         if ($response === null || ($response->getErrorCode() !== null && $response->getErrorCode() !== RegisterResponse::NO_ERROR)) {
             $msg = 'at response from sberbank: ';
