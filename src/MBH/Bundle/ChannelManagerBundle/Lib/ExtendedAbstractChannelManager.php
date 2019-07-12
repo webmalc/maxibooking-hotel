@@ -40,9 +40,12 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         $begin = $this->getDefaultBegin($begin);
         $end = $this->getDefaultEnd($begin, $end);
 
+        $restrictionsMap = $this->container->get('mbh.channel_manager.restriction.mapper')
+            ->getMap($this->getConfig(), $begin, $end, 'd.m.Y');
+
         foreach ($this->getConfig() as $config) {
             $serviceTariffs = $this->pullTariffs($config);
-            $pricesData = $this->requestDataFormatter->formatPriceRequestData($begin, $end, $roomType, $serviceTariffs, $config);
+            $pricesData = $this->requestDataFormatter->formatPriceRequestData($begin, $end, $roomType, $serviceTariffs, $config, $restrictionsMap);
             $requestInfoArray = $this->requestFormatter->formatUpdatePricesRequest($pricesData);
             $this->log('begin update prices');
             foreach ($requestInfoArray as $requestInfo) {
@@ -104,9 +107,12 @@ abstract class ExtendedAbstractChannelManager extends AbstractChannelManagerServ
         $begin = $this->getDefaultBegin($begin);
         $end = $this->getDefaultEnd($begin, $end);
 
+        $restrictionsMap = $this->container->get('mbh.channel_manager.restriction.mapper')
+            ->getMap($this->getConfig(), $begin, $end, 'd.m.Y');
+
         foreach ($this->getConfig() as $config) {
             $serviceTariffs = $this->pullTariffs($config);
-            $restrictionsData = $this->requestDataFormatter->formatRestrictionRequestData($begin, $end, $roomType, $serviceTariffs, $config);
+            $restrictionsData = $this->requestDataFormatter->formatRestrictionRequestData($begin, $end, $roomType, $serviceTariffs, $config, $restrictionsMap);
             $requestInfoArray = $this->requestFormatter->formatUpdateRestrictionsRequest($restrictionsData);
             foreach ($requestInfoArray as $requestInfo) {
                 $this->log('begin update restrictions');

@@ -52,7 +52,8 @@ class ExpediaRequestDataFormatterTest extends UnitTestCase
      */
     public function testFormatPriceRequestData()
     {
-        $requestData = $this->dataFormatter->formatPriceRequestData($this->begin, $this->end, null, $this->getServiceTariffData(), $this->config);
+        $restrictionMap = $this->container->get('mbh.channel_manager.restriction.mapper')->getMap([$this->config], $this->begin, $this->end, 'd.m.Y');
+        $requestData = $this->dataFormatter->formatPriceRequestData($this->begin, $this->end, null, $this->getServiceTariffData(), $this->config, $restrictionMap);
         $this->assertEquals([$this->compileExpectedRequestData()], $requestData);
     }
 

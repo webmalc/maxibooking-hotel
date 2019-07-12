@@ -600,11 +600,11 @@ class Helper
 
     public function getTimeZone(?ClientConfig $clientConfig = null)
     {
-        if (is_null($clientConfig)) {
+        if ($clientConfig === null) {
             $clientConfig = $this->container->get('mbh.client_config_manager')->fetchConfig();
         }
 
-        if (is_null($clientConfig) || empty($clientConfig->getTimeZone())) {
+        if ($clientConfig === null || empty($clientConfig->getTimeZone())) {
             return $this->container->getParameter('locale') === 'ru'
                 ? 'Europe/Moscow'
                 : 'Europe/Paris';

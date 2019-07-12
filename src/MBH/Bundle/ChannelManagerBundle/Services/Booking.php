@@ -312,6 +312,9 @@ class Booking extends Base
 
         $this->log('start update prices');
 
+        $restrictionsMap = $this->container->get('mbh.channel_manager.restriction.mapper')
+            ->getMap($this->getConfig(), $begin, $end);
+
         // iterate hotels
         foreach ($this->getConfig() as $config) {
             $data = [];
@@ -359,7 +362,9 @@ class Booking extends Base
                             continue;
                         }
 
-                        if (isset($priceCaches[$roomTypeId][$syncPricesTariffId][$day->format('d.m.Y')])) {
+                        $isClosed = $restrictionsMap[$config->getHotel()->getId()][$syncPricesTariffId][$roomTypeId][$day->format('Y-m-d')];
+
+                        if (!$isClosed && isset($priceCaches[$roomTypeId][$syncPricesTariffId][$day->format('d.m.Y')])) {
                             /** @var PriceCache $info */
                             $info = $priceCaches[$roomTypeId][$syncPricesTariffId][$day->format('d.m.Y')];
                             $calculator = $this->container->get('mbh.calculation');
@@ -371,7 +376,7 @@ class Booking extends Base
                             $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
                                 'price' => $price,
                                 'price1' => $price1,
-                                'closed' => $price === (float)0 ? true : false
+                                'closed' => false
                             ];
                         } else {
                             $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
@@ -424,7 +429,11 @@ class Booking extends Base
 
         $this->log('start update restrictions');
 
+        $restrictionsMap = $this->container->get('mbh.channel_manager.restriction.mapper')
+            ->getMap($this->getConfig(), $begin, $end);
+
         // iterate hotels
+        /** @var ChannelManagerConfigInterface $config */
         foreach ($this->getConfig() as $config) {
             $data = [];
             $roomTypes = $this->getRoomTypes($config);
@@ -438,20 +447,6 @@ class Booking extends Base
                 [],
                 true
             );
-            $priceCachesCallback = function () use ($begin, $end, $config, $roomType) {
-                $filtered = $this->priceCacheFilter->filterFetch(
-                    $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
-                        $begin,
-                        $end,
-                        $config->getHotel(),
-                        $roomType ? [$roomType->getId()] : [],
-                        [],
-                        true
-                    )
-                );
-                return $filtered;
-            };
-            $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
 
             foreach ($roomTypes as $roomTypeId => $roomTypeInfo) {
                 foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
@@ -468,18 +463,18 @@ class Booking extends Base
                             ? $tariffDocument->getParent()->getId()
                             : $tariffId;
 
-                        if (!isset($serviceTariffs[$tariff['syncId']]) || $serviceTariffs[$tariff['syncId']]['readonly'] || $serviceTariffs[$tariff['syncId']]['is_child_rate']) {
+                        if (!isset($serviceTariffs[$tariff['syncId']]) || $serviceTariffs[$tariff['syncId']]['readonly']
+                            || $serviceTariffs[$tariff['syncId']]['is_child_rate']) {
                             continue;
                         }
 
-                        if (!empty($serviceTariffs[$tariff['syncId']]['rooms']) && !in_array($roomTypeInfo['syncId'], $serviceTariffs[$tariff['syncId']]['rooms'])) {
+                        if (!empty($serviceTariffs[$tariff['syncId']]['rooms'])
+                            && !in_array($roomTypeInfo['syncId'], $serviceTariffs[$tariff['syncId']]['rooms'])) {
                             continue;
                         }
 
-                        $price = false;
-                        if (isset($priceCaches[$roomTypeId][$syncPricesTariffId][$day->format('d.m.Y')])) {
-                            $price = true;
-                        }
+                        $isClosedByPriceCacheTariff = $restrictionsMap[$config->getHotel(
+                        )->getId()][$syncPricesTariffId][$roomTypeId][$day->format('Y-m-d')];
 
                         if (isset($restrictions[$roomTypeId][$syncRestrictionsTariffId][$day->format('d.m.Y')])) {
                             $info = $restrictions[$roomTypeId][$syncRestrictionsTariffId][$day->format('d.m.Y')];
@@ -490,7 +485,7 @@ class Booking extends Base
                                 'maximumstay' => (int)$info->getMaxStay(),
                                 'closedonarrival' => $info->getClosedOnArrival() ? 1 : 0,
                                 'closedondeparture' => $info->getClosedOnDeparture() ? 1 : 0,
-                                'closed' => $info->getClosed() || !$price ? 1 : 0,
+                                'closed' => $info->getClosed() || $isClosedByPriceCacheTariff ? 1 : 0,
                             ];
                         } else {
                             $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
@@ -500,7 +495,7 @@ class Booking extends Base
                                 'maximumstay' => 0,
                                 'closedonarrival' => 0,
                                 'closedondeparture' => 0,
-                                'closed' => !$price ? 1 : 0,
+                                'closed' => $isClosedByPriceCacheTariff ? 1 : 0,
                             ];
                         }
                     }
