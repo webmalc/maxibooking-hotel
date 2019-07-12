@@ -17,7 +17,7 @@ parameters:
     mb_user_pwd: 'mb_user_pwd'
     mbh.environment: "prod" #это для обхода проверки \MBH\Bundle\BaseBundle\EventListener\OnController::onKernelController
     mbh_cache:
-        is_enabled: false
+        is_enabled: true
         prefix: mbh
         lifetime: 7
         logs: false
