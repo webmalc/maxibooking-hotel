@@ -19,7 +19,7 @@ const state: object = {
     isForceBooking: false,
     isSpecialStrict: false,
     isUseCache: false,
-    errorLevel: 1,
+    errorLevel: 0,
     isOnline: false,
     roomTypeSelections: []
 

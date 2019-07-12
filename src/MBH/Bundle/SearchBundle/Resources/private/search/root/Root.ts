@@ -3,7 +3,7 @@ import store from '../store';
 
 import VueRoot from './Components/VueRoot.vue'
 
-Vue.config.devtools = true;
+Vue.config.devtools = process.env.NODE_ENV === 'development';
 
 // Store clever init https://stackoverflow.com/a/45899653/3725361
 export class Root {
