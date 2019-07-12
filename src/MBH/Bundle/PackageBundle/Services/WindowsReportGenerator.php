@@ -252,6 +252,9 @@ class WindowsReportGenerator
      */
     public function getCountVirtualNumbers(): array
     {
+        //** В версии 7.3  этот код отвалился. Оказалось что он вообще нигде не используется в итоге
+        // Пока не удаляю. но удалить надо.
+        throw new \Exception("Alloha!");
         return $this->countVirtualNumbers;
     }
 
@@ -263,28 +266,32 @@ class WindowsReportGenerator
 
     private function countVirtualNumbers(\DateTime $to)
     {
-        $packagesRoomTypes = $this->packages;
+        //** В версии 7.3  этот код отвалился. Оказалось что он вообще нигде не используется в итоге
+        // Пока не удаляю. но удалить надо.
+        // */
+
+//        $packagesRoomTypes = $this->packages;
         $arr = [];
 
-        foreach ($this->roomTypes as $roomType) {
-            foreach (new \DatePeriod($this->begin, \DateInterval::createFromDateString('1 day'), $to) as $day) {
-                $count = 0;
-                foreach ($packagesRoomTypes as $packagesRoomType) {
-                    foreach ($packagesRoomType as $packageRoom) {
-                        foreach ($packageRoom as $package) {
-                            if ($day >= $package->getBegin() && $day < $package->getEnd()) {
-                                if ($package->getRoomType() == $roomType) {
-                                    $package->getVirtualRoom() ? $count++ : null;
-                                }
-                            }
-                        }
-
-                    }
-
-                }
-                $arr[$roomType->getId()][$day->format('d.m.Y')] = $count;
-            }
-        }
+//        foreach ($this->roomTypes as $roomType) {
+//            foreach (new \DatePeriod($this->begin, \DateInterval::createFromDateString('1 day'), $to) as $day) {
+//                $count = 0;
+//                foreach ($packagesRoomTypes as $packagesRoomType) {
+//                    foreach ($packagesRoomType as $packageRoom) {
+//                        foreach ($packageRoom as $package) {
+//                            if ($day >= $package->getBegin() && $day < $package->getEnd()) {
+//                                if ($package->getRoomType() == $roomType) {
+//                                    $package->getVirtualRoom() ? $count++ : null;
+//                                }
+//                            }
+//                        }
+//
+//                    }
+//
+//                }
+//                $arr[$roomType->getId()][$day->format('d.m.Y')] = $count;
+//            }
+//        }
 
         return $arr;
     }
