@@ -107,11 +107,10 @@ abstract class AbstractRequestDataFormatter
      * @param $roomType
      * @param $serviceTariffs Массив актуальных данных о тарифах, полученный с сервиса
      * @param ChannelManagerConfigInterface $config
-     * @param array $restrictionsMap
      * @return array
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    protected function getPriceData($begin, $end, $roomType, $serviceTariffs, ChannelManagerConfigInterface $config, array $restrictionsMap)
+    protected function getPriceData($begin, $end, $roomType, $serviceTariffs, ChannelManagerConfigInterface $config)
     {
         $resultData = [];
 
@@ -144,11 +143,9 @@ abstract class AbstractRequestDataFormatter
                     /** @var PriceCache $priceCache */
                     $priceCache = null;
 
-                    $isClosed = $restrictionsMap[$config->getHotel()->getId(
-                    )][$tariffInfo['doc']->getId()][$roomTypeInfo['doc']->getId()][$day->format('d.m.Y')];
-
                     /** @var \DateTime $day */
-                    if (!$isClosed && isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
+                    if (isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])
+                    && $priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')]->getPrice()) {
                         /** @var PriceCache $priceCache */
                         $priceCache = $priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')];
                     }

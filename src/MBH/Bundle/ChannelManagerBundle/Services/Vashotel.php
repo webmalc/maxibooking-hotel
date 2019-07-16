@@ -981,7 +981,7 @@ class Vashotel extends Base implements ChannelManagerServiceInterface
 
                         if ($info) {
                             $data['rooms'][$roomType['syncId']][$day->format('Y-m-d')] = [
-                                'prices' => $isClosed ? [] : $prices,
+                                'prices' => $prices,
                                 'closed' => $isClosed ? 1 : 0
                             ];
                         } else {
