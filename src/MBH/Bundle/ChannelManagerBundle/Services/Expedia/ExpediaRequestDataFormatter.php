@@ -109,14 +109,7 @@ class ExpediaRequestDataFormatter extends AbstractRequestDataFormatter
                             $price->getRoomType(),
                             $price->getTariff(),
                             $price->getDate(),
-                            $price->getDate(),
-                            0,
-                            0,
-                            null,
-                            false,
-                            null,
-                            true,
-                            false
+                            $price->getDate()
                         );
                 }
 

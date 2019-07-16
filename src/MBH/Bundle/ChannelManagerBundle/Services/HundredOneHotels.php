@@ -199,13 +199,7 @@ class HundredOneHotels extends Base
                                 $tariff,
                                 $day,
                                 $day,
-                                $occupantCount,
-                                0,
-                                null,
-                                false,
-                                null,
-                                true,
-                                false
+                                $occupantCount
                             );
                             $currentDatePrice = isset($priceFinal[$occupantCount . '_0']) ? $priceFinal[$occupantCount . '_0']['total'] : 0;
                         } else {
