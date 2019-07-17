@@ -8,8 +8,12 @@ services:
       volumes:
         - ../../..:/var/www/mbh
       networks:
-        - proxynet
+        - mynetwork
+
 
 networks:
-  proxynet:
+  mynetwork:
     name: mbh-network
+    driver: bridge
+
+

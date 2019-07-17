@@ -21,7 +21,7 @@ $env = 'dev';
 AliasChecker::checkAlias(AppKernel::CLIENT_VARIABLE, $env);
 $request = Request::createFromGlobals();
 Request::setTrustedProxies(['127.0.0.1', '127.0.1.1', $request->server->get('REMOTE_ADDR')], Request::HEADER_X_FORWARDED_AWS_ELB);
-if (!\in_array($request->getClientIp(), ['93.186.62.78', '127.0.0.1', '127.0.1.1', '172.17.0.1'], true)) {
+if (!\in_array($request->getClientIp(), ['93.186.62.78', '127.0.0.1', '127.0.1.1', '172.16.0.1'], true)) {
     header('HTTP/1.0 403 Forbidden');
     exit('You are not allowed to access this file. Check '.basename(__FILE__).' for more information.');
 }

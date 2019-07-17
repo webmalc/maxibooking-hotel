@@ -9,7 +9,7 @@ services:
       container_name: mbh-memcached
       hostname: memcache
       networks:
-        - proxynet
+        - mynetwork
 
 
     redis:
@@ -17,7 +17,7 @@ services:
       container_name: mbh-redis
       hostname: docker-redis
       networks:
-        - proxynet
+        - mynetwork
 
     rabbitmq:
       image: rabbitmq:latest
@@ -34,7 +34,7 @@ services:
       volumes:
         - ./phpdocker/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
       networks:
-        - proxynet
+        - mynetwork
 
     mongo:
       image: mongo:3.6
@@ -46,7 +46,7 @@ services:
       ports:
         - "27018:27017"
       networks:
-        - proxynet
+        - mynetwork
 
     webserver:
       image: nginx:alpine
@@ -59,7 +59,7 @@ services:
       ports:
         - "9090:80"
       networks:
-        - proxynet
+        - mynetwork
 
     php-fpm:
       build: phpdocker/php-fpm
@@ -75,12 +75,17 @@ services:
         - ./phpdocker/php-fpm/fish:/root/.config/fish/functions
         - /tmp/:/tmp/
       networks:
-        - proxynet
+        - mynetwork
 
 volumes:
   mongo_data:
     driver: local
 
 networks:
-  proxynet:
+  mynetwork:
     name: mbh-network
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.0.0/16
