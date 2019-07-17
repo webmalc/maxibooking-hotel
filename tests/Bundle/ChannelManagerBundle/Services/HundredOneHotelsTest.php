@@ -6,11 +6,13 @@ use MBH\Bundle\BaseBundle\Lib\Test\ChannelManagerServiceTestCase;
 use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Services\HundredOneHotels;
-use MBH\Bundle\PriceBundle\Document\PriceCache;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class HundredOneHotelsTest extends ChannelManagerServiceTestCase
 {
+    protected const UPDATE_PRICES = 'updatePrices';
+    protected const UPDATE_RESTRICTIONS = 'updateRestrictions';
+
     protected const HOH_HOTEL_ID1 = 101;
     protected const HOH_HOTEL_ID2 = 202;
 
@@ -64,27 +66,7 @@ class HundredOneHotelsTest extends ChannelManagerServiceTestCase
         return new HundredOneHotelsConfig();
     }
 
-    protected function unsetPriceCache(\DateTime $date, $type = true): void
-    {
-        /** @var PriceCache $pc */
-        $pc = $this->dm->getRepository(PriceCache::class)->findOneBy([
-            'hotel.id' => $this->getHotelByIsDefault(true)->getId(),
-            'roomType.id' => $this->getHotelByIsDefault(true)->getRoomTypes()[0]->getId(),
-            'tariff.id' => $this->getHotelByIsDefault(true)->getBaseTariff()->getId(),
-            'date' => $date
-        ]);
-
-        if ($type) {
-            $pc->setCancelDate(new \DateTime(), true);
-        } else {
-            $pc->setPrice(0);
-        }
-
-        $this->dm->persist($pc);
-        $this->dm->flush();
-    }
-
-    protected function setMock(): void
+    protected function setMock($method): void
     {
         $mock = \Mockery::mock(HundredOneHotels::class, [$this->container])->makePartial();
 
@@ -96,26 +78,63 @@ class HundredOneHotelsTest extends ChannelManagerServiceTestCase
             return $serviceTariffs;
         });
 
-        $mock->shouldReceive('send')->andReturnUsing(function(...$data) {
-            $this->assertEquals(
-                json_decode($this->getUpdatePricesRequestData(!$this->datum), true),
-                json_decode($data[1]['request'], true)
-            );
-        });
+
+        switch ($method) {
+            case self::UPDATE_PRICES:
+                $this->mockUpdatePricesSend($mock);
+                break;
+            case self::UPDATE_RESTRICTIONS:
+                $this->mockUpdateRestrictionsSend($mock);
+                break;
+        }
+
+
 
         $mock->shouldReceive('log')->andReturnTrue();
 
         $this->container->set('mbh.channelmanager.hundred_one_hotels', $mock);
     }
 
+    protected function mockUpdatePricesSend($mock): void
+    {
+        $mock->shouldReceive('send')->andReturnUsing(function(...$data) {
+            $this->assertEquals(
+                json_decode($this->getUpdatePricesRequestData(!$this->datum), true),
+                json_decode($data[1]['request'], true)
+            );
+        });
+    }
+
+    protected function mockUpdateRestrictionsSend($mock): void
+    {
+        $mock->shouldReceive('send')->andReturnUsing(function(...$data) {
+            $this->assertEquals(
+                json_decode($this->getUpdateRestrictionsRequestData(!$this->datum), true),
+                json_decode($data[1]['request'], true)
+            );
+        });
+    }
+
     public function testUpdatePrices(): void
     {
         $this->unsetPriceCache((clone $this->startDate)->modify('+3 days'), true);
         $this->unsetPriceCache((clone $this->startDate)->modify('+4 days'));
-        $this->setMock();
+        $this->setRestriction((clone $this->startDate)->modify('+5 days'));
+        $this->setMock(self::UPDATE_PRICES);
 
         $cm = $this->container->get('mbh.channelmanager.hundred_one_hotels');
         $cm->updatePrices($this->startDate, $this->endDate);
+    }
+
+    public function testUpdateRestrictions(): void
+    {
+        $this->unsetPriceCache((clone $this->startDate)->modify('+3 days'), true);
+        $this->unsetPriceCache((clone $this->startDate)->modify('+4 days'));
+        $this->setRestriction((clone $this->startDate)->modify('+5 days'));
+        $this->setMock(self::UPDATE_RESTRICTIONS);
+
+        $cm = $this->container->get('mbh.channelmanager.hundred_one_hotels');
+        $cm->updateRestrictions($this->startDate, $this->endDate);
     }
 
     public function testGetConfig(): void
@@ -239,6 +258,2572 @@ class HundredOneHotelsTest extends ChannelManagerServiceTestCase
         }
     }
 
+    protected function getUpdateRestrictionsRequestData($isDefaultHotel): string
+    {
+        $date1 = clone $this->startDate;
+        $date2 = clone $this->startDate;
+
+        return $isDefaultHotel
+            ?
+            '{
+   "api_key": null,
+   "hotel_id": 101,
+   "service": "set_calendar",
+   "data": [
+      {
+         "day": "'. $date1->format('Y-m-d') .'",
+         "closed": {
+            "def_room1": 0,
+            "def_room2": 0,
+            "def_room3": 0
+         },
+         "closed_to_arrival": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "def_room1": {
+               "ID1": 1
+            },
+            "def_room2": {
+               "ID1": 3
+            },
+            "def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date1->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "def_room1": 0,
+            "def_room2": 0,
+            "def_room3": 0
+         },
+         "closed_to_arrival": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "def_room1": {
+               "ID1": 1
+            },
+            "def_room2": {
+               "ID1": 3
+            },
+            "def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date1->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "def_room1": 0,
+            "def_room2": 0,
+            "def_room3": 0
+         },
+         "closed_to_arrival": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "def_room1": {
+               "ID1": 1
+            },
+            "def_room2": {
+               "ID1": 3
+            },
+            "def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date1->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "def_room1": 1,
+            "def_room2": 0,
+            "def_room3": 0
+         },
+         "closed_to_arrival": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "def_room1": {
+               "ID1": 1
+            },
+            "def_room2": {
+               "ID1": 3
+            },
+            "def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date1->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "def_room1": 1,
+            "def_room2": 0,
+            "def_room3": 0
+         },
+         "closed_to_arrival": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "def_room1": {
+               "ID1": 1
+            },
+            "def_room2": {
+               "ID1": 3
+            },
+            "def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date1->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "def_room1": 1,
+            "def_room2": 0,
+            "def_room3": 0
+         },
+         "closed_to_arrival": {
+            "def_room1": {
+               "ID1": 1
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "def_room1": {
+               "ID1": 2
+            },
+            "def_room2": {
+               "ID1": 3
+            },
+            "def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date1->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "def_room1": 0,
+            "def_room2": 0,
+            "def_room3": 0
+         },
+         "closed_to_arrival": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "def_room1": {
+               "ID1": 1
+            },
+            "def_room2": {
+               "ID1": 3
+            },
+            "def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date1->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "def_room1": 0,
+            "def_room2": 0,
+            "def_room3": 0
+         },
+         "closed_to_arrival": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "def_room1": {
+               "ID1": 1
+            },
+            "def_room2": {
+               "ID1": 3
+            },
+            "def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date1->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "def_room1": 0,
+            "def_room2": 0,
+            "def_room3": 0
+         },
+         "closed_to_arrival": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "def_room1": {
+               "ID1": 1
+            },
+            "def_room2": {
+               "ID1": 3
+            },
+            "def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date1->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "def_room1": 0,
+            "def_room2": 0,
+            "def_room3": 0
+         },
+         "closed_to_arrival": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "def_room1": {
+               "ID1": 1
+            },
+            "def_room2": {
+               "ID1": 3
+            },
+            "def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date1->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "def_room1": 0,
+            "def_room2": 0,
+            "def_room3": 0
+         },
+         "closed_to_arrival": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "def_room1": {
+               "ID1": 1
+            },
+            "def_room2": {
+               "ID1": 3
+            },
+            "def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date1->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "def_room1": 0,
+            "def_room2": 0,
+            "def_room3": 0
+         },
+         "closed_to_arrival": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "def_room1": {
+               "ID1": 1
+            },
+            "def_room2": {
+               "ID1": 3
+            },
+            "def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date1->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "def_room1": 0,
+            "def_room2": 0,
+            "def_room3": 0
+         },
+         "closed_to_arrival": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "def_room1": {
+               "ID1": 1
+            },
+            "def_room2": {
+               "ID1": 3
+            },
+            "def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date1->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "def_room1": 0,
+            "def_room2": 0,
+            "def_room3": 0
+         },
+         "closed_to_arrival": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "def_room1": {
+               "ID1": 1
+            },
+            "def_room2": {
+               "ID1": 3
+            },
+            "def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date1->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "def_room1": 0,
+            "def_room2": 0,
+            "def_room3": 0
+         },
+         "closed_to_arrival": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "def_room1": {
+               "ID1": 1
+            },
+            "def_room2": {
+               "ID1": 3
+            },
+            "def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date1->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "def_room1": 0,
+            "def_room2": 0,
+            "def_room3": 0
+         },
+         "closed_to_arrival": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "def_room1": {
+               "ID1": 1
+            },
+            "def_room2": {
+               "ID1": 3
+            },
+            "def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date1->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "def_room1": 0,
+            "def_room2": 0,
+            "def_room3": 0
+         },
+         "closed_to_arrival": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "def_room1": {
+               "ID1": 1
+            },
+            "def_room2": {
+               "ID1": 3
+            },
+            "def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date1->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "def_room1": 0,
+            "def_room2": 0,
+            "def_room3": 0
+         },
+         "closed_to_arrival": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "def_room1": {
+               "ID1": 1
+            },
+            "def_room2": {
+               "ID1": 3
+            },
+            "def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date1->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "def_room1": 0,
+            "def_room2": 0,
+            "def_room3": 0
+         },
+         "closed_to_arrival": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "def_room1": {
+               "ID1": 1
+            },
+            "def_room2": {
+               "ID1": 3
+            },
+            "def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date1->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "def_room1": 0,
+            "def_room2": 0,
+            "def_room3": 0
+         },
+         "closed_to_arrival": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "def_room1": {
+               "ID1": 1
+            },
+            "def_room2": {
+               "ID1": 3
+            },
+            "def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date1->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "def_room1": 0,
+            "def_room2": 0,
+            "def_room3": 0
+         },
+         "closed_to_arrival": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "def_room1": {
+               "ID1": 1
+            },
+            "def_room2": {
+               "ID1": 3
+            },
+            "def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date1->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "def_room1": 0,
+            "def_room2": 0,
+            "def_room3": 0
+         },
+         "closed_to_arrival": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "def_room1": {
+               "ID1": 1
+            },
+            "def_room2": {
+               "ID1": 3
+            },
+            "def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date1->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "def_room1": 0,
+            "def_room2": 0,
+            "def_room3": 0
+         },
+         "closed_to_arrival": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "def_room1": {
+               "ID1": 1
+            },
+            "def_room2": {
+               "ID1": 3
+            },
+            "def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date1->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "def_room1": 0,
+            "def_room2": 0,
+            "def_room3": 0
+         },
+         "closed_to_arrival": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "def_room1": {
+               "ID1": 1
+            },
+            "def_room2": {
+               "ID1": 3
+            },
+            "def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date1->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "def_room1": 0,
+            "def_room2": 0,
+            "def_room3": 0
+         },
+         "closed_to_arrival": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "def_room1": {
+               "ID1": 1
+            },
+            "def_room2": {
+               "ID1": 3
+            },
+            "def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date1->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "def_room1": 0,
+            "def_room2": 0,
+            "def_room3": 0
+         },
+         "closed_to_arrival": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "def_room1": {
+               "ID1": 1
+            },
+            "def_room2": {
+               "ID1": 3
+            },
+            "def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date1->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "def_room1": 0,
+            "def_room2": 0,
+            "def_room3": 0
+         },
+         "closed_to_arrival": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "def_room1": {
+               "ID1": 1
+            },
+            "def_room2": {
+               "ID1": 3
+            },
+            "def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date1->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "def_room1": 0,
+            "def_room2": 0,
+            "def_room3": 0
+         },
+         "closed_to_arrival": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "def_room1": {
+               "ID1": 1
+            },
+            "def_room2": {
+               "ID1": 3
+            },
+            "def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date1->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "def_room1": 0,
+            "def_room2": 0,
+            "def_room3": 0
+         },
+         "closed_to_arrival": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "def_room1": {
+               "ID1": 1
+            },
+            "def_room2": {
+               "ID1": 3
+            },
+            "def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date1->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "def_room1": 0,
+            "def_room2": 0,
+            "def_room3": 0
+         },
+         "closed_to_arrival": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "def_room1": {
+               "ID1": 1
+            },
+            "def_room2": {
+               "ID1": 3
+            },
+            "def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date1->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "def_room1": 0,
+            "def_room2": 0,
+            "def_room3": 0
+         },
+         "closed_to_arrival": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "def_room1": {
+               "ID1": 0
+            },
+            "def_room2": {
+               "ID1": 0
+            },
+            "def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "def_room1": {
+               "ID1": 1
+            },
+            "def_room2": {
+               "ID1": 3
+            },
+            "def_room3": {
+               "ID1": 2
+            }
+         }
+      }
+   ]
+}'
+            :
+            '{
+   "api_key": null,
+   "hotel_id": 202,
+   "service": "set_calendar",
+   "data": [
+      {
+         "day": "'. $date2->format('Y-m-d') .'",
+         "closed": {
+            "not_def_room1": 0,
+            "not_def_room2": 0,
+            "not_def_room3": 0
+         },
+         "closed_to_arrival": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "not_def_room1": {
+               "ID1": 1
+            },
+            "not_def_room2": {
+               "ID1": 3
+            },
+            "not_def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date2->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "not_def_room1": 0,
+            "not_def_room2": 0,
+            "not_def_room3": 0
+         },
+         "closed_to_arrival": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "not_def_room1": {
+               "ID1": 1
+            },
+            "not_def_room2": {
+               "ID1": 3
+            },
+            "not_def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date2->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "not_def_room1": 0,
+            "not_def_room2": 0,
+            "not_def_room3": 0
+         },
+         "closed_to_arrival": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "not_def_room1": {
+               "ID1": 1
+            },
+            "not_def_room2": {
+               "ID1": 3
+            },
+            "not_def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date2->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "not_def_room1": 0,
+            "not_def_room2": 0,
+            "not_def_room3": 0
+         },
+         "closed_to_arrival": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "not_def_room1": {
+               "ID1": 1
+            },
+            "not_def_room2": {
+               "ID1": 3
+            },
+            "not_def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date2->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "not_def_room1": 0,
+            "not_def_room2": 0,
+            "not_def_room3": 0
+         },
+         "closed_to_arrival": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "not_def_room1": {
+               "ID1": 1
+            },
+            "not_def_room2": {
+               "ID1": 3
+            },
+            "not_def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date2->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "not_def_room1": 0,
+            "not_def_room2": 0,
+            "not_def_room3": 0
+         },
+         "closed_to_arrival": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "not_def_room1": {
+               "ID1": 1
+            },
+            "not_def_room2": {
+               "ID1": 3
+            },
+            "not_def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date2->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "not_def_room1": 0,
+            "not_def_room2": 0,
+            "not_def_room3": 0
+         },
+         "closed_to_arrival": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "not_def_room1": {
+               "ID1": 1
+            },
+            "not_def_room2": {
+               "ID1": 3
+            },
+            "not_def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date2->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "not_def_room1": 0,
+            "not_def_room2": 0,
+            "not_def_room3": 0
+         },
+         "closed_to_arrival": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "not_def_room1": {
+               "ID1": 1
+            },
+            "not_def_room2": {
+               "ID1": 3
+            },
+            "not_def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date2->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "not_def_room1": 0,
+            "not_def_room2": 0,
+            "not_def_room3": 0
+         },
+         "closed_to_arrival": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "not_def_room1": {
+               "ID1": 1
+            },
+            "not_def_room2": {
+               "ID1": 3
+            },
+            "not_def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date2->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "not_def_room1": 0,
+            "not_def_room2": 0,
+            "not_def_room3": 0
+         },
+         "closed_to_arrival": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "not_def_room1": {
+               "ID1": 1
+            },
+            "not_def_room2": {
+               "ID1": 3
+            },
+            "not_def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date2->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "not_def_room1": 0,
+            "not_def_room2": 0,
+            "not_def_room3": 0
+         },
+         "closed_to_arrival": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "not_def_room1": {
+               "ID1": 1
+            },
+            "not_def_room2": {
+               "ID1": 3
+            },
+            "not_def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date2->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "not_def_room1": 0,
+            "not_def_room2": 0,
+            "not_def_room3": 0
+         },
+         "closed_to_arrival": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "not_def_room1": {
+               "ID1": 1
+            },
+            "not_def_room2": {
+               "ID1": 3
+            },
+            "not_def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date2->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "not_def_room1": 0,
+            "not_def_room2": 0,
+            "not_def_room3": 0
+         },
+         "closed_to_arrival": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "not_def_room1": {
+               "ID1": 1
+            },
+            "not_def_room2": {
+               "ID1": 3
+            },
+            "not_def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date2->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "not_def_room1": 0,
+            "not_def_room2": 0,
+            "not_def_room3": 0
+         },
+         "closed_to_arrival": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "not_def_room1": {
+               "ID1": 1
+            },
+            "not_def_room2": {
+               "ID1": 3
+            },
+            "not_def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date2->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "not_def_room1": 0,
+            "not_def_room2": 0,
+            "not_def_room3": 0
+         },
+         "closed_to_arrival": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "not_def_room1": {
+               "ID1": 1
+            },
+            "not_def_room2": {
+               "ID1": 3
+            },
+            "not_def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date2->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "not_def_room1": 0,
+            "not_def_room2": 0,
+            "not_def_room3": 0
+         },
+         "closed_to_arrival": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "not_def_room1": {
+               "ID1": 1
+            },
+            "not_def_room2": {
+               "ID1": 3
+            },
+            "not_def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date2->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "not_def_room1": 0,
+            "not_def_room2": 0,
+            "not_def_room3": 0
+         },
+         "closed_to_arrival": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "not_def_room1": {
+               "ID1": 1
+            },
+            "not_def_room2": {
+               "ID1": 3
+            },
+            "not_def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date2->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "not_def_room1": 0,
+            "not_def_room2": 0,
+            "not_def_room3": 0
+         },
+         "closed_to_arrival": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "not_def_room1": {
+               "ID1": 1
+            },
+            "not_def_room2": {
+               "ID1": 3
+            },
+            "not_def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date2->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "not_def_room1": 0,
+            "not_def_room2": 0,
+            "not_def_room3": 0
+         },
+         "closed_to_arrival": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "not_def_room1": {
+               "ID1": 1
+            },
+            "not_def_room2": {
+               "ID1": 3
+            },
+            "not_def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date2->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "not_def_room1": 0,
+            "not_def_room2": 0,
+            "not_def_room3": 0
+         },
+         "closed_to_arrival": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "not_def_room1": {
+               "ID1": 1
+            },
+            "not_def_room2": {
+               "ID1": 3
+            },
+            "not_def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date2->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "not_def_room1": 0,
+            "not_def_room2": 0,
+            "not_def_room3": 0
+         },
+         "closed_to_arrival": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "not_def_room1": {
+               "ID1": 1
+            },
+            "not_def_room2": {
+               "ID1": 3
+            },
+            "not_def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date2->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "not_def_room1": 0,
+            "not_def_room2": 0,
+            "not_def_room3": 0
+         },
+         "closed_to_arrival": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "not_def_room1": {
+               "ID1": 1
+            },
+            "not_def_room2": {
+               "ID1": 3
+            },
+            "not_def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date2->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "not_def_room1": 0,
+            "not_def_room2": 0,
+            "not_def_room3": 0
+         },
+         "closed_to_arrival": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "not_def_room1": {
+               "ID1": 1
+            },
+            "not_def_room2": {
+               "ID1": 3
+            },
+            "not_def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date2->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "not_def_room1": 0,
+            "not_def_room2": 0,
+            "not_def_room3": 0
+         },
+         "closed_to_arrival": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "not_def_room1": {
+               "ID1": 1
+            },
+            "not_def_room2": {
+               "ID1": 3
+            },
+            "not_def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date2->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "not_def_room1": 0,
+            "not_def_room2": 0,
+            "not_def_room3": 0
+         },
+         "closed_to_arrival": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "not_def_room1": {
+               "ID1": 1
+            },
+            "not_def_room2": {
+               "ID1": 3
+            },
+            "not_def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date2->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "not_def_room1": 0,
+            "not_def_room2": 0,
+            "not_def_room3": 0
+         },
+         "closed_to_arrival": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "not_def_room1": {
+               "ID1": 1
+            },
+            "not_def_room2": {
+               "ID1": 3
+            },
+            "not_def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date2->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "not_def_room1": 0,
+            "not_def_room2": 0,
+            "not_def_room3": 0
+         },
+         "closed_to_arrival": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "not_def_room1": {
+               "ID1": 1
+            },
+            "not_def_room2": {
+               "ID1": 3
+            },
+            "not_def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date2->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "not_def_room1": 0,
+            "not_def_room2": 0,
+            "not_def_room3": 0
+         },
+         "closed_to_arrival": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "not_def_room1": {
+               "ID1": 1
+            },
+            "not_def_room2": {
+               "ID1": 3
+            },
+            "not_def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date2->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "not_def_room1": 0,
+            "not_def_room2": 0,
+            "not_def_room3": 0
+         },
+         "closed_to_arrival": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "not_def_room1": {
+               "ID1": 1
+            },
+            "not_def_room2": {
+               "ID1": 3
+            },
+            "not_def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date2->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "not_def_room1": 0,
+            "not_def_room2": 0,
+            "not_def_room3": 0
+         },
+         "closed_to_arrival": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "not_def_room1": {
+               "ID1": 1
+            },
+            "not_def_room2": {
+               "ID1": 3
+            },
+            "not_def_room3": {
+               "ID1": 2
+            }
+         }
+      },
+      {
+         "day": "'. $date2->modify('+1 days')->format('Y-m-d') .'",
+         "closed": {
+            "not_def_room1": 0,
+            "not_def_room2": 0,
+            "not_def_room3": 0
+         },
+         "closed_to_arrival": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "closed_to_departure": {
+            "not_def_room1": {
+               "ID1": 0
+            },
+            "not_def_room2": {
+               "ID1": 0
+            },
+            "not_def_room3": {
+               "ID1": 0
+            }
+         },
+         "min_stay": {
+            "not_def_room1": {
+               "ID1": 1
+            },
+            "not_def_room2": {
+               "ID1": 3
+            },
+            "not_def_room3": {
+               "ID1": 2
+            }
+         }
+      }
+   ]
+}';
+    }
+
     protected function getUpdatePricesRequestData($isDefaultHotel): string
     {
         $date1 = clone $this->startDate;
@@ -343,7 +2928,7 @@ class HundredOneHotelsTest extends ChannelManagerServiceTestCase
       {
          "day": "' . $date1->modify('+1 day')->format('Y-m-d') . '",
          "closed": {
-            "def_room1": 0,
+            "def_room1": 1,
             "def_room2": 0,
             "def_room3": 0
          },
@@ -1434,5 +4019,4 @@ class HundredOneHotelsTest extends ChannelManagerServiceTestCase
    ]
 }';
     }
-
 }

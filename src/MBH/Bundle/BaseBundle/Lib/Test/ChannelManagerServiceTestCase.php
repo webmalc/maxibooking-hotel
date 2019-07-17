@@ -8,6 +8,8 @@ use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
+use MBH\Bundle\PriceBundle\Document\PriceCache;
+use MBH\Bundle\PriceBundle\Document\Restriction;
 use Tests\Bundle\ChannelManagerBundle\Services\ChannelManagerServiceMock;
 
 abstract class ChannelManagerServiceTestCase extends UnitTestCase
@@ -65,6 +67,45 @@ abstract class ChannelManagerServiceTestCase extends UnitTestCase
         $this->getHotelByIsDefault($isDefault)->$hotelSetConfigMethod($config);
 
         $this->dm->persist($config);
+        $this->dm->flush();
+    }
+
+    protected function unsetPriceCache(\DateTime $date, $type = true): void
+    {
+        /** @var PriceCache $pc */
+        $pc = $this->dm->getRepository(PriceCache::class)->findOneBy([
+            'hotel.id' => $this->getHotelByIsDefault(true)->getId(),
+            'roomType.id' => $this->getHotelByIsDefault(true)->getRoomTypes()[0]->getId(),
+            'tariff.id' => $this->getHotelByIsDefault(true)->getBaseTariff()->getId(),
+            'date' => $date
+        ]);
+
+        if ($type) {
+            $pc->setCancelDate(new \DateTime(), true);
+        } else {
+            $pc->setPrice(0);
+        }
+
+        $this->dm->persist($pc);
+        $this->dm->flush();
+    }
+
+    protected function setRestriction(\DateTime $date): void
+    {
+        $r = new Restriction();
+        $r->setClosed(true)
+            ->setHotel($this->getHotelByIsDefault(true))
+            ->setTariff($this->getHotelByIsDefault(true)->getBaseTariff())
+            ->setRoomType($this->getHotelByIsDefault(true)->getRoomTypes()[0])
+            ->setMinStay(2)
+            ->setMaxStay(10)
+            ->setMinStayArrival(1)
+            ->setMaxStayArrival(10)
+            ->setClosedOnArrival(true)
+            ->setClosedOnDeparture(false)
+            ->setDate($date);
+
+        $this->dm->persist($r);
         $this->dm->flush();
     }
 

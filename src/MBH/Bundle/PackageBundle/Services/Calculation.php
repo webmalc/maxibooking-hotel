@@ -161,12 +161,11 @@ class Calculation
         Promotion $promotion = null,
         $useCategories = false,
         Special $special = null,
-        $useDuration = true,
-        $useMemcached = true
+        $useDuration = true
     ) {
         $originTariff = $tariff;
         $prices = [];
-        $useMemcached ? $memcached = $this->container->get('mbh.cache') : $memcached = null;
+        $memcached = $this->container->get('mbh.cache');
         $places = $roomType->getPlaces();
         $hotel = $roomType->getHotel();
         $useCategories ? $isChildPrices = $roomType->getCategory()->getIsChildPrices() : $isChildPrices = $roomType->getIsChildPrices();
