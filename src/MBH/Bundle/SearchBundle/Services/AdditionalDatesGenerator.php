@@ -141,8 +141,8 @@ class AdditionalDatesGenerator
 
         $isPositiveDeltaSatisfy = $this->isPositiveDeltaSatisfy($searchedDuration, $currentDuration);
         $isNegativeDeltaSatisfy = $this->isNegativeDeltaSatisfy($searchedDuration, $currentDuration);
-        $isMaxPackageSatisfy = $this->isMaximalPackageLengthSatisfy($currentDuration);
-        $isMinPackageSatisfy = $this->isMinimalPackageLengthSatisfy($currentDuration);
+        $isMaxPackageSatisfy = $this->isMaximalPackageLengthSatisfy($searchedDuration, $currentDuration);
+        $isMinPackageSatisfy = $this->isMinimalPackageLengthSatisfy($searchedDuration, $currentDuration);
 
         return $isPositiveDeltaSatisfy && $isNegativeDeltaSatisfy && $isMinPackageSatisfy && $isMaxPackageSatisfy;
     }
@@ -168,21 +168,23 @@ class AdditionalDatesGenerator
     }
 
     /**
+     * @param int $searchedDuration
      * @param int $currentDuration
      * @return bool
      */
-    private function isMinimalPackageLengthSatisfy(int $currentDuration): bool
+    private function isMinimalPackageLengthSatisfy(int $searchedDuration, int $currentDuration): bool
     {
-        return $currentDuration >= $this->minPackageLength;
+        return ($currentDuration >= $this->minPackageLength) || ($searchedDuration <= $this->minPackageLength);
     }
 
     /**
+     * @param int $searchedDuration
      * @param int $currentDuration
      * @return bool
      */
-    private function isMaximalPackageLengthSatisfy(int $currentDuration): bool
+    private function isMaximalPackageLengthSatisfy(int $searchedDuration, int $currentDuration): bool
     {
-        return $currentDuration <= $this->maxPackageLength;
+        return ($currentDuration <= $this->maxPackageLength) || ($searchedDuration >= $this->maxPackageLength);
     }
 
 }
