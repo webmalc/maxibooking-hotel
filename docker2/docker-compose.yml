@@ -1,0 +1,86 @@
+###############################################################################
+#                          Generated on phpdocker.io                          #
+###############################################################################
+version: "3.5"
+services:
+
+    memcached:
+      image: memcached:alpine
+      container_name: mbh-memcached
+      hostname: memcache
+      networks:
+        - proxynet
+
+
+    redis:
+      image: redis:alpine
+      container_name: mbh-redis
+      hostname: docker-redis
+      networks:
+        - proxynet
+
+    rabbitmq:
+      image: rabbitmq:latest
+      container_name: mbh-rabbitmq
+      hostname: docker-rabbit
+      environment:
+        RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
+        RABBITMQ_DEFAULT_USER: "rabbitmq"
+        RABBITMQ_DEFAULT_PASS: "rabbitmq"
+        RABBITMQ_DEFAULT_VHOST: "/"
+      ports:
+        - "15673:15672"
+        - "5673:5672"
+      volumes:
+        - ./phpdocker/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
+      networks:
+        - proxynet
+
+    mongo:
+      image: mongo:3.6
+      container_name: mbh-mongo
+      hostname: docker-mongo
+      command: mongod --setParameter failIndexKeyTooLong=false
+      volumes:
+        - mongo_data:/data/db
+      ports:
+        - "27018:27017"
+      networks:
+        - proxynet
+
+    webserver:
+      image: nginx:alpine
+      container_name: mbh-webserver
+      hostname: docker-webserver
+      working_dir: /var/www/mbh
+      volumes:
+        - ..:/var/www/mbh
+        - ./phpdocker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      ports:
+        - "9090:80"
+      networks:
+        - proxynet
+
+    php-fpm:
+      build: phpdocker/php-fpm
+      container_name: mbh-php-fpm
+      hostname: docker-php-fpm
+      working_dir: /var/www/mbh
+      volumes:
+        - ..:/var/www/mbh
+        - ./phpdocker/php-fpm/php-ini-overrides-fpm.ini:/etc/php/7.3/fpm/conf.d/99-overrides.ini
+        - ./phpdocker/php-fpm/php-ini-overrides-cli.ini:/etc/php/7.3/cli/conf.d/99-overrides.ini
+        - ./phpdocker/php-fpm/xdebug.ini:/etc/php/7.3/mods-available/xdebug.ini
+        - ./phpdocker/php-fpm/supervisor.conf.d:/etc/supervisor/conf.d
+        - ./phpdocker/php-fpm/fish:/root/.config/fish/functions
+        - /tmp/:/tmp/
+      networks:
+        - proxynet
+
+volumes:
+  mongo_data:
+    driver: local
+
+networks:
+  proxynet:
+    name: mbh-network

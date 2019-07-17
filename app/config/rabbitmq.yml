@@ -1,4 +1,3 @@
-#rabbitmq
 old_sound_rabbit_mq:
     connections:
         default:

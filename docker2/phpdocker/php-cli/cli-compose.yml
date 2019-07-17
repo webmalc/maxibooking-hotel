@@ -1,0 +1,15 @@
+version: "3.5"
+services:
+    php-cli:
+      build: .
+      container_name: mbh-php-cli
+      hostname: docker-php-cli
+      working_dir: /var/www/mbh
+      volumes:
+        - ../../..:/var/www/mbh
+      networks:
+        - proxynet
+
+networks:
+  proxynet:
+    name: mbh-network

@@ -744,7 +744,6 @@ class PackageRepository extends DocumentRepository
 
         /** TODO: Updated to owner.id in 3.4 version */
         if ($createdBy = $data['createdBy'] ?? null) {
-//            $qb->field('createdBy')->equals($data['createdBy']);
             $qb->addOr($qb->expr()->field('createdBy')->equals($createdBy));
             $qb->addOr($qb->expr()->field('createdBy')->equals(null));
         }

@@ -156,3 +156,11 @@ Vagrantfile
 /scripts/checkalias/settings.py
 
 /app/config/jwt/*
+
+#docker2
+/docker2/phpdocker/nginx/nginx.conf
+docker2/phpdocker/php-fpm/php-ini-overrides-cli.ini
+docker2/phpdocker/php-fpm/php-ini-overrides-fpm.ini
+docker2/phpdocker/php-fpm/xdebug.ini
+docker2/phpdocker/php-fpm/supervisor.conf.d/*
+!docker2/phpdocker/php-fpm/supervisor.conf.d/*.dist

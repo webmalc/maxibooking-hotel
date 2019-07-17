@@ -1,0 +1,11 @@
+[program:async_search]
+command=php /var/www/mbh/bin/console rabbitmq:consumer async_search --env=prod
+process_name=%(program_name)s%(process_num)02d
+numprocs=1
+startsecs=2
+autorestart=true
+stopsignal=INT
+stopasgroup=true
+stopwaitsecs=60
+stdout_logfile=/tmp/async_search_out-test.log
+stderr_logfile=/tmp/async_search_err-test.log
