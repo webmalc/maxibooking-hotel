@@ -121,6 +121,7 @@ class SearchCacheInvalidator
 
     public function flushCache(): void
     {
+        /** TODO: need to flush redis search cache only, not all keys */
         $this->redis->flushall();
         $this->cacheItemRepository->flushCache();
     }

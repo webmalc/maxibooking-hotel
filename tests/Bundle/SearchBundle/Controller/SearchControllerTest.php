@@ -7,6 +7,7 @@ use Tests\Bundle\SearchBundle\SearchWebTestCase;
 class SearchControllerTest extends SearchWebTestCase
 {
 
+
     /**
      * TODO: Для группировок сделать отдельные тесты? Пока костыль небольшой.
      * @dataProvider requestDataProvider
