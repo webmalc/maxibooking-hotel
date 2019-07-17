@@ -965,19 +965,7 @@ class Vashotel extends Base implements ChannelManagerServiceInterface
 
                         $isClosed = $restrictionsMap[$config->getHotel()->getId()][$tariffDoc->getId()][$roomTypeId][$day->format('Y-m-d')];
 
-                        $prices = $calc->calcPrices(
-                            $roomType['doc'],
-                            $tariffDoc,
-                            $day,
-                            $day,
-                            0,
-                            0,
-                            null,
-                            false,
-                            null,
-                            true,
-                            false
-                        );
+                        $prices = $calc->calcPrices($roomType['doc'], $tariffDoc, $day, $day);
 
                         if ($info) {
                             $data['rooms'][$roomType['syncId']][$day->format('Y-m-d')] = [
