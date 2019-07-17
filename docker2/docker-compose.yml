@@ -1,19 +1,23 @@
 ###############################################################################
 #                          Generated on phpdocker.io                          #
 ###############################################################################
-version: "3.1"
+version: "3.5"
 services:
 
     memcached:
       image: memcached:alpine
       container_name: mbh-memcached
       hostname: memcache
+      networks:
+        - mynetwork
 
 
     redis:
       image: redis:alpine
       container_name: mbh-redis
       hostname: docker-redis
+      networks:
+        - mynetwork
 
     rabbitmq:
       image: rabbitmq:latest
@@ -29,9 +33,11 @@ services:
         - "5673:5672"
       volumes:
         - ./phpdocker/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
+      networks:
+        - mynetwork
 
     mongo:
-      image: mongo:3.4
+      image: mongo:3.6
       container_name: mbh-mongo
       hostname: docker-mongo
       command: mongod --setParameter failIndexKeyTooLong=false
@@ -39,6 +45,8 @@ services:
         - mongo_data:/data/db
       ports:
         - "27018:27017"
+      networks:
+        - mynetwork
 
     webserver:
       image: nginx:alpine
@@ -49,7 +57,9 @@ services:
         - ..:/var/www/mbh
         - ./phpdocker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
       ports:
-       - "9090:80"
+        - "9090:80"
+      networks:
+        - mynetwork
 
     php-fpm:
       build: phpdocker/php-fpm
@@ -64,7 +74,18 @@ services:
         - ./phpdocker/php-fpm/supervisor.conf.d:/etc/supervisor/conf.d
         - ./phpdocker/php-fpm/fish:/root/.config/fish/functions
         - /tmp/:/tmp/
+      networks:
+        - mynetwork
 
 volumes:
   mongo_data:
     driver: local
+
+networks:
+  mynetwork:
+    name: mbh-network
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.0.0/16
