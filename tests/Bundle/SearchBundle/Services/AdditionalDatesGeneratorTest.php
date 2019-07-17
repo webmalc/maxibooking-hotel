@@ -16,6 +16,8 @@ class AdditionalDatesGeneratorTest extends WebTestCase
      * @param int|null $rangeEnd
      * @param int $countExpected
      * @param array $dataExpected
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConfigException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException
      * @dataProvider datesProvider
      */
     public function testGenerate(
@@ -27,7 +29,7 @@ class AdditionalDatesGeneratorTest extends WebTestCase
         array $dataExpected
     ): void {
 
-        $generator = new AdditionalDatesGenerator();
+        $generator = $this->getContainer()->get('mbh_search.additional_days_generator');
 
         $actual = $generator->generate($begin, $end, $rangeBegin, $rangeEnd);
 

@@ -16,7 +16,6 @@ use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStore;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncSearchers\AsyncSearchDecisionMakerInterface;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncSearchers\AsyncSearcherGroupedByRoomType;
 use MBH\Bundle\SearchBundle\Services\Search\CacheSearcher;
-use MBH\Bundle\SearchBundle\Services\Search\AsyncSearcher;
 use MBH\Bundle\SearchBundle\Services\Search\SearcherFactory;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
@@ -28,8 +27,8 @@ class AsyncSearcherGroupedByRoomTypeTest extends SearchWebTestCase
         $dm = $this->createMock(DocumentManager::class);
         $searchConditions = (new SearchConditions())->setSearchHash('fakeSearchHash');
         $conditionsRepository = $this->createMock(SearchConditionsRepository::class);
-        $conditionsRepository->expects($this->exactly(3))->method('find')->willReturn($searchConditions, $searchConditions, null);
-        $conditionsRepository->expects($this->exactly(2))->method('getDocumentManager')->willReturn($dm);
+        $conditionsRepository->expects($this->exactly(4))->method('find')->willReturn($searchConditions, $searchConditions, $searchConditions, null);
+        $conditionsRepository->expects($this->exactly(3))->method('getDocumentManager')->willReturn($dm);
 
 
         $searchedResult1 = (new Result())->setStatus('ok');
@@ -37,13 +36,13 @@ class AsyncSearcherGroupedByRoomTypeTest extends SearchWebTestCase
         $searchedResult3 = (new Result())->setStatus('error');
 
         $searcher = $this->createMock(CacheSearcher::class);
-        $searcher->expects($this->exactly(3))->method('search')->willReturn($searchedResult1, $searchedResult2, $searchedResult3);
+        $searcher->expects($this->exactly(6))->method('search')->willReturn($searchedResult1, $searchedResult2, $searchedResult3);
 
         $searcherFactory = $this->createMock(SearcherFactory::class);
-        $searcherFactory->expects($this->once())->method('getSearcher')->willReturn($searcher);
+        $searcherFactory->expects($this->exactly(2))->method('getSearcher')->willReturn($searcher);
 
         $resultStore = $this->createMock(AsyncResultStore::class);
-        $resultStore->expects($this->exactly(3))->method('store')->willReturnCallback(function ($searchResult) use (&$numberOfCall) {
+        $resultStore->expects($this->exactly(3))->method('storeInStock')->willReturnCallback(function ($searchResult) use (&$numberOfCall) {
             $numberOfCall++;
             if ($numberOfCall === 2) {
                 $this->assertInternalType('array', $searchResult);
@@ -54,11 +53,13 @@ class AsyncSearcherGroupedByRoomTypeTest extends SearchWebTestCase
         });
 
         $decisionMaker = $this->createMock(AsyncSearchDecisionMakerInterface::class);
-        $decisionMaker->expects($this->exactly(2))->method('isNeedSearch')->willReturn(true, false);
-        $decisionMaker->expects($this->exactly(1))->method('markFoundedResults');
+        $decisionMaker->expects($this->exactly(3))->method('isNeedSearch')->willReturn(true, false, true);
+        $decisionMaker->expects($this->exactly(2))->method('canIStoreInStock')->willReturn(true, false);
+        $decisionMaker->expects($this->once())->method('markStoredInStockResult');
+        $decisionMaker->expects($this->once())->method('markFoundedResults');
 
 
-        $resultStore->expects($this->exactly(1))->method('addFakeReceivedCount')->willReturnCallback(function ($actualHash, $actualCount) {
+        $resultStore->expects($this->exactly(2))->method('addFakeToStock')->willReturnCallback(function ($actualHash, $actualCount) {
             $this->assertEquals(3, $actualCount);
             $this->assertEquals('fakeSearchHash', $actualHash);
         });
@@ -71,6 +72,7 @@ class AsyncSearcherGroupedByRoomTypeTest extends SearchWebTestCase
         $dataManager = $this->createMock(DataManager::class);
 
         $search = new AsyncSearcherGroupedByRoomType($conditionsRepository, $resultStore, $searcherFactory, $decisionMaker, $dataManager);
+        $search->search('fakeConditionsId', $group);
         $search->search('fakeConditionsId', $group);
         $search->search('fakeConditionsId', $group);
 

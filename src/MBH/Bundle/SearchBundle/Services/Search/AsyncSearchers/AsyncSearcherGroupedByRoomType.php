@@ -72,9 +72,7 @@ class AsyncSearcherGroupedByRoomType implements AsyncSearcherInterface
      * @throws ConsumerSearchException
      * @throws LockException
      * @throws MappingException
-     * @throws CommunicationException
-     * @throws ServerException
-     * @throws AbortedMultiExecException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\AsyncResultReceiverException
      */
     public function search(string $conditionsId, QueryGroupInterface $searchQueryGroup): void
     {

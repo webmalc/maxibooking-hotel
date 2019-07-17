@@ -27,10 +27,7 @@ class RoomTypeSearchDecisionMaker implements AsyncSearchDecisionMakerInterface
 
     /** @var Client */
     private $cache;
-    /**
-     * @var int
-     */
-    private $resultsAmount;
+
     /**
      * @var bool
      */
@@ -47,7 +44,6 @@ class RoomTypeSearchDecisionMaker implements AsyncSearchDecisionMakerInterface
     {
         $this->cache = $cache;
         $config = $configService->getConfig();
-        $this->resultsAmount = $config->getRoomTypeResultsShowAmount();
         $this->isShowNecessarilyDate = $config->isMustShowNecessarilyDate();
     }
 
@@ -65,7 +61,7 @@ class RoomTypeSearchDecisionMaker implements AsyncSearchDecisionMakerInterface
         $roomTypeId = $group->getRoomTypeId();
         $hash = $conditions->getSearchHash();
 
-        $results = (int)$this->cache->get($this->getFoundedKey($hash, $roomTypeId));
+        $results = (int)$this->cache->get(self::getFoundedKey($hash, $roomTypeId));
 
         printf("\n".'%u conditions, %u founded'. "\n", $conditions->getAdditionalResultsLimit(), $results);
 
@@ -83,7 +79,7 @@ class RoomTypeSearchDecisionMaker implements AsyncSearchDecisionMakerInterface
             throw new AsyncResultReceiverException('Wrong query group in RoomType Decision maker');
         }
 
-        $key = $this->getFoundedKey($conditions->getSearchHash(), $group->getRoomTypeId());
+        $key = static::getFoundedKey($conditions->getSearchHash(), $group->getRoomTypeId());
         $this->cache->incr($key);
         $this->cache->expire($key, self::EXPIRED);
     }
@@ -93,7 +89,7 @@ class RoomTypeSearchDecisionMaker implements AsyncSearchDecisionMakerInterface
      * @param string $roomTypeId
      * @return string
      */
-    private function getFoundedKey(string $hash, string $roomTypeId): string
+    public static function getFoundedKey(string $hash, string $roomTypeId): string
     {
         return 'already_founded_room_types_' .$roomTypeId.'_'. $hash;
     }
@@ -104,7 +100,7 @@ class RoomTypeSearchDecisionMaker implements AsyncSearchDecisionMakerInterface
             throw new AsyncResultReceiverException('Wrong query group in RoomType Decision maker');
         }
 
-        $storedKey = $this->getStoredInStackKey($conditions->getSearchHash(), $group->getRoomTypeId());
+        $storedKey = static::getStoredInStackKey($conditions->getSearchHash(), $group->getRoomTypeId());
         $stored = (int)$this->cache->get($storedKey);
 
         return ($stored < $conditions->getAdditionalResultsLimit())
@@ -113,13 +109,14 @@ class RoomTypeSearchDecisionMaker implements AsyncSearchDecisionMakerInterface
 
     public function markStoredInStockResult(SearchConditions $conditions, QueryGroupInterface $group): void
     {
-        $storedKey = $this->getStoredInStackKey($conditions->getSearchHash(), $group->getRoomTypeId());
+        /** @var QueryGroupByRoomType $group */
+        $storedKey = static::getStoredInStackKey($conditions->getSearchHash(), $group->getRoomTypeId());
         $this->cache->incr($storedKey);
         $this->cache->expire($storedKey, self::EXPIRED);
 
     }
 
-    private function getStoredInStackKey(string $hash, string $roomTypeId): string
+    public static function getStoredInStackKey(string $hash, string $roomTypeId): string
     {
         return 'already_stored_in_stack_room_types_' .$roomTypeId.'_'. $hash;
     }
