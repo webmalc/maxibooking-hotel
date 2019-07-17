@@ -313,7 +313,7 @@ class Booking extends Base
         $this->log('start update prices');
 
         $restrictionsMap = $this->container->get('mbh.channel_manager.restriction.mapper')
-            ->getMap($this->getConfig(), $begin, $end);
+            ->getMap($this->getConfig(), $begin, $end, 'Y-m-d');
 
         // iterate hotels
         foreach ($this->getConfig() as $config) {
@@ -364,7 +364,7 @@ class Booking extends Base
 
                         $isClosed = $restrictionsMap[$config->getHotel()->getId()][$syncPricesTariffId][$roomTypeId][$day->format('Y-m-d')];
 
-                        if (!$isClosed && isset($priceCaches[$roomTypeId][$syncPricesTariffId][$day->format('d.m.Y')])) {
+                        if (isset($priceCaches[$roomTypeId][$syncPricesTariffId][$day->format('d.m.Y')])) {
                             /** @var PriceCache $info */
                             $info = $priceCaches[$roomTypeId][$syncPricesTariffId][$day->format('d.m.Y')];
                             $calculator = $this->container->get('mbh.calculation');
@@ -376,7 +376,7 @@ class Booking extends Base
                             $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [
                                 'price' => $price,
                                 'price1' => $price1,
-                                'closed' => false
+                                'closed' => $isClosed
                             ];
                         } else {
                             $data[$roomTypeInfo['syncId']][$day->format('Y-m-d')][$tariff['syncId']] = [

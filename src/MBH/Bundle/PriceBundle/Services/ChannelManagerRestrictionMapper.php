@@ -18,15 +18,6 @@ class ChannelManagerRestrictionMapper
     /** @var Helper */
     private $helper;
 
-    /** @var ?array */
-    private $data;
-
-    /** @var \DateTime */
-    private $beginDate;
-
-    /** @var \DateTime */
-    private $endDate;
-
     /**
      * PriceCacheRestriction constructor.
      * @param DocumentManager $dm
@@ -56,15 +47,6 @@ class ChannelManagerRestrictionMapper
         string $dateTimeFormat = 'Y-m-d'
     ): array
     {
-//        if ($this->data !== null && $this->beginDate === $begin && $this->endDate === $end) {
-//            return $this->data;
-//        }
-//
-//        $this->beginDate = $begin;
-//        $this->endDate = $end;
-
-        //TODO: save calculated data into $this->data if dates and config params are equal
-
         $idsInfoArray = $this->getIdsInfoArray($channelManagerConfigs);
         $dataCaches = $this->getPriceCachesArray($idsInfoArray, $begin, $end);
         $dataRest = $this->getRestrictionsArray($idsInfoArray, $begin, $end);

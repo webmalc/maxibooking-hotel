@@ -1189,7 +1189,7 @@ class BookingTest extends ChannelManagerServiceTestCase
                         <rate id="ID1"/>
                         
                         
-                        
+                        <price>1200</price>
                         <closed>1</closed>
                     </date>
                                                                 <date value="'.$date4->modify('+1 days')->format('Y-m-d').'">

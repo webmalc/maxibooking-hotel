@@ -266,10 +266,21 @@ class ExpediaTest  extends ChannelManagerServiceTestCase
       </RoomType>
    </AvailRateUpdate>
    <AvailRateUpdate>
-      <DateRange from="'.(clone $begin)->modify('+4 days')->format('Y-m-d').'" to="'.(clone $begin)->modify('+6 days')->format('Y-m-d').'" />
+      <DateRange from="'.(clone $begin)->modify('+4 days')->format('Y-m-d').'" to="'.(clone $begin)->modify('+5 days')->format('Y-m-d').'" />
       <RoomType id="def_room1">
          <RatePlan id="ID1" closed="true">
             <Rate currency="RUB" />
+         </RatePlan>
+      </RoomType>
+   </AvailRateUpdate>
+   <AvailRateUpdate>
+      <DateRange from="'.(clone $begin)->modify('+6 days')->format('Y-m-d').'" to="'.(clone $begin)->modify('+6 days')->format('Y-m-d').'" />
+      <RoomType id="def_room1">
+         <RatePlan id="ID1" closed="true">
+            <Rate currency="RUB">
+               <PerOccupancy rate="1200" occupancy="1" />
+               <PerOccupancy rate="2100" occupancy="2" />
+            </Rate>
          </RatePlan>
       </RoomType>
    </AvailRateUpdate>
