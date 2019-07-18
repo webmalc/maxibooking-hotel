@@ -3,6 +3,7 @@
 namespace Tests\Bundle\ChannelManagerBundle\Services;
 
 use MBH\Bundle\BaseBundle\Lib\Test\ChannelManagerServiceTestCase;
+use MBH\Bundle\BaseBundle\Service\Cache;
 use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Services\HundredOneHotels;
@@ -33,6 +34,11 @@ class HundredOneHotelsTest extends ChannelManagerServiceTestCase
 
     private $datum = true;
 
+    /**
+     * @var Cache
+     */
+    private $cache;
+
     public static function setUpBeforeClass()
     {
         self::baseFixtures();
@@ -54,6 +60,7 @@ class HundredOneHotelsTest extends ChannelManagerServiceTestCase
         $this->startDate = new \DateTime('midnight');
         $this->endDate = new \DateTime('midnight +30 days');
         $this->hoh = new HundredOneHotels($this->container);
+        $this->cache = $this->container->get('mbh.cache');
     }
 
     protected function getServiceHotelIdByIsDefault(bool $isDefault): int
@@ -102,6 +109,8 @@ class HundredOneHotelsTest extends ChannelManagerServiceTestCase
                 json_decode($this->getUpdatePricesRequestData(!$this->datum), true),
                 json_decode($data[1]['request'], true)
             );
+
+            $this->cache->clear('price_caches_fetch', null, null, true);
         });
     }
 
@@ -117,6 +126,7 @@ class HundredOneHotelsTest extends ChannelManagerServiceTestCase
 
     public function testUpdatePrices(): void
     {
+        $this->cache->clear('price_caches_fetch', null, null, true);
         $this->unsetPriceCache((clone $this->startDate)->modify('+3 days'), true);
         $this->unsetPriceCache((clone $this->startDate)->modify('+4 days'));
         $this->setRestriction((clone $this->startDate)->modify('+5 days'));

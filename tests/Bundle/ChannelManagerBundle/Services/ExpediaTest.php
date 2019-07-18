@@ -4,6 +4,7 @@ namespace Tests\Bundle\ChannelManagerBundle\Services;
 
 
 use MBH\Bundle\BaseBundle\Lib\Test\ChannelManagerServiceTestCase;
+use MBH\Bundle\BaseBundle\Service\Cache;
 use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
 use MBH\Bundle\ChannelManagerBundle\Services\Expedia\Expedia;
 use MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaRequestDataFormatter;
@@ -44,6 +45,9 @@ class ExpediaTest  extends ChannelManagerServiceTestCase
 
     private $datum = true;
 
+    /**@var Cache */
+    private $cache;
+
     public static function setUpBeforeClass()
     {
         self::baseFixtures();
@@ -67,6 +71,7 @@ class ExpediaTest  extends ChannelManagerServiceTestCase
         $this->expedia = new Expedia($this->container);
         $this->requestFormatter = $this->container->get('mbh.channelmanager.expedia_request_formatter');
         $this->requestDataFormatter = $this->container->get('mbh.channelmanager.expedia_request_data_formatter');
+        $this->cache = $this->container->get('mbh.cache');
     }
 
     protected function getServiceHotelIdByIsDefault(bool $isDefault): int
@@ -162,6 +167,7 @@ class ExpediaTest  extends ChannelManagerServiceTestCase
             );
 
             $this->datum = !$this->datum;
+            $this->cache->clear('price_caches_fetch', null, null, true);
         });
     }
 
@@ -190,6 +196,7 @@ class ExpediaTest  extends ChannelManagerServiceTestCase
     }
     public function testUpdatePrices(): void
     {
+        $this->cache->clear('price_caches_fetch', null, null, true);
         $date = clone $this->startDate;
         $this->unsetPriceCache($date->modify('+4 days'));
         $this->unsetPriceCache($date->modify('+1 days'), false);
