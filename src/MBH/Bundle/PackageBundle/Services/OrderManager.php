@@ -320,7 +320,7 @@ class OrderManager
                 throw new Exception('Create order error: validation errors.');
             }
 
-            if (($data['status'] == 'offline' && $this->container->get('security.authorization_checker')->isGranted('ROLE_ORDER_AUTO_CONFIRMATION')) ||
+            if (($data['status'] === 'offline' && $this->container->get('security.authorization_checker')->isGranted('ROLE_ORDER_AUTO_CONFIRMATION')) ||
                 ($user instanceof User && in_array('ROLE_ORDER_AUTO_CONFIRMATION', $user->getRoles()))
             ) {
                 $order->setConfirmed(true);
@@ -331,10 +331,7 @@ class OrderManager
 
             //Acl
             if ($user) {
-                $aclProvider = $this->container->get('security.acl.provider');
-                $acl = $aclProvider->createAcl(ObjectIdentity::fromDomainObject($order));
-                $acl->insertObjectAce(UserSecurityIdentity::fromAccount($user), MaskBuilder::MASK_MASTER);
-                $aclProvider->updateAcl($acl);
+                $order->setOwner($user);
             }
         }
 
@@ -533,10 +530,7 @@ class OrderManager
 
         //Acl
         if ($user) {
-            $aclProvider = $this->container->get('security.acl.provider');
-            $acl = $aclProvider->createAcl(ObjectIdentity::fromDomainObject($package));
-            $acl->insertObjectAce(UserSecurityIdentity::fromAccount($user), MaskBuilder::MASK_MASTER);
-            $aclProvider->updateAcl($acl);
+            $package->setOwner($user);
         }
 
         //Add cash docs

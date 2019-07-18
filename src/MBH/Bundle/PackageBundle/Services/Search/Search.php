@@ -354,7 +354,8 @@ class Search implements SearchInterface
                 $founded = 0;
                 $infantAge = $tariff->getInfantAge();
                 $maxInfants = $caches[0]->getRoomType()->getMaxInfants();
-                $childrenAges = $query->childrenAges;
+                $childrenAges = $query->childrenAges ?? [];
+
 
                 array_walk($childrenAges, static function (&$age) use ($infantAge, $maxInfants, &$founded) {
 
