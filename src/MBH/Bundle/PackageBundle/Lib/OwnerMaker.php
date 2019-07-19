@@ -13,7 +13,7 @@ use MBH\Bundle\UserBundle\Lib\OwnerInterface;
  * Class AclOwnerMaker
  * @package MBH\Bundle\PackageBundle\Lib
  */
-class AclOwnerMaker
+class OwnerMaker
 {
     /**
      * @var DocumentManager

@@ -111,7 +111,6 @@ services:
             - '@mbh.hotel.hotel_manager'
             - '@fos_user.user_manager'
             - '@workflow.fixtures_installation'
-            - '@mbh.acl_document_owner_maker'
             - '@old_sound_rabbit_mq.task_command_runner_producer'
             - '%domain%'
 

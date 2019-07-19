@@ -175,9 +175,6 @@ class WelcomeControllerTest extends WebTestCase
 
     public function testSecurity()
     {
-        //** TODO: Remove it, cause User have hotels access in model now. */
-        /*$this->attachManagerToTheHotel();*/
-
         $crawlerAdmin = $this->getListCrawler(self::URL_PACKAGE_ORGANIZATIONS_LIST);
 
         $amountAdminMenuItems = $crawlerAdmin->filter(self::FILTER_FOR_COUNT_ITEMS_MENU)->count();
@@ -220,24 +217,4 @@ class WelcomeControllerTest extends WebTestCase
         $this->assertCount(1, $createHotel);
     }
 
-    private function attachManagerToTheHotel(): void
-    {
-        $container = $this->getContainer();
-
-        /** @var User $user */
-        $user = $container->get('doctrine.odm.mongodb.document_manager')
-            ->getRepository('MBHUserBundle:User')
-            ->findOneBy([
-                'username' => self::USER_MANAGER,
-            ]);
-
-        /** @var Hotel $hotel */
-        $hotel = $container->get('doctrine.odm.mongodb.document_manager')
-            ->getRepository('MBHHotelBundle:Hotel')
-            ->findOneBy(['fullTitle' => $this->nameTestHotel]);
-
-        $container
-            ->get('mbh.acl_document_owner_maker')
-            ->insertAcl($user, $hotel);
-    }
 }

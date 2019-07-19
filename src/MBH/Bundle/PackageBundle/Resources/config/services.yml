@@ -143,8 +143,8 @@ services:
                   - '%mbh_dynamic_sale_period%'
                   - '@service_container'
 
-    mbh.acl_document_owner_maker:
-        class: MBH\Bundle\PackageBundle\Lib\AclOwnerMaker
+    mbh.owner_maker:
+        class: MBH\Bundle\PackageBundle\Lib\OwnerMaker
         arguments: ['@doctrine.odm.mongodb.document_manager']
 
     mbh_bundle_package.services.package_accommodation_manipulator:

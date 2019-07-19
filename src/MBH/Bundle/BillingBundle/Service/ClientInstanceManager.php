@@ -16,7 +16,6 @@ use MBH\Bundle\BillingBundle\Lib\Model\Client;
 use MBH\Bundle\BillingBundle\Lib\Model\Result;
 use MBH\Bundle\HotelBundle\Service\HotelManager;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
-use MBH\Bundle\PackageBundle\Lib\AclOwnerMaker;
 use MBH\Bundle\UserBundle\Document\AuthorizationToken;
 use MBH\Bundle\UserBundle\Document\User;
 use MBH\Bundle\BillingBundle\Lib\Maintenance\MaintenanceManager;
@@ -96,8 +95,6 @@ class ClientInstanceManager
      */
     private $workflow;
 
-    private $aclOwnerMaker;
-
     /** @var ProducerInterface */
     private $producer;
 
@@ -116,7 +113,6 @@ class ClientInstanceManager
         HotelManager $hotelManager,
         UserManager $userManager,
         WorkFlow $workflow,
-        AclOwnerMaker $aclOwnerMaker,
         ProducerInterface $producer,
         string $domain
     ) {
@@ -134,7 +130,6 @@ class ClientInstanceManager
         $this->kernelEnv = $kernel->getEnvironment();
         $this->userManager = $userManager;
         $this->workflow = $workflow;
-        $this->aclOwnerMaker = $aclOwnerMaker;
         $this->producer = $producer;
         $this->domain = $domain;
     }

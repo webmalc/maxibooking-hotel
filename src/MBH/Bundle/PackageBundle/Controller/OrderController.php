@@ -573,7 +573,7 @@ class OrderController extends Controller implements CheckHotelControllerInterfac
         $this->dm->flush();
 
         /** SetOwner && ACL */
-        $om = $this->get('mbh.acl_document_owner_maker');
+        $om = $this->get('mbh.owner_maker');
         $om->assignOwnerToDocument($user, $order);
         $om->assignOwnerToDocument($user, $package);
 
