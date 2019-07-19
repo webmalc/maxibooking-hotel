@@ -9,8 +9,8 @@
             <room id="{{ roomId }}">
                 {% for date, dateInfo in roomInfo %}
                     <date value="{{ date }}">
-                        {% if dateInfo.closed is defined and dateInfo.closed %}
-                        <closed>1</closed>
+                        {% if dateInfo.closed is defined%}
+                        <closed>{{ dateInfo.closed }}</closed>
                         {% endif %}
 
                         {% if dateInfo.prices is defined %}

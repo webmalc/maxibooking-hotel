@@ -23,6 +23,7 @@ parameters:
       tbh: {text: '฿', small: 'satang', icon: 'fa fa-money', side: left}
       idr: {text: 'currency.idr.text', small: 'currency.idr.small', icon: 'fa fa-money', side: left, symbol: 'Rp'}
       gbp: {text: '£', small: 'p', icon: 'fa fa-gbp', side: left}
+      adm: {text: 'Դ', small: 'lym', icon: 'fa fa-money', side: left}
 
     # ReCaptcha
     mbh.recaptcha:

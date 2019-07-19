@@ -128,6 +128,10 @@ class HundredOneHotels extends Base
         $begin = $this->getDefaultBegin($begin);
         $end = $this->getDefaultEnd($begin, $end);
         $calc = $this->container->get('mbh.calculation');
+
+        $restrictionsMap = $this->container->get('mbh.channel_manager.restriction.mapper')
+            ->getMap($this->getConfig(), $begin, $end, 'd.m.Y');
+
         // iterate hotels
         /** @var HundredOneHotelsConfig $config */
         foreach ($this->getConfig() as $config) {
@@ -183,6 +187,9 @@ class HundredOneHotels extends Base
                             continue;
                         }
 
+                        $isClosed = $restrictionsMap[$config->getHotel()
+                            ->getId()][$syncPricesTariffId][$roomTypeId][$day->format('d.m.Y')];
+
                         if (isset($priceCaches[$roomTypeId][$syncPricesTariffId][$day->format('d.m.Y')])) {
                             /** @var PriceCache $currentDatePriceCache */
                             $occupantCount = $serviceTariffs[$serviceTariffId]['occupantCount'];
@@ -192,13 +199,7 @@ class HundredOneHotels extends Base
                                 $tariff,
                                 $day,
                                 $day,
-                                $occupantCount,
-                                0,
-                                null,
-                                false,
-                                null,
-                                true,
-                                false
+                                $occupantCount
                             );
                             $currentDatePrice = isset($priceFinal[$occupantCount . '_0']) ? $priceFinal[$occupantCount . '_0']['total'] : 0;
                         } else {
@@ -208,7 +209,7 @@ class HundredOneHotels extends Base
                             $day,
                             $requestFormatter::CLOSED,
                             $serviceRoomTypeId,
-                            $currentDatePrice === 0 ? 1 : 0
+                            $isClosed ? 1 : 0
                         );
                         if ($currentDatePrice !== 0) {
                             $requestFormatter->addDoubleParamCondition(
@@ -257,6 +258,9 @@ class HundredOneHotels extends Base
         $begin = $this->getDefaultBegin($begin);
         $end = $this->getDefaultEnd($begin, $end);
 
+        $restrictionsMap = $this->container->get('mbh.channel_manager.restriction.mapper')
+            ->getMap($this->getConfig(), $begin, $end, 'd.m.Y');
+
         // iterate hotels
         /** @var HundredOneHotelsConfig $config */
         foreach ($this->getConfig() as $config) {
@@ -274,21 +278,6 @@ class HundredOneHotels extends Base
                 [],
                 true
             );
-            $priceCacheFilter = $this->container->get('mbh.price_cache_repository_filter');
-            $priceCachesCallback = function () use ($begin, $end, $config, $paramRoomType, $priceCacheFilter) {
-                $filtered = $priceCacheFilter->filterFetch(
-                    $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
-                        $begin,
-                        $end,
-                        $config->getHotel(),
-                        $paramRoomType ? [$paramRoomType->getId()] : [],
-                        [],
-                        true
-                    )
-                );
-                return $filtered;
-            };
-            $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
 
             foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
                 /** @var \DateTime $day */
@@ -319,61 +308,70 @@ class HundredOneHotels extends Base
                             continue;
                         }
 
-                        $price = false;
-                        if (isset($priceCaches[$roomTypeId][$syncPricesTariffId][$day->format('d.m.Y')])) {
-                            $price = true;
-                        }
+                        $isClosedRestrictionTariff = $restrictionsMap[$config->getHotel()->getId(
+                        )][$syncRestrictionsTariffId][$roomTypeId][$day->format('d.m.Y')];
+
+                        $isClosedPriceTariff = $restrictionsMap[$config->getHotel()->getId(
+                        )][$syncPricesTariffId][$roomTypeId][$day->format('d.m.Y')];
 
                         if (isset($restrictions[$roomTypeId][$syncRestrictionsTariffId][$day->format('d.m.Y')])) {
-
                             /** @var Restriction $maxiBookingRestrictionObject */
                             $maxiBookingRestrictionObject = $restrictions[$roomTypeId][$syncRestrictionsTariffId][$day->format('d.m.Y')];
 
                             $requestFormatter->addSingleParamCondition($day,
                                 $requestFormatter::CLOSED,
                                 $serviceRoomTypeId,
-                                $maxiBookingRestrictionObject->getClosed() || !$price ? 1 : 0);
+                                ($isClosedRestrictionTariff || $isClosedPriceTariff)
+                                && $maxiBookingRestrictionObject->getClosed() ? 1 : 0
+                            );
 
                             $requestFormatter->addDoubleParamCondition($day,
                                 $requestFormatter::CLOSED_TO_ARRIVAL,
                                 $serviceRoomTypeId,
                                 $serviceTariffId,
-                                $maxiBookingRestrictionObject->getClosedOnArrival() ? 1 : 0);
+                                $maxiBookingRestrictionObject->getClosedOnArrival() ? 1 : 0
+                            );
 
                             $requestFormatter->addDoubleParamCondition($day,
                                 $requestFormatter::CLOSED_TO_DEPARTURE,
                                 $serviceRoomTypeId,
                                 $serviceTariffId,
-                                $maxiBookingRestrictionObject->getClosedOnDeparture() ? 1 : 0);
+                                $maxiBookingRestrictionObject->getClosedOnDeparture() ? 1 : 0
+                            );
 
                             $requestFormatter->addDoubleParamCondition($day,
                                 $requestFormatter::MIN_STAY,
                                 $serviceRoomTypeId,
                                 $serviceTariffId,
-                                (int)$maxiBookingRestrictionObject->getMinStay());
+                                (int)$maxiBookingRestrictionObject->getMinStay()
+                            );
                         } else {
                             $requestFormatter->addSingleParamCondition($day,
                                 $requestFormatter::CLOSED,
                                 $serviceRoomTypeId,
-                                0);
+                                ($isClosedRestrictionTariff || $isClosedPriceTariff) ? 1 : 0
+                            );
 
                             $requestFormatter->addDoubleParamCondition($day,
                                 $requestFormatter::CLOSED_TO_ARRIVAL,
                                 $serviceRoomTypeId,
                                 $serviceTariffId,
-                                0);
+                                0
+                            );
 
                             $requestFormatter->addDoubleParamCondition($day,
                                 $requestFormatter::CLOSED_TO_DEPARTURE,
                                 $serviceRoomTypeId,
                                 $serviceTariffId,
-                                0);
+                                0
+                            );
 
                             $requestFormatter->addDoubleParamCondition($day,
                                 $requestFormatter::MIN_STAY,
                                 $serviceRoomTypeId,
                                 $serviceTariffId,
-                                1);
+                                1
+                            );
                         }
                     }
                 }

@@ -104,6 +104,33 @@ class AirbnbTest extends UnitTestCase
         $this->assertEquals($lastDayOfSentData->format('Ymd'), $lastEvent->dtend);
     }
 
+    public function testMixedPullOrders()
+    {
+        $this->setSecondRoomType();
+        $this->mockHttpService();
+        $isSuccess = $this->container->get('mbh.airbnb')->pullOrders();
+        $this->assertTrue($isSuccess);
+
+        $orders = $this->dm
+            ->getRepository('MBHPackageBundle:Order')
+            ->findBy(['channelManagerType' => Airbnb::NAME]);
+        $this->assertCount(3, $orders);
+        $this->assertEquals('Стандартный одноместный', $orders[0]->getPackages()->toArray()[0]->getRoomType()->getFullTitle());
+        $this->assertEquals('Люкс', $orders[1]->getPackages()->toArray()[0]->getRoomType()->getFullTitle());
+        $this->assertEquals('Люкс', $orders[2]->getPackages()->toArray()[0]->getRoomType()->getFullTitle());
+    }
+
+    private function mockHttpService()
+    {
+        $mock = \Mockery::mock(CMHttpService::class)->makePartial();
+
+        $mock->shouldReceive('getByAirbnbUrl')->andReturnUsing(function ($url) {
+            return (new Result())->setData($this->getFourthCalendar($url));
+        });
+
+        $this->container->set('mbh.cm_http_service', $mock);
+    }
+
     private function replaceHttpService(string $calendar)
     {
         $httpServiceMock = $this->getMockBuilder(CMHttpService::class)->getMock();
@@ -132,10 +159,15 @@ class AirbnbTest extends UnitTestCase
         return $this->wrapCalendar($this->getEventById('1418fb94e984-4ac6e9143r674246f878defd58250d61@airbnb.com'));
     }
 
+    public function getFourthCalendar($url): string
+    {
+        return $this->wrapCalendar($this->getMultipleEventsDataBySyncUrl($url));
+    }
+
     private function getEventById(string $id)
     {
         return "BEGIN:VEVENT
-DTEND;VALUE=DATE:20181211
+DTEND;VALUE=DATE:20211211
 DTSTART;VALUE=DATE:20181210
 UID:" . $id
             . "\nDESCRIPTION:CHECKIN: 10.12.2018\nCHECKOUT: 11.12.2018\nNIGHTS: 1\nPHONE: 
@@ -184,5 +216,62 @@ END:VEVENT\n";
             $this->dm->persist($airbnbConfig);
             $this->dm->flush();
         }
+    }
+
+    protected function setSecondRoomType()
+    {
+        $airbnbConfig = $this->dm->getRepository('MBHChannelManagerBundle:AirbnbConfig')->findOneBy([]);
+        $hotel = $this->dm->getRepository('MBHHotelBundle:Hotel')->findOneBy(['isDefault' => true]);
+        $roomType2 = $this->dm
+            ->getRepository('MBHHotelBundle:RoomType')
+            ->findOneBy([
+                'hotel.id' => $hotel->getId(),
+                'fullTitle' => 'Люкс'
+            ]);
+        $airbnbConfig
+            ->addRoom(
+                (new AirbnbRoom())
+                    ->setSyncUrl(Airbnb::SYNC_URL_BEGIN . '/some_fiction_number2')
+                    ->setRoomType($roomType2)
+            );
+
+        $this->dm->persist($airbnbConfig);
+        $this->dm->flush();
+    }
+
+    protected function getMultipleEventsDataBySyncUrl(string $url): string
+    {
+        $airbnbEndDate = $url === 'https://www.airbnb./some_fiction_number' ? '20180401' : '20210401';
+
+        return "BEGIN:VEVENT
+DTEND;VALUE=DATE:20200326
+DTSTART;VALUE=DATE:20180322
+UID:1418fb94e984-4ac6e9147d674246f878defd58250d61@airbnb.com
+DESCRIPTION:CHECKIN: 22.03.2018\nCHECKOUT: 26.03.2018\nNIGHTS: 4\nPHONE: 
+ +7 925 888-00-00\nEMAIL: (нет доступных вариантов электронного адреса)\n
+ PROPERTY: Апартаменты Meidan Suites  3 гостя\n
+SUMMARY:Alevtina Sholokhova (HMW3STQQNP)
+LOCATION:Апартаменты Meidan Suites  3 гостя
+END:VEVENT
+BEGIN:VEVENT
+DTEND;VALUE=DATE:$airbnbEndDate
+DTSTART;VALUE=DATE:20180330
+UID:1418fb94e984-4ac6e9147d674246f878defd58250d61@airbnb.com
+DESCRIPTION:CHECKIN: 30.03.2018\nCHECKOUT: 01.04.2018\nNIGHTS: 2\nPHONE: 
+ +7 925 888-00-00\nEMAIL: (нет доступных вариантов электронного адреса)\n
+ PROPERTY: Апартаменты Meidan Suites  3 гостя\n
+SUMMARY:Kate Guselnikova (HMAMXJ54CY)
+LOCATION:Апартаменты Meidan Suites  3 гостя
+END:VEVENT
+BEGIN:VEVENT
+DTEND;VALUE=DATE:20180504
+DTSTART;VALUE=DATE:20180428
+UID:1418fb94e984-4ac6e9147d674246f878defd58250d61@airbnb.com
+DESCRIPTION:CHECKIN: 28.04.2018\nCHECKOUT: 04.05.2018\nNIGHTS: 6\nPHONE: 
+ +7 925 888-00-00\nEMAIL: (нет доступных вариантов электронного адреса)\n
+ PROPERTY: Апартаменты Meidan Suites  3 гостя\n
+SUMMARY:Сергей Посохин (HMSF9PA434)
+LOCATION:Апартаменты Meidan Suites  3 гостя
+END:VEVENT";
     }
 }

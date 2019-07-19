@@ -152,6 +152,13 @@ class Extension extends \Twig_Extension
         return $prepaymentPrice === null ? '0.00' : (string)$prepaymentPrice;
     }
 
+    public function getCashSurcharge(\MBH\Bundle\ClientBundle\Service\DocumentSerialize\Order $order): string
+    {
+        $surchargePrice = $this->container->get('mbh.template_prices_generator')->getSurcharge($order);
+
+        return $surchargePrice === null ? '0.00' : (string)$surchargePrice;
+    }
+
     /**
      * @param \MBH\Bundle\ClientBundle\Service\DocumentSerialize\Order $order
      * @return string
@@ -531,7 +538,8 @@ class Extension extends \Twig_Extension
             'get_guide_article_url'      => new TwigFunction('get_guide_article_url', [$this, 'getGuideArticleUrl'], $options),
             'get_cash_price'             => new TwigFunction('get_cash_price', [$this, 'getCashPrice'], $options),
             'get_cashless_price'         => new TwigFunction('get_cashless_price', [$this, 'getCashlessPrice'], $options),
-            'get_prepayment_price'       => new TwigFunction('get_prepayment_price', [$this, 'getCashPrepayment'], $options)
+            'get_prepayment_price'       => new TwigFunction('get_prepayment_price', [$this, 'getCashPrepayment'], $options),
+            'get_surcharge_price'        => new TwigFunction('get_surcharge_price', [$this, 'getCashSurcharge'], $options),
         ];
     }
 
