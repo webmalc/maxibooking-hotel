@@ -273,7 +273,7 @@ class Airbnb extends AbstractChannelManagerService
                     ->createOrder($orderInfo, $existingPackage->getOrder());
                 $this->notify($order, 'commonCM', 'edit', ['%channelManagerName%' => $orderInfo->getChannelManagerName()]);
             }
-        } else {
+        } else if ($this->checkOutOfDateOrder($orderInfo->getOrderData())) {
             $order = $this->container
                 ->get('mbh.channelmanager.order_handler')
                 ->createOrder($orderInfo);
@@ -281,6 +281,17 @@ class Airbnb extends AbstractChannelManagerService
         }
 
         return $packagesInRoom;
+    }
+
+    private function checkOutOfDateOrder(array $orderData): bool
+    {
+        if (isset($orderData['DTEND_array'][2])) {
+            $departureDate = (new \DateTime())->setTimestamp($orderData['DTEND_array'][2]);
+
+            return $departureDate >= new \DateTime();
+        }
+
+        return false;
     }
 
     /**

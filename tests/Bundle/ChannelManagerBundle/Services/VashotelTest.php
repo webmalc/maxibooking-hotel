@@ -4,6 +4,7 @@ namespace Tests\Bundle\ChannelManagerBundle\Services;
 
 
 use MBH\Bundle\BaseBundle\Lib\Test\ChannelManagerServiceTestCase;
+use MBH\Bundle\BaseBundle\Service\Cache;
 use MBH\Bundle\ChannelManagerBundle\Document\VashotelConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Services\Vashotel;
@@ -29,6 +30,9 @@ class VashotelTest extends ChannelManagerServiceTestCase
 
     private $datum = false;
 
+    /**@var Cache */
+    private $cache;
+
     public static function setUpBeforeClass()
     {
         self::baseFixtures();
@@ -49,6 +53,7 @@ class VashotelTest extends ChannelManagerServiceTestCase
         $this->initConfig(false);
         $this->startDate = new \DateTime('midnight');
         $this->endDate = new \DateTime('midnight +8 days');
+        $this->cache = $this->container->get('mbh.cache');
     }
 
     protected function getServiceHotelIdByIsDefault(bool $isDefault): int
@@ -96,6 +101,7 @@ class VashotelTest extends ChannelManagerServiceTestCase
                 $this->generateCompareString($data[1], true),
                 $this->getUpdatePricesRequestData($this->datum)
             );
+            $this->cache->clear('price_caches_fetch', null, null, true);
 
             return simplexml_load_string('<?xml version="1.0" encoding="UTF-8"?><request></request>');
         });
@@ -182,22 +188,37 @@ class VashotelTest extends ChannelManagerServiceTestCase
 
     protected function getUpdatePricesRequestData($isDefault): string
     {
+        $date1 = clone $this->startDate;
+        $date2 = clone $this->startDate;
+
         return $isDefault
             ?
-            '{"2019-07-16":{"closed":"0","price1":"1200","price2":"2100"},"2019-07-17":{"closed":"0","price1":"1200",'.
-            '"price2":"2100"},"2019-07-18":{"closed":"0","price1":"1200","price2":"2100"},"2019-07-19":{"closed":"1"},'.
-            '"2019-07-20":{"closed":"1"},"2019-07-21":{"closed":"1","price1":"1200","price2":"2100"},"2019-07-22"'.
+            '{"' . $date1->format('Y-m-d') . '":{"closed":"0","price1":"1200","price2":"2100"},"'
+            . $date1->modify('+1 days')->format('Y-m-d') . '":{"closed":"0","price1":"1200",'.
+            '"price2":"2100"},"' . $date1->modify('+1 days')->format('Y-m-d') .
+            '":{"closed":"0","price1":"1200","price2":"2100"},"' .
+            $date1->modify('+1 days')->format('Y-m-d') . '":{"closed":"1"},'.
+            '"' . $date1->modify('+1 days')->format('Y-m-d') . '":{"closed":"1"},"'
+            . $date1->modify('+1 days')->format('Y-m-d') .
+            '":{"closed":"1","price1":"1200","price2":"2100"},"' .
+            $date1->modify('+1 days')->format('Y-m-d') . '"'.
             ':{"closed":"0","price1":"1200","price2":"2100"}}'
             :
-            '{"2019-07-16":{"closed":"0","price1":"1200","price2":"2100"},"2019-07-17":{"closed":"0","price1":"1200",'.
-            '"price2":"2100"},"2019-07-18":{"closed":"0","price1":"1200","price2":"2100"},"2019-07-19":{"closed":"0",'.
-            '"price1":"1200","price2":"2100"},"2019-07-20":{"closed":"0","price1":"1200","price2":"2100"},'.
-            '"2019-07-21":{"closed":"0","price1":"1200","price2":"2100"},"2019-07-22":{"closed":"0",'.
+            '{"' . $date2->format('Y-m-d') . '":{"closed":"0","price1":"1200","price2":"2100"},"'
+            . $date2->modify('+1 days')->format('Y-m-d') . '":{"closed":"0","price1":"1200",'.
+            '"price2":"2100"},"' . $date2->modify('+1 days')->format('Y-m-d') .
+            '":{"closed":"0","price1":"1200","price2":"2100"},"'
+            . $date2->modify('+1 days')->format('Y-m-d') . '":{"closed":"0",'.
+            '"price1":"1200","price2":"2100"},"' . $date2->modify('+1 days')->format('Y-m-d') .
+            '":{"closed":"0","price1":"1200","price2":"2100"},'.
+            '"' . $date2->modify('+1 days')->format('Y-m-d') . '":{"closed":"0","price1":"1200","price2":"2100"},"'
+            . $date2->modify('+1 days')->format('Y-m-d') . '":{"closed":"0",'.
             '"price1":"1200","price2":"2100"}}';
     }
 
     public function testUpdatePrices(): void
     {
+        $this->cache->clear('price_caches_fetch', null, null, true);
         $this->unsetPriceCache((clone $this->startDate)->modify('+3 days'), true);
         $this->unsetPriceCache((clone $this->startDate)->modify('+4 days'));
         $this->setRestriction((clone $this->startDate)->modify('+5 days'));
@@ -209,6 +230,7 @@ class VashotelTest extends ChannelManagerServiceTestCase
 
     public function testUpdateRestrictions(): void
     {
+        $this->cache->clear('price_caches_fetch', null, null, true);
         $this->unsetPriceCache((clone $this->startDate)->modify('+3 days'), true);
         $this->unsetPriceCache((clone $this->startDate)->modify('+4 days'));
         $this->setRestriction((clone $this->startDate)->modify('+5 days'));
