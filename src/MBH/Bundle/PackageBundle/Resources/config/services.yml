@@ -138,9 +138,9 @@ services:
                   - '%mbh_dynamic_sale_period%'
                   - '@service_container'
 
-#    mbh.acl_document_owner_maker:
-#        class: MBH\Bundle\PackageBundle\Lib\AclOwnerMaker
-#        arguments: ['@security.acl.provider', '@doctrine.odm.mongodb.document_manager']
+    mbh.owner_maker:
+        class: MBH\Bundle\PackageBundle\Lib\OwnerMaker
+        arguments: ['@doctrine.odm.mongodb.document_manager']
 
     task_notice_unpaid_order:
       class:      MBH\Bundle\PackageBundle\Task\TaskNoticeUnpaidOrder

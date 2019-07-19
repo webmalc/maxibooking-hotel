@@ -3,6 +3,7 @@ namespace MBH\Bundle\UserBundle\DataFixtures\MongoDB;
 
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -70,12 +71,9 @@ class UserData extends AbstractFixture implements OrderedFixtureInterface, Conta
                 $manager->persist($user);
                 $manager->flush();
 
-                if (isset($userData['hotels']) ) {
-                    foreach ($userData['hotels'] as $hotelId) {
-                        $this->container
-                            ->get('mbh.acl_document_owner_maker')
-                            ->insertAcl($user, $this->getReference($hotelId));
-                    }
+                if ($userData['hotels'] ?? false) {
+                    $hotels = $manager->getRepository(Hotel::class)->findAll();
+                    $user->setHotels($hotels);
                 }
 
                 $this->setReference($key, $user);
