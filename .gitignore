@@ -160,6 +160,7 @@ Vagrantfile
 #docker2
 /docker2/phpdocker/nginx/nginx.conf
 docker2/phpdocker/php-fpm/php-ini-overrides-cli.ini
+docker2/phpdocker/php-cli/php-ini-overrides-cli.ini
 docker2/phpdocker/php-fpm/php-ini-overrides-fpm.ini
 docker2/phpdocker/php-fpm/xdebug.ini
 docker2/phpdocker/php-fpm/supervisor.conf.d/*
