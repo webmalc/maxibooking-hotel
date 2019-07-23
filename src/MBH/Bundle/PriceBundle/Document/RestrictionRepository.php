@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PriceBundle\Document;
 
+use DateTime;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use MBH\Bundle\BaseBundle\Service\Cache;
 use MBH\Bundle\BaseBundle\Service\Helper;
@@ -9,6 +10,7 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
+use MBH\Bundle\SearchBundle\Services\Data\Fetcher\ExtendedDataQueryInterface;
 
 class RestrictionRepository extends DocumentRepository
 {
@@ -35,8 +37,8 @@ class RestrictionRepository extends DocumentRepository
         $data = $hotels = [];
         $qb = $this->createQueryBuilder('q');
         $qb
-            ->field('date')->gte(new \DateTime('midnight'))
-            ->field('date')->lte(new \DateTime('midnight +365 days'))
+            ->field('date')->gte(new DateTime('midnight'))
+            ->field('date')->lte(new DateTime('midnight +365 days'))
             ->field('tariff.id')->in($tariffsIds)
             ->field('hotel.id')->in($hotelIds)
             ->field('roomType.id')->in($roomTypeIds)
@@ -54,7 +56,7 @@ class RestrictionRepository extends DocumentRepository
                 $hotel = $restriction->getRoomType()->getHotel();
 
                 $data[$restriction->getRoomType()->getId()][$dateStr] = $dateStr;
-                $data['allrooms_'.$hotel->getId()][$dateStr] = $dateStr;
+                $data['allrooms_' . $hotel->getId()][$dateStr] = $dateStr;
                 $hotels[$hotel->getId()] = $hotel;
             }
         };
@@ -62,7 +64,7 @@ class RestrictionRepository extends DocumentRepository
         foreach ($hotels as $hotel) {
             foreach ($hotel->getRoomTypes() as $roomType) {
                 isset($data[$roomType->getId()]) ? $dates = $data[$roomType->getId()] : $dates = [];
-                $data['allrooms_'.$hotel->getId()] = array_intersect($data['allrooms_'.$hotel->getId()], $dates);
+                $data['allrooms_' . $hotel->getId()] = array_intersect($data['allrooms_' . $hotel->getId()], $dates);
             }
         }
 
@@ -70,20 +72,21 @@ class RestrictionRepository extends DocumentRepository
     }
 
     /**
-     * @param \DateTime $begin
-     * @param \DateTime $end
+     * @param DateTime $begin
+     * @param DateTime $end
      * @param Hotel $hotel
      * @param array $roomTypes
      * @param array $tariffs
      * @return \Doctrine\ODM\MongoDB\Query\Builder
      */
     public function fetchQueryBuilder(
-        \DateTime $begin = null,
-        \DateTime $end = null,
+        DateTime $begin = null,
+        DateTime $end = null,
         Hotel $hotel = null,
         array $roomTypes = [],
         array $tariffs = []
-    ) {
+    )
+    {
 
         $qb = $this->createQueryBuilder('q');
 
@@ -113,13 +116,13 @@ class RestrictionRepository extends DocumentRepository
     }
 
     /**
-     * @param \DateTime $date
+     * @param DateTime $date
      * @param RoomType $roomType
      * @param Tariff $tariff
      * @param Cache $memcached
      * @return Restriction
      */
-    public function findOneByDate(\DateTime $date, RoomType $roomType, Tariff $tariff, Cache $memcached = null)
+    public function findOneByDate(DateTime $date, RoomType $roomType, Tariff $tariff, Cache $memcached = null)
     {
         if ($memcached) {
             $cache = $memcached->get('restrictions_find_one_by_date', func_get_args());
@@ -139,30 +142,29 @@ class RestrictionRepository extends DocumentRepository
         return $result;
     }
 
-    public function findOneByDateRaw(\DateTime $date, RoomType $roomType, Tariff $tariff)
+    public function findOneByDateRaw(DateTime $date, RoomType $roomType, Tariff $tariff)
     {
         $qb = $this->findOneByDateQB($date, $roomType, $tariff);
         $qb->select('minStayArrival');
         return $qb->hydrate(false)->getQuery()->getSingleResult();
     }
 
-    private function findOneByDateQB(\DateTime $date, RoomType $roomType, Tariff $tariff)
+    private function findOneByDateQB(DateTime $date, RoomType $roomType, Tariff $tariff)
     {
         $qb = $this->createQueryBuilder();
         $qb
             ->field('date')->equals($date)
             ->field('tariff.id')->equals($tariff->getId())
             ->field('roomType.id')->equals($roomType->getId())
-            ->field('isEnabled')->equals(true)
-        ;
+            ->field('isEnabled')->equals(true);
 
         return $qb;
     }
 
 
     /**
-     * @param \DateTime $begin
-     * @param \DateTime $end
+     * @param DateTime $begin
+     * @param DateTime $end
      * @param Hotel $hotel
      * @param array $roomTypes
      * @param array $tariffs
@@ -171,14 +173,15 @@ class RestrictionRepository extends DocumentRepository
      * @return array
      */
     public function fetch(
-        \DateTime $begin = null,
-        \DateTime $end = null,
+        DateTime $begin = null,
+        DateTime $end = null,
         Hotel $hotel = null,
         array $roomTypes = [],
         array $tariffs = [],
         $grouped = false,
         Cache $memcached = null
-    ) {
+    )
+    {
 
         if ($memcached) {
             $cache = $memcached->get('restrictions_fetch', func_get_args());
@@ -210,38 +213,34 @@ class RestrictionRepository extends DocumentRepository
         return $result;
     }
 
-    /**
-     * @param SearchConditions $conditions
-     * @param bool $isCaterory
-     */
-    public function getAllSearchPeriod(SearchConditions $conditions)
+
+    public function getAllSearchPeriod(DateTime $begin, DateTime $end, array $tariffIds = [], array $roomTypeIds = [], array $hotelIds = [])
     {
         $qb = $this->createQueryBuilder();
-        $restrictionTariffs = $conditions->getRestrictionTariffs();
-        $isTariffIds = (bool)$restrictionTariffs->count();
-        if ($isTariffIds) {
-            $tariffIds = Helper::toIds($restrictionTariffs);
+//        $restrictionTariffs = $conditions->getRestrictionTariffs();
+//        $isTariffIds = (bool)$restrictionTariffs->count();
+        if (count($tariffIds)) {
+//            $tariffIds = Helper::toIds($restrictionTariffs);
             $qb->field('tariff.id')->in(array_unique($tariffIds));
         }
 
-        $isRoomTypeSpecified = $conditions->getRoomTypes()->count();
+//        $isRoomTypeSpecified = $conditions->getRoomTypes()->count();
 
-        if ($isRoomTypeSpecified) {
-            $roomTypes = $conditions->getRoomTypes();
-            $roomTypeIds = Helper::toIds($roomTypes);
+        if (count($roomTypeIds)) {
+//            $roomTypes = $conditions->getRoomTypes();
+//            $roomTypeIds = Helper::toIds($roomTypes);
             $qb->field('roomType.id')->in($roomTypeIds);
         }
 
         /** Priority to tariff or roomTpe */
-        $isHotelIds = $conditions->getHotels()->count();
-        if (!$isTariffIds && !$isRoomTypeSpecified && $isHotelIds) {
-            $hotelIds = Helper::toIds($conditions->getHotels());
+//        $isHotelIds = $conditions->getHotels()->count();
+        if (!count($tariffIds) && !count($roomTypeIds) && count($hotelIds)) {
             $qb->field('hotel.id')->in($hotelIds);
         }
 
         $qb
-            ->field('date')->gte($conditions->getMaxBegin())
-            ->field('date')->lte($conditions->getMaxEnd());
+            ->field('date')->gte($begin)
+            ->field('date')->lte($end);
 
         return $qb->hydrate(false)->getQuery()->execute();
     }

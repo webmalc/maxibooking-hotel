@@ -8,6 +8,7 @@ use DateTime;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Services\Cache\ErrorFilters\ErrorFilterLevelInterface;
 use MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataQueryInterface;
+use MBH\Bundle\SearchBundle\Services\Data\Fetcher\ExtendedDataQueryInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -379,8 +380,10 @@ class SearchQuery implements DataQueryInterface
         return $this;
     }
 
-
-
+    public function isExtendedDataQuery(): bool
+    {
+        return (null !== $this->getSearchConditions());
+    }
 
 
     public static function createInstance(SearchConditions $conditions, DateTime $begin, DateTime $end, array $tariffRoomType): SearchQuery

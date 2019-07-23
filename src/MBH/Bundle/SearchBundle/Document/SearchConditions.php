@@ -15,6 +15,7 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Services\Cache\ErrorFilters\ErrorResultFilter;
+use MBH\Bundle\SearchBundle\Services\Data\Fetcher\ExtendedDataQueryInterface;
 use MBH\Bundle\SearchBundle\Validator\Constraints\ChildrenAgesSameAsChildren;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -286,6 +287,9 @@ class SearchConditions extends Base
         return $this;
     }
 
+    /**
+     * @return Collection|Hotel[]
+     */
     public function getHotels(): Collection
     {
         return $this->hotels;
@@ -310,7 +314,7 @@ class SearchConditions extends Base
     }
 
     /**
-     * @return Collection
+     * @return Collection|RoomType[]
      */
     public function getRoomTypes(): Collection
     {
@@ -325,20 +329,6 @@ class SearchConditions extends Base
         return $this->tariffs;
     }
 
-    /** @return ArrayCollection|Tariff[] */
-    public function getRestrictionTariffs(): ArrayCollection
-    {
-        $restrictionTariffs = [];
-        foreach ($this->tariffs as $tariff) {
-            if ($tariff->getParent() && $tariff->getChildOptions()->isInheritRooms()) {
-                $restrictionTariffs[] = $tariff->getParent();
-            } else {
-                $restrictionTariffs[] = $tariff;
-            }
-        }
-
-        return new ArrayCollection($restrictionTariffs);
-    }
 
     /**
      * @param ArrayCollection|Tariff[] $tariffs

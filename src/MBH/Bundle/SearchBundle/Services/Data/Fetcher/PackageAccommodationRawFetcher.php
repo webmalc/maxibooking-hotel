@@ -36,17 +36,9 @@ class PackageAccommodationRawFetcher implements DataRawFetcherInterface
     }
 
 
-    public function getRawData(DataQueryInterface $dataQuery): array
+    public function getRawData(ExtendedDataQueryInterface $dataQuery): array
     {
-        $conditions = $dataQuery->getSearchConditions();
-        if (!$conditions) {
-            throw new DataManagerException('Critical Error in %s fetcher. No SearchConditions in SearchQuery', __CLASS__);
-        }
-
-        $maxBegin = $conditions->getMaxBegin();
-        $maxEnd = $conditions->getMaxEnd();
-
-        $data =  $this->repository->getRawAccommodationByPeriod($maxBegin, $maxEnd);
+        $data =  $this->repository->getRawAccommodationByPeriod($dataQuery->getBegin(), $dataQuery->getEnd());
 
         $accommodationGroupedByRoomType = [];
         foreach ($data as $packageAccommodation) {

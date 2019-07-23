@@ -47,17 +47,9 @@ class PriceCacheRawFetcher implements DataRawFetcherInterface
     }
 
 
-    public function getRawData(DataQueryInterface $dataQuery): array
+    public function getRawData(ExtendedDataQueryInterface $dataQuery): array
     {
-        $conditions = $dataQuery->getSearchConditions();
-        if (!$conditions) {
-            throw new DataManagerException('Critical Error in %s fetcher. No SearchConditions in SearchQuery', __CLASS__);
-        }
-
-        $begin = $conditions->getMaxBegin();
-        $end = $conditions->getMaxEnd();
-
-        $cursor = $this->priceCacheRepository->fetchRawPeriod($begin, $end, [], [], $this->isUseCategory);
+        $cursor = $this->priceCacheRepository->fetchRawPeriod($dataQuery->getBegin(), $dataQuery->getEnd(), [], [], $this->isUseCategory);
 
         $priceCaches =  $cursor->toArray(false);
         $data = [];

@@ -5,10 +5,14 @@ namespace MBH\Bundle\SearchBundle\Services\Data\Fetcher;
 
 
 use MBH\Bundle\SearchBundle\Lib\Exceptions\AsyncDataFetcherException;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\DataFetchQueryException;
+use MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataQueries\ExtendedDataQuery;
+use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcherInterface;
 use Predis\Client;
 use Psr\SimpleCache\InvalidArgumentException;
 
 /**
+ * TODO: Need to split data fetcher to Simple and Extended DF. Use decorator and factory in ServiceContainer
  * Class DataFetcher
  * @package MBH\Bundle\SearchBundle\Services\Data\Fetcher
  */
@@ -25,6 +29,9 @@ class DataFetcher implements DataFetcherInterface
     /** @var array */
     private $data;
 
+    /** @var SharedDataFetcherInterface */
+    private $sharedData;
+
     /**
      * @var Client
      */
@@ -35,10 +42,11 @@ class DataFetcher implements DataFetcherInterface
      * @param Client $client
      * @param DataRawFetcherInterface $rawFetcher
      */
-    public function __construct(Client $client, DataRawFetcherInterface $rawFetcher)
+    public function __construct(Client $client, DataRawFetcherInterface $rawFetcher, SharedDataFetcherInterface $sharedData)
     {
         $this->client = $client;
         $this->rawFetcher = $rawFetcher;
+        $this->sharedData = $sharedData;
     }
 
 
@@ -47,9 +55,11 @@ class DataFetcher implements DataFetcherInterface
      * @return array
      * @throws AsyncDataFetcherException
      * @throws InvalidArgumentException
+     * @throws DataFetchQueryException
      */
     public function fetch(DataQueryInterface $dataQuery): array
     {
+        //** TODO: need to wrap by decorator to separate simple and complex query (with add dates and need to store in memory) */
         $hash = $dataQuery->getSearchHash();
         $key = $this->createKey($hash);
         if (!($data = $this->data[$hash] ?? null)) {
@@ -61,9 +71,7 @@ class DataFetcher implements DataFetcherInterface
                 }
 
             } else {
-
                 $data = unserialize($this->client->get($key), ['allowed_classes' => true]);
-
             }
             $this->data[$hash] = $data;
         }
@@ -79,10 +87,35 @@ class DataFetcher implements DataFetcherInterface
     /**
      * @param DataQueryInterface $searchQuery
      * @return array
+     * @throws DataFetchQueryException
      */
     private function fetchData(DataQueryInterface $searchQuery): array
     {
-        return $this->rawFetcher->getRawData($searchQuery);
+        /** @var ExtendedDataQuery $dataQuery */
+        $dataQuery = new ExtendedDataQuery();
+        if ($searchQuery->isExtendedDataQuery()) {
+            $searchConditions = $searchQuery->getSearchConditions();
+            if (null === $searchConditions) {
+                throw new DataFetchQueryException('No searchConditions in Extended Data Fetch');
+            }
+            $dataQuery
+                ->setBegin($searchConditions->getMaxBegin())
+                ->setEnd($searchConditions->getMaxEnd())
+                ->setTariffs($searchConditions->getTariffs())
+                ->setRoomTypes($searchConditions->getRoomTypes())
+                ->setHotels($searchConditions->getHotels())
+
+            ;
+
+        } else {
+            $dataQuery->setBegin($searchQuery->getBegin());
+            $dataQuery->setEnd($searchQuery->getEnd());
+            $tariff = $this->sharedData->getFetchedTariff($searchQuery->getTariffId());
+            $roomType = $this->sharedData->getFetchedRoomType($searchQuery->getRoomTypeId());
+            $dataQuery->setTariffs([$tariff]);
+            $dataQuery->setRoomTypes([$roomType]);
+        }
+        return $this->rawFetcher->getRawData($dataQuery);
     }
 
     /**
@@ -125,8 +158,12 @@ class DataFetcher implements DataFetcherInterface
 
     }
 
-    private function createKey(string $hash): string
+    private function createKey(?string $hash = null): string
     {
+        if (null === $hash) {
+            $hash = uniqid('singleQueryRequest', true);
+        }
+
         return $this->getName().$hash;
     }
 
