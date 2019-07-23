@@ -37,17 +37,6 @@
 </head>
 <body>
     <article id="mbh-form-additional-data-wrapper">
-        {% if formConfig.roomTypes and choices|length != 1 %}
-            <section class="form-group mbh-form-row room-type">
-                <label for="mbh-form-roomType" class="title">{{ fieldsName.roomType is not empty ? fieldsName.roomType : ('views.api.form.room_type.label'|trans({}, 'MBHOnlineBundle')) }}</label>
-                <select id="mbh-form-roomType" class="form-control input-sm" name="roomType" data-form="room-type">
-                    <option value="">- {{ 'views.api.form.room_type.choices.any'|trans({}, 'MBHOnlineBundle') }} -</option>
-                    {% for roomType in choices %}
-                        <option value="{{ roomType.id }}">{{ roomType.localeTitle(app.request.locale) }}</option>
-                    {% endfor %}
-                </select>
-            </section>
-        {% endif %}
         <section class="form-group mbh-form-row adults">
             <div class="title">
                 <span>{{ fieldsName.adults is not empty ? fieldsName.adults : ('views.api.form.adults.label'|trans({}, 'MBHOnlineBundle')) }}</span>

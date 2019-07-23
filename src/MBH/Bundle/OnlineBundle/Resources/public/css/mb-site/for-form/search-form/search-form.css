@@ -104,20 +104,9 @@
     height: 120px;
   }
 }
+#mbh-body-search-iframe select,
 #mbh-body-search-iframe input {
   font-family: inherit;
-}
-@media (min-width: 832px) {
-  #mbh-body-search-iframe.booking-page #mbh-form-wrapper form#mbh-form {
-    width: 882px;
-  }
-  #mbh-body-search-iframe.booking-page #mbh-form-wrapper form#mbh-form .mbh-form-row {
-    width: 210px;
-  }
-  #mbh-body-search-iframe.booking-page #mbh-form-wrapper form#mbh-form .mbh-form-row.mbh-form-additional-form-amount-guest-wrapper,
-  #mbh-body-search-iframe.booking-page #mbh-form-wrapper form#mbh-form .mbh-form-row#mbh-form-submit-wrapper {
-    width: 210px;
-  }
 }
 #mbh-body-search-iframe #mbh-form-wrapper {
   display: flex;
@@ -134,12 +123,12 @@
 }
 @media (min-width: 732px) {
   #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form {
-    width: 662px;
+    width: 806px;
   }
 }
 @media (min-width: 832px) {
   #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form {
-    width: 762px;
+    width: 876px;
   }
 }
 #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-form-begin-wrapper::after,
@@ -158,6 +147,7 @@
     margin-right: 7px;
   }
   #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-additional-form-amount-guest-wrapper,
+  #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-additional-room-types,
   #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-form-end-wrapper {
     margin: 0 7px;
   }
@@ -193,7 +183,7 @@
 @media (min-width: 832px) {
   #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-row.mbh-form-additional-form-amount-guest-wrapper,
   #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-row#mbh-form-submit-wrapper {
-    width: 180px;
+    width: 140px;
   }
 }
 #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-row > label {
@@ -217,6 +207,38 @@
 #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-form-submit:hover {
   filter: brightness(120%);
 }
+#mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-additional-room-types::after {
+  content: "";
+  padding-right: 15px;
+  right: 26px;
+  position: relative;
+  height: 20px;
+  background-image: url('/bundles/mbhonline/images/arrow-down.svg');
+  background-repeat: no-repeat;
+  background-position: right;
+}
+@media (min-width: 732px) and (max-width: 831px) {
+  #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-additional-room-types {
+    width: 130px;
+  }
+}
+#mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-additional-room-types select {
+  -moz-appearance: none;
+  /* Firefox */
+  -webkit-appearance: none;
+  /* Safari and Chrome */
+  appearance: none;
+  width: inherit;
+  padding: 0 36px 0 12px;
+  border: none;
+  outline: none;
+  background: transparent;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  height: inherit;
+  line-height: inherit;
+  font-size: inherit;
+}
 #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-additional-form-amount-guest-wrapper::after {
   margin-right: 10px;
   content: "";
@@ -231,7 +253,7 @@
   border: none;
   text-align: center;
   padding: 0;
-  width: 72px;
+  width: 45px;
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;

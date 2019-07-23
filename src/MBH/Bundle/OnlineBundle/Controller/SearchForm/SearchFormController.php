@@ -149,14 +149,14 @@ class SearchFormController extends Controller
             '@MBHOnline/SearchForm/additional-form-iframe.html.twig',
             [
                 'formConfig' => $formConfig,
-                'choices'    => $helperDataForm->getRoomTypes(),
+//                'choices'    => $helperDataForm->generateRoomTypeListForSelectOptions(),
             ]
         );
     }
 
     /**
      * Online form iframe
-     * @Route("/form/search-iframe/{formConfigId}", name=FormConfig::ROUTER_NAME_SEARCH_IFRAME)
+     * @Route("/form/search-iframe/{formConfigId}", name=MBH\Bundle\OnlineBundle\Document\SettingsOnlineForm\FormConfig::ROUTER_NAME_SEARCH_IFRAME)
      * @Method("GET")
      * @Cache(expires="tomorrow", public=true)
      * @ParamConverter(converter="form_config_converter")
@@ -198,7 +198,7 @@ class SearchFormController extends Controller
             'config'     => $config,
             'formConfig' => $formConfig,
             'hotels'     => $dataForSearchForm->getHotels(),
-            'choices'    => $dataForSearchForm->getRoomTypes(),
+            'choices'    => $dataForSearchForm->generateRoomTypeListForSelectOption(),
         ];
 
         $text = $formConfig->getFormTemplate()

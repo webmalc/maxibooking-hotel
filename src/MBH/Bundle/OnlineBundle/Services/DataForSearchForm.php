@@ -6,6 +6,7 @@
 namespace MBH\Bundle\OnlineBundle\Services;
 
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -47,6 +48,11 @@ class DataForSearchForm
      * @var Router
      */
     private $router;
+
+    /**
+     * @var array|RoomType[]
+     */
+    private $roomTypeList;
 
     public function __construct(DocumentManager $dm, Helper $helper, Router $router, RequestStack $request)
     {
@@ -98,23 +104,33 @@ class DataForSearchForm
         return $this->hotels;
     }
 
-    public function getRoomTypes(): array
+    public function generateRoomTypeListForSelectOption(): array
     {
-        $choices = $this->formConfig->getRoomTypeChoices()->toArray();
-
-        if (count($choices) === 0) {
-            /** @var Hotel $hotel */
-            $roomTypes = [];
-            foreach ($this->getHotels() as $hotel) {
-                $roomTypes[] = $hotel->getRoomTypes()->toArray();
-            }
-
-            $choices = array_merge(...$roomTypes);
+        if ($this->formConfig->isUseAdditionalForm()) {
+            return $this->generateDataForSelectForRoomTypeIfUseAdditionalForm();
         }
 
-        $this->filterRoomTypeIfIssetHotelInRequest($choices);
+        return $this->filterRoomTypeIfIssetHotelInRequest($this->fetchRoomTypes());
+    }
 
-        return $choices;
+    private function fetchRoomTypes(): array {
+        if ($this->roomTypeList === null) {
+            $choices = $this->formConfig->getRoomTypeChoices()->toArray();
+
+            if (count($choices) === 0) {
+                /** @var Hotel $hotel */
+                $roomTypes = [];
+                foreach ($this->getHotels() as $hotel) {
+                    $roomTypes[] = $hotel->getRoomTypes()->toArray();
+                }
+
+                $choices = array_merge(...$roomTypes);
+            }
+
+            $this->roomTypeList = $choices;
+        }
+
+        return $this->roomTypeList;
     }
 
     public function getConfigForLoadAllIframe(): array
@@ -226,16 +242,16 @@ class DataForSearchForm
         );
     }
 
-    private function filterRoomTypeIfIssetHotelInRequest(array &$chooseRoomType): void
+    private function filterRoomTypeIfIssetHotelInRequest(array $chooseRoomType): array
     {
         if ($this->request === null) {
-            return;
+            return $chooseRoomType;
         }
 
         $hotelId = $this->request->get('hotel');
 
         if (empty($hotelId)) {
-            return;
+            return $chooseRoomType;
         }
 
         /** @var RoomType $roomType */
@@ -245,5 +261,31 @@ class DataForSearchForm
             }
         }
 
+        return $chooseRoomType;
+
+    }
+
+    private function generateDataForSelectForRoomTypeIfUseAdditionalForm(): array
+    {
+        if (count($this->getHotels()) === 1) {
+            return $this->fetchRoomTypes();
+        }
+
+        /** @var ArrayCollection $roomTypeChoices */
+        $roomTypeChoices = new ArrayCollection($this->fetchRoomTypes());
+
+        $roomTypes = [];
+
+        /** @var Hotel $hotel */
+        foreach ($this->getHotels() as $hotel) {
+            $roomTypes[$hotel->getFullTitleOrTitle()] =
+                $hotel->getRoomTypes()
+                    ->filter(function(RoomType $roomType) use ($roomTypeChoices) {
+                        return $roomTypeChoices->contains($roomType);
+                    })
+                    ->toArray();
+        }
+
+        return $roomTypes;
     }
 }

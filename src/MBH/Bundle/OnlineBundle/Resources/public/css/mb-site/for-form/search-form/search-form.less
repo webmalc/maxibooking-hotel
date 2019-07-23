@@ -3,9 +3,17 @@
 .importFontRoboto();
 
 #mbh-body-search-iframe {
-  @row-width-desktop: 180px;
-  @row-width-tablet: 130px;
-  @row-width-mobile: 240px;
+
+  @desktop-input-max-width: 180px;
+  @desktop-input-min-width: 140px;
+
+  @desktop-input-field-date: @desktop-input-max-width;
+  @desktop-input-field-room-type: @desktop-input-max-width;
+  @desktop-input-field-guest: @desktop-input-min-width;
+  @desktop-input-button-find: @desktop-input-min-width;
+
+  @tablet-input-width: 130px;
+  @mobile-input-width: 240px;
 
   @ident-row: 7px;
 
@@ -24,28 +32,29 @@
 
   height: 280px;
 
+  select,
   input {
     font-family: inherit;
   }
 
-  &.booking-page {
-    #mbh-form-wrapper {
-      form#mbh-form {
-        @media (min-width: @size-screen-mid-width-tablet) {
-          width: 210px*4 + (@ident-row*2)*3;
-
-          .mbh-form-row {
-            &.mbh-form-additional-form-amount-guest-wrapper,
-            &#mbh-form-submit-wrapper {
-              width: 210px;
-            }
-
-            width: 210px;
-          }
-        }
-      }
-    }
-  }
+  //&.booking-page {
+  //  #mbh-form-wrapper {
+  //    form#mbh-form {
+  //      @media (min-width: @size-screen-mid-width-tablet) {
+  //        width: @desktop-input-field-booking-page*5 + (@ident-row*2)*4;
+  //
+  //        .mbh-form-row {
+  //          &.mbh-form-additional-form-amount-guest-wrapper,
+  //          &#mbh-form-submit-wrapper {
+  //            width: @desktop-input-min-width;
+  //          }
+  //
+  //          width: @desktop-input-field-booking-page;
+  //        }
+  //      }
+  //    }
+  //  }
+  //}
 
   #mbh-form-wrapper {
     display: flex;
@@ -60,11 +69,11 @@
       justify-content: center;
 
       @media (min-width: @size-screen-max-width-mobile) {
-        width: @row-width-desktop*2 + @row-width-tablet*2 + (@ident-row*2)*3;
+        width: @desktop-input-field-date*2 + @tablet-input-width*3 + (@ident-row*2)*4;
       }
 
       @media (min-width: @size-screen-mid-width-tablet) {
-        width: @row-width-desktop*4 + (@ident-row*2)*3;
+        width: @desktop-input-max-width*3+@desktop-input-min-width*2 + (@ident-row*2)*4;
       }
 
       width: 240px;
@@ -89,6 +98,7 @@
         }
 
         .mbh-form-additional-form-amount-guest-wrapper,
+        .mbh-form-additional-room-types,
         #mbh-form-end-wrapper {
           margin: 0 @ident-row;
         }
@@ -113,20 +123,21 @@
         background: #ffffff;
 
         @media (min-width: @size-screen-max-width-mobile) {
-          width: @row-width-desktop;
+          width: @desktop-input-max-width;
         }
 
         &.mbh-form-additional-form-amount-guest-wrapper,
         &#mbh-form-submit-wrapper {
           @media (min-width: @size-screen-max-width-mobile) {
-            width: @row-width-tablet;
+            width: @tablet-input-width;
           }
           @media (min-width: @size-screen-mid-width-tablet) {
-            width: @row-width-desktop;
+            width: @desktop-input-min-width;
           }
+
         }
 
-        width: @row-width-mobile;
+        width: @mobile-input-width;
         height: 40px;
 
         & > label {
@@ -151,6 +162,46 @@
         .filterBrightnessOnHover();
       }
 
+      .mbh-form-additional-room-types {
+        &::after {
+          content: "";
+          padding-right: 15px;
+          right: 26px;
+          position: relative;
+          height: 20px;
+          background-image: url('/bundles/mbhonline/images/arrow-down.svg');
+          background-repeat: no-repeat;
+          background-position: right;
+
+        }
+
+        @media (min-width: @size-screen-max-width-mobile) and (max-width: @size-screen-mid-width-tablet-minus-one) {
+          width: @tablet-input-width;
+        }
+
+        select {
+          -moz-appearance:none; /* Firefox */
+          -webkit-appearance:none; /* Safari and Chrome */
+          appearance: none;
+
+          width: inherit;
+
+          padding: 0 36px 0 12px;
+          border: none;
+          outline: none;
+          background: transparent;
+          .textUppercase();
+          height: inherit;
+          line-height: inherit;
+          font-size: inherit;
+
+          option {
+            //text-transform: none;
+            //letter-spacing: unset;
+          }
+        }
+      }
+
       .mbh-form-additional-form-amount-guest-wrapper {
         &::after {
           margin-right: 10px;
@@ -171,7 +222,7 @@
             width: 30px;
           }
 
-          width: 72px;
+          width: 45px;
 
           -webkit-appearance: none;
           -moz-appearance: none;

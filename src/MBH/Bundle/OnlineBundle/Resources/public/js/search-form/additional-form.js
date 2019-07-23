@@ -19,7 +19,7 @@ AdditionalForm.prototype.eventHandler = function () {
 
     var dataForm = {};
 
-    ['adults', 'children-age', 'room-type'].forEach(function(name) {
+    ['adults', 'children-age'].forEach(function(name) {
         property = _this.wrapper.querySelectorAll('[data-form="' + name + '"]');
         switch (name) {
             case 'adults':
@@ -34,9 +34,6 @@ AdditionalForm.prototype.eventHandler = function () {
                     })
 
                 }
-                break;
-            case 'room-type':
-                dataForm['roomType'] = property[0].value;
                 break;
         }
     });
@@ -162,8 +159,6 @@ AdditionalForm.prototype.childrenAgeAddSelection = function (index, age) {
 AdditionalForm.prototype.listenerPostMessage = function (){
     var _this = this;
 
-    var roomType = this.wrapper.querySelector('#mbh-form-roomType');
-
     window.addEventListener('message', function(e) {
         if (e.data.type !== 'mbh') {
             return;
@@ -192,10 +187,6 @@ AdditionalForm.prototype.listenerPostMessage = function (){
             }
 
             _this.childrenCheckStepperValue();
-        }
-
-        if (roomType !== null && form.roomType !== '') {
-            _this.selectedOption(roomType, form.roomType);
         }
     });
 };

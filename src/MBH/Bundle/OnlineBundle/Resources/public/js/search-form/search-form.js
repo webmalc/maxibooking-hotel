@@ -35,6 +35,7 @@ function SearchForm(widthIframeWithDatepiker) {
     this.button = jQuery('#mbh-form-submit');
     this.locale = jQuery('#mbh-form-locale');
     this.roomType = jQuery('#mbh-form-roomType');
+    this.hotel = jQuery('#mbh-form-hotel');
     this.last = null;
     this.options = {
             minDate: 0
@@ -66,7 +67,7 @@ SearchForm.prototype.additionalFormDataInit = function () {
         return {
             adults: parseInt(query.adults),
             children: parseInt(query.children),
-            roomType: query.roomType,
+            // roomType: query.roomType,
             'children-ages': query['children-ages']
         }
 
@@ -101,7 +102,7 @@ SearchForm.prototype.additionalDataSetValueFromIframe = function (e) {
 
     this.setValue(this.adults, this.additionalFormUseIt.adults);
     this.setValue(this.children, this.additionalFormUseIt.children);
-    this.roomType.val(this.additionalFormUseIt.roomType);
+    // this.roomType.val(this.additionalFormUseIt.roomType);
 
     this.setChildAgeForms(this.additionalFormUseIt.children,this.additionalFormUseIt);
 };
@@ -170,14 +171,23 @@ SearchForm.prototype.searchFormActions  = function () {
 
     }
 
-    this.setValue(this.begin, this.query.begin);
-    this.setValue(this.end, this.query.end);
-    this.setValue(this.adults, this.query.adults);
-    this.setValue(this.children, this.query.children);
-    this.setValue(this.nights, this.query.nights);
+    var hotelId;
 
-    this.roomType.val(this.query.roomType);
-    jQuery('#mbh-form-hotel').val(this.query.hotel);
+    this.roomType.change(function(ev) {
+        // console.log(ev);
+        // console.log(this.value);
+        // console.log(this.data);
+
+        hotelId = $("option:selected", this).data('hotelId');
+        console.log(hotelId);
+        // if (hotelId == undefined)
+
+        _this.hotel.val(hotelId !== undefined ? hotelId : '');
+
+        // var valueSelected = this.value;
+    });
+
+    this.setValueAfterLoad();
 
     this.begin.change(function() {
         var beginDate = jQuery.datepicker.parseDate('dd.mm.yy', _this.begin.val()),
@@ -237,6 +247,20 @@ SearchForm.prototype.searchFormActions  = function () {
     });
 
     this.setChildAgeForms(this.children.val(), this.query);
+};
+
+SearchForm.prototype.setValueAfterLoad = function() {
+    this.setValue(this.begin, this.query.begin);
+    this.setValue(this.end, this.query.end);
+    this.setValue(this.adults, this.query.adults);
+    this.setValue(this.children, this.query.children);
+    this.setValue(this.nights, this.query.nights);
+    this.hotel.val(this.query.hotel);
+    this.roomType.val(this.query.roomType);
+
+    if (this.hotel.val() !== '' && this.roomType.val() === '') {
+        $('[data-hotel-id="' + this.hotel.val() + '"]', this.roomType).prop('selected', true);
+    }
 };
 
 SearchForm.prototype.setChildAgeForms = function(childrenCount, query) {
