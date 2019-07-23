@@ -7,8 +7,10 @@ namespace MBH\Bundle\SearchBundle\Services\Data\Fetcher;
 use DateInterval;
 use DatePeriod;
 use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\PriceBundle\Document\RestrictionRepository;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\DataManagerException;
 use MBH\Bundle\SearchBundle\Services\Data\ActualChildOptionDeterminer;
 use MongoDate;
@@ -36,13 +38,35 @@ class RestrictionsRawFetcher implements DataRawFetcherInterface
         $this->actualChildOptionDeterminer = $actualChildOptionDeterminer;
     }
 
-    public function getRawData(DataQueryInterface $dataQuery): array
+    public function getRawData(ExtendedDataQueryInterface $dataQuery): array
     {
-        $conditions = $dataQuery->getSearchConditions();
-        if (!$conditions) {
-            throw new DataManagerException('Critical Error in %s fetcher. No SearchConditions in SearchQuery', __CLASS__);
+        $begin = $dataQuery->getBegin();
+        $end = $dataQuery->getEnd();
+        /** @return ArrayCollection|Tariff[] */
+
+        $restrictionTariffs = [];
+        foreach ($dataQuery->getTariffs() as $tariff) {
+            /** @var Tariff $tariff */
+            if ($tariff->getParent() && $tariff->getChildOptions()->isInheritRooms()) {
+                $restrictionTariffs[] = $tariff->getParent();
+            } else {
+                $restrictionTariffs[] = $tariff;
+            }
         }
-        $cursor = $this->restrictionRepo->getAllSearchPeriod($conditions);
+
+        $tariffs = new ArrayCollection($restrictionTariffs);
+        $tariffIds = Helper::toIds($tariffs);
+
+        $roomTypeIds = Helper::toIds($dataQuery->getRoomTypes());
+        $hotelIds = Helper::toIds($dataQuery->getHotels());
+
+        $cursor = $this->restrictionRepo->getAllSearchPeriod(
+            $begin,
+            $end,
+            $tariffIds,
+            $roomTypeIds,
+            $hotelIds
+        );
 
         $data =  $cursor->toArray(false);
         $restrictions = [];

@@ -635,13 +635,14 @@ services:
             - [addFetcher, ['@mbh_search.package_accommodation_fetcher']]
             - [addFetcher, ['@mbh_search.room_fetcher']]
 
-
+#TODO: need factory to remove verbose service describe
     mbh_search.price_cache_fetcher:
         class: MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataFetcher
         public: false
         arguments:
             - '@snc_redis.data_fetcher_client'
             - '@mbh_search.price_cache_raw_fetcher'
+            - '@mbh_search.shared_data_fetcher'
 
     mbh_search.restrictions_fetcher:
         class: MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataFetcher
@@ -649,6 +650,7 @@ services:
         arguments:
             - '@snc_redis.data_fetcher_client'
             - '@mbh_search.restriction_raw_fetcher'
+            - '@mbh_search.shared_data_fetcher'
 
     mbh_search.room_cache_fetcher:
         class: MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataFetcher
@@ -656,6 +658,7 @@ services:
         arguments:
             - '@snc_redis.data_fetcher_client'
             - '@mbh_search.room_cache_raw_fetcher'
+            - '@mbh_search.shared_data_fetcher'
 
     mbh_search.room_fetcher:
         class: MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataFetcher
@@ -663,6 +666,7 @@ services:
         arguments:
             - '@snc_redis.data_fetcher_client'
             - '@mbh_search.room_raw_fetcher'
+            - '@mbh_search.shared_data_fetcher'
 
     mbh_search.package_accommodation_fetcher:
         class: MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataFetcher
@@ -670,6 +674,7 @@ services:
         arguments:
             - '@snc_redis.data_fetcher_client'
             - '@mbh_search.package_accommodation_raw_fetcher'
+            - '@mbh_search.shared_data_fetcher'
 
     mbh_search.price_cache_raw_fetcher:
         class: MBH\Bundle\SearchBundle\Services\Data\Fetcher\PriceCacheRawFetcher

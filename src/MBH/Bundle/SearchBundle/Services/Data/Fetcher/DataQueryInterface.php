@@ -8,7 +8,7 @@ use MBH\Bundle\SearchBundle\Document\SearchConditions;
 
 interface DataQueryInterface
 {
-    public function getSearchHash(): string;
+    public function getSearchHash(): ?string;
 
     public function getBegin();
 
@@ -17,6 +17,8 @@ interface DataQueryInterface
     public function getTariffId(): ?string;
 
     public function getRoomTypeId(): ?string;
+
+    public function isExtendedDataQuery(): bool;
 
     public function getSearchConditions(): ?SearchConditions;
 

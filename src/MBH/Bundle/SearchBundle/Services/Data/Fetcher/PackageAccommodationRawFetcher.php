@@ -5,11 +5,8 @@ namespace MBH\Bundle\SearchBundle\Services\Data\Fetcher;
 
 
 use DateTime;
-use Doctrine\ODM\MongoDB\MongoDBException;
 use MBH\Bundle\BaseBundle\Service\Helper;
-use MBH\Bundle\PackageBundle\Document\PackageAccommodationRepository;
 use MBH\Bundle\PackageBundle\Document\PackageRepository;
-use MBH\Bundle\SearchBundle\Lib\Exceptions\DataManagerException;
 use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher;
 
 /**
@@ -42,23 +39,9 @@ class PackageAccommodationRawFetcher implements DataRawFetcherInterface
     }
 
 
-    /**
-     * @param DataQueryInterface $dataQuery
-     * @return array
-     * @throws DataManagerException
-     * @throws MongoDBException
-     */
-    public function getRawData(DataQueryInterface $dataQuery): array
+    public function getRawData(ExtendedDataQueryInterface $dataQuery): array
     {
-        $conditions = $dataQuery->getSearchConditions();
-        if (!$conditions) {
-            throw new DataManagerException('Critical Error in %s fetcher. No SearchConditions in SearchQuery', __CLASS__);
-        }
-
-        $maxBegin = $conditions->getMaxBegin();
-        $maxEnd = $conditions->getMaxEnd();
-
-        $data =  $this->repository->getRawAccommodationByPeriod($maxBegin, $maxEnd);
+        $data =  $this->repository->getRawAccommodationByPeriod($dataQuery->getBegin(), $dataQuery->getEnd());
 
         $accommodationGroupedByRoomType = [];
         foreach ($data as $package) {
@@ -70,14 +53,6 @@ class PackageAccommodationRawFetcher implements DataRawFetcherInterface
         return $accommodationGroupedByRoomType;
     }
 
-    /**
-     * @param DateTime $begin
-     * @param DateTime $end
-     * @param string $tariffId
-     * @param string $roomTypeId
-     * @param array $data
-     * @return array
-     */
     public function getExactData(DateTime $begin, DateTime $end, string $tariffId, string $roomTypeId, array $data): array
     {
         $groupedAccommodations = $data[$roomTypeId] ?? [];
@@ -96,9 +71,6 @@ class PackageAccommodationRawFetcher implements DataRawFetcherInterface
         return $result;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return static::NAME;

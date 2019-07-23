@@ -28,7 +28,7 @@ class RoomRawFetcher implements DataRawFetcherInterface
     }
 
 
-    public function getRawData(DataQueryInterface $dataQuery): array
+    public function getRawData(ExtendedDataQueryInterface $dataQuery): array
     {
         return $this->roomRepository->fetchRawAllRoomsByRoomType([], true);
     }

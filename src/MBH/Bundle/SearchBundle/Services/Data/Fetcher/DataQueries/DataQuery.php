@@ -6,6 +6,7 @@ namespace MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataQueries;
 
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataQueryInterface;
+use MBH\Bundle\SearchBundle\Services\Data\Fetcher\ExtendedDataQueryInterface;
 
 class DataQuery implements DataQueryInterface
 {
@@ -25,7 +26,7 @@ class DataQuery implements DataQueryInterface
     /** @var string */
     private $roomTypeId;
 
-    /** @var SearchConditions */
+    /** @var ExtendedDataQueryInterface|SearchConditions */
     private $searchConditions;
 
     /**
@@ -140,6 +141,11 @@ class DataQuery implements DataQueryInterface
         $this->searchConditions = $searchConditions;
 
         return $this;
+    }
+
+    public function isExtendedDataQuery(): bool
+    {
+        return (null !== $this->getSearchConditions());
     }
 
 

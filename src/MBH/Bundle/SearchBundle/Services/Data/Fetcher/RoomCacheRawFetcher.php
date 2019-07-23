@@ -35,16 +35,10 @@ class RoomCacheRawFetcher implements DataRawFetcherInterface
         $this->actualChildOptionDeterminer = $actualChildOptionDeterminer;
     }
 
-    public function getRawData(DataQueryInterface $dataQuery): array
+    public function getRawData(ExtendedDataQueryInterface $dataQuery): array
     {
-        $conditions = $dataQuery->getSearchConditions();
-        if (!$conditions) {
-            throw new DataManagerException(
-                'Critical Error in %s fetcher. No SearchConditions in SearchQuery', __CLASS__
-            );
-        }
 
-        $rawData = $this->roomCacheRepository->fetchRaw($conditions->getMaxBegin(), $conditions->getMaxEnd());
+        $rawData = $this->roomCacheRepository->fetchRaw($dataQuery->getBegin(), $dataQuery->getEnd());
         $data = [];
         foreach ($rawData as $rawRoomCache) {
 //            $roomTypeIdKey = (string)$rawRoomCache['roomType']['$id'];
