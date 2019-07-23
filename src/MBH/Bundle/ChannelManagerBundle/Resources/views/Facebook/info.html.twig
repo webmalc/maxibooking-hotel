@@ -1,0 +1,20 @@
+{% extends 'MBHChannelManagerBundle:Facebook:layout.html.twig' %}
+
+
+{% block content %}
+    <div class="nav-tabs-custom">
+
+    {% include 'MBHChannelManagerBundle:Facebook:tabs.html.twig' %}
+
+    <div class="tab-content">
+
+            <div id="channel-manager-instruction" class="well">
+                {% include 'MBHChannelManagerBundle:Facebook:instructions.html.twig' %}
+            </div>
+
+
+
+    </div>
+    </div>
+
+{% endblock %}

@@ -69,3 +69,6 @@ services:
 
   mbh.channelmanager.vashotel:
     class: Tests\Bundle\ChannelManagerBundle\Services\ChannelManagerServiceMock
+
+  mbh.channelmanager.facebook:
+    class: Tests\Bundle\ChannelManagerBundle\Services\ChannelManagerServiceMock
