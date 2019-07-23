@@ -119,7 +119,7 @@ class ServiceData extends AbstractFixture implements OrderedFixtureInterface, Co
 
                         foreach ($locales as $locale) {
                             $translationRepository
-                                ->translate($service, 'fullTitle', $locale, $trans->trans($title, [], null, $locale));
+                                ->translate($service, 'fullTitle', $locale, $trans->trans($titleId, [], null, $locale));
                         }
                     }
                 }
