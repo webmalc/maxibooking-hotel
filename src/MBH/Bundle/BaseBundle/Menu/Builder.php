@@ -773,7 +773,7 @@ class Builder
                     'route' => 'facebook',
                     'label' => 'Facebook',
                 ],
-                'attributes' => ['icon' => 'fa fa-cloud-download'],
+                'attributes' => ['icon' => 'fa fa-facebook'],
             ],
         ];
 

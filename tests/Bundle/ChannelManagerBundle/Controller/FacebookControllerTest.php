@@ -13,14 +13,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class FacebookControllerTest extends WebTestCase
 {
-
-
     /** @var Client */
     protected $client;
+
     /**
      * @var DocumentManager
      */
     protected $dm;
+
     /**
      * @var ContainerInterface
      */
@@ -51,7 +51,7 @@ class FacebookControllerTest extends WebTestCase
         $this->assertEquals($this->client->getResponse()->getStatusCode(), 200);
         $this->assertEquals(
             1,
-            $crawler->filter('a[href = "https://test.maaaxi.com'. SiteManager::DEFAULT_RESULTS_PAGE .'"]')->count()
+            $crawler->filter('a[href = "https://test.maaaxi.com' . SiteManager::DEFAULT_RESULTS_PAGE . '"]')->count()
         );
     }
 
@@ -65,8 +65,8 @@ class FacebookControllerTest extends WebTestCase
 
     public function deleteSiteConfig()
     {
-       $this->dm->getDocumentCollection(SiteConfig::class)->drop();
-       $this->dm->flush();
+        $this->dm->getDocumentCollection(SiteConfig::class)->drop();
+        $this->dm->flush();
 
     }
 
@@ -78,7 +78,7 @@ class FacebookControllerTest extends WebTestCase
         $this->assertEquals($this->client->getResponse()->getStatusCode(), 200);
         $this->assertEquals(
             1,
-            $crawler->filter('html:contains("'.$message.'")')->count()
+            $crawler->filter('html:contains("' . $message . '")')->count()
         );
     }
 
