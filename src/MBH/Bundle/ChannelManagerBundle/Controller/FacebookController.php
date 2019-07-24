@@ -29,7 +29,6 @@ class FacebookController extends Controller
     {
         $siteManager = $this->get('mbh.site_manager');
         $searchResultAddress = $siteManager->getSiteAddress()? $siteManager->getSiteAddress() . SiteManager::DEFAULT_RESULTS_PAGE : null;
-        //$searchResultAddress = null;
         return $this->render('MBHChannelManagerBundle:Facebook:info.html.twig',
             ['searchResultAddress' => $searchResultAddress]
         );

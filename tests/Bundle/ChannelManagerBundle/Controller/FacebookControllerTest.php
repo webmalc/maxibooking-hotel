@@ -42,6 +42,7 @@ class FacebookControllerTest extends WebTestCase
         $this->client = self::makeClient(true);
         $this->container = self::getContainer();
         $this->dm = $this->container->get('doctrine.odm.mongodb.document_manager');
+
     }
 
     public function testInfoActionSuccess()
@@ -72,11 +73,12 @@ class FacebookControllerTest extends WebTestCase
     public function testInfoActionFault()
     {
         $this->deleteSiteConfig();
+        $message = $this->container->get('translator')->trans('cm_connection_instructions.part2.facebook.warning1');
         $crawler = $this->getCrawler();
         $this->assertEquals($this->client->getResponse()->getStatusCode(), 200);
         $this->assertEquals(
             1,
-            $crawler->filter('h3:contains("Ошибка")')->count()
+            $crawler->filter('html:contains("'.$message.'")')->count()
         );
     }
 
