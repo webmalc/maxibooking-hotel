@@ -12,7 +12,6 @@ use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PackageBundle\Lib\SearchCalculateEvent;
 use MBH\Bundle\PriceBundle\Document\Tariff;
-use MBH\Bundle\SearchBundle\Lib\Data\RoomCacheFetchQuery;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\CalculationException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultImage;
@@ -25,7 +24,6 @@ use MBH\Bundle\SearchBundle\Lib\Result\ResultRoomType;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultTariff;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\AccommodationRoomSearcher;
-use MBH\Bundle\SearchBundle\Services\Calc\CalcQuery;
 use MBH\Bundle\SearchBundle\Services\Calc\Calculation;
 use MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataManager;
 use MBH\Bundle\SearchBundle\Services\Data\Fetcher\RoomCacheRawFetcher;
@@ -163,6 +161,7 @@ class SearchResultComposer
         // В дальнейшем цены могут содержать разное кол-во детей и взрослых (инфантов)
         //
         //*/
+        //** FIXIT */
         $prices = $this->getPrices($searchQuery, $roomType, $tariff, $actualAdults, $actualChildren);
         $combinations = array_keys($prices);
         $resultPrices = [];
@@ -267,32 +266,7 @@ class SearchResultComposer
             return $prices;
         }
 
-        $conditions = $searchQuery->getSearchConditions();
-        $calcQuery = new CalcQuery();
-        $calcQuery
-            ->setSearchBegin($searchQuery->getBegin())
-            ->setSearchEnd($searchQuery->getEnd())
-            ->setRoomType($roomType)
-            ->setTariff($tariff)
-            ->setActualAdults($actualAdults)
-            ->setActualChildren($actualChildren)
-            //** TODO: Уточнить по поводу Promotion */
-            /*->setPromotion()*/
-            /** TODO: Это все необязательные поля, нужны исключительно для dataHolder чтоб получить все данные сразу */
-        ;
-        if ($conditions) {
-            $calcQuery
-                ->setConditionTariffs($conditions->getTariffs())
-                ->setConditionRoomTypes($conditions->getRoomTypes())
-                ->setConditionMaxBegin($conditions->getMaxBegin())
-                ->setConditionMaxEnd($conditions->getMaxEnd())
-                ->setConditionHash($conditions->getSearchHash());
-
-            $calcQuery->setSearchConditions($conditions);
-        }
-
-
-        return $this->calculation->calcPrices($calcQuery);
+        return $this->calculation->calcPrices($searchQuery, $actualAdults, $actualChildren);
     }
 
 

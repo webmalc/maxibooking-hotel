@@ -66,7 +66,7 @@ services:
 
     mbh.package.subsciber.search:
             class: MBH\Bundle\PackageBundle\EventListener\SearchSubscriber
-            arguments: ['@service_container']
+            arguments: ['@service_container', '@mbh_search.shared_data_fetcher']
             tags:
                 - { name: kernel.event_subscriber, event: search.calculation }
 

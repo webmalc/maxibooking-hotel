@@ -102,7 +102,7 @@ abstract class SearchWebTestCase extends WebTestCase
      */
     protected function getDocumentFromArrayByFullTitle(iterable $documents, string $documentFullTitle)
     {
-        $filter = function ($document) use ($documentFullTitle) {
+        $filter = static function ($document) use ($documentFullTitle) {
             return $document->getFullTitle() === $documentFullTitle;
         };
         $documentFiltered = array_filter($documents, $filter);

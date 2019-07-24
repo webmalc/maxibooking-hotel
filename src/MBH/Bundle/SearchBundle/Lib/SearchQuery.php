@@ -6,16 +6,14 @@ namespace MBH\Bundle\SearchBundle\Lib;
 
 use DateTime;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
-use MBH\Bundle\SearchBundle\Services\Cache\ErrorFilters\ErrorFilterLevelInterface;
-use MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataQueryInterface;
-use MBH\Bundle\SearchBundle\Services\Data\Fetcher\ExtendedDataQueryInterface;
+use MBH\Bundle\SearchBundle\Services\Calc\CalcQueryInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class SearchQuery
  * @package MBH\Bundle\SearchBundle\Lib
  */
-class SearchQuery implements DataQueryInterface
+class SearchQuery implements CalcQueryInterface
 {
     /**
      * @var DateTime
@@ -44,6 +42,9 @@ class SearchQuery implements DataQueryInterface
      * @Assert\NotNull()
      */
     private $roomTypeId;
+
+    /** @var string */
+    private $specialId;
 
     /**
      * @var int
@@ -104,7 +105,7 @@ class SearchQuery implements DataQueryInterface
     /**
      * @return mixed
      */
-    public function getBegin()
+    public function getBegin(): DateTime
     {
         return $this->begin;
     }
@@ -123,7 +124,7 @@ class SearchQuery implements DataQueryInterface
     /**
      * @return mixed
      */
-    public function getEnd()
+    public function getEnd(): DateTime
     {
         return $this->end;
     }
@@ -182,11 +183,23 @@ class SearchQuery implements DataQueryInterface
         return $this;
     }
 
+    public function getSpecialId(): ?string
+    {
+        return $this->specialId;
+    }
+
+    public function setSpecialId(string $specialId): SearchQuery
+    {
+        $this->specialId = $specialId;
+
+        return $this;
+    }
+
 
     /**
      * @return mixed
      */
-    public function getAdults()
+    public function getAdults(): int
     {
         return $this->adults;
     }
@@ -225,7 +238,7 @@ class SearchQuery implements DataQueryInterface
     /**
      * @return mixed
      */
-    public function getChildrenAges()
+    public function getChildrenAges(): array
     {
         return $this->childrenAges;
     }
@@ -244,7 +257,7 @@ class SearchQuery implements DataQueryInterface
     /**
      * @return SearchConditions
      */
-    public function getSearchConditions(): ?SearchConditions
+    public function getSearchConditions(): SearchConditions
     {
         return $this->searchConditions;
     }
@@ -382,7 +395,7 @@ class SearchQuery implements DataQueryInterface
 
     public function isExtendedDataQuery(): bool
     {
-        return (null !== $this->getSearchConditions());
+        return null !== $this->searchConditions;
     }
 
 
@@ -402,8 +415,11 @@ class SearchQuery implements DataQueryInterface
             ->setIsForceBooking($conditions->isForceBooking())
             ->setSearchHash($conditions->getSearchHash())
             ->setErrorLevel($conditions->getErrorLevel())
-            ->setIsWarmUp($conditions->isThisWarmUp())
-        ;
+            ->setIsWarmUp($conditions->isThisWarmUp());
+
+        if ($special = $conditions->getSpecial()) {
+            $searchQuery->setSpecialId($special->getId());
+        }
 
         return $searchQuery;
     }

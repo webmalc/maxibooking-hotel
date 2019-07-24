@@ -7,19 +7,24 @@ namespace MBH\Bundle\SearchBundle\Services\Calc;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\CalcHelperException;
+use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcherInterface;
 
 class CalculationHelper
 {
     /** @var RoomTypeManager */
     private $roomTypeManager;
 
+    /** @var SharedDataFetcherInterface */
+    private $sharedDataFetcher;
+
     /**
      * CalculationHelper constructor.
      * @param RoomTypeManager $roomTypeManager
      */
-    public function __construct(RoomTypeManager $roomTypeManager)
+    public function __construct(RoomTypeManager $roomTypeManager, SharedDataFetcherInterface $sharedDataFetcher)
     {
         $this->roomTypeManager = $roomTypeManager;
+        $this->sharedDataFetcher = $sharedDataFetcher;
     }
 
     public function isIndividualAdditionalPrices(RoomType $roomType): bool
@@ -49,8 +54,9 @@ class CalculationHelper
     }
 
 
-    public function getCombinations(int $adults, int $children, RoomType $roomType): array
+    public function getCombinations(int $adults, int $children, string $roomTypeId): array
     {
+        $roomType = $this->sharedDataFetcher->getFetchedRoomType($roomTypeId);
         $result = [];
         if ($adults === 0 && $children === 0) {
             $this->roomTypeManager->useCategories ? $isChildPrices = $roomType->getCategory()->getIsChildPrices() : $isChildPrices = $roomType->getIsChildPrices();
