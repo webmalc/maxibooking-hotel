@@ -12,7 +12,7 @@
     {% set active = active + 1 %}
 {% endif %}
 
-{% if base != 'airbnb' or isReadyToSync %}
+{% if base != 'airbnb' or base != 'homeaway' or isReadyToSync %}
     {% set menu = menu|merge([
         {'route': base, icon: 'fa-info-circle', titleTransId: 'views.tabs.main_settings'},
     ]) %}
@@ -21,12 +21,16 @@
 {% endif %}
 
 {% set menu = menu|merge([
-    {'route': base ~ '_room', icon: 'fa-bed', titleTransId: base != 'airbnb' ? 'views.tabs.room_types' : 'views.tabs.airbnb.room_types'},
+    {'route': base ~ '_room', icon: 'fa-bed', titleTransId: (base != 'airbnb' and base != 'homeaway') ? 'views.tabs.room_types' : 'views.tabs.airbnb.room_types'},
 ]) %}
 
 {% if base == 'airbnb' %}
     {% set menu = menu|merge([
-        {'route': base ~ '_room_links', icon: 'fa-link', titleTransId: 'views.tabs.room_links'}
+        {'route': base ~ '_room_links', icon: 'fa-link', titleTransId: 'views.tabs.airbnb.room_links'}
+    ]) %}
+{% elseif base == 'homeaway' %}
+    {% set menu = menu|merge([
+        {'route': base ~ '_room_links', icon: 'fa-link', titleTransId: 'views.tabs.homeaway.room_links'}
     ]) %}
 {% endif %}
 
@@ -73,7 +77,7 @@
         {% set isActiveTab = loop.index == active %}
 
         {% if not (isActiveTab or (config and config.isReadyToSync())
-            or (loop.index in [1, 2] and base != 'airbnb' and active in [1, 2] and ((is_mb_user() and isConfiguredByTechSupport) or (not isConfiguredByTechSupport and config and config.isConnectionSettingsRead()))
+            or (loop.index in [1, 2] and base != 'airbnb' and base != 'homeaway' and active in [1, 2] and ((is_mb_user() and isConfiguredByTechSupport) or (not isConfiguredByTechSupport and config and config.isConnectionSettingsRead()))
             and not (loop.index == 2 and active == 1 and isConfiguredByTechSupport and (config is empty or config.hotelId is empty)))) %}
             <li class="disabled">
                 <a href="#" role="tab">{{ title|raw }}</a>

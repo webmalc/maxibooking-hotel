@@ -14,6 +14,7 @@ use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerServiceInterface as ServiceInterface;
 use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
+use MBH\Bundle\ChannelManagerBundle\Services\HomeAway\HomeAway;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use OldSound\RabbitMqBundle\RabbitMq\Producer;
@@ -37,7 +38,8 @@ class ChannelManager
         'myallocator' => 'MyallocatorConfig',
         'expedia' => 'ExpediaConfig',
         'hundred_one_hotels' => 'HundredOneHotelsConfig',
-        Airbnb::NAME => 'AirbnbConfig'
+        Airbnb::NAME => 'AirbnbConfig',
+        HomeAway::NAME => 'HomeAwayConfig'
     ];
 
     const PULL_OLD_ORDERS_ROUTES = [
@@ -450,7 +452,7 @@ class ChannelManager
         $config
             ->setIsEnabled(true)
             ->setIsConnectionSettingsRead(true);
-        if ($channelManagerName === Airbnb::NAME) {
+        if ($channelManagerName === Airbnb::NAME || $channelManagerName === HomeAway::NAME) {
             $config->setIsMainSettingsFilled(true);
         }
 

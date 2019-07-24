@@ -32,3 +32,6 @@ parameters:
         airbnb:
           title: 'Airbnb'
           service: 'mbh.airbnb'
+        homeaway:
+          title: 'HomeAway'
+          service: 'mbh.home_away'

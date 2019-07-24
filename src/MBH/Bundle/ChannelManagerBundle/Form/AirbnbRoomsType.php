@@ -3,7 +3,6 @@
 namespace MBH\Bundle\ChannelManagerBundle\Form;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
-use MBH\Bundle\BaseBundle\Service\Utils;
 use MBH\Bundle\ChannelManagerBundle\Document\AirbnbConfig;
 use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;

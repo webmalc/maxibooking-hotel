@@ -2,27 +2,28 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Document;
 
+
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
-use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
-use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
-use MBH\Bundle\HotelBundle\Document\RoomType;
-use Symfony\Component\Validator\Constraints as Assert;
 use MBH\Bundle\BaseBundle\Document\Base;
+use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ConfigTrait;
 use MBH\Bundle\ChannelManagerBundle\Lib\IsConnectionSettingsReadTrait;
+use MBH\Bundle\ChannelManagerBundle\Services\HomeAway\HomeAway;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use MBH\Bundle\HotelBundle\Document\RoomType;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ODM\Document(collection="AirbnbConfig")
+ * @ODM\Document(collection="HomeAwayConfig")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
-class AirbnbConfig extends Base implements ChannelManagerConfigInterface
+class HomeAwayConfig extends Base implements ChannelManagerConfigInterface
 {
     use ConfigTrait;
     use IsConnectionSettingsReadTrait;
@@ -33,15 +34,15 @@ class AirbnbConfig extends Base implements ChannelManagerConfigInterface
     /**
      * @var Hotel
      * @Gedmo\Versioned
-     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="airbnbConfig")
-     * @Assert\NotNull(message="document.airbnbConfig.no_hotel_selected")
+     * @ODM\ReferenceOne(targetDocument="MBH\Bundle\HotelBundle\Document\Hotel", inversedBy="homeAwayConfig")
+     * @Assert\NotNull(message="document.homeAwayConfig.no_hotel_selected")
      * @ODM\Index()
      */
     protected $hotel;
 
     /**
-     * @var array|BookingRoom[]
-     * @ODM\EmbedMany(targetDocument="AirbnbRoom")
+     * @var array|HomeAwayRoom[]
+     * @ODM\EmbedMany(targetDocument="HomeAwayRoom")
      */
     protected $rooms;
 
@@ -55,7 +56,8 @@ class AirbnbConfig extends Base implements ChannelManagerConfigInterface
      * @ODM\Field(type="bool")
      * @var bool
      */
-    private $isRoomLinksPageViewed = false;
+    protected $isRoomLinksPageViewed = false;
+
 
     public function __construct()
     {
@@ -63,9 +65,27 @@ class AirbnbConfig extends Base implements ChannelManagerConfigInterface
         $this->tariffs = new ArrayCollection();
     }
 
-    public function getName()
+    /**
+     * @param RoomType $roomType
+     * @return HomeAwayRoom|mixed|null
+     */
+    public function getSyncRoomByRoomType(RoomType $roomType)
     {
-        return Airbnb::NAME;
+        foreach ($this->getRooms() as $room) {
+            if ($roomType === $room->getRoomType()) {
+                return $room;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return HomeAway::NAME;
     }
 
     /**
@@ -78,9 +98,9 @@ class AirbnbConfig extends Base implements ChannelManagerConfigInterface
 
     /**
      * @param Hotel $hotel
-     * @return AirbnbConfig
+     * @return HomeAwayConfig
      */
-    public function setHotel(Hotel $hotel): AirbnbConfig
+    public function setHotel(Hotel $hotel): HomeAwayConfig
     {
         $this->hotel = $hotel;
 
@@ -89,34 +109,40 @@ class AirbnbConfig extends Base implements ChannelManagerConfigInterface
 
     public function getHotelId()
     {
-        // TODO: Implement getHotelId() method.
     }
 
     public function setHotelId($hotelId)
     {
-        // TODO: Implement setHotelId() method.
     }
 
-    public function removeAllRooms()
+    public function removeAllRooms(): void
     {
         $this->rooms = new ArrayCollection();
     }
 
     /**
-     * @return ArrayCollection|array|AirbnbRoom[]
+     * @return ArrayCollection|array|HomeAwayRoom[]
      */
     public function getRooms()
     {
         return $this->rooms;
     }
 
-    public function addRoom(Room $room)
+    /**
+     * @param Room $room
+     * @return HomeAwayConfig
+     */
+    public function addRoom(Room $room): HomeAwayConfig
     {
         $this->rooms->add($room);
 
         return $this;
     }
 
+    /**
+     * @param Room $room
+     * @return $this
+     */
     public function removeRoom(Room $room)
     {
         $this->rooms->remove($room);
@@ -124,7 +150,10 @@ class AirbnbConfig extends Base implements ChannelManagerConfigInterface
         return $this;
     }
 
-    public function removeAllTariffs()
+    /**
+     * @return HomeAwayConfig
+     */
+    public function removeAllTariffs(): HomeAwayConfig
     {
         $this->tariffs = new ArrayCollection();
 
@@ -139,14 +168,22 @@ class AirbnbConfig extends Base implements ChannelManagerConfigInterface
         return $this->tariffs;
     }
 
-    public function addTariff(Tariff $tariff)
+    /**
+     * @param Tariff $tariff
+     * @return HomeAwayConfig
+     */
+    public function addTariff(Tariff $tariff): HomeAwayConfig
     {
         $this->tariffs->add($tariff);
 
         return $this;
     }
 
-    public function removeTariff(Tariff $tariff)
+    /**
+     * @param Tariff $tariff
+     * @return HomeAwayConfig
+     */
+    public function removeTariff(Tariff $tariff): HomeAwayConfig
     {
         $this->tariffs->remove($tariff);
 
@@ -163,27 +200,12 @@ class AirbnbConfig extends Base implements ChannelManagerConfigInterface
 
     /**
      * @param bool $isRoomLinksPageViewed
-     * @return AirbnbConfig
+     * @return HomeAwayConfig
      */
-    public function setIsRoomLinksPageViewed(bool $isRoomLinksPageViewed): AirbnbConfig
+    public function setIsRoomLinksPageViewed(bool $isRoomLinksPageViewed): HomeAwayConfig
     {
         $this->isRoomLinksPageViewed = $isRoomLinksPageViewed;
 
         return $this;
-    }
-
-    /**
-     * @param RoomType $roomType
-     * @return AirbnbRoom|mixed|null
-     */
-    public function getSyncRoomByRoomType(RoomType $roomType)
-    {
-        foreach ($this->getRooms() as $room) {
-            if ($roomType === $room->getRoomType()) {
-                return $room;
-            }
-        }
-
-        return null;
     }
 }

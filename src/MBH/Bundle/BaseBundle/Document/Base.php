@@ -47,6 +47,7 @@ class Base
     public function setIsEnabled($isEnabled)
     {
         $this->isEnabled = $isEnabled;
+
         return $this;
     }
 

@@ -7,6 +7,7 @@ use Knp\Menu\FactoryInterface;
 use Knp\Menu\ItemInterface;
 use MBH\Bundle\BaseBundle\Lib\Menu\BadgesHolder;
 use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
+use MBH\Bundle\ChannelManagerBundle\Services\HomeAway\HomeAway;
 use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -768,12 +769,23 @@ class Builder
             ]
         ];
 
+        $homeAway = [
+            HomeAway::NAME => [
+                'options' => [
+                    'route' => HomeAway::NAME,
+                    'label' => 'HomeAway'
+                ],
+                'attributes' => ['icon' => 'fa fa-cloud-download'],
+            ]
+        ];
+
         $parent = $this->createItem($channelManager);
 
         return $parent->setChildren($this->getItemsInArray([
             $booking,
             $expedia,
             $airbnb,
+            $homeAway,
             $ostrovok,
             $hundredOneHotel,
             $vashotel,

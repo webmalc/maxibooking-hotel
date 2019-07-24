@@ -100,7 +100,8 @@ trait ConfigTrait
     /**
      * @return bool
      */
-    public function isMainSettingsFilled() {
+    public function isMainSettingsFilled()
+    {
         return $this->isMainSettingsFilled;
     }
 
@@ -108,7 +109,7 @@ trait ConfigTrait
      * @param bool $isFilled
      * @return self
      */
-    public function setIsMainSettingsFilled(bool $isFilled)
+    public function setIsMainSettingsFilled(bool $isFilled): self
     {
         $this->isMainSettingsFilled = $isFilled;
 

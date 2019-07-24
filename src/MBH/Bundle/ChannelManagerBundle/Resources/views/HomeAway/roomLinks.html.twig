@@ -1,0 +1,49 @@
+{% extends 'MBHChannelManagerBundle:HomeAway:layout.html.twig' %}
+
+{% block content %}
+
+    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 3, 'entity': config, base: 'homeaway', services: false } %}
+
+    <div class="tab-content">
+        <div class="tab-pane active">
+            <div class="well" id="room-links-instruction">
+                <p>{{ 'airbnb.room_links.connection_instructions.text1'|trans }}</p>
+
+                <p>{{ 'airbnb.room_links.connection_instructions.text2'|trans }}</p>
+                {#<ol class="btm-pd">#}
+                    {#{% for listNumber in 1..9 %}#}
+                        {#<li>{{ ('airbnb.room_links.connection_instructions.list.text' ~ listNumber)|trans|raw }}</li>#}
+                    {#{% endfor %}#}
+                {#</ol>#}
+
+                <p>{{ 'airbnb.room_links.connection_instructions.text3'|trans }}</p>
+            </div>
+
+            {% for room in config.rooms %}
+                {% set link = url('ical_room_calendar', {id: room.roomType.id, service: 'homeaway'}) %}
+                <div class="row" style="background-color: #e7f3e2; padding: 10px; margin: 0;">
+                    <div class="col-md-2" style="padding-top: 5px; margin-bottom: 5px;">
+                        <strong style="padding-left: 5px">
+                            {{ room.roomType.name }}
+                        </strong>
+                    </div>
+                    <div class="col-md-7" style="margin-bottom: 5px;">
+                        <input class="readonly" type="text" readonly value="{{ link }}">
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-primary" type="button" onclick='copyToClipboard("{{ link }}")'>
+                            <i class='fa fa-link'></i> {{ 'airbnb.room_links.copy_link_button.text'|trans }}
+                        </button>
+                    </div>
+                </div>
+            {% endfor %}
+            <form method="post" id="room-links-form">
+                {% include '@MBHChannelManager/HomeAway/actions.html.twig' with {route: 'homeaway_room_links'} %}
+            </form>
+            {% if config %}
+                {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': config, 'logs': logs} %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+

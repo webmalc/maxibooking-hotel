@@ -1,0 +1,17 @@
+{% extends "MBHChannelManagerBundle:HomeAway:layout.html.twig" %}
+
+{% block content %}
+    {% include 'MBHChannelManagerBundle::tabs.html.twig' with {'active': 1, 'entity': config, base: 'homeaway', services: false } %}
+    <div class="tab-content">
+        <div class="tab-pane active" id="home">
+            {{ form_start(form, {'action': path('homeaway'), 'attr': {'class': 'form-horizontal'}}) }}
+            {{ form_widget(form) }}
+            {% include '@MBHChannelManager/HomeAway/actions.html.twig' with {route: 'homeaway'} %}
+            {{ form_end(form) }}
+
+            {% if config %}
+                {% include 'MBHBaseBundle:Partials:entityInfo.html.twig' with {'entity': config, 'logs': logs} %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

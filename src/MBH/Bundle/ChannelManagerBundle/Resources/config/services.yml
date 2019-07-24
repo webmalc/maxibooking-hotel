@@ -178,6 +178,11 @@ services:
         arguments: ['@doctrine.odm.mongodb.document_manager', '@router', '@translator']
         tags: [{name: form.type}]
 
+    mbh.homeaway_room_form:
+        class: MBH\Bundle\ChannelManagerBundle\Form\HomeAwayRoomsType
+        arguments: ['@translator']
+        tags: [{name: form.type}]
+
     mbh.cm_http_service:
         class: MBH\Bundle\ChannelManagerBundle\Services\CMHttpService
 
@@ -194,3 +199,7 @@ services:
     mbh.channel_manager_logs_handler:
         class: MBH\Bundle\ChannelManagerBundle\Services\Logs\ChannelManagerLogHandler
         arguments: ['@mbh.channelmanager.logger_handler']
+
+    mbh.home_away:
+        class: MBH\Bundle\ChannelManagerBundle\Services\HomeAway\HomeAway
+        arguments: ['@service_container']

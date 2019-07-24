@@ -17,6 +17,7 @@ use MBH\Bundle\BaseBundle\Document\Traits\LocalizableTrait;
 use MBH\Bundle\CashBundle\Document\CardType;
 use MBH\Bundle\ChannelManagerBundle\Document\AirbnbConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
+use MBH\Bundle\ChannelManagerBundle\Document\HomeAwayConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\HundredOneHotelsConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\MyallocatorConfig;
 use MBH\Bundle\PackageBundle\Document\Organization;
@@ -240,6 +241,9 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
      * @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\AirbnbConfig", mappedBy="hotel")
      */
     protected $airbnbConfig;
+
+    /** @ODM\ReferenceOne(targetDocument="MBH\Bundle\ChannelManagerBundle\Document\HomeAwayConfig", mappedBy="hotel") */
+    protected $homeAwayConfig;
 
     /** @ODM\ReferenceMany(targetDocument="MBH\Bundle\RestaurantBundle\Document\IngredientCategory", mappedBy="hotel") */
     protected $ingredientCategories;
@@ -467,6 +471,14 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
         $this->TableTypes = new ArrayCollection();
         $this->acceptedCardTypes = new ArrayCollection();
         $this->images = new ArrayCollection();
+    }
+
+    /**
+     * @return HomeAwayConfig|null
+     */
+    public function getHomeAwayConfig(): ?HomeAwayConfig
+    {
+        return $this->homeAwayConfig;
     }
 
     /**

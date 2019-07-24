@@ -167,13 +167,17 @@ controller.channel_manager.pull_rooms.error: 'Channel manager data transfer erro
 messages_store.channel_manager_name: 'Booking system'
 channel_manager.intro_type.hotel_data.help: 'To change follow the <a target="_blank" href="%nameRoute%">link</a>'
 form.airbnb_tariff_type.tariff.label: Rate
+form.airbnb_homeaway_type.tariff.label: Rate
 controller.bookingController.booking_unknown_error_yet: 'An error occurred while syncing Booking.com with MaxiBooking.'
 controller.bookingController.booking_is_not_confirmed: 'Synchronization of MaxiBooking with Booking.com is not confirmed. Please complete confirmation process in your Booking account as described in the "Booking.com confirmation" tab'
 airbnb.rooms.connection_instructions.text1: 'Specifythe link to each object (apartment, room or house) which will be used by Maxibooking to receive reservation data created on AirBnb.'
 cm_wizard.unfilled_data_error: '{1}Fill in the hotel information in field %emptyFieldNames%|]1, Inf[Fill in the hotel information in following fields: %emptyFieldNames%'
 forms.airbnb_rooms_type.sync_urls_group: 'Links to objects for receiving reservations from AirBnb'
+forms.homeaway_rooms_type.sync_urls_group: 'Links to objects for receiving reservations from HomeAway'
 forms.airbnb_rooms_type.sync_url.help: 'Link to the AirBnb calendar which must look like this "%exampleUrl%"'
+forms.homeaway_rooms_type.sync_url.help: 'Link to the HomeAway calendar which must look like this "%exampleUrl%"'
 form.airbnb_tariff_type.tariff.help: 'Rate which will be used to create reservations coming with Airbnb'
+form.homeaway_tariff_type.tariff.help: 'Rate which will be used to create reservations coming with HomeAway'
 airbnb_package_info.errors.can_not_calc_price: 'Unable to calculate the reservation cost. Specify the current price.'
 airbnb.rooms.connection_instructions.text2: 'If you don''t want to publish some properties on AirBnb, leave the field blank.'
 airbnb.rooms.connection_instructions.text3: 'To find a link for receiving reservation information:'
@@ -197,6 +201,11 @@ airbnb.room_links.connection_instructions.list.text5: 'On the opened page click 
 airbnb.room_links.connection_instructions.list.text7: 'In the newly opened window paste the link to the <strong>Calendar Address (URL)</strong> field'
 airbnb.room_links.connection_instructions.list.text8: 'Then enter the name of the calendar in the <strong>Name Your Calendar</strong> field. The name should be Maxibooking'
 airbnb.room_links.connection_instructions.list.text9: 'Click <strong>Import Calendar</ strong>'
+
+homeaway.rooms.connection_instructions.text1: 'Specifythe link to each object (apartment, room or house) which will be used by Maxibooking to receive reservation data created on HomeAway.'
+homeaway.rooms.connection_instructions.text2: 'If you don''t want to publish some properties on HomeAway, leave the field blank.'
+homeaway.rooms.connection_instructions.text3: 'To find a link for receiving reservation information:'
+
 log.pagination.forward: 'Next'
 log.pagination.back: 'Previous'
 log.data_table.date: 'Date/time'

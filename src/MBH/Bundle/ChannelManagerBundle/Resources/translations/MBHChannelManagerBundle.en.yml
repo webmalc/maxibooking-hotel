@@ -149,7 +149,8 @@ view.data_warnings.check_data_text: 'Check the data to be uploaded to the system
 views.tabs.instruction: 'Premission from "%channelManagerName%"'
 views.channnelmanager.wizard_info.request_sent: 'The request has been sent, please, wait for the response.'
 views.channnelmanager.wizard_info.send_request: 'Send a request'
-views.tabs.room_links: 'Link to AirBnb'
+views.tabs.airbnb.room_links: 'Link to AirBnb'
+views.tabs.homeaway.room_links: 'Link to HomeAway'
 views.tabs.airbnb.room_types: Property
 channelManager.commonCM.notification.request_error.pull_rooms: 'Room type information acquisition error from %channelManagerName%'
 channelManager.commonCM.notification.request_error.pull_tariffs: 'Rates information acquisition error from %channelManagerName%'
