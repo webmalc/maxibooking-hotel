@@ -15,8 +15,6 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 class ApiKeyUserProvider implements UserProviderInterface
 {
 
-    public const ROLE_ACCESS_WITH_TOKEN = 'ROLE_ACCESS_WITH_TOKEN';
-
     private $dm;
 
     public function __construct(DocumentManager $dm) {
@@ -49,8 +47,6 @@ class ApiKeyUserProvider implements UserProviderInterface
             }
 
         }
-
-        $user->addRole(self::ROLE_ACCESS_WITH_TOKEN);
 
         return $user;
     }
