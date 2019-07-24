@@ -69,7 +69,7 @@ class OnlineResultCreator implements OnlineCreatorInterface
      * @return OnlineResultInstance
      * @throws OnlineBookingSearchException
      */
-    private function create($searchResult, SearchQuery $searchQuery, string $type): OnlineResultInstance
+    private function create($searchResult, SearchQuery $searchQuery): OnlineResultInstance
     {
         if ($searchResult instanceof SearchResult) {
             $instance = $this->createInstance($searchResult->getRoomType(), [$searchResult], $searchQuery, $type);

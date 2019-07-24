@@ -15,6 +15,7 @@ use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultRoom;
+use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher;
 use MBH\Bundle\SearchBundle\Services\Search\Search;
 
 class OnlineSearchAdapter
@@ -26,6 +27,9 @@ class OnlineSearchAdapter
      */
     private $dm;
 
+    /** @var SharedDataFetcher */
+    private $dataFetcher;
+
     /**
      * @var SearchFactory
      */
@@ -35,11 +39,12 @@ class OnlineSearchAdapter
      * OnlineSearchAdapter constructor.
      * @param Search $search
      */
-    public function __construct(Search $search, DocumentManager $dm, SearchFactory $factory)
+    public function __construct(Search $search, DocumentManager $dm, SearchFactory $factory, SharedDataFetcher $dataFetcher)
     {
         $this->search = $search;
         $this->dm = $dm;
         $this->factory = $factory;
+        $this->dataFetcher = $dataFetcher;
     }
 
 
@@ -57,7 +62,7 @@ class OnlineSearchAdapter
         $adaptedResults = [];
         if (count($searchResults)) {
             foreach ($searchResults as $roomTypeCategoryId => $results) {
-                $roomTypeCategory = $this->dm->find(RoomTypeCategory::class, $roomTypeCategoryId);
+                $roomTypeCategory = $this->dataFetcher->getFetchedCategory($roomTypeCategoryId);
                 $adaptedResults[] = [
                     'roomType' => $roomTypeCategory,
                     'results' => $this->convertNewResultsToOld($results)
@@ -78,32 +83,34 @@ class OnlineSearchAdapter
                 $searchResult = new SearchResult();
                 $searchResult->setBegin(new \DateTime($currentResult['begin']));
                 $searchResult->setEnd(new \DateTime($currentResult['end']));
-                $adults = $currentResult['resultConditions']['adults'];
-                $children = $currentResult['resultConditions']['children'];
+                $adults = $currentResult['adults'];
+                $children = $currentResult['children'];
                 $searchResult->setAdults($adults);
                 $searchResult->setChildren($children);
-                $searchResult->setRoomType($this->dm->find(RoomType::class, $currentResult['resultRoomType']['id']));
+                $searchResult->setRoomType($this->dataFetcher->getFetchedRoomType($currentResult['roomType']));
                 $searchResult->setVirtualRoom($this->adaptVirtualRoom($currentResult));
-                $tariff = $this->dm->find(Tariff::class, $currentResult['resultTariff']['id']);
+                $tariff = $this->dataFetcher->getFetchedTariff($currentResult['tariff']);
                 $searchResult->setTariff($tariff);
                 $newResultPrices = reset($currentResult['prices']);
+                $priceAdults = $newResultPrices['adults'];
+                $priceChildren = $newResultPrices['children'];
                 $prices = [
                     //** HotFix when adapt with childrenAge difference */
 //                     $newResultPrices['searchAdults'].'_'.$newResultPrices['searchChildren'] => $newResultPrices['total']
-                    $adults.'_'.$children => $newResultPrices['total']
+                    $priceAdults.'_'.$priceChildren => $newResultPrices['total']
 
                 ];
                 $searchResult->setPrices($prices);
-                $dayPrices = $newResultPrices['dayPrices'];
+                $dayPrices = $newResultPrices['priceByDay'];
                 $packagePrices = [];
                 foreach ($dayPrices as $dayPrice) {
                     $packagePrices[] = new PackagePrice(
                         new \DateTime($dayPrice['date']),
-                        $dayPrice['price'],
-                        $this->dm->find(Tariff::class, $dayPrice['tariff']['id'])
+                        $dayPrice['total'],
+                        $this->dm->find(Tariff::class, $dayPrice['tariff'])
                     );
                 }
-                $searchResult->setPackagePrices($packagePrices, $adults, $children);
+                $searchResult->setPackagePrices($packagePrices, $priceAdults, $priceChildren);
 
                 $oldResults[] = $searchResult;
             }
@@ -114,7 +121,7 @@ class OnlineSearchAdapter
 
     private function adaptVirtualRoom($currentResult)
     {
-        $currentVirtualRoomId = $currentResult['virtualRoom']['id'];
+        $currentVirtualRoomId = $currentResult['virtualRoom'];
         if ($currentVirtualRoomId !== ResultRoom::FAKE_VIRTUAL_ROOM_ID) {
             return $this->dm->find(Room::class, $currentVirtualRoomId);
         }
