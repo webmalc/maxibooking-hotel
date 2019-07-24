@@ -5,9 +5,7 @@ namespace MBH\Bundle\SearchBundle\Services\Search;
 
 
 use function count;
-use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
-use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultRoom;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultConditions;
@@ -18,7 +16,6 @@ use MBH\Bundle\SearchBundle\Lib\Result\ResultRoomType;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultTariff;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\AccommodationRoomSearcher;
-use MBH\Bundle\SearchBundle\Services\Calc\CalcQuery;
 use MBH\Bundle\SearchBundle\Services\Calc\Calculation;
 use MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataManager;
 use MBH\Bundle\SearchBundle\Services\Data\Fetcher\RoomCacheRawFetcher;
@@ -84,7 +81,7 @@ class SearchResultComposer
         // В дальнейшем цены могут содержать разное кол-во детей и взрослых (инфантов)
         //
         //*/
-        $prices = $this->getPrices($searchQuery, $roomType, $tariff, $actualAdults, $actualChildren);
+        $prices = $this->calculation->calcPrices($searchQuery, $actualAdults, $actualChildren);
         $combinations = array_keys($prices);
         $resultPrices = [];
         foreach ($combinations as $combination) {
@@ -119,7 +116,7 @@ class SearchResultComposer
 //        $accommodationRooms = $this->accommodationRoomSearcher->search($searchQuery);
         $accommodationRooms = [];
         $resultAccommodationRooms = [];
-        if (!count($accommodationRooms)) {
+        if (count($accommodationRooms)) {
             foreach ($accommodationRooms as $accommodationRoom) {
                 $resultAccommodationRoom = new ResultRoom();
                 $resultAccommodationRoom
@@ -142,37 +139,6 @@ class SearchResultComposer
         ;
 
         return $result;
-    }
-
-
-    private function getPrices(SearchQuery $searchQuery, RoomType $roomType, Tariff $tariff, int $actualAdults, int $actualChildren): array
-    {
-        $conditions = $searchQuery->getSearchConditions();
-        $calcQuery = new CalcQuery();
-        $calcQuery
-            ->setSearchBegin($searchQuery->getBegin())
-            ->setSearchEnd($searchQuery->getEnd())
-            ->setRoomType($roomType)
-            ->setTariff($tariff)
-            ->setActualAdults($actualAdults)
-            ->setActualChildren($actualChildren)
-            //** TODO: Уточнить по поводу Promotion */
-            /*->setPromotion()*/
-            /** TODO: Это все необязательные поля, нужны исключительно для dataHolder чтоб получить все данные сразу */
-        ;
-        if ($conditions) {
-            $calcQuery
-                ->setConditionTariffs($conditions->getTariffs())
-                ->setConditionRoomTypes($conditions->getRoomTypes())
-                ->setConditionMaxBegin($conditions->getMaxBegin())
-                ->setConditionMaxEnd($conditions->getMaxEnd())
-                ->setConditionHash($conditions->getSearchHash());
-
-            $calcQuery->setSearchConditions($conditions);
-        }
-
-
-        return $this->calculation->calcPrices($calcQuery);
     }
 
 

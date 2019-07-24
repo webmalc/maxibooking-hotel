@@ -14,8 +14,8 @@ class AdditionalPromotionData extends AbstractFixture implements OrderedFixtureI
 {
     public function doLoad(ObjectManager $manager)
     {
-        $tariff1 = $this->getReference(AdditionalTariffData::UP_TARIFF_NAME . '-tariff' . '/0');
-        $tariff2 = $this->getReference(AdditionalTariffData::DOWN_TARIFF_NAME . '-tariff' . '/0');
+        $tariff1 = $this->getReference(AdditionalTariffData::UP_TARIFF_NAME . '-tariff' . '/1');
+        $tariff2 = $this->getReference(AdditionalTariffData::DOWN_TARIFF_NAME . '-tariff' . '/1');
 
         $promotion1 = new Promotion();
         $promotion1

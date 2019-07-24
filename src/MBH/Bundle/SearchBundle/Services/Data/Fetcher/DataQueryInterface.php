@@ -4,15 +4,16 @@
 namespace MBH\Bundle\SearchBundle\Services\Data\Fetcher;
 
 
+use DateTime;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 
 interface DataQueryInterface
 {
     public function getSearchHash(): ?string;
 
-    public function getBegin();
+    public function getBegin(): DateTime;
 
-    public function getEnd();
+    public function getEnd(): DateTime;
 
     public function getTariffId(): ?string;
 
@@ -20,6 +21,6 @@ interface DataQueryInterface
 
     public function isExtendedDataQuery(): bool;
 
-    public function getSearchConditions(): ?SearchConditions;
+    public function getSearchConditions(): SearchConditions;
 
 }

@@ -14,6 +14,7 @@ use MBH\Bundle\PriceBundle\DataFixtures\MongoDB\AdditionalTariffData;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\PriceCachesMergerException;
+use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Calc\CalcQuery;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
@@ -47,31 +48,24 @@ class CalculationTest extends SearchWebTestCase
         $end = new \DateTime("midnight +{$data['endOffset']} days");
 
         $variants = $data['variants'];
+
         foreach ($variants as $variant) {
-            //** TODO: Promotion Test add to data provider */
-            $fakePromotion = new Promotion();
-            $fakePromotion
-                ->setDiscount(0)
-                ->setFullTitle('fakePromotion')
-            ;
-            $calcQuery = new CalcQuery();
+            $adults = $variant['adults'];
+            $children = $variant['children'];
+
+            $calcQuery = new SearchQuery();
             $calcQuery
-                ->setTariff($searchTariff)
-                ->setRoomType($searchRoomType)
-                ->setSearchBegin($begin)
-                ->setSearchEnd($end)
-                ->setActualAdults($variant['adults'])
-                ->setActualChildren($variant['children'])
-                ->setPromotion($fakePromotion)
-                ->setConditionHash(uniqid('', false))
-            ;
+                ->setTariffId($searchTariff->getId())
+                ->setRoomTypeId($searchRoomType->getId())
+                ->setBegin($begin)
+                ->setEnd($end)
+                ->setSearchHash(uniqid('', false));
             $searchConditions = new SearchConditions();
             $searchConditions
                 ->setBegin($begin)
                 ->setEnd($end);
 
             $calcQuery->setSearchConditions($searchConditions);
-
 
 
             if ($data['isExpectException'] ?? null) {
@@ -90,8 +84,8 @@ class CalculationTest extends SearchWebTestCase
 
             }
 
-            $actual = $this->getContainer()->get('mbh_search.calculation')->calcPrices($calcQuery);
-            $key = $variant['adults'] . '_' . $variant['children'];
+            $actual = $this->getContainer()->get('mbh_search.calculation')->calcPrices($calcQuery, $adults, $children);
+            $key = $adults . '_' . $children;
             $this->assertArrayHasKey($key, $actual);
             $actualData = $actual[$key];
             $this->assertEquals($variant['total'], $actualData['total'], $key);
@@ -102,7 +96,10 @@ class CalculationTest extends SearchWebTestCase
                 $day = (clone $begin)->modify("+ $index days")->format('d_m_Y') . ' offset' . $index;
                 $this->assertEquals($variant['priceByDay'][$index], $packagePrice->getPrice(), "Error in $key $day");
                 $this->assertEquals($variant['tariffByDay'][$index], $packagePrice->getTariff()->getName(), "Error in $key $day");
-                $this->assertEquals($fakePromotion->getFullTitle(), $packagePrice->getPromotion()->getFullTitle());
+                if ($promotionName = $variant['promotion'][$index] ?? null) {
+                    $this->assertEquals($promotionName, $packagePrice->getPromotion()->getFullTitle());
+                }
+
             }
         }
 
@@ -134,21 +131,21 @@ class CalculationTest extends SearchWebTestCase
                         'adults' => 3,
                         'children' => 0,
                         'total' => 2000 * 5,
-                        'priceByDay' => [2000,2000,2000,2000,2000],
+                        'priceByDay' => [2000, 2000, 2000, 2000, 2000],
                         'tariffByDay' => ['Основной тариф', 'Основной тариф', 'Основной тариф', 'Основной тариф', 'Основной тариф'],
                     ],
                     [
                         'adults' => 3,
                         'children' => 2,
                         'total' => 2000 * 5 + (700 + 700) * 5,
-                        'priceByDay' => [3400,3400,3400,3400,3400],
+                        'priceByDay' => [3400, 3400, 3400, 3400, 3400],
                         'tariffByDay' => ['Основной тариф', 'Основной тариф', 'Основной тариф', 'Основной тариф', 'Основной тариф'],
                     ],
                     [
                         'adults' => 5,
                         'children' => 0,
                         'total' => 2000 * 5 + (1500 + 1500) * 5,
-                        'priceByDay' => [5000,5000,5000,5000,5000],
+                        'priceByDay' => [5000, 5000, 5000, 5000, 5000],
                         'tariffByDay' => ['Основной тариф', 'Основной тариф', 'Основной тариф', 'Основной тариф', 'Основной тариф'],
                     ]
                 ],
@@ -193,6 +190,52 @@ class CalculationTest extends SearchWebTestCase
                             AdditionalTariffData::DOWN_TARIFF_NAME,
                             AdditionalTariffData::UP_TARIFF_NAME
                         ],
+                    ],
+                ],
+
+            ]
+        ];
+
+        yield [
+            false,
+            [
+                'searchRoomTypeName' => AdditionalRoomTypeData::THREE_PLUS_TWO_PLACE_ROOM_TYPE['fullTitle'],
+                'searchTariffName' => AdditionalTariffData::UP_TARIFF_NAME,
+                'hotelName' => 'Гостиница Амур',
+                'beginOffset' => 2,
+                'endOffset' => 9,
+                'variants' => [
+                    [
+                        'adults' => 1,
+                        'children' => 0,
+                        'total' => 1900 * 2 + ((1890 * 4) * 50) / 100 + 1880 * 70 / 100,
+                        'priceByDay' => [1900, 1900, 1890 / 2, 1890 / 2, 1890 / 2, 1890 / 2, (100 - 30) * 1880 / 100],
+                        'tariffByDay' => [
+                            'Основной тариф',
+                            'Основной тариф',
+                            AdditionalTariffData::DOWN_TARIFF_NAME,
+                            AdditionalTariffData::DOWN_TARIFF_NAME,
+                            AdditionalTariffData::DOWN_TARIFF_NAME,
+                            AdditionalTariffData::DOWN_TARIFF_NAME,
+                            AdditionalTariffData::UP_TARIFF_NAME
+                        ],
+                        'promotion' => [null, null, 'SecondPromotion', 'SecondPromotion', 'SecondPromotion', 'SecondPromotion', 'FirstPromotion']
+                    ],
+                    [
+                        'adults' => 2,
+                        'children' => 2,
+                        'total' => 5400 + 2680 * 2 + 2660 * 70 / 100,
+                        'priceByDay' => [2700, 2700, 2680 / 2, 2680 / 2, 2680 / 2, 2680 / 2, (100 - 30) * 2660 / 100],
+                        'tariffByDay' => [
+                            'Основной тариф',
+                            'Основной тариф',
+                            AdditionalTariffData::DOWN_TARIFF_NAME,
+                            AdditionalTariffData::DOWN_TARIFF_NAME,
+                            AdditionalTariffData::DOWN_TARIFF_NAME,
+                            AdditionalTariffData::DOWN_TARIFF_NAME,
+                            AdditionalTariffData::UP_TARIFF_NAME
+                        ],
+                        'promotion' => [null, null, 'SecondPromotion', 'SecondPromotion', 'SecondPromotion', 'SecondPromotion', 'FirstPromotion']
                     ],
                 ],
 
@@ -330,7 +373,7 @@ class CalculationTest extends SearchWebTestCase
                         'adults' => 1,
                         'children' => 0,
                         'total' => 2400 * 2 + 2390 * 4 + 2380,
-                        'priceByDay' => [2400,2400,2390,2390,2390,2390,2380],
+                        'priceByDay' => [2400, 2400, 2390, 2390, 2390, 2390, 2380],
                         'tariffByDay' => [
                             'Основной тариф',
                             'Основной тариф',

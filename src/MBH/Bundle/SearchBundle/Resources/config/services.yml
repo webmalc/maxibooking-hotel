@@ -201,16 +201,18 @@ services:
             - '@mbh_search.shared_data_fetcher'
             - '@mbh_search.calculation_helper'
             - '@mbh_search.price_round_sign'
+            - '@mbh_search.special_repository'
 
     mbh_search.calculation_helper:
         class: MBH\Bundle\SearchBundle\Services\Calc\CalculationHelper
-        arguments: ['@mbh.hotel.room_type_manager']
+        arguments: ['@mbh.hotel.room_type_manager', '@mbh_search.shared_data_fetcher']
 
     mbh_search.price_caches_merger:
         class: MBH\Bundle\SearchBundle\Services\Calc\PriceCachesMerger
         arguments:
             - '@mbh_search.tariff_repository'
             - '@mbh_search.data_manager'
+            - '@mbh_search.shared_data_fetcher'
 
     mbh_search.result_composer:
         class: MBH\Bundle\SearchBundle\Services\Search\SearchResultComposer
@@ -373,6 +375,12 @@ services:
         factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
         arguments:
             - MBH\Bundle\PackageBundle\Document\Package
+
+    mbh_search.special_repository:
+        class: MBH\Bundle\PriceBundle\Document\SpecialRepository
+        factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
+        arguments:
+            - MBH\Bundle\PriceBundle\Document\Special
 
     #Грязный хак. Т.к. с  основной веткой через черрипик, постоянно гемморой по поводу этого репозитория
     mbh_search.package_accommodation_repository:

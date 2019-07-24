@@ -15,6 +15,7 @@ use MBH\Bundle\PriceBundle\DataFixtures\MongoDB\AdditionalTariffData;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\PriceCachesMergerException;
+use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Calc\CalcQuery;
 use MBH\Bundle\SearchBundle\Services\Calc\PriceCachesMerger;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
@@ -53,23 +54,30 @@ class PriceCachesMergerTest extends SearchWebTestCase
         $searchTariff = $this->getDocumentFromArrayByFullTitle($hotelTariffs, $data['searchTariffName']);
 
         $isCategory = $data['isCategory'] ?? false;
+        $adults = 2;
+        $children = 1;
+        $childrenAges = [3];
 
-        $calcQuery = new CalcQuery();
+        $calcQuery = new SearchQuery();
         $searchConditions = new SearchConditions();
         $searchConditions
+            ->setAdults($adults)
+            ->setChildren($children)
+            ->setChildrenAges($childrenAges)
             ->setAdditionalBegin(0)
             ->setAdditionalEnd(0)
             ->setBegin($begin)
             ->setEnd($end)
         ;
         $calcQuery
-            ->setTariff($searchTariff)
-            ->setRoomType($searchRoomType)
-            ->setSearchBegin($begin)
-            ->setSearchEnd($end)
-            ->setConditionHash(uniqid('prefix', true))
-            ->setConditionMaxBegin($calcQuery->getSearchBegin())
-            ->setConditionMaxEnd($calcQuery->getSearchEnd())
+            ->setAdults($adults)
+            ->setChildren($children)
+            ->setChildrenAges($childrenAges)
+            ->setTariffId($searchTariff->getId())
+            ->setRoomTypeId($searchRoomType->getId())
+            ->setBegin($begin)
+            ->setEnd($end)
+            ->setSearchHash(uniqid('prefix', true))
             ->setSearchConditions($searchConditions)
         ;
 

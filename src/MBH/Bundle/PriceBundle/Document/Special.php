@@ -573,10 +573,11 @@ class Special extends Base
 
         if (count($entries)) {
             foreach ($entries as $entry) {
-                if ($entry->getId() == $object->getId()) {
+                if ($entry->getId() === $object->getId()) {
                     return true;
                 }
             }
+
             return false;
         }
 
