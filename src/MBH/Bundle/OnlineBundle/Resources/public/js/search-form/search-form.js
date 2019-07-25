@@ -175,7 +175,6 @@ SearchForm.prototype.searchFormActions  = function () {
 
     this.roomType.change(function(ev) {
         hotelId = $("option:selected", this).data('hotelId');
-        console.log(hotelId);
 
         _this.hotel.val(hotelId !== undefined ? hotelId : '');
     });
