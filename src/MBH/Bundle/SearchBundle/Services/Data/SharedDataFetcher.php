@@ -12,6 +12,8 @@ use MBH\Bundle\HotelBundle\Document\HotelRepository;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomRepository;
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\HotelBundle\Document\RoomTypeCategory;
+use MBH\Bundle\HotelBundle\Document\RoomTypeCategoryRepository;
 use MBH\Bundle\HotelBundle\Document\RoomTypeRepository;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Document\TariffRepository;
@@ -41,6 +43,10 @@ class SharedDataFetcher implements SharedDataFetcherInterface
      * @var HotelRepository
      */
     private $hotelRepository;
+    /**
+     * @var RoomTypeCategoryRepository
+     */
+    private $categoryRepository;
 
     /** @var HotelSelector */
     private $hotelSelector;
@@ -51,18 +57,21 @@ class SharedDataFetcher implements SharedDataFetcherInterface
      * @param RoomTypeRepository $roomTypeRepository
      * @param RoomRepository $roomRepository
      * @param HotelRepository $hotelRepository
+     * @param RoomTypeCategoryRepository $categoryRepository
      */
     public function __construct(
         TariffRepository $tariffRepository,
         RoomTypeRepository $roomTypeRepository,
         RoomRepository $roomRepository,
-        HotelRepository $hotelRepository
+        HotelRepository $hotelRepository,
+        RoomTypeCategoryRepository $categoryRepository
     ) {
 
         $this->tariffRepository = $tariffRepository;
         $this->roomTypeRepository = $roomTypeRepository;
         $this->roomRepository = $roomRepository;
         $this->hotelRepository = $hotelRepository;
+        $this->categoryRepository = $categoryRepository;
     }
 
     /**
@@ -96,6 +105,16 @@ class SharedDataFetcher implements SharedDataFetcherInterface
     }
 
 
+    /**
+     * @param string $categoryId
+     * @return RoomTypeCategory
+     * @throws SharedFetcherException
+     */
+    public function getFetchedCategory(string $categoryId): RoomTypeCategory
+    {
+        return $this->getObject($this->categoryRepository, $categoryId);
+    }
+
 
     /**
      * @param string $roomId
@@ -112,7 +131,7 @@ class SharedDataFetcher implements SharedDataFetcherInterface
     /**
      * @param ObjectRepository $repository
      * @param string $objectId
-     * @return RoomType|Tariff|Room|Hotel
+     * @return RoomType|Tariff|Room|Hotel|RoomTypeCategory
      * @throws SharedFetcherException
      */
     private function getObject(ObjectRepository $repository, string $objectId)

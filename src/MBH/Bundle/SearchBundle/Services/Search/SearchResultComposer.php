@@ -17,7 +17,6 @@ use MBH\Bundle\SearchBundle\Lib\Result\ResultTariff;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\AccommodationRoomSearcher;
 use MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataManager;
-use MBH\Bundle\SearchBundle\Services\Data\Fetcher\RoomCacheRawFetcher;
 use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher;
 
 

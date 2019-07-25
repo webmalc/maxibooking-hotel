@@ -6,6 +6,7 @@ namespace MBH\Bundle\SearchBundle\Services\Search;
 
 use DateTime;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Document\Room;
@@ -15,6 +16,7 @@ use MBH\Bundle\PriceBundle\Document\RestrictionRepository;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearcherException;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\WindowsCheckLimitException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultInterface;
@@ -22,6 +24,10 @@ use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher;
 use SplObjectStorage;
 
+/**
+ * Class WindowsChecker
+ * @package MBH\Bundle\SearchBundle\Services\Search
+ */
 class WindowsChecker
 {
 
@@ -48,6 +54,14 @@ class WindowsChecker
     }
 
 
+    /**
+     * @param ResultInterface $result
+     * @param SearchQuery $searchQuery
+     * @throws SearcherException
+     * @throws WindowsCheckLimitException
+     * @throws MongoDBException
+     * @throws SharedFetcherException
+     */
     public function checkWindows(ResultInterface $result, SearchQuery $searchQuery): void
     {
         $searchConditions = $searchQuery->getSearchConditions();
@@ -181,7 +195,7 @@ class WindowsChecker
 //                ->setName($room->getName())
 //            ;
 //            $result->setVirtualRoom($resultRoom);
-            $result->setVirtualRoom((string)$firstRawRoom['_id']);
+            $result->setVirtualRoom((string)$firstRawRoom->_id);
         }
     }
 }

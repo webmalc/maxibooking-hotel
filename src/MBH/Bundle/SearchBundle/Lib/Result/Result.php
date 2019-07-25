@@ -36,6 +36,9 @@ class Result implements ResultInterface, ResultCacheablesInterface
     private $roomType;
 
     /** @var string */
+    private $roomTypeCategory;
+
+    /** @var string */
     private $tariff;
 
     /** @var Price[] */
@@ -183,8 +186,6 @@ class Result implements ResultInterface, ResultCacheablesInterface
         return $this;
     }
 
-
-
     public function getRoomType(): string
     {
         return $this->roomType;
@@ -196,6 +197,27 @@ class Result implements ResultInterface, ResultCacheablesInterface
 
         return $this;
     }
+
+    /**
+     * @return string
+     */
+    public function getRoomTypeCategory(): ?string
+    {
+        return $this->roomTypeCategory;
+    }
+
+    /**
+     * @param string $roomTypeCategory
+     * @return Result
+     */
+    public function setRoomTypeCategory(string $roomTypeCategory): Result
+    {
+        $this->roomTypeCategory = $roomTypeCategory;
+
+        return $this;
+    }
+
+
 
     public function getTariff(): string
     {
