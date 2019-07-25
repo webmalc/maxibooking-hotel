@@ -174,20 +174,13 @@ SearchForm.prototype.searchFormActions  = function () {
     var hotelId;
 
     this.roomType.change(function(ev) {
-        // console.log(ev);
-        // console.log(this.value);
-        // console.log(this.data);
-
         hotelId = $("option:selected", this).data('hotelId');
         console.log(hotelId);
-        // if (hotelId == undefined)
 
         _this.hotel.val(hotelId !== undefined ? hotelId : '');
-
-        // var valueSelected = this.value;
     });
 
-    this.setValueAfterLoad();
+    this.pushValueAfterLoad();
 
     this.begin.change(function() {
         var beginDate = jQuery.datepicker.parseDate('dd.mm.yy', _this.begin.val()),
@@ -249,7 +242,7 @@ SearchForm.prototype.searchFormActions  = function () {
     this.setChildAgeForms(this.children.val(), this.query);
 };
 
-SearchForm.prototype.setValueAfterLoad = function() {
+SearchForm.prototype.pushValueAfterLoad = function() {
     this.setValue(this.begin, this.query.begin);
     this.setValue(this.end, this.query.end);
     this.setValue(this.adults, this.query.adults);
@@ -258,8 +251,8 @@ SearchForm.prototype.setValueAfterLoad = function() {
     this.hotel.val(this.query.hotel);
     this.roomType.val(this.query.roomType);
 
-    if (this.hotel.val() !== '' && this.roomType.val() === '') {
-        $('[data-hotel-id="' + this.hotel.val() + '"]', this.roomType).prop('selected', true);
+    if (this.roomType.val() === '') {
+        $('[data-hotel-id="' + this.hotel.val() + '"]', this.roomType).first().prop('selected', true);
     }
 };
 
@@ -352,7 +345,7 @@ SearchForm.prototype.viewChange = function() {
     };
 
     var showIFrame = function(event) {
-        var el = jQuery(this);
+        var el = jQuery(this).find('input');
         _this.last = el;
         window.parent.postMessage({
             type: 'mbh',
@@ -369,18 +362,19 @@ SearchForm.prototype.viewChange = function() {
         }
     };
 
-    this.begin.on('focus', showIFrame);
-    this.end.on('focus', showIFrame);
+    this.begin.parent().on('click', showIFrame);
+    this.end.parent().on('click', showIFrame);
     this.additionalFormWrapper.on('click', {action: 'showAdditionalForm'}, showIFrame);
 
-    var eTarget, needHideAdditionalData;
+    var eTarget, needHideAdditionalData, needHideCalendar;
     jQuery('html').click(function(e) {
         eTarget = jQuery(e.target);
         needHideAdditionalData = !eTarget.hasClass('mbh-form-additional-form-amount-guest-wrapper')
             && !eTarget.hasClass('additional-form-label')
             && !eTarget.hasClass('additional-input');
+        needHideCalendar = !eTarget.hasClass('mbh-form-date-wrapper') && !eTarget.hasClass('mbh-calendar-input');
 
-        if (!eTarget.hasClass('mbh-calendar-input')) {
+        if (needHideCalendar) {
             window.parent.postMessage({
                 type: 'mbh',
                 action: 'hideCalendar'

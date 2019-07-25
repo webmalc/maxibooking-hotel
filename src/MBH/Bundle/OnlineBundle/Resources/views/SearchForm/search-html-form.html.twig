@@ -1,7 +1,9 @@
 {% macro optionsSelect(roomTypeList)%}
     <option value="" data-hotel-id="{{ (roomTypeList | first).hotel.id }}">- {{ 'views.api.form.room_type.choices.any'|trans({}, 'MBHOnlineBundle') }} -</option>
     {% for roomType in roomTypeList %}
-        <option value="{{ roomType.id }}" {{ roomTypeList|length == 1 ? 'selected' }}>{{ roomType.localeTitle(app.request.locale) }}</option>
+        <option data-hotel-id="{{ roomType.hotel.id }}"
+                value="{{ roomType.id }}" {{ roomTypeList|length == 1 ? 'selected' }}
+        >{{ roomType.localeTitle(app.request.locale) }}</option>
     {% endfor %}
 {% endmacro %}
 {% import _self as macros %}
@@ -21,12 +23,12 @@
     </div>
     {% endif %}
 
-    <div class="mbh-form-row form-group" id="mbh-form-begin-wrapper">
+    <div class="mbh-form-row form-group mbh-form-date-wrapper" id="mbh-form-begin-wrapper">
         <label for="mbh-form-begin"> {{ fieldsName.begin is not empty ? fieldsName.begin : ('views.api.form.check_in_date.label'|trans({}, 'MBHOnlineBundle')) }}</label>
         <input type="text" class="mbh-calendar-input form-control input-sm" id="mbh-form-begin" name="begin" required value="{{ 'now'|date('d.m.Y') }}" readonly>
     </div>
 
-    <div class="mbh-form-row form-group" id="mbh-form-end-wrapper"{% if formConfig.nights %} style='display: none;'{% endif %}>
+    <div class="mbh-form-row form-group mbh-form-date-wrapper" id="mbh-form-end-wrapper"{% if formConfig.nights %} style='display: none;'{% endif %}>
         <label for="mbh-form-end"> {{ fieldsName.end is not empty ? fieldsName.end : ('views.api.form.check_out_date.label'|trans({}, 'MBHOnlineBundle')) }}</label>
         <input type="text" class="mbh-calendar-input form-control input-sm" id="mbh-form-end" name="end" required value="{{ 'now'|date_modify('+1 day')|date('d.m.Y') }}" readonly>
     </div>
