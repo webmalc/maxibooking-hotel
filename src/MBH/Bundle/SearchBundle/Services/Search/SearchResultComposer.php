@@ -16,19 +16,13 @@ use MBH\Bundle\SearchBundle\Lib\Result\ResultRoomType;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultTariff;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\AccommodationRoomSearcher;
-use MBH\Bundle\SearchBundle\Services\Calc\Calculation;
 use MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataManager;
 use MBH\Bundle\SearchBundle\Services\Data\Fetcher\RoomCacheRawFetcher;
 use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher;
-use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminer;
-use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminerEvent;
 
 
 class SearchResultComposer
 {
-    /** @var Calculation */
-    private $calculation;
-
     /** @var DataManager */
     private $dataManager;
 
@@ -38,30 +32,22 @@ class SearchResultComposer
      * @var AccommodationRoomSearcher
      */
     private $accommodationRoomSearcher;
-    /**
-     * @var OccupancyDeterminer
-     */
-    private $determiner;
 
     /**
      * SearchResultComposer constructor.
-     * @param Calculation $calculation
      * @param DataManager $dataManager
      * @param SharedDataFetcher $sharedDataFetcher
      * @param AccommodationRoomSearcher $roomSearcher
-     * @param OccupancyDeterminer $determiner
      */
-    public function __construct(Calculation $calculation, DataManager $dataManager, SharedDataFetcher $sharedDataFetcher, AccommodationRoomSearcher $roomSearcher, OccupancyDeterminer $determiner)
+    public function __construct(DataManager $dataManager, SharedDataFetcher $sharedDataFetcher, AccommodationRoomSearcher $roomSearcher)
     {
-        $this->calculation = $calculation;
         $this->dataManager = $dataManager;
         $this->sharedDataFetcher = $sharedDataFetcher;
         $this->accommodationRoomSearcher = $roomSearcher;
-        $this->determiner = $determiner;
     }
 
 
-    public function composeResult(SearchQuery $searchQuery): Result
+    public function composeResult(SearchQuery $searchQuery, array $prices): Result
     {
         $roomType = $this->sharedDataFetcher->getFetchedRoomType($searchQuery->getRoomTypeId());
         $tariff = $this->sharedDataFetcher->getFetchedTariff($searchQuery->getTariffId());
@@ -72,16 +58,13 @@ class SearchResultComposer
         $resultRoomType = ResultRoomType::createInstance($roomType);
         $resultTariff = ResultTariff::createInstance($tariff);
 
-
-        $occupancy = $this->determiner->determine($searchQuery, OccupancyDeterminerEvent::OCCUPANCY_DETERMINER_EVENT_CALCULATION);
-        $actualAdults = $occupancy->getAdults();
-        $actualChildren = $occupancy->getChildren();
-
         //** TODO: Цены вынести выше в поиске
         // В дальнейшем цены могут содержать разное кол-во детей и взрослых (инфантов)
         //
         //*/
-        $prices = $this->calculation->calcPrices($searchQuery, $actualAdults, $actualChildren);
+        /** Временно, перейти на класс Price для цен */
+        $infants = 0;
+
         $combinations = array_keys($prices);
         $resultPrices = [];
         foreach ($combinations as $combination) {
@@ -99,7 +82,7 @@ class SearchResultComposer
                     $packagePrice->getDate(),
                     $adults,
                     $children,
-                    $occupancy->getInfants(),
+                    $infants,
                     $packagePrice->getPrice(),
                     $dayTariff);
                 $resultPrice->addDayPrice($dayPrice);

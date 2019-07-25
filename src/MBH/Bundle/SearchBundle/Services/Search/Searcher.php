@@ -30,18 +30,24 @@ class Searcher implements SearcherInterface
 
     /** @var ValidatorInterface  */
     private $validator;
+    /**
+     * @var PriceSearcher
+     */
+    private $priceSearcher;
 
     public function __construct(
         RestrictionsCheckerService $restrictionsChecker,
         SearchLimitChecker $limitChecker,
         SearchResultComposer $resultComposer,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        PriceSearcher $priceSearcher
 )
     {
         $this->restrictionChecker = $restrictionsChecker;
         $this->searchLimitChecker = $limitChecker;
         $this->resultComposer = $resultComposer;
         $this->validator = $validator;
+        $this->priceSearcher = $priceSearcher;
     }
 
 
@@ -84,7 +90,9 @@ class Searcher implements SearcherInterface
             /** TODO: some conditions may be various (child free etc...) */
             $this->searchLimitChecker->checkRoomTypePopulationLimit($searchQuery);
 
-            $result = $this->resultComposer->composeResult($searchQuery);
+            $prices = $this->priceSearcher->searchPrice($searchQuery);
+            $result = $this->resultComposer->composeResult($searchQuery, $prices);
+
             $this->searchLimitChecker->checkWindows($result);
         } catch (SearchException $e) {
             $result = Result::createErrorResult($searchQuery, $e);

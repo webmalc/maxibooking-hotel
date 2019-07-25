@@ -8,6 +8,7 @@ use MBH\Bundle\HotelBundle\DataFixtures\MongoDB\AdditionalRoomTypeData;
 use MBH\Bundle\PackageBundle\Lib\SearchResult;
 use MBH\Bundle\PriceBundle\DataFixtures\MongoDB\AdditionalTariffData;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
+use MBH\Bundle\SearchBundle\Services\Search\PriceSearcher;
 use MBH\Bundle\SearchBundle\Services\Search\SearchResultComposer;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
@@ -16,10 +17,14 @@ class SearchResultComposerTest extends SearchWebTestCase
     /** @var SearchResultComposer */
     private $searchComposer;
 
+    /** @var PriceSearcher */
+    private $priceSearcher;
+
     public function setUp()
     {
         parent::setUp();
         $this->searchComposer = $this->getContainer()->get('mbh_search.result_composer');
+        $this->priceSearcher = $this->getContainer()->get('mbh_search.price_searcher');
     }
 
     /** @dataProvider dataProvider */
@@ -28,7 +33,8 @@ class SearchResultComposerTest extends SearchWebTestCase
         $searchQuery = $this->createSearchQuery($data);
         $searchQuery->getSearchConditions()->setId('fakeId');
         /** @var Result $actual */
-        $actual = $this->searchComposer->composeResult($searchQuery);
+        $prices = $this->priceSearcher->searchPrice($searchQuery);
+        $actual = $this->searchComposer->composeResult($searchQuery, $prices);
         $expected = $data['expected'];
         /** TODO: Добавить всякой фигни */
         $this->assertEquals($expected['minCache'], $actual->getMinRoomsCount());
