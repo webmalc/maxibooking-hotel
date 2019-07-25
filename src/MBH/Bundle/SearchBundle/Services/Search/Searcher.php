@@ -3,6 +3,7 @@
 
 namespace MBH\Bundle\SearchBundle\Services\Search;
 
+use function count;
 use Doctrine\ODM\MongoDB\MongoDBException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\DataFetchQueryException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\RestrictionLimitException;
@@ -14,7 +15,6 @@ use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\RestrictionsCheckerService;
 use MBH\Bundle\SearchBundle\Validator\Constraints\ChildrenAgesSameAsChildren;
-use Psr\SimpleCache\InvalidArgumentException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class Searcher implements SearcherInterface
@@ -30,18 +30,24 @@ class Searcher implements SearcherInterface
 
     /** @var ValidatorInterface  */
     private $validator;
+    /**
+     * @var PriceSearcher
+     */
+    private $priceSearcher;
 
     public function __construct(
         RestrictionsCheckerService $restrictionsChecker,
         SearchLimitChecker $limitChecker,
         SearchResultComposer $resultComposer,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        PriceSearcher $priceSearcher
 )
     {
         $this->restrictionChecker = $restrictionsChecker;
         $this->searchLimitChecker = $limitChecker;
         $this->resultComposer = $resultComposer;
         $this->validator = $validator;
+        $this->priceSearcher = $priceSearcher;
     }
 
 
@@ -54,7 +60,7 @@ class Searcher implements SearcherInterface
      * @throws DataFetchQueryException
      * @throws SearchResultComposerException
      * @throws SharedFetcherException
-     * @throws InvalidArgumentException
+     * @throws DataFetchQueryException
      */
     public function search(SearchQuery $searchQuery): Result
     {
@@ -85,7 +91,9 @@ class Searcher implements SearcherInterface
             /** TODO: some conditions may be various (child free etc...) */
             $this->searchLimitChecker->checkRoomTypePopulationLimit($searchQuery);
 
-            $result = $this->resultComposer->composeResult($searchQuery);
+            $prices = $this->priceSearcher->searchPrice($searchQuery);
+            $result = $this->resultComposer->composeResult($searchQuery, $prices);
+
             $virtualRoom = $this->searchLimitChecker->checkWindows($result, $searchQuery);
             $this->resultComposer->insertVirtualRoom($virtualRoom, $result);
         } catch (SearchException $e) {

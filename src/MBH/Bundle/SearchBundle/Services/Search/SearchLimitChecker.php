@@ -118,7 +118,7 @@ class SearchLimitChecker
     public function checkTariffConditions(SearchQuery $searchQuery): void
     {
         $tariff = $this->sharedDataFetcher->getFetchedTariff($searchQuery->getTariffId());
-        //** TODO: Уточнить у Cергея, тут должны быть приведенные значения взрослых-детей или из запроса ибо в поиске из запрсоа. */
+        //** TODO: Уточнить у Cергея, тут должны быть приведенные значения взрослых-детей или из запроса ибо в поиске из запроса. */
         $duration = $searchQuery->getDuration();
         $actualOccupancy = $this->getActualOccupancies($searchQuery);
         $checkResult = PromotionConditionFactory::checkConditions(

@@ -7,12 +7,7 @@ namespace MBH\Bundle\SearchBundle\Services\Search;
 use Liip\ImagineBundle\Templating\Helper\FilterHelper;
 use MBH\Bundle\HotelBundle\Document\Room;
 use function count;
-use MBH\Bundle\HotelBundle\Document\RoomType;
-use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
-use MBH\Bundle\PackageBundle\Lib\SearchCalculateEvent;
-use MBH\Bundle\PriceBundle\Document\Tariff;
-use MBH\Bundle\SearchBundle\Lib\Exceptions\CalculationException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultImage;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultRoom;
@@ -24,22 +19,15 @@ use MBH\Bundle\SearchBundle\Lib\Result\ResultRoomType;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultTariff;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\AccommodationRoomSearcher;
-use MBH\Bundle\SearchBundle\Services\Calc\Calculation;
 use MBH\Bundle\SearchBundle\Services\Data\Fetcher\DataManager;
 use MBH\Bundle\SearchBundle\Services\Data\Fetcher\RoomCacheRawFetcher;
 use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher;
-use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminer;
-use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminerEvent;
 use Symfony\Bridge\Twig\Extension\HttpFoundationExtension;
 use Symfony\Component\Asset\Packages;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 
 class SearchResultComposer
 {
-    /** @var Calculation */
-    private $calculation;
-
     /** @var DataManager */
     private $dataManager;
 
@@ -49,13 +37,6 @@ class SearchResultComposer
      * @var AccommodationRoomSearcher
      */
     private $accommodationRoomSearcher;
-    /**
-     * @var OccupancyDeterminer
-     */
-    private $determiner;
-
-    /** @var EventDispatcherInterface  */
-    private $dispatcher;
 
     private $filterHelper;
 
@@ -66,62 +47,39 @@ class SearchResultComposer
      * @var array
      */
     private $onlineOptions;
-    /**
-     * @var RoomTypeManager
-     */
-    private $roomManager;
+
 
     /**
      * SearchResultComposer constructor.
-     * @param Calculation $calculation
      * @param DataManager $dataManager
      * @param SharedDataFetcher $sharedDataFetcher
      * @param AccommodationRoomSearcher $roomSearcher
-     * @param OccupancyDeterminer $determiner
-     * @param EventDispatcherInterface $dispatcher
+     * @param FilterHelper $filterHelper
+     * @param Packages $packages
+     * @param HttpFoundationExtension $router
+     * @param array $onlineOptions
      */
     public function __construct(
-
-        Calculation $calculation,
         DataManager $dataManager,
         SharedDataFetcher $sharedDataFetcher,
         AccommodationRoomSearcher $roomSearcher,
-        OccupancyDeterminer $determiner,
-        EventDispatcherInterface $dispatcher,
         FilterHelper $filterHelper,
         Packages $packages,
         HttpFoundationExtension $router,
-        array $onlineOptions,
-        RoomTypeManager $roomManager
-
+        array $onlineOptions
 )
     {
-        $this->calculation = $calculation;
         $this->dataManager = $dataManager;
         $this->sharedDataFetcher = $sharedDataFetcher;
         $this->accommodationRoomSearcher = $roomSearcher;
-        $this->determiner = $determiner;
-        $this->dispatcher = $dispatcher;
         $this->filterHelper = $filterHelper;
         $this->packages = $packages;
         $this->router = $router;
         $this->onlineOptions = $onlineOptions;
-        $this->roomManager = $roomManager;
     }
 
 
-    /**
-     * @param SearchQuery $searchQuery
-     * @return Result
-     * @throws SearchResultComposerException
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\CalcHelperException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\CalculationException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\PriceCachesMergerException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     */
-    public function composeResult(SearchQuery $searchQuery): Result
+    public function composeResult(SearchQuery $searchQuery, array $prices): Result
     {
         $roomType = $this->sharedDataFetcher->getFetchedRoomType($searchQuery->getRoomTypeId());
         $tariff = $this->sharedDataFetcher->getFetchedTariff($searchQuery->getTariffId());
@@ -152,17 +110,13 @@ class SearchResultComposer
 
         $resultTariff = ResultTariff::createInstance($tariff);
 
-
-        $occupancy = $this->determiner->determine($searchQuery, OccupancyDeterminerEvent::OCCUPANCY_DETERMINER_EVENT_CALCULATION);
-        $actualAdults = $occupancy->getAdults();
-        $actualChildren = $occupancy->getChildren();
-
         //** TODO: Цены вынести выше в поиске
         // В дальнейшем цены могут содержать разное кол-во детей и взрослых (инфантов)
         //
         //*/
-        //** FIXIT */
-        $prices = $this->getPrices($searchQuery, $roomType, $tariff, $actualAdults, $actualChildren);
+        /** Временно, перейти на класс Price для цен */
+        $infants = 0;
+
         $combinations = array_keys($prices);
         $resultPrices = [];
         foreach ($combinations as $combination) {
@@ -183,7 +137,7 @@ class SearchResultComposer
                     $packagePrice->getDate(),
                     $adults,
                     $children,
-                    $occupancy->getInfants(),
+                    $infants,
                     $packagePrice->getPrice(),
                     $dayTariff);
                 $resultPrice->addDayPrice($dayPrice);
@@ -224,49 +178,6 @@ class SearchResultComposer
         ;
 
         return $result;
-    }
-
-
-    /**
-     * @param SearchQuery $searchQuery
-     * @param RoomType $roomType
-     * @param Tariff $tariff
-     * @param int $actualAdults
-     * @param int $actualChildren
-     * @return array
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\CalcHelperException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\CalculationException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\PriceCachesMergerException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
-     */
-    private function getPrices(SearchQuery $searchQuery, RoomType $roomType, Tariff $tariff, int $actualAdults, int $actualChildren): array
-    {
-        $event = new SearchCalculateEvent();
-        $eventData = [
-            'roomType' => $roomType,
-            'tariff' => $tariff,
-            'begin' => $searchQuery->getBegin(),
-            'end' => (clone $searchQuery->getEnd())->modify('-1 day'),
-            'adults' => $actualAdults,
-            'children' => $actualChildren,
-            'promotion' => null,
-            'special' => null,
-            'isUseCategory' => $this->roomManager->useCategories,
-            'childrenAges' => $searchQuery->getChildrenAges()
-        ];
-        $event->setEventData($eventData);
-        $this->dispatcher->dispatch(SearchCalculateEvent::SEARCH_CALCULATION_NAME, $event);
-        $prices = $event->getPrices();
-        if (null !== $prices) {
-            if (false === $prices) {
-                throw new CalculationException('No price for subscriber');
-            }
-
-            return $prices;
-        }
-
-        return $this->calculation->calcPrices($searchQuery, $actualAdults, $actualChildren);
     }
 
 

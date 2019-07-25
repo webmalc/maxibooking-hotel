@@ -178,6 +178,7 @@ services:
             - '@mbh_search.search_limit_checker'
             - '@mbh_search.result_composer'
             - '@validator'
+            - '@mbh_search.price_searcher'
 
     mbh_search.search:
         class: MBH\Bundle\SearchBundle\Services\Search\Search
@@ -221,20 +222,25 @@ services:
             - '@mbh_search.data_manager'
             - '@mbh_search.shared_data_fetcher'
 
+    mbh_search.price_searcher:
+        class: MBH\Bundle\SearchBundle\Services\Search\PriceSearcher
+        arguments:
+            - '@mbh_search.calculation'
+            - '@mbh_search.occupancy_determiner'
+            - '@event_dispatcher'
+            - '@mbh.hotel.room_type_manager'
+            - '@mbh_search.shared_data_fetcher'
+
     mbh_search.result_composer:
         class: MBH\Bundle\SearchBundle\Services\Search\SearchResultComposer
         arguments:
-            - '@mbh_search.calculation'
             - '@mbh_search.data_manager'
             - '@mbh_search.shared_data_fetcher'
             - '@mbh_search.accommodation_room_searcher'
-            - '@mbh_search.occupancy_determiner'
-            - '@event_dispatcher'
             - '@liip_imagine.templating.filter_helper'
             - '@assets.packages'
             - '@twig.extension.httpfoundation'
             - '%online_booking%'
-            - '@mbh.hotel.room_type_manager'
 
 # async receive results
     mbh_search.asycn_search:
