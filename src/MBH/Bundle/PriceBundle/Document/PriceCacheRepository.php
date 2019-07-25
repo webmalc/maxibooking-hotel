@@ -10,6 +10,8 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 class PriceCacheRepository extends DocumentRepository
 {
     /**
+     * @param int $period
+     * @param string $roomTypeField
      * @return array
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
@@ -41,21 +43,27 @@ class PriceCacheRepository extends DocumentRepository
      * @return array
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    public function getRawByRoomTypesAndTariffs(\DateTime $begin, \DateTime $end, $roomTypeIds = null, $tariffIds = null)
+    public function getRawByRoomTypesAndTariffs(
+        \DateTime $begin,
+        \DateTime $end,
+        $roomTypeIds = null,
+        $tariffIds = null
+    ): array
     {
         $cachesQb =  $this
             ->createQueryBuilder()
             ->select('hotel.id', 'roomType.id', 'tariff.id', 'date', 'price')
+            ->field('price')->notEqual(0)
             ->field('date')->gte($begin)->lte($end)
             ->field('isEnabled')->equals(true)
             ->sort('date')->sort('hotel.id')->sort('roomType.id')
             ->hydrate(false);
 
-        if (!is_null($roomTypeIds)) {
+        if ($roomTypeIds !== null) {
             $cachesQb->field('roomType.id')->in($roomTypeIds);
         }
 
-        if (!is_null($tariffIds)) {
+        if ($tariffIds  !== null) {
             $cachesQb->field('tariff.id')->in($tariffIds);
         }
         $result = $this->convertRawMongoData($cachesQb->getQuery()->execute());
@@ -79,21 +87,22 @@ class PriceCacheRepository extends DocumentRepository
         array $roomTypes = [],
         array $tariffs = [],
         $categories = false
-    ) {
+    ): \Doctrine\ODM\MongoDB\Query\Builder
+    {
         $qb = $this->createQueryBuilder('q');
 
         $field = $categories ? 'roomType' : 'roomTypeCategory';
         $qb->field($field)->equals(null);
 
         // hotel
-        if (!empty($hotel)) {
+        if ($hotel !== null) {
             $qb->field('hotel.id')->equals($hotel->getId());
         }
         // begin & end
-        if (!empty($begin)) {
+        if ($begin !== null) {
             $qb->field('date')->gte($begin);
         }
-        if (!empty($end)) {
+        if ($end !== null) {
             $qb->field('date')->lte($end);
         }
         //roomTypes
@@ -121,6 +130,7 @@ class PriceCacheRepository extends DocumentRepository
      * @param boolean $categories
      * @param Cache $memcached
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function fetch(
         \DateTime $begin = null,
@@ -131,7 +141,8 @@ class PriceCacheRepository extends DocumentRepository
         $grouped = false,
         $categories = false,
         Cache $memcached = null
-    ) {
+    ): array
+    {
         if ($memcached) {
             $cache = $memcached->get('price_caches_fetch', func_get_args());
             if ($cache !== false) {
@@ -174,6 +185,7 @@ class PriceCacheRepository extends DocumentRepository
      * @param bool $categories
      * @param \DateTime|null $displayedDate
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function fetchWithCancelDate(
         \DateTime $begin = null,
@@ -183,9 +195,10 @@ class PriceCacheRepository extends DocumentRepository
         array $tariffs = [],
         $categories = false,
         \DateTime $displayedDate = null
-    ) {
+    ): array
+    {
         $cachesQB = $this->fetchQueryBuilder($begin, $end, $hotel, $roomTypes, $tariffs, $categories);
-        if (!is_null($displayedDate)) {
+        if ($displayedDate !== null) {
             $cachesQB->addAnd($cachesQB->expr()
                 ->addOr($cachesQB->expr()->field('createdAt')->exists(false))
                 ->addOr($cachesQB->expr()->field('createdAt')->lt($displayedDate)));
@@ -208,7 +221,6 @@ class PriceCacheRepository extends DocumentRepository
         return $result;
     }
 
-
     /**
      * @param RoomType $roomType
      * @param \DateTime $begin
@@ -226,7 +238,7 @@ class PriceCacheRepository extends DocumentRepository
             ->field('isEnabled')->equals(true)
             ->limit(1)
         ;
-        if (!is_null($tariffsIds)) {
+        if ($tariffsIds !== null) {
             $qb->field('tariff.id')->in($tariffsIds);
         }
         return $qb->getQuery()->getSingleResult();
@@ -234,6 +246,7 @@ class PriceCacheRepository extends DocumentRepository
 
     /**
      * @param $caches
+     * @param string $roomTypeField
      * @return array
      */
     private function convertRawMongoData($caches, string $roomTypeField = 'roomType'): array

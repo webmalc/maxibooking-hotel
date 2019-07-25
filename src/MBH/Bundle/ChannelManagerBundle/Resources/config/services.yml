@@ -191,6 +191,11 @@ services:
         arguments: ['@service_container']
         shared: false
 
+    mbh.homeaway_order_info:
+        class: MBH\Bundle\ChannelManagerBundle\Services\HomeAway\HomeAwayOrderInfo
+        arguments: ['@service_container']
+        shared: false
+
     mbh.airbnb_package_info:
         class: MBH\Bundle\ChannelManagerBundle\Services\Airbnb\AirbnbPackageInfo
         arguments: ['@service_container']
@@ -203,3 +208,7 @@ services:
     mbh.home_away:
         class: MBH\Bundle\ChannelManagerBundle\Services\HomeAway\HomeAway
         arguments: ['@service_container']
+
+    mbh.ical_generator:
+        class: MBH\Bundle\ChannelManagerBundle\Services\CalendarGenerator
+        arguments: ['@mbh.warnings_compiler', '@mbh.periods_compiler']

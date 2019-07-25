@@ -8,16 +8,23 @@ use MBH\Bundle\BillingBundle\Lib\Model\Result;
 
 class CMHttpService
 {
+    /** @var Client */
+    protected $client;
+
+    public function __construct()
+    {
+        $this->client = new Client();
+    }
+
     /**
      * @param string $url
      * @return Result
      */
-    public function getByAirbnbUrl(string $url)
+    public function getResult(string $url): Result
     {
         $result = new Result();
-        $client = new Client();
 
-        $response = $client->get($url, [
+        $response = $this->client->get($url, [
             RequestOptions::HTTP_ERRORS => false
         ]);
 

@@ -2,24 +2,15 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services\Airbnb;
 
-use Eluceo\iCal\Component\Calendar;
-use Eluceo\iCal\Component\Event;
 use ICal\ICal;
-use MBH\Bundle\BaseBundle\Lib\EmptyCachePeriod;
+use MBH\Bundle\BillingBundle\Lib\Model\Result;
 use MBH\Bundle\ChannelManagerBundle\Document\AirbnbConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\AirbnbRoom;
-use MBH\Bundle\ChannelManagerBundle\Lib\AbstractChannelManagerService;
-use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
+use MBH\Bundle\ChannelManagerBundle\Lib\ICalType\AbstractICalTypeChannelManagerService;
 use MBH\Bundle\HotelBundle\Document\RoomType;
-use MBH\Bundle\PackageBundle\Document\Criteria\PackageQueryCriteria;
 use MBH\Bundle\PackageBundle\Document\Package;
-use MBH\Bundle\PriceBundle\Document\PriceCache;
-use MBH\Bundle\PriceBundle\Document\RoomCache;
-use MBH\Bundle\PriceBundle\Document\Tariff;
-use Symfony\Component\BrowserKit\Response;
-use Symfony\Component\HttpFoundation\Request;
 
-class Airbnb extends AbstractChannelManagerService
+class Airbnb extends AbstractICalTypeChannelManagerService
 {
     public const NAME = 'airbnb';
     public const DOMAIN_NAME = self::NAME;
@@ -28,50 +19,19 @@ class Airbnb extends AbstractChannelManagerService
     const PERIOD_LENGTH = '1 year';
     const CLOSED_PERIOD_SUMMARY = 'Not available';
 
-    /**
-     * @param \DateTime $begin
-     * @param \DateTime $end
-     * @param RoomType $roomType
-     * @return boolean
-     * @throw \Exception
-     */
-    public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    protected function getPeriodLength(): string
     {
-        return true;
+        return self::PERIOD_LENGTH;
     }
 
-    /**
-     * @param \DateTime $begin
-     * @param \DateTime $end
-     * @param RoomType $roomType
-     * @return boolean
-     * @throw \Exception
-     */
-    public function updateRooms(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    protected function getName(): string
     {
-        return true;
+        return self::NAME;
     }
 
-    /**
-     * @param \DateTime $begin
-     * @param \DateTime $end
-     * @param RoomType $roomType
-     * @return boolean
-     * @throw \Exception
-     */
-    public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    protected function getClosedPeriodSummary(): string
     {
-        return true;
-    }
-
-    /**
-     * Create packages from service request
-     * @return \Symfony\Component\HttpFoundation\Response
-     * @throw \Exception
-     */
-    public function createPackages()
-    {
-        // TODO: Implement createPackages() method.
+        return self::CLOSED_PERIOD_SUMMARY;
     }
 
     /**
@@ -79,7 +39,7 @@ class Airbnb extends AbstractChannelManagerService
      * @return bool
      * @throws \Throwable
      */
-    public function pullOrders()
+    public function pullOrders(): bool
     {
         $isSuccess = true;
 
@@ -89,39 +49,32 @@ class Airbnb extends AbstractChannelManagerService
             $packagesByRoomIds = $this->getPackagesByRoomIds($config);
 
             foreach ($config->getRooms() as $room) {
-                $result = $httpService->getByAirbnbUrl($room->getSyncUrl());
-                if ($result->isSuccessful()) {
-                    $airbnbPackageIds = [];
-                    $packagesInRoom = $packagesByRoomIds[$room->getRoomType()->getId()] ?? [];
-
-                    $iCalResponse = new ICal($result->getData());
-                    $events = $iCalResponse->cal['VEVENT'];
-
-                    foreach ($events as $event) {
-                        if (stripos($event['SUMMARY'], self::CLOSED_PERIOD_SUMMARY) !== false) {
-                            continue;
-                        }
-                        $orderInfo = $this->container
-                            ->get('mbh.airbnb_order_info')
-                            ->setInitData($event, $room, $config->getTariffs()->first()->getTariff());
-                        $airbnbPackageIds[] = $orderInfo->getChannelManagerOrderId();
-                        $packagesInRoom = $this->modifyOrCreatePackage($packagesInRoom, $orderInfo);
-                    }
-
-                    $this->removeMissingOrders($packagesInRoom, $airbnbPackageIds);
-                } else {
-                    $this->notifyErrorRequest(self::NAME, 'channelManager.commonCM.notification.request_error.pull_orders');
-                    $logErrorMessage = $this->container
-                            ->get('translator')
-                            ->trans('channelManager.commonCM.notification.request_error.pull_orders', [
-                                '%channelManagerName%' => 'Airbnb'
-                            ], 'MBHChannelManagerBundle')
-                        . '. URL:' . $room->getSyncUrl()
-                        . '. Response: '
-                        . $result->getData();
-                    $this->log($logErrorMessage, 'error');
+                /** @var Result $result */
+                $result = $httpService->getResult($room->getSyncUrl());
+                if (!$result->isSuccessful()) {
+                    $this->notifyAndLogError($room, $result);
                     $isSuccess = false;
+                    continue;
                 }
+
+                $airbnbPackageIds = [];
+                $packagesInRoom = $packagesByRoomIds[$room->getRoomType()->getId()] ?? [];
+
+                $iCalResponse = new ICal($result->getData());
+                $events = $iCalResponse->cal['VEVENT'];
+
+                foreach ($events as $event) {
+                    if (stripos($event['SUMMARY'], self::CLOSED_PERIOD_SUMMARY) !== false) {
+                        continue;
+                    }
+                    $orderInfo = $this->container
+                        ->get('mbh.airbnb_order_info')
+                        ->setInitData($event, $room, $config->getTariffs()->first()->getTariff());
+                    $airbnbPackageIds[] = $orderInfo->getChannelManagerOrderId();
+                    $packagesInRoom = $this->modifyOrCreatePackage($packagesInRoom, $orderInfo);
+                }
+
+                $this->removeMissingOrders($packagesInRoom, $airbnbPackageIds);
             }
         }
 
@@ -131,105 +84,18 @@ class Airbnb extends AbstractChannelManagerService
     /**
      * @param RoomType $roomType
      * @return string
-     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      * @throws \Exception
      */
-    public function generateRoomCalendar(RoomType $roomType)
+    public function generateRoomCalendar(RoomType $roomType): string
     {
-        $hotel = $roomType->getHotel();
-        $airbnbConfig = $hotel->getAirbnbConfig();
-
-        $begin = new \DateTime('midnight');
-        $end = new \DateTime('midnight +' . self::PERIOD_LENGTH);
-        $this->logger->info('Request availability data from Airbnb for room type with id:' . $roomType->getId());
-
-        //TODO: Уточнить
-        $calendar = new Calendar('maxibooking');
-
-        if ($airbnbConfig->isReadyToSync()) {
-            /** @var Tariff $tariff */
-            $tariff = $airbnbConfig->getTariffs()->first()->getTariff();
-
-            $warningsCompiler = $this->container->get('mbh.warnings_compiler');
-            $emptyPriceCachePeriods = $warningsCompiler
-                ->getEmptyCachePeriodsForRoomTypeAndTariff($roomType, $begin, $end, $tariff, PriceCache::class, 'price');
-            $emptyRoomCachePeriods = $warningsCompiler
-                ->getEmptyCachePeriodsForRoomTypeAndTariff($roomType, $begin, $end, $tariff, RoomCache::class, 'leftRooms');
-            $closedPeriods = $warningsCompiler->getClosedPeriods($begin, $end, $roomType, $tariff);
-
-            $emptyCachePeriods = array_map(function (EmptyCachePeriod $emptyCachePeriod) {
-                return ['begin' => $emptyCachePeriod->getBegin(), 'end' => $emptyCachePeriod->getEnd()];
-            }, array_merge($emptyPriceCachePeriods, $emptyRoomCachePeriods, $closedPeriods));
-
-            $combinedPeriods = $this->container
-                ->get('mbh.periods_compiler')
-                ->combineIntersectedPeriods($emptyCachePeriods);
-
-            foreach ($combinedPeriods as $period) {
-                $this->addEvent($calendar, $period['begin'], $period['end']);
-            }
-        } else {
-            $this->addEvent($calendar, $begin, $end);
-        }
-
-        return $calendar->render();
-    }
-
-    /**
-     * Pull rooms from service server
-     * @param ChannelManagerConfigInterface $config
-     * @return array
-     */
-    public function pullRooms(ChannelManagerConfigInterface $config)
-    {
-        return [];
-    }
-
-    /**
-     * Pull tariffs from service server
-     * @param ChannelManagerConfigInterface $config
-     * @return array
-     */
-    public function pullTariffs(ChannelManagerConfigInterface $config)
-    {
-        return [];
-    }
-
-    /**
-     * Check response from booking service
-     * @param mixed $response
-     * @param array $params
-     * @return boolean
-     */
-    public function checkResponse($response, array $params = null)
-    {
-        // TODO: Implement checkResponse() method.
-    }
-
-    /**
-     * Close sales on service
-     * @param ChannelManagerConfigInterface $config
-     * @return boolean
-     */
-    public function closeForConfig(ChannelManagerConfigInterface $config)
-    {
-        return true;
-    }
-
-    /**
-     * @param Request $request
-     * @return Response
-     */
-    public function pushResponse(Request $request)
-    {
-        return new Response();
+        return $this->generateCalendar($roomType, $roomType->getHotel()->getAirbnbConfig());
     }
 
     /**
      * @param $packagesInRoom
      * @param $airbnbPackageIds
      */
-    private function removeMissingOrders($packagesInRoom, $airbnbPackageIds): void
+    protected function removeMissingOrders($packagesInRoom, $airbnbPackageIds): void
     {
         $deletedPackageIds = array_diff(array_keys($packagesInRoom), $airbnbPackageIds);
         foreach ($deletedPackageIds as $packageId) {
@@ -239,19 +105,6 @@ class Airbnb extends AbstractChannelManagerService
             $this->dm->remove($deletedOrder);
             $this->dm->flush();
         }
-    }
-
-    private function addEvent(Calendar $calendar, \DateTime $begin, \DateTime $end)
-    {
-        $vEvent = new Event();
-        $vEvent->setDtStart($begin);
-        //if "notime" param is true, vendor increase end date by one day(class Event, line 263)
-        $vEvent->setDtEnd($end);
-        $vEvent->setNoTime(true);
-
-        $calendar->addComponent($vEvent);
-
-        return $calendar;
     }
 
     /**
@@ -283,7 +136,7 @@ class Airbnb extends AbstractChannelManagerService
         return $packagesInRoom;
     }
 
-    private function checkOutOfDateOrder(array $orderData): bool
+    protected function checkOutOfDateOrder(array $orderData): bool
     {
         if (isset($orderData['DTEND_array'][2])) {
             $departureDate = (new \DateTime())->setTimestamp($orderData['DTEND_array'][2]);
