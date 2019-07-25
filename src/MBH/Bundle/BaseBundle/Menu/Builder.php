@@ -773,11 +773,11 @@ class Builder
         return $parent->setChildren($this->getItemsInArray([
             $booking,
             $expedia,
-            $myAllLocator,
+            $airbnb,
             $ostrovok,
             $hundredOneHotel,
             $vashotel,
-            $airbnb
+            $myAllLocator
         ]));
 
     }

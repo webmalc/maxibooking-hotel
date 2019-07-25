@@ -4,6 +4,7 @@ namespace Tests\Bundle\ChannelManagerBundle\Services;
 
 
 use MBH\Bundle\BaseBundle\Lib\Test\ChannelManagerServiceTestCase;
+use MBH\Bundle\BaseBundle\Service\Cache;
 use MBH\Bundle\ChannelManagerBundle\Document\OstrovokConfig;
 use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\Ostrovok\OstrovokApiService;
@@ -26,6 +27,9 @@ class OstrovokExtendedTest extends ChannelManagerServiceTestCase
     /**@var \DateTime */
     private $endDate;
 
+    /**@var Cache */
+    private $cache;
+
     public static function setUpBeforeClass()
     {
         self::baseFixtures();
@@ -46,6 +50,7 @@ class OstrovokExtendedTest extends ChannelManagerServiceTestCase
         $this->initConfig(false);
         $this->startDate = new \DateTime('midnight');
         $this->endDate = new \DateTime('midnight +30 days');
+        $this->cache = $this->container->get('mbh.cache');
     }
 
     protected function getServiceHotelIdByIsDefault(bool $isDefault): int
@@ -161,6 +166,7 @@ class OstrovokExtendedTest extends ChannelManagerServiceTestCase
             switch ($flag) {
                 case 0:
                     $this->assertEquals((array)json_decode($this->getRequestData(), true), $data[0]);
+                    $this->cache->clear('price_caches_fetch', null, null, true);
                     break;
                 case 1:
                     $this->assertEquals((array)json_decode($this->getRatePlansPutData(), true), $data[0]);
@@ -181,6 +187,7 @@ class OstrovokExtendedTest extends ChannelManagerServiceTestCase
 
     public function testUpdatePrices(): void
     {
+        $this->cache->clear('price_caches_fetch', null, null, true);
         $this->mockApiBrowser(0);
         $ost = new Ostrovok($this->container);
         $ost->updatePrices($this->startDate, $this->endDate);

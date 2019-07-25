@@ -4,6 +4,7 @@ namespace Tests\Bundle\ChannelManagerBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Lib\Test\UnitTestCase;
+use MBH\Bundle\BaseBundle\Service\Cache;
 use MBH\Bundle\ChannelManagerBundle\Document\ExpediaConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\Room;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
@@ -28,6 +29,9 @@ class ExpediaRequestDataFormatterTest extends UnitTestCase
     /** @var \DateTime */
     private $end;
 
+    /** @var Cache */
+    private $cache;
+
 
     public static function setUpBeforeClass()
     {
@@ -45,6 +49,7 @@ class ExpediaRequestDataFormatterTest extends UnitTestCase
 
         $this->begin = new \DateTime('midnight');
         $this->end = new \DateTime('midnight +30 days');
+        $this->cache = $this->container->get('mbh.cache');
     }
 
     /**
@@ -52,6 +57,7 @@ class ExpediaRequestDataFormatterTest extends UnitTestCase
      */
     public function testFormatPriceRequestData()
     {
+        $this->cache->clear('price_caches_fetch', null, null, true);
         $restrictionMap = $this->container->get('mbh.channel_manager.restriction.mapper')->getMap([$this->config], $this->begin, $this->end, 'd.m.Y');
         $requestData = $this->dataFormatter->formatPriceRequestData($this->begin, $this->end, null, $this->getServiceTariffData(), $this->config, $restrictionMap);
         $this->assertEquals([$this->compileExpectedRequestData()], $requestData);

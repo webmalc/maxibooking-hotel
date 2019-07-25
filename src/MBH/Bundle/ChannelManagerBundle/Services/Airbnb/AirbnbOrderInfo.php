@@ -167,4 +167,12 @@ class AirbnbOrderInfo extends AbstractOrderInfo
     {
         return $this->orderData['DESCRIPTION'] ?? '';
     }
+
+    /**
+     * @return array
+     */
+    public function getOrderData(): array
+    {
+        return $this->orderData;
+    }
 }

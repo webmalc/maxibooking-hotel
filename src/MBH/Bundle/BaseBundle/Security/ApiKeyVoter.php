@@ -4,6 +4,7 @@
 namespace MBH\Bundle\BaseBundle\Security;
 
 
+use MBH\Bundle\UserBundle\Security\ApiKeyAuthenticator;
 use MBH\Bundle\UserBundle\Security\ApiKeyUserProvider;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -48,7 +49,7 @@ class ApiKeyVoter extends Voter
             }
         }
 
-        return !in_array(ApiKeyUserProvider::ROLE_ACCESS_WITH_TOKEN, $roles, true);
+        return !in_array(ApiKeyAuthenticator::ROLE_ACCESS_WITH_TOKEN, $roles, true);
     }
 
     private function initRestrictionRoles()
