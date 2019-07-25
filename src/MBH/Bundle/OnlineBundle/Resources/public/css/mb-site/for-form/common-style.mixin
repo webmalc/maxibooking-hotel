@@ -251,6 +251,10 @@
   .panel-heading {
     padding: 15px 25px;
   }
+
+  .panel {
+    box-shadow: none;
+  }
 }
 
 .filterBrightnessOnHover() {

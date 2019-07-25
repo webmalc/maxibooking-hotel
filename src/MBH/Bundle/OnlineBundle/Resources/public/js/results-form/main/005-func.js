@@ -58,3 +58,15 @@ MbhResultForm.prototype.addEventReloadPage = function(selector) {
         window.location.reload();
     });
 };
+
+MbhResultForm.prototype.calcAndSetHeightPackageInfo = function() {
+    document.querySelectorAll('#mbh-package-info .panel-body').forEach(function(packageInfo) {
+        document.querySelectorAll('.mbh-results-step-wrapper').forEach(function(stepWrapper) {
+            if (packageInfo.clientHeight > stepWrapper.clientHeight) {
+                return;
+            }
+            // 21 is margin-bottom in the bootstrap style
+            packageInfo.style.height = (parseInt(stepWrapper.clientHeight) - 21) + 'px';
+        });
+    });
+};

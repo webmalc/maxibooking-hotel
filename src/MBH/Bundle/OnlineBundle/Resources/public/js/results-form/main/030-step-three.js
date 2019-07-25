@@ -96,6 +96,8 @@ MbhResultForm.prototype.stepThree = function() {
 
             _this.validateAndCalc();
 
+            _this.calcAndSetHeightPackageInfo();
+
             _this.prepareAndGoStepFour();
         }
     });

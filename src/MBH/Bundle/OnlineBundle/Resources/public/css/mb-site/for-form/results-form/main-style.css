@@ -211,6 +211,9 @@ body .btn-default {
 body .panel-heading {
   padding: 15px 25px;
 }
+body .panel {
+  box-shadow: none;
+}
 body #mbh-user-form-next:hover,
 body #mbh-payment-types-next:hover,
 body #mbh-online-payment-btn:hover {
@@ -244,9 +247,8 @@ body #mbh-results-wrapper {
     width: 970px;
   }
 }
-body #mbh-results-wrapper #mbh-package-info {
+body #mbh-results-wrapper #mbh-package-info .panel-body {
   background-color: #FFFFFF;
-  margin-bottom: 10px;
 }
 body #mbh-results-wrapper #mbh-package-info .mbh-package-info-wrapper {
   margin-bottom: 11px;

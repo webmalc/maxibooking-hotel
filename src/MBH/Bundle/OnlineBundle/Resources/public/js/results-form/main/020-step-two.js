@@ -211,6 +211,8 @@ MbhResultForm.prototype.stepTwo = function() {
 
             _this._requestParams.useServices = document.querySelector('#mbh-package-info-total-services') !== null;
 
+            _this.calcAndSetHeightPackageInfo();
+
             _this.prepareAndGoStepThree();
         }
     });
