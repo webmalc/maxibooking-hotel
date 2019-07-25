@@ -232,21 +232,23 @@ services:
             - '@mbh.hotel.room_type_manager'
             - '@mbh_search.shared_data_fetcher'
 
-    mbh_search.result_composer:
-        class: MBH\Bundle\SearchBundle\Services\Search\SearchResultComposer
-        arguments:
-            - '@mbh_search.data_manager'
-            - '@mbh_search.shared_data_fetcher'
-            - '@mbh_search.accommodation_room_searcher'
-            - '@liip_imagine.templating.filter_helper'
-            - '@assets.packages'
-            - '@twig.extension.httpfoundation'
-            - '%online_booking%'
+#    mbh_search.result_composer:
+#        class: MBH\Bundle\SearchBundle\Services\Search\SearchResultComposer
+#        arguments:
+#            - '@mbh_search.data_manager'
+#            - '@mbh_search.shared_data_fetcher'
+#            - '@mbh_search.accommodation_room_searcher'
+#            - '@liip_imagine.templating.filter_helper'
+#            - '@assets.packages'
+#            - '@twig.extension.httpfoundation'
+#            - '%online_booking%'
 
     mbh_search.search_result_creator:
       class: MBH\Bundle\SearchBundle\Services\Search\Result\SearchResultCreator
+      arguments:
+        ['@mbh.hotel.room_type_manager', '@mbh_search.shared_data_fetcher']
 
-# async receive results
+  # async receive results
     mbh_search.asycn_search:
         class: MBH\Bundle\SearchBundle\RabbitMQ\AsyncSearchConsumer
         calls:
@@ -605,6 +607,7 @@ services:
             - '@mbh_search.room_type_repository'
             - '@mbh_search.room_repository'
             - '@mbh_search.hotel_repository'
+            - '@mbh_search.room_type_category_repository'
 
 #    mbh_search.room_cache_fetcher:
 #        class: MBH\Bundle\SearchBundle\Services\Data\RoomCacheFetcher

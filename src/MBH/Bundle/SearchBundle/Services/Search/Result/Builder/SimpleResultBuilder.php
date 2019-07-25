@@ -47,6 +47,14 @@ class SimpleResultBuilder implements ResultBuilderInterface
         return $this;
     }
 
+    public function addRoomTypeCategory(string $categoryId): ResultBuilderInterface
+    {
+        $this->result->setRoomTypeCategory($categoryId);
+
+        return $this;
+    }
+
+
     public function addTariff(string $tariffId): ResultBuilderInterface
     {
         $this->result->setTariff($tariffId);

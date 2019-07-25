@@ -17,6 +17,8 @@ interface ResultBuilderInterface
 
     public function addRoomType(string $roomTypeId): ResultBuilderInterface;
 
+    public function addRoomTypeCategory(string $categoryId): ResultBuilderInterface;
+
     public function addTariff(string $tariffId): ResultBuilderInterface;
 
     public function addPrices(array $prices): ResultBuilderInterface;

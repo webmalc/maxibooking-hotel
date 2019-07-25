@@ -102,9 +102,7 @@ class Searcher implements SearcherInterface
 
             $result = $this->resultCreator->createResult($searchQuery, $prices, $roomAvailableAmount);
 
-            $virtualRoom = $this->searchLimitChecker->checkWindows($result, $searchQuery);
-
-            $this->resultComposer->insertVirtualRoom($virtualRoom, $result);
+            $this->windowsChecker->checkWindows($result, $searchQuery);
 
         } catch (SearchException $e) {
             $result = $this->resultCreator->createErrorResult($searchQuery, $e);

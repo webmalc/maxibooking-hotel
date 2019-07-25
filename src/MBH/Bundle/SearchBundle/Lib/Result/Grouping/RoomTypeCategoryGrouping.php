@@ -5,23 +5,11 @@ namespace MBH\Bundle\SearchBundle\Lib\Result\Grouping;
 
 
 
-class RoomTypeCategoryGrouping extends RoomTypeGrouping
+class RoomTypeCategoryGrouping extends AbstractGrouping
 {
-    public function group(array $searchResults): array
+    protected function getGroupField(): string
     {
-        $grouped = [];
-        $roomTypeGrouped = parent::group($searchResults);
-        if (count($roomTypeGrouped)) {
-            foreach ($roomTypeGrouped as $roomTypeGroup) {
-                $catId = $roomTypeGroup['roomType']['categoryId'];
-                if (!($grouped[$catId] ?? null)) {
-                    $grouped[$catId] = $roomTypeGroup;
-                }
-
-            }
-        }
-
-        return $grouped;
+        return 'roomTypeCategory';
     }
 
 }
