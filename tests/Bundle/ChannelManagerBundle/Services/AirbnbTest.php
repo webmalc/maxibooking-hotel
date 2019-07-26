@@ -12,6 +12,8 @@ use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
 use MBH\Bundle\ChannelManagerBundle\Services\CMHttpService;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PriceBundle\DataFixtures\MongoDB\RoomCacheData;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -43,7 +45,7 @@ class AirbnbTest extends UnitTestCase
         $this->assertTrue($isSuccess);
 
         $order = $this->dm
-            ->getRepository('MBHPackageBundle:Order')
+            ->getRepository(Order::class)
             ->findOneBy(['channelManagerId' => '1418fb94e984-4ac6e9147d674246f878defd58250d61@airbnb.com']);
         $this->assertNotNull($order);
     }
@@ -55,7 +57,7 @@ class AirbnbTest extends UnitTestCase
         $this->assertTrue($isSuccess);
 
         $orders = $this->dm
-            ->getRepository('MBHPackageBundle:Order')
+            ->getRepository(Order::class)
             ->findBy(['channelManagerType' => Airbnb::NAME]);
         $this->assertEquals(2, count($orders));
     }
@@ -64,18 +66,18 @@ class AirbnbTest extends UnitTestCase
     {
         $this->replaceHttpService($this->getThirdCalendar());
         $orderForRemoval = $this->dm
-            ->getRepository('MBHPackageBundle:Order')
+            ->getRepository(Order::class)
             ->findOneBy(['channelManagerId' => '1418fb94e984-4ac6e9147d674246f878defd58250d61@airbnb.com']);
         $this->assertNotNull($orderForRemoval);
         $isSuccess = $this->container->get('mbh.airbnb')->pullOrders();
         $this->assertTrue($isSuccess);
 
         $orderForRemoval = $this->dm
-            ->getRepository('MBHPackageBundle:Order')
+            ->getRepository(Order::class)
             ->findOneBy(['channelManagerId' => '1418fb94e984-4ac6e9147d674246f878defd58250d61@airbnb.com']);
         $this->assertNull($orderForRemoval);
         $existingOrder = $orderForRemoval = $this->dm
-            ->getRepository('MBHPackageBundle:Order')
+            ->getRepository(Order::class)
             ->findOneBy(['channelManagerId' => '1418fb94e984-4ac6e9143r674246f878defd58250d61@airbnb.com']);
         $this->assertNotNull($existingOrder);
     }
@@ -86,8 +88,10 @@ class AirbnbTest extends UnitTestCase
     public function testGenerateRoomCalendar()
     {
         $hotel = $this->dm->getRepository('MBHHotelBundle:Hotel')->findOneBy(['isDefault' => true]);
+
+        /** @var RoomType $roomType */
         $roomType = $this->dm
-            ->getRepository('MBHHotelBundle:RoomType')
+            ->getRepository(RoomType::class)
             ->findOneBy([
                 'hotel.id' => $hotel->getId(),
                 'fullTitle' => 'Стандартный двухместный'
@@ -124,7 +128,7 @@ class AirbnbTest extends UnitTestCase
     {
         $mock = \Mockery::mock(CMHttpService::class)->makePartial();
 
-        $mock->shouldReceive('getByAirbnbUrl')->andReturnUsing(function ($url) {
+        $mock->shouldReceive('getResult')->andReturnUsing(function ($url) {
             return (new Result())->setData($this->getFourthCalendar($url));
         });
 
@@ -136,7 +140,7 @@ class AirbnbTest extends UnitTestCase
         $httpServiceMock = $this->getMockBuilder(CMHttpService::class)->getMock();
         $httpServiceMock
             ->expects($this->once())
-            ->method('getByAirbnbUrl')
+            ->method('getResult')
             ->willReturn((new Result())->setData($calendar));
         $this->container->set('mbh.cm_http_service', $httpServiceMock);
     }
@@ -220,10 +224,10 @@ END:VEVENT\n";
 
     protected function setSecondRoomType()
     {
-        $airbnbConfig = $this->dm->getRepository('MBHChannelManagerBundle:AirbnbConfig')->findOneBy([]);
-        $hotel = $this->dm->getRepository('MBHHotelBundle:Hotel')->findOneBy(['isDefault' => true]);
+        $airbnbConfig = $this->dm->getRepository(AirbnbConfig::class)->findOneBy([]);
+        $hotel = $this->dm->getRepository(Hotel::class)->findOneBy(['isDefault' => true]);
         $roomType2 = $this->dm
-            ->getRepository('MBHHotelBundle:RoomType')
+            ->getRepository(RoomType::class)
             ->findOneBy([
                 'hotel.id' => $hotel->getId(),
                 'fullTitle' => 'Люкс'
@@ -249,9 +253,9 @@ DTSTART;VALUE=DATE:20180322
 UID:1418fb94e984-4ac6e9147d674246f878defd58250d61@airbnb.com
 DESCRIPTION:CHECKIN: 22.03.2018\nCHECKOUT: 26.03.2018\nNIGHTS: 4\nPHONE: 
  +7 925 888-00-00\nEMAIL: (нет доступных вариантов электронного адреса)\n
- PROPERTY: Апартаменты Meidan Suites  3 гостя\n
-SUMMARY:Alevtina Sholokhova (HMW3STQQNP)
-LOCATION:Апартаменты Meidan Suites  3 гостя
+ PROPERTY: Апартаменты 3 гостя\n
+SUMMARY:NAME NAME (HMHU6YRYQQNP)
+LOCATION:Апартаменты 3 гостя
 END:VEVENT
 BEGIN:VEVENT
 DTEND;VALUE=DATE:$airbnbEndDate
@@ -259,9 +263,9 @@ DTSTART;VALUE=DATE:20180330
 UID:1418fb94e984-4ac6e9147d674246f878defd58250d61@airbnb.com
 DESCRIPTION:CHECKIN: 30.03.2018\nCHECKOUT: 01.04.2018\nNIGHTS: 2\nPHONE: 
  +7 925 888-00-00\nEMAIL: (нет доступных вариантов электронного адреса)\n
- PROPERTY: Апартаменты Meidan Suites  3 гостя\n
-SUMMARY:Kate Guselnikova (HMAMXJ54CY)
-LOCATION:Апартаменты Meidan Suites  3 гостя
+ PROPERTY: Апартаменты 3 гостя\n
+SUMMARY:NAME NAME (HMAZDGHDG4CY)
+LOCATION:Апартаменты 3 гостя
 END:VEVENT
 BEGIN:VEVENT
 DTEND;VALUE=DATE:20180504
@@ -269,9 +273,9 @@ DTSTART;VALUE=DATE:20180428
 UID:1418fb94e984-4ac6e9147d674246f878defd58250d61@airbnb.com
 DESCRIPTION:CHECKIN: 28.04.2018\nCHECKOUT: 04.05.2018\nNIGHTS: 6\nPHONE: 
  +7 925 888-00-00\nEMAIL: (нет доступных вариантов электронного адреса)\n
- PROPERTY: Апартаменты Meidan Suites  3 гостя\n
-SUMMARY:Сергей Посохин (HMSF9PA434)
-LOCATION:Апартаменты Meidan Suites  3 гостя
+ PROPERTY: Апартаменты 3 гостя\n
+SUMMARY:NAME NAME (DZRTHDRYS56YDGBH)
+LOCATION:Апартаменты 3 гостя
 END:VEVENT";
     }
 }

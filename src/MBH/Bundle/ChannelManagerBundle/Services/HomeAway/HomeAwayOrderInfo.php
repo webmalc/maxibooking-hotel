@@ -5,7 +5,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Services\HomeAway;
 
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
 use MBH\Bundle\ChannelManagerBundle\Lib\ICalType\AbstractICalTypeOrderInfo;
-use MBH\Bundle\PackageBundle\Document\PackageSource;
+use MBH\Bundle\ChannelManagerBundle\Lib\ICalType\AbstractICalTypePackageInfo;
 
 class HomeAwayOrderInfo extends AbstractICalTypeOrderInfo
 {
@@ -14,13 +14,6 @@ class HomeAwayOrderInfo extends AbstractICalTypeOrderInfo
     {
         throw new \Exception('implement me');
 //        return $this->orderData['UID'];
-    }
-
-    public function getSource(): ?PackageSource
-    {
-        return $this->dm
-            ->getRepository('MBHPackageBundle:PackageSource')
-            ->findOneBy(['code' => $this->getChannelManagerName()]);
     }
 
     /**
@@ -37,17 +30,6 @@ class HomeAwayOrderInfo extends AbstractICalTypeOrderInfo
         return $this->packagesData;
     }
 
-    protected function setPackagesData(): void
-    {
-        throw new \Exception('implement me');
-//        $this->packagesData = [
-//            $this->container
-//                ->get('mbh.homeaway_package_info')
-//                ->setInitData($this->orderData, $this->room, $this->tariff)
-//        ];
-//        $this->isPackagesDataInit = true;
-    }
-
     /**
      * @return string
      */
@@ -60,5 +42,10 @@ class HomeAwayOrderInfo extends AbstractICalTypeOrderInfo
     {
         throw new \Exception('implement me');
 //        return $this->orderData['DESCRIPTION'] ?? '';
+    }
+
+    protected function getPackageInfoService(): AbstractICalTypePackageInfo
+    {
+        return $this->container->get('mbh.homeaway_package_info');
     }
 }

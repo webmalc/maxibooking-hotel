@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Lib\ICalType;
 
-
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractOrderInfo;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
@@ -12,6 +11,7 @@ use MBH\Bundle\PackageBundle\Document\PackageService;
 use MBH\Bundle\PackageBundle\Document\PackageSource;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use MBH\Bundle\ChannelManagerBundle\Document\AbstractICalTypeChannelManagerRoom;
 
 abstract class AbstractICalTypeOrderInfo extends AbstractOrderInfo
 {
@@ -51,6 +51,17 @@ abstract class AbstractICalTypeOrderInfo extends AbstractOrderInfo
         return $this->getPackagesData()[0]->getPrice();
     }
 
+    protected function setPackagesData(): void
+    {
+        $this->packagesData = [
+            $this->getPackageInfoService()
+                ->setInitData($this->orderData, $this->room, $this->tariff)
+        ];
+        $this->isPackagesDataInit = true;
+    }
+
+    abstract protected function getPackageInfoService(): AbstractICalTypePackageInfo;
+
     /**
      * @param Order $order
      * @return array|CashDocument[]
@@ -79,12 +90,11 @@ abstract class AbstractICalTypeOrderInfo extends AbstractOrderInfo
      * Возвращает массив объектов, хранящих данные о бронях в заказе
      * @return AbstractPackageInfo[]
      */
-    public function getPackagesData()
+    public function getPackagesData(): array
     {
         if (!$this->isPackagesDataInit) {
             $this->packagesData = [
-                $this->container
-                    ->get('mbh.airbnb_package_info')
+                $this->getPackageInfoService()
                     ->setInitData($this->orderData, $this->room, $this->tariff)
             ];
             $this->isPackagesDataInit = true;
@@ -96,7 +106,7 @@ abstract class AbstractICalTypeOrderInfo extends AbstractOrderInfo
     /**
      * @return PackageService[]
      */
-    public function getServices()
+    public function getServices(): array
     {
         return [];
     }
@@ -105,7 +115,7 @@ abstract class AbstractICalTypeOrderInfo extends AbstractOrderInfo
      * Возвращает данные о кредитной карте, если указаны.
      * @return CreditCard|null
      */
-    public function getCreditCard()
+    public function getCreditCard(): ?CreditCard
     {
         return null;
     }

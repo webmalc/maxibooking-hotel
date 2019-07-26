@@ -20,7 +20,7 @@ class ChannelManagerApiController extends BaseController
      * @param RoomType $roomType
      * @return Response
      */
-    public function roomCalendarAction(string $service, RoomType $roomType)
+    public function roomCalendarAction(string $service, RoomType $roomType): Response
     {
         $calendar = $this
             ->get('mbh.channelmanager')

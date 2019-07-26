@@ -1,16 +1,19 @@
 <?php
 
-namespace MBH\Bundle\ChannelManagerBundle\Lib\ICalType;
+namespace MBH\Bundle\ChannelManagerBundle\Document;
 
-use MBH\Bundle\ChannelManagerBundle\Document\Room;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
+/**
+ * @ODM\EmbeddedDocument
+ */
 abstract class AbstractICalTypeChannelManagerRoom extends Room
 {
     /**
      * @var string
      * @ODM\Field(type="string")
      */
-    private $syncUrl;
+    protected $syncUrl;
 
     /**
      * @return string

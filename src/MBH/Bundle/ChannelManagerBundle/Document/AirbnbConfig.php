@@ -8,11 +8,11 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
+use MBH\Bundle\ChannelManagerBundle\Lib\ICalType\ICalTypeChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use Symfony\Component\Validator\Constraints as Assert;
 use MBH\Bundle\BaseBundle\Document\Base;
-use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ConfigTrait;
 use MBH\Bundle\ChannelManagerBundle\Lib\IsConnectionSettingsReadTrait;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -22,7 +22,7 @@ use MBH\Bundle\HotelBundle\Document\Hotel;
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
-class AirbnbConfig extends Base implements ChannelManagerConfigInterface
+class AirbnbConfig extends Base implements ICalTypeChannelManagerConfigInterface
 {
     use ConfigTrait;
     use IsConnectionSettingsReadTrait;
@@ -163,9 +163,9 @@ class AirbnbConfig extends Base implements ChannelManagerConfigInterface
 
     /**
      * @param bool $isRoomLinksPageViewed
-     * @return AirbnbConfig
+     * @return ICalTypeChannelManagerConfigInterface
      */
-    public function setIsRoomLinksPageViewed(bool $isRoomLinksPageViewed): AirbnbConfig
+    public function setIsRoomLinksPageViewed(bool $isRoomLinksPageViewed): ICalTypeChannelManagerConfigInterface
     {
         $this->isRoomLinksPageViewed = $isRoomLinksPageViewed;
 

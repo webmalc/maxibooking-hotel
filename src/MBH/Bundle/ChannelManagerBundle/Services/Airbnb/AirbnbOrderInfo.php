@@ -4,7 +4,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Services\Airbnb;
 
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
 use MBH\Bundle\ChannelManagerBundle\Lib\ICalType\AbstractICalTypeOrderInfo;
-use MBH\Bundle\PackageBundle\Document\PackageSource;
+use MBH\Bundle\ChannelManagerBundle\Lib\ICalType\AbstractICalTypePackageInfo;
 
 class AirbnbOrderInfo extends AbstractICalTypeOrderInfo
 {
@@ -15,16 +15,6 @@ class AirbnbOrderInfo extends AbstractICalTypeOrderInfo
     public function getChannelManagerOrderId(): string
     {
         return $this->orderData['UID'];
-    }
-
-    /**
-     * @return PackageSource|null
-     */
-    public function getSource(): ?PackageSource
-    {
-        return $this->dm
-            ->getRepository('MBHPackageBundle:PackageSource')
-            ->findOneBy(['code' => $this->getChannelManagerName()]);
     }
 
     /**
@@ -41,19 +31,6 @@ class AirbnbOrderInfo extends AbstractICalTypeOrderInfo
     }
 
     /**
-     *
-     */
-    protected function setPackagesData(): void
-    {
-        $this->packagesData = [
-            $this->container
-                ->get('mbh.airbnb_package_info')
-                ->setInitData($this->orderData, $this->room, $this->tariff)
-        ];
-        $this->isPackagesDataInit = true;
-    }
-
-    /**
      * @return string
      */
     public function getChannelManagerName(): string
@@ -64,5 +41,10 @@ class AirbnbOrderInfo extends AbstractICalTypeOrderInfo
     public function getNote(): string
     {
         return $this->orderData['DESCRIPTION'] ?? '';
+    }
+
+    protected function getPackageInfoService(): AbstractICalTypePackageInfo
+    {
+        return $this->container->get('mbh.airbnb_package_info');
     }
 }

@@ -201,6 +201,11 @@ services:
         arguments: ['@service_container']
         shared: false
 
+    mbh.homeaway_package_info:
+        class: MBH\Bundle\ChannelManagerBundle\Services\HomeAway\HomeAwayPackageInfo
+        arguments: ['@service_container']
+        shared: false
+
     mbh.channel_manager_logs_handler:
         class: MBH\Bundle\ChannelManagerBundle\Services\Logs\ChannelManagerLogHandler
         arguments: ['@mbh.channelmanager.logger_handler']

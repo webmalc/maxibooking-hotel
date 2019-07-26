@@ -8,8 +8,8 @@ use Gedmo\SoftDeleteable\Traits\SoftDeleteableDocument;
 use Gedmo\Timestampable\Traits\TimestampableDocument;
 use MBH\Bundle\BaseBundle\Document\Base;
 use MBH\Bundle\BaseBundle\Document\Traits\BlameableDocument;
-use MBH\Bundle\ChannelManagerBundle\Lib\ChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\ConfigTrait;
+use MBH\Bundle\ChannelManagerBundle\Lib\ICalType\ICalTypeChannelManagerConfigInterface;
 use MBH\Bundle\ChannelManagerBundle\Lib\IsConnectionSettingsReadTrait;
 use MBH\Bundle\ChannelManagerBundle\Services\HomeAway\HomeAway;
 use MBH\Bundle\HotelBundle\Document\Hotel;
@@ -23,7 +23,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
-class HomeAwayConfig extends Base implements ChannelManagerConfigInterface
+class HomeAwayConfig extends Base implements ICalTypeChannelManagerConfigInterface
 {
     use ConfigTrait;
     use IsConnectionSettingsReadTrait;
@@ -200,9 +200,9 @@ class HomeAwayConfig extends Base implements ChannelManagerConfigInterface
 
     /**
      * @param bool $isRoomLinksPageViewed
-     * @return HomeAwayConfig
+     * @return ICalTypeChannelManagerConfigInterface
      */
-    public function setIsRoomLinksPageViewed(bool $isRoomLinksPageViewed): HomeAwayConfig
+    public function setIsRoomLinksPageViewed(bool $isRoomLinksPageViewed): ICalTypeChannelManagerConfigInterface
     {
         $this->isRoomLinksPageViewed = $isRoomLinksPageViewed;
 

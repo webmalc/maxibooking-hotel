@@ -34,7 +34,7 @@ class CalendarGenerator
      * @return string
      * @throws \Exception
      */
-    public function generateRoomCalendar(\DateTime $begin, \DateTime $end, RoomType $roomType, Tariff $tariff): string
+    public function renderRoomCalendar(\DateTime $begin, \DateTime $end, RoomType $roomType, Tariff $tariff): string
     {
         $closedPeriods = $this->getClosedPeriods($begin, $end, $roomType, $tariff);
         $combinedPeriods = $this->periodsCompiler->combineIntersectedPeriods($closedPeriods);
