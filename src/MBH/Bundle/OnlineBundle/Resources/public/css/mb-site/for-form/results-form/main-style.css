@@ -592,8 +592,10 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-conta
   margin-top: 10px;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-price-container .room-count-selector .room-count-selector-label {
-  font-size: 16px;
-  line-height: 28px;
+  font-size: 14px;
+  line-height: 20px;
+  color: #737373;
+  margin-bottom: 10px;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-price-container .room-count-selector .mbh-results-packages-count {
   font-size: 16px;

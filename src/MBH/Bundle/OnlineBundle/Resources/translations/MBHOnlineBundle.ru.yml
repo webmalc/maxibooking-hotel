@@ -59,6 +59,7 @@ views.api.step_one.result_actions.room.many: номера
 views.api.step_one.result_actions.guest.other: гостей
 views.api.step_one.result_actions.guest.one: гость
 views.api.step_one.result_actions.guest.many: гостя
+views.api.step_one.result_actions.amount_nights: за %amountNight% ночь|за %amountNight% ночи|за %amountNight% ночей
 
 views.api.result.packages_info.total_to_pay: 'К оплате:'
 

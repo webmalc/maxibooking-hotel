@@ -124,7 +124,8 @@
                         {% endfor %}
                     </div>
                     <div class="nights">
-                        {{ results|first.nights }} {{ 'nights'|transchoice(results|first.nights) }}
+                        {% set amountNights = results|first.nights %}
+                        {{ 'views.api.step_one.result_actions.amount_nights'|transchoice( amountNights, {'%amountNight%' : amountNights }, 'MBHOnlineBundle') }}
                     </div>
 
                     <div class="room-count-selector">
@@ -150,7 +151,7 @@
                         </label>
                     </div>
                     <div class="mbh-center room-amount">
-                        {{ 'views.api.getResultsTable.room_cache_count'|trans({}, 'MBHOnlineBundle') }}
+                        {{ 'views.api.getResultsTable.room_cache_count' | trans({}, 'MBHOnlineBundle') }}:
                         {{ result.roomsCount }}
                     </div>
                 </div>

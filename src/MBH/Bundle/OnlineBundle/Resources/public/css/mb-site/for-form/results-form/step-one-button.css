@@ -118,6 +118,9 @@ body .btn-default {
 body .panel-heading {
   padding: 15px 25px;
 }
+body .panel {
+  box-shadow: none;
+}
 body #mbh-results-actions {
   box-sizing: border-box;
   width: calc(100vw - 30px);
@@ -127,6 +130,7 @@ body #mbh-results-actions {
   align-items: center;
   height: inherit;
   border: 1px solid var(--main);
+  border-bottom: none;
   background: #FFFFFF;
 }
 @media (min-width: 732px) {
