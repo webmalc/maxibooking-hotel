@@ -17,6 +17,7 @@ use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Services\Cache\ErrorFilters\ErrorResultFilter;
 use MBH\Bundle\SearchBundle\Services\Data\Fetcher\ExtendedDataQueryInterface;
+use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\SearchConditionsInterface;
 use MBH\Bundle\SearchBundle\Validator\Constraints\ChildrenAgesSameAsChildren;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
@@ -29,7 +30,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
  * @ChildrenAgesSameAsChildren()
  * @ODM\Document(collection="SearchConditions", repositoryClass="SearchConditionsRepository")
  */
-class SearchConditions extends Base
+class SearchConditions extends Base implements SearchConditionsInterface
 {
 
     use TimestampableDocument;

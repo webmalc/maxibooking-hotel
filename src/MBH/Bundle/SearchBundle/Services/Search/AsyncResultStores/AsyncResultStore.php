@@ -44,7 +44,7 @@ class AsyncResultStore implements AsyncResultStoreInterface
         $this->finalResultsBuilder = $resultsBuilder;
     }
 
-    public function storeInStock($result, SearchConditions $conditions): void
+    public function storeInStock($result, SearchConditionsInterface $conditions): void
     {
         $hash = $conditions->getSearchHash();
         if ($result instanceof Result) {
@@ -70,7 +70,7 @@ class AsyncResultStore implements AsyncResultStoreInterface
      * @throws GroupingFactoryException
      */
     public function receiveFromStock(
-        SearchConditions $conditions,
+        SearchConditionsInterface $conditions,
         $grouperName = null,
         bool $isCreateJson = false,
         bool $isCreateAnswer = false
@@ -105,9 +105,7 @@ class AsyncResultStore implements AsyncResultStoreInterface
 
         }
 
-        //**  */
         $this->cache->transaction()->incrby($this->createReceivedKey($hash), $received)->exec();
-        //**  */
 
         $results = array_map([$this->serializer, 'decodeJsonToArray'], $results);
 
@@ -117,7 +115,8 @@ class AsyncResultStore implements AsyncResultStoreInterface
             $conditions->getErrorLevel(),
             $isCreateJson,
             $isCreateAnswer,
-            $grouperName
+            $grouperName,
+            $conditions
         );
 
         return $results;

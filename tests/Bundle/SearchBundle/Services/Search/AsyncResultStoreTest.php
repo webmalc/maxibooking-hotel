@@ -7,12 +7,17 @@ namespace Tests\Bundle\SearchBundle\Services\Search;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\WindowsCheckLimitException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
-use MBH\Bundle\SearchBundle\Lib\Result\ResultConditions;
-use MBH\Bundle\SearchBundle\Lib\Result\ResultRoomType;
-use MBH\Bundle\SearchBundle\Lib\Result\ResultTariff;
+use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Cache\ErrorFilters\ErrorResultFilter;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStore;
+use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\SearchConditionsInterface;
+use MBH\Bundle\SearchBundle\Services\Search\Result\Builder\DayPriceBuilder;
+use MBH\Bundle\SearchBundle\Services\Search\Result\Builder\DayPriceDirector;
+use MBH\Bundle\SearchBundle\Services\Search\Result\Builder\PriceBuilder;
+use MBH\Bundle\SearchBundle\Services\Search\Result\Builder\PriceDirector;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
 class AsyncResultStoreTest extends SearchWebTestCase
@@ -24,8 +29,8 @@ class AsyncResultStoreTest extends SearchWebTestCase
         $hash = uniqid('', false);
         $conditions = new SearchConditions();
         $conditions->setSearchHash($hash);
-        $searchResult1 = $this->getData($hash, 'ok');
-        $searchResult2 = $this->getData($hash, 'error', ErrorResultFilter::WINDOWS);
+        $searchResult1 = $this->getData('ok');
+        $searchResult2 = $this->getData('error', new WindowsCheckLimitException('error'));
 
         $service = $this->getContainer()->get('mbh_search.async_result_store');
         $service->storeInStock($searchResult1,  $conditions);
@@ -50,14 +55,15 @@ class AsyncResultStoreTest extends SearchWebTestCase
         $service = $this->getContainer()->get('mbh_search.async_result_store');
 
         $hash = uniqid('', false);
-        $searchResult1 = $this->getData($hash, 'ok');
-        $searchResult2 = $this->getData($hash, 'error', ErrorResultFilter::WINDOWS);
-        $searchResult3 = $this->getData($hash, 'ok');
+        $searchResult1 = $this->getData('ok');
+        $searchResult2 = $this->getData('error', new WindowsCheckLimitException('error'));
+        $searchResult3 = $this->getData('ok');
+
+        /** @var SearchConditionsInterface|SearchConditions $conditions */
         $conditions = new SearchConditions();
         $resultsCount = 3;
-        $resultConditions = $searchResult1->getResultConditions();
         $conditions
-            ->setSearchHash($resultConditions->getSearchHash())
+            ->setSearchHash($hash)
             ->setExpectedResultsCount($resultsCount)
             ->setErrorLevel(ErrorResultFilter::WINDOWS)
         ;
@@ -85,7 +91,7 @@ class AsyncResultStoreTest extends SearchWebTestCase
 
             $this->assertInstanceOf(Result::class, $actual);
             /** @var Result $actual */
-            $this->assertEquals($hash, $actual->getResultConditions()->getSearchHash());
+//            $this->assertEquals($hash, $actual->getResultConditions()->getSearchHash());
 
         }
 //        foreach ([
@@ -128,38 +134,58 @@ class AsyncResultStoreTest extends SearchWebTestCase
     }
 
 
-    private function getData(string $hash, string $status, ?int $errorType = null): Result
+    private function getData(string $status, SearchException $e = null): Result
     {
+
+        /** @var RoomType $roomType */
         $roomType =  $this->dm->getRepository(RoomType::class)->findOneBy([]);
+        /** @var Tariff $tariff */
         $tariff = $this->dm->getRepository(Tariff::class)->findOneBy([]);
-        $conditions = new SearchConditions();
-        $conditions->setId('fakeId');
-        $errorLevel = ErrorResultFilter::ALL;
-        $conditions
-            ->setSearchHash($hash)
-            ->setBegin(new \DateTime())
-            ->setEnd(new \DateTime())
-            ->setAdults(2)
-            ->setErrorLevel($errorLevel)
-        ;
-        $resultRoomType = ResultRoomType::createInstance($roomType);
-        $resultTariff = ResultTariff::createInstance($tariff);
-        $resultConditions = ResultConditions::createInstance($conditions);
+
         $begin = new \DateTime('midnight');
         $end = new \DateTime('midnight +3 days');
-        $result = Result::createInstance(
-            $begin,
-            $end,
-            $resultConditions,
-            $resultTariff,
-            $resultRoomType,
-            [],
-            0,
-            []
-        );
-        $result->setStatus($status);
-        if (null !== $errorType) {
-            $result->setErrorType($errorType);
+        $adults = 2;
+        $children = 0;
+
+        $searchQuery = new SearchQuery();
+        $searchQuery->setAdults($adults);
+        $searchQuery->setBegin($begin);
+        $searchQuery->setEnd($end);
+        $searchQuery->setTariffId($tariff->getId());
+        $searchQuery->setRoomTypeId($roomType->getId());
+
+
+        $tourists = [
+            'mainAdults' => $adults,
+            'addsAdults' => $children,
+            'mainChildren' => 0,
+            'addsChildren' => 0,
+        ];
+
+        $dayPriceBuilder = new DayPriceBuilder();
+        $dayPriceDirector = new DayPriceDirector($dayPriceBuilder);
+        $dayPrices = [];
+        foreach (new \DatePeriod($begin, new \DateInterval('P1D'), (clone $end)->modify('+1 day')) as $date) {
+            $dayPrices[] = $dayPriceDirector->createDayPrice($date, $tourists, $roomType, $tariff, 333.3);
+        }
+
+        $priceBuilder = new PriceBuilder();
+        $priceDirector = new PriceDirector($priceBuilder);
+        $prices = $priceDirector->createPrice($searchQuery, $dayPrices);
+
+        $resultCreator = $this->getContainer()->get('mbh_search.search_result_creator');
+
+
+        $result = null;
+        if ($status === 'ok') {
+            $result = $resultCreator->createResult($searchQuery, [$prices], 1);
+        }
+        if ($status === 'error') {
+            $result = $resultCreator->createErrorResult($searchQuery, $e);
+        }
+
+        if (null === $result || !($result instanceof Result)) {
+            throw new \Exception('Test Exception in '. __CLASS__);
         }
 
         return $result;

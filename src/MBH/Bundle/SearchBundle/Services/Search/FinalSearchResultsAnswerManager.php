@@ -4,7 +4,9 @@
 namespace MBH\Bundle\SearchBundle\Services\Search;
 
 
+use MBH\Bundle\SearchBundle\Lib\Exceptions\GroupingFactoryException;
 use MBH\Bundle\SearchBundle\Services\FinalSearchResultsBuilder;
+use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\SearchConditionsInterface;
 
 /**
  * Class FinalSearchResultsAnswerManager
@@ -28,21 +30,26 @@ class FinalSearchResultsAnswerManager
     /**
      * @param $results
      * @param int $errorLevel
-     * @param string $grouperName
      * @param bool $isCreateJson
      * @param bool $isCreateAnswer
+     * @param string $grouperName
+     * @param SearchConditionsInterface|null $conditions
      * @return mixed
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\GroupingFactoryException
+     * @throws GroupingFactoryException
      */
-    public function createAnswer($results, int $errorLevel, bool $isCreateJson, bool $isCreateAnswer, string $grouperName = null)
+    public function createAnswer($results, int $errorLevel, bool $isCreateJson, bool $isCreateAnswer, string $grouperName = null, SearchConditionsInterface $conditions = null)
     {
 
-        return $this->builder
+        $this->builder
             ->set($results)
             ->errorFilter($errorLevel)
             ->setGrouping($grouperName)
             ->createJson($isCreateJson)
-            ->createAnswer($isCreateAnswer)
-            ->getResults();
+            ->createAnswer($isCreateAnswer);
+        if ($conditions) {
+            $this->builder->setSearchHashConditions($conditions);
+        }
+
+        return $this->builder->getResults();
     }
 }

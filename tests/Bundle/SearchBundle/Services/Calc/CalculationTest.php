@@ -12,10 +12,13 @@ use MBH\Bundle\HotelBundle\Service\RoomTypeManager;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PriceBundle\DataFixtures\MongoDB\AdditionalTariffData;
 use MBH\Bundle\PriceBundle\Document\Promotion;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\PriceCachesMergerException;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Calc\CalcQuery;
+use MBH\Bundle\SearchBundle\Services\Calc\Prices\DayPrice;
+use MBH\Bundle\SearchBundle\Services\Calc\Prices\Price;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
 class CalculationTest extends SearchWebTestCase
@@ -55,18 +58,13 @@ class CalculationTest extends SearchWebTestCase
 
             $calcQuery = new SearchQuery();
             $calcQuery
+                ->setSearchHash('fakeSearchTestHash')
+                ->setAdults($adults)
+                ->setChildren($children)
                 ->setTariffId($searchTariff->getId())
                 ->setRoomTypeId($searchRoomType->getId())
                 ->setBegin($begin)
-                ->setEnd($end)
-                ->setSearchHash(uniqid('', false));
-            $searchConditions = new SearchConditions();
-            $searchConditions
-                ->setBegin($begin)
                 ->setEnd($end);
-
-            $calcQuery->setSearchConditions($searchConditions);
-
 
             if ($data['isExpectException'] ?? null) {
                 $this->expectException($data['expectedException']);
@@ -85,19 +83,27 @@ class CalculationTest extends SearchWebTestCase
             }
 
             $actual = $this->getContainer()->get('mbh_search.calculation')->calcPrices($calcQuery, $adults, $children);
-            $key = $adults . '_' . $children;
-            $this->assertArrayHasKey($key, $actual);
-            $actualData = $actual[$key];
-            $this->assertEquals($variant['total'], $actualData['total'], $key);
-            $this->assertContainsOnlyInstancesOf(PackagePrice::class, $actualData['packagePrices']);
-            foreach (range(0, $data['endOffset'] - $data['beginOffset'] - 1) as $index) {
-                /** @var PackagePrice $packagePrice */
-                $packagePrice = $actualData['packagePrices'][$index];
+            $this->assertCount(1, $actual);
+            /** @var Price $actualPrice */
+            $actualPrice = reset($actual);
+            $this->assertInstanceOf(Price::class, $actualPrice);
+
+            $this->assertEquals($variant['total'], $actualPrice->getTotal(), sprintf('%s_%s', $adults, $children));
+
+            $beginOffset = $data['beginOffset'];
+            $endOffset = $data['endOffset'];
+            $this->assertCount($endOffset - $beginOffset, $dayPrices = $actualPrice->getPriceByDay());
+
+            foreach (range(0, $endOffset - $beginOffset - 1) as $index) {
+                /** @var DayPrice $packagePrice */
+                $packagePrice = $dayPrices[$index];
                 $day = (clone $begin)->modify("+ $index days")->format('d_m_Y') . ' offset' . $index;
-                $this->assertEquals($variant['priceByDay'][$index], $packagePrice->getPrice(), "Error in $key $day");
-                $this->assertEquals($variant['tariffByDay'][$index], $packagePrice->getTariff()->getName(), "Error in $key $day");
+                $this->assertEquals($variant['priceByDay'][$index], $packagePrice->getTotal(), "Error in $day");
+                $tariff = $this->dm->getRepository(Tariff::class)->find($packagePrice->getTariff());
+                $this->assertEquals($variant['tariffByDay'][$index], $tariff->getName(), "Error in $day");
                 if ($promotionName = $variant['promotion'][$index] ?? null) {
-                    $this->assertEquals($promotionName, $packagePrice->getPromotion()->getFullTitle());
+                    $promotion = $this->dm->getRepository(Promotion::class)->find($packagePrice->getPromotion());
+                    $this->assertEquals($promotionName, $promotion->getName());
                 }
 
             }

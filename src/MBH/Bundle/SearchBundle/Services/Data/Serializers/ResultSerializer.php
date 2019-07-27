@@ -54,7 +54,7 @@ class ResultSerializer
      * @param array $context
      * @return iterable
      */
-    public function normalize(Result $result, array $context = []): iterable
+    public function normalize(Result $result, array $context = []): array
     {
         return $this->normalizer->normalize($result, null, $context);
     }

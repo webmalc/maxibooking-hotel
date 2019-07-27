@@ -7,6 +7,7 @@ namespace MBH\Bundle\SearchBundle\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultCacheException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
+use MBH\Bundle\SearchBundle\Lib\Result\ResultInterface;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -293,15 +294,14 @@ class SearchResultCacheItem
      * @return SearchResultCacheItem
      * @throws SearchResultCacheException
      */
-    public static function createInstance(Result $result): SearchResultCacheItem
+    public static function createInstance(ResultInterface $result): SearchResultCacheItem
     {
         $cacheItem = new self();
-        $roomTypeId = $result->getResultRoomType()->getId();
-        $tariffId = $result->getResultTariff()->getId();
-        $resultConditions = $result->getResultConditions();
-        $adults = $resultConditions->getAdults();
-        $children = $resultConditions->getChildren();
-        $childrenAges = $resultConditions->getChildrenAges();
+        $roomTypeId = $result->getRoomType();
+        $tariffId = $result->getTariff();
+        $adults = $result->getAdults();
+        $children = $result->getChildren();
+        $childrenAges = $result->getChildrenAges();
         $cacheItem
             ->setBegin($result->getBegin())
             ->setEnd($result->getEnd())

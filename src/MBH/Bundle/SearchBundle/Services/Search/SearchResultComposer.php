@@ -7,6 +7,7 @@ namespace MBH\Bundle\SearchBundle\Services\Search;
 use Liip\ImagineBundle\Templating\Helper\FilterHelper;
 use MBH\Bundle\HotelBundle\Document\Room;
 use function count;
+use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultImage;
@@ -178,32 +179,6 @@ class SearchResultComposer
         ;
 
         return $result;
-    }
-
-
-    private function getMinCacheValue(SearchQuery $searchQuery): int
-    {
-        $roomCaches = $this->dataManager->fetchData($searchQuery, RoomCacheRawFetcher::NAME);
-
-        //** TODO: Когда станет понятно на каком этапе отсекать лимиты, тут переделать. */
-        $mainRoomCaches = array_filter(
-            $roomCaches,
-            static function ($roomCache) {
-                $isMainRoomCache = !array_key_exists('tariff', $roomCache) || null === $roomCache['tariff'];
-
-                return $isMainRoomCache && $roomCache['leftRooms'] > 0;
-            }
-        );
-
-
-        $min = min(array_column($mainRoomCaches, 'leftRooms'));
-
-        $duration = $searchQuery->getDuration();
-        if ($min < 1 || count($mainRoomCaches) !== $duration) {
-            throw new SearchResultComposerException('Error! RoomCaches count not equal duration.');
-        }
-
-        return $min;
     }
 
     public function insertVirtualRoom(Room $room, Result $result)

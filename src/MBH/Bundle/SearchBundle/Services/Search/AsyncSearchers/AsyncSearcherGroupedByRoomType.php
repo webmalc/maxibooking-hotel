@@ -17,6 +17,7 @@ use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupByRoomType;
 use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupInterface;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStoreInterface;
 use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\AsyncResultStore;
+use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\SearchConditionsInterface;
 use MBH\Bundle\SearchBundle\Services\Search\SearcherFactory;
 use Predis\CommunicationException;
 use Predis\Response\ServerException;
@@ -126,11 +127,11 @@ class AsyncSearcherGroupedByRoomType implements AsyncSearcherInterface
 
     /**
      * @param array $results
-     * @param SearchConditions $conditions
+     * @param SearchConditionsInterface $conditions
      * @param QueryGroupInterface $queryGroup
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\AsyncResultReceiverException
      */
-    private function storeResults(array $results, SearchConditions $conditions, QueryGroupInterface $queryGroup)
+    private function storeResults(array $results, SearchConditionsInterface $conditions, QueryGroupInterface $queryGroup)
     {
         $founded = false;
         foreach ($results as $result) {

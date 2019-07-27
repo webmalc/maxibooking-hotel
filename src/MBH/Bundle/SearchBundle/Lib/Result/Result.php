@@ -4,44 +4,51 @@
 namespace MBH\Bundle\SearchBundle\Lib\Result;
 
 
-use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
-use MBH\Bundle\SearchBundle\Lib\SearchQuery;
+use DateTime;
+use MBH\Bundle\SearchBundle\Services\Calc\Prices\Price;
 
-class Result implements ResultCacheablesInterface
+class Result implements ResultInterface, ResultCacheablesInterface
 {
+
+    public const OK_STATUS = 'ok';
+
+    public const ERROR_STATUS = 'error';
 
     /** @var string */
     private $id;
 
-    /** @var \DateTime */
+    /** @var DateTime */
     private $begin;
 
-    /** @var \DateTime */
+    /** @var DateTime */
     private $end;
 
-    /** @var ResultRoomType */
-    private $resultRoomType;
+    /** @var int */
+    private $adults;
 
-    /** @var ResultTariff */
-    private $resultTariff;
+    /** @var int */
+    private $children;
 
-    /** @var ResultConditions */
-    private $resultConditions;
+    /** @var array  */
+    private $childrenAges = [];
 
-    /** @var ResultPrice[] */
+    /** @var string */
+    private $roomType;
+
+    /** @var string */
+    private $tariff;
+
+    /** @var Price[] */
     private $prices = [];
 
     /** @var int */
-    private $minRoomsCount;
+    private $roomAvailableAmount;
 
-    /** @var ResultRoom[] */
-    private $accommodationRooms = [];
-
-    /** @var ResultRoom */
+    /** @var string */
     private $virtualRoom;
 
     /** @var string */
-    private $status = 'ok';
+    private $status;
 
     /** @var string */
     private $error = '';
@@ -65,19 +72,31 @@ class Result implements ResultCacheablesInterface
     }
 
 
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    public function setId(string $id): Result
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getBegin(): \DateTime
+    public function getBegin(): DateTime
     {
         return $this->begin;
     }
 
     /**
-     * @param \DateTime $begin
+     * @param DateTime $begin
      * @return Result
      */
-    public function setBegin(\DateTime $begin): Result
+    public function setBegin(DateTime $begin): Result
     {
         $this->begin = $begin;
 
@@ -85,97 +104,20 @@ class Result implements ResultCacheablesInterface
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getEnd(): \DateTime
+    public function getEnd(): DateTime
     {
         return $this->end;
     }
 
     /**
-     * @param \DateTime $end
+     * @param DateTime $end
      * @return Result
      */
-    public function setEnd(\DateTime $end): Result
+    public function setEnd(DateTime $end): Result
     {
         $this->end = $end;
-
-        return $this;
-    }
-
-
-    /**
-     * @return ResultRoomType
-     */
-    public function getResultRoomType(): ResultRoomType
-    {
-        return $this->resultRoomType;
-    }
-
-    /**
-     * @param ResultRoomType $resultRoomType
-     * @return Result
-     */
-    public function setResultRoomType(ResultRoomType $resultRoomType): Result
-    {
-        $this->resultRoomType = $resultRoomType;
-
-        return $this;
-    }
-
-    /**
-     * @return ResultTariff
-     */
-    public function getResultTariff(): ResultTariff
-    {
-        return $this->resultTariff;
-    }
-
-    /**
-     * @param ResultTariff $resultTariff
-     * @return Result
-     */
-    public function setResultTariff(ResultTariff $resultTariff): Result
-    {
-        $this->resultTariff = $resultTariff;
-
-        return $this;
-    }
-
-    /**
-     * @return ResultConditions
-     */
-    public function getResultConditions(): ResultConditions
-    {
-        return $this->resultConditions;
-    }
-
-    /**
-     * @param ResultConditions $resultConditions
-     * @return Result
-     */
-    public function setResultConditions(ResultConditions $resultConditions): Result
-    {
-        $this->resultConditions = $resultConditions;
-
-        return $this;
-    }
-
-    /**
-     * @return ResultPrice[]
-     */
-    public function getPrices(): array
-    {
-        return $this->prices;
-    }
-
-    /**
-     * @param ResultPrice[] $prices
-     * @return Result
-     */
-    public function setPrices(array $prices): Result
-    {
-        $this->prices = $prices;
 
         return $this;
     }
@@ -183,58 +125,107 @@ class Result implements ResultCacheablesInterface
     /**
      * @return int
      */
-    public function getMinRoomsCount(): ?int
+    public function getAdults(): int
     {
-        return $this->minRoomsCount;
+        return $this->adults;
     }
 
     /**
-     * @param int $minRoomsCount
+     * @param int $adults
      * @return Result
      */
-    public function setMinRoomsCount(int $minRoomsCount): Result
+    public function setAdults(int $adults): Result
     {
-        $this->minRoomsCount = $minRoomsCount;
+        $this->adults = $adults;
 
         return $this;
     }
 
     /**
-     * @return ResultRoom[]
+     * @return int
      */
-    public function getAccommodationRooms(): array
+    public function getChildren(): int
     {
-        return $this->accommodationRooms;
+        if (null === $this->children) {
+            return 0;
+        }
+
+        return $this->children;
     }
 
     /**
-     * @param ResultRoom[] $accommodationRooms
+     * @param int|null $children
      * @return Result
      */
-    public function setAccommodationRooms(array $accommodationRooms): Result
+    public function setChildren(?int $children): Result
     {
-        $this->accommodationRooms = $accommodationRooms;
+        $this->children = $children;
 
         return $this;
     }
 
     /**
-     * @return ResultRoom
+     * @return array
      */
-    public function getVirtualRoom(): ?ResultRoom
+    public function getChildrenAges(): array
     {
-        return $this->virtualRoom;
+        return $this->childrenAges;
     }
 
     /**
-     * @param ResultRoom $virtualRoom
+     * @param array $childrenAges
      * @return Result
      */
-    public function setVirtualRoom(?ResultRoom $virtualRoom = null): Result
+    public function setChildrenAges(array $childrenAges): Result
     {
-        $this->virtualRoom = $virtualRoom;
+        $this->childrenAges = $childrenAges;
 
         return $this;
+    }
+
+
+
+    public function getRoomType(): string
+    {
+        return $this->roomType;
+    }
+
+    public function setRoomType(string $roomTypeId): Result
+    {
+        $this->roomType = $roomTypeId;
+
+        return $this;
+    }
+
+    public function getTariff(): string
+    {
+        return $this->tariff;
+    }
+
+    public function setTariff(string $tariffId): Result
+    {
+        $this->tariff = $tariffId;
+
+        return $this;
+    }
+
+    /** @return Price[] */
+    public function getPrices(): array
+    {
+        return $this->prices;
+    }
+
+    public function addPrices(Price $price)
+    {
+        $this->prices[] = $price;
+    }
+
+    /** Do not remove! This method uses Serializer!
+     * @param array $prices
+     */
+    public function setPrices(array $prices)
+    {
+        $this->prices = $prices;
     }
 
     /**
@@ -276,7 +267,7 @@ class Result implements ResultCacheablesInterface
     }
 
     /**
-     * @return int
+     * @return int|null
      */
     public function getErrorType(): ?int
     {
@@ -284,7 +275,7 @@ class Result implements ResultCacheablesInterface
     }
 
     /**
-     * @param int $errorType
+     * @param int|null $errorType
      * @return Result
      */
     public function setErrorType(?int $errorType): Result
@@ -294,35 +285,21 @@ class Result implements ResultCacheablesInterface
         return $this;
     }
 
-
-
-    public function getId(): string
-    {
-        return $this->id;
-    }
-
-    public function setId(string $id): Result
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
     /**
-     * @return bool
+     * @return int
      */
-    public function isCached(): ?bool
+    public function getRoomAvailableAmount(): ?int
     {
-        return $this->cached;
+        return $this->roomAvailableAmount;
     }
 
     /**
-     * @param bool $cached
+     * @param int $roomAvailableAmount
      * @return Result
      */
-    public function setCached(?bool $cached): Result
+    public function setRoomAvailableAmount(int $roomAvailableAmount = null): Result
     {
-        $this->cached = $cached;
+        $this->roomAvailableAmount = $roomAvailableAmount;
 
         return $this;
     }
@@ -330,71 +307,40 @@ class Result implements ResultCacheablesInterface
     /**
      * @return string
      */
+    public function getVirtualRoom(): ?string
+    {
+        return $this->virtualRoom;
+    }
+
+    /**
+     * @param string $virtualRoomId
+     * @return Result
+     */
+    public function setVirtualRoom(string $virtualRoomId = null): Result
+    {
+        $this->virtualRoom = $virtualRoomId;
+
+        return $this;
+    }
+
     public function getCacheItemId(): string
     {
         return $this->cacheItemId;
     }
 
-    /**
-     * @param string $cacheItemId
-     * @return Result
-     */
-    public function setCacheItemId(string $cacheItemId): Result
+    public function setCacheItemId(string $id): Result
     {
-        $this->cacheItemId = $cacheItemId;
+        $this->cacheItemId = $id;
 
         return $this;
     }
 
-    public static function createErrorResult(SearchQuery $searchQuery, SearchException $exception): Result
+    public function setCached(?bool $cached): Result
     {
-        $begin = $searchQuery->getBegin();
-        $end = $searchQuery->getEnd();
-        $resultConditions = ResultConditions::createInstance($searchQuery->getSearchConditions());
-        $resultTariff = new ResultTariff();
-        $resultTariff->setId($searchQuery->getTariffId());
-        $resultRoomType = new ResultRoomType();
-        $resultRoomType->setId($searchQuery->getRoomTypeId());
-        $result = self::createInstance($begin, $end, $resultConditions, $resultTariff, $resultRoomType, [], 0, []);
+        $this->cached = $cached;
 
-        $result
-            ->setStatus('error')
-            ->setError($exception->getMessage())
-            ->setErrorType($exception->getType())
-        ;
-
-
-        return $result;
+        return $this;
     }
 
-    public static function createInstance(
-        \DateTime $begin,
-        \DateTime $end,
-        ResultConditions $resultConditions,
-        ResultTariff $tariff,
-        ResultRoomType $roomType,
-        array $resultPrices,
-        int $minRooms,
-        array $accommodationRooms,
-        ResultRoom $virtualRoom = null
-
-    ): Result
-    {
-        $result = new self();
-
-        $result
-            ->setBegin($begin)
-            ->setEnd($end)
-            ->setResultConditions($resultConditions)
-            ->setMinRoomsCount($minRooms)
-            ->setResultTariff($tariff)
-            ->setResultRoomType($roomType)
-            ->setPrices($resultPrices)
-            ->setAccommodationRooms($accommodationRooms)
-            ->setVirtualRoom($virtualRoom);
-
-
-        return $result;
-    }
 
 }

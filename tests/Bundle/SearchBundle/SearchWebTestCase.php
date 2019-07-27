@@ -9,9 +9,15 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\BaseBundle\Lib\Test\WebTestCase;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\Hotel;
+use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupInterface;
+use MBH\Bundle\SearchBundle\Services\Search\Result\Builder\DayPriceBuilder;
+use MBH\Bundle\SearchBundle\Services\Search\Result\Builder\DayPriceDirector;
+use MBH\Bundle\SearchBundle\Services\Search\Result\Builder\PriceBuilder;
+use MBH\Bundle\SearchBundle\Services\Search\Result\Builder\PriceDirector;
 
 abstract class SearchWebTestCase extends WebTestCase
 {
@@ -176,6 +182,45 @@ abstract class SearchWebTestCase extends WebTestCase
 
         return $conditions;
     }
+
+    protected function resultCreator($adults, $children, $childrenAges, $begin, $end, Tariff $tariff, RoomType $roomType): array
+    {
+        $availableRooms = 2;
+        $tourists = [
+            'mainAdults' => $adults,
+            'addsAdults' => $children,
+            'mainChildren' => 0,
+            'addsChildren' => 0,
+        ];
+        $searchQuery = new SearchQuery();
+        $searchQuery
+            ->setBegin($begin)
+            ->setEnd($end)
+            ->setTariffId($tariff->getId())
+            ->setRoomTypeId($roomType->getId())
+            ->setAdults($adults)
+            ->setChildren($children)
+            ->setChildrenAges($childrenAges);
+
+        $dayPriceBuilder = new DayPriceBuilder();
+        $dayPriceDirector = new DayPriceDirector($dayPriceBuilder);
+        $dayPrices = [];
+        foreach (new \DatePeriod($begin, new \DateInterval('P1D'), (clone $end)->modify('+1 day')) as $date) {
+            $dayPrices[] = $dayPriceDirector->createDayPrice($date, $tourists, $roomType, $tariff, 333);
+        }
+
+        $priceBuilder = new PriceBuilder();
+        $priceDirector = new PriceDirector($priceBuilder);
+        $price = $priceDirector->createPrice($searchQuery, $dayPrices);
+
+        $resultCreator = $this->getContainer()->get('mbh_search.search_result_creator');
+
+        return [
+            'result' => $resultCreator->createResult($searchQuery, [$price], $availableRooms),
+            'searchQuery' => $searchQuery
+        ];
+    }
+
 
 }
 

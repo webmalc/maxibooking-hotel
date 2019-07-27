@@ -12,6 +12,7 @@ use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Document\SearchResultCacheItem;
 use MBH\Bundle\SearchBundle\Document\SearchResultCacheItemRepository;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
+use MBH\Bundle\SearchBundle\Lib\Result\ResultCacheablesInterface;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultConditions;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultDayPrice;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultPrice;
@@ -19,6 +20,12 @@ use MBH\Bundle\SearchBundle\Lib\Result\ResultRoomType;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultTariff;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Cache\CacheSearchResults;
+use MBH\Bundle\SearchBundle\Services\Search\Result\Builder\DayPriceBuilder;
+use MBH\Bundle\SearchBundle\Services\Search\Result\Builder\DayPriceDirector;
+use MBH\Bundle\SearchBundle\Services\Search\Result\Builder\PriceBuilder;
+use MBH\Bundle\SearchBundle\Services\Search\Result\Builder\PriceDirector;
+use MBH\Bundle\SearchBundle\Services\Search\Result\Builder\SimpleResultBuilder;
+use MBH\Bundle\SearchBundle\Services\Search\Result\SearchResultCreator;
 use Predis\Client;
 use Psr\Log\LoggerInterface;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
@@ -71,7 +78,7 @@ class CacheSearchResultsTest extends SearchWebTestCase
         $dmMock = $this->createMock(DocumentManager::class);
         $repositoryMock = $this->createMock(SearchResultCacheItemRepository::class);
 
-        $dmMock->expects($this->once())->method('persist')->willReturnCallback(function ($actual) use (&$result, &$createdKey){
+        $dmMock->expects($this->once())->method('persist')->willReturnCallback(function ($actual) use (&$result, &$createdKey) {
             /** @var SearchResultCacheItem $actual */
             $this->assertInstanceOf(SearchResultCacheItem::class, $actual);
             $this->assertEquals($createdKey, $actual->getCacheResultKey());
@@ -79,6 +86,7 @@ class CacheSearchResultsTest extends SearchWebTestCase
 
         $dmMock->expects($this->once())->method('flush')->willReturnCallback(function ($actual) {
             $this->assertInstanceOf(SearchResultCacheItem::class, $actual);
+            /** @var SearchResultCacheItem $actual */
             $actual->setId('fakeTestId');
         });
 
@@ -94,8 +102,9 @@ class CacheSearchResultsTest extends SearchWebTestCase
 
         $logger = $this->createMock(LoggerInterface::class);
 
+        $resultCreator = $this->createMock(SearchResultCreator::class);
 
-        $service = new CacheSearchResults($repositoryMock, $serializer, $redisMock, $keyCreator, $filter, $logger);
+        $service = new CacheSearchResults($repositoryMock, $serializer, $redisMock, $keyCreator, $filter, $logger, $resultCreator);
 
         $result = $data['result'];
         /** @noinspection PhpUnusedLocalVariableInspection */
@@ -120,58 +129,23 @@ class CacheSearchResultsTest extends SearchWebTestCase
         /** @var RoomType $roomType */
         $roomType = $hotel->getRoomTypes()->first();
 
-        $resultRoomType = ResultRoomType::createInstance($roomType);
-        $resultTariff = ResultTariff::createInstance($tariff);
 
         $adults = 2;
         $children = 2;
         $childrenAges = [3, 7];
         $begin = new \DateTime('midnight');
         $end = new \DateTime('midnight + 3 days');
-        $conditions = new SearchConditions();
-        $conditions
-            ->setId('fakeConditionsId')
-            ->setBegin($begin)
-            ->setEnd($end)
-            ->setAdults($adults)
-            ->setChildren($children)
-            ->setChildrenAges($childrenAges)
-            ->setSearchHash('fakeSearchHash')
-        ;
 
-        $dayPrice = ResultDayPrice::createInstance($begin, $adults, $children, 0, 333, $resultTariff);
-        $resultPrice = ResultPrice::createInstance($adults, $children, 33333, [$dayPrice]);
-        $resultConditions = ResultConditions::createInstance($conditions);
+        $data = $this->resultCreator($adults, $children, $childrenAges, $begin, $end, $tariff, $roomType);
+        $result = $data['result'];
 
-        $result = Result::createInstance(
-            $begin,
-            $end,
-            $resultConditions,
-            $resultTariff,
-            $resultRoomType,
-            [$resultPrice],
-            5,
-            []
-        );
+        /** @var ResultCacheablesInterface $result */
         $result->setCacheItemId('fakeTestId');
-
-        $searchQuery = new SearchQuery();
-        $searchQuery
-            ->setBegin($begin)
-            ->setEnd($end)
-            ->setTariffId($tariff->getId())
-            ->setRoomTypeId($roomType->getId())
-            ->setAdults($adults)
-            ->setChildren($children)
-            ->setChildrenAges($childrenAges)
-            ->setSearchConditions($conditions)
-
-        ;
 
         yield [
             [
                 'result' => $result,
-                'searchQuery' => $searchQuery
+                'searchQuery' => $data['searchQuery']
             ]
         ];
     }

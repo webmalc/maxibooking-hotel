@@ -10,7 +10,7 @@ interface CalcQueryInterface extends DataQueryInterface
 {
     public function getAdults(): int;
 
-    public function getChildren(): ?int;
+    public function getChildren(): int;
 
     public function getChildrenAges(): array;
 

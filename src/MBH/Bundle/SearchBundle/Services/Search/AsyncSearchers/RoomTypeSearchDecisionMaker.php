@@ -10,6 +10,7 @@ use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConfigException;
 use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupByRoomType;
 use MBH\Bundle\SearchBundle\Services\QueryGroups\QueryGroupInterface;
 use MBH\Bundle\SearchBundle\Services\QueryGroups\SearchNecessarilyInterface;
+use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\SearchConditionsInterface;
 use MBH\Bundle\SearchBundle\Services\SearchConfigService;
 use Predis\Client;
 
@@ -48,12 +49,12 @@ class RoomTypeSearchDecisionMaker implements AsyncSearchDecisionMakerInterface
     }
 
     /**
-     * @param SearchConditions $conditions
+     * @param SearchConditionsInterface $conditions
      * @param QueryGroupInterface $group
      * @return bool
      * @throws AsyncResultReceiverException
      */
-    public function isNeedSearch(SearchConditions $conditions, QueryGroupInterface $group): bool
+    public function isNeedSearch(SearchConditionsInterface $conditions, QueryGroupInterface $group): bool
     {
         if (!$group instanceof QueryGroupByRoomType) {
             throw new AsyncResultReceiverException('Wrong query group in RoomType Decision maker');
@@ -69,11 +70,11 @@ class RoomTypeSearchDecisionMaker implements AsyncSearchDecisionMakerInterface
     }
 
     /**
-     * @param SearchConditions $conditions
+     * @param SearchConditionsInterface $conditions
      * @param QueryGroupInterface $group
      * @throws AsyncResultReceiverException
      */
-    public function markFoundedResults(SearchConditions $conditions, QueryGroupInterface $group): void
+    public function markFoundedResults(SearchConditionsInterface $conditions, QueryGroupInterface $group): void
     {
         if (!$group instanceof QueryGroupByRoomType) {
             throw new AsyncResultReceiverException('Wrong query group in RoomType Decision maker');
@@ -94,7 +95,7 @@ class RoomTypeSearchDecisionMaker implements AsyncSearchDecisionMakerInterface
         return 'already_founded_room_types_' .$roomTypeId.'_'. $hash;
     }
 
-    public function canIStoreInStock(SearchConditions $conditions, QueryGroupInterface $group): bool
+    public function canIStoreInStock(SearchConditionsInterface $conditions, QueryGroupInterface $group): bool
     {
         if (!$group instanceof QueryGroupByRoomType) {
             throw new AsyncResultReceiverException('Wrong query group in RoomType Decision maker');
@@ -107,7 +108,7 @@ class RoomTypeSearchDecisionMaker implements AsyncSearchDecisionMakerInterface
             || ($this->isMustDate($group) && $this->isShowNecessarilyDate);
     }
 
-    public function markStoredInStockResult(SearchConditions $conditions, QueryGroupInterface $group): void
+    public function markStoredInStockResult(SearchConditionsInterface $conditions, QueryGroupInterface $group): void
     {
         /** @var QueryGroupByRoomType $group */
         $storedKey = static::getStoredInStackKey($conditions->getSearchHash(), $group->getRoomTypeId());

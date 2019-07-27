@@ -4,19 +4,24 @@
 namespace MBH\Bundle\SearchBundle\Services\Calc;
 
 
+use DateTime;
 use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\HotelBundle\Document\RoomType;
-use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\SpecialRepository;
-use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\PriceBundle\Services\PromotionConditionFactory;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\CalcHelperException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\CalculationAdditionalPriceException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\CalculationException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException;
+use MBH\Bundle\SearchBundle\Services\Calc\Prices\DayPrice;
+use MBH\Bundle\SearchBundle\Services\Calc\Prices\Price;
 use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher;
+use MBH\Bundle\SearchBundle\Services\Search\Result\Builder\DayPriceBuilder;
+use MBH\Bundle\SearchBundle\Services\Search\Result\Builder\DayPriceDirector;
+use MBH\Bundle\SearchBundle\Services\Search\Result\Builder\PriceBuilder;
+use MBH\Bundle\SearchBundle\Services\Search\Result\Builder\PriceDirector;
 
 class Calculation
 {
@@ -66,7 +71,7 @@ class Calculation
      * @throws SharedFetcherException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\PriceCachesMergerException
      */
-    public function calcPrices(CalcQueryInterface $calcQuery, int $adults = 0, int $children = 0): array
+    public function calcPrices(CalcQueryInterface $calcQuery, int $adults = null, int $children = null): array
     {
         $priceCaches = $this->priceCacheMerger->getMergedPriceCaches($calcQuery);
 
@@ -83,27 +88,19 @@ class Calculation
      * @throws CalculationException
      * @throws SharedFetcherException
      */
-    private function getPrices(array $priceCaches, CalcQueryInterface $calcQuery, int $adults, int $children): array
+    private function getPrices(array $priceCaches, CalcQueryInterface $calcQuery, ?int $adults, ?int $children): array
     {
         $prices = [];
         $combinations = $this->calculationHelper
             ->getCombinations(
-                $adults,
-                $children,
+                $adults ?? $calcQuery->getAdults(),
+                $children ?? $calcQuery->getChildren(),
                 $calcQuery->getRoomTypeId()
             );
 
         foreach ($combinations as $combination) {
             try {
-                $combinationPrices = $this->getPriceForCombination($combination, $priceCaches, $calcQuery);
-                $prices[$combination['adults'] . '_' . $combination['children']] = [
-                    'adults' => $combination['adults'],
-                    'children' => $combination['children'],
-                    'total' => $combinationPrices['total'],
-                    'prices' => $combinationPrices['prices'],
-                    'packagePrices' => $combinationPrices['packagePrices'],
-                    'discount' => $combinationPrices['discount']
-                ];
+                $prices[] = $this->getPriceForCombination($combination, $priceCaches, $calcQuery);
             } catch (CalculationAdditionalPriceException $e) {
                 continue;
             }
@@ -122,16 +119,13 @@ class Calculation
      * @param array $combination
      * @param array $priceCaches
      * @param CalcQueryInterface $calcQuery
-     * @return array
-     * @throws CalculationAdditionalPriceException
-     * @throws CalculationException
+     * @return Price
      * @throws CalcHelperException
+     * @throws CalculationAdditionalPriceException
      * @throws SharedFetcherException
      */
-    private function getPriceForCombination(array $combination, array $priceCaches, CalcQueryInterface $calcQuery): array
+    private function getPriceForCombination(array $combination, array $priceCaches, CalcQueryInterface $calcQuery): Price
     {
-        $total = 0;
-        $packagePrices = $dayPrices = [];
         $searchAdults = $combination['adults'];
         $searchChildren = $combination['children'];
 
@@ -155,46 +149,80 @@ class Calculation
         $addsAdults = $sortedTourists['addsAdults'];
         $all = $sortedTourists['all'];
 
-
+        $pricesByDay = [];
         foreach ($priceCaches as $cacheData) {
             /** Move promotion here */
             $rawPriceCache = $cacheData['data'];
             $originalTariffId = $cacheData['searchTariffId'];
-            $promotion = $this->getTariffPromotion($originalTariffId, $searchAdults, $searchChildren, $duration);
-
+            $originalTariff = $this->sharedDataFetcher->getFetchedTariff($originalTariffId);
 
             $multiPrices = ($addsAdults + $addsChildren) > 1;
             $isIndividualPrices = $this->calculationHelper->isIndividualAdditionalPrices($roomType);
 
-            $mainChildrenPrice = $this->getMainChildrenPrice($rawPriceCache, $roomType, $mainChildren, $all, $promotion);
+            $mainChildrenPrice = $this->getMainChildrenPrice($rawPriceCache, $roomType, $mainChildren, $promotion);
             $mainAdultPrice = $this->getMainAdultsPrice($rawPriceCache, $roomType, $mainAdults, $all);
             $additionalAdultPrice = $this->getAdditionalAdultsPrice($rawPriceCache, $addsAdults, $multiPrices, $isIndividualPrices);
             $additionalChildrenPrice = $this->getAdditionalChildrenPrice($rawPriceCache, $addsChildren, $multiPrices, $addsAdults, $isIndividualPrices, $promotion);
 
             $dayPrice = $mainAdultPrice + $mainChildrenPrice + $additionalAdultPrice + $additionalChildrenPrice;
 
-            $dayPrice -= PromotionConditionFactory::calcDiscount($promotion, $dayPrice, true);
 
-            $rawPriceDate = Helper::convertMongoDateToDate($rawPriceCache['date']);
-            /** @var Tariff $tariff */
-            $tariff = $this->sharedDataFetcher->getFetchedTariff($cacheData['searchTariffId']);
-            /** @var Special $special */
-            $special = $this->specialRepository->find($calcQuery->getSpecialId());
-            $packagePrice = $this->getPackagePrice($dayPrice, $rawPriceDate, $tariff, $roomType, $promotion, $special);
-            $dayPrices[$rawPriceDate->format('d_m_Y')] = $dayPrice;
-            $packagePrices[] = $packagePrice;
-            $total += $dayPrice;
+            $date = Helper::convertMongoDateToDate($rawPriceCache['date']);
+
+            $dayPriceBuilder = new DayPriceBuilder();
+            $dayPriceDirector = new DayPriceDirector($dayPriceBuilder);
+
+            $specialId = $calcQuery->getSpecialId();
+            $specialDiscount = null;
+            if (null !== $specialId) {
+                /** @var Special $special */
+                $special = $this->specialRepository->find($specialId);
+                $specialDiscount = $this->calcSpecialDiscount($date, $special, $roomType->getId(), $originalTariffId, $dayPrice);
+            }
+
+            if ($specialDiscount) {
+                /** @var Special $special */
+                $dayPrice -= $specialDiscount;
+                $priceByDay = $dayPriceDirector->createDayPriceSpecial($date, $sortedTourists, $roomType, $originalTariff, $dayPrice, $special);
+            } elseif (($promotion = $this->getTariffPromotion($originalTariffId, $searchAdults, $searchChildren, $duration)) && ($promotion instanceof Promotion)) {
+                $promotionDiscount = PromotionConditionFactory::calcDiscount($promotion, $dayPrice, true);
+                $dayPrice -= $promotionDiscount;
+                $priceByDay = $dayPriceDirector->createDayPricePromotion($date, $sortedTourists, $roomType, $originalTariff, $dayPrice, $promotion);
+            } else {
+                $priceByDay = $dayPriceDirector->createDayPrice($date, $sortedTourists, $roomType, $originalTariff, $dayPrice);
+            }
+
+            $pricesByDay[] = $priceByDay;
         }
 
-        return [
-            'total' => round($total, $this->priceRoundSign),
-            'prices' => $dayPrices,
-            'packagePrices' => $packagePrices,
-            'discount' => $promotion ? $promotion->getDiscount() : null,
 
-        ];
+        return $this->createPrice($calcQuery, $pricesByDay);
     }
 
+    private function createPrice(CalcQueryInterface $calcQuery, array $dayPrices): Price
+    {
+        $priceBuilder = new PriceBuilder();
+        $priceDirector = new PriceDirector($priceBuilder);
+
+        return $priceDirector->createPrice($calcQuery, $dayPrices);
+    }
+
+    private function calcSpecialDiscount(DateTime $date, Special $special, string $roomTypeId, string $tariffId, float $price): ?float
+    {
+        $tariff = $this->sharedDataFetcher->getFetchedTariff($tariffId);
+        $roomType = $this->sharedDataFetcher->getFetchedRoomType($roomTypeId);
+        $discount = null;
+        if ($special
+            && $date >= $special->getBegin()
+            && $date <= $special->getEnd()
+            && $special->check($roomType)
+            && $special->check($tariff)
+        ) {
+            $discount = $special->isIsPercent() ? $price * $special->getDiscount() / 100 : $special->getDiscount();
+        }
+
+        return $discount;
+    }
 
     private function getMainAdultsPrice(array $rawPriceCache, RoomType $roomType, int $mainAdults, int $all): float
     {
@@ -220,7 +248,7 @@ class Calculation
      * @return float|int
      * @throws CalcHelperException
      */
-    private function getMainChildrenPrice(array $rawPriceCache, RoomType $roomType, int $mainChildren, int $all, Promotion $promotion = null): float
+    private function getMainChildrenPrice(array $rawPriceCache, RoomType $roomType, int $mainChildren, ?Promotion $promotion = null): float
 
     {
         $price = 0;
@@ -319,33 +347,6 @@ class Calculation
         }
 
         return $result;
-    }
-
-
-    /**
-     * @param $price
-     * @param \DateTime $date
-     * @param Tariff $tariff
-     * @param RoomType $roomType
-     * @param Promotion|null $promotion
-     * @param Special|null $special
-     * @return PackagePrice
-     */
-    private function getPackagePrice($price, \DateTime $date, Tariff $tariff, RoomType $roomType, ?Promotion $promotion = null, ?Special $special = null): PackagePrice
-    {
-        $packagePrice = new PackagePrice($date, $price > 0 ? $price : 0, $tariff);
-        if ($special &&
-            $date >= $special->getBegin() && $date <= $special->getEnd() &&
-            $special->check($roomType) && $special->check($tariff)
-        ) {
-            $price = $special->isIsPercent() ? $price - $price * $special->getDiscount() / 100 : $price - $special->getDiscount();
-            $packagePrice->setPrice($price)->setSpecial($special);
-        }
-        if ($promotion) {
-            $packagePrice->setPromotion($promotion);
-        }
-
-        return $packagePrice;
     }
 
     //Сортировка кто на основное, кто на доп места.

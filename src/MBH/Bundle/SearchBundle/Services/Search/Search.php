@@ -96,9 +96,11 @@ class Search
      * @param bool $isCreateJson
      * @param bool $isCreateAnswer
      * @return mixed
+     * @throws GroupingFactoryException
      * @throws SearchConditionException
      * @throws SearchQueryGeneratorException
-     * @throws GroupingFactoryException
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
      */
     public function searchSync(
         array $data,
@@ -130,7 +132,8 @@ class Search
             $conditions->getErrorLevel(),
             $isCreateJson,
             $isCreateAnswer,
-            $grouping
+            $grouping,
+            $conditions
         );
 
         $this->dispatcher->dispatch(SearchEvent::SEARCH_SYNC_END, $event);

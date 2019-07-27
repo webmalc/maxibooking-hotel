@@ -176,9 +176,10 @@ services:
         arguments:
             - '@mbh_search.restrictions_checker_service'
             - '@mbh_search.search_limit_checker'
-            - '@mbh_search.result_composer'
+            - '@mbh_search.search_result_creator'
             - '@validator'
             - '@mbh_search.price_searcher'
+            - '@mbh_search.search_windows_checker'
 
     mbh_search.search:
         class: MBH\Bundle\SearchBundle\Services\Search\Search
@@ -242,6 +243,9 @@ services:
             - '@twig.extension.httpfoundation'
             - '%online_booking%'
 
+    mbh_search.search_result_creator:
+      class: MBH\Bundle\SearchBundle\Services\Search\Result\SearchResultCreator
+
 # async receive results
     mbh_search.asycn_search:
         class: MBH\Bundle\SearchBundle\RabbitMQ\AsyncSearchConsumer
@@ -277,7 +281,12 @@ services:
             - '@mbh_search.occupancy_determiner'
             - '@mbh_search.data_manager'
 
-#Occupancies
+    mbh_search.search_windows_checker:
+        class: MBH\Bundle\SearchBundle\Services\Search\WindowsChecker
+        arguments:
+          ['@mbh_search.client_config', '@mbh_search.shared_data_fetcher', '@doctrine.odm.mongodb.document_manager']
+
+    #Occupancies
     mbh_search.occupancy_determiner:
         class: MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminer
         arguments:
@@ -479,6 +488,7 @@ services:
             - '@mbh_search.cache_key_creator'
             - '@mbh_search.error_result_filter'
             - '@mbh_search.save_cache_logger'
+            - '@mbh_search.search_result_creator'
         abstract: true
 
     mbh_search.cache_search:

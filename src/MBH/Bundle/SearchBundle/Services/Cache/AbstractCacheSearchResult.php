@@ -14,6 +14,7 @@ use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\Cache\ErrorFilters\ErrorResultFilterInterface;
 use MBH\Bundle\SearchBundle\Services\Data\Serializers\ResultSerializer;
+use MBH\Bundle\SearchBundle\Services\Search\Result\SearchResultCreatorInterface;
 use Predis\Client;
 use Psr\Log\LoggerInterface;
 
@@ -40,6 +41,10 @@ abstract class AbstractCacheSearchResult implements SearchCacheInterface
 
     /** @var LoggerInterface */
     protected $logger;
+    /**
+     * @var SearchResultCreatorInterface
+     */
+    private $resultCreator;
 
     /**
      * SearchCache constructor.
@@ -50,7 +55,7 @@ abstract class AbstractCacheSearchResult implements SearchCacheInterface
      * @param ErrorResultFilterInterface $filter
      * @param LoggerInterface $logger
      */
-    public function __construct(SearchResultCacheItemRepository $cacheItemRepository, ResultSerializer $serializer, Client $client, CacheKeyCreator $keyCreator, ErrorResultFilterInterface $filter, LoggerInterface $logger)
+    public function __construct(SearchResultCacheItemRepository $cacheItemRepository, ResultSerializer $serializer, Client $client, CacheKeyCreator $keyCreator, ErrorResultFilterInterface $filter, LoggerInterface $logger, SearchResultCreatorInterface $resultCreator)
     {
         $this->cacheItemRepository = $cacheItemRepository;
         $this->serializer = $serializer;
@@ -59,6 +64,7 @@ abstract class AbstractCacheSearchResult implements SearchCacheInterface
         $this->dm = $cacheItemRepository->getDocumentManager();
         $this->filter = $filter;
         $this->logger = $logger;
+        $this->resultCreator = $resultCreator;
     }
 
 
@@ -70,7 +76,7 @@ abstract class AbstractCacheSearchResult implements SearchCacheInterface
             $serializer = $this->serializer;
             if ('' === $cacheResult) {
                 $exception = new SearchException();
-                $errorResult = Result::createErrorResult($searchQuery, $exception);
+                $errorResult = $this->resultCreator->createErrorResult($searchQuery, $exception);
                 $cacheResult = $hydrated ? $errorResult : $serializer->normalize($errorResult);
             } else {
                 /** @var Result $errorResult */
@@ -96,8 +102,8 @@ abstract class AbstractCacheSearchResult implements SearchCacheInterface
             $this->dm->persist($cacheItem);
             $this->dm->flush($cacheItem);
             $cacheItemId = $cacheItem->getId();
-        } else  {
-            $this->logger->info('SearchCacheItemResult duplicated key='.$key);
+        } else {
+            $this->logger->info('SearchCacheItemResult duplicated key=' . $key);
         }
 
         try {
