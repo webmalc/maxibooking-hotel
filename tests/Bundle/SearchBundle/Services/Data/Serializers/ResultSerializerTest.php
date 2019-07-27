@@ -46,38 +46,13 @@ class ResultSerializerTest extends SearchWebTestCase
         /** @var Tariff $tariff */
         $tariff = $hotel->getTariffs()->first();
 
-        $resultRoomType = ResultRoomType::createInstance($roomType);
-        $resultTariff = ResultTariff::createInstance($tariff);
-
         $adults = 2;
         $children = 2;
         $childrenAges = [3, 7];
         $begin = new \DateTime('midnight');
         $end = new \DateTime('midnight + 3 days');
-        $conditions = new SearchConditions();
-        $conditions
-            ->setId('fakeConditionsId')
-            ->setBegin($begin)
-            ->setEnd($end)
-            ->setAdults($adults)
-            ->setChildren($children)
-            ->setChildrenAges($childrenAges);
 
-        $dayPrice = ResultDayPrice::createInstance($begin, $adults, $children, 0, 333, $resultTariff);
-        $resultPrice = ResultPrice::createInstance($adults, $children, 33333, [$dayPrice]);
-        $resultConditions = ResultConditions::createInstance($conditions);
-
-        $result = Result::createInstance(
-            $begin,
-            $end,
-            $resultConditions,
-            $resultTariff,
-            $resultRoomType,
-            [$resultPrice],
-            5,
-            []);
-
-        return $result;
+        return $this->resultCreator($adults, $children, $childrenAges, $begin, $end, $tariff, $roomType)['result'];
 
     }
 }

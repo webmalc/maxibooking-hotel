@@ -13,11 +13,12 @@ class CacheSearcher extends AbstractCacheSearcher
 
     /**
      * @param SearchQuery $searchQuery
+     * @param string|null $resultBuilderType
      * @return Result|array
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
-     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\DataFetchQueryException
+     * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SearcherException
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException
-     * @throws \Psr\SimpleCache\InvalidArgumentException
      */
     public function search(SearchQuery $searchQuery)
     {

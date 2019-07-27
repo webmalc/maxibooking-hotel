@@ -34,13 +34,14 @@ class SearchControllerTest extends SearchWebTestCase
             $this->assertJson($json);
             $answer = json_decode($json, true);
             $this->assertCount($grouping ? 6 : 8, $answer['results']['success']);
-            $actualResults = $answer['results']['success'];
-            if (!$grouping) {
-                foreach ($actualResults as $actualResult) {
-                    $this->assertArrayHasKey('resultConditions', $actualResult);
-                    $this->assertNotEmpty($actualResult['resultConditions']['id']);
-                }
-            }
+            $this->assertArrayHasKey('conditionHash', $answer);
+            //** After resultConditionsRemove need add another tests */
+//            $actualResults = $answer['results']['success'];
+//            if (!$grouping) {
+//                foreach ($actualResults as $actualResult) {
+//                    $this->assertNotEmpty($actualResult['resultConditions']['id']);
+//                }
+//            }
 
 
         } else {

@@ -12,8 +12,10 @@ use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultComposerException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
+use MBH\Bundle\SearchBundle\Lib\Result\ResultInterface;
 use MBH\Bundle\SearchBundle\Lib\SearchQuery;
 use MBH\Bundle\SearchBundle\Services\RestrictionsCheckerService;
+use MBH\Bundle\SearchBundle\Services\Search\Result\SearchResultCreatorInterface;
 use MBH\Bundle\SearchBundle\Validator\Constraints\ChildrenAgesSameAsChildren;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -25,9 +27,6 @@ class Searcher implements SearcherInterface
     /** @var  SearchLimitChecker*/
     private $searchLimitChecker;
 
-    /** @var SearchResultComposer */
-    private $resultComposer;
-
     /** @var ValidatorInterface  */
     private $validator;
     /**
@@ -35,19 +34,28 @@ class Searcher implements SearcherInterface
      */
     private $priceSearcher;
 
+    /** @var WindowsChecker */
+    private $windowsChecker;
+    /**
+     * @var SearchResultCreatorInterface
+     */
+    private $resultCreator;
+
     public function __construct(
         RestrictionsCheckerService $restrictionsChecker,
         SearchLimitChecker $limitChecker,
-        SearchResultComposer $resultComposer,
+        SearchResultCreatorInterface $resultCreator,
         ValidatorInterface $validator,
-        PriceSearcher $priceSearcher
+        PriceSearcher $priceSearcher,
+        WindowsChecker $windowsChecker
 )
     {
         $this->restrictionChecker = $restrictionsChecker;
         $this->searchLimitChecker = $limitChecker;
-        $this->resultComposer = $resultComposer;
+        $this->resultCreator = $resultCreator;
         $this->validator = $validator;
         $this->priceSearcher = $priceSearcher;
+        $this->windowsChecker = $windowsChecker;
     }
 
 
@@ -55,13 +63,12 @@ class Searcher implements SearcherInterface
      * TODO: Надобно сделать сервис проверки лимитов и под каждый лимит отдельный класс как в restrictions например.
      * @param SearchQuery $searchQuery
      * @return Result
+     * @throws DataFetchQueryException
      * @throws MongoDBException
-     * @throws SearchResultComposerException
      * @throws SearcherException
      * @throws SharedFetcherException
-     * @throws DataFetchQueryException
      */
-    public function search(SearchQuery $searchQuery): Result
+    public function search(SearchQuery $searchQuery): ResultInterface
     {
         try {
             $errors = $this->validator->validate($searchQuery);
@@ -77,7 +84,8 @@ class Searcher implements SearcherInterface
                 throw new SearcherException('There is a problem in SearchQuery. '. $errors);
             }
 
-            $this->searchLimitChecker->checkRoomCacheLimit($searchQuery);
+            $roomCaches = $this->searchLimitChecker->checkRoomCacheLimit($searchQuery);
+            $roomAvailableAmount = min(array_column($roomCaches, 'leftRooms'));
 
             if (!$this->restrictionChecker->check($searchQuery)) {
                 $errors = $this->restrictionChecker->getErrors();
@@ -91,11 +99,12 @@ class Searcher implements SearcherInterface
             $this->searchLimitChecker->checkRoomTypePopulationLimit($searchQuery);
 
             $prices = $this->priceSearcher->searchPrice($searchQuery);
-            $result = $this->resultComposer->composeResult($searchQuery, $prices);
 
-            $this->searchLimitChecker->checkWindows($result);
+            $result = $this->resultCreator->createResult($searchQuery, $prices, $roomAvailableAmount);
+
+            $this->windowsChecker->checkWindows($result, $searchQuery);
         } catch (SearchException $e) {
-            $result = Result::createErrorResult($searchQuery, $e);
+            $result = $this->resultCreator->createErrorResult($searchQuery, $e);
         }
 
         return $result;

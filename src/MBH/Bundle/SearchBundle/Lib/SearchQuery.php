@@ -219,8 +219,12 @@ class SearchQuery implements CalcQueryInterface
     /**
      * @return int|null
      */
-    public function getChildren(): ?int
+    public function getChildren(): int
     {
+        if (null === $this->children) {
+            return 0;
+        }
+
         return $this->children;
     }
 

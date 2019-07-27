@@ -76,7 +76,8 @@
     "facebook/webdriver": "^1.6",
     "ob/highcharts-bundle": "^1.6",
     "php-amqplib/php-amqplib": "2.7",
-    "ext-json": "*"
+    "ext-json": "*",
+    "symfony/serializer": "<4"
   },
   "require-dev": {
     "sensio/generator-bundle": "^3.0",

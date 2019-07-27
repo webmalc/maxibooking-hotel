@@ -4,15 +4,17 @@
 namespace Tests\Bundle\SearchBundle\Lib\Result\Grouping;
 
 
+use Generator;
 use MBH\Bundle\SearchBundle\Lib\Result\Grouping\RoomTypeGrouping;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
-use MBH\Bundle\SearchBundle\Lib\Result\ResultRoomType;
 use Tests\Bundle\SearchBundle\SearchWebTestCase;
 
 class RoomTypeGroupingTest extends SearchWebTestCase
 {
-    /** @dataProvider dataProvider
+    /**
+     * @dataProvider dataProvider
      * @param iterable $data
+     * @throws \Exception
      */
     public function testGroup(iterable $data): void
     {
@@ -22,22 +24,20 @@ class RoomTypeGroupingTest extends SearchWebTestCase
         $serializer = $this->getContainer()->get('mbh_search.result_serializer');
         foreach ($source as $value) {
             $result = $this->createMock(Result::class);
-            $resultRoomType = $this->createMock(ResultRoomType::class);
-            $resultRoomType->expects($this->any())->method('getId')->willReturn($value['roomTypeId']);
-            $result->expects($this->any())->method('getResultRoomType')->willReturn($resultRoomType);
-            $result->expects($this->any())->method('getBegin')->willReturn(new \DateTime("midnight + {$value['beginOffset']} days"));
-            $result->expects($this->any())->method('getEnd')->willReturn(new \DateTime("midnight + {$value['endOffset']} days"));
+            $result->method('getRoomType')->willReturn($value['roomTypeId']);
+            $result->method('getBegin')->willReturn(new \DateTime("midnight + {$value['beginOffset']} days"));
+            $result->method('getEnd')->willReturn(new \DateTime("midnight + {$value['endOffset']} days"));
             $searchResults[] = $serializer->normalize(
                 $result,
                 [
-                    'attributes' => ['id', 'resultRoomType', 'begin', 'end']
+                    'attributes' => ['id', 'roomType', 'begin', 'end']
                 ]
             );
         }
 
         $service = new RoomTypeGrouping();
         $actual = $service->group($searchResults);
-        $actualResults = array_reduce($actual, function ($carry, $item) {
+        $actualResults = array_reduce($actual, static function ($carry, $item) {
             $resultsByDate = $item['results'];
             $count = 0;
             foreach ($resultsByDate as $results) {
@@ -51,7 +51,7 @@ class RoomTypeGroupingTest extends SearchWebTestCase
 
     }
 
-    public function dataProvider()
+    public function dataProvider(): ?Generator
     {
         yield [
             [

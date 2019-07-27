@@ -9,6 +9,7 @@ use MBH\Bundle\SearchBundle\Lib\Result\Grouping\GroupingFactory;
 use MBH\Bundle\SearchBundle\Lib\Result\Result;
 use MBH\Bundle\SearchBundle\Services\Cache\ErrorFilters\ErrorResultFilter;
 use MBH\Bundle\SearchBundle\Services\Data\Serializers\ResultSerializer;
+use MBH\Bundle\SearchBundle\Services\Search\AsyncResultStores\SearchConditionsInterface;
 
 class FinalSearchResultsBuilder
 {
@@ -29,6 +30,9 @@ class FinalSearchResultsBuilder
 
     /** @var bool */
     private $isCreateAnswer = false;
+
+    /** @var string */
+    private $searchHashConditions;
 
     /** @var ErrorResultFilter */
     private $errorFilter;
@@ -56,6 +60,12 @@ class FinalSearchResultsBuilder
 
         return $this;
     }
+
+    public function setSearchHashConditions(SearchConditionsInterface $conditions): void
+    {
+        $this->searchHashConditions = $conditions->getSearchHash();
+    }
+
 
     public function addResult($result): self
     {
@@ -116,7 +126,8 @@ class FinalSearchResultsBuilder
         if ($this->isCreateAnswer) {
 
             $results = [
-                'results' => \count($results) ? $results : []
+                'results' => \count($results) ? $results : [],
+                'conditionHash' => $this->searchHashConditions
             ];
         }
 
