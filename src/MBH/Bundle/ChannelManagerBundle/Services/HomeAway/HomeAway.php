@@ -12,7 +12,7 @@ class HomeAway extends AbstractICalTypeChannelManagerService
     public const CHANNEL_MANAGER_TYPE = 'homeAway';
     public const NAME = 'homeaway';
     public const CONFIG = 'HomeAwayConfig';
-    protected const PERIOD_LENGTH = '1 year';
+    public const PERIOD_LENGTH = '1 year';
     protected const CLOSED_PERIOD_SUMMARY = 'TODOTODOTODOTODOTODO';
 
     protected function getPeriodLength(): string

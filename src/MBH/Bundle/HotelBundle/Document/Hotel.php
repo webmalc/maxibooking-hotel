@@ -482,6 +482,17 @@ class Hotel extends Base implements \JsonSerializable, AddressInterface
     }
 
     /**
+     * @param HomeAwayConfig $config
+     * @return $this
+     */
+    public function setHomeAwayConfig(HomeAwayConfig $config)
+    {
+        $this->homeAwayConfig = $config;
+
+        return $this;
+    }
+
+    /**
      * @return AirbnbConfig
      */
     public function getAirbnbConfig(): ?AirbnbConfig

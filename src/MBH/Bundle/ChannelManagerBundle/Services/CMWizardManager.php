@@ -115,7 +115,7 @@ class CMWizardManager
             throw new AccessDeniedException();
         }
 
-        if (is_null($config)
+        if ($config === null
             || ($this->isConfiguredByTechSupport($channelManagerName) && empty($config->getHotelId()))
             || (!$this->isConfiguredByTechSupport($channelManagerName) && !$config->isConnectionSettingsRead())) {
             return 'wizard_info';

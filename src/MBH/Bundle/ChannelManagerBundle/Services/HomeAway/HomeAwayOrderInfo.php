@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Services\HomeAway;
 
-
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
 use MBH\Bundle\ChannelManagerBundle\Lib\ICalType\AbstractICalTypeOrderInfo;
 use MBH\Bundle\ChannelManagerBundle\Lib\ICalType\AbstractICalTypePackageInfo;
@@ -12,8 +11,9 @@ class HomeAwayOrderInfo extends AbstractICalTypeOrderInfo
 
     public function getChannelManagerOrderId(): string
     {
-        throw new \Exception('implement me');
-//        return $this->orderData['UID'];
+//        throw new \Exception('implement me');
+
+        return $this->orderData['UID'];
     }
 
     /**
@@ -40,8 +40,9 @@ class HomeAwayOrderInfo extends AbstractICalTypeOrderInfo
 
     public function getNote(): string
     {
-        throw new \Exception('implement me');
-//        return $this->orderData['DESCRIPTION'] ?? '';
+//        throw new \Exception('implement me');
+
+        return $this->orderData['DESCRIPTION'] ?? '';
     }
 
     protected function getPackageInfoService(): AbstractICalTypePackageInfo

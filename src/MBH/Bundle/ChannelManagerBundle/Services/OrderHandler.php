@@ -37,7 +37,6 @@ class OrderHandler
         } else {
             foreach ($order->getPackages() as $package) {
                 $this->dm->remove($package);
-                $this->dm->flush();
             }
             if ($orderInfo->getChannelManagerName()) {
                 $order->setChannelManagerStatus('modified');
@@ -67,7 +66,6 @@ class OrderHandler
         }
 
         $this->dm->persist($order);
-        $this->dm->flush();
 
         $order = $this->saveCashDocuments($order, $orderInfo->getCashDocuments($order));
 
@@ -75,7 +73,6 @@ class OrderHandler
             $package = $this->createPackage($packageInfo, $order);
             $order->addPackage($package);
             $this->dm->persist($package);
-            $this->dm->flush();
         }
 
         $creditCard = $orderInfo->getCreditCard();
@@ -109,10 +106,10 @@ class OrderHandler
     {
         //Получаем сохраненные электронные кассовые документы
         $electronicCashDocuments = [];
-        if (!is_null($order->getCashDocuments())) {
+        if ($order->getCashDocuments() !== null) {
             foreach ($order->getCashDocuments() as $cashDocument) {
                 /** @var CashDocument $cashDocument */
-                if ($cashDocument->getMethod() == 'electronic') {
+                if ($cashDocument->getMethod() === 'electronic') {
                     $electronicCashDocuments[] = $cashDocument;
                 }
             }

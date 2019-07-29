@@ -178,7 +178,7 @@ forms.airbnb_rooms_type.sync_url.help: 'Link to the AirBnb calendar which must l
 forms.homeaway_rooms_type.sync_url.help: 'Link to the HomeAway calendar which must look like this "%exampleUrl%"'
 form.airbnb_tariff_type.tariff.help: 'Rate which will be used to create reservations coming with Airbnb'
 form.homeaway_tariff_type.tariff.help: 'Rate which will be used to create reservations coming with HomeAway'
-airbnb_package_info.errors.can_not_calc_price: 'Unable to calculate the reservation cost. Specify the current price.'
+ical_package_info.errors.can_not_calc_price: '%channelManagerName%. Unable to calculate the reservation cost. Specify the current price.'
 airbnb.rooms.connection_instructions.text2: 'If you don''t want to publish some properties on AirBnb, leave the field blank.'
 airbnb.rooms.connection_instructions.text3: 'To find a link for receiving reservation information:'
 airbnb.rooms.connection_instructions.list.text1: 'Log in to your account on AirBnb (<a href="https://airbnb.com" target="_blank">https://airbnb.com</a>).'

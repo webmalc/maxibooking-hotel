@@ -17,9 +17,15 @@ abstract class AbstractICalTypePackageInfo extends AbstractPackageInfo
     /** @var Tariff */
     protected $tariff;
 
+    /** @var bool */
     protected $isCorrupted = false;
+    /** @var */
     protected $packagePrice;
+    /** @var bool */
     protected $isPackagePriceInit = false;
+
+    /** @return string */
+    abstract protected function getChannelManagerName(): string;
 
     /**
      * @param array $packageData
@@ -36,21 +42,33 @@ abstract class AbstractICalTypePackageInfo extends AbstractPackageInfo
         return $this;
     }
 
+    /**
+     * @return RoomType
+     */
     public function getRoomType(): RoomType
     {
         return $this->cmRoom->getRoomType();
     }
 
+    /**
+     * @return Tariff
+     */
     public function getTariff(): Tariff
     {
         return $this->tariff;
     }
 
+    /**
+     * @return int
+     */
     public function getAdultsCount(): int
     {
         return 1;
     }
 
+    /**
+     * @return int
+     */
     public function getChildrenCount(): int
     {
         return 0;
@@ -74,11 +92,17 @@ abstract class AbstractICalTypePackageInfo extends AbstractPackageInfo
         return $this->getPackagePrice()['total'];
     }
 
+    /**
+     * @return bool
+     */
     public function getIsCorrupted(): bool
     {
         return $this->isCorrupted;
     }
 
+    /**
+     * @return bool
+     */
     public function getIsSmoking(): bool
     {
         return false;
@@ -119,7 +143,10 @@ abstract class AbstractICalTypePackageInfo extends AbstractPackageInfo
                     'packagePrices' => $packagePrices
                 ];
 
-                $this->addPackageNote($this->translator->trans('airbnb_package_info.errors.can_not_calc_price'));
+                $this->addPackageNote($this->translator->trans(
+                    'ical_type_package_info.errors.can_not_calc_price',
+                    ['%channelManagerName%' => $this->getChannelManagerName()]
+                ));
                 $this->isCorrupted = true;
             } else {
                 $this->packagePrice = $pricesByCombinations[$combination];

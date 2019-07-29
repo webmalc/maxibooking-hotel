@@ -169,7 +169,7 @@ abstract class AbstractICalTypeChannelManagerService extends AbstractChannelMana
                 $events = $iCalResponse->cal['VEVENT'];
 
                 foreach ($events as $event) {
-                    if (stripos($event['SUMMARY'], $this->getClosedPeriodSummary()) !== false) {
+                    if ($this->isClosedPeriodSummary($event)) {
                         continue;
                     }
                     $orderInfo = $this->getOrderInfoService()
@@ -183,6 +183,11 @@ abstract class AbstractICalTypeChannelManagerService extends AbstractChannelMana
         }
 
         return $isSuccess;
+    }
+
+    protected function isClosedPeriodSummary(?array $event): bool
+    {
+        return (stripos($event['SUMMARY'], $this->getClosedPeriodSummary()) !== false);
     }
 
     /**
@@ -213,8 +218,9 @@ abstract class AbstractICalTypeChannelManagerService extends AbstractChannelMana
             $existingPackage = $packagesInRoom[$orderInfo->getChannelManagerOrderId()];
             $packageInfo = $orderInfo->getPackagesData()[0];
 
-            if ($existingPackage->getBegin() != $packageInfo->getBeginDate()
-                || $existingPackage->getEnd() != $packageInfo->getEndDate()) {
+            if ($existingPackage->getBegin() !== $packageInfo->getBeginDate()
+                || $existingPackage->getEnd() !== $packageInfo->getEndDate()
+            ) {
                 $order = $this->container
                     ->get('mbh.channelmanager.order_handler')
                     ->createOrder($orderInfo, $existingPackage->getOrder());
