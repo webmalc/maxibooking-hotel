@@ -146,43 +146,96 @@ abstract class AbstractICalTypeChannelManagerService extends AbstractChannelMana
      */
     public function pullOrders(): bool
     {
-        $isSuccess = true;
-
         $httpService = $this->container->get('mbh.cm_http_service');
         /** @var ICalTypeChannelManagerConfigInterface $config */
         foreach ($this->getConfig() as $config) {
+
             $packagesByRoomIds = $this->getPackagesByRoomIds($config);
 
             foreach ($config->getRooms() as $room) {
                 /** @var Result $result */
                 $result = $httpService->getResult($room->getSyncUrl());
+
                 if (!$result->isSuccessful()) {
                     $this->notifyAndLogError($room, $result);
                     $isSuccess = false;
                     continue;
                 }
 
-                $channelManagerPackageIds = [];
-                $packagesInRoom = $packagesByRoomIds[$room->getRoomType()->getId()] ?? [];
-
-                $iCalResponse = new ICal($result->getData());
-                $events = $iCalResponse->cal['VEVENT'];
-
-                foreach ($events as $event) {
-                    if ($this->isClosedPeriodSummary($event)) {
-                        continue;
-                    }
-                    $orderInfo = $this->getOrderInfoService()
-                        ->setInitData($event, $room, $config->getTariffs()->first()->getTariff());
-                    $channelManagerPackageIds[] = $orderInfo->getChannelManagerOrderId();
-                    $packagesInRoom = $this->modifyOrCreatePackage($packagesInRoom, $orderInfo);
-                }
-
-                $this->removeMissingOrders($packagesInRoom, $channelManagerPackageIds);
+                $this->handleResponse($result, $room, $config, $packagesByRoomIds);
             }
         }
 
-        return $isSuccess;
+        return $isSuccess ?? true;
+    }
+
+    protected function handleResponse(
+        Result $response,
+        AbstractICalTypeChannelManagerRoom $room,
+        ICalTypeChannelManagerConfigInterface $config,
+        array $packagesByRoomIds
+    ): void
+    {
+        $packagesInRoom = $packagesByRoomIds[$room->getRoomType()->getId()] ?? [];
+
+        $iCalResponse = new ICal($response->getData());
+        $events = $iCalResponse->cal['VEVENT'];
+
+        foreach ($events as $event) {
+            if ($this->isClosedPeriodSummary($event)) {
+                continue;
+            }
+
+            $orderInfo = $this->getOrderInfoService()
+                ->setInitData($event, $room, $config->getTariffs()->first()->getTariff());
+
+            if (!$this->checkOutOfDateOrder($orderInfo)) {
+                continue;
+            }
+
+            $channelManagerPackageIds[] = $orderInfo->getChannelManagerOrderId();
+
+            if (isset($packagesInRoom[$orderInfo->getChannelManagerOrderId()])) {
+                /** @var Package $existingPackage */
+                $existingPackage = $packagesInRoom[$orderInfo->getChannelManagerOrderId()];
+                $packageInfo = $orderInfo->getPackagesData()[0];
+
+                if ($existingPackage->getBegin() !== $packageInfo->getBeginDate()
+                    || $existingPackage->getEnd() !== $packageInfo->getEndDate()
+                ) {
+                    $this->modifyPackage($orderInfo, $existingPackage);
+                }
+                $this->createPackage($orderInfo);
+            }
+        }
+
+        $this->removeMissingOrders($packagesInRoom, $channelManagerPackageIds ?? []);
+    }
+
+    protected function createPackage(AbstractICalTypeOrderInfo $orderInfo): void
+    {
+        $order = $this->container->get('mbh.channelmanager.order_handler')
+            ->createOrder($orderInfo);
+
+        $this->notify(
+            $order,
+            'commonCM',
+            'edit',
+            ['%channelManagerName%' => $orderInfo->getChannelManagerName()]
+        );
+    }
+
+    protected function modifyPackage(AbstractICalTypeOrderInfo $orderInfo, Package $existingPackage): void
+    {
+        $order = $this->container->get('mbh.channelmanager.order_handler')
+            ->createOrder($orderInfo, $existingPackage->getOrder());
+
+        $this->notify(
+            $order,
+            'commonCM',
+            'edit',
+            ['%channelManagerName%' => $orderInfo->getChannelManagerName()]
+        );
     }
 
     protected function isClosedPeriodSummary(?array $event): bool
@@ -206,40 +259,10 @@ abstract class AbstractICalTypeChannelManagerService extends AbstractChannelMana
         $this->dm->flush();
     }
 
-    /**
-     * @param array $packagesInRoom
-     * @param AbstractICalTypeOrderInfo $orderInfo
-     * @return mixed
-     */
-    protected function modifyOrCreatePackage(array $packagesInRoom, AbstractICalTypeOrderInfo $orderInfo)
+    protected function checkOutOfDateOrder(AbstractICalTypeOrderInfo $orderData): bool
     {
-        if (isset($packagesInRoom[$orderInfo->getChannelManagerOrderId()])) {
-            /** @var Package $existingPackage */
-            $existingPackage = $packagesInRoom[$orderInfo->getChannelManagerOrderId()];
-            $packageInfo = $orderInfo->getPackagesData()[0];
-
-            if ($existingPackage->getBegin() !== $packageInfo->getBeginDate()
-                || $existingPackage->getEnd() !== $packageInfo->getEndDate()
-            ) {
-                $order = $this->container
-                    ->get('mbh.channelmanager.order_handler')
-                    ->createOrder($orderInfo, $existingPackage->getOrder());
-                $this->notify($order, 'commonCM', 'edit', ['%channelManagerName%' => $orderInfo->getChannelManagerName()]);
-            }
-        } else if ($this->checkOutOfDateOrder($orderInfo->getOrderData())) {
-            $order = $this->container
-                ->get('mbh.channelmanager.order_handler')
-                ->createOrder($orderInfo);
-            $this->notify($order, 'commonCM', 'new', ['%channelManagerName%' => $orderInfo->getChannelManagerName()]);
-        }
-
-        return $packagesInRoom;
-    }
-
-    protected function checkOutOfDateOrder(array $orderData): bool
-    {
-        if (isset($orderData['DTEND_array'][2])) {
-            $departureDate = (new \DateTime())->setTimestamp($orderData['DTEND_array'][2]);
+        if ($orderData->getDepartureDate()) {
+            $departureDate = (new \DateTime())->setTimestamp($orderData->getDepartureDate());
 
             return $departureDate >= new \DateTime();
         }

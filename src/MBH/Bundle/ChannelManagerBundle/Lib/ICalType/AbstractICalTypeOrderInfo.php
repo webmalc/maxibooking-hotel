@@ -61,6 +61,7 @@ abstract class AbstractICalTypeOrderInfo extends AbstractOrderInfo
     }
 
     abstract protected function getPackageInfoService(): AbstractICalTypePackageInfo;
+    abstract public function getDepartureDate(): ?string;
 
     /**
      * @param Order $order

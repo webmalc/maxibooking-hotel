@@ -47,4 +47,10 @@ class AirbnbOrderInfo extends AbstractICalTypeOrderInfo
     {
         return $this->container->get('mbh.airbnb_package_info');
     }
+
+    public function getDepartureDate(): ?string
+    {
+        return $this->orderData['DTEND_array'][2];
+    }
+
 }

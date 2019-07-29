@@ -9,6 +9,11 @@ use MBH\Bundle\ChannelManagerBundle\Lib\ICalType\AbstractICalTypePackageInfo;
 class HomeAwayOrderInfo extends AbstractICalTypeOrderInfo
 {
 
+    public function getDepartureDate(): ?string
+    {
+        return $this->orderData['DTEND_array'][2];
+    }
+
     public function getChannelManagerOrderId(): string
     {
 //        throw new \Exception('implement me');

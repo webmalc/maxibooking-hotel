@@ -2,7 +2,6 @@
 
 namespace MBH\Bundle\ChannelManagerBundle\Form;
 
-
 use MBH\Bundle\ChannelManagerBundle\Document\HomeAwayConfig;
 use MBH\Bundle\ChannelManagerBundle\Services\HomeAway\HomeAway;
 use Symfony\Component\Form\AbstractType;
@@ -62,10 +61,9 @@ class HomeAwayRoomsType extends AbstractType
     public function validateSyncUrl(?string $syncUrl, ExecutionContextInterface $context): void
     {
         $regexp = sprintf('/^https:\/\/.+?\.%s\..*/', HomeAway::NAME);
-//        if ($syncUrl !== null && !preg_match($regexp, $syncUrl)) {
-//            $context->addViolation('validator.airbnb_rooms_type.sync_url', ['%homeawayName%' => HomeAway::NAME]);
+        if ($syncUrl !== null && !preg_match($regexp, $syncUrl)) {
 //            $context->addViolation('validator.airbnb_rooms_type.sync_url', ['%airbnbName%' => HomeAway::NAME]);
-//        }
+        }
     }
 
     public function checkIsNotEmpty(array $data, ExecutionContextInterface $context): void
