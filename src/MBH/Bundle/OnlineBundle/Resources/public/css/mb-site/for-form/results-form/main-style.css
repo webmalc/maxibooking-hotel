@@ -325,6 +325,11 @@ body #mbh-results-wrapper .step-info .step-number-info .step-title {
   font-size: 16px;
   line-height: 24px;
 }
+@media (min-width: 832px) {
+  body #mbh-results-wrapper .step-info .step-number-info + .step-number-info {
+    margin-left: 18px;
+  }
+}
 body #mbh-results-wrapper #mbh-results-actions {
   display: flex;
   flex-direction: column;
@@ -341,6 +346,9 @@ body #mbh-results-wrapper #mbh-results-actions {
 }
 body #mbh-results-wrapper .step-one .currency-symbol {
   font-size: 28px;
+}
+body #mbh-results-wrapper .step-one #mbh-results-tariffs {
+  margin-bottom: 42px;
 }
 body #mbh-results-wrapper .step-one #mbh-results-tariffs .panel-body {
   padding: 0;
@@ -424,7 +432,7 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-conta
 }
 @media (min-width: 520px) {
   body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container {
-    padding: 20px 15px;
+    padding: 28px 15px 27px;
   }
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .image-container {
@@ -447,7 +455,7 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-conta
   background-position: center;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container > div {
-  margin-bottom: 8px;
+  margin-bottom: 3px;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-room-type-name-wrapper {
   font-family: 'Roboto Slab', serif;
@@ -475,17 +483,19 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-conta
   text-align: center;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-select-guest .price-for {
-  margin-right: .3em;
+  margin-right: .5em;
   font-weight: normal;
-  font-size: 14px;
-  line-height: 24px;
+}
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-select-guest .person-icon + .person-icon {
+  margin-left: .4em;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .facility-wrapper ul.inline-facility {
   list-style: none;
   padding: 0;
+  margin-bottom: unset;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .facility-wrapper ul.inline-facility li {
-  padding: 2px;
+  padding: 0 2px;
   display: inline-block;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-tariff-title-wrapper .mbh-results-tariff {
@@ -493,15 +503,14 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-conta
   line-height: 24px;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-room-type-description-container .mbh-results-room-type-description-wrapper .mbh-results-room-type-description-toggle {
-  margin-top: 5px;
   background: #FFFFFF;
   border: none;
   padding: unset;
   outline: none;
   font-style: italic;
   font-weight: 500;
-  font-size: 16px;
-  line-height: 24px;
+  font-size: 14px;
+  line-height: 20px;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-room-type-description-container .mbh-results-room-type-description-wrapper.show-description .mbh-results-room-type-description.description-small {
   display: none;
@@ -514,10 +523,15 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-conta
   line-height: 20px;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-room-type-description-container .mbh-results-room-type-description-wrapper .mbh-results-room-type-description.description-small {
-  display: block;
+  display: inline;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-room-type-description-container .mbh-results-room-type-description-wrapper .mbh-results-room-type-description.description-full {
   display: none;
+}
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-price-container {
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-price-container > * {
   text-align: center;

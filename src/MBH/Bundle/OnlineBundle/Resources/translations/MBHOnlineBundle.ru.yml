@@ -35,7 +35,8 @@ views.api.getResultsTable.room_cache_count: 'В наличии'
 views.api.getResultsTable.guests: Гости
 views.api.getResultsTable.price: Цена
 views.api.getResultsTable.rooms_amount: 'Количество номеров'
-views.api.getResultsTable.room_description: 'Подробнее...'
+views.api.getResultsTable.room_description.show: 'Посмотреть всё'
+views.api.getResultsTable.room_description.hide: 'Скрыть'
 views.api.getResultsTable.room_price: 'Цена за номер'
 views.api.getResultsTable.hotel: Отель
 views.api.getResultsTable.service_type: 'Тип услуги'

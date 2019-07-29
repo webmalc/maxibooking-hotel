@@ -1,24 +1,43 @@
-MbhResultForm.prototype.initSwipe = function () {
-    var mySwiper = new Swiper ('.swiper-container', {
-        loop: true,
-        navigation: {
-            nextEl: '.swiper-button-next',
-            prevEl: '.swiper-button-prev'
+MbhResultForm.prototype.initSwipeStepOne = function () {
+
+    this._swiperListStepOne = [];
+
+    document.querySelectorAll('.swiper-container').forEach(function(container) {
+        if (container.dataset.useSwipe !== 'true') {
+            return;
         }
-    })
+        var roomTypeId = container.dataset.roomTypeId;
+        var swipe = new Swiper (container, {
+            loop: true,
+            navigation: {
+                nextEl: '.button-next-' + roomTypeId,
+                prevEl: '.button-prev-' + roomTypeId
+            }
+        });
+
+        this._swiperListStepOne.push(swipe);
+    }, this);
+};
+
+MbhResultForm.prototype.destroySwipeStepOne = function () {
+    this._swiperListStepOne.forEach(function(swipe) {
+        swipe.destroy(true, true)
+    });
 };
 
 MbhResultForm.prototype.descriptionToggle = function () {
     var _this = this;
 
-    document.querySelectorAll('.mbh-results-room-type-description-wrapper').forEach(function(wrapper) {
-        var btn = wrapper.querySelector('button');
+    document.querySelectorAll('.mbh-results-room-type-description-wrapper').forEach(function(descriptionWrapper) {
+        var btn = descriptionWrapper.querySelector('button');
         if (btn === null) {
             return;
         }
+
+        var btnTitleShow = btn.innerText;
+
         btn.addEventListener('click', function(ev) {
-            this.children[0].classList.toggle('fa-angle-down');
-            wrapper.classList.toggle('show-description');
+            btn.innerText = descriptionWrapper.classList.toggle('show-description') ? _this._text.roomDesc.btnHide : btnTitleShow;
             _this.resize();
         })
     });
@@ -185,6 +204,8 @@ MbhResultForm.prototype.prepareAndGoStepTwo = function () {
 
             _this.sendPostMessage('hideStepOneButton');
 
+            _this.destroySwipeStepOne();
+
             _this.waiting();
 
             _this.stepTwo()
@@ -281,7 +302,7 @@ MbhResultForm.prototype.stepOne = function() {
 
             _this.setFancyBoxOffset();
 
-            _this.initSwipe();
+            _this.initSwipeStepOne();
 
             _this.calcTotal();
 

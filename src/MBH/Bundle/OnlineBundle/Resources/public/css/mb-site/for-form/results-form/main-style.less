@@ -235,6 +235,12 @@ body {
           .fontSizeLineHeight();
         }
       }
+
+      @media (min-width: @size-screen-mid-width-tablet) {
+        .step-number-info + .step-number-info {
+          margin-left: 18px;
+        }
+      }
     }
 
     #mbh-results-actions {
@@ -259,15 +265,13 @@ body {
 
 // BEGIN TARIFFS
       #mbh-results-tariffs {
-
+        margin-bottom: 42px;
         .panel-body {
           padding: 0;
         };
 
         .mbh-results-tariff-wrapper {
-
           &.show-description {
-
             background: @general_color_light;
             .mbh-results-tariff-description {
               display: block;
@@ -344,9 +348,7 @@ body {
         }
       }
 // END TARIFFS
-
       #mbh-results-duration {
-
         h3 {
           .fontRobotoSlab();
 
@@ -362,10 +364,12 @@ body {
 // BEGIN RESULT
       #mbh-results-list-wrapper {
         .mbh-results-container {
+          @heightBlockImageAndPrice: 200px;
+
           margin: 10px 0;
 
           @media (min-width: 520px) {
-            padding: 20px 15px;
+            padding: 28px 15px 27px;
           }
           padding: 10px 0;
           background: #FFFFFF;
@@ -375,7 +379,7 @@ body {
               text-align: center;
 
               .swiper-container {
-                height: 200px;
+                height: @heightBlockImageAndPrice;
 
                 .swiper-button-prev {
                   background-image: url("/bundles/mbhonline/images/swiper/btn-prev.svg");
@@ -398,7 +402,7 @@ body {
   // BEGIN DESCRIPTION
           .mbh-results-description-container {
             > div {
-              margin-bottom: 8px;
+              margin-bottom: 3px;
             }
 
             .mbh-results-room-type-name-wrapper {
@@ -421,10 +425,12 @@ body {
               }
 
               .price-for {
-                margin-right: .3em;
+                margin-right: .5em;
                 font-weight: normal;
+              }
 
-                .fontSizeLineHeight(14px, 24px);
+              .person-icon + .person-icon {
+                margin-left: .4em;
               }
             }
 
@@ -432,8 +438,9 @@ body {
               ul.inline-facility {
                 list-style: none;
                 padding: 0;
+                margin-bottom: unset;
                 li {
-                  padding: 2px;
+                  padding: 0 2px;
                   display: inline-block;
                 }
               }
@@ -449,7 +456,6 @@ body {
               .mbh-results-room-type-description-wrapper {
 
                 .mbh-results-room-type-description-toggle {
-                  margin-top: 5px;
                   background: #FFFFFF;
                   border: none;
                   padding: unset;
@@ -457,9 +463,8 @@ body {
 
                   font-style: italic;
                   font-weight: 500;
-                  .fontSizeLineHeight();
+                  .fontSizeLineHeight(14px, 20px);
                 }
-
 
                 &.show-description {
                   .mbh-results-room-type-description {
@@ -474,7 +479,7 @@ body {
 
                 .mbh-results-room-type-description {
                   &.description-small {
-                    display: block;
+                    display: inline;
                   }
                   &.description-full {
                     display: none;
@@ -488,6 +493,10 @@ body {
   // END DESCRIPTION
   // BEGIN PRICE
           .mbh-results-price-container {
+            min-height: @heightBlockImageAndPrice;
+            display: flex;
+            flex-direction: column;
+
             > * {
               text-align: center;
             }

@@ -2,7 +2,6 @@
     <div id="mbh-results-global-wrapper" class="step-one">
 
         {% include 'MBHOnlineBundle:ResultsForm:stepInfo.html.twig' with {'stepNumber': 1} %}
-
         {% include 'MBHOnlineBundle:ResultsForm:tariffs.html.twig' with {'tariffResults': tariffResults} %}
 
         <div id="mbh-results-duration">
@@ -25,7 +24,10 @@
                 <div class="row mbh-results-container">
                     <div class="col-xs-12 col-sm-4 mbh-results-image-wrapper">
                         <div class="image-container bg-primary">
-                            <div class="swiper-container">
+                            {% set amountImage = result.roomType.onlineImages | length %}
+                            <div class="swiper-container"
+                                 data-room-type-id="{{ result.roomType.id }}"
+                                 data-use-swipe="{{ amountImage > 1 ? 'true' : 'false' }}">
                                 <div class="swiper-wrapper">
                                     {% for image in result.roomType.onlineImagesByPriority %}
                                         <div class="swiper-slide">
@@ -38,8 +40,10 @@
                                         </div>
                                     {% endfor %}
                                 </div>
-                                <div class="button-navigation swiper-button-prev"></div>
-                                <div class="button-navigation swiper-button-next"></div>
+                                {% if amountImage > 1 %}
+                                    <div class="button-navigation swiper-button-prev button-prev-{{ result.roomType.id }}"></div>
+                                    <div class="button-navigation swiper-button-next button-next-{{ result.roomType.id }}"></div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -71,16 +75,20 @@
                                     {% set arr = priceTourists|split('_') %}
                                     {% if arr[0] %}
                                         {% for i in 1..arr[0] %}
-                                            <i class="fa fa-male"></i>&nbsp;
+                                            <i class="person-icon fa fa-male"></i>
                                         {% endfor %}
                                     {% endif %}
                                     {% if arr[1] %}
                                         {% for k in 1..arr[1] %}
-                                            <small><i class="fa fa-child"></i></small>&nbsp;
+                                            <small class="person-icon"><i class="fa fa-child"></i></small>
                                         {% endfor %}
                                     {% endif %}
                                 {% endfor %}
                             {% endif %}
+                        </div>
+                        <div class="mbh-results-tariff-title-wrapper">
+                            <span class="mbh-results-tariff"
+                                  data-id="{{ result.tariff.id }}">{{ result.tariff.fullTitle }}</span>
                         </div>
                         <div class="facility-wrapper">
                             {% if result.roomType.facilities is not empty %}
@@ -93,24 +101,19 @@
                                 </ul>
                             {% endif %}
                         </div>
-                        <div class="mbh-results-tariff-title-wrapper">
-                            <span class="mbh-results-tariff"
-                                  data-id="{{ result.tariff.id }}">{{ result.tariff.fullTitle }}</span>
-                        </div>
                         <div class="mbh-results-room-type-description-container">
                             {% if result.roomType.description is not empty %}
-                                {% set desc = result.roomType.description | striptags %}
+                                {% set desc = result.roomType.description | striptags | remove_non_printable_characters %}
                                 <div class="mbh-results-room-type-description-wrapper">
-                                    {% if desc|length > 115 %}
-                                        <div class="mbh-results-room-type-description description-small">
-                                            {{ desc|slice(0, 115) ~ '...' }}
-                                        </div>
+                                    {% if desc|length > 120 %}
+                                        <span class="mbh-results-room-type-description description-small">
+                                            {{ desc|slice(0, 100) ~ '...' }}
+                                        </span>
                                         <div class="mbh-results-room-type-description description-full">
                                             {{ desc }}
                                         </div>
                                         <button class="mbh-results-room-type-description-toggle">
-                                            <i class="fa fa-angle-right"></i>
-                                            {{ 'views.api.getResultsTable.room_description'|trans({}, 'MBHOnlineBundle') }}
+                                            {{ 'views.api.getResultsTable.room_description.show'|trans({}, 'MBHOnlineBundle') }}
                                         </button>
                                     {% else %}
                                         <div class="mbh-results-room-type-description">
@@ -161,6 +164,7 @@
                                 {% endif %}
                             </label>
                         </div>
+                        <div style="flex-grow: 2;"></div>
                         <div class="mbh-center room-amount">
                             {{ 'views.api.getResultsTable.room_cache_count' | trans({}, 'MBHOnlineBundle') }}:
                             {{ result.roomsCount }}

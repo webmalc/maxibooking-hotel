@@ -35,7 +35,8 @@ views.api.getResultsTable.room_type: 'Room type'
 views.api.getResultsTable.guests: Guests
 views.api.getResultsTable.price: Price
 views.api.getResultsTable.rooms_amount: 'Number of rooms'
-views.api.getResultsTable.room_description: 'Room description'
+views.api.getResultsTable.room_description.show: 'Room description'
+views.api.getResultsTable.room_description.hide: 'Hide'
 views.api.getResultsTable.room_price: 'Room price'
 views.api.getResultsTable.hotel: Hotel
 views.api.getResultsTable.service_type: 'Service type'
