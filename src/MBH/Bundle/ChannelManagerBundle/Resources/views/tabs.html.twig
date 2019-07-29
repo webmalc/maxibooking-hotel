@@ -12,7 +12,7 @@
     {% set active = active + 1 %}
 {% endif %}
 
-{% if base != 'airbnb' or base != 'homeaway' or isReadyToSync %}
+{% if ((base != 'airbnb' and base != 'homeaway') or isReadyToSync) %}
     {% set menu = menu|merge([
         {'route': base, icon: 'fa-info-circle', titleTransId: 'views.tabs.main_settings'},
     ]) %}

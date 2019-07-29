@@ -7,6 +7,7 @@ use MBH\Bundle\BaseBundle\Lib\EmptyCachePeriod;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PriceBundle\Document\PriceCache;
+use MBH\Bundle\PriceBundle\Document\Restriction;
 use MBH\Bundle\PriceBundle\Document\RoomCache;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -14,17 +15,32 @@ use Symfony\Component\Translation\TranslatorInterface;
 class WarningsCompiler
 {
     const CACHE_PERIOD_LENGTH_IN_DAYS = 1000;
+
+    /** @var DocumentManager */
     private $dm;
+
+    /** @var TranslatorInterface */
     private $translator;
+
+    /** @var PeriodsCompiler */
     private $periodsCompiler;
 
+    /** @var */
     private $cachesForPeriod;
 
-    public function __construct(DocumentManager $dm, TranslatorInterface $translator, PeriodsCompiler $periodsCompiler)
-    {
+    /** @var Helper */
+    private $helper;
+
+    public function __construct(
+        DocumentManager $dm,
+        TranslatorInterface $translator,
+        PeriodsCompiler $periodsCompiler,
+        Helper $helper
+    ) {
         $this->dm = $dm;
         $this->translator = $translator;
         $this->periodsCompiler = $periodsCompiler;
+        $this->helper = $helper;
     }
 
     /**
@@ -44,14 +60,15 @@ class WarningsCompiler
         string $comparedField,
         Hotel $hotel = null,
         $withLastPeriod = false
-    ) {
+    ): array
+    {
         $periodBegin = new \DateTime('midnight');
         $periodsEnd = new \DateTime('midnight + ' . $periodLengthInDays . ' days');
 
         $periodsWithoutPrice = [];
 
         foreach ($cachesSortedByHotelRoomTypeAndTariff as $hotelId => $cachesByRoomTypeAndTariff) {
-            if (!is_null($hotel) && $hotel->getId() !== $hotelId) {
+            if ($hotel !== null && $hotel->getId() !== $hotelId) {
                 continue;
             }
 
@@ -60,7 +77,7 @@ class WarningsCompiler
                     $cachePeriods = $this->periodsCompiler
                         ->getPeriodsByFieldNames($periodBegin, $periodsEnd, $caches, [$comparedField], 'd.m.Y', true);
                     foreach ($cachePeriods as $periodNumber => $cachePeriodData) {
-                        if ((is_null($cachePeriodData['data']) || $cachePeriodData['data'][$comparedField] <= 0)
+                        if (($cachePeriodData['data'] === null || $cachePeriodData['data'][$comparedField] <= 0)
                             && ($withLastPeriod || $periodNumber !== (count($cachePeriods) - 1))) {
                             if (!isset($periodsWithoutPrice[$hotelId][$roomTypeId][$tariffId])) {
                                 $periodsWithoutPrice[$hotelId][$roomTypeId][$tariffId] = [];
@@ -68,7 +85,7 @@ class WarningsCompiler
 
                             $roomType = $this->dm->find('MBHHotelBundle:RoomType', $roomTypeId);
                             $tariff = $className === RoomCache::class ? null : $this->dm->find('MBHPriceBundle:Tariff', $tariffId);
-                            if (!is_null($roomType)) {
+                            if ($roomType !== null) {
                                 $emptyPeriod = new EmptyCachePeriod($cachePeriodData['begin'], $cachePeriodData['end'], $roomType, $tariff);
                                 $periodsWithoutPrice[$hotelId][$roomTypeId][$tariffId][] = $emptyPeriod;
                             }
@@ -134,10 +151,10 @@ class WarningsCompiler
      * @throws \Doctrine\ODM\MongoDB\MongoDBException
      * @throws \Exception
      */
-    public function getClosedPeriods(\DateTime $begin, \DateTime $end, RoomType $roomType, Tariff $tariff)
+    public function getClosedPeriods(\DateTime $begin, \DateTime $end, RoomType $roomType, Tariff $tariff): array
     {
         $qb = $this->dm
-            ->getRepository('MBHPriceBundle:Restriction')
+            ->getRepository(Restriction::class)
             ->fetchQueryBuilder($begin, $end, null, [$roomType->getId()], [$tariff->getId()]);
         $qb
             ->addOr($qb->expr()->field('closed')->equals(true))
@@ -153,15 +170,17 @@ class WarningsCompiler
 
         $restrictionsByDate = [];
         foreach ($rawRestrictions as $rawRestriction) {
-            $date = $rawRestriction['date']->toDateTime();
-            $restrictionsByDate[$date->format('d.m.Y')] = $rawRestriction;
+            $date = $rawRestriction['date']->toDateTime()
+                ->setTimeZone(new \DateTimeZone($this->helper->getTimeZone()))->format('d.m.Y');
+            $restrictionsByDate[$date] = $rawRestriction;
         }
 
-        $periods = $this->periodsCompiler->getPeriodsByFieldNames($begin, $end, $restrictionsByDate, [], 'd.m.Y', true);
+        $periods = $this->periodsCompiler
+            ->getPeriodsByFieldNames($begin, $end, $restrictionsByDate, [], 'd.m.Y', true);
 
         $closedPeriods = [];
         foreach ($periods as $period) {
-            if (!is_null($period['data'])) {
+            if ($period['data'] !== null) {
                 $closedPeriods[] = new EmptyCachePeriod($period['begin'], $period['end'], $roomType, $tariff);
             }
         }
@@ -174,9 +193,12 @@ class WarningsCompiler
      * @return array
      * @throws \Exception
      */
-    public function getEmptyPriceCachePeriods(Hotel $hotel = null)
+    public function getEmptyPriceCachePeriods(Hotel $hotel = null): array
     {
-        $cachesSortedByHotelRoomTypeAndTariff = $this->getCachesForPeriod(self::CACHE_PERIOD_LENGTH_IN_DAYS, PriceCache::class);
+        $cachesSortedByHotelRoomTypeAndTariff = $this->getCachesForPeriod(
+            self::CACHE_PERIOD_LENGTH_IN_DAYS,
+            PriceCache::class
+        );
 
         return $this->getPeriodsWithEmptyCaches(
             $cachesSortedByHotelRoomTypeAndTariff,
@@ -192,9 +214,12 @@ class WarningsCompiler
      * @return array
      * @throws \Exception
      */
-    public function getEmptyRoomCachePeriods(Hotel $hotel = null)
+    public function getEmptyRoomCachePeriods(Hotel $hotel = null): array
     {
-        $cachesSortedByHotelRoomTypeAndTariff = $this->getCachesForPeriod(self::CACHE_PERIOD_LENGTH_IN_DAYS, RoomCache::class);
+        $cachesSortedByHotelRoomTypeAndTariff = $this->getCachesForPeriod(
+            self::CACHE_PERIOD_LENGTH_IN_DAYS,
+            RoomCache::class
+        );
 
         return $this->getPeriodsWithEmptyCaches(
             $cachesSortedByHotelRoomTypeAndTariff,
@@ -211,14 +236,18 @@ class WarningsCompiler
      * @param array|null $tariffIds
      * @return array
      */
-    public function getLastCacheByRoomTypesAndTariffs(string $cacheClass, array $roomTypeIds = null, array $tariffIds = null)
+    public function getLastCacheByRoomTypesAndTariffs(
+        string $cacheClass,
+        array $roomTypeIds = null,
+        array $tariffIds = null
+    ): array
     {
         $result = [];
         foreach ($this->getCachesForPeriod(self::CACHE_PERIOD_LENGTH_IN_DAYS, $cacheClass) as $cachesByRoomTypesAndTariffs) {
             foreach ($cachesByRoomTypesAndTariffs as $roomTypeId => $cachesByTariffs) {
-                if (is_null($roomTypeIds) || in_array($roomTypeId, $roomTypeIds)) {
+                if ($roomTypeIds === null || in_array($roomTypeId, $roomTypeIds)) {
                     foreach ($cachesByTariffs as $tariffId => $caches) {
-                        if ($cacheClass === RoomCache::class || is_null($tariffIds) || in_array($tariffId, $tariffIds)) {
+                        if ($cacheClass === RoomCache::class || $tariffIds === null || in_array($tariffId, $tariffIds)) {
                             $result[$roomTypeId][$tariffId] = end($caches);
                         }
                     }
@@ -235,7 +264,7 @@ class WarningsCompiler
      * @return array
      * @throws \Exception
      */
-    public function getEmptyCacheWarningsAsStrings(Hotel $hotel, string $cacheType)
+    public function getEmptyCacheWarningsAsStrings(Hotel $hotel, string $cacheType): array
     {
         $warningMessages = [];
         switch ($cacheType) {
@@ -258,7 +287,7 @@ class WarningsCompiler
             foreach ($hotelWarnings as $emptyPriceCacheWarningsByTariffs) {
                 /** @var EmptyCachePeriod[] $emptyPeriodsForTariff */
                 foreach ($emptyPriceCacheWarningsByTariffs as $emptyPeriodsForTariff) {
-                    $periods = array_map(function (EmptyCachePeriod $period) {
+                    $periods = array_map(static function (EmptyCachePeriod $period) {
                         return '"' . $period->getPeriodAsString() . '"';
                     }, $emptyPeriodsForTariff);
 
@@ -284,6 +313,7 @@ class WarningsCompiler
      * @param int $periodLengthInDays
      * @param string $className
      * @return mixed
+     * @throws \Exception
      */
     public function getCachesForPeriod(int $periodLengthInDays, string $className)
     {

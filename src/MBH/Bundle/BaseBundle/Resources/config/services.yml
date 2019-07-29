@@ -543,7 +543,11 @@ services:
 
     mbh.warnings_compiler:
         class: MBH\Bundle\BaseBundle\Service\WarningsCompiler
-        arguments: ['@doctrine.odm.mongodb.document_manager', '@translator', '@mbh.periods_compiler']
+        arguments: [
+            '@doctrine.odm.mongodb.document_manager',
+            '@translator',
+            '@mbh.periods_compiler',
+            '@mbh.helper']
 
     mbh.exception_manager:
         class: MBH\Bundle\BaseBundle\Service\ExceptionManager
