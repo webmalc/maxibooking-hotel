@@ -52,6 +52,8 @@ views.api.getResultsTable.nothing_found_for_your_query: 'По вашему за�
 views.api.step_info.one: 'Тарифы и номера'
 views.api.step_info.two: 'Персональные данные и услуги'
 views.api.step_info.three: 'Оплата'
+views.api.step_one.amount_nights: за %amountNight% ночь|за %amountNight% ночи|за %amountNight% ночей
+views.api.step_one.price_for: 'Цена за:'
 
 views.api.step_one.result_actions.room.other: номеров
 views.api.step_one.result_actions.room.one: номер
@@ -59,7 +61,6 @@ views.api.step_one.result_actions.room.many: номера
 views.api.step_one.result_actions.guest.other: гостей
 views.api.step_one.result_actions.guest.one: гость
 views.api.step_one.result_actions.guest.many: гостя
-views.api.step_one.result_actions.amount_nights: за %amountNight% ночь|за %amountNight% ночи|за %amountNight% ночей
 
 views.api.result.packages_info.total_to_pay: 'К оплате:'
 

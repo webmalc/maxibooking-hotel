@@ -1,3 +1,13 @@
+MbhResultForm.prototype.initSwipe = function () {
+    var mySwiper = new Swiper ('.swiper-container', {
+        loop: true,
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev'
+        }
+    })
+};
+
 MbhResultForm.prototype.descriptionToggle = function () {
     var _this = this;
 
@@ -270,6 +280,8 @@ MbhResultForm.prototype.stepOne = function() {
             _this.tablePrices();
 
             _this.setFancyBoxOffset();
+
+            _this.initSwipe();
 
             _this.calcTotal();
 

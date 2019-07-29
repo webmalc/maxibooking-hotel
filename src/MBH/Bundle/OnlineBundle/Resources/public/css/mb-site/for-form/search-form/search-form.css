@@ -97,7 +97,7 @@
   display: flex;
   justify-content: center;
   background: rgba(40, 40, 40, 0.75);
-  height: 280px;
+  height: 336px;
 }
 @media (min-width: 732px) {
   #mbh-body-search-iframe {

@@ -371,12 +371,20 @@ body {
           background: #FFFFFF;
   // BEGIN IMAGE
           .mbh-results-image-wrapper {
-            .main-image {
-              margin-bottom: 5px;
+            .image-container {
               text-align: center;
 
-              height: 224px;
+              .swiper-container {
+                height: 200px;
 
+                .swiper-button-prev {
+                  background-image: url("/bundles/mbhonline/images/swiper/btn-prev.svg");
+                }
+                .swiper-button-next {
+                  background-image: url("/bundles/mbhonline/images/swiper/btn-next.svg");
+                }
+
+              }
               a {
                 display: block;
                 width: 100%;
@@ -385,77 +393,12 @@ body {
                 background-position: center;
               }
             }
-            .list-small-image {
-
-              a {
-                margin-right: 7px;
-                margin-left: 7px;
-
-                &:first-of-type {
-                  margin-left: 0;
-                }
-
-                @media (max-width: 374px) {
-                  &:nth-of-type(4) {
-                    margin-right: 0;
-                  }
-                  &:nth-of-type(n+5) {
-                    display: none;
-                  }
-                }
-
-                @media (min-width: 375px) and (max-width: 439px){
-                  &:nth-of-type(5) {
-                    margin-right: 0;
-                  }
-                  &:nth-of-type(n+6) {
-                    display: none;
-                  }
-                }
-
-                @media (min-width: 440px) and (max-width: 549px){
-                  &:nth-of-type(6) {
-                    margin-right: 0;
-                  }
-                  &:nth-of-type(n+7) {
-                    display: none;
-                  }
-                }
-
-                @media (min-width: 550px) and (max-width: @size-screen-mid-width-tablet-minus-one){
-                  &:nth-of-type(7) {
-                    margin-right: 0;
-                  }
-                  &:nth-of-type(n+8) {
-                    display: none;
-                  }
-                }
-
-                @media (min-width: @size-screen-mid-width-tablet) {
-                  &:nth-of-type(4) {
-                    margin-right: 0;
-                  }
-                  &:nth-of-type(n+5) {
-                    display: none;
-                  }
-                }
-
-                img {
-                  height: 50px;
-                  @media (min-width: @size-screen-mid-width-tablet) {
-                    width: 60px;
-                  }
-
-                  width: 50px;
-                }
-              }
-            }
           }
   // END IMAGE
   // BEGIN DESCRIPTION
           .mbh-results-description-container {
             > div {
-              margin-bottom: 15px;
+              margin-bottom: 8px;
             }
 
             .mbh-results-room-type-name-wrapper {
@@ -463,19 +406,9 @@ body {
               .fontSizeLineHeight(20px, 24px);
             }
 
-            .mbh-results-hotel-and-tariff-wrapper {
+            .mbh-results-hotel-title-wrapper {
               .mbh-results-hotel {
                 .fontSizeLineHeight();
-              }
-              span + span {
-                margin-left: 5px;
-              }
-            }
-
-            .mbh-results-tourists-select-container {
-              label {
-                margin-right: .3em;
-                font-weight: normal;
               }
             }
 
@@ -485,6 +418,13 @@ body {
 
               .select2:not(.hidden) {
                 text-align: center;
+              }
+
+              .price-for {
+                margin-right: .3em;
+                font-weight: normal;
+
+                .fontSizeLineHeight(14px, 24px);
               }
             }
 
@@ -496,6 +436,12 @@ body {
                   padding: 2px;
                   display: inline-block;
                 }
+              }
+            }
+
+            .mbh-results-tariff-title-wrapper {
+              .mbh-results-tariff {
+                .fontSizeLineHeight(14px, 24px);
               }
             }
 
@@ -534,7 +480,7 @@ body {
                     display: none;
                   }
 
-                  .fontSizeLineHeight();
+                  .fontSizeLineHeight(14px, 20px);
                 }
               }
             }

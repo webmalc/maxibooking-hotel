@@ -427,92 +427,36 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-conta
     padding: 20px 15px;
   }
 }
-body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .main-image {
-  margin-bottom: 5px;
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .image-container {
   text-align: center;
-  height: 224px;
 }
-body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .main-image a {
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .image-container .swiper-container {
+  height: 200px;
+}
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .image-container .swiper-container .swiper-button-prev {
+  background-image: url("/bundles/mbhonline/images/swiper/btn-prev.svg");
+}
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .image-container .swiper-container .swiper-button-next {
+  background-image: url("/bundles/mbhonline/images/swiper/btn-next.svg");
+}
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .image-container a {
   display: block;
   width: 100%;
   height: 100%;
   background-size: cover;
   background-position: center;
 }
-body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .list-small-image a {
-  margin-right: 7px;
-  margin-left: 7px;
-}
-body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .list-small-image a:first-of-type {
-  margin-left: 0;
-}
-@media (max-width: 374px) {
-  body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .list-small-image a:nth-of-type(4) {
-    margin-right: 0;
-  }
-  body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .list-small-image a:nth-of-type(n+5) {
-    display: none;
-  }
-}
-@media (min-width: 375px) and (max-width: 439px) {
-  body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .list-small-image a:nth-of-type(5) {
-    margin-right: 0;
-  }
-  body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .list-small-image a:nth-of-type(n+6) {
-    display: none;
-  }
-}
-@media (min-width: 440px) and (max-width: 549px) {
-  body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .list-small-image a:nth-of-type(6) {
-    margin-right: 0;
-  }
-  body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .list-small-image a:nth-of-type(n+7) {
-    display: none;
-  }
-}
-@media (min-width: 550px) and (max-width: 831px) {
-  body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .list-small-image a:nth-of-type(7) {
-    margin-right: 0;
-  }
-  body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .list-small-image a:nth-of-type(n+8) {
-    display: none;
-  }
-}
-@media (min-width: 832px) {
-  body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .list-small-image a:nth-of-type(4) {
-    margin-right: 0;
-  }
-  body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .list-small-image a:nth-of-type(n+5) {
-    display: none;
-  }
-}
-body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .list-small-image a img {
-  height: 50px;
-  width: 50px;
-}
-@media (min-width: 832px) {
-  body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .list-small-image a img {
-    width: 60px;
-  }
-}
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container > div {
-  margin-bottom: 15px;
+  margin-bottom: 8px;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-room-type-name-wrapper {
   font-family: 'Roboto Slab', serif;
   font-size: 20px;
   line-height: 24px;
 }
-body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-hotel-and-tariff-wrapper .mbh-results-hotel {
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-hotel-title-wrapper .mbh-results-hotel {
   font-size: 16px;
   line-height: 24px;
-}
-body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-hotel-and-tariff-wrapper span + span {
-  margin-left: 5px;
-}
-body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-tourists-select-container label {
-  margin-right: .3em;
-  font-weight: normal;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-select-guest {
   font-size: 16px;
@@ -530,6 +474,12 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-conta
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-select-guest .select2:not(.hidden) {
   text-align: center;
 }
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-select-guest .price-for {
+  margin-right: .3em;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 24px;
+}
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .facility-wrapper ul.inline-facility {
   list-style: none;
   padding: 0;
@@ -537,6 +487,10 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-conta
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .facility-wrapper ul.inline-facility li {
   padding: 2px;
   display: inline-block;
+}
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-tariff-title-wrapper .mbh-results-tariff {
+  font-size: 14px;
+  line-height: 24px;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-room-type-description-container .mbh-results-room-type-description-wrapper .mbh-results-room-type-description-toggle {
   margin-top: 5px;
@@ -556,8 +510,8 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-conta
   display: block;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-room-type-description-container .mbh-results-room-type-description-wrapper .mbh-results-room-type-description {
-  font-size: 16px;
-  line-height: 24px;
+  font-size: 14px;
+  line-height: 20px;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-description-container .mbh-results-room-type-description-container .mbh-results-room-type-description-wrapper .mbh-results-room-type-description.description-small {
   display: block;
