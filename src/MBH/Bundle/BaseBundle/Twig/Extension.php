@@ -322,6 +322,11 @@ class Extension extends \Twig_Extension
         return preg_replace('/\s{2,}/',' ', $str);
     }
 
+    public function removeNonPrintableCharacters(string $str): string
+    {
+        return str_replace(['&nbsp;', '&ensp;', '&emsp;', '&shy;'], '', $str);
+    }
+
     /**
      * @return array
      */
@@ -339,6 +344,7 @@ class Extension extends \Twig_Extension
             'str_to_date' => new \Twig_SimpleFilter('str_to_date', [$this, 'stringToDate']),
             'clear_adjacent_whitespace' => new \Twig_SimpleFilter('clear_adjacent_whitespace', [$this, 'clearAdjacentWhitespace']),
             'result_number_format' => new TwigFilter('result_number_format', [$this, 'resultNumberFormat']),
+            'remove_non_printable_characters' => new TwigFilter('remove_non_printable_characters', [$this, 'removeNonPrintableCharacters'])
         ];
     }
 
