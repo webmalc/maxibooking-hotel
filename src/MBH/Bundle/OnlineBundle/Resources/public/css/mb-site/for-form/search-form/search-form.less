@@ -37,25 +37,6 @@
     font-family: inherit;
   }
 
-  //&.booking-page {
-  //  #mbh-form-wrapper {
-  //    form#mbh-form {
-  //      @media (min-width: @size-screen-mid-width-tablet) {
-  //        width: @desktop-input-field-booking-page*5 + (@ident-row*2)*4;
-  //
-  //        .mbh-form-row {
-  //          &.mbh-form-additional-form-amount-guest-wrapper,
-  //          &#mbh-form-submit-wrapper {
-  //            width: @desktop-input-min-width;
-  //          }
-  //
-  //          width: @desktop-input-field-booking-page;
-  //        }
-  //      }
-  //    }
-  //  }
-  //}
-
   #mbh-form-wrapper {
     display: flex;
     flex-direction: column;
@@ -65,6 +46,13 @@
     padding: 35px 0 10px;
 
     form#mbh-form {
+      .commonStyleForIconInput(@_side_size: 20px) {
+        content: "";
+        width: @_side_size;
+        height: @_side_size;
+        background-repeat: no-repeat;
+      }
+
       display: flex;
       justify-content: center;
 
@@ -80,16 +68,23 @@
 
       flex-wrap: wrap;
 
-      #mbh-form-begin-wrapper::after,
-      #mbh-form-end-wrapper::after {
-        content: "";
-        width: 20px;
-        height: 20px;
-        background-image: url('/bundles/mbhonline/images/icon-calendar.svg');
-        background-repeat: no-repeat;
-        background-position: right;
-        margin-right: 10px;
-        margin-top: -1px;
+      .calendarImage() {
+        #mbh-form-begin-wrapper::after,
+        #mbh-form-end-wrapper::after {
+          .commonStyleForIconInput();
+          background-image: url('/bundles/mbhonline/images/icon-calendar.svg');
+          background-position: right;
+          margin-right: 10px;
+          margin-top: -1px;
+        }
+      }
+
+      @media (min-width: @size-screen-mid-width-tablet) {
+        .calendarImage();
+      }
+
+      @media (max-width: @size-screen-max-width-mobile-minus-one) {
+        .calendarImage();
       }
 
       @media (min-width: @size-screen-max-width-mobile) {
@@ -126,6 +121,37 @@
           width: @desktop-input-max-width;
         }
 
+        @media (min-width: @size-screen-max-width-mobile) and (max-width: @size-screen-mid-width-tablet-minus-one) {
+          &.mbh-form-date-wrapper {
+            width: @tablet-input-width;
+            label {
+              display: none;
+            }
+
+            input {
+              margin-right: 9px;
+            }
+
+            &::before {
+              .commonStyleForIconInput(24px);
+              background-position: right;
+              margin-left: 10px;
+            }
+
+            &#mbh-form-begin-wrapper {
+              &::before {
+                background-image: url('/bundles/mbhonline/images/arrow-arrive.svg');
+              }
+            }
+
+            &#mbh-form-end-wrapper {
+              &::before {
+                background-image: url('/bundles/mbhonline/images/arrow-departure.svg');
+              }
+            }
+          }
+        }
+
         &.mbh-form-additional-form-amount-guest-wrapper,
         &#mbh-form-submit-wrapper {
           @media (min-width: @size-screen-max-width-mobile) {
@@ -134,7 +160,15 @@
           @media (min-width: @size-screen-mid-width-tablet) {
             width: @desktop-input-min-width;
           }
+        }
 
+        &.mbh-form-additional-form-amount-guest-wrapper {
+          @media (min-width: @size-screen-max-width-mobile) and (max-width: @size-screen-mid-width-tablet-minus-one) {
+            width: 104px;
+            label {
+              display: none;
+            }
+          }
         }
 
         width: @mobile-input-width;
@@ -194,23 +228,39 @@
           height: inherit;
           line-height: inherit;
           font-size: inherit;
-
-          option {
-            //text-transform: none;
-            //letter-spacing: unset;
-          }
         }
       }
 
       .mbh-form-additional-form-amount-guest-wrapper {
-        &::after {
-          margin-right: 10px;
-          content: "";
-          width: 20px;
-          height: 20px;
+        .iconPerson() {
+          .commonStyleForIconInput();
           background-image: url('/bundles/mbhonline/images/icon-person.svg');
-          background-repeat: no-repeat;
-          background-position: right;
+        }
+
+        .iconPersonNotTable() {
+          &::after {
+            margin-right: 10px;
+            background-position: right;
+
+            .iconPerson();
+          }
+        }
+
+        @media (min-width: @size-screen-mid-width-tablet) {
+          .iconPersonNotTable();
+        }
+
+        @media (max-width: @size-screen-max-width-mobile-minus-one) {
+          .iconPersonNotTable();
+        }
+
+        @media (min-width: @size-screen-max-width-mobile) and (max-width: @size-screen-mid-width-tablet-minus-one) {
+          &::before {
+            margin-left: 10px;
+            background-position: left;
+
+            .iconPerson();
+          }
         }
 
         .additional-input {
@@ -220,6 +270,7 @@
           padding: 0;
           @media (min-width: @size-screen-max-width-mobile) and (max-width: @size-screen-mid-width-tablet-minus-one) {
             width: 30px;
+            margin-right: 30px;
           }
 
           width: 45px;

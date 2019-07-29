@@ -131,16 +131,31 @@
     width: 876px;
   }
 }
-#mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-form-begin-wrapper::after,
-#mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-form-end-wrapper::after {
-  content: "";
-  width: 20px;
-  height: 20px;
-  background-image: url('/bundles/mbhonline/images/icon-calendar.svg');
-  background-repeat: no-repeat;
-  background-position: right;
-  margin-right: 10px;
-  margin-top: -1px;
+@media (min-width: 832px) {
+  #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-form-begin-wrapper::after,
+  #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-form-end-wrapper::after {
+    content: "";
+    width: 20px;
+    height: 20px;
+    background-repeat: no-repeat;
+    background-image: url('/bundles/mbhonline/images/icon-calendar.svg');
+    background-position: right;
+    margin-right: 10px;
+    margin-top: -1px;
+  }
+}
+@media (max-width: 731px) {
+  #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-form-begin-wrapper::after,
+  #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-form-end-wrapper::after {
+    content: "";
+    width: 20px;
+    height: 20px;
+    background-repeat: no-repeat;
+    background-image: url('/bundles/mbhonline/images/icon-calendar.svg');
+    background-position: right;
+    margin-right: 10px;
+    margin-top: -1px;
+  }
 }
 @media (min-width: 732px) {
   #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-form-begin-wrapper {
@@ -174,6 +189,31 @@
     width: 180px;
   }
 }
+@media (min-width: 732px) and (max-width: 831px) {
+  #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-row.mbh-form-date-wrapper {
+    width: 130px;
+  }
+  #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-row.mbh-form-date-wrapper label {
+    display: none;
+  }
+  #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-row.mbh-form-date-wrapper input {
+    margin-right: 9px;
+  }
+  #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-row.mbh-form-date-wrapper::before {
+    content: "";
+    width: 24px;
+    height: 24px;
+    background-repeat: no-repeat;
+    background-position: right;
+    margin-left: 10px;
+  }
+  #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-row.mbh-form-date-wrapper#mbh-form-begin-wrapper::before {
+    background-image: url('/bundles/mbhonline/images/arrow-arrive.svg');
+  }
+  #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-row.mbh-form-date-wrapper#mbh-form-end-wrapper::before {
+    background-image: url('/bundles/mbhonline/images/arrow-departure.svg');
+  }
+}
 @media (min-width: 732px) {
   #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-row.mbh-form-additional-form-amount-guest-wrapper,
   #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-row#mbh-form-submit-wrapper {
@@ -184,6 +224,14 @@
   #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-row.mbh-form-additional-form-amount-guest-wrapper,
   #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-row#mbh-form-submit-wrapper {
     width: 140px;
+  }
+}
+@media (min-width: 732px) and (max-width: 831px) {
+  #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-row.mbh-form-additional-form-amount-guest-wrapper {
+    width: 104px;
+  }
+  #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-row.mbh-form-additional-form-amount-guest-wrapper label {
+    display: none;
   }
 }
 #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-row > label {
@@ -239,14 +287,38 @@
   line-height: inherit;
   font-size: inherit;
 }
-#mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-additional-form-amount-guest-wrapper::after {
-  margin-right: 10px;
-  content: "";
-  width: 20px;
-  height: 20px;
-  background-image: url('/bundles/mbhonline/images/icon-person.svg');
-  background-repeat: no-repeat;
-  background-position: right;
+@media (min-width: 832px) {
+  #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-additional-form-amount-guest-wrapper::after {
+    margin-right: 10px;
+    background-position: right;
+    content: "";
+    width: 20px;
+    height: 20px;
+    background-repeat: no-repeat;
+    background-image: url('/bundles/mbhonline/images/icon-person.svg');
+  }
+}
+@media (max-width: 731px) {
+  #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-additional-form-amount-guest-wrapper::after {
+    margin-right: 10px;
+    background-position: right;
+    content: "";
+    width: 20px;
+    height: 20px;
+    background-repeat: no-repeat;
+    background-image: url('/bundles/mbhonline/images/icon-person.svg');
+  }
+}
+@media (min-width: 732px) and (max-width: 831px) {
+  #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-additional-form-amount-guest-wrapper::before {
+    margin-left: 10px;
+    background-position: left;
+    content: "";
+    width: 20px;
+    height: 20px;
+    background-repeat: no-repeat;
+    background-image: url('/bundles/mbhonline/images/icon-person.svg');
+  }
 }
 #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-additional-form-amount-guest-wrapper .additional-input {
   background: #fff;
@@ -261,6 +333,7 @@
 @media (min-width: 732px) and (max-width: 831px) {
   #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form .mbh-form-additional-form-amount-guest-wrapper .additional-input {
     width: 30px;
+    margin-right: 30px;
   }
 }
 #mbh-body-search-iframe #mbh-form-wrapper form#mbh-form #mbh-form-adults-children-clear,
