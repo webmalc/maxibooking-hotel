@@ -60,6 +60,9 @@ MbhResultForm.prototype.addEventReloadPage = function(selector) {
 };
 
 MbhResultForm.prototype.calcAndSetHeightPackageInfo = function() {
+    if (isMobileDevice) {
+        return;
+    }
     document.querySelectorAll('#mbh-package-info .panel-body').forEach(function(packageInfo) {
         document.querySelectorAll('.mbh-results-step-wrapper').forEach(function(stepWrapper) {
             if (packageInfo.clientHeight > stepWrapper.clientHeight) {
