@@ -60,7 +60,7 @@ MbhResultForm.prototype.addEventReloadPage = function(selector) {
 };
 
 MbhResultForm.prototype.calcAndSetHeightPackageInfo = function() {
-    if (isMobileDevice) {
+    if (window.screen.availWidth < 1024) {
         return;
     }
     document.querySelectorAll('#mbh-package-info .panel-body').forEach(function(packageInfo) {
