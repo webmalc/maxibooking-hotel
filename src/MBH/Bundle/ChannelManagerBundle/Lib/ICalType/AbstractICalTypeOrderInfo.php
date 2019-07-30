@@ -15,12 +15,23 @@ use MBH\Bundle\ChannelManagerBundle\Document\AbstractICalTypeChannelManagerRoom;
 
 abstract class AbstractICalTypeOrderInfo extends AbstractOrderInfo
 {
+    /** @var array */
     protected $orderData;
+
+    /** @var AbstractICalTypeChannelManagerRoom */
     protected $room;
+
+    /** @var Tariff */
     protected $tariff;
 
+    /** @var array */
     protected $packagesData;
+
+    /** @var bool */
     protected $isPackagesDataInit = false;
+
+    abstract protected function getPackageInfoService(): AbstractICalTypePackageInfo;
+    abstract public function getDepartureDate(): ?string;
 
     /**
      * @param array $orderData
@@ -46,6 +57,9 @@ abstract class AbstractICalTypeOrderInfo extends AbstractOrderInfo
         return $this->getPackagesData()[0]->getTourists()[0];
     }
 
+    /**
+     * @return mixed
+     */
     public function getPrice()
     {
         return $this->getPackagesData()[0]->getPrice();
@@ -60,15 +74,12 @@ abstract class AbstractICalTypeOrderInfo extends AbstractOrderInfo
         $this->isPackagesDataInit = true;
     }
 
-    abstract protected function getPackageInfoService(): AbstractICalTypePackageInfo;
-    abstract public function getDepartureDate(): ?string;
-
     /**
      * @param Order $order
      * @return array|CashDocument[]
      * @throws \Exception
      */
-    public function getCashDocuments(Order $order)
+    public function getCashDocuments(Order $order): array
     {
         return [(new CashDocument())
             ->setIsConfirmed(false)
@@ -80,6 +91,9 @@ abstract class AbstractICalTypeOrderInfo extends AbstractOrderInfo
             ->setTotal($this->getPrice())];
     }
 
+    /**
+     * @return PackageSource|null
+     */
     public function getSource(): ?PackageSource
     {
         return $this->dm
@@ -164,11 +178,5 @@ abstract class AbstractICalTypeOrderInfo extends AbstractOrderInfo
     public function isHandledAsCancelled(?Order $order): bool
     {
         return false;
-    }
-
-    /** @return array */
-    public function getOrderData(): array
-    {
-        return $this->orderData;
     }
 }
