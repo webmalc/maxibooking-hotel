@@ -3,7 +3,7 @@
 namespace MBH\Bundle\ChannelManagerBundle\Services\Airbnb;
 
 use MBH\Bundle\ChannelManagerBundle\Lib\ICalType\AbstractICalTypePackageInfo;
-use MBH\Bundle\PackageBundle\Document\Tourist;
+use MBH\Bundle\ChannelManagerBundle\Lib\ICalType\ICalTouristData;
 
 class AirbnbPackageInfo extends AbstractICalTypePackageInfo
 {
@@ -48,38 +48,27 @@ class AirbnbPackageInfo extends AbstractICalTypePackageInfo
     }
 
     /**
-     * @return array
-     * @throws \Exception
+     * @return ICalTouristData
      */
-    public function getTourists(): array
+    protected function getTouristFetchData(): ICalTouristData
     {
         $rawPayerContactsData = explode('\n', $this->packageData['DESCRIPTION']);
-        $payerContacts = [];
         foreach ($rawPayerContactsData as $rawPayerContactData) {
             if (!empty($rawPayerContactData)) {
                 $payerContactAsKeyValue = explode(':', $rawPayerContactData);
                 $payerContacts[$payerContactAsKeyValue[0]] = trim($payerContactAsKeyValue[1]);
             }
         }
-        $phone = $payerContacts['PHONE'] ?? null;
-        $email = $payerContacts['EMAIL'] ?? null;
 
         $rawPayerNameData = explode(' ', trim($this->packageData['SUMMARY']));
         $payerName = $rawPayerNameData[0];
         //** TODO: HotFix when description has one word. */
         $payerSurname = $rawPayerNameData[1] ?? $payerName;
 
-        $payer = $this->dm
-            ->getRepository(Tourist::class)
-            ->fetchOrCreate(
-                $payerSurname,
-                $payerName,
-                null,
-                null,
-                $email,
-                $phone
-            );
-
-        return [$payer];
+        return (new ICalTouristData())
+            ->setPayerSurname($payerSurname)
+            ->setPayerName($payerName)
+            ->setPayerEmail($payerContacts['EMAIL'] ?? null)
+            ->setPayerPhone($payerContacts['PHONE'] ?? null);
     }
 }

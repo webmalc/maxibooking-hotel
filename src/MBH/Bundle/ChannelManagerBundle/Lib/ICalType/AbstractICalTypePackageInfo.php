@@ -6,6 +6,7 @@ use MBH\Bundle\ChannelManagerBundle\Document\AbstractICalTypeChannelManagerRoom;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
 use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
+use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 
 abstract class AbstractICalTypePackageInfo extends AbstractPackageInfo
@@ -24,8 +25,8 @@ abstract class AbstractICalTypePackageInfo extends AbstractPackageInfo
     /** @var bool */
     protected $isPackagePriceInit = false;
 
-    /** @return string */
     abstract protected function getChannelManagerName(): string;
+    abstract protected function getTouristFetchData(): ICalTouristData;
 
     /**
      * @param array $packageData
@@ -156,5 +157,23 @@ abstract class AbstractICalTypePackageInfo extends AbstractPackageInfo
         }
 
         return $this->packagePrice;
+    }
+
+    public function getTourists(): array
+    {
+        $payerData = $this->getTouristFetchData();
+
+        $payer = $this->dm
+            ->getRepository(Tourist::class)
+            ->fetchOrCreate(
+                $payerData->getPayerSurname(),
+                $payerData->getPayerName(),
+                null,
+                null,
+                $payerData->getPayerEmail(),
+                $payerData->getPayerPhone()
+            );
+
+        return [$payer];
     }
 }

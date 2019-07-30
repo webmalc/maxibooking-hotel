@@ -1,15 +1,18 @@
-{% if channelManager == 'airbnb' %}
-    <br><p><strong>{{ 'cm_connection_instructions.airbnb.part1.text1'|trans }}</strong></p>
-    <p>{{ 'cm_connection_instructions.airbnb.part1.text2'|trans|raw }}</p>
+{% if channelManager == 'airbnb' or channelManager == 'homeaway' %}
 
-    {% set notes = ['cm_connection_instructions.airbnb.part1.notes.text1', 'cm_connection_instructions.airbnb.part1.notes.text2', 'cm_connection_instructions.airbnb.part1.notes.text3'] %}
+    {% set cmTitle = channelManager == 'airbnb' ? 'AirBnb' : 'HomeAway' %}
+
+    <br><p><strong>{{ 'cm_connection_instructions.ical.part1.text1'|trans({'%title%': cmTitle})|raw }}</strong></p>
+    <p>{{ 'cm_connection_instructions.ical.part1.text2'|trans({'%title%': cmTitle})|raw }}</p>
+
+    {% set notes = ['cm_connection_instructions.ical.part1.notes.text1', 'cm_connection_instructions.ical.part1.notes.text2', 'cm_connection_instructions.ical.part1.notes.text3'] %}
     <ol class="btm-pd">
         {% for note in notes %}
-            <li>{{ note|trans }}</li>
+            <li>{{ note|trans({'%title%': cmTitle})|raw }}</li>
         {% endfor %}
     </ol>
-    <p>{{ 'cm_connection_instructions.airbnb.part1.text3'|trans }}</p>
-    <p>{{ 'cm_connection_instructions.airbnb.part1.text4'|trans|raw }}</p>
+    <p>{{ 'cm_connection_instructions.ical.part1.text3'|trans({'%title%': cmTitle})|raw }}</p>
+    <p>{{ 'cm_connection_instructions.ical.part1.text4'|trans({'%title%': cmTitle})|raw }}</p>
 
 {% else %}
     <br>

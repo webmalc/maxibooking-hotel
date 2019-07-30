@@ -50,7 +50,7 @@ class HomeAwayController extends BaseController
 
             if (!$config->isReadyToSync()) {
                 $this->get('mbh.messages_store')
-                    ->sendMessageToTechSupportAboutNewConnection('Airbnb', $this->get('mbh.instant_notifier'));
+                    ->sendMessageToTechSupportAboutNewConnection('HomeAway', $this->get('mbh.instant_notifier'));
             }
             $this->dm->flush();
 
@@ -65,7 +65,6 @@ class HomeAwayController extends BaseController
             'form' => $form->createView(),
             'logs' => $this->logs($config)
         ];
-
     }
 
     /**

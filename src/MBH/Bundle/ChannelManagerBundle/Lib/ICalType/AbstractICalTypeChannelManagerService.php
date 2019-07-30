@@ -205,6 +205,7 @@ abstract class AbstractICalTypeChannelManagerService extends AbstractChannelMana
                 ) {
                     $this->modifyPackage($orderInfo, $existingPackage);
                 }
+            } else {
                 $this->createPackage($orderInfo);
             }
         }
@@ -244,10 +245,10 @@ abstract class AbstractICalTypeChannelManagerService extends AbstractChannelMana
     }
 
     /**
-     * @param $packagesInRoom
+     * @param array $packagesInRoom
      * @param array $channelManagerPackageIds
      */
-    protected function removeMissingOrders($packagesInRoom, array $channelManagerPackageIds): void
+    protected function removeMissingOrders(array $packagesInRoom, array $channelManagerPackageIds): void
     {
         $deletedPackageIds = array_diff(array_keys($packagesInRoom), $channelManagerPackageIds);
         foreach ($deletedPackageIds as $packageId) {
