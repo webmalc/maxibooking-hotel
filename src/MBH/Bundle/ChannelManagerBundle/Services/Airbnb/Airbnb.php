@@ -14,6 +14,15 @@ class Airbnb extends AbstractICalTypeChannelManagerService
     public const CONFIG = 'AirbnbConfig';
     public const PERIOD_LENGTH = '1 year';
     protected const CLOSED_PERIOD_SUMMARY = 'Not available';
+    protected const CLOSED_PERIOD_SUMMARY_ELEMENT = 'SUMMARY';
+
+    /**
+     * @return string
+     */
+    protected function getCheckClosedPeriodElement(): string
+    {
+        return self::CLOSED_PERIOD_SUMMARY_ELEMENT;
+    }
 
     /** @return string */
     protected function getPeriodLength(): string

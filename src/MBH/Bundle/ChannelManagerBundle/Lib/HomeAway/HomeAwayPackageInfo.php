@@ -7,11 +7,17 @@ use MBH\Bundle\ChannelManagerBundle\Lib\ICalType\ICalTouristData;
 
 class HomeAwayPackageInfo extends AbstractICalTypePackageInfo
 {
+    /**
+     * @return string
+     */
     protected function getChannelManagerName(): string
     {
         return HomeAway::NAME;
     }
 
+    /**
+     * @return bool|\DateTime
+     */
     public function getBeginDate()
     {
 //        throw new \Exception('implement me');
@@ -19,6 +25,9 @@ class HomeAwayPackageInfo extends AbstractICalTypePackageInfo
         return \DateTime::createFromFormat('Ymd', $this->packageData['DTSTART'])->modify('midnight');
     }
 
+    /**
+     * @return bool|\DateTime
+     */
     public function getEndDate()
     {
 //        throw new \Exception('implement me');
@@ -53,6 +62,9 @@ class HomeAwayPackageInfo extends AbstractICalTypePackageInfo
             ->setPayerPhone($payerContacts['PHONE'] ?? null);
     }
 
+    /**
+     * @return mixed
+     */
     public function getChannelManagerId()
     {
 //        throw new \Exception('implement me');
@@ -60,6 +72,9 @@ class HomeAwayPackageInfo extends AbstractICalTypePackageInfo
         return $this->packageData['UID'];
     }
 
+    /**
+     * @return string
+     */
     public function getNote(): string
     {
 //        throw new \Exception('implement me');

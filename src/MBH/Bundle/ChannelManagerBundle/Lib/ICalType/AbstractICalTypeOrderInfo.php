@@ -135,16 +135,25 @@ abstract class AbstractICalTypeOrderInfo extends AbstractOrderInfo
         return null;
     }
 
+    /**
+     * @return bool
+     */
     public function isOrderModified(): bool
     {
         return false;
     }
 
+    /**
+     * @return bool
+     */
     public function isOrderCreated(): bool
     {
         return true;
     }
 
+    /**
+     * @return bool
+     */
     public function isOrderCancelled(): bool
     {
         return false;

@@ -14,11 +14,11 @@ use MBH\Bundle\ChannelManagerBundle\Document\AbstractICalTypeChannelManagerRoom;
 
 abstract class AbstractICalTypeChannelManagerService extends AbstractChannelManagerService
 {
-
     abstract protected function getOrderInfoService(): AbstractICalTypeOrderInfo;
     abstract protected function getClosedPeriodSummary(): string;
     abstract protected function getPeriodLength(): string;
     abstract protected function getName(): string;
+    abstract protected function getCheckClosedPeriodElement(): string;
 
     /**
      * @param \DateTime $begin
@@ -169,6 +169,13 @@ abstract class AbstractICalTypeChannelManagerService extends AbstractChannelMana
         return $isSuccess ?? true;
     }
 
+    /**
+     * @param Result $response
+     * @param AbstractICalTypeChannelManagerRoom $room
+     * @param ICalTypeChannelManagerConfigInterface $config
+     * @param array $packagesByRoomIds
+     * @throws \Exception
+     */
     protected function handleResponse(
         Result $response,
         AbstractICalTypeChannelManagerRoom $room,
@@ -213,6 +220,9 @@ abstract class AbstractICalTypeChannelManagerService extends AbstractChannelMana
         $this->removeMissingOrders($packagesInRoom, $channelManagerPackageIds ?? []);
     }
 
+    /**
+     * @param AbstractICalTypeOrderInfo $orderInfo
+     */
     protected function createPackage(AbstractICalTypeOrderInfo $orderInfo): void
     {
         $order = $this->container->get('mbh.channelmanager.order_handler')
@@ -226,6 +236,10 @@ abstract class AbstractICalTypeChannelManagerService extends AbstractChannelMana
         );
     }
 
+    /**
+     * @param AbstractICalTypeOrderInfo $orderInfo
+     * @param Package $existingPackage
+     */
     protected function modifyPackage(AbstractICalTypeOrderInfo $orderInfo, Package $existingPackage): void
     {
         $order = $this->container->get('mbh.channelmanager.order_handler')
@@ -239,9 +253,13 @@ abstract class AbstractICalTypeChannelManagerService extends AbstractChannelMana
         );
     }
 
-    protected function isClosedPeriodSummary(?array $event): bool
+    /**
+     * @param array $event
+     * @return bool
+     */
+    protected function isClosedPeriodSummary(array $event): bool
     {
-        return (stripos($event['SUMMARY'], $this->getClosedPeriodSummary()) !== false);
+        return (stripos($event[$this->getCheckClosedPeriodElement()], $this->getClosedPeriodSummary()) !== false);
     }
 
     /**
@@ -260,6 +278,11 @@ abstract class AbstractICalTypeChannelManagerService extends AbstractChannelMana
         $this->dm->flush();
     }
 
+    /**
+     * @param AbstractICalTypeOrderInfo $orderData
+     * @return bool
+     * @throws \Exception
+     */
     protected function checkOutOfDateOrder(AbstractICalTypeOrderInfo $orderData): bool
     {
         if ($orderData->getDepartureDate()) {

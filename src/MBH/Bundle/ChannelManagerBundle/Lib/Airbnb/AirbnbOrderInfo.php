@@ -8,7 +8,6 @@ use MBH\Bundle\ChannelManagerBundle\Lib\ICalType\AbstractICalTypePackageInfo;
 
 class AirbnbOrderInfo extends AbstractICalTypeOrderInfo
 {
-
     /**
      * @return string
      */
@@ -38,19 +37,27 @@ class AirbnbOrderInfo extends AbstractICalTypeOrderInfo
         return Airbnb::NAME;
     }
 
+    /**
+     * @return string
+     */
     public function getNote(): string
     {
         return $this->orderData['DESCRIPTION'] ?? '';
     }
 
+    /**
+     * @return AbstractICalTypePackageInfo
+     */
     protected function getPackageInfoService(): AbstractICalTypePackageInfo
     {
         return $this->container->get('mbh.airbnb_package_info');
     }
 
+    /**
+     * @return string|null
+     */
     public function getDepartureDate(): ?string
     {
         return $this->orderData['DTEND_array'][2];
     }
-
 }

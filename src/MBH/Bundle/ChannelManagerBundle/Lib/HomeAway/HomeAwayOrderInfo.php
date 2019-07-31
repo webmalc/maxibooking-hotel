@@ -9,11 +9,17 @@ use MBH\Bundle\ChannelManagerBundle\Lib\ICalType\AbstractICalTypePackageInfo;
 class HomeAwayOrderInfo extends AbstractICalTypeOrderInfo
 {
 
+    /**
+     * @return string|null
+     */
     public function getDepartureDate(): ?string
     {
         return $this->orderData['DTEND_array'][2];
     }
 
+    /**
+     * @return string
+     */
     public function getChannelManagerOrderId(): string
     {
 //        throw new \Exception('implement me');
@@ -43,6 +49,9 @@ class HomeAwayOrderInfo extends AbstractICalTypeOrderInfo
         return HomeAway::NAME;
     }
 
+    /**
+     * @return string
+     */
     public function getNote(): string
     {
 //        throw new \Exception('implement me');
@@ -50,6 +59,9 @@ class HomeAwayOrderInfo extends AbstractICalTypeOrderInfo
         return $this->orderData['DESCRIPTION'] ?? '';
     }
 
+    /**
+     * @return AbstractICalTypePackageInfo
+     */
     protected function getPackageInfoService(): AbstractICalTypePackageInfo
     {
         return $this->container->get('mbh.homeaway_package_info');
