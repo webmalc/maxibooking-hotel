@@ -1,0 +1,29 @@
+upload_max_filesize = 256M
+post_max_size = 256M
+date.timezone = Europe/Moscow
+memory_limit = 2G
+max_execution_time = 180
+
+#http://stackoverflow.com/questions/12905404/symfony2-slow-initialization-time
+#http://symfony.com/doc/master/performance.html
+#https://habr.com/en/company/mailru/blog/310054/
+realpath_cache_size = 4096k
+realpath_cache_ttl = 600
+
+
+#https://haydenjames.io/php-benchmarks-opcache-performance-tweaks/
+opcache.max_accelerated_files = 20000
+opcache.interned_strings_buffer=16
+opcache.memory_consumption=512
+opcache.validate_timestamps=0
+opcache.enable_file_override=1
+opcache.consistency_checks=0
+opcache.file_cache_consistency_checks=0
+opcache.enable_cli=1
+opcache.file_update_protection=0
+
+
+#cli
+
+opcache.file_cache_only=0
+opcache.file_cache=/tmp/php-opcache
