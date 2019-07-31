@@ -14,6 +14,8 @@ class HomeAwayOrderInfo extends AbstractICalTypeOrderInfo
      */
     public function getDepartureDate(): ?string
     {
+        throw new \Exception('implement me');
+
         return $this->orderData['DTEND_array'][2];
     }
 
@@ -22,7 +24,7 @@ class HomeAwayOrderInfo extends AbstractICalTypeOrderInfo
      */
     public function getChannelManagerOrderId(): string
     {
-//        throw new \Exception('implement me');
+        throw new \Exception('implement me');
 
         return $this->orderData['UID'];
     }
@@ -54,7 +56,7 @@ class HomeAwayOrderInfo extends AbstractICalTypeOrderInfo
      */
     public function getNote(): string
     {
-//        throw new \Exception('implement me');
+        throw new \Exception('implement me');
 
         return $this->orderData['DESCRIPTION'] ?? '';
     }

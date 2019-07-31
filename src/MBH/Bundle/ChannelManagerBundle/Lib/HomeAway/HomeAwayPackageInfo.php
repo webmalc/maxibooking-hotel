@@ -20,7 +20,7 @@ class HomeAwayPackageInfo extends AbstractICalTypePackageInfo
      */
     public function getBeginDate()
     {
-//        throw new \Exception('implement me');
+        throw new \Exception('implement me');
 
         return \DateTime::createFromFormat('Ymd', $this->packageData['DTSTART'])->modify('midnight');
     }
@@ -30,7 +30,7 @@ class HomeAwayPackageInfo extends AbstractICalTypePackageInfo
      */
     public function getEndDate()
     {
-//        throw new \Exception('implement me');
+        throw new \Exception('implement me');
 
         return \DateTime::createFromFormat('Ymd', $this->packageData['DTEND'])->modify('midnight');
     }
@@ -40,7 +40,7 @@ class HomeAwayPackageInfo extends AbstractICalTypePackageInfo
      */
     protected function getTouristFetchData(): ICalTouristData
     {
-//        throw new \Exception('implement me');
+        throw new \Exception('implement me');
 
         $rawPayerContactsData = explode('\n', $this->packageData['DESCRIPTION']);
         foreach ($rawPayerContactsData as $rawPayerContactData) {
@@ -67,7 +67,7 @@ class HomeAwayPackageInfo extends AbstractICalTypePackageInfo
      */
     public function getChannelManagerId()
     {
-//        throw new \Exception('implement me');
+        throw new \Exception('implement me');
 
         return $this->packageData['UID'];
     }
@@ -77,7 +77,7 @@ class HomeAwayPackageInfo extends AbstractICalTypePackageInfo
      */
     public function getNote(): string
     {
-//        throw new \Exception('implement me');
+        throw new \Exception('implement me');
 
         return (!empty($this->note) ?  ($this->note . "\n") : '')  . ($this->packageData['DESCRIPTION'] ?? '');
     }
