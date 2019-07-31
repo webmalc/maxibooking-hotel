@@ -12,16 +12,13 @@
 
                 <p>{{ 'homeaway.rooms.connection_instructions.text3'|trans }}</p>
                 <ol class="btm-pd">
-                    {#{% for itemNumber in 1..7 %}#}
-                        {#<li>#}
-                            {#{{ ('airbnb.rooms.connection_instructions.list.text' ~ itemNumber)|trans|raw }}#}
-                        {#</li>#}
-                    {#{% endfor %}#}
-                    <li>
-                        instructions steps here
-                    </li>
+                    {% for itemNumber in 1..8 %}
+                        <li>
+                            {{ ('homeaway.rooms.connection_instructions.list.text' ~ itemNumber)|trans|raw }}
+                        </li>
+                    {% endfor %}
                 </ol>
-
+                <p><strong>{{ 'ical.room_links.connection_instructions.text3'|trans }}</strong></p>
             </div>
             {{ form_start(form, {'action': path('homeaway_room'), 'attr': {'class': 'form-horizontal'}}) }}
             {{ form_widget(form) }}

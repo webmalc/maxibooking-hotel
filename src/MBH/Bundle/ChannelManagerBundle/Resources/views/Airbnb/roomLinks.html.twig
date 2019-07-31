@@ -7,16 +7,16 @@
     <div class="tab-content">
         <div class="tab-pane active">
             <div class="well" id="room-links-instruction">
-                <p>{{ 'airbnb.room_links.connection_instructions.text1'|trans }}</p>
+                <p>{{ 'ical.room_links.connection_instructions.text1'|trans({'%cmTitle%': 'AirBnb'}) }}</p>
 
-                <p>{{ 'airbnb.room_links.connection_instructions.text2'|trans }}</p>
+                <p>{{ 'ical.room_links.connection_instructions.text2'|trans }}</p>
                 <ol class="btm-pd">
                     {% for listNumber in 1..9 %}
                         <li>{{ ('airbnb.room_links.connection_instructions.list.text' ~ listNumber)|trans|raw }}</li>
                     {% endfor %}
                 </ol>
 
-                <p>{{ 'airbnb.room_links.connection_instructions.text3'|trans }}</p>
+                <p>{{ 'ical.room_links.connection_instructions.text3'|trans|raw }}</p>
             </div>
 
                 {% for room in config.rooms %}

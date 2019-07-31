@@ -7,16 +7,25 @@
     <div class="tab-content">
         <div class="tab-pane active">
             <div class="well" id="room-links-instruction">
-                <p>{{ 'airbnb.room_links.connection_instructions.text1'|trans }}</p>
+                <p>{{ 'ical.room_links.connection_instructions.text1'|trans({'%cmTitle%': 'HomeAway'}) }}</p>
 
-                <p>{{ 'airbnb.room_links.connection_instructions.text2'|trans }}</p>
-                {#<ol class="btm-pd">#}
-                    {#{% for listNumber in 1..9 %}#}
-                        {#<li>{{ ('airbnb.room_links.connection_instructions.list.text' ~ listNumber)|trans|raw }}</li>#}
-                    {#{% endfor %}#}
-                {#</ol>#}
+                <p>{{ 'ical.room_links.connection_instructions.text2'|trans }}</p>
+                <ol class="btm-pd">
+                    {% for listNumber in 1..7 %}
+                        <li>{{ ('homeaway.room_links.connection_instructions.list.text' ~ listNumber)|trans|raw }}</li>
+                    {% endfor %}
+                    <li>
+                        {{ ('homeaway.room_links.connection_instructions.list.text8')|trans|raw }}
+                        <ul>
+                            <li>{{ ('homeaway.room_links.connection_instructions.list.text9')|trans|raw }}</li>
+                            <li>{{ ('homeaway.room_links.connection_instructions.list.text10')|trans|raw }};</li>
+                            <li>{{ ('homeaway.room_links.connection_instructions.list.text11')|trans|raw }}</li>
+                        </ul>
+                    </li>
+                </ol>
 
-                <p>{{ 'airbnb.room_links.connection_instructions.text3'|trans }}</p>
+                <p>{{ 'homeaway.room_links.connection_instructions.list.text12'|trans|raw }}</p>
+                <p>{{ 'ical.room_links.connection_instructions.text3'|trans|raw }}</p>
             </div>
 
             {% for room in config.rooms %}
