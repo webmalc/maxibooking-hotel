@@ -1,0 +1,106 @@
+.heightPanelHeading () {
+  height: 52px;
+}
+
+.commonRadio() {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  background: #FFFFFF;
+
+  margin-top: -3px;
+}
+
+.inputStyleRadio() {
+  &:before {
+    .commonRadio();
+    border: 1px solid #DADADA;
+  }
+
+  &:checked {
+    &:before {
+      .commonRadio();
+      border: 1px solid @general_color;
+    }
+
+    &:after {
+      .commonRadio();
+      width: 10px;
+      height: 10px;
+      background: @general_color;
+
+      margin-left: 4px;
+      margin-top: 1px;
+    }
+  }
+}
+
+.commonStylePanelBootstrap() {
+  .panel {
+    padding: 0;
+    border: none;
+
+    .panel-heading {
+      display: flex;
+      align-items: center;
+
+      border: unset;
+
+      .fontRobotoSlab();
+
+      .fontSizeLineHeight(20px, 24px);
+
+      background: #282828;
+      opacity: 0.7;
+
+      color: #FFFFFF;
+
+      .heightPanelHeading ();
+    }
+
+    .panel-body {
+      ul {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+        background: #FFFFFF;
+
+        li {
+          border-bottom: 1px solid #A0A0A0;
+
+          input[type="radio"] {
+            &:disabled {
+              .inputStyleRadio();
+            }
+
+          }
+        }
+      }
+    }
+  }
+}
+
+.commonStyleFont();
+
+.commonStylePanelBootstrap();
+
+.styleFontForSelect() {
+  .fontSizeLineHeight(16px, 28px);
+  text-align: center;
+}
+
+.styleForSelect2() {
+  .styleFontForSelect();
+  a {
+    border-radius: unset;
+    height: 34px;
+
+    .select2-chosen {
+      margin-top: 4px;
+    }
+  }
+}
+
+.replaceStyleBootstrap();

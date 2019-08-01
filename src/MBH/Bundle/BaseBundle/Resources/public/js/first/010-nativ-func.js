@@ -7,3 +7,10 @@ var isMobileDevice = (function() {
     return isMobile;
   }
 })();
+
+var isTabletDevice = (function() {
+  var isTablet = window.matchMedia('only screen and (min-width: 700px) and (max-width: 1023px)').matches;
+  return function() {
+    return isTablet;
+  }
+})();

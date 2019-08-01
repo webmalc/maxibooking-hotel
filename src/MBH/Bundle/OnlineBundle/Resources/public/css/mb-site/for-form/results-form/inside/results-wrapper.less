@@ -1,0 +1,234 @@
+#mbh-results-list-wrapper {
+  .mbh-results-container {
+    @heightBlockImageAndPrice: 200px;
+    margin: 10px 0;
+
+    @media (min-width: 520px) {
+      padding: 28px 15px 27px;
+    }
+    padding: 10px 0;
+    background: #FFFFFF;
+    // BEGIN IMAGE
+    .mbh-results-image-wrapper {
+      .image-container {
+        text-align: center;
+
+        .swiper-container {
+          .heightSwiperContainer() {
+            // samsung s7/s8/s9 | Huawei p20/p30 | Xiaomi Mi A2/ Redmi
+            @media (min-width: 360px) {
+              height: 266px;
+            }
+
+            // iphone 6/7/8/X
+            @media (min-width: 375px) {
+              height: 277px;
+            }
+
+            // iphone 6/7/8 max
+            @media (min-width: 414px) {
+              height: 306px;
+            }
+
+            // blackberry Playbook
+            @media (min-width: 600px) {
+              height: 444px;
+            }
+
+            @media (min-width: @size-screen-mid-width-tablet) {
+              height: @heightBlockImageAndPrice;
+            }
+
+            height: 237px;
+          }
+
+          .heightSwiperContainer();
+
+          .swiper-button-prev {
+            background-image: url("/bundles/mbhonline/images/swiper/btn-prev.svg");
+          }
+          .swiper-button-next {
+            background-image: url("/bundles/mbhonline/images/swiper/btn-next.svg");
+          }
+        }
+        a {
+          display: block;
+          width: 100%;
+          height: 100%;
+          background-size: cover;
+          background-position: center;
+        }
+      }
+    }
+    // END IMAGE
+    // BEGIN DESCRIPTION
+    .mbh-results-description-container {
+      > div {
+        margin-bottom: 3px;
+      }
+
+      .mbh-results-room-type-name-wrapper {
+        .fontRobotoSlab();
+        .fontSizeLineHeight(20px, 24px);
+      }
+
+      .mbh-results-hotel-title-wrapper {
+        .mbh-results-hotel {
+          .fontSizeLineHeight();
+        }
+      }
+
+      .mbh-results-select-guest {
+        .styleForSelect2();
+        text-align: unset;
+
+        .select2:not(.hidden) {
+          text-align: center;
+        }
+
+        .price-for {
+          margin-right: .5em;
+          font-weight: normal;
+        }
+
+        .person-icon + .person-icon {
+          margin-left: .4em;
+        }
+      }
+
+      .facility-wrapper {
+        ul.inline-facility {
+          list-style: none;
+          padding: 0;
+          margin-bottom: unset;
+          li {
+            padding: 0 2px;
+            display: inline-block;
+          }
+        }
+      }
+
+      .mbh-results-tariff-title-wrapper {
+        .mbh-results-tariff {
+          .fontSizeLineHeight(14px, 24px);
+        }
+      }
+
+      .mbh-results-room-type-description-container {
+        .mbh-results-room-type-description-wrapper {
+
+          .mbh-results-room-type-description-toggle {
+            background: #FFFFFF;
+            border: none;
+            padding: unset;
+            outline: none;
+
+            font-style: italic;
+            font-weight: 500;
+            .fontSizeLineHeight(14px, 20px);
+          }
+
+          &.show-description {
+            .mbh-results-room-type-description {
+              &.description-small {
+                display: none;
+              }
+              &.description-full {
+                display: block;
+              }
+            }
+          }
+
+          .mbh-results-room-type-description {
+            &.description-small {
+              display: inline;
+            }
+            &.description-full {
+              display: none;
+            }
+
+            .fontSizeLineHeight(14px, 20px);
+          }
+        }
+      }
+    }
+    // END DESCRIPTION
+    // BEGIN PRICE
+    .mbh-results-price-container {
+      min-height: @heightBlockImageAndPrice;
+      display: flex;
+      flex-direction: column;
+
+      > * {
+        text-align: center;
+      }
+      .price {
+        .mbh-results-prices {
+          margin: 0;
+          padding: 0;
+          list-style-type: none;
+
+          .fontRobotoSlab();
+          .fontSizeLineHeight(32px, 44px);
+
+          color: #4F4F4F;
+
+          li {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+        }
+      }
+
+      .nights {
+        .fontSizeLineHeight(16px, 28px);
+        text-align: center;
+        color: #282828;
+      }
+
+      .room-count-selector {
+        margin-top: 10px;
+
+        .room-count-selector-label {
+          .fontSizeLineHeight(14px, 20px);
+          color: #737373;
+
+          margin-bottom: 10px;
+        }
+
+        .mbh-results-packages-count {
+          .styleForSelect2();
+          width: 80px;
+        }
+      }
+
+      .room-amount {
+        margin-top: 10px;
+        .fontSizeLineHeight(14px, 20px);
+        color: #737373;
+      }
+    }
+    // END PRICE
+    @media (max-width: @size-screen-mid-width-tablet-minus-one) {
+      display: flex;
+      flex-direction: column;
+
+      .mbh-results-description-container {
+        order: 1;
+        margin-bottom: 15px;
+      }
+      .mbh-results-image-wrapper {
+        margin-bottom: 15px;
+        order: 2;
+
+        .main-image {
+          height: 250px;
+        }
+      }
+      .mbh-results-price-container {
+        order: 3;
+      }
+    }
+  }
+}

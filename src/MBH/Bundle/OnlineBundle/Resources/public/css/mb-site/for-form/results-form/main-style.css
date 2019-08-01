@@ -208,8 +208,10 @@ body .btn-default {
   border-color: unset;
   background: #BDBDBD;
 }
-body .panel-heading {
-  padding: 15px 25px;
+@media (min-width: 732px) {
+  body .panel-heading {
+    padding: 15px 25px;
+  }
 }
 body .panel {
   box-shadow: none;
@@ -235,7 +237,7 @@ body .mbh-results-info-load {
 }
 body #mbh-results-wrapper {
   box-sizing: border-box;
-  width: calc(100vw - 30px);
+  width: 100%;
 }
 @media (min-width: 732px) {
   body #mbh-results-wrapper {
@@ -295,10 +297,14 @@ body #mbh-results-wrapper #mbh-package-info .mbh-price-amount i.fa {
   font-size: 0.8em;
 }
 body #mbh-results-wrapper .step-info {
-  margin-top: 25px;
-  margin-bottom: 65px;
+  margin: 25px 15px 65px 15px;
   display: flex;
   flex-wrap: wrap;
+}
+@media (min-width: 732px) {
+  body #mbh-results-wrapper .step-info {
+    margin: 25px 0 65px 0;
+  }
 }
 body #mbh-results-wrapper .step-info .step-number-info {
   display: flex;
@@ -369,8 +375,10 @@ body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wra
 body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wrapper.show-description .mbh-results-tariff-label #mbh-results-tariff-selected {
   font-weight: bold;
 }
-body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wrapper .col-sm-1 {
-  margin-left: 10px;
+@media (min-width: 732px) {
+  body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wrapper .col-sm-1 {
+    margin-left: 10px;
+  }
 }
 @media (min-width: 520px) {
   body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wrapper .col-sm-1,
@@ -415,11 +423,13 @@ body #mbh-results-wrapper .step-one #mbh-results-tariffs .mbh-results-tariff-wra
 }
 body #mbh-results-wrapper .step-one #mbh-results-duration h3 {
   font-family: 'Roboto Slab', serif;
+  margin-left: 15px;
 }
 @media (min-width: 732px) {
   body #mbh-results-wrapper .step-one #mbh-results-duration h3 {
     font-size: 32px;
     line-height: 44px;
+    margin-left: unset;
   }
 }
 body #mbh-results-wrapper .step-one #mbh-results-duration #mbh-result-response-info {
@@ -439,7 +449,32 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-conta
   text-align: center;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .image-container .swiper-container {
-  height: 200px;
+  height: 237px;
+}
+@media (min-width: 360px) {
+  body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .image-container .swiper-container {
+    height: 266px;
+  }
+}
+@media (min-width: 375px) {
+  body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .image-container .swiper-container {
+    height: 277px;
+  }
+}
+@media (min-width: 414px) {
+  body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .image-container .swiper-container {
+    height: 306px;
+  }
+}
+@media (min-width: 600px) {
+  body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .image-container .swiper-container {
+    height: 444px;
+  }
+}
+@media (min-width: 832px) {
+  body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .image-container .swiper-container {
+    height: 200px;
+  }
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-image-wrapper .image-container .swiper-container .swiper-button-prev {
   background-image: url("/bundles/mbhonline/images/swiper/btn-prev.svg");

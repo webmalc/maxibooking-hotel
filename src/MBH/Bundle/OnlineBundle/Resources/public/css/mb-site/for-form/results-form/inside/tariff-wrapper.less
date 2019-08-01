@@ -1,0 +1,85 @@
+#mbh-results-tariffs {
+  margin-bottom: 42px;
+  .panel-body {
+    padding: 0;
+  };
+
+  .mbh-results-tariff-wrapper {
+    &.show-description {
+      background: @general_color_light;
+      .mbh-results-tariff-description {
+        display: block;
+      }
+
+      .mbh-results-tariff-label {
+        height: unset;
+        padding: 5px 0;
+        .mbh-results-tariffs-description-toggle {
+          background: @general_color_light;
+        }
+        #mbh-results-tariff-selected {
+          font-weight: bold;
+        }
+      }
+    }
+
+    @media (min-width: @size-screen-max-width-mobile) {
+      .col-sm-1 {
+        margin-left: 10px;
+      }
+    }
+
+    @media (min-width: 520px) {
+      .col-sm-1,
+      .col-sm-11 {
+        padding-left: unset;
+      }
+
+      .col-sm-1 {
+        padding-right: unset;
+        margin-left: -10px;
+      }
+
+      .col-sm-11 {
+        margin-left: -10px;
+      }
+    }
+
+    .col-sm-11 {
+      > *:not(.mbh-results-tariff-description) {
+        margin-right: 0.3em;
+      }
+    }
+
+    .mbh-results-tariff-label {
+      .mbh-results-tariffs-description-toggle {
+        border: none;
+        background: #FFFFFF;
+
+        font-style: italic;
+        font-weight: normal;
+        .fontSizeLineHeight();
+
+        padding: unset;
+
+        color: #737373;
+      }
+
+      .heightPanelHeading ();
+      display: flex;
+      align-items: center;
+      margin: 0;
+
+      .fontSizeLineHeight();
+
+      a {
+        text-decoration: none;
+        z-index: 1;
+      }
+    }
+
+    .mbh-results-tariff-description {
+      display: none;
+    }
+  }
+}

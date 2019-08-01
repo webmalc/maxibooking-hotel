@@ -1,3 +1,9 @@
+MbhResultForm.prototype.backgroundImageRoomForTablet = function () {
+    document.querySelectorAll('.image-room-link').forEach(function(image) {
+        image.style.backgroundImage = isTabletDevice() ? image.dataset.backgroundTablet : image.dataset.background;
+    });
+};
+
 MbhResultForm.prototype.initSwipeStepOne = function () {
 
     this._swiperListStepOne = [];
@@ -282,6 +288,8 @@ MbhResultForm.prototype.stepOne = function() {
         crossDomain: true,
         success: function(data) {
             _this.wrapper.html(data);
+
+            _this.backgroundImageRoomForTablet();
 
             _this.resize();
 

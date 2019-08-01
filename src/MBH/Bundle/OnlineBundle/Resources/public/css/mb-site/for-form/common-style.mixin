@@ -202,7 +202,8 @@
     width: @_width_for_result_page;
   }
 
-  .widthWithCalc();
+  width: 100%;
+  //.widthWithCalc();
 }
 
 @indent_btn: 30px;
@@ -248,8 +249,10 @@
     background: #BDBDBD;
   }
 
-  .panel-heading {
-    padding: 15px 25px;
+  @media (min-width: @size-screen-max-width-mobile) {
+    .panel-heading {
+      padding: 15px 25px;
+    }
   }
 
   .panel {

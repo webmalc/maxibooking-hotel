@@ -30,12 +30,14 @@
                                  data-use-swipe="{{ amountImage > 1 ? 'true' : 'false' }}">
                                 <div class="swiper-wrapper">
                                     {% for image in result.roomType.onlineImagesByPriority %}
+                                        {% set fullImageLink = asset(vich_uploader_asset(image, 'imageFile')|imagine_filter('size_1980x1280')) %}
                                         <div class="swiper-slide">
-                                            <a href="{{ asset(vich_uploader_asset(image, 'imageFile')|imagine_filter('size_1980x1280')) }}"
-                                               class="fancybox item{{ image.isMain ? ' active' : '' }}"
+                                            <a href="{{ fullImageLink }}"
+                                               class="fancybox item image-room-link{{ image.isMain ? ' active' : '' }}"
                                                data-fancybox="group-{{ result.roomType.id }}"
                                                title="room image #{{ loop.index }}"
-                                               style="background-image: url('{{ asset(vich_uploader_asset(image, 'imageFile') | imagine_filter('size_500x500')) }}')"
+                                               data-background="url('{{ asset(vich_uploader_asset(image, 'imageFile') | imagine_filter('size_500x500')) }}')"
+                                               data-background-tablet="url('{{ fullImageLink }}')"
                                             ></a>
                                         </div>
                                     {% endfor %}

@@ -1,0 +1,45 @@
+.step-info {
+  @media (min-width: @size-screen-max-width-mobile) {
+    margin: 25px 0 65px 0;
+  }
+  margin: 25px 15px 65px 15px;
+
+  display: flex;
+  flex-wrap: wrap;
+  .step-number-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+
+    &.active {
+      .step-number {
+        background: @general_color;
+      }
+    }
+
+    .step-number {
+      .fontSizeLineHeight(16px, 16px);
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      width: 40px;
+      height: 40px;
+      background: #BDBDBD;
+      color: #FFFFFF;
+    }
+
+    .step-title {
+      margin-left: 18px;
+      margin-right: 18px;
+      .fontSizeLineHeight();
+    }
+  }
+
+  @media (min-width: @size-screen-mid-width-tablet) {
+    .step-number-info + .step-number-info {
+      margin-left: 18px;
+    }
+  }
+}
