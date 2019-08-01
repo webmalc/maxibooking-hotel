@@ -4,12 +4,15 @@ namespace MBH\Bundle\HotelBundle\Document;
 
 use Doctrine\ODM\MongoDB\Cursor;
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\BaseBundle\Lib\DocumentTraits\FindAllRawTrait;
 
 /**
  * Class HotelRepository
  */
 class HotelRepository extends DocumentRepository
 {
+
+    use FindAllRawTrait;
 
     /**
      * Get last Hotel or null
@@ -76,4 +79,6 @@ class HotelRepository extends DocumentRepository
             ->execute()
             ->toArray();
     }
+
+
 }

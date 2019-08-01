@@ -5,6 +5,7 @@ namespace MBH\Bundle\PriceBundle\Document;
 use Doctrine\MongoDB\CursorInterface;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use MBH\Bundle\BaseBundle\Lib\DocumentTraits\FindAllRawTrait;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use MBH\Bundle\PriceBundle\Lib\TariffFilter;
@@ -12,6 +13,8 @@ use MBH\Bundle\BaseBundle\Service\Cache;
 
 class TariffRepository extends DocumentRepository
 {
+
+    use FindAllRawTrait;
 
     /**
      * Get base tariffs ids
@@ -337,4 +340,5 @@ class TariffRepository extends DocumentRepository
             ->getQuery()
             ->toArray();
     }
+
 }

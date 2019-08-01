@@ -117,7 +117,7 @@ class FinalSearchResultsBuilder
             $results = array_filter($results, [$this, 'filterError']);
 
         }
-
+        $results = array_values($results);
         $groupingFactory = new GroupingFactory();
         /** @noinspection CallableParameterUseCaseInTypeContextInspection */
         $grouping = $groupingFactory->createGrouping($this->grouping);

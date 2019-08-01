@@ -69,7 +69,7 @@
                 if (searchStarted) {
                     this.debugClearErrors();
                     (this.isAdditionalDates && !this.forceSyncSearch) ? this.asyncSearch() : this.syncSearch();
-                    this.specialSearch();
+                    // this.specialSearch();
                 }
                 if (searchStopped) {
                     this.sortAllPrices();

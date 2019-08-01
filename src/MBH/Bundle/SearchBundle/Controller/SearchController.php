@@ -56,13 +56,16 @@ class SearchController extends Controller
             if (!\is_array($data)) {
                 throw new SearchConditionException('Bad received data');
             }
-            $json = $search->searchSync($data, $grouping, true, true);
-            $answer = new JsonResponse($json, 200, [], true);
+            $results = $search->searchSync($data, $grouping, false, true);
         } catch (SearchConditionException|SearchQueryGeneratorException|GroupingFactoryException $e) {
-            $answer = new JsonResponse(['error' => $e->getMessage()], 400);
+            return new JsonResponse(['error' => $e->getMessage()], 400);
         }
 
-        return $answer;
+        $info = $this->get('mbh_search.info_service');
+        $infoData = ['infoData' => $info->getInfo()];
+        $results = array_merge($results, $infoData);
+
+        return  new JsonResponse($results, 200, []);
     }
 
     /**
@@ -81,12 +84,16 @@ class SearchController extends Controller
                 throw new SearchConditionException('Received bad data');
             }
             $conditionsId = $search->searchAsync($data);
-            $answer = new JsonResponse(['conditionsId' => $conditionsId]);
+            $result = ['conditionsId' => $conditionsId];
         } catch (SearchConditionException|SearchQueryGeneratorException $e) {
-            $answer = new JsonResponse(['error' => $e->getMessage()], 400);
+            return new JsonResponse(['error' => $e->getMessage()], 400);
         }
 
-        return $answer;
+        $info = $this->get('mbh_search.info_service');
+        $infoData = ['infoData' => $info->getInfo()];
+        $result = array_merge($result, $infoData);
+
+        return  new JsonResponse($result);
     }
 
     /**

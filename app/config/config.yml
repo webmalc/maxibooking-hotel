@@ -33,6 +33,7 @@ framework:
         # handler_id set to null will use default session handler from php.ini
 #        handler_id:  ~
         handler_id:  mbh.session.handler.mongodb
+        gc_maxlifetime: 86400
     fragments:       ~
     http_method_override: true
     cache:

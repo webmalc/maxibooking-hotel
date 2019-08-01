@@ -2,7 +2,7 @@ declare let Routing: Routing;
 import Vue from 'vue';
 import store from '../store';
 
-import VueRoot from './Components/VueRoot'
+import VueRoot from './Components/VueRoot.vue'
 
 Vue.config.devtools = true;
 

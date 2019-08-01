@@ -35,6 +35,11 @@ class SearchControllerTest extends SearchWebTestCase
             $answer = json_decode($json, true);
             $this->assertCount($grouping ? 6 : 8, $answer['results']['success']);
             $this->assertArrayHasKey('conditionHash', $answer);
+            $this->assertArrayHasKey('infoData', $answer);
+            $infoKeys = array_keys($answer['infoData']);
+            foreach (['categories', 'hotels', 'promotions', 'roomTypes', 'tariffs'] as $key) {
+                $this->assertContains($key, $infoKeys);
+            }
             //** After resultConditionsRemove need add another tests */
 //            $actualResults = $answer['results']['success'];
 //            if (!$grouping) {

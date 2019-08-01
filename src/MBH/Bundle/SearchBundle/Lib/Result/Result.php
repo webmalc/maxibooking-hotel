@@ -60,7 +60,7 @@ class Result implements ResultInterface, ResultCacheablesInterface
     private $errorType;
 
     /** @var bool */
-    private $cached;
+    private $cached = false;
 
     /** @var string */
     private $cacheItemId = '';
@@ -362,6 +362,11 @@ class Result implements ResultInterface, ResultCacheablesInterface
         $this->cached = $cached;
 
         return $this;
+    }
+
+    public function getCached(): bool
+    {
+        return $this->cached;
     }
 
 

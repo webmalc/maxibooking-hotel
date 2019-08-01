@@ -3,10 +3,13 @@
 namespace MBH\Bundle\HotelBundle\Document;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\BaseBundle\Lib\DocumentTraits\FindAllRawTrait;
 use MBH\Bundle\HotelBundle\Model\RoomTypeRepositoryInterface;
 
 class RoomTypeCategoryRepository extends DocumentRepository implements RoomTypeRepositoryInterface
 {
+    use FindAllRawTrait;
+
     /**
      * @param Hotel $hotel
      * @param mixed $roomTypesCats ids array
@@ -57,6 +60,5 @@ class RoomTypeCategoryRepository extends DocumentRepository implements RoomTypeR
             ->toArray()
             ;
     }
-
 
 }

@@ -9,7 +9,7 @@ const defaultEnd = date.clone().add(1, 'days').format('DD.MM.YYYY');
 const state: object = {
     begin: defaultBegin,
     end: defaultEnd,
-    adults: 6,
+    adults: 1,
     children: 0,
     childrenAges: [],
     additionalBegin: 0,
@@ -18,7 +18,7 @@ const state: object = {
     orderId: 0,
     isForceBooking: false,
     isUseCache: false,
-    errorLevel: 1,
+    errorLevel: 0,
     isOnline: false,
     roomTypeSelections: []
 

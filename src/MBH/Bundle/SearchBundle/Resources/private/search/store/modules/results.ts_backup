@@ -2,13 +2,11 @@ import Vue from 'vue';
 import * as _ from 'lodash';
 
 const state = {
-    successes: {},
+    successes:{},
     errors: {},
     amount: 0,
     specialsHtml: '',
-    time: '',
-    infoData: {},
-    currentConditions: {}
+    time: ''
 };
 
 const minPriceInDays = (dayResults) => {
@@ -36,31 +34,19 @@ const mutations = {
     setSpecialsHtml(state, payload) {
         state.specialsHtml = payload;
     },
-
-    addCurrentSearchConditions(state, {begin, end}) {
-        state.currentConditions = {begin, end}
-    },
-
     addResults(state, payload) {
-        if (payload.hasOwnProperty('infoData')) {
-            state.infoData = payload.infoData;
+        if (payload.results.hasOwnProperty('success')) {
+            const successes = payload.results.success;
+            resultMerger(state.successes, successes);
         }
 
-        if (payload.hasOwnProperty('results')) {
-            const results = payload.results;
-            if (results.hasOwnProperty('success')) {
-                const successes = payload.results.success;
-                resultMerger(state.successes, successes);
-            }
+        if (payload.results.hasOwnProperty('errors')) {
+            const errors = payload.results.errors;
+            resultMerger(state.errors, errors);
+        }
 
-            if (results.hasOwnProperty('errors')) {
-                const errors = payload.results.errors;
-                resultMerger(state.errors, errors);
-            }
-
-            if (results.hasOwnProperty('time')) {
-                state.time = payload.results.time;
-            }
+        if (payload.results.hasOwnProperty('time')) {
+            state.time = payload.results.time;
         }
 
 
@@ -71,8 +57,6 @@ const mutations = {
         state.amount = 0;
         state.specialsHtml = '';
         state.time = '';
-        state.infoData = {};
-        state.currentConditions = {}
     },
     sortAllPrices(state) {
         for (let resultId in state.successes) {
@@ -162,31 +146,6 @@ const resultMerger = (existsResultsData, newResultsData) => {
 };
 
 const getters = {
-    getRoomTypeInfo: state => (roomTypeId) => {
-        const roomTypes = state.infoData.roomTypes;
-
-        return roomTypes[roomTypeId];
-    },
-    getHotelInfo: state => (hotelId) => {
-        const hotels = state.infoData.hotels;
-
-        return hotels[hotelId];
-    },
-    getTariffInfo: state => (tariffId) => {
-        const tariffs = state.infoData.tariffs;
-
-        return tariffs[tariffId];
-    },
-    getPromotionInfo: state => (promotionId) => {
-        const promotions = state.infoData.promotions;
-
-        return promotions[promotionId];
-    },
-    getCategoryInfo: state => (categoryId) => {
-        const categories = state.infoData.categories;
-
-        return categories[categoryId]
-    },
     isResults: state => {
         return Boolean(Object.keys(state.successes).length/* || Object.keys(state.errors).length*/);
     },

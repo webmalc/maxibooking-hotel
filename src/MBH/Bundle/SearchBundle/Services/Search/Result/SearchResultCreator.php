@@ -45,6 +45,7 @@ class SearchResultCreator implements SearchResultCreatorInterface
         $builder = $this->createCommonResult($searchQuery);
         $result = $builder
             ->addPrices($prices)
+            ->addRoomAvailableAmount($roomAvailableAmount)
             ->setOkStatus()
             ->getResult();
 
