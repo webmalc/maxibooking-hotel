@@ -4,6 +4,7 @@ namespace MBH\Bundle\ChannelManagerBundle\Controller;
 
 
 use MBH\Bundle\BaseBundle\Controller\BaseController;
+use MBH\Bundle\ChannelManagerBundle\Document\HomeAwayConfig;
 use MBH\Bundle\ChannelManagerBundle\Document\HomeAwayRoom;
 use MBH\Bundle\ChannelManagerBundle\Document\Tariff;
 use MBH\Bundle\ChannelManagerBundle\Form\HomeAwayRoomsType;
@@ -40,6 +41,11 @@ class HomeAwayController extends BaseController
         $isReadyResult = $this->get('mbh.cm_wizard_manager')->checkForReadinessOrGetStepUrl($config, HomeAway::NAME);
         if ($isReadyResult !== true) {
             return $this->redirect($isReadyResult);
+        }
+
+        if (!$config) {
+            $config = new HomeAwayConfig();
+            $config->setHotel($this->hotel);
         }
 
         $form = $this->createForm(HomeAwayType::class, $config);

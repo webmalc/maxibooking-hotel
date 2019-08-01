@@ -13,15 +13,19 @@ abstract class AbstractICalTypePackageInfo extends AbstractPackageInfo
 {
     /** @var array */
     protected $packageData;
+
     /** @var AbstractICalTypeChannelManagerRoom */
     protected $cmRoom;
+
     /** @var Tariff */
     protected $tariff;
 
     /** @var bool */
     protected $isCorrupted = false;
+
     /** @var */
     protected $packagePrice;
+
     /** @var bool */
     protected $isPackagePriceInit = false;
 
@@ -34,7 +38,11 @@ abstract class AbstractICalTypePackageInfo extends AbstractPackageInfo
      * @param Tariff $tariff
      * @return AbstractICalTypePackageInfo
      */
-    public function setInitData(array $packageData, AbstractICalTypeChannelManagerRoom $cmRoom, Tariff $tariff): AbstractICalTypePackageInfo
+    public function setInitData(
+        array $packageData,
+        AbstractICalTypeChannelManagerRoom $cmRoom,
+        Tariff $tariff
+    ): AbstractICalTypePackageInfo
     {
         $this->packageData = $packageData;
         $this->cmRoom = $cmRoom;
