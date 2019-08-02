@@ -357,8 +357,14 @@ class ResultsFormController extends BaseController
             }
         }
 
+        $screenWidth = $request->get('screenWidth');
+
+        $isMobile = empty($screenWidth) ? false: $screenWidth < 801;
+
         return $this->render(
-            '@MBHOnline/ResultsForm/stepOne.html.twig',
+            $isMobile
+                ? '@MBHOnline/ResultsForm/stepOneMobile.html.twig'
+                : '@MBHOnline/ResultsForm/stepOne.html.twig',
             [
                 'defaultTariff' => $defaultTariff ?? null,
                 'facilityArray' => $facilityArray,

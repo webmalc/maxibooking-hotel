@@ -1,0 +1,29 @@
+<div class="mbh-results-select-guest">
+    <div class="mbh-results-tourists-select-container{% if result.prices|length == 1 %} hidden{% endif %}">
+        <label for="mbh-results-tourists-select" class="price-for">{{ 'views.api.step_one.price_for' | trans ({}, 'MBHOnlineBundle')}}</label>
+        <select id="mbh-results-tourists-select" class="mbh-results-tourists-select select2">
+            {% for priceTourists, price  in result.prices %}
+                {% set arr = priceTourists|split('_') %}
+                <option value="{{ priceTourists }}">
+                    {% if arr[0] %}{{ arr[0] }} {{ 'views.api.getResultsTable.number_of_adults'|trans }}{% endif %}{% if arr[1] and arr[0] %}+{% endif %}{% if arr[1] %}{{ arr[1] }} {{ 'views.api.getResultsTable.number_of_children'|trans }}{% endif %}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    {% if result.prices|length == 1 %}
+        <span class="price-for">{{ 'views.api.step_one.price_for' | trans ({}, 'MBHOnlineBundle')}}</span>
+        {% for priceTourists, price  in result.prices %}
+            {% set arr = priceTourists|split('_') %}
+            {% if arr[0] %}
+                {% for i in 1..arr[0] %}
+                    <i class="person-icon fa fa-male"></i>
+                {% endfor %}
+            {% endif %}
+            {% if arr[1] %}
+                {% for k in 1..arr[1] %}
+                    <small class="person-icon"><i class="fa fa-child"></i></small>
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+</div>

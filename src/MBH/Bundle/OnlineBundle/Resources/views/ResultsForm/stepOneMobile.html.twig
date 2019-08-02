@@ -1,0 +1,31 @@
+{% extends "@MBHOnline/ResultsForm/StepOneBlock/layout.html.twig" %}
+{% block resultList %}
+    {% for result in results %}
+        <div class="row mbh-results-container mbh-results-container-mobile">
+            <div class="col-sx-12 col-sm-12">
+                {% include "@MBHOnline/ResultsForm/StepOneBlock/roomTypeNameAndHotelTitle.html.twig" %}
+                {% include "@MBHOnline/ResultsForm/StepOneBlock/tariffTitleWraper.html.twig" %}
+            </div>
+            <div class="col-sx-12 col-sm-12 mbh-results-image-wrapper">
+                {% include "@MBHOnline/ResultsForm/StepOneBlock/imageContainer.html.twig" %}
+            </div>
+            <div class="col-sx-12 col-sm-12">
+                {% include "@MBHOnline/ResultsForm/StepOneBlock/facilityWrapper.html.twig" %}
+                {% include "@MBHOnline/ResultsForm/StepOneBlock/roomTypeDescriptionContainer.html.twig" %}
+            </div>
+            <div class="col-sx-12 col-sm-12 mbh-results-price-container">
+                <div class="select-guest-and-price-and-nights-container">
+                    {% include "@MBHOnline/ResultsForm/StepOneBlock/selectGuest.html.twig" %}
+                    <div class="price-and-nights-container">
+                        {% include "@MBHOnline/ResultsForm/StepOneBlock/priceContainerPrice.html.twig" %}
+                        {% include "@MBHOnline/ResultsForm/StepOneBlock/priceContainerNights.html.twig" %}
+                    </div>
+                </div>
+                <div class="room-amount-and-room-count-selector-container">
+                    {% include "@MBHOnline/ResultsForm/StepOneBlock/priceContainerRoomAmount.html.twig" %}
+                    {% include "@MBHOnline/ResultsForm/StepOneBlock/priceContainerRoomCountSelector.html.twig" %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

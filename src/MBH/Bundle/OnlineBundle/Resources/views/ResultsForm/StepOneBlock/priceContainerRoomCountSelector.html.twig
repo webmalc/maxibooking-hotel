@@ -1,0 +1,26 @@
+{% set isSingleResult = results|length == 1 %}
+<div class="room-count-selector">
+    <div class="room-count-selector-label">
+        {{ 'views.api.getResultsTable.rooms_amount'|trans({}, 'MBHOnlineBundle') }}
+    </div>
+    <label>
+        {% set maxConfig = formConfig.maxPackages %}
+        {% if  result.roomsCount > maxConfig %}
+            {% set max = maxConfig %}
+        {% else %}
+            {% set max = result.roomsCount %}
+        {% endif %}
+        <select class="mbh-results-packages-count select2 {{ max == 1 ? 'hidden' }}">
+            <option value="0" {% if not isSingleResult %} selected="selected" {% endif %}>0
+            </option>
+            {% for i in 1..max %}
+                <option {% if isSingleResult and i == 1 %} selected="selected" {% endif %}
+                        value="{{ i }}">{{ i }}</option>
+            {% endfor %}
+        </select>
+        {% if max == 1 %}
+            <input type="checkbox" {% if isSingleResult %}checked{% endif %}
+                   class="mbh-results-packages-count" value="1">
+        {% endif %}
+    </label>
+</div>

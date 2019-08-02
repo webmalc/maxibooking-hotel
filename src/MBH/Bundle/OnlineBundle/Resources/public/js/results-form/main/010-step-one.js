@@ -1,11 +1,13 @@
 MbhResultForm.prototype.backgroundImageRoomForTablet = function () {
+    console.log(screen);
+    console.log(document.body.clientWidth);
+    var isTablet = 700 < screen.availWidth && screen.availWidth < 1023;
     document.querySelectorAll('.image-room-link').forEach(function(image) {
-        image.style.backgroundImage = isTabletDevice() ? image.dataset.backgroundTablet : image.dataset.background;
+        image.style.backgroundImage = isTablet ? image.dataset.backgroundTablet : image.dataset.background;
     });
 };
 
 MbhResultForm.prototype.initSwipeStepOne = function () {
-
     this._swiperListStepOne = [];
 
     document.querySelectorAll('.swiper-container').forEach(function(container) {
@@ -281,9 +283,11 @@ MbhResultForm.prototype.stepOne = function() {
     var _this = this;
     this._totalPackage = 0;
 
+    console.log(this.searchData.url);
+
     jQuery.ajax({
         url: this._urls.stepOne,
-        data: this.searchData.url,
+        data: this.searchData.url + '&screenWidth=' + screen.availWidth,
         dataType: 'html',
         crossDomain: true,
         success: function(data) {

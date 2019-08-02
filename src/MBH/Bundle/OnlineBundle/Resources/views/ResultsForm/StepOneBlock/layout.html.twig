@@ -1,0 +1,26 @@
+{% spaceless %}
+    <div id="mbh-results-global-wrapper" class="step-one">
+
+        {% include 'MBHOnlineBundle:ResultsForm:stepInfo.html.twig' with {'stepNumber': 1} %}
+        {% include 'MBHOnlineBundle:ResultsForm:tariffs.html.twig' with {'tariffResults': tariffResults} %}
+
+        <div id="mbh-results-duration">
+            <div id="mbh-result-response-info">
+                <span id="mbh-results-duration-days">{{ results|first.days }}</span>
+                <span id="mbh-results-duration-nights">{{ results|first.nights }}</span>
+            </div>
+            <h3>
+                {{ 'views.api.getResultsTable.hotel_rooms_for'|trans({}, 'MBHOnlineBundle') }}
+                {{ 'from'|trans }}
+                <span id="mbh-results-duration-begin">{{ results|first.begin|date('d.m.Y') }}</span> {{ 'to'|trans }}
+                <span id="mbh-results-duration-end">{{ results|first.end|date('d.m.Y') }}</span>
+            </h3>
+        </div>
+
+        <section id="mbh-results-list-wrapper">
+            <input type="hidden" id="mbh-form-locale" value="{{ app.request.locale }}">
+            {% block resultList %}
+            {% endblock %}
+        </section>
+    </div>
+{% endspaceless %}

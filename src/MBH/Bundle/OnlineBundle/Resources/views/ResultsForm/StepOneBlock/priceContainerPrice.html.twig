@@ -1,0 +1,9 @@
+<div class="price">
+    {% for priceTourists, price  in result.prices %}
+        <ul class="mbh-results-prices">
+            <li data-value="{{ price }}" class="{{ priceTourists }}">
+                {{ currency_symbol_with_price(price | result_number_format ) }}
+            </li>
+        </ul>
+    {% endfor %}
+</div>

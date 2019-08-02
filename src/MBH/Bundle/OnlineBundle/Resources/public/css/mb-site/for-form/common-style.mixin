@@ -194,6 +194,10 @@
 .maxOuterBorders(@_width_for_result_page: @size-screen-mid-width-tablet) {
   box-sizing: border-box;
 
+  @media (min-width: 700px) {
+    .widthWithCalc();
+  }
+
   @media (min-width: @size-screen-max-width-mobile) {
     width: @size-screen-max-width-mobile;
   }
@@ -203,7 +207,6 @@
   }
 
   width: 100%;
-  //.widthWithCalc();
 }
 
 @indent_btn: 30px;

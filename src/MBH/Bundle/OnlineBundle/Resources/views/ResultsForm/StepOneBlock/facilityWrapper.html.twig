@@ -1,0 +1,11 @@
+<div class="facility-wrapper">
+    {% if result.roomType.facilities is not empty %}
+        <ul class="inline-facility spacer-top">
+            {% for facility in result.roomType.facilities %}
+                <li><span class="fa fa-2x mbf-{{ facility }}"
+                          title="{% for key, val in facilityArray %}{% if key == facility %}{{ val }}{% endif %}{% endfor %}"></span>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>

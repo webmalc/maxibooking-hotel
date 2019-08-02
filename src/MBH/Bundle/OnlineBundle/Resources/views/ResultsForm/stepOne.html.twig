@@ -1,179 +1,24 @@
-{% spaceless %}
-    <div id="mbh-results-global-wrapper" class="step-one">
-
-        {% include 'MBHOnlineBundle:ResultsForm:stepInfo.html.twig' with {'stepNumber': 1} %}
-        {% include 'MBHOnlineBundle:ResultsForm:tariffs.html.twig' with {'tariffResults': tariffResults} %}
-
-        <div id="mbh-results-duration">
-            <div id="mbh-result-response-info">
-                <span id="mbh-results-duration-days">{{ results|first.days }}</span>
-                <span id="mbh-results-duration-nights">{{ results|first.nights }}</span>
+{% extends "@MBHOnline/ResultsForm/StepOneBlock/layout.html.twig" %}
+{% block resultList %}
+    {% for result in results %}
+        <div class="row mbh-results-container mbh-results-container-desktop">
+            <div class="col-xs-12 col-sm-4 mbh-results-image-wrapper">
+                {% include "@MBHOnline/ResultsForm/StepOneBlock/imageContainer.html.twig" %}
             </div>
-            <h3>
-                {{ 'views.api.getResultsTable.hotel_rooms_for'|trans({}, 'MBHOnlineBundle') }}
-                {{ 'from'|trans }}
-                <span id="mbh-results-duration-begin">{{ results|first.begin|date('d.m.Y') }}</span> {{ 'to'|trans }}
-                <span id="mbh-results-duration-end">{{ results|first.end|date('d.m.Y') }}</span>
-            </h3>
+            <div class="col-xs-12 col-sm-5 mbh-results-description-container">
+                {% include "@MBHOnline/ResultsForm/StepOneBlock/roomTypeNameAndHotelTitle.html.twig" %}
+                {% include "@MBHOnline/ResultsForm/StepOneBlock/selectGuest.html.twig" %}
+                {% include "@MBHOnline/ResultsForm/StepOneBlock/tariffTitleWraper.html.twig" %}
+                {% include "@MBHOnline/ResultsForm/StepOneBlock/facilityWrapper.html.twig" %}
+                {% include "@MBHOnline/ResultsForm/StepOneBlock/roomTypeDescriptionContainer.html.twig" %}
+            </div>
+            <div class="col-xs-12 col-sm-3 mbh-results-price-container">
+                {% include "@MBHOnline/ResultsForm/StepOneBlock/priceContainerPrice.html.twig" %}
+                {% include "@MBHOnline/ResultsForm/StepOneBlock/priceContainerNights.html.twig" %}
+                {% include "@MBHOnline/ResultsForm/StepOneBlock/priceContainerRoomCountSelector.html.twig" %}
+                <div style="flex-grow: 2;"></div>
+                {% include "@MBHOnline/ResultsForm/StepOneBlock/priceContainerRoomAmount.html.twig" %}
+            </div>
         </div>
-
-        <section id="mbh-results-list-wrapper">
-            <input type="hidden" id="mbh-form-locale" value="{{ app.request.locale }}">
-            {% set isSingleResult = results|length == 1 %}
-            {% for result in results %}
-                <div class="row mbh-results-container">
-                    <div class="col-xs-12 col-sm-4 mbh-results-image-wrapper">
-                        <div class="image-container bg-primary">
-                            {% set amountImage = result.roomType.onlineImages | length %}
-                            <div class="swiper-container"
-                                 data-room-type-id="{{ result.roomType.id }}"
-                                 data-use-swipe="{{ amountImage > 1 ? 'true' : 'false' }}">
-                                <div class="swiper-wrapper">
-                                    {% for image in result.roomType.onlineImagesByPriority %}
-                                        {% set fullImageLink = asset(vich_uploader_asset(image, 'imageFile')|imagine_filter('size_1980x1280')) %}
-                                        <div class="swiper-slide">
-                                            <a href="{{ fullImageLink }}"
-                                               class="fancybox item image-room-link{{ image.isMain ? ' active' : '' }}"
-                                               data-fancybox="group-{{ result.roomType.id }}"
-                                               title="room image #{{ loop.index }}"
-                                               data-background="url('{{ asset(vich_uploader_asset(image, 'imageFile') | imagine_filter('size_500x500')) }}')"
-                                               data-background-tablet="url('{{ fullImageLink }}')"
-                                            ></a>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                                {% if amountImage > 1 %}
-                                    <div class="button-navigation swiper-button-prev button-prev-{{ result.roomType.id }}"></div>
-                                    <div class="button-navigation swiper-button-next button-next-{{ result.roomType.id }}"></div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-5 mbh-results-description-container">
-                        <div class="mbh-results-room-type-name-wrapper">
-                            <span class="mbh-results-room-type-name"
-                                  data-id="{{ result.roomType.id }}">{{ result.roomType.localeTitle(app.request.locale) }}</span>
-                        </div>
-                        <div class="mbh-results-hotel-title-wrapper">
-                            <span class="mbh-results-hotel text-primary"
-                                  data-id="{{ result.roomType.hotel.id }}">{{ result.roomType.hotel.fullTitle }}</span>
-
-                        </div>
-                        <div class="mbh-results-select-guest">
-                            <div class="mbh-results-tourists-select-container{% if result.prices|length == 1 %} hidden{% endif %}">
-                                <label for="mbh-results-tourists-select" class="price-for">{{ 'views.api.step_one.price_for' | trans ({}, 'MBHOnlineBundle')}}</label>
-                                <select id="mbh-results-tourists-select" class="mbh-results-tourists-select select2">
-                                    {% for priceTourists, price  in result.prices %}
-                                        {% set arr = priceTourists|split('_') %}
-                                        <option value="{{ priceTourists }}">
-                                            {% if arr[0] %}{{ arr[0] }} {{ 'views.api.getResultsTable.number_of_adults'|trans }}{% endif %}{% if arr[1] and arr[0] %}+{% endif %}{% if arr[1] %}{{ arr[1] }} {{ 'views.api.getResultsTable.number_of_children'|trans }}{% endif %}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            {% if result.prices|length == 1 %}
-                                <span class="price-for">{{ 'views.api.step_one.price_for' | trans ({}, 'MBHOnlineBundle')}}</span>
-                                {% for priceTourists, price  in result.prices %}
-                                    {% set arr = priceTourists|split('_') %}
-                                    {% if arr[0] %}
-                                        {% for i in 1..arr[0] %}
-                                            <i class="person-icon fa fa-male"></i>
-                                        {% endfor %}
-                                    {% endif %}
-                                    {% if arr[1] %}
-                                        {% for k in 1..arr[1] %}
-                                            <small class="person-icon"><i class="fa fa-child"></i></small>
-                                        {% endfor %}
-                                    {% endif %}
-                                {% endfor %}
-                            {% endif %}
-                        </div>
-                        <div class="mbh-results-tariff-title-wrapper">
-                            <span class="mbh-results-tariff"
-                                  data-id="{{ result.tariff.id }}">{{ result.tariff.fullTitle }}</span>
-                        </div>
-                        <div class="facility-wrapper">
-                            {% if result.roomType.facilities is not empty %}
-                                <ul class="inline-facility spacer-top">
-                                    {% for facility in result.roomType.facilities %}
-                                        <li><span class="fa fa-2x mbf-{{ facility }}"
-                                                  title="{% for key, val in facilityArray %}{% if key == facility %}{{ val }}{% endif %}{% endfor %}"></span>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            {% endif %}
-                        </div>
-                        <div class="mbh-results-room-type-description-container">
-                            {% if result.roomType.description is not empty %}
-                                {% set desc = result.roomType.description | striptags | remove_non_printable_characters %}
-                                <div class="mbh-results-room-type-description-wrapper">
-                                    {% if desc|length > 120 %}
-                                        <span class="mbh-results-room-type-description description-small">
-                                            {{ desc|slice(0, 100) ~ '...' }}
-                                        </span>
-                                        <div class="mbh-results-room-type-description description-full">
-                                            {{ desc }}
-                                        </div>
-                                        <button class="mbh-results-room-type-description-toggle">
-                                            {{ 'views.api.getResultsTable.room_description.show'|trans({}, 'MBHOnlineBundle') }}
-                                        </button>
-                                    {% else %}
-                                        <div class="mbh-results-room-type-description">
-                                            {{ desc }}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-3 mbh-results-price-container">
-                        <div class="price">
-                            {% for priceTourists, price  in result.prices %}
-                                <ul class="mbh-results-prices">
-                                    <li data-value="{{ price }}" class="{{ priceTourists }}">
-                                        {{ currency_symbol_with_price(price | result_number_format ) }}
-                                    </li>
-                                </ul>
-                            {% endfor %}
-                        </div>
-                        <div class="nights">
-                            {% set amountNights = results|first.nights %}
-                            {{ 'views.api.step_one.amount_nights'|transchoice( amountNights, {'%amountNight%' : amountNights }, 'MBHOnlineBundle') }}
-                        </div>
-
-                        <div class="room-count-selector">
-                            <div class="room-count-selector-label">
-                                {{ 'views.api.getResultsTable.rooms_amount'|trans({}, 'MBHOnlineBundle') }}
-                            </div>
-                            <label>
-                                {% set maxConfig = formConfig.maxPackages %}
-                                {% if  result.roomsCount > maxConfig %}
-                                    {% set max = maxConfig %}
-                                {% else %}
-                                    {% set max = result.roomsCount %}
-                                {% endif %}
-                                <select class="mbh-results-packages-count select2 {{ max == 1 ? 'hidden' }}">
-                                    <option value="0" {% if not isSingleResult %} selected="selected" {% endif %}>0
-                                    </option>
-                                    {% for i in 1..max %}
-                                        <option {% if isSingleResult and i == 1 %} selected="selected" {% endif %}
-                                                value="{{ i }}">{{ i }}</option>
-                                    {% endfor %}
-                                </select>
-                                {% if max == 1 %}
-                                    <input type="checkbox" {% if isSingleResult %}checked{% endif %}
-                                           class="mbh-results-packages-count" value="1">
-                                {% endif %}
-                            </label>
-                        </div>
-                        <div style="flex-grow: 2;"></div>
-                        <div class="mbh-center room-amount">
-                            {{ 'views.api.getResultsTable.room_cache_count' | trans({}, 'MBHOnlineBundle') }}:
-                            {{ result.roomsCount }}
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </section>
-    </div>
-{% endspaceless %}
+    {% endfor %}
+{% endblock %}

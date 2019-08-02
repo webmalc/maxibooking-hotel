@@ -1,0 +1,25 @@
+<div class="image-container bg-primary">
+    {% set amountImage = result.roomType.onlineImages | length %}
+    <div class="swiper-container"
+         data-room-type-id="{{ result.roomType.id }}"
+         data-use-swipe="{{ amountImage > 1 ? 'true' : 'false' }}">
+        <div class="swiper-wrapper">
+            {% for image in result.roomType.onlineImagesByPriority %}
+                {% set fullImageLink = asset(vich_uploader_asset(image, 'imageFile')|imagine_filter('size_1980x1280')) %}
+                <div class="swiper-slide">
+                    <a href="{{ fullImageLink }}"
+                       class="fancybox item image-room-link{{ image.isMain ? ' active' : '' }}"
+                       data-fancybox="group-{{ result.roomType.id }}"
+                       title="room image #{{ loop.index }}"
+                       data-background="url('{{ asset(vich_uploader_asset(image, 'imageFile') | imagine_filter('size_500x500')) }}')"
+                       data-background-tablet="url('{{ fullImageLink }}')"
+                    ></a>
+                </div>
+            {% endfor %}
+        </div>
+        {% if amountImage > 1 %}
+            <div class="button-navigation swiper-button-prev button-prev-{{ result.roomType.id }}"></div>
+            <div class="button-navigation swiper-button-next button-next-{{ result.roomType.id }}"></div>
+        {% endif %}
+    </div>
+</div>

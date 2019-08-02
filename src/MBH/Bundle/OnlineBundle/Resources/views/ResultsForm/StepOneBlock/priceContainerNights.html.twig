@@ -1,0 +1,4 @@
+<div class="nights">
+    {% set amountNights = results|first.nights %}
+    {{ 'views.api.step_one.amount_nights'|transchoice( amountNights, {'%amountNight%' : amountNights }, 'MBHOnlineBundle') }}
+</div>

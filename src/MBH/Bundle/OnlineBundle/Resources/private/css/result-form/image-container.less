@@ -1,0 +1,51 @@
+.mbh-results-image-wrapper {
+  .image-container {
+    text-align: center;
+
+    .swiper-container {
+      .heightSwiperContainer() {
+        // samsung s7/s8/s9 | Huawei p20/p30 | Xiaomi Mi A2/ Redmi
+        @media (min-width: 360px) {
+          height: 266px;
+        }
+
+        // iphone 6/7/8/X
+        @media (min-width: 375px) {
+          height: 277px;
+        }
+
+        // iphone 6/7/8 max
+        @media (min-width: 414px) {
+          height: 306px;
+        }
+
+        // blackberry Playbook
+        @media (min-width: 600px) {
+          height: 444px;
+        }
+
+        @media (min-width: @size-screen-mid-width-tablet) {
+          height: 200px;
+        }
+
+        height: 237px;
+      }
+
+      .heightSwiperContainer();
+
+      .swiper-button-prev {
+        background-image: url("/bundles/mbhonline/images/swiper/btn-prev.svg");
+      }
+      .swiper-button-next {
+        background-image: url("/bundles/mbhonline/images/swiper/btn-next.svg");
+      }
+    }
+    a {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+    }
+  }
+}
