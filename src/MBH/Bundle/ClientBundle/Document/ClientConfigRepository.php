@@ -13,7 +13,7 @@ class ClientConfigRepository extends DocumentRepository
     /**
      * @return ClientConfig
      */
-    public function fetchConfig()
+    public function fetchConfig(): ClientConfig
     {
         /** @var DocumentManager $qb */
         $qb = $this->createQueryBuilder();
