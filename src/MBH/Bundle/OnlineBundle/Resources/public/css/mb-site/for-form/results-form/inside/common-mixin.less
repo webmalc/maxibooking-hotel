@@ -57,7 +57,9 @@
 
       color: #FFFFFF;
 
-      .heightPanelHeading ();
+      @media (min-width: @size-screen-max-width-mobile) {
+        .heightPanelHeading ();
+      }
     }
 
     .panel-body {

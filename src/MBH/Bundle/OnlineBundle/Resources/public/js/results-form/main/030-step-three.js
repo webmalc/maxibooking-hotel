@@ -1,11 +1,8 @@
 MbhResultForm.prototype.togglePaymentSystemVisibility = function () {
     var _this = this,
-        paymentSystemsBlock = document.querySelector('#mbh-payment-systems');
-        listPaymentRow = document.querySelectorAll('.mbh-payment-type-row');
-
-    if (paymentSystemsBlock.dataset.onlyOneSystem === '1') {
-        return;
-    }
+        paymentSystemsBlock = document.querySelector('#mbh-payment-systems'),
+        listPaymentRow = document.querySelectorAll('.mbh-payment-type-row'),
+        useOnlyOneSystem = paymentSystemsBlock.dataset.onlyOneSystem === '1';
 
     listPaymentRow.forEach(function(wrapper) {
         var input = wrapper.querySelector('.mbh-payment-types-radio');
@@ -14,7 +11,10 @@ MbhResultForm.prototype.togglePaymentSystemVisibility = function () {
                 wrapperSecond.classList.remove('selected');
             });
             input.checked = true;
-            paymentSystemsBlock.hidden = _this.paymentTypes.onlines.indexOf(input.value) === -1;
+
+            if (!useOnlyOneSystem) {
+                paymentSystemsBlock.hidden = _this.paymentTypes.onlines.indexOf(input.value) === -1;
+            }
 
             wrapper.classList.add('selected');
             _this.resize();

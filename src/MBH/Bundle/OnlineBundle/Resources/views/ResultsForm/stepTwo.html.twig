@@ -201,11 +201,15 @@
 
     <div id="mbh-results-actions">
         <button id="mbh-user-form-previous" class="button btn btn-default">
-            <small><i class="fa fa-chevron-left"></i></small>
-            {{ 'views.api.getUserForm.choose_other_rooms'|trans({}, 'MBHOnlineBundle') }}
+            <span class="visible-xs">
+                <img src="/bundles/mbhonline/images/arrow-previous.svg">
+            </span>
+            <span class="hidden-xs">
+                {{ 'views.api.getUserForm.choose_other_rooms'|trans({}, 'MBHOnlineBundle') }}
+            </span>
         </button>
-        <button id="mbh-user-form-next" class="button btn btn-primary spacer-left-sm">{{ 'views.api.getUserForm.continue'|trans({}, 'MBHOnlineBundle') }}
-            <small><i class="fa fa-chevron-right "></i></small>
+        <button id="mbh-user-form-next" class="button btn btn-primary spacer-left-sm">
+            {{ 'views.api.getUserForm.continue'|trans({}, 'MBHOnlineBundle') }}
         </button>
     </div>
 </div>

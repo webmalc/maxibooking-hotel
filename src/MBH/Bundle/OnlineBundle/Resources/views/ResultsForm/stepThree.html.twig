@@ -81,11 +81,15 @@
     </div>
     <div id="mbh-results-actions">
         <button id="mbh-payment-types-previous" class="button btn btn-default">
-            <small><i class="fa fa-chevron-left"></i></small>
-            {{ 'views.api.getPaymentType.choose_other_rooms'|trans({}, 'MBHOnlineBundle') }}
+            <span class="visible-xs">
+                <img src="/bundles/mbhonline/images/arrow-previous.svg">
+            </span>
+            <span class="hidden-xs">
+                {{ 'views.api.getPaymentType.choose_other_rooms'|trans({}, 'MBHOnlineBundle') }}
+            </span>
         </button>
-        <button id="mbh-payment-types-next" class="button btn btn-primary spacer-left-sm">{{ 'views.api.getPaymentType.reservate'|trans({}, 'MBHOnlineBundle') }}
-            <small><i class="fa fa-chevron-right "></i></small>
+        <button id="mbh-payment-types-next" class="button btn btn-primary spacer-left-sm">
+            {{ 'views.api.getPaymentType.reservate'|trans({}, 'MBHOnlineBundle') }}
         </button>
     </div>
 </div>

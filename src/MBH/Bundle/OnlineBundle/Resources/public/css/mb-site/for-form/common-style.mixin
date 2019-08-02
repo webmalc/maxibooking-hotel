@@ -211,24 +211,6 @@
 
 @indent_btn: 30px;
 
-.marginLeftBtn() {
-  @media (min-width: 472px) {
-    margin: unset;
-    margin-left: @indent_btn;
-    order: unset;
-  }
-  order: 2;
-  margin: 5px 0 10px 0;
-}
-
-.marginRightBtn() {
-  @media (min-width: 472px) {
-    margin: unset;
-    margin-right: @indent_btn;
-  }
-  margin: 10px 0 5px 0;
-}
-
 .replaceStyleBootstrap() {
   .btn {
     .textUppercase();

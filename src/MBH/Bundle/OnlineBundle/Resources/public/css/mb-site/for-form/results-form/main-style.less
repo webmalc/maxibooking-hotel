@@ -39,19 +39,22 @@ body {
 
     @import "../../../../../private/css/result-form/step-info";
     @import "inside/step-info-wrapper";
+
+    @import "../../../../../private/css/result-form/result-action";
+
     #mbh-results-actions {
-      @media (min-width: 472px) {
-        flex-direction: row;
-        height: 78px;
+      height: 78px;
+      background: #FFFFFF;
+
+      button:first-of-type {
+        height: 43px;
       }
 
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      flex-wrap: wrap;
-
-      border: 1px solid @general_color;
-      background: #FFFFFF;
+      @media (min-width: @size-screen-max-width-mobile) {
+        border: 1px solid @general_color;
+        border-bottom: none;
+      }
+      border-top: 1px solid @general_color;
     }
 
     .step-one {
@@ -75,30 +78,8 @@ body {
 
       @import "inside/results-wrapper";
     }
+
     .step-two {
-      #mbh-results-actions {
-        justify-content: space-between;
-
-        #mbh-user-form-previous {
-          .marginLeftBtn();
-        }
-
-        #mbh-user-form-next {
-          .marginRightBtn();
-        }
-      }
-
-      @media (max-width: @size-screen-max-width-mobile-minus-one) {
-        .mbh-results-step-wrapper {
-          display: flex;
-          flex-direction: column;
-
-          .mbh-results-services-and-user-form {
-            order: 2;
-          }
-        }
-      }
-
       .mbh-results-services-and-user-form {
         #mbh-results-services-wrapper {
           .panel-body {
@@ -188,7 +169,7 @@ body {
                   display: flex;
                   align-items: center;
 
-                  input {
+                  #mbh-form-personal-data {
                     width: 35px;
                     height: 35px;
                   }
@@ -205,19 +186,7 @@ body {
       }
     }
 
-
-
     .step-three {
-      #mbh-results-actions {
-        justify-content: space-between;
-        #mbh-payment-types-previous {
-          .marginLeftBtn();
-        }
-        #mbh-payment-types-next {
-          .marginRightBtn();
-        }
-      }
-
       #mbh-results-payment-form {
         .panel-body {
           padding-top: 0;
@@ -229,13 +198,15 @@ body {
             margin-bottom: 7px;
           }
 
-          .col-sm-1 {
-            margin-left: 10px;
-            margin-right: -10px;
-          }
+          @media (min-width: @size-screen-mid-width-tablet) {
+            .col-sm-1 {
+              margin-left: 10px;
+              margin-right: -10px;
+            }
 
-          .col-sm-11 {
-            padding-left: 0;
+            .col-sm-11 {
+              padding-left: 0;
+            }
           }
 
           .col-sm-1.hidden + .col-sm-11 {
