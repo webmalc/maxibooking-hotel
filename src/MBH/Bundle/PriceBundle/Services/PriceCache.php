@@ -80,7 +80,7 @@ class PriceCache
         $oldPriceCachesCallback = function () use ($begin, $end, $hotel, $roomTypes, $tariffs) {
             return $this->dm->getRepository('MBHPriceBundle:PriceCache')
                 ->fetch(
-                    $begin, $end, $hotel, $this->helper->toIds($roomTypes), $this->helper->toIds($tariffs), false, $this->roomManager->useCategories
+                    $begin, $end, $hotel, $this->helper->toIds($roomTypes), $this->helper->toIds($tariffs), false, $this->roomManager->getIsUseCategories()
                 );
         };
         $oldPriceCaches = $this->helper->getFilteredResult($this->dm, $oldPriceCachesCallback);
@@ -95,7 +95,9 @@ class PriceCache
                 continue;
             }
 
-            $updateCaches[$oldPriceCache->getDate()->format('d.m.Y')][$oldPriceCache->getTariff()->getId()][$oldPriceCache->getCategoryOrRoomType($this->roomManager->useCategories)->getId()] = $oldPriceCache;
+            $updateCaches[$oldPriceCache->getDate()->format('d.m.Y')][$oldPriceCache->getTariff(
+            )->getId()][$oldPriceCache->getCategoryOrRoomType($this->roomManager->getIsUseCategories(
+            ))->getId()] = $oldPriceCache;
 
             $tempPriceCache = $holderDataForm->createPriceCache();
 
@@ -114,7 +116,7 @@ class PriceCache
                 ]
             ];
 
-            if ($this->roomManager->useCategories) {
+            if ($this->roomManager->getIsUseCategories()) {
                 $field = 'roomTypeCategory';
                 $collection = 'RoomTypeCategory';
                 $collectionId = $oldPriceCache->getRoomTypeCategory()->getId();
@@ -163,7 +165,7 @@ class PriceCache
                             continue;
                         }
 
-                        if ($this->roomManager->useCategories) {
+                        if ($this->roomManager->getIsUseCategories()) {
                             $field = 'roomTypeCategory';
                             $collection = 'RoomTypeCategory';
                         } else {

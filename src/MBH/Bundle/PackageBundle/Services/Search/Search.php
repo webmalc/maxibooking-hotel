@@ -114,7 +114,7 @@ class Search implements SearchInterface
             if (!empty($query->availableRoomTypes)) {
                 $query->roomTypes = array_intersect($query->roomTypes, $query->availableRoomTypes);
             };
-        } elseif ($this->manager->useCategories && !$query->forceRoomTypes) {
+        } elseif ($this->manager->getIsUseCategories() && !$query->forceRoomTypes) {
             $roomTypes = [];
             foreach ($query->roomTypes as $catId) {
                 $cat = $this->dm->getRepository('MBHHotelBundle:RoomTypeCategory')->find($catId);
@@ -374,7 +374,11 @@ class Search implements SearchInterface
 
                 $useCategories = $query->isOnline && $clientConfig && $clientConfig->getUseRoomTypeCategory();
                 $result = new SearchResult();
-                $tourists = $roomType->getAdultsChildrenCombination($adults, $children, $this->manager->useCategories);
+                $tourists = $roomType->getAdultsChildrenCombination(
+                    $adults,
+                    $children,
+                    $this->manager->getIsUseCategories()
+                );
 
                 if ($query->accommodations) {
                     $accommodationRooms = $this->dm->getRepository('MBHHotelBundle:Room')->fetchAccommodationRooms(
@@ -424,11 +428,12 @@ class Search implements SearchInterface
                     $tourists['adults'],
                     $tourists['children'],
                     $promotion,
-                    $this->manager->useCategories,
+                    $this->manager->getIsUseCategories(),
                     $query->getSpecial()
                 );
 
-                if (!$prices || (($query->adults + $query->children) != 0 && !isset($prices[$tourists['adults'] . '_' . $tourists['children']]))) {
+                if (!$prices || (($query->adults + $query->children) != 0
+                        && !isset($prices[$tourists['adults'] . '_' . $tourists['children']]))) {
                     continue;
                 }
                 foreach ($prices as $price) {

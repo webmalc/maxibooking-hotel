@@ -126,7 +126,7 @@ abstract class AbstractRequestDataFormatter
                 $this->getRoomTypeArray($roomType),
                 [],
                 true,
-                $this->roomManager->useCategories
+                $this->roomManager->getIsUseCategories()
             )
         );
 
@@ -368,7 +368,7 @@ abstract class AbstractRequestDataFormatter
         if (!$roomType) {
             return [];
         }
-        if (!$this->roomManager->useCategories) {
+        if (!$this->roomManager->getIsUseCategories()) {
             return [$roomType->getId()];
         } else {
             if (!$roomType->getCategory()) {

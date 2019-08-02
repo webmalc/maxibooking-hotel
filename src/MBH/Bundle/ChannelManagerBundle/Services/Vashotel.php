@@ -935,7 +935,7 @@ class Vashotel extends Base implements ChannelManagerServiceInterface
                         $this->getRoomTypeArray($filterRoomType),
                         [],
                         true,
-                        $this->roomManager->useCategories
+                        $this->roomManager->getIsUseCategories()
                     )
                 );
                 return $filtered;
