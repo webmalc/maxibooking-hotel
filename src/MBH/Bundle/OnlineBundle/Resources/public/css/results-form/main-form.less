@@ -62,40 +62,14 @@ body {
 
 
 /* ----------- STEP -------- */
-
+@import "../../../private/css/result-form/step-info";
 .step-info {
-  margin-top: 25px;
-  display: flex;
-  flex-wrap: wrap;
-
   .step-number-info {
-    display: flex;
-    align-items: center;
-
     margin-bottom: 15px;
-
     &:not(.active) {
       .step-number {
         background: #BDBDBD;
       }
-    }
-
-    .step-number {
-
-      display: flex;
-      justify-content: center;
-      align-items: center;
-
-      width: 40px;
-      height: 40px;
-      color: #FFFFFF;
-    }
-
-    .step-title {
-      margin-left: 18px;
-      margin-right: 18px;
-      font-size: 16px;
-      line-height: 24px;
     }
   }
 }
@@ -181,18 +155,17 @@ body {
   display: none;
 }
 
-.mbh-results-hotel {
-  font-size: 12px;
-  color: #999;
-  padding: 0 0 0 4px;
-}
-
 .warning .mbh-results-hotel {
   color: #000;
 }
 
 #mbh-results-list-wrapper {
   .mbh-results-container {
+    @import "../../../private/css/result-form/room-type-description";
+    @import "../../../private/css/result-form/facility-wrapper";
+    @import "../../../private/css/result-form/select-guest";
+    @import "../../../private/css/result-form/image-container";
+
     &:nth-of-type(odd) {
       background-color: lightgrey;
     }
@@ -202,132 +175,6 @@ body {
     margin: 10px 0;
     padding: 5px 0;
 
-  // BEGIN IMG
-    .mbh-results-image-wrapper {
-      .main-image {
-        margin-bottom: 5px;
-        text-align: center;
-
-        height: 120px;
-
-        a {
-          display: block;
-          width: 100%;
-          height: 100%;
-          background-size: cover;
-          background-position: center;
-        }
-      }
-      .list-small-image {
-
-        a {
-          margin-right: 7px;
-          margin-left: 7px;
-
-          &:first-of-type {
-            margin-left: 0;
-          }
-
-          @media (max-width: 374px) {
-            &:nth-of-type(4) {
-              margin-right: 0;
-            }
-            &:nth-of-type(n+5) {
-              display: none;
-            }
-          }
-
-          @media (min-width: 375px) and (max-width: 439px){
-            &:nth-of-type(5) {
-              margin-right: 0;
-            }
-            &:nth-of-type(n+6) {
-              display: none;
-            }
-          }
-
-          @media (min-width: 440px) and (max-width: 549px){
-            &:nth-of-type(6) {
-              margin-right: 0;
-            }
-            &:nth-of-type(n+7) {
-              display: none;
-            }
-          }
-
-          @media (min-width: 550px) and (max-width: 831px){
-            &:nth-of-type(7) {
-              margin-right: 0;
-            }
-            &:nth-of-type(n+8) {
-              display: none;
-            }
-          }
-
-          @media (min-width: 832px) {
-            &:nth-of-type(3) {
-              margin-right: 0;
-            }
-            &:nth-of-type(n+4) {
-              display: none;
-            }
-          }
-
-          img {
-            height: 50px;
-            width: 50px;
-          }
-        }
-      }
-    }
-
-  // END IMG
-  // BEGIN DESCRIPTION
-    .mbh-results-description-container {
-      .mbh-results-hotel-and-tariff-wrapper {
-        span + span {
-          margin-left: 5px;
-        }
-      }
-
-      .facility-wrapper {
-
-        ul.inline-facility {
-          margin-left: 0;
-          padding: 0;
-          list-style: none;
-
-          li {
-            display: inline-block;
-            margin-right: 5px;
-            padding: 3px;
-          }
-        }
-      }
-
-      .mbh-results-room-type-description-container {
-        .mbh-results-room-type-description-wrapper {
-          .mbh-results-room-type-description-toggle {
-            background: #FFFFFF;
-            border: none;
-
-            font-size: 11px;
-          }
-
-
-          &.show-description {
-            .mbh-results-room-type-description {
-              display: block;
-            }
-          }
-
-          .mbh-results-room-type-description {
-            display: none;
-          }
-        }
-      }
-    }
-  // END DESCRIPTION
   // BEGIN PRICE
     .mbh-results-price-container {
       > * {
@@ -354,28 +201,6 @@ body {
       .room-amount {
       }
     }
-  // END PRICE
-    @media (max-width: 767px) {
-      display: flex;
-      flex-direction: column;
-
-      .mbh-results-description-container {
-        order: 1;
-        margin-bottom: 15px;
-      }
-      .mbh-results-image-wrapper {
-        margin-bottom: 15px;
-        order: 2;
-
-        .main-image {
-          height: 250px;
-        }
-      }
-      .mbh-results-price-container {
-        order: 3;
-      }
-    }
-
   }
 }
 
@@ -400,20 +225,6 @@ body {
 
 .mbh-results-tourists-select {
   width: 100px;
-}
-
-/* -------------------------- SERVICES -------------------------------- */
-.mbh-results-services-name {
-  font-size: 15px;
-
-  small {
-    font-size: 11px;
-    color: #7e747c;
-  }
-}
-
-.mbh-results-services-prices {
-  font-size: 16px;
 }
 
 /* -------------------------- RESULTS ACTIONS -------------------------------- */

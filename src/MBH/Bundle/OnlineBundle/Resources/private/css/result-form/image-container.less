@@ -3,35 +3,31 @@
     text-align: center;
 
     .swiper-container {
-      .heightSwiperContainer() {
-        // samsung s7/s8/s9 | Huawei p20/p30 | Xiaomi Mi A2/ Redmi
-        @media (min-width: 360px) {
-          height: 266px;
-        }
-
-        // iphone 6/7/8/X
-        @media (min-width: 375px) {
-          height: 277px;
-        }
-
-        // iphone 6/7/8 max
-        @media (min-width: 414px) {
-          height: 306px;
-        }
-
-        // blackberry Playbook
-        @media (min-width: 600px) {
-          height: 444px;
-        }
-
-        @media (min-width: @size-screen-mid-width-tablet) {
-          height: 200px;
-        }
-
-        height: 237px;
+      // samsung s7/s8/s9 | Huawei p20/p30 | Xiaomi Mi A2/ Redmi
+      @media (min-width: 360px) {
+        height: 266px;
       }
 
-      .heightSwiperContainer();
+      // iphone 6/7/8/X
+      @media (min-width: 375px) {
+        height: 277px;
+      }
+
+      // iphone 6/7/8 max
+      @media (min-width: 414px) {
+        height: 306px;
+      }
+
+      // blackberry Playbook
+      @media (min-width: 600px) {
+        height: 444px;
+      }
+
+      @media (min-width: 800px) {
+        height: 200px;
+      }
+
+      height: 237px;
 
       .swiper-button-prev {
         background-image: url("/bundles/mbhonline/images/swiper/btn-prev.svg");

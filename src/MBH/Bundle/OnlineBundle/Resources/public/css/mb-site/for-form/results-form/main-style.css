@@ -302,9 +302,30 @@ body #mbh-results-wrapper #mbh-package-info .mbh-price-amount i.fa {
   font-size: 0.8em;
 }
 body #mbh-results-wrapper .step-info {
-  margin: 25px 15px 65px 15px;
+  margin-top: 25px;
   display: flex;
   flex-wrap: wrap;
+}
+body #mbh-results-wrapper .step-info .step-number-info {
+  display: flex;
+  align-items: center;
+}
+body #mbh-results-wrapper .step-info .step-number-info .step-number {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  color: #FFFFFF;
+}
+body #mbh-results-wrapper .step-info .step-number-info .step-title {
+  margin-left: 18px;
+  margin-right: 18px;
+  font-size: 16px;
+  line-height: 24px;
+}
+body #mbh-results-wrapper .step-info {
+  margin: 25px 15px 65px 15px;
 }
 @media (min-width: 732px) {
   body #mbh-results-wrapper .step-info {
@@ -312,8 +333,6 @@ body #mbh-results-wrapper .step-info {
   }
 }
 body #mbh-results-wrapper .step-info .step-number-info {
-  display: flex;
-  align-items: center;
   margin-bottom: 10px;
 }
 body #mbh-results-wrapper .step-info .step-number-info.active .step-number {
@@ -322,19 +341,7 @@ body #mbh-results-wrapper .step-info .step-number-info.active .step-number {
 body #mbh-results-wrapper .step-info .step-number-info .step-number {
   font-size: 16px;
   line-height: 16px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 40px;
-  height: 40px;
   background: #BDBDBD;
-  color: #FFFFFF;
-}
-body #mbh-results-wrapper .step-info .step-number-info .step-title {
-  margin-left: 18px;
-  margin-right: 18px;
-  font-size: 16px;
-  line-height: 24px;
 }
 @media (min-width: 832px) {
   body #mbh-results-wrapper .step-info .step-number-info + .step-number-info {
@@ -467,7 +474,7 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-image
     height: 444px;
   }
 }
-@media (min-width: 832px) {
+@media (min-width: 800px) {
   body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-image-wrapper .image-container .swiper-container {
     height: 200px;
   }
@@ -486,9 +493,6 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-image
   background-position: center;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-select-guest {
-  font-size: 16px;
-  line-height: 28px;
-  text-align: center;
   text-align: unset;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-select-guest a {
@@ -519,6 +523,11 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-room-
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-room-type-description-container .mbh-results-room-type-description-wrapper .mbh-results-room-type-description.description-full {
   display: none;
+}
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-select-guest {
+  font-size: 16px;
+  line-height: 28px;
+  text-align: center;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container {
   margin: 20px 0;
@@ -566,13 +575,6 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-conta
   line-height: 28px;
   text-align: center;
   width: 80px;
-}
-body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-price-container .room-count-selector .mbh-results-packages-count a {
-  border-radius: unset;
-  height: 34px;
-}
-body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-price-container .room-count-selector .mbh-results-packages-count a .select2-chosen {
-  margin-top: 4px;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container .mbh-results-price-container .room-amount {
   color: #737373;
@@ -759,13 +761,6 @@ body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form #mbh-res
   line-height: 28px;
   text-align: center;
   text-align: right;
-}
-body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form #mbh-results-services-wrapper .mbh-service-item .mbh-service-item-hotel a {
-  border-radius: unset;
-  height: 34px;
-}
-body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form #mbh-results-services-wrapper .mbh-service-item .mbh-service-item-hotel a .select2-chosen {
-  margin-top: 4px;
 }
 body #mbh-results-wrapper .step-two .mbh-results-services-and-user-form .mbh-results-form-user-container .panel-body {
   padding: 36px 25px;
