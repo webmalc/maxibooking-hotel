@@ -8,6 +8,12 @@
   border: 1px solid lightgrey;
   background: #FFFFFF;
 
+  .filler {
+    @media (min-width: 768px) {
+      flex-grow: 2;
+    }
+  }
+
   #mbh-results-package-info-container {
     display: flex;
     margin-left: 30px;
@@ -38,11 +44,9 @@
 
   #mbh-results-total {
     margin: 0 0.3em;
+    .mbh-results-total-text,
     .mbh-results-total-sum {
       margin-right: 0.3em;
-    }
-    span + span {
-      margin-left: 0.3em;
     }
   }
 

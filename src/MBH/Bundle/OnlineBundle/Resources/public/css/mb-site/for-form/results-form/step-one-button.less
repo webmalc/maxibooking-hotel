@@ -3,6 +3,8 @@
 .importFontRoboto();
 
 body {
+  margin: 0;
+  padding: 0;
   .commonStyleFont();
 
   .replaceStyleBootstrap();
@@ -11,12 +13,19 @@ body {
   justify-content: center;
   background-color: unset;
 
+  .filler {
+    @media (min-width: @size-screen-max-width-mobile) {
+      flex-grow: 2;
+    }
+  }
+
   #mbh-results-actions {
     .maxOuterBorders(970px);
 
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    //flex-direction: column;
+
+    justify-content: space-between;
 
     align-items: center;
 
@@ -26,8 +35,11 @@ body {
     }
 
     height: inherit;
-    border: 1px solid @general_color;
-    border-bottom: none;
+    @media (min-width: @size-screen-max-width-mobile) {
+      border: 1px solid @general_color;
+      border-bottom: none;
+    }
+    border-top: 1px solid @general_color;
     background: #FFFFFF;
 
     #mbh-results-package-info-container {
@@ -78,8 +90,16 @@ body {
     #mbh-results-total {
       display: flex;
 
+      @media(min-width: 768px) {
+        flex-direction: row;
+      }
+      flex-direction: column;
+
       .mbh-results-total-text {
-        font-size: 14px;
+        @media (min-width: @size-screen-max-width-mobile) {
+          font-size: 14px;
+        }
+        font-size: 12px;
         margin-right: 0.3em;
         .textUppercase();
       }
@@ -91,9 +111,62 @@ body {
       }
 
       .currency-symbol {
-        font-size: 16px;
+        font-size: 14px;
         font-weight: bold;
       }
     }
+  }
+
+  // bootstrap
+  @media (max-width: 767px) {
+    .hidden-xs {
+      display: none !important;
+    }
+  }
+
+  .btn[disabled] {
+    cursor: not-allowed;
+    opacity: 0.65;
+    filter: alpha(opacity=65);
+    -webkit-box-shadow: none;
+    box-shadow: none;
+  }
+
+  button[disabled] {
+    cursor: default;
+  }
+
+  .btn {
+    display: inline-block;
+    margin-bottom: 0;
+    font-weight: normal;
+    text-align: center;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    background-image: none;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    padding: 10px 18px;
+    font-size: 15px;
+    line-height: 1.42857143;
+    border-radius: 0;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  button {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    -webkit-appearance: button;
+    cursor: pointer;
+    text-transform: none;
+    overflow: visible;
+    color: #ffffff;
+    margin: 0;
   }
 }

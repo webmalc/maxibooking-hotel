@@ -87,6 +87,8 @@
   /* Legacy iOS */
 }
 body {
+  margin: 0;
+  padding: 0;
   font-family: 'Roboto', sans-serif;
   font-style: normal;
   font-weight: normal;
@@ -115,23 +117,33 @@ body .btn-default {
   border-color: unset;
   background: #BDBDBD;
 }
-body .panel-heading {
-  padding: 15px 25px;
+@media (min-width: 732px) {
+  body .panel-heading {
+    padding: 15px 25px;
+  }
 }
 body .panel {
   box-shadow: none;
 }
+@media (min-width: 732px) {
+  body .filler {
+    flex-grow: 2;
+  }
+}
 body #mbh-results-actions {
   box-sizing: border-box;
-  width: calc(100vw - 30px);
+  width: 100%;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   height: inherit;
-  border: 1px solid var(--main);
-  border-bottom: none;
+  border-top: 1px solid var(--main);
   background: #FFFFFF;
+}
+@media (min-width: 700px) {
+  body #mbh-results-actions {
+    width: calc(100vw - 30px);
+  }
 }
 @media (min-width: 732px) {
   body #mbh-results-actions {
@@ -147,6 +159,12 @@ body #mbh-results-actions {
   body #mbh-results-actions {
     flex-direction: row;
     justify-content: flex-end;
+  }
+}
+@media (min-width: 732px) {
+  body #mbh-results-actions {
+    border: 1px solid var(--main);
+    border-bottom: none;
   }
 }
 body #mbh-results-actions #mbh-results-package-info-container {
@@ -188,12 +206,23 @@ body #mbh-results-actions #mbh-results-next:hover {
 }
 body #mbh-results-actions #mbh-results-total {
   display: flex;
+  flex-direction: column;
+}
+@media (min-width: 768px) {
+  body #mbh-results-actions #mbh-results-total {
+    flex-direction: row;
+  }
 }
 body #mbh-results-actions #mbh-results-total .mbh-results-total-text {
-  font-size: 14px;
+  font-size: 12px;
   margin-right: 0.3em;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+@media (min-width: 732px) {
+  body #mbh-results-actions #mbh-results-total .mbh-results-total-text {
+    font-size: 14px;
+  }
 }
 body #mbh-results-actions #mbh-results-total #mbh-results-total-sum {
   font-size: 18px;
@@ -202,6 +231,53 @@ body #mbh-results-actions #mbh-results-total #mbh-results-total-sum {
   letter-spacing: 0.05em;
 }
 body #mbh-results-actions #mbh-results-total .currency-symbol {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: bold;
+}
+@media (max-width: 767px) {
+  body .hidden-xs {
+    display: none !important;
+  }
+}
+body .btn[disabled] {
+  cursor: not-allowed;
+  opacity: 0.65;
+  filter: alpha(opacity=65);
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+body button[disabled] {
+  cursor: default;
+}
+body .btn {
+  display: inline-block;
+  margin-bottom: 0;
+  font-weight: normal;
+  text-align: center;
+  vertical-align: middle;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+  cursor: pointer;
+  background-image: none;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  padding: 10px 18px;
+  font-size: 15px;
+  line-height: 1.42857143;
+  border-radius: 0;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+body button {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  -webkit-appearance: button;
+  cursor: pointer;
+  text-transform: none;
+  overflow: visible;
+  color: #ffffff;
+  margin: 0;
 }
