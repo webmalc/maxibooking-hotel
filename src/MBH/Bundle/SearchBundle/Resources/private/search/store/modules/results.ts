@@ -2,11 +2,13 @@ import Vue from 'vue';
 import * as _ from 'lodash';
 
 const state = {
-    successes:{},
+    successes: {},
     errors: {},
     amount: 0,
     specialsHtml: '',
-    time: ''
+    time: '',
+    infoData: {},
+    currentConditions: {}
 };
 
 const minPriceInDays = (dayResults) => {
@@ -34,19 +36,31 @@ const mutations = {
     setSpecialsHtml(state, payload) {
         state.specialsHtml = payload;
     },
+
+    addCurrentSearchConditions(state, {begin, end}) {
+        state.currentConditions = {begin, end}
+    },
+
     addResults(state, payload) {
-        if (payload.results.hasOwnProperty('success')) {
-            const successes = payload.results.success;
-            resultMerger(state.successes, successes);
+        if (payload.hasOwnProperty('infoData')) {
+            state.infoData = payload.infoData;
         }
 
-        if (payload.results.hasOwnProperty('errors')) {
-            const errors = payload.results.errors;
-            resultMerger(state.errors, errors);
-        }
+        if (payload.hasOwnProperty('results')) {
+            const results = payload.results;
+            if (results.hasOwnProperty('success')) {
+                const successes = payload.results.success;
+                resultMerger(state.successes, successes);
+            }
 
-        if (payload.results.hasOwnProperty('time')) {
-            state.time = payload.results.time;
+            if (results.hasOwnProperty('errors')) {
+                const errors = payload.results.errors;
+                resultMerger(state.errors, errors);
+            }
+
+            if (results.hasOwnProperty('time')) {
+                state.time = payload.results.time;
+            }
         }
 
 
@@ -57,6 +71,8 @@ const mutations = {
         state.amount = 0;
         state.specialsHtml = '';
         state.time = '';
+        state.infoData = {};
+        state.currentConditions = {}
     },
     sortAllPrices(state) {
         for (let resultId in state.successes) {
@@ -108,11 +124,11 @@ const mutations = {
         for (let dateKey in results) {
             if (results.hasOwnProperty(dateKey)) {
                 results[dateKey].map(function(result) {
-                    let rest = result.minRoomsCount - amount;
+                    let rest = result.roomAvailableAmount - amount;
                     if (rest < 0) {
                         rest = 0;
                     }
-                    result.minRoomsCount = rest;
+                    result.roomAvailableAmount = rest;
                 })
             }
         }
@@ -146,6 +162,31 @@ const resultMerger = (existsResultsData, newResultsData) => {
 };
 
 const getters = {
+    getRoomTypeInfo: state => (roomTypeId) => {
+        const roomTypes = state.infoData.roomTypes;
+
+        return roomTypes[roomTypeId];
+    },
+    getHotelInfo: state => (hotelId) => {
+        const hotels = state.infoData.hotels;
+
+        return hotels[hotelId];
+    },
+    getTariffInfo: state => (tariffId) => {
+        const tariffs = state.infoData.tariffs;
+
+        return tariffs[tariffId];
+    },
+    getPromotionInfo: state => (promotionId) => {
+        const promotions = state.infoData.promotions;
+
+        return promotions[promotionId];
+    },
+    getCategoryInfo: state => (categoryId) => {
+        const categories = state.infoData.categories;
+
+        return categories[categoryId]
+    },
     isResults: state => {
         return Boolean(Object.keys(state.successes).length/* || Object.keys(state.errors).length*/);
     },

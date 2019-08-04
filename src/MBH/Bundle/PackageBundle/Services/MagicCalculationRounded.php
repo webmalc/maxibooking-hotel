@@ -16,7 +16,7 @@ class MagicCalculationRounded extends MagicCalculation
 
     protected function getTotalPrice($total)
     {
-        return round($total, $this->sign, PHP_ROUND_HALF_UP);
+        return round($total, $this->sign);
     }
 
 }

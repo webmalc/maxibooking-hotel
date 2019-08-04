@@ -438,6 +438,12 @@ services:
         arguments:
             - MBH\Bundle\SearchBundle\Document\SearchResultHolder
 
+    mbh_search.promotion_repository:
+        class: MBH\Bundle\SearchBundle\Document\PromotionRepository
+        factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
+        arguments:
+            - MBH\Bundle\PriceBundle\Document\Promotion
+
     mbh_search.search_cache_item_repository:
       class: MBH\Bundle\SearchBundle\Document\SearchResultCacheItemRepository
       factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
@@ -598,6 +604,18 @@ services:
             - '@mbh.hotel.selector'
             - '@mbh_search.shared_data_fetcher'
 
+    mbh_search.info_service:
+      class: MBH\Bundle\SearchBundle\Services\Data\InfoService
+      arguments:
+          - '@mbh_search.room_type_repository'
+          - '@mbh_search.tariff_repository'
+          - '@mbh_search.hotel_repository'
+          - '@mbh_search.room_type_category_repository'
+          - '@mbh_search.promotion_repository'
+          - '%online_booking%'
+          - '@twig.extension.httpfoundation'
+          - '@assets.packages'
+          - '@liip_imagine.templating.filter_helper'
 
     ##Fetchers
     mbh_search.shared_data_fetcher:

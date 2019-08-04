@@ -19,5 +19,7 @@ interface PriceBuilderInterface
 
     public function addDayPrice(DayPrice $dayPrice): PriceBuilderInterface;
 
+    public function setTotal($total): PriceBuilderInterface;
+
     public function getPrice(): Price;
 }

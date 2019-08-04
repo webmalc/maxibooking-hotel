@@ -77,11 +77,11 @@
                         <img :src="mainImage.thumb"
                             width="70px" height="70px"> </a></div>
                     <div class="col-xs-8">
-                        <div>{{orderData.resultRoomType.hotelName}}</div>
+                        <div>{{hotelInfo.title}}</div>
                         <div class="numtype">Тип номера</div>
                         <div><a class="room_link"
                                 href="https://azovsky.ru/azovsky/azovskiy-rooms/azovskiy-rooms-standart/"
-                                target="_blank">{{orderData.resultRoomType.categoryName}}</a></div>
+                                target="_blank">{{categoryInfo.title}}</a></div>
                     </div>
                 </div>
                 <div class="date-info row">
@@ -106,7 +106,7 @@
                 </div>
                 <div class="guests">
                     <div>Гости: {{adults}}{{children ? `+${children}`: ''}}</div>
-                    <div>Тариф: {{orderData.resultTariff.fullName}}</div>
+                    <div>Тариф: {{tariffInfo.title}}</div>
                 </div>
                 <div class="row" style="margin-top: 15px">
                     <div class="title" style="display: inline-block;">Стоимость</div>
@@ -134,6 +134,9 @@
 <script>
     import * as moment from 'moment';
     import LightBox from 'vue-image-lightbox';
+
+    const createDate = date => moment(date, 'DD.MM.YYYY');
+
     export default {
         name: "Order",
         components: {
@@ -169,16 +172,16 @@
                 return !Object.keys(this.$store.state.order.currentOrder).length || this.$store.state.order.status === 'error';
             },
             adults() {
-                return this.orderData.resultConditions.adults
+                return this.orderData.adults
             },
             children() {
-                return this.orderData.resultConditions.children
+                return this.orderData.children
             },
             begin() {
-                return moment(this.orderData.begin);
+                return createDate(this.orderData.begin);
             },
             end() {
-                return moment(this.orderData.end);
+                return createDate(this.orderData.end);
             },
             nights() {
                 return this.end.diff(this.begin, 'days');
@@ -218,18 +221,34 @@
                 return `${this.totalPrice} руб.(100% от ${this.totalPrice} руб.)`
             },
             roomTypeId() {
-                return this.orderData.resultRoomType.id;
+                return this.orderData.roomType;
             },
             tariffId() {
-                return this.orderData.resultTariff.id;
+                return this.orderData.tariff;
+            },
+            roomTypeInfo() {
+                return this.$store.getters['results/getRoomTypeInfo'](this.roomTypeId);
+            },
+            tariffInfo() {
+                return this.$store.getters['results/getTariffInfo'](this.tariffId);
+            },
+            categoryInfo() {
+                const categoryId = this.roomTypeInfo.category.$id.$id;
+
+                return this.$store.getters['results/getCategoryInfo'](categoryId);
+            },
+            hotelInfo() {
+                const hotelId = this.roomTypeInfo.hotel.$id.$id;
+
+                return this.$store.getters['results/getHotelInfo'](hotelId);
             },
             image() {
-                return this.orderData.resultRoomType.images;
+                return this.roomTypeInfo.frontImages;
             },
             mainImage() {
                 let images;
-                if (Array.isArray(this.orderData.resultRoomType.images)) {
-                    images = this.orderData.resultRoomType.images.filter(image => image.isMain)
+                if (Array.isArray(this.image)) {
+                    images = this.image.filter(image => image.isMain)
                 }
 
                 let mainImage =  images.shift();

@@ -80,6 +80,7 @@ const actions = {
         commit('setSearchSyncType');
         commit('results/clearResults',null , {root: true});
         let conditions = rootGetters['form/getSearchConditions'];
+        commit('results/addCurrentSearchConditions', {begin: conditions.begin, end: conditions.end}, {root: true});
         try {
             let url = Routing.generate(state.syncSearchUrl, {grouping: 'roomType'}, true);
             console.log(url);
@@ -103,7 +104,7 @@ const actions = {
         commit('results/clearResults',null , {root: true});
         let conditions = rootGetters['form/getSearchConditions'];
         const asyncUrl = Routing.generate(state.asyncSearchStartUrl, {}, true);
-
+        commit('results/addCurrentSearchConditions', {begin: conditions.begin, end: conditions.end}, {root: true});
         try {
             const conditionResponse = await request(asyncUrl, conditions);
             if (!conditionResponse.ok) {
@@ -113,6 +114,7 @@ const actions = {
             }
             const data = await conditionResponse.json();
             const conditionsId = data.conditionsId;
+            commit('results/addResults', data, {root: true});
             let url = Routing.generate(state.asyncSearchUrl, {id: conditionsId, grouping: 'roomType'}, true);
             let requestThreshold: number = 30;
             let responseStatus: number;

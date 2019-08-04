@@ -48,6 +48,13 @@ class PriceBuilder implements PriceBuilderInterface
         return $this;
     }
 
+    public function setTotal($total): PriceBuilderInterface
+    {
+        $this->price->setTotal($total);
+
+        return $this;
+    }
+
     public function getPrice(): Price
     {
         $price = $this->price;

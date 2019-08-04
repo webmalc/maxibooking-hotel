@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 
 /**
- * @ODM\Document(collection="promotions")
+ * @ODM\Document(collection="promotions", repositoryClass="MBH\Bundle\PriceBundle\Document\PromotionRepository")
  * @Gedmo\Loggable
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @ODM\HasLifecycleCallbacks

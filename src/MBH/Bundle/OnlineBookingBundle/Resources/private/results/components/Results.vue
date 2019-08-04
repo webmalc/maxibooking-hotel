@@ -1,10 +1,10 @@
 <template>
     <div id="all-results">
         <ResultInstance
-                v-for="(dateResults, dateKey) in sortedDateResults(result.roomType.id)"
+                v-for="(dateResults, dateKey) in sortedDateResults(result.roomType)"
                 :data="dateResults"
-                :roomType="result.roomType"
-                :key="`date-key-${result.roomType.id}-${dateKey}`"/>
+                :roomType="roomTypeInfo(result.roomType)"
+                :key="`date-key-${result.roomType}-${dateKey}`"/>
     </div>
 </template>
 
@@ -19,6 +19,9 @@
         methods: {
             sortedDateResults(roomTypeId) {
                 return this.$store.getters['results/getSortedDayResults'](roomTypeId);
+            },
+            roomTypeInfo(roomTypeId) {
+                return this.$store.getters['results/getRoomTypeInfo'](roomTypeId)
             }
         }
     }

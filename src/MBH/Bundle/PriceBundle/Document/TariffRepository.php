@@ -5,6 +5,7 @@ namespace MBH\Bundle\PriceBundle\Document;
 use Doctrine\MongoDB\CursorInterface;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 use Doctrine\ODM\MongoDB\MongoDBException;
+use MBH\Bundle\BaseBundle\Lib\DocumentTraits\FindAllRawTrait;
 use MBH\Bundle\HotelBundle\Document\Hotel;
 use Doctrine\ODM\MongoDB\Query\Builder;
 use MBH\Bundle\BaseBundle\Service\Cache;
@@ -12,6 +13,9 @@ use MBH\Bundle\PriceBundle\Lib\TariffFilter;
 
 class TariffRepository extends DocumentRepository
 {
+
+    use FindAllRawTrait;
+
     /**
      * Get Tariffs with > 1 package
      * @return array

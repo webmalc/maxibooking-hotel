@@ -239,17 +239,16 @@ const getters = {
             return {};
         }
         return {
-            begin: moment(order.begin).format('DD.MM.YYYY'),
-            end: moment(order.end).format('DD.MM.YYYY'),
-            adults: order.resultConditions.adults,
-            children: order.resultConditions.children,
-            childrenAges: order.resultConditions.childrenAges,
-            roomType: order.resultRoomType.id,
-            tariff: order.resultTariff.id,
+            begin: order.begin,
+            end: order.end,
+            adults: order.adults,
+            children: order.children,
+            childrenAges: order.childrenAges,
+            roomType: order.roomType,
+            tariff: order.tariff,
             /*savedQueryId: order.resultConditions.id,*/
             paymentType: 'hundred',
             total: order.prices[0].total,
-
         };
     }
 };

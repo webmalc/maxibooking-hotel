@@ -1,7 +1,7 @@
 <template>
     <div>
-        <div v-if="rbkReady">Процесс оплаты
-            <div v-if="paymentStatus === 'closed'" @click="openRBKPayment">Кнопка отрыть оплату заново.</div>
+        <div v-if="rbkReady">Не перезагружайте страницу. Процесс оплаты заказа {{orderResult.orderId}}
+            <div v-if="paymentStatus === 'closed'" @click="openRBKPayment">Открыть оплату заново.</div>
         </div>
         <div v-else>Тут крутилка пока не готовы данные для оплаты</div>
     </div>

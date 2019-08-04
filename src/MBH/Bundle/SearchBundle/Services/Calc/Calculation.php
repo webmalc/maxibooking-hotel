@@ -202,7 +202,7 @@ class Calculation
     private function createPrice(CalcQueryInterface $calcQuery, array $dayPrices): Price
     {
         $priceBuilder = new PriceBuilder();
-        $priceDirector = new PriceDirector($priceBuilder);
+        $priceDirector = new PriceDirector($priceBuilder, $this->priceRoundSign);
 
         return $priceDirector->createPrice($calcQuery, $dayPrices);
     }

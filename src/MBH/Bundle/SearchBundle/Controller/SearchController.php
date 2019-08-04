@@ -2,6 +2,11 @@
 
 namespace MBH\Bundle\SearchBundle\Controller;
 
+use DateTime;
+use Doctrine\ODM\MongoDB\LockException;
+use Doctrine\ODM\MongoDB\Mapping\MappingException;
+use Doctrine\ODM\MongoDB\MongoDBException;
+use function is_array;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Document\SearchResultCacheItem;
@@ -14,6 +19,8 @@ use MBH\Bundle\SearchBundle\Lib\Exceptions\RoomTypesTypeException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchConditionException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchQueryGeneratorException;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\SearchResultCacheException;
+use MBH\Bundle\SearchBundle\Lib\Exceptions\SharedFetcherException;
+use MBH\Bundle\SearchBundle\Services\Search\Debug\DebugPriceCheckerException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -45,22 +52,27 @@ class SearchController extends Controller
      * @param Request $request
      * @param null|string $grouping
      * @return Response
+     * @throws MongoDBException
+     * @throws SharedFetcherException
      */
     public function syncSearchAction(Request $request, ?string $grouping = null): Response
     {
         $data = json_decode($request->getContent(), true);
         $search = $this->get('mbh_search.search');
         try {
-            if (!\is_array($data)) {
+            if (!is_array($data)) {
                 throw new SearchConditionException('Bad received data');
             }
-            $json = $search->searchSync($data, $grouping, true, true);
-            $answer = new JsonResponse($json, 200, [], true);
+            $results = $search->searchSync($data, $grouping, false, true);
         } catch (SearchConditionException|SearchQueryGeneratorException|GroupingFactoryException $e) {
-            $answer = new JsonResponse(['error' => $e->getMessage()], 400);
+            return new JsonResponse(['error' => $e->getMessage()], 400);
         }
 
-        return $answer;
+        $info = $this->get('mbh_search.info_service');
+        $infoData = ['infoData' => $info->getInfo()];
+        $results = array_merge($results, $infoData);
+
+        return  new JsonResponse($results, 200, []);
     }
 
     /**
@@ -103,16 +115,20 @@ class SearchController extends Controller
         $data = json_decode($request->getContent(), true);
         $search = $this->get('mbh_search.search');
         try {
-            if (!\is_array($data)) {
+            if (!is_array($data)) {
                 throw new SearchConditionException('Received bad data');
             }
             $conditionsId = $search->searchAsync($data);
-            $answer = new JsonResponse(['conditionsId' => $conditionsId]);
+            $result = ['conditionsId' => $conditionsId];
         } catch (SearchConditionException|SearchQueryGeneratorException $e) {
-            $answer = new JsonResponse(['error' => $e->getMessage()], 400);
+            return new JsonResponse(['error' => $e->getMessage()], 400);
         }
 
-        return $answer;
+        $info = $this->get('mbh_search.info_service');
+        $infoData = ['infoData' => $info->getInfo()];
+        $result = array_merge($result, $infoData);
+
+        return  new JsonResponse($result);
     }
 
     /**
@@ -144,8 +160,8 @@ class SearchController extends Controller
      */
     public function clientAction(): Response
     {
-        $begin = new \DateTime('midnight');
-        $end = new \DateTime('midnight +1 days');
+        $begin = new DateTime('midnight');
+        $end = new DateTime('midnight +1 days');
         $adults = 2;
         $children = 1;
         $childrenAges = [3];
@@ -197,7 +213,7 @@ class SearchController extends Controller
         $config = $this->get('doctrine.odm.mongodb.document_manager')->getRepository(ClientConfig::class)->findOneBy([]);
         /** @var ClientConfig $config */
         $begin = $config->getBeginDate();
-        $now = new \DateTime('midnight');
+        $now = new DateTime('midnight');
         if (!$begin || $begin < $now) {
             $begin = clone $now;
         }
@@ -220,9 +236,9 @@ class SearchController extends Controller
      * @Route("/price-check", name="search_price_check", options={"expose"=true}, defaults={"_format":"json"})
      * @param Request $request
      * @return JsonResponse
-     * @throws \Doctrine\ODM\MongoDB\LockException
-     * @throws \Doctrine\ODM\MongoDB\Mapping\MappingException
-     * @throws \MBH\Bundle\SearchBundle\Services\Search\Debug\DebugPriceCheckerException
+     * @throws LockException
+     * @throws MappingException
+     * @throws DebugPriceCheckerException
      */
     public function priceCheckAction(Request $request): JsonResponse
     {

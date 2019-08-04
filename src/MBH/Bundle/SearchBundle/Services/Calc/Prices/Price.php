@@ -108,14 +108,7 @@ class Price
 
     public function getTotal()
     {
-        $total = 0;
-        if (is_array($this->priceByDay)) {
-            foreach ($this->priceByDay as $dayPrice) {
-                $total += $dayPrice->getTotal();
-            }
-        }
-
-        return $total;
+        return $this->total;
     }
 
     /**

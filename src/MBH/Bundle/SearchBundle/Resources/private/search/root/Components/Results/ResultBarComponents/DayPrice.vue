@@ -9,8 +9,8 @@
 
 <script lang="ts">
     declare let $: any;
-    import moment from 'moment';
-    import accounting from 'accounting';
+    import * as moment from 'moment';
+    import * as accounting from 'accounting';
 
 
     export default {
@@ -29,12 +29,29 @@
             detail: function () {
                 let html: string = '';
                 for (let dayPrice of this.dayPrices) {
-                    let day = moment(dayPrice['date']).format('DD MMM');
-                    let price = accounting.formatMoney(dayPrice['price'], "", 2, ",", ".");
-                    html += `${day} - ${price} - <i class='fa fa-sliders'></i> ${dayPrice['tariff']['name']}<br>`;
+                    let day = moment(dayPrice['date'], 'DD.MM.YYYY').format('DD MMM');
+                    let price = accounting.formatMoney(dayPrice['total'], "", 2, ",", ".");
+                    const tariffName = this.tariffInfo(dayPrice['tariff']).title;
+
+                    html += `${day} - ${price} - <i class='fa fa-sliders'></i> ${tariffName}`;
+                    if (dayPrice['promotion']) {
+                        const promotionName = this.promotionInfo(dayPrice['promotion']).title;
+                        html += `&nbsp;<i class='fa fa-bookmark'></i>${promotionName}`;
+                    }
+
+                    html += `<br>`;
                 }
 
                 return `<small>${html}</small>`;
+            },
+
+        },
+        methods: {
+            tariffInfo: function(tariffId) {
+                return this.$store.getters['results/getTariffInfo'](tariffId);
+            },
+            promotionInfo: function(promotionId) {
+                return this.$store.getters['results/getPromotionInfo'](promotionId);
             }
         }
     }

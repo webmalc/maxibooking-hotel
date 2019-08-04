@@ -25,7 +25,7 @@
                     <div class="leftinrdm">
                         <p class="titlerdm">
                             <a :href="hotelLink"  class="hotel_link" target="_blank">
-                                {{roomType.hotelName}}
+                                {{hotelInfo.title}}
                             </a> &nbsp;
                         </p>
                         <p class="numtype">
@@ -34,7 +34,7 @@
                             <a class="room_link"
                                href="https://azovsky.ru/azovland/tipi-nomerov/nomera-komfort-v-domikah/"
                                target="_blank">
-                                {{roomType.categoryName}}</a>
+                                {{categoryInfo.title}}</a>
                         </p>
                         <p class="gueststype"><b>Гости:</b> {{formData.adults}} взр. {{formData.children ? `${formData.children} реб`: '' }}</p>
                         <a :href="`https://azovsky.ru${eat.url}`"
@@ -51,7 +51,7 @@
                         <p class="titlerdm">Цена за {{nights}} ночей</p>
                         <div class="clear"></div>
                         <p class="pricerdm">
-                            <span class="noneprice"> {{currentOldPrice}}</span> &#8381;
+                            <span class="noneprice" v-if="currentOldPrice"> {{currentOldPrice}}&#8381;</span>
                             <span class="newprice">{{currentPrice}}&#8381;</span>
                         </p>
                         <p class="datesrdm">{{showDate(begin)}} - {{showDate(end)}}</p>
@@ -77,7 +77,7 @@
                                 :key="`${roomType.id}-${key}`"
                                 @click="trClick(key)"
                         >
-                            <td>{{result.resultTariff.fullName}}</td>
+                            <td>{{tariffInfo(result.tariff).fullTitle}}</td>
                             <td class="redtd"></td>
                             <td>{{result.prices[0].total}}&#8381;</td>
                             <td>
@@ -118,8 +118,10 @@
 </template>
 
 <script lang="ts">
-    import moment from 'moment';
+    import * as moment from 'moment';
     import LightBox from 'vue-image-lightbox';
+
+    const createDate = date => moment(date, 'DD.MM.YYYY');
 
     moment.locale('ru');
     export default {
@@ -144,16 +146,16 @@
                 return this.nights + 1;
             },
             begin() {
-                return moment(this.data[0].begin);
+                return createDate(this.data[0].begin);
             },
             end() {
-                return moment(this.data[0].end);
+                return createDate(this.data[0].end);
             },
             searchBegin() {
-                return moment(this.data[0].resultConditions.begin);
+                return createDate(this.$store.state.results.currentConditions.begin);
             },
             searchEnd() {
-                return moment(this.data[0].resultConditions.end);
+                return createDate(this.$store.state.results.currentConditions.end);
             },
             additionalDates() {
                 return this.begin.diff(this.searchBegin) || this.end.diff(this.searchEnd);
@@ -165,14 +167,21 @@
                 return this.selectedResult.prices[0].total;
             },
             currentOldPrice() {
-                const price = this.currentPrice * 100 / (100 - this.selectedResult.prices[0].discount);
+                const discountArray = this.selectedResult.prices[0].priceByDay[0].discount;
+                let price = null;
+                if (discountArray.length > 0) {
+                    const discountObject = discountArray[0];
+                    const discount = discountObject[Object.keys(discountObject)[0]];
+                    price = this.currentPrice * 100 / (100 - discount);
+                    price = Math.round(price);
+                }
 
-                return Math.round(price);
+                return price;
             },
             mainImage() {
                 let images;
-                if (Array.isArray(this.roomType.images)) {
-                    images = this.roomType.images.filter(image => image.isMain)
+                if (Array.isArray(this.roomType.frontImages)) {
+                    images = this.roomType.frontImages.filter(image => image.isMain)
                 }
 
                 let mainImage =  images.shift();
@@ -186,20 +195,30 @@
 
             },
             images() {
-                return this.roomType.images;
+                return this.roomType.frontImages;
             },
-            mainImageindex() {
+            mainImageIndex() {
                 return this.images.findIndex(image => image.isMain);
             },
             hotelLink() {
-                return this.roomType.links.url;
+                return this.hotelInfo.links.url;
             },
             eat() {
                 return {
-                    number: this.roomType.links.eat.number,
-                    url: this.roomType.links.eat.url
+                    number: this.hotelInfo.links.eat.number,
+                    url: this.hotelInfo.links.eat.url
                 }
-            }
+            },
+            hotelInfo() {
+                const hotelId = this.roomType.hotel.$id.$id;
+
+                return this.$store.getters['results/getHotelInfo'](hotelId);
+            },
+            categoryInfo() {
+                const categoryId = this.roomType.category.$id.$id;
+
+                return this.$store.getters['results/getCategoryInfo'](categoryId);
+            },
         },
         methods: {
             showDate(dateMoment) {
@@ -220,6 +239,9 @@
             saveOrderData(type) {
                 this.$store.commit('order/selectOrder', this.selectedResult);
                 this.$router.push({name: 'order', params: {type}});
+            },
+            tariffInfo(tariffId) {
+                return this.$store.getters['results/getTariffInfo'](tariffId);
             }
         }
 

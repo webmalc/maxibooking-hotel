@@ -3,10 +3,14 @@
 namespace MBH\Bundle\HotelBundle\Document;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\BaseBundle\Lib\DocumentTraits\FindAllRawTrait;
 use MBH\Bundle\HotelBundle\Model\RoomTypeRepositoryInterface;
 
 class RoomTypeRepository extends DocumentRepository implements RoomTypeRepositoryInterface
 {
+
+    use FindAllRawTrait;
+
     /**
      * Get roomTypes with > 1 package
      * @return array

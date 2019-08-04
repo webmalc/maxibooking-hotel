@@ -32,7 +32,7 @@
                 >
                     <table style="width: 100%;"
                            class="not-auto-datatable package-search-table table table-striped table-hover table-condensed table-icons table-actions"
-                           v-for="(dateGroupedResults, dateKey) in sortedDateResults(roomTypeGroupedResult.roomType.id)" :key="`date-key-${dateKey}`"
+                           v-for="(dateGroupedResults, dateKey) in sortedDateResults(roomTypeGroupedResult.roomType)" :key="`date-key-${dateKey}`"
                     >
                         <thead>
                         <tr>
@@ -64,11 +64,12 @@
 </template>
 
 <script lang="ts">
-    import moment from 'moment';
+    import * as moment from 'moment';
     import ResultBar from './ResultBar.vue'
 
 
     moment.locale('ru');
+
     export default {
         name: "ResultsWrapper",
         components: {
@@ -91,16 +92,27 @@
         },
         methods: {
             name(result) {
-                return `${result.roomType.name}: ${result.roomType.hotelName}`;
+                const roomTypeId = result.roomType;
+                const roomType = this.roomTypeInfo(roomTypeId);
+                const hotelId = roomType.hotel.$id.$id;
+                const hotel = this.hotelInfo(hotelId);
+
+                return `${roomType.fullTitle}: ${hotel.fullTitle}`;
             },
             datedName(firstResultInArray) {
-                return `${moment(firstResultInArray.begin).format('DD (dd) MMMM YYYY')} - ${moment(firstResultInArray.end).format('DD (dd) MMMM YYYY')}`
+                return `${moment(firstResultInArray.begin, 'DD.MM.YYYY').format('DD (dd) MMMM YYYY')} - ${moment(firstResultInArray.end, 'DD.MM.YYYY').format('DD (dd) MMMM YYYY')}`
             },
             sortedDateResults(roomTypeId) {
                 return this.$store.getters['results/getSortedDayResults'](roomTypeId);
             },
             shuffle() {
                 this.$store.commit('results/shuffle');
+            },
+            roomTypeInfo(roomTypeId) {
+                return this.$store.getters['results/getRoomTypeInfo'](roomTypeId);
+            },
+            hotelInfo(hotelId) {
+                return this.$store.getters['results/getHotelInfo'](hotelId);
             }
         }
     }

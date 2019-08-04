@@ -7,7 +7,7 @@
         <td>{{titleBegin}}-{{titleEnd}} {{exactDay ? '': ' (доп. даты)'}}<br>
             <small>{{night}} ночей</small>
         </td>
-        <td>{{tariff.name}}<br>
+        <td>{{tariffInfo.title || tariffInfo.fullTitle }}<br>
             <small><span class="package-search-book-count">Свободно номеров: {{minRooms}}</span></small>
         </td>
 
@@ -20,18 +20,18 @@
         <td class="text-center">
             <select disabled v-model="priceIndex" readonly="readonly"
                     class="form-control plain-html input-sm search-tourists-select">
-                <option v-for="(price, key) in result.prices" :value="key"><span>{{price.searchAdults}} взр.</span><span
-                        v-if="price.searchChildren">+{{price.searchChildren}} реб.</span></option>
+                <option v-for="(price, key) in result.prices" :value="key"><span>{{price.adults}} взр.</span><span
+                        v-if="price.children">+{{price.children}} реб.</span></option>
             </select>
         </td>
 
         <td class="text-right">
             <ul class="package-search-prices">
                 <li>{{rounded(totalPrice)}}
-                    <small is="DayPrice" :dayPrices="selectedPrice.dayPrices"></small>
+                    <small is="DayPrice" :dayPrices="selectedPrice.priceByDay"></small>
                 </li>
             </ul>
-            <small><i class="fa fa-sliders"></i> {{tariff.name}}</small>
+            <small><i class="fa fa-sliders"></i> {{tariffInfo.title || tariffInfo.fullTitle}}</small>
         </td>
 
         <td class="text-center">
@@ -48,11 +48,14 @@
 <script lang="ts">
     import Icon from './ResultBarComponents/Icon.vue';
     import DayPrice from './ResultBarComponents/DayPrice.vue';
-    import accounting from 'accounting';
-    import moment from 'moment';
+    import * as accounting from 'accounting';
+    import * as moment from 'moment';
 
     declare let Routing: Routing;
 
+    const createDate = function (date) {
+        return moment(date, 'DD.MM.YYYY');
+    };
 
     export default {
         name: "ResultBar",
@@ -80,30 +83,35 @@
                 }
             },
             exactDay() {
-                return this.result.begin === this.conditions.begin && this.result.end === this.conditions.end;
+                return this.result.begin === this.searchBegin && this.result.end === this.searchEnd;
             },
             titleBegin() {
-                return moment(this.result.begin).format('DD MMM');
+                return createDate(this.result.begin).format('DD MMM');
             },
             titleEnd() {
-                return moment(this.result.end).format('DD MMM');
+                return createDate(this.result.end).format('DD MMM');
             },
             night() {
-                const begin = moment.utc(this.result.begin);
-                const end = moment.utc(this.result.end);
+                const begin = moment.utc(this.result.begin, 'DD.MM.YYYY');
+                const end = moment.utc(this.result.end, 'DD.MM.YYYY');
                 return moment.duration(end.diff(begin)).asDays();
             },
             tariff() {
-                return this.result.resultTariff;
+                return this.result.tariff;
+            },
+            tariffInfo() {
+                const tariffId = this.tariff;
+
+                return this.$store.getters['results/getTariffInfo'](tariffId);
             },
             roomType() {
-                return this.result.resultRoomType;
+                return this.result.roomType;
             },
             minRooms() {
-                return this.result.minRoomsCount;
+                return this.result.roomAvailableAmount;
             },
             anchor(): string {
-                return `#${this.roomType.id}${this.tariff.id}${moment(this.result.begin).format('YYYYMD')}${moment(this.result.end).format('YYYYMD')}`;
+                return `#${this.roomType}${this.tariff}${createDate(this.result.begin).format('YYYYMD')}${createDate(this.result.end).format('YYYYMD')}`;
             },
             totalPrice(): number {
                 return this.selectedPrice.total;
@@ -111,17 +119,21 @@
             selectedPrice() {
                 return this.result.prices[this.priceIndex];
             },
-            conditions() {
-                return this.result.resultConditions;
+            searchBegin() {
+                return createDate(this.$store.state.results.currentConditions.begin).format('DD.MM.YYYY');
             },
+            searchEnd() {
+                return createDate(this.$store.state.results.currentConditions.end).format('DD.MM.YYYY');
+            },
+
             bookingData(): object {
-                const begin = moment(this.result.begin).format('DD.MM.YYYY');
-                const end = moment(this.result.end).format('DD.MM.YYYY');
-                const tariff = this.tariff.id;
-                const roomType = this.roomType.id;
-                const adults = this.conditions.adults;
-                const children = this.conditions.children;
-                const childrenAges = this.conditions.childrenAges;
+                const begin = createDate(this.result.begin).format('DD.MM.YYYY');
+                const end = createDate(this.result.end).format('DD.MM.YYYY');
+                const tariff = this.tariff;
+                const roomType = this.roomType;
+                const adults = this.result.adults;
+                const children = this.result.children;
+                const childrenAges = this.result.childrenAges;
                 const order = this.$store.state.form.orderId;
                 const forceBooking = this.$store.state.form.isForceBooking === false ? 0 : 1;
 
@@ -166,7 +178,7 @@
             decreaseRoomAvailability() {
                 const result = this.result;
                 this.$store.commit('results/bookingAction', {
-                    roomType: result.resultRoomType.id,
+                    roomType: result.roomType,
                     amount: this.quantity
                 });
                 this.quantity = Math.min(this.quantity, this.minRooms);

@@ -3,10 +3,13 @@
 namespace MBH\Bundle\HotelBundle\Document;
 
 use Doctrine\ODM\MongoDB\DocumentRepository;
+use MBH\Bundle\BaseBundle\Lib\DocumentTraits\FindAllRawTrait;
 use MBH\Bundle\HotelBundle\Model\RoomTypeRepositoryInterface;
 
 class RoomTypeCategoryRepository extends DocumentRepository implements RoomTypeRepositoryInterface
 {
+    use FindAllRawTrait;
+
     /**
      * @param Hotel $hotel
      * @param mixed $roomTypesCats ids array
@@ -15,7 +18,7 @@ class RoomTypeCategoryRepository extends DocumentRepository implements RoomTypeR
     public function fetchQueryBuilder(Hotel $hotel = null, $roomTypesCats = null)
     {
         /* @var $dm  \Doctrine\Bundle\MongoDBBundle\ManagerRegistry */
-        $qb = $this->createQueryBuilder('s');
+        $qb = $this->createQueryBuilder();
 
         // hotel
         if ($hotel) {

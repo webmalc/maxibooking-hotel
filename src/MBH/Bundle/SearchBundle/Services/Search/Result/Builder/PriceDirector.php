@@ -13,14 +13,20 @@ class PriceDirector
 
     /** @var PriceBuilderInterface */
     private $priceBuilder;
+    /**
+     * @var int
+     */
+    private $priceRoundSign;
 
     /**
      * PriceDirector constructor.
      * @param PriceBuilderInterface $priceBuilder
+     * @param int $priceRoundSign
      */
-    public function __construct(PriceBuilderInterface $priceBuilder)
+    public function __construct(PriceBuilderInterface $priceBuilder, int $priceRoundSign = 2)
     {
         $this->priceBuilder = $priceBuilder;
+        $this->priceRoundSign = $priceRoundSign;
     }
 
 
@@ -37,10 +43,18 @@ class PriceDirector
             ->setChildren($calcQuery->getChildren())
             ->setChildrenAges($calcQuery->getChildrenAges());
 
+        $total = 0;
         foreach ($dayPrices as $dayPrice) {
             /** @var DayPrice $dayPrice */
             $this->priceBuilder->addDayPrice($dayPrice);
+            $total += $dayPrice->getTotal();
         }
+
+        if (null !== $this->priceRoundSign) {
+            $total = round($total, $this->priceRoundSign);
+        }
+
+        $this->priceBuilder->setTotal($total);
 
         return $this->priceBuilder->getPrice();
     }

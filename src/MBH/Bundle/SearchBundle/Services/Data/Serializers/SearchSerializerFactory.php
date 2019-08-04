@@ -13,13 +13,14 @@ use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Serializer as SymfonySerializer;
 use Symfony\Component\Serializer\SerializerInterface;
 
+/** This class uses in DI */
 class SearchSerializerFactory
 {
 
     public static function createSerializer(): SerializerInterface
     {
         $jsonEncoder = new JsonEncoder();
-        $dateTimeNormalizer = new DateTimeNormalizer();
+        $dateTimeNormalizer = new DateTimeNormalizer('d.m.Y');
         $arrayDenormalizer = new ArrayDenormalizer();
         $objectNormalizer = new ObjectNormalizer(null, null, null, new ReflectionExtractor());
 
@@ -30,7 +31,7 @@ class SearchSerializerFactory
     public static function createNormalizer(): ObjectNormalizer
     {
         $normalizer = new ObjectNormalizer(null, null, null, new ReflectionExtractor());
-        $normalizer->setSerializer(new Serializer([new DateTimeNormalizer(), new ArrayDenormalizer(), new ObjectNormalizer(null, null, null, new ReflectionExtractor())]));
+        $normalizer->setSerializer(new Serializer([new DateTimeNormalizer('d.m.Y'), new ArrayDenormalizer(), new ObjectNormalizer(null, null, null, new ReflectionExtractor())]));
 
         return $normalizer;
     }
