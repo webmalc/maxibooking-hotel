@@ -135,7 +135,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             $this->hotel,
             $roomTypeIds,
             $request->get('tariffs') ? $request->get('tariffs') : [],
-            $this->manager->useCategories,
+            $this->manager->getIsUseCategories(),
             $cancelDate
         );
 
@@ -324,7 +324,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
                     $newPriceCache = $factory->create($prices);
                     $newPriceCache
                         ->setHotel($this->hotel)
-                        ->setCategoryOrRoomType($roomType, $this->manager->useCategories)
+                        ->setCategoryOrRoomType($roomType, $this->manager->getIsUseCategories())
                         ->setTariff($tariff)
                         ->setDate($this->helper->getDateFromString($date));
 
@@ -369,7 +369,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
             if (is_string($str)) {
                 /** @var PriceCacheHolderDataGeneratorForm $generator */
                 $generator = unserialize($str);
-                $generator->afterUnserialize($this->dm, $this->manager->useCategories);
+                $generator->afterUnserialize($this->dm, $this->manager->getIsUseCategories());
             } else {
                 $request->getSession()->remove('priceCacheGeneratorForm');
             }
@@ -377,7 +377,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
         $generator->setHotel($this->hotel);
 
         $form = $this->createForm(PriceCacheGeneratorType::class, $generator, [
-            'useCategories' => $this->manager->useCategories,
+            'useCategories' => $this->manager->getIsUseCategories(),
         ]);
 
         return [
@@ -401,7 +401,7 @@ class PriceCacheController extends Controller implements CheckHotelControllerInt
         $holderDataForm->setHotel($this->hotel);
 
         $form = $this->createForm(PriceCacheGeneratorType::class, $holderDataForm, [
-            'useCategories' => $this->manager->useCategories
+            'useCategories' => $this->manager->getIsUseCategories()
         ]);
 
         $form->handleRequest($request);

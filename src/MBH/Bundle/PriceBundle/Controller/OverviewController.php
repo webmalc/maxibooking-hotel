@@ -109,7 +109,7 @@ class OverviewController extends Controller implements CheckHotelControllerInter
                 $begin,
                 $end,
                 $hotel,
-                $request->get('roomTypes') && !$manager->useCategories ? $request->get('roomTypes') : [],
+                $request->get('roomTypes') && !$manager->getIsUseCategories() ? $request->get('roomTypes') : [],
                 [],
                 true
             );
@@ -124,7 +124,7 @@ class OverviewController extends Controller implements CheckHotelControllerInter
                     $request->get('roomTypes') ? $request->get('roomTypes') : [],
                     [],
                     true,
-                    $manager->useCategories
+                    $manager->getIsUseCategories()
                 );
         };
         $priceCaches = $helper->getFilteredResult($this->dm, $priceCachesCallback);

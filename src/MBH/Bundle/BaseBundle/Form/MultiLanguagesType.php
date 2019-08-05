@@ -14,17 +14,25 @@ use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 class MultiLanguagesType extends AbstractType
 {
-    private $languages;
     private $multiLangTranslator;
     private $defaultLang;
     private $propertyAccessor;
+    private $clientConfigManager;
 
     public function __construct(ClientConfigManager $clientConfigManager, MultiLangTranslator $multiLangTranslator, string $defaultLang, PropertyAccessor $propertyAccessor)
     {
-        $this->languages = $configLanguages = $clientConfigManager->fetchConfig()->getLanguages();
         $this->multiLangTranslator = $multiLangTranslator;
         $this->defaultLang = $defaultLang;
         $this->propertyAccessor = $propertyAccessor;
+        $this->clientConfigManager = $clientConfigManager;
+    }
+
+    /**
+     * @return array|null
+     */
+    private function getLanguages(): ?array
+    {
+        $this->clientConfigManager->fetchConfig()->getLanguages();
     }
 
     /**
@@ -37,9 +45,9 @@ class MultiLanguagesType extends AbstractType
         $fieldName = $builder->getName();
         $document = $builder->getData();
         $translationsByLanguages = $this->multiLangTranslator
-            ->getTranslationsByLanguages($document, $fieldName, $this->languages);
+            ->getTranslationsByLanguages($document, $fieldName, $this->getLanguages());
 
-        foreach ($this->languages as $language) {
+        foreach ($this->getLanguages() as $language) {
             if (isset($translationsByLanguages[$language])) {
                 $data = $translationsByLanguages[$language];
             } else {
@@ -61,9 +69,9 @@ class MultiLanguagesType extends AbstractType
     public function finishView(FormView $view, FormInterface $form, array $options)
     {
         $view->vars['embedded'] = true;
-        foreach ($this->languages as $language) {
+        foreach ($this->getLanguages() as $language) {
             $field = $view->children[$language];
-            $field->vars['languages'] = $this->languages;
+            $field->vars['languages'] = $this->getLanguages();
             $field->vars['language'] = $language;
             $field->vars['defaultLang'] = $this->defaultLang;
         }

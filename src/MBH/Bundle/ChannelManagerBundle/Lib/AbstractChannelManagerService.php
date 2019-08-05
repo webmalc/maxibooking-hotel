@@ -217,10 +217,10 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         if (!$roomType) {
             return [];
         }
-        if (!$this->roomManager->useCategories) {
+        if (!$this->roomManager->getIsUseCategories()) {
             return [$roomType->getId()];
         }
-        if ($this->roomManager->useCategories) {
+        if ($this->roomManager->getIsUseCategories()) {
             if (!$roomType->getCategory()) {
                 return [0];
             }

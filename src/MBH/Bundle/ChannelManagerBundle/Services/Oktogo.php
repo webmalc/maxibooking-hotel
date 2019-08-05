@@ -219,7 +219,7 @@ class Oktogo extends Base
                     $this->getRoomTypeArray($roomType),
                     [],
                     true,
-                    $this->roomManager->useCategories
+                    $this->roomManager->getIsUseCategories()
                 );
             };
             $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);

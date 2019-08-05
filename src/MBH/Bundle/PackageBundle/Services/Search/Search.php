@@ -46,11 +46,6 @@ class Search implements SearchInterface
     private $manager;
 
     /**
-     * @var ClientConfig;
-     */
-    private $config;
-
-    /**
      * @var \MBH\Bundle\BaseBundle\Service\Cache
      */
     private $memcached;
@@ -66,9 +61,13 @@ class Search implements SearchInterface
         $this->dm = $container->get('doctrine_mongodb')->getManager();
         $this->now = new \DateTime('midnight');
         $this->manager = $container->get('mbh.hotel.room_type_manager');
-        $this->config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
         $this->hotels = $this->dm->getRepository('MBHHotelBundle:Hotel')->findAll();
         $this->memcached = $this->container->get('mbh.cache');
+    }
+
+    private function getClientConfig(): ClientConfig
+    {
+        return $this->container->get('mbh.client_config_manager')->fetchConfig();
     }
 
     /**
@@ -117,7 +116,7 @@ class Search implements SearchInterface
             if (!empty($query->availableRoomTypes)) {
                 $query->roomTypes = array_intersect($query->roomTypes, $query->availableRoomTypes);
             }
-        } elseif ($this->manager->useCategories && !$query->forceRoomTypes) {
+        } elseif ($this->manager->getIsUseCategories() && !$query->forceRoomTypes) {
             $roomTypes = [];
             foreach ($query->roomTypes as $catId) {
                 $cat = $this->dm->getRepository('MBHHotelBundle:RoomTypeCategory')->find($catId);
@@ -391,6 +390,10 @@ class Search implements SearchInterface
                 if ($roomType->getTotalPlaces() < $adults + $children) {
                     continue;
                 }
+
+                $clientConfig = $this->getClientConfig();
+
+                $useCategories = $query->isOnline && $clientConfig && $clientConfig->getUseRoomTypeCategory();
                 /** Добавляем для азовского доп значение лимита на взрослых. 10.07.2019 */
                 $adultsLimit = $roomType->getMaxAdults();
                 if (null !==  $adultsLimit && $adultsLimit < $adults) {
@@ -400,7 +403,11 @@ class Search implements SearchInterface
                 $useCategories = $query->isOnline && $this->config && $this->config->getUseRoomTypeCategory();
                 $result = new SearchResult();
                 /** @var RoomType $roomType */
-                $tourists = $roomType->getAdultsChildrenCombination($adults, $children, $this->manager->useCategories);
+                $tourists = $roomType->getAdultsChildrenCombination(
+                    $adults,
+                    $children,
+                    $this->manager->getIsUseCategories()
+                );
 
                 if ($query->accommodations) {
                     $accommodationRooms = $this->dm->getRepository('MBHHotelBundle:Room')->fetchAccommodationRooms(
@@ -451,11 +458,12 @@ class Search implements SearchInterface
                     $tourists['adults'],
                     $tourists['children'],
                     $promotion,
-                    $this->manager->useCategories,
+                    $this->manager->getIsUseCategories(),
                     $query->getSpecial()
                 );
 
-                if (!$prices || (($query->adults + $query->children) != 0 && !isset($prices[$tourists['adults'] . '_' . $tourists['children']]))) {
+                if (!$prices || (($query->adults + $query->children) != 0
+                        && !isset($prices[$tourists['adults'] . '_' . $tourists['children']]))) {
                     continue;
                 }
                 foreach ($prices as $price) {
@@ -519,7 +527,9 @@ class Search implements SearchInterface
             return true;
         }
 
-        if (!$this->config || !$this->config->getSearchWindows() || $result->getForceBooking()) {
+        $clientConfig = $this->getClientConfig();
+
+        if (!$clientConfig || !$clientConfig->getSearchWindows() || $result->getForceBooking()) {
             return true;
         }
 
@@ -656,7 +666,7 @@ class Search implements SearchInterface
     public function searchTariffs(SearchQuery $query)
     {
         if ($query->limit === null && !count($query->roomTypes)) {
-            $query->limit = $this->config->getSearchTariffs();
+            $query->limit = $this->getClientConfig()->getSearchTariffs();
         }
 
         $results = $tariffs = [];
