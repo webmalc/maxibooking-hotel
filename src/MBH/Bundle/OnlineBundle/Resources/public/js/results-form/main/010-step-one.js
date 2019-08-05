@@ -1,20 +1,50 @@
 MbhResultForm.prototype.backgroundImageRoomForTablet = function () {
-    console.log(screen);
-    console.log(document.body.clientWidth);
     var isTablet = 700 < screen.availWidth && screen.availWidth < 1023;
     document.querySelectorAll('.image-room-link').forEach(function(image) {
         image.style.backgroundImage = isTablet ? image.dataset.backgroundTablet : image.dataset.background;
     });
 };
 
+MbhResultForm.prototype.createImageContainer = function (roomTypeId) {
+    this.sendPostMessage('createImageContainer', {roomTypeId: roomTypeId});
+};
+
+MbhResultForm.prototype.subscribeForHideAllImage = function () {
+    var _this = this;
+    this._hideAllImageFunction = function(ev) {
+        if (ev.code === 'Escape') {
+            _this.sendPostMessage('hideAllImage');
+        }
+    };
+
+    window.addEventListener('keyup', this._hideAllImageFunction);
+};
+
+MbhResultForm.prototype.unsubscribeForHideAllImage = function () {
+    window.removeEventListener('keyup', this._hideAllImageFunction);
+};
+
 MbhResultForm.prototype.initSwipeStepOne = function () {
+    var _this = this;
     this._swiperListStepOne = [];
 
     document.querySelectorAll('.swiper-container').forEach(function(container) {
+        var roomTypeId = container.dataset.roomTypeId,
+            imageLinkList = container.querySelectorAll('.image-room-link');
+
+        if (imageLinkList.length > 0) {
+            _this.createImageContainer(roomTypeId);
+            imageLinkList.forEach(function(imageLink) {
+                imageLink.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    _this.sendPostMessage('openImage', {roomTypeId: roomTypeId, imageId: this.dataset.imageId});
+                });
+            });
+        }
+
         if (container.dataset.useSwipe !== 'true') {
             return;
         }
-        var roomTypeId = container.dataset.roomTypeId;
         var swipe = new Swiper (container, {
             loop: true,
             navigation: {
@@ -23,8 +53,10 @@ MbhResultForm.prototype.initSwipeStepOne = function () {
             }
         });
 
-        this._swiperListStepOne.push(swipe);
-    }, this);
+        _this._swiperListStepOne.push(swipe);
+
+        console.log(_this._swiperListStepOne);
+    });
 };
 
 MbhResultForm.prototype.destroySwipeStepOne = function () {
@@ -49,31 +81,6 @@ MbhResultForm.prototype.descriptionToggle = function () {
             _this.resize();
         })
     });
-};
-
-MbhResultForm.prototype.setFancyBoxOffset = function() {
-    var frameOffset = 0;
-    window.addEventListener('message', function(event) {
-        var parentWindowData = event.data;
-        if (parentWindowData.type === 'onScroll') {
-            frameOffset = parentWindowData.frameTopOffset;
-        }
-    });
-
-    if (document.body.scrollHeight > screen.height) {
-        $('.fancybox').fancybox({
-            afterLoad: function () {
-                var fancyTopOffset = screen.height / 2 - frameOffset - document.body.scrollHeight / 2;
-                var offsetLimit = document.body.scrollHeight / 2 - screen.height / 2 + 30;
-                if (fancyTopOffset > offsetLimit) {
-                    fancyTopOffset = offsetLimit;
-                } else if (fancyTopOffset * (-1) > offsetLimit) {
-                    fancyTopOffset = (-1) * offsetLimit;
-                }
-                $('.fancybox-placeholder').css('top', fancyTopOffset);
-            }
-        });
-    }
 };
 
 MbhResultForm.prototype.calcTotal = function () {
@@ -214,6 +221,8 @@ MbhResultForm.prototype.prepareAndGoStepTwo = function () {
 
             _this.destroySwipeStepOne();
 
+            _this.unsubscribeForHideAllImage();
+
             _this.waiting();
 
             _this.stepTwo()
@@ -312,9 +321,9 @@ MbhResultForm.prototype.stepOne = function() {
 
             _this.tablePrices();
 
-            _this.setFancyBoxOffset();
-
             _this.initSwipeStepOne();
+
+            _this.subscribeForHideAllImage();
 
             _this.calcTotal();
 

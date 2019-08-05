@@ -25,6 +25,11 @@ function OnLoadResultsLoad() {
     };
 
     this._iframeUrl = '{{ url('online_form_results_iframe', {formConfigId: config.id}) }}';
+
+    this._imageIframes = {
+        url: '{{ url('online_form_image_container_iframe', {id: 'ReplaceRoomTypeIdString'}) | raw }}',
+        list: {}
+    };
 };
 
 OnLoadResultsLoad.prototype.metrics = function() {
@@ -240,7 +245,83 @@ OnLoadResultsLoad.prototype.processMessage = function(e) {
         }
 
         window.scrollTo(0, this._resultsIframe.offsetTop);
+
+        return;
     }
+
+    if (e.data.action === 'createImageContainer') {
+        this.createImageContainerIframe(e.data.data.roomTypeId);
+
+        return;
+    }
+
+    if (e.data.action === 'openImage') {
+        this.openImage(e.data.data);
+
+        return;
+    }
+
+    if (e.data.action === 'hideImage') {
+        this.hideImage(e.data.data);
+
+        return;
+    }
+
+    if (e.data.action === 'hideAllImage') {
+        this.hideAllImage();
+
+        return;
+    }
+};
+
+OnLoadResultsLoad.prototype.hideImageOnPressEsc = function () {
+    var _this = this;
+    window.addEventListener('keyup', function(ev) {
+        if (ev.code === 'Escape') {
+            _this.hideAllImage();
+        }
+    });
+};
+
+OnLoadResultsLoad.prototype.hideAllImage = function () {
+    for (var key in this._imageIframes.list) {
+        this.hideImage({roomTypeId: key});
+    }
+};
+
+OnLoadResultsLoad.prototype.hideImage = function (data) {
+    this.toggleVisibleImage(data.roomTypeId, true);
+};
+
+OnLoadResultsLoad.prototype.openImage = function (data) {
+    this._imageIframes.list[data.roomTypeId].contentWindow.postMessage(data.imageId, '*');
+    this.toggleVisibleImage(data.roomTypeId, false);
+};
+
+OnLoadResultsLoad.prototype.toggleVisibleImage = function (roomTypeId, hide) {
+    this._imageIframes.list[roomTypeId].hidden = hide;
+};
+
+OnLoadResultsLoad.prototype.createImageContainerIframe = function (roomTypeId) {
+    if (this._imageIframes.list[roomTypeId] !== undefined) {
+        return;
+    }
+
+    var imageIframe = document.createElement('iframe');
+    imageIframe.id = 'image-container-' + roomTypeId;
+    imageIframe.src = this._imageIframes.url.replace('ReplaceRoomTypeIdString', roomTypeId);
+    imageIframe.width = '100%';
+    imageIframe.height = '100%';
+    imageIframe.style.position = 'fixed';
+    imageIframe.style.zIndex = 10;
+    imageIframe.style.border = 'none';
+    imageIframe.style.bottom = 0;
+    imageIframe.scrolling = 'no';
+    imageIframe.hidden = true;
+
+    document.body.append(imageIframe);
+
+    this._imageIframes.list[roomTypeId] = imageIframe;
 };
 
 OnLoadResultsLoad.prototype.toggleVisibleStepOneButton = function (isNeedShow) {
@@ -277,6 +358,8 @@ OnLoadResultsLoad.prototype.exec = function() {
     this.initUrl();
     this.createResultIframe();
     this.createButtonForStepOne();
+
+    this.hideImageOnPressEsc();
 
     this._resultsWrapper.querySelector('a').style.display = 'none';
 

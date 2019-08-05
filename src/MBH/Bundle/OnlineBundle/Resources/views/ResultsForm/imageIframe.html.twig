@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Image Container</title>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css">
+    <script defer src="//code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+    <script defer src="//cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+    {% block scripts %}
+        {% javascripts filter='uglifyjs2'
+            '@MBHOnlineBundle/Resources/public/js/common-online-form/mbh-send-post-message.js'
+            '@MBHOnlineBundle/Resources/public/js/results-form/image-container/script.js'
+        %}
+            <script defer type="text/javascript" src="{{ absolute_url(asset_url) }}"></script>
+        {% endjavascripts %}
+    {% endblock %}
+    <style>
+        body {
+            background: rgba(159, 159, 159, 0.07);
+        }
+    </style>
+    <script type="text/javascript">
+        function ImageContainer() {
+            this._roomTypeId = '{{ roomType.id }}';
+            this._imageList = [];
+            this._imageMapIdToIndex = {};
+
+            {% for image in roomType.onlineImagesByPriority %}
+                this._imageMapIdToIndex['{{ image.id }}'] = {{ loop.index0 }};
+                this._imageList.push({
+                    src: '{{ asset(vich_uploader_asset(image, 'imageFile')|imagine_filter('size_1980x1280')) }}'
+                });
+            {% endfor %}
+        }
+    </script>
+</head>
+<body>
+</body>
+</html>

@@ -73,11 +73,16 @@ SearchForm.prototype.additionalFormDataInit = function () {
 
     })(this.query);
 
-    window.parent.postMessage({
-        type: 'mbh',
-        target: 'additionalFromDataForParentForm',
-        form: dataForForm
-    }, "*");
+    this.sendPostMessage(
+        '',
+        {form: dataForForm},
+        'additionalFromDataForParentForm'
+    );
+    // window.parent.postMessage({
+    //     type: 'mbh',
+    //     target: 'additionalFromDataForParentForm',
+    //     form: dataForForm
+    // }, "*");
 
 };
 
@@ -102,7 +107,6 @@ SearchForm.prototype.additionalDataSetValueFromIframe = function (e) {
 
     this.setValue(this.adults, this.additionalFormUseIt.adults);
     this.setValue(this.children, this.additionalFormUseIt.children);
-    // this.roomType.val(this.additionalFormUseIt.roomType);
 
     this.setChildAgeForms(this.additionalFormUseIt.children,this.additionalFormUseIt);
 };
@@ -121,10 +125,11 @@ SearchForm.prototype.processMessage = function(e) {
 
     if (e.data.date && this.last) {
         this.last.val(e.data.date).trigger('change');
-        window.parent.postMessage({
-            type: 'mbh',
-            action: 'hideCalendar'
-        }, "*");
+        this.sendPostMessage('hideCalendar');
+        // window.parent.postMessage({
+        //     type: 'mbh',
+        //     action: 'hideCalendar'
+        // }, "*");
     }
 };
 
@@ -296,16 +301,21 @@ SearchForm.prototype.setChildAgeForms = function(childrenCount, query) {
     }
 };
 
+SearchForm.prototype.sendPostMessage = function (action, data, target) {
+    mbhSendParentPostMessage(action, data, target);
+};
+
 SearchForm.prototype.viewChange = function() {
     var _this = this;
 
     var resizeHandler = function () {
         var formHeight = document.getElementById('mbh-form-wrapper').clientHeight;
-        window.parent.postMessage({
-            type: 'mbh',
-            action: 'formResize',
-            formHeight: formHeight
-        }, '*')
+        _this.sendPostMessage('formResize', formHeight);
+        // window.parent.postMessage({
+        //     type: 'mbh',
+        //     action: 'formResize',
+        //     formHeight: formHeight
+        // }, '*')
     };
 
     window.addEventListener('resize', resizeHandler);
@@ -346,13 +356,23 @@ SearchForm.prototype.viewChange = function() {
     var showIFrame = function(event) {
         var el = jQuery(this).find('input');
         _this.last = el;
-        window.parent.postMessage({
-            type: 'mbh',
-            action: (event.data !== undefined && event.data.action !== undefined) ? event.data.action : 'showCalendar',
-            top: el.offset().top + el.outerHeight(),
-            left: paddingLeft(el.offset().left),
-            date: el.val()
-        }, "*");
+
+        _this.sendPostMessage(
+            (event.data !== undefined && event.data.action !== undefined) ? event.data.action : 'showCalendar',
+            {
+                top: el.offset().top + el.outerHeight(),
+                left: paddingLeft(el.offset().left),
+                date: el.val()
+            }
+        );
+
+        // window.parent.postMessage({
+        //     type: 'mbh',
+        //     action: (event.data !== undefined && event.data.action !== undefined) ? event.data.action : 'showCalendar',
+        //     top: el.offset().top + el.outerHeight(),
+        //     left: paddingLeft(el.offset().left),
+        //     date: el.val()
+        // }, "*");
     };
 
     var hideCalendar = function(e, exception) {
@@ -374,17 +394,19 @@ SearchForm.prototype.viewChange = function() {
         needHideCalendar = !eTarget.hasClass('mbh-form-date-wrapper') && !eTarget.hasClass('mbh-calendar-input');
 
         if (needHideCalendar) {
-            window.parent.postMessage({
-                type: 'mbh',
-                action: 'hideCalendar'
-            }, "*");
+            _this.sendPostMessage('hideCalendar');
+            // window.parent.postMessage({
+            //     type: 'mbh',
+            //     action: 'hideCalendar'
+            // }, "*");
         }
 
         if (needHideAdditionalData) {
-            window.parent.postMessage({
-                type: 'mbh',
-                action: 'hideAdditionalForm'
-            }, "*");
+            _this.sendPostMessage('hideAdditionalForm');
+            // window.parent.postMessage({
+            //     type: 'mbh',
+            //     action: 'hideAdditionalForm'
+            // }, "*");
         }
     });
 };

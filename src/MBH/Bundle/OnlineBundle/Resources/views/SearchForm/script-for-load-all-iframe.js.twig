@@ -213,11 +213,11 @@ OnLoadFormLoad.prototype.resizeIframeHeight = function (event) {
         return;
     }
     if (event.data.action === 'formResize') {
-        this.searchIframe.height = event.data.formHeight + 5;
+        this.searchIframe.height = event.data.data + 5;
     }
 
     if (event.data.action === 'additionalFormIFrameResize') {
-        this.additionalFormIframe.height = event.data.formHeight + 3;
+        this.additionalFormIframe.height = event.data.data + 3;
     }
 };
 

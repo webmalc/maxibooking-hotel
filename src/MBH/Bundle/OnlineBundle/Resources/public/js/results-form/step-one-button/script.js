@@ -72,11 +72,7 @@ StepOneButton.prototype.exec = function() {
     });
 
     this._packageNextButton.addEventListener('click', function(e) {
-        window.parent.postMessage({
-            type: 'mbh',
-            target: 'stepOneParent',
-            action: 'clickNextButton'
-        },'*');
+        mbhSendParentPostMessage('clickNextButton', null, 'stepOneParent');
     });
 };
 

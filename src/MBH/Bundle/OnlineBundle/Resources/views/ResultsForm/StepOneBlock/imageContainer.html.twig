@@ -8,9 +8,9 @@
                 {% set fullImageLink = asset(vich_uploader_asset(image, 'imageFile')|imagine_filter('size_1980x1280')) %}
                 <div class="swiper-slide">
                     <a href="{{ fullImageLink }}"
-                       class="fancybox item image-room-link{{ image.isMain ? ' active' : '' }}"
-                       data-fancybox="group-{{ result.roomType.id }}"
+                       class="item image-room-link{{ image.isMain ? ' active' : '' }}"
                        title="room image #{{ loop.index }}"
+                       data-image-id="{{ image.id }}"
                        data-background="url('{{ asset(vich_uploader_asset(image, 'imageFile') | imagine_filter('size_500x500')) }}')"
                        data-background-tablet="url('{{ fullImageLink }}')"
                     ></a>

@@ -52,6 +52,7 @@ AdditionalForm.prototype.iframeResize = function () {
     if (this.lastIframeHeight !== this.currentFormHeight) {
         this.lastIframeHeight = this.currentFormHeight;
 
+
         window.parent.postMessage({
             type: 'mbh',
             action: this._PM_RESIZE_IFRAME,
@@ -167,7 +168,7 @@ AdditionalForm.prototype.listenerPostMessage = function (){
             return;
         }
 
-        var form = e.data.form;
+        var form = e.data.data.form;
         if (form.adults !== undefined && form.adults > 0) {
             _this.wrapper.querySelector('.stepper-value[data-form="adults"]').innerHTML = form.adults;
             _this.adultsCheckStepperValue();

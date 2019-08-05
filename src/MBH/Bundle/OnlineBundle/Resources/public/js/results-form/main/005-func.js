@@ -3,12 +3,7 @@ MbhResultForm.prototype.priceSeparator = function (amount) {
 };
 
 MbhResultForm.prototype.sendPostMessage = function (action, data, target) {
-    window.parent.postMessage({
-        type: 'mbh',
-        action: action,
-        data: data || null,
-        target: target || null
-    }, "*");
+    mbhSendParentPostMessage(action, data, target);
 };
 
 MbhResultForm.prototype.scrollToTopIframe = function () {

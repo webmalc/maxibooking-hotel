@@ -371,6 +371,18 @@ class ResultsFormController extends BaseController
     }
 
     /**
+     * @param RoomType $roomType
+     * @Route("/results/image/{id}", name="online_form_image_container_iframe")
+     */
+    public function imageIframeAction(RoomType $roomType)
+    {
+        return $this->render(
+            '@MBHOnline/ResultsForm/imageIframe.html.twig',
+            ['roomType' => $roomType]
+        );
+    }
+
+    /**
      * User form
      * @Route("/results/user/form/{formConfigId}", name="online_form_user_form", options={"expose"=true})
      * @ParamConverter(converter="form_config_converter")
