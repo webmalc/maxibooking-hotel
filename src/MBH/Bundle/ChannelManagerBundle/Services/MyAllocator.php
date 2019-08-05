@@ -340,7 +340,7 @@ class MyAllocator extends Base
                         $this->getRoomTypeArray($paramRoomType),
                         [],
                         true,
-                        $this->roomManager->useCategories
+                        $this->roomManager->getIsUseCategories()
                     )
                 );
                 return $filtered;

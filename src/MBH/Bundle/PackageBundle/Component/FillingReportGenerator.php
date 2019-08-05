@@ -47,7 +47,7 @@ class FillingReportGenerator
         $priceCacheRepository = $dm->getRepository('MBHPriceBundle:PriceCache');
 
         $catsIds = [];
-        if ($manager->useCategories) {
+        if ($manager->getIsUseCategories()) {
             foreach ($roomTypes as $roomType) {
                 $cat = $roomType->getCategory();
                 if (!$cat) {
@@ -60,7 +60,7 @@ class FillingReportGenerator
         $roomTypeIDs = $this->container->get('mbh.helper')->toIds($roomTypes);
 
         $criteria = ['date' => ['$gte' => reset($rangeDateList), '$lte' => end($rangeDateList)]];
-        if ($manager->useCategories) {
+        if ($manager->getIsUseCategories()) {
             if($catsIds) {
                 $criteria['roomTypeCategory.id'] = ['$in' => $catsIds];
             }
@@ -220,7 +220,7 @@ class FillingReportGenerator
                 $packageRowData = $emptyPackageRowData;
 
                 foreach($priceCaches as $priceCache) {
-                    if ($manager->useCategories) {
+                    if ($manager->getIsUseCategories()) {
                         $cat = $priceCache->getRoomTypeCategory();
                         $pcRoomTypeId = $cat ? $cat->getId() : 0;
                         $cat = $roomType->getCategory();

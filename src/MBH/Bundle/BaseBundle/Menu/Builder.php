@@ -7,6 +7,7 @@ use Knp\Menu\FactoryInterface;
 use Knp\Menu\ItemInterface;
 use MBH\Bundle\BaseBundle\Lib\Menu\BadgesHolder;
 use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -67,12 +68,18 @@ class Builder
     {
         $this->factory = $factory;
         $this->container = $container;
-
+        $this->behavior = $this->container->getParameter('mbh.menu.behaviors.now');
         $this->currentRoute = $this->container->get('router');
         $this->currentRoute->getContext()->setMethod('GET');
         $this->security = $this->container->get('security.authorization_checker');
+    }
 
-        $this->setConfig();
+    /**
+     * @return ClientConfig
+     */
+    private function getClientConfig(): ClientConfig
+    {
+        return $this->container->get('mbh.client_config_manager')->fetchConfig();
     }
 
     /**
@@ -337,15 +344,6 @@ class Builder
         }
 
         return $menu;
-    }
-
-    protected function setConfig()
-    {
-        if (!$this->config) {
-            $this->config = $this->container->get('doctrine_mongodb')->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-        }
-
-        $this->behavior = $this->container->getParameter('mbh.menu.behaviors.now');
     }
 
     /**
@@ -861,7 +859,7 @@ class Builder
 
         $menuItems = [];
 
-        if ($this->config->isMBSiteEnabled()) {
+        if ($this->getClientConfig()->isMBSiteEnabled()) {
             $menuItems[] = [
                 'site_settings' => [
                     'options'    => [
@@ -1084,7 +1082,9 @@ class Builder
 
         $children = [$hotelsLink, $corpus, $hotelRoomType];
 
-        if ($this->config && $this->config->getUseRoomTypeCategory()) {
+        $clientConfig = $this->getClientConfig();
+
+        if ($clientConfig && $clientConfig->getUseRoomTypeCategory()) {
             $roomTypeCategory = [
                 'room_type_category' => [
                     'options'    => [
@@ -1221,7 +1221,7 @@ class Builder
 //            ['route' => 'sales_channels_report', 'label' => 'sales_channels_report.title'])
 //            ->setAttributes(['icon' => 'fa fa-compass']);
 //
-//        if ($this->config && $this->config->getSearchWindows()) {
+//        if ($this->config && $this->config->getSearchWindows()) { //TODO: use getClientConfig
 //            $menu['reports']->addChild('report_windows',
 //                ['route' => 'report_windows', 'label' => 'menu.label.reports.windows'])
 //                ->setAttributes(['icon' => 'fa fa-windows']);
