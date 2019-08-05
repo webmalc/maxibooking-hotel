@@ -35,7 +35,8 @@ class AirbnbTest extends UnitTestCase
         self::bootKernel();
         $this->container = self::getContainerStat();
         $this->dm = $this->container->get('doctrine.odm.mongodb.document_manager');
-        $this->initAirbnbConfig();
+        $this->initAirbnbConfig(true);
+        $this->initAirbnbConfig(false);
     }
 
     public function testFirstPullOrders()
@@ -111,6 +112,7 @@ class AirbnbTest extends UnitTestCase
     public function testMixedPullOrders()
     {
         $this->setSecondRoomType();
+        $this->setSecondRoomTypeNd();
         $this->mockHttpService();
         $isSuccess = $this->container->get('mbh.airbnb')->pullOrders();
         $this->assertTrue($isSuccess);
@@ -118,10 +120,13 @@ class AirbnbTest extends UnitTestCase
         $orders = $this->dm
             ->getRepository('MBHPackageBundle:Order')
             ->findBy(['channelManagerType' => Airbnb::NAME]);
-        $this->assertCount(3, $orders);
+        $this->assertCount(6, $orders);
         $this->assertEquals('Стандартный одноместный', $orders[0]->getPackages()->toArray()[0]->getRoomType()->getFullTitle());
         $this->assertEquals('Люкс', $orders[1]->getPackages()->toArray()[0]->getRoomType()->getFullTitle());
         $this->assertEquals('Люкс', $orders[2]->getPackages()->toArray()[0]->getRoomType()->getFullTitle());
+        $this->assertEquals('Стандартный одноместный', $orders[3]->getPackages()->toArray()[0]->getRoomType()->getFullTitle());
+        $this->assertEquals('Люкс', $orders[4]->getPackages()->toArray()[0]->getRoomType()->getFullTitle());
+        $this->assertEquals('Люкс', $orders[5]->getPackages()->toArray()[0]->getRoomType()->getFullTitle());
     }
 
     private function mockHttpService()
@@ -192,12 +197,12 @@ END:VEVENT\n";
             . 'END:VCALENDAR';
     }
 
-    private function initAirbnbConfig()
+    private function initAirbnbConfig($isDefault = true)
     {
-        $airbnbConfig = $this->dm->getRepository('MBHChannelManagerBundle:AirbnbConfig')->findOneBy([]);
+        $airbnbConfig = null;//$this->dm->getRepository('MBHChannelManagerBundle:AirbnbConfig')->findOneBy([]);
         if (is_null($airbnbConfig)) {
             /** @var Hotel $hotel */
-            $hotel = $this->dm->getRepository('MBHHotelBundle:Hotel')->findOneBy(['isDefault' => true]);
+            $hotel = $this->dm->getRepository('MBHHotelBundle:Hotel')->findOneBy(['isDefault' => $isDefault]);
             $roomType = $this->dm
                 ->getRepository('MBHHotelBundle:RoomType')
                 ->findOneBy([
@@ -226,6 +231,29 @@ END:VEVENT\n";
     {
         $airbnbConfig = $this->dm->getRepository(AirbnbConfig::class)->findOneBy([]);
         $hotel = $this->dm->getRepository(Hotel::class)->findOneBy(['isDefault' => true]);
+        $roomType2 = $this->dm
+            ->getRepository(RoomType::class)
+            ->findOneBy([
+                'hotel.id' => $hotel->getId(),
+                'fullTitle' => 'Люкс'
+            ]);
+        $airbnbConfig
+            ->addRoom(
+                (new AirbnbRoom())
+                    ->setSyncUrl(Airbnb::SYNC_URL_BEGIN . '/some_fiction_number2')
+                    ->setRoomType($roomType2)
+            );
+
+        $this->dm->persist($airbnbConfig);
+        $this->dm->flush();
+    }
+
+    protected function setSecondRoomTypeNd()
+    {
+        $airbnbConfig = $this->dm->getRepository(AirbnbConfig::class)->findOneBy(
+            ['hotel' => $this->dm->getRepository(Hotel::class)->findOneBy(['isDefault' => false])]
+        );
+        $hotel = $this->dm->getRepository(Hotel::class)->findOneBy(['isDefault' => false]);
         $roomType2 = $this->dm
             ->getRepository(RoomType::class)
             ->findOneBy([
