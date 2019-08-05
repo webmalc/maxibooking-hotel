@@ -2,6 +2,7 @@
 
 namespace MBH\Bundle\PackageBundle\Services;
 
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\PackageBundle\Document\Tourist;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -32,18 +33,12 @@ class TouristsMessenger
      */
     protected $caller;
 
-    /**
-     * @var \MBH\Bundle\ClientBundle\Document\ClientConfig
-     */
-    protected $config;
-
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
         $this->dm = $container->get('doctrine_mongodb')->getManager();
         $this->mailer = $container->get('mbh.mailer');
         $this->mbhs = $container->get('mbh.mbhs');
-        $this->config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
     }
 
     /**
@@ -75,8 +70,12 @@ class TouristsMessenger
                 $isSend = true;
             }
         }
+
+        /** @var ClientConfig $clientConfig */
+        $clientConfig = $this->dm->getRepository(ClientConfig::class)->fetchConfig();
+
         // send sms
-        if ($sms && $this->config && $this->config->getIsSendSms() && $tourist->getPhone() && $text) {
+        if ($sms && $clientConfig && $clientConfig->getIsSendSms() && $tourist->getPhone() && $text) {
             $smsResult = $this->mbhs->sendSms((empty($smsText)) ? $text : $smsText, $tourist->getPhone());
             if (!$smsResult->error) {
                 $isSend = true;

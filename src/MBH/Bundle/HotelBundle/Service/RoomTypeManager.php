@@ -26,22 +26,25 @@ class RoomTypeManager
      */
     protected $dm;
 
-    /**
-     * @var ClientConfig;
-     */
-    private $config;
-
-    /**
-     * @var bool
-     */
-    public $useCategories = false;
+    /** @var bool|null */
+    private $useCategories = null;
 
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
         $this->dm = $this->container->get('doctrine_mongodb')->getManager();
-        $this->config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-        $this->useCategories = $this->config && $this->config->getUseRoomTypeCategory();
+    }
+
+    public function getIsUseCategories(): bool
+    {
+        if ($this->useCategories !== null) {
+            return $this->useCategories;
+        }
+
+        /** @var ClientConfig $config */
+        $config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+
+        return $this->useCategories = ($config && $config->getUseRoomTypeCategory());
     }
 
     /**
@@ -49,7 +52,7 @@ class RoomTypeManager
      */
     public function getRepository()
     {
-        $repoName = $this->useCategories ? 'MBHHotelBundle:RoomTypeCategory' : 'MBHHotelBundle:RoomType';
+        $repoName = $this->getIsUseCategories() ? 'MBHHotelBundle:RoomTypeCategory' : 'MBHHotelBundle:RoomType';
 
         return $this->dm->getRepository($repoName);
     }

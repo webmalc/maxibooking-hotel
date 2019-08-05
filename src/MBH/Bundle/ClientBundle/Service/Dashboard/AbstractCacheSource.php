@@ -37,7 +37,7 @@ abstract class AbstractCacheSource extends AbstractDashboardSource
     protected function checkZeroes(array $cache): self
     {
         if (!$cache[static::ZERO_FIELD]) {
-            $this->addDate($cache['hotel'], $cache[$this->roomTypeKey], $cache['date']);
+            $this->addDate($cache['hotel'], $cache[$this->getRoomTypeKey()], $cache['date']);
         }
         return $this;
     }
@@ -50,7 +50,7 @@ abstract class AbstractCacheSource extends AbstractDashboardSource
      */
     protected function checkHoles(array $cache)
     {
-        $caches = $this->caches[$cache['hotel']][$cache[$this->roomTypeKey]][$cache['tariff']];
+        $caches = $this->caches[$cache['hotel']][$cache[$this->getRoomTypeKey()]][$cache['tariff']];
         if ($cache === reset($caches)) {
             return $this;
         }
@@ -61,7 +61,7 @@ abstract class AbstractCacheSource extends AbstractDashboardSource
             $day = clone $cache['date'];
             $day->modify($operator . '1 day');
             if (!isset($caches[$day->format('d.m.Y')])) {
-                $this->addDate($cache['hotel'], $cache[$this->roomTypeKey], $day);
+                $this->addDate($cache['hotel'], $cache[$this->getRoomTypeKey()], $day);
             }
         };
         $check('+');
