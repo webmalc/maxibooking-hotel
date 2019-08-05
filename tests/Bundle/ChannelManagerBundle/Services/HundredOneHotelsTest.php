@@ -213,20 +213,20 @@ class HundredOneHotelsTest extends ChannelManagerServiceTestCase
         if ($isDefaultHotel) {
             $defRoomsId = $this->getServiceRoomIds(true);
             return '{"api_key":null,"hotel_id":'.self::HOH_HOTEL_ID1.',"service":"set_calendar","data":[{"day":"'.$this->dateInc(true).'",'.
-                '"quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":10,"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'"'.
-                ':10,"'.$defRoomsId[1].'":10,"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":10,'.
-                '"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":10,"'.$defRoomsId[2].'":10}},'.
-                '{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":10,"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'",'.
-                '"quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":10,"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,'.
-                '"'.$defRoomsId[1].'":10,"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":10,"'.$defRoomsId[2].'":10}},'.
-                '{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":10,"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota"'.
-                ':{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":10,"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":10,'.
-                '"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":10,"'.$defRoomsId[2].'":10}},{"day":'.
-                '"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":10,"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":'.
-                '{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":10,"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":10,'.
-                '"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":10,"'.$defRoomsId[2].'":10}},{"day":'.
-                '"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":10,"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'"'.
-                ':10,"'.$defRoomsId[1].'":10,"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":10,"'.$defRoomsId[2].'":10}}'.
+                '"quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":3,"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'"'.
+                ':10,"'.$defRoomsId[1].'":2,"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":1,'.
+                '"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":6,"'.$defRoomsId[2].'":10}},'.
+                '{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":5,"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'",'.
+                '"quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":5,"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,'.
+                '"'.$defRoomsId[1].'":8,"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":8,"'.$defRoomsId[2].'":10}},'.
+                '{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":5,"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota"'.
+                ':{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":5,"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":4,'.
+                '"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":7,"'.$defRoomsId[2].'":10}},{"day":'.
+                '"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":7,"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":'.
+                '{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":7,"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":7,'.
+                '"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":7,"'.$defRoomsId[2].'":10}},{"day":'.
+                '"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":8,"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'"'.
+                ':10,"'.$defRoomsId[1].'":8,"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":10,"'.$defRoomsId[2].'":10}}'.
                 ',{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":10,"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":'.
                 '{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":10,"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":10,'.
                 '"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":10,"'.$defRoomsId[2].'":10}},{"day":'.

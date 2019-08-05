@@ -827,3 +827,7 @@ cm_connection_instructions.part3.text1: 'Более подробно проце�
 cm_connection_instructions.part3.text2: 'Если у Вас возникли вопросы обратитесь, пожалуйста, в службу поддержки по адресу: <a href="mailto:%supportEmail%">%supportEmail%</a>.'
 site_manager.empty_room_caches_warning: '%roomTypeName%: Не выставлены номера в продаже на периоды: %periods%'
 site_manager.empty_price_caches_warning: '%roomTypeName%: Для тарифа "%tariffName%" не выставлены цены на периоды: %periods%'
+cm_connection_instructions.part2.facebook.text1: 'Результаты поиска Вы можете посмотреть по ссылке <a href="%connectionLink%" target="_blank">%connectionLink%</a>. Тут должен быть какой-то текст'
+cm_connection_instructions.part2.facebook.text2: 'Какой-то дополнительный текст'
+cm_connection_instructions.part2.facebook.warning1: 'Ошибка получения данных!'
+cm_connection_instructions.part2.facebook.warning2: 'Пожалуйста, проверьте настройки сайта.'

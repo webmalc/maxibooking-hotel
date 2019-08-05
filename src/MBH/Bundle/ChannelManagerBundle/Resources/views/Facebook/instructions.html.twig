@@ -1,0 +1,26 @@
+{% set channelManager = 'facebook' %}
+{% set channelManagerHumanName = 'Facebook' %}
+
+{% if searchResultAddress is not same as (null) %}
+    <p>{{ 'cm_connection_instructions.part2.text1'|trans|raw }}</p>
+
+    {% set numberOfStepsByCMs = {facebook: 2} %}
+
+    <ol class="btm-pd">
+        {% for stepNumber in 1..numberOfStepsByCMs[channelManager] %}
+            <li>{{ ('cm_connection_instructions.part2.' ~ channelManager ~ '.text' ~ stepNumber)|trans({'%connectionLink%': searchResultAddress})|raw }}</li>
+        {% endfor %}
+    </ol>
+
+    <p>
+{% else %}
+    <h3>{{ 'cm_connection_instructions.part2.facebook.warning1'|trans|raw }}</h3>
+    <p>{{ 'cm_connection_instructions.part2.facebook.warning2'|trans|raw }}</p>
+{% endif %}
+
+    {{ 'cm_connection_instructions.part3.text2'|trans({'%supportEmail%': get_twig_data()['support_main_email']})|raw }}
+</p>
+
+<br>
+
+

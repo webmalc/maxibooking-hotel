@@ -337,7 +337,7 @@ class Booking extends Base
                         $this->getRoomTypeArray($roomType),
                         [],
                         true,
-                        $this->roomManager->useCategories
+                        $this->roomManager->getIsUseCategories()
                     )
                 );
                 return $filtered;
