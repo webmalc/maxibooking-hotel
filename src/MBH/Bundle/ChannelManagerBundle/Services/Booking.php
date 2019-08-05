@@ -26,15 +26,21 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class Booking extends Base
 {
-    const UNAVAIBLE_PRICES = [
+    const UNAVAILABLE_PRICES= [
         'isPersonPrice' => false,
         'additionalChildrenPrice' => null,
         'additionalPrice' => null,
     ];
 
-    const UNAVAIBLE_RESTRICTIONS = [
+    const UNAVAILABLE_RESTRICTIONS = [
         'minBeforeArrival' => null,
         'maxBeforeArrival' => null,
+    ];
+
+    const UNAVAILABLE_PRICES_ADAPTER = [
+        'isPersonPrice' => 'isSinglePlacement',
+        'additionalChildrenPrice' => 'isChildPrices',
+        'additionalPrice' => 'isIndividualAdditionalPrices',
     ];
 
     /**
