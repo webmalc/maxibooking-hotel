@@ -767,6 +767,15 @@ class Builder
                 'attributes' => ['icon' => 'fa fa-cloud-download'],
             ]
         ];
+        $facebook = [
+            'facebook' => [
+                'options'    => [
+                    'route' => 'facebook',
+                    'label' => 'Facebook',
+                ],
+                'attributes' => ['icon' => 'fa fa-facebook'],
+            ],
+        ];
 
         $parent = $this->createItem($channelManager);
 
@@ -777,7 +786,8 @@ class Builder
             $ostrovok,
             $hundredOneHotel,
             $vashotel,
-            $myAllLocator
+            $myAllLocator,
+            $facebook
         ]));
 
     }
