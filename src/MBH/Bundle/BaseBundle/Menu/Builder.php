@@ -768,6 +768,15 @@ class Builder
                 'attributes' => ['icon' => 'fa fa-cloud-download'],
             ]
         ];
+        $facebook = [
+            'facebook' => [
+                'options'    => [
+                    'route' => 'facebook',
+                    'label' => 'Facebook',
+                ],
+                'attributes' => ['icon' => 'fa fa-facebook'],
+            ],
+        ];
 
         $homeAway = [
             HomeAway::NAME => [
@@ -789,7 +798,8 @@ class Builder
             $ostrovok,
             $hundredOneHotel,
             $vashotel,
-            $myAllLocator
+            $myAllLocator,
+            $facebook
         ]));
 
     }
