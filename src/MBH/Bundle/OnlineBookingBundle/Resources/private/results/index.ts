@@ -7,7 +7,8 @@ import * as queryString from 'query-string';
 import routes from './routes';
 
 
-Vue.config.devtools = true;
+Vue.config.devtools = process.env.NODE_ENV === 'development';
+
 Vue.use(VueRouter);
 Vue.use(PrettyCheckbox);
 Vue.use(VueLazyLoad);

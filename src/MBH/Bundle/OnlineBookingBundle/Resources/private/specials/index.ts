@@ -3,7 +3,8 @@ import VueCurrencyFilter from 'vue-currency-filter';
 import Specials from './components/Specials.vue';
 import VueRouter from 'vue-router';
 
-Vue.config.devtools = true;
+Vue.config.devtools = process.env.NODE_ENV === 'development';
+
 Vue.use(VueCurrencyFilter, {
     thousandsSeparator: ' ',
 
