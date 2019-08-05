@@ -123,6 +123,7 @@ class HOHRequestFormatter
 
         //отправляемые сообщения должны содержать один POST параметр 'request', содержащий данные в json-формате
         $requestData = ['request' => json_encode($template)];
+
         return $requestData;
     }
 }

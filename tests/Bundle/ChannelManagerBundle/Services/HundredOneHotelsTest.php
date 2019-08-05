@@ -168,6 +168,8 @@ class HundredOneHotelsTest extends ChannelManagerServiceTestCase
 
     public function testHOHRequestFormatter(): void
     {
+        $this->container->get('mbh.room.cache')->recalculateByPackages();
+        $this->cache->clear('room_cache_fetch', null, null, true);
         /** @var HundredOneHotels $hoh */
         $hoh = \Mockery::mock(HundredOneHotels::class, [$this->container])->makePartial();
         $num = $this->intInc();
@@ -212,7 +214,7 @@ class HundredOneHotelsTest extends ChannelManagerServiceTestCase
     {
         if ($isDefaultHotel) {
             $defRoomsId = $this->getServiceRoomIds(true);
-            return '{"api_key":null,"hotel_id":'.self::HOH_HOTEL_ID1.',"service":"set_calendar","data":[{"day":"'.$this->dateInc(true).'",'.
+            return '{"api_key":null,"hotel_id":"'.self::HOH_HOTEL_ID1.'","service":"set_calendar","data":[{"day":"'.$this->dateInc(true).'",'.
                 '"quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":3,"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'"'.
                 ':10,"'.$defRoomsId[1].'":2,"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":1,'.
                 '"'.$defRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":6,"'.$defRoomsId[2].'":10}},'.
@@ -238,7 +240,7 @@ class HundredOneHotelsTest extends ChannelManagerServiceTestCase
                 '"'.$this->dateInc().'","quota":{"'.$defRoomsId[0].'":10,"'.$defRoomsId[1].'":10,"'.$defRoomsId[2].'":10}}]}';
         } else {
             $notDefRoomsId = $this->getServiceRoomIds(false);
-            return '{"api_key":null,"hotel_id":'.self::HOH_HOTEL_ID2.',"service":"set_calendar","data":[{"day":"'.$this->dateInc(true).'","quota":'.
+            return '{"api_key":null,"hotel_id":"'.self::HOH_HOTEL_ID2.'","service":"set_calendar","data":[{"day":"'.$this->dateInc(true).'","quota":'.
                 '{"'.$notDefRoomsId[0].'":10,"'.$notDefRoomsId[1].'":10,"'.$notDefRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":{"'.$notDefRoomsId[0].'":10,'.
                 '"'.$notDefRoomsId[1].'":10,"'.$notDefRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":{"'.$notDefRoomsId[0].'":10,"'.$notDefRoomsId[1].'":10,'.
                 '"'.$notDefRoomsId[2].'":10}},{"day":"'.$this->dateInc().'","quota":{"'.$notDefRoomsId[0].'":10,"'.$notDefRoomsId[1].'":10,"'.$notDefRoomsId[2].'":10}},'.
