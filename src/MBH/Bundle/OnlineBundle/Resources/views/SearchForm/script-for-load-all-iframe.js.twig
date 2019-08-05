@@ -197,8 +197,8 @@ OnLoadFormLoad.prototype.showIframe = function (event, element) {
     var c = this.getCoords();
 
     element.style.display = 'block';
-    element.style.top = (event.data.top + c.top - 10) + 'px';
-    element.style.left = (isMobileDevice() ? event.data.left : (event.data.left + c.left)) + 'px';
+    element.style.top = (event.data.data.top + c.top - 10) + 'px';
+    element.style.left = (isMobileDevice() ? event.data.data.left : (event.data.data.left + c.left)) + 'px';
     element.contentWindow.postMessage(event.data, '*');
 };
 

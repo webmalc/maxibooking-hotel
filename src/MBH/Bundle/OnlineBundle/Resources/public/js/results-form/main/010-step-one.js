@@ -54,8 +54,6 @@ MbhResultForm.prototype.initSwipeStepOne = function () {
         });
 
         _this._swiperListStepOne.push(swipe);
-
-        console.log(_this._swiperListStepOne);
     });
 };
 
@@ -291,8 +289,6 @@ MbhResultForm.prototype.sendDataStepOneButton = function (action, data) {
 MbhResultForm.prototype.stepOne = function() {
     var _this = this;
     this._totalPackage = 0;
-
-    console.log(this.searchData.url);
 
     jQuery.ajax({
         url: this._urls.stepOne,

@@ -621,6 +621,8 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-conta
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container-desktop .mbh-results-image-wrapper {
   width: 270px;
+  padding-right: 0;
+  padding-left: 0;
 }
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-container-desktop .mbh-results-description-container {
   width: 420px;

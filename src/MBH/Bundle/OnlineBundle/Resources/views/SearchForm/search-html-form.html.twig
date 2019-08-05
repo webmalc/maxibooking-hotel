@@ -79,19 +79,21 @@
 
     {% if formConfig.useAdditionalForm %}
         <div class="mbh-form-row form-group mbh-form-additional-room-types"{{ formConfig.roomTypes ? '' : ' style="display: none;"' }}>
-            <select id="mbh-form-roomType" class="form-control input-sm" name="roomType">
-                <option selected disabled>Выбрать тип номера</option>
-                {% if hotels|length > 1 %}
-                    <option value="">- {{ 'views.api.form.room_type.choices.any'|trans({}, 'MBHOnlineBundle') }} -</option>
-                    {% for key, roomTypes in choices %}
-                        <optgroup label="{{ key }}">
-                            {{ macros.optionsSelect(roomTypes) }}
-                        </optgroup>
-                    {% endfor %}
-                {% else %}
-                    {{ macros.optionsSelect(choices) }}
-                {% endif %}
-            </select>
+            <label for="mbh-form-roomType">
+                <select id="mbh-form-roomType" class="form-control input-sm" name="roomType">
+                    <option selected disabled>Выбрать тип номера</option>
+                    {% if hotels|length > 1 %}
+                        <option value="">- {{ 'views.api.form.room_type.choices.any'|trans({}, 'MBHOnlineBundle') }} -</option>
+                        {% for key, roomTypes in choices %}
+                            <optgroup label="{{ key }}">
+                                {{ macros.optionsSelect(roomTypes) }}
+                            </optgroup>
+                        {% endfor %}
+                    {% else %}
+                        {{ macros.optionsSelect(choices) }}
+                    {% endif %}
+                </select>
+            </label>
         </div>
         <div class="mbh-form-row form-group mbh-form-additional-form-amount-guest-wrapper">
             <label class="additional-form-label">{{ fieldsName.guest is not empty ? fieldsName.guest : ('views.api.form.guest.label' | trans({}, 'MBHOnlineBundle') ) }}</label>

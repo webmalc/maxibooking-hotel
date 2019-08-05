@@ -67,7 +67,6 @@ SearchForm.prototype.additionalFormDataInit = function () {
         return {
             adults: parseInt(query.adults),
             children: parseInt(query.children),
-            // roomType: query.roomType,
             'children-ages': query['children-ages']
         }
 
@@ -78,12 +77,6 @@ SearchForm.prototype.additionalFormDataInit = function () {
         {form: dataForForm},
         'additionalFromDataForParentForm'
     );
-    // window.parent.postMessage({
-    //     type: 'mbh',
-    //     target: 'additionalFromDataForParentForm',
-    //     form: dataForForm
-    // }, "*");
-
 };
 
 SearchForm.prototype.setValue = function(field, val) {
@@ -97,11 +90,11 @@ SearchForm.prototype.additionalDataSetValueFromIframe = function (e) {
         return;
     }
 
-    if (e.data.name !== 'additionalFromDataForIframe' || e.data.form === {}) {
+    if (e.data.action !== 'additionalFromDataForIframe' || e.data.data === {}) {
         return;
     }
 
-    this.additionalFormUseIt = e.data.form;
+    this.additionalFormUseIt = e.data.data;
 
     this.additionalFormWriteAmountGuest(this.additionalFormUseIt.adults, this.additionalFormUseIt.children);
 
@@ -126,10 +119,6 @@ SearchForm.prototype.processMessage = function(e) {
     if (e.data.date && this.last) {
         this.last.val(e.data.date).trigger('change');
         this.sendPostMessage('hideCalendar');
-        // window.parent.postMessage({
-        //     type: 'mbh',
-        //     action: 'hideCalendar'
-        // }, "*");
     }
 };
 
@@ -155,7 +144,7 @@ SearchForm.prototype.addEventListeners = function () {
 SearchForm.prototype.searchFormActions  = function () {
     var _this = this;
 
-    this.viewChange();
+    this.changeView();
     this.addEventListeners();
 
     if (!this.begin.val() || !this.end.val()) {
@@ -305,17 +294,12 @@ SearchForm.prototype.sendPostMessage = function (action, data, target) {
     mbhSendParentPostMessage(action, data, target);
 };
 
-SearchForm.prototype.viewChange = function() {
+SearchForm.prototype.changeView = function() {
     var _this = this;
 
     var resizeHandler = function () {
         var formHeight = document.getElementById('mbh-form-wrapper').clientHeight;
         _this.sendPostMessage('formResize', formHeight);
-        // window.parent.postMessage({
-        //     type: 'mbh',
-        //     action: 'formResize',
-        //     formHeight: formHeight
-        // }, '*')
     };
 
     window.addEventListener('resize', resizeHandler);
@@ -365,14 +349,6 @@ SearchForm.prototype.viewChange = function() {
                 date: el.val()
             }
         );
-
-        // window.parent.postMessage({
-        //     type: 'mbh',
-        //     action: (event.data !== undefined && event.data.action !== undefined) ? event.data.action : 'showCalendar',
-        //     top: el.offset().top + el.outerHeight(),
-        //     left: paddingLeft(el.offset().left),
-        //     date: el.val()
-        // }, "*");
     };
 
     var hideCalendar = function(e, exception) {
@@ -395,18 +371,10 @@ SearchForm.prototype.viewChange = function() {
 
         if (needHideCalendar) {
             _this.sendPostMessage('hideCalendar');
-            // window.parent.postMessage({
-            //     type: 'mbh',
-            //     action: 'hideCalendar'
-            // }, "*");
         }
 
         if (needHideAdditionalData) {
             _this.sendPostMessage('hideAdditionalForm');
-            // window.parent.postMessage({
-            //     type: 'mbh',
-            //     action: 'hideAdditionalForm'
-            // }, "*");
         }
     });
 };

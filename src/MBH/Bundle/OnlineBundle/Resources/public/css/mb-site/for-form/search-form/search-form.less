@@ -197,16 +197,15 @@
       }
 
       .mbh-form-additional-room-types {
-        &::after {
-          content: "";
-          padding-right: 15px;
-          right: 26px;
-          position: relative;
-          height: 20px;
+        label {
+          width: inherit;
+          order: 2;
+          border-right: none;
+          margin-right: 15px;
+
           background-image: url('/bundles/mbhonline/images/arrow-down.svg');
           background-repeat: no-repeat;
           background-position: right;
-
         }
 
         @media (min-width: @size-screen-max-width-mobile) and (max-width: @size-screen-mid-width-tablet-minus-one) {
@@ -218,7 +217,7 @@
           -webkit-appearance:none; /* Safari and Chrome */
           appearance: none;
 
-          width: inherit;
+          width: 100%;
 
           padding: 0 36px 0 12px;
           border: none;
@@ -228,6 +227,7 @@
           height: inherit;
           line-height: inherit;
           font-size: inherit;
+          cursor: pointer;
         }
       }
 

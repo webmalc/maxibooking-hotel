@@ -38,12 +38,16 @@ AdditionalForm.prototype.eventHandler = function () {
         }
     });
 
-    window.parent.postMessage({
-        type: 'mbh',
-        target: 'form',
-        name: this._PM_INPUT_DATA_FOR_PARENT,
-        form: dataForm
-    }, '*')
+
+    this.sendPostMessage(
+        this._PM_INPUT_DATA_FOR_PARENT,
+        dataForm,
+        'form'
+    );
+};
+
+AdditionalForm.prototype.sendPostMessage = function (action, data, target) {
+    mbhSendParentPostMessage(action, data, target);
 };
 
 AdditionalForm.prototype.iframeResize = function () {
@@ -52,12 +56,7 @@ AdditionalForm.prototype.iframeResize = function () {
     if (this.lastIframeHeight !== this.currentFormHeight) {
         this.lastIframeHeight = this.currentFormHeight;
 
-
-        window.parent.postMessage({
-            type: 'mbh',
-            action: this._PM_RESIZE_IFRAME,
-            formHeight: this.currentFormHeight
-        }, '*')
+        this.sendPostMessage( this._PM_RESIZE_IFRAME, this.currentFormHeight);
     }
 };
 
@@ -219,7 +218,7 @@ AdditionalForm.prototype.adultsSectionInit = function () {
 };
 
 AdditionalForm.prototype.exec = function() {
-
+    var _this = this;
     this.childrenSectionInit();
     this.adultsSectionInit();
 
@@ -227,10 +226,7 @@ AdditionalForm.prototype.exec = function() {
     this.wrapperAddListener();
 
     document.querySelector('.close-button button').addEventListener('click', function(e) {
-        window.parent.postMessage({
-            type: 'mbh',
-            action: 'hideAdditionalForm'
-        }, "*");
+        _this.sendPostMessage('hideAdditionalForm');
     });
 };
 
