@@ -9,6 +9,7 @@ namespace MBH\Bundle\ClientBundle\Service\PaymentSystem;
 
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
+use MBH\Bundle\ClientBundle\Document\PaymentSystem\NewRbk;
 use MBH\Bundle\ClientBundle\Lib\PaymentSystem\NewRbk\InvoiceRequest;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
@@ -63,12 +64,21 @@ class NewRbkInvoiceCreate
     {
         $this->container = $container;
         $this->dm = $this->container->get('doctrine.odm.mongodb.document_manager');
-        $this->config = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
-        if ($this->config->getNewRbk() === null) {
+    }
+
+    /**
+     * @return NewRbk
+     * @throws \LogicException
+     */
+    private function getEntity(): NewRbk
+    {
+        $config = $this->container->get('mbh.client_config_manager')->fetchConfig();
+
+        if ($config->getNewRbk() === null) {
             throw new \LogicException('must not be empty');
         }
 
-        $this->entity = $this->config->getNewRbk();
+        return $config->getNewRbk();
     }
 
     /**
@@ -90,7 +100,7 @@ class NewRbkInvoiceCreate
      */
     private function sendQuery(): NewRbkCreateInvoiceResponse
     {
-        $apiKey = $this->entity->getApiKey();
+        $apiKey = $this->getEntity()->getApiKey();
 
         $curl = curl_init();
 
@@ -132,7 +142,8 @@ class NewRbkInvoiceCreate
      */
     private function getPostFields()
     {
-        $invoice = InvoiceRequest::create($this->dm, $this->config, $this->package, $this->getCashDocument());
+        $clientConfig = $this->container->get('mbh.client_config_manager')->fetchConfig();
+        $invoice = InvoiceRequest::create($this->dm, $clientConfig, $this->package, $this->getCashDocument());
 
         return json_encode($invoice, JSON_UNESCAPED_UNICODE);
     }

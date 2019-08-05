@@ -80,7 +80,7 @@ class SearchMultipleDates implements SearchInterface
                     $roomTypes
                 );
             }
-        } elseif ($this->manager->useCategories) {
+        } elseif ($this->manager->getIsUseCategories()) {
             $roomTypes = [];
             foreach ($query->roomTypes as $catId) {
                 $cat = $this->dm->getRepository('MBHHotelBundle:RoomTypeCategory')->find($catId);
