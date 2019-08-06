@@ -472,6 +472,9 @@ body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-image
 body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-image-wrapper .image-container .swiper-container {
   height: 237px;
 }
+body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-image-wrapper .image-container .swiper-container .swiper-wrapper {
+  width: 100vw;
+}
 @media (min-width: 360px) {
   body #mbh-results-wrapper .step-one #mbh-results-list-wrapper .mbh-results-image-wrapper .image-container .swiper-container {
     height: 266px;
