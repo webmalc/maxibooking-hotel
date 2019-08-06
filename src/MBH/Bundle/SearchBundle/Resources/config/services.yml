@@ -231,6 +231,10 @@ services:
             - '@event_dispatcher'
             - '@mbh.hotel.room_type_manager'
             - '@mbh_search.shared_data_fetcher'
+            - '@mbh_search.old_to_new_price_converter'
+
+    mbh_search.old_to_new_price_converter:
+        class: MBH\Bundle\SearchBundle\Services\Search\Result\OldToNewPriceConverter
 
 #    mbh_search.result_composer:
 #        class: MBH\Bundle\SearchBundle\Services\Search\SearchResultComposer
@@ -780,7 +784,6 @@ services:
         arguments:
             - '@snc_redis.results_client'
             - '@mbh_search.result_serializer'
-            - '@mbh_search.results_answer_manager'
 
 #serializer
     mbh_search.serializer:

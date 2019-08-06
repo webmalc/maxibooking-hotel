@@ -34,10 +34,11 @@ class FinalSearchResultsAnswerManager
      * @param bool $isCreateAnswer
      * @param string $grouperName
      * @param SearchConditionsInterface|null $conditions
+     * @param bool $separated
      * @return mixed
      * @throws GroupingFactoryException
      */
-    public function createAnswer($results, int $errorLevel, bool $isCreateJson, bool $isCreateAnswer, string $grouperName = null, SearchConditionsInterface $conditions = null)
+    public function createAnswer($results, int $errorLevel, bool $isCreateJson, bool $isCreateAnswer, string $grouperName = null, ?string $searchConditionHash = null, bool $separated = true)
     {
 
         $this->builder
@@ -46,10 +47,10 @@ class FinalSearchResultsAnswerManager
             ->setGrouping($grouperName)
             ->createJson($isCreateJson)
             ->createAnswer($isCreateAnswer);
-        if ($conditions) {
-            $this->builder->setSearchHashConditions($conditions);
+        if ($searchConditionHash) {
+            $this->builder->setSearchHashConditions($searchConditionHash);
         }
 
-        return $this->builder->getResults();
+        return $this->builder->getResults($separated);
     }
 }

@@ -49,6 +49,7 @@ class DayPriceDirector
         return $this->dayPriceBuilder->getDayPrice();
     }
 
+
     /** TODO: Rebuild todo  to Tourists interface */
     private function buildDayPrice(DateTime $date, array $tourists, RoomType $roomType, Tariff $tariff, float $dayPrice): void
     {

@@ -4,7 +4,6 @@
 namespace MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper;
 
 
-
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MBH\Bundle\HotelBundle\Document\Room;
 use MBH\Bundle\HotelBundle\Document\RoomType;
@@ -16,6 +15,7 @@ use MBH\Bundle\PackageBundle\Services\Search\SearchFactory;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\SearchBundle\Lib\Result\ResultRoom;
 use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcher;
+use MBH\Bundle\SearchBundle\Services\Search\FinalSearchResultsAnswerManager;
 use MBH\Bundle\SearchBundle\Services\Search\Search;
 
 class OnlineSearchAdapter
@@ -34,26 +34,39 @@ class OnlineSearchAdapter
      * @var SearchFactory
      */
     private $factory;
+    /**
+     * @var FinalSearchResultsAnswerManager
+     */
+    private $answerManager;
 
     /**
      * OnlineSearchAdapter constructor.
      * @param Search $search
      */
-    public function __construct(Search $search, DocumentManager $dm, SearchFactory $factory, SharedDataFetcher $dataFetcher)
-    {
+    public function __construct(
+        Search $search,
+        DocumentManager $dm,
+        SearchFactory $factory,
+        SharedDataFetcher $dataFetcher,
+        FinalSearchResultsAnswerManager $answerManager
+    ) {
         $this->search = $search;
         $this->dm = $dm;
         $this->factory = $factory;
         $this->dataFetcher = $dataFetcher;
+        $this->answerManager = $answerManager;
     }
 
 
     public function search(SearchQuery $query): array
     {
         $data = $this->searchDataAdaptive($query);
-        $searchResults = $this->search->searchSync($data, 'roomTypeCategory');
+        $searchResults = $this->search->searchSync($data, null, false, false, false);
+        $searchResults = $this->filterAzovskyOnline($searchResults);
+        /** Костыль для азовского. Нужно из поиска выносить формирование результатов и делать класс для результатов с методами создания различных вариантов */
+        $searchResults = $this->answerManager->createAnswer($searchResults, 0, false, false, 'roomTypeCategory');
 
-        return  $this->adaptResults($searchResults);
+        return $this->adaptResults($searchResults);
     }
 
     private function adaptResults(array $searchResults): array
@@ -65,10 +78,11 @@ class OnlineSearchAdapter
                 $roomTypeCategory = $this->dataFetcher->getFetchedCategory($roomTypeCategoryId);
                 $adaptedResults[] = [
                     'roomType' => $roomTypeCategory,
-                    'results' => $this->convertNewResultsToOld($results)
+                    'results' => $this->convertNewResultsToOld($results),
                 ];
             }
         }
+
         return $adaptedResults;
     }
 
@@ -97,7 +111,7 @@ class OnlineSearchAdapter
                 $prices = [
                     //** HotFix when adapt with childrenAge difference */
 //                     $newResultPrices['searchAdults'].'_'.$newResultPrices['searchChildren'] => $newResultPrices['total']
-                    $priceAdults.'_'.$priceChildren => $newResultPrices['total']
+                    $priceAdults.'_'.$priceChildren => $newResultPrices['total'],
 
                 ];
                 $searchResult->setPrices($prices);
@@ -121,7 +135,7 @@ class OnlineSearchAdapter
 
     private function adaptVirtualRoom($currentResult)
     {
-        $currentVirtualRoomId = $currentResult['virtualRoom'];
+        $currentVirtualRoomId = $currentResult['virtualRoom'] ?? ResultRoom::FAKE_VIRTUAL_ROOM_ID;
         if ($currentVirtualRoomId !== ResultRoom::FAKE_VIRTUAL_ROOM_ID) {
             return $this->dm->find(Room::class, $currentVirtualRoomId);
         }
@@ -146,7 +160,7 @@ class OnlineSearchAdapter
             'roomTypes' => $searchQuery->roomTypes,
             'additionalBegin' => $searchQuery->range,
             'additionalEnd' => $searchQuery->range,
-            'isUseCache' => false
+            'isUseCache' => false,
         ];
 
         return $data;
@@ -156,11 +170,79 @@ class OnlineSearchAdapter
     {
         usort(
             $results,
-            function ($resultA, $resultB) {
+            static function ($resultA, $resultB) {
                 return (int)$resultA['prices'][0]['total'] <=> (int)$resultB['prices'][0]['total'];
             }
         );
 
         return $results;
     }
+
+    private function filterAzovskyOnline(array $results): array
+    {
+        $dated = [];
+        foreach ($results as $result) {
+            $begin = $result['begin'];
+            $end = $result['end'];
+            $tariff = $result['tariff'];
+            $category = $result['roomTypeCategory'];
+            $key = implode('_', [$begin, $end, $tariff, $category]);
+            $dated[$key][] = $result;
+        }
+
+        $excludeKeys = [];
+        foreach ($dated as $key => $grouped) {
+            if (count($grouped) > 1) {
+                $roomTypes = array_column($grouped, 'roomType');
+                $exclude = $this->getRoomTypeForExclude($roomTypes);
+                foreach ($exclude as $roomTypeKey) {
+                    $excludeKeys[] = $key.'_'.$roomTypeKey;
+                }
+            }
+        }
+
+        $filtered = array_filter(
+            $results,
+            static function ($result) use ($excludeKeys){
+                $begin = $result['begin'];
+                $end = $result['end'];
+                $tariff = $result['tariff'];
+                $category = $result['roomTypeCategory'];
+                $roomType = $result['roomType'];
+                $key = implode('_', [$begin, $end, $tariff, $category, $roomType]);
+
+                return !in_array($key, $excludeKeys, true);
+            }
+        );
+
+
+        return $filtered;
+    }
+
+    private function getRoomTypeForExclude(array $roomTypeIds): array
+    {
+        $roomTypes = [];
+        foreach ($roomTypeIds as $roomTypeId) {
+            $roomTypes[] = $this->dataFetcher->getFetchedRoomType($roomTypeId);
+        }
+        usort(
+            $roomTypes,
+            static function ($roomType1, $roomType2) {
+                /** @var RoomType $roomType1 */
+                /** @var RoomType $roomType2 */
+                return $roomType1->getTotalPlaces() <=> $roomType2->getTotalPlaces();
+            }
+        );
+
+        array_shift($roomTypes);
+
+        $exclude = [];
+        foreach ($roomTypes as $roomType) {
+            $exclude[] = $roomType->getId();
+        }
+
+        return $exclude;
+    }
+
+
 }

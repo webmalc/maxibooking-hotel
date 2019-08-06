@@ -5,6 +5,7 @@ namespace MBH\Bundle\SearchBundle\Services\Search;
 
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\OnlineBookingBundle\Service\OnlineSearchHelper\OnlineSearchAdapter;
 use MBH\Bundle\SearchBundle\Document\SearchConditions;
 use MBH\Bundle\SearchBundle\Lib\Events\SearchEvent;
 use MBH\Bundle\SearchBundle\Lib\Exceptions\GroupingFactoryException;
@@ -46,7 +47,7 @@ class Search
     private $producer;
 
     /** @var FinalSearchResultsAnswerManager */
-    private $resultsBuilder;
+    private $resultsAnswerManager;
 
     /** @var QueryGroupCreator */
     private $queryGroupCreator;
@@ -84,7 +85,7 @@ class Search
         $this->conditionsCreator = $conditionsCreator;
         $this->combinationsGenerator = $queryGenerator;
         $this->producer = $producer;
-        $this->resultsBuilder = $builder;
+        $this->resultsAnswerManager = $builder;
         $this->queryGroupCreator = $groupCreator;
         $this->dispatcher = $dispatcher;
     }
@@ -95,6 +96,7 @@ class Search
      * @param null $grouping
      * @param bool $isCreateJson
      * @param bool $isCreateAnswer
+     * @param bool $separatedError
      * @return mixed
      * @throws GroupingFactoryException
      * @throws SearchConditionException
@@ -106,7 +108,8 @@ class Search
         array $data,
         $grouping = null,
         bool $isCreateJson = false,
-        bool $isCreateAnswer = false
+        bool $isCreateAnswer = false,
+        bool $separatedError = true
     ) {
         $event = new SearchEvent();
         $conditions = $this->createSearchConditions($data);
@@ -127,13 +130,19 @@ class Search
             $results[] = $searcher->search($searchQuery);
         }
 
-        $results = $this->resultsBuilder->createAnswer(
+        /**
+         * Вынести отсюда формирование результатов. Не забыть что костыль в адаптере для онлайн прикручен с фильтрацией
+         * @see OnlineSearchAdapter::search()
+         *
+         */
+        $results = $this->resultsAnswerManager->createAnswer(
             $results,
             $conditions->getErrorLevel(),
             $isCreateJson,
             $isCreateAnswer,
             $grouping,
-            $conditions
+            $conditions->getSearchHash(),
+            $separatedError
         );
 
         $this->dispatcher->dispatch(SearchEvent::SEARCH_SYNC_END, $event);

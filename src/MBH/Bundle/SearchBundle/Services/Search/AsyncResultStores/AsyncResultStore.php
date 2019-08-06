@@ -23,25 +23,18 @@ class AsyncResultStore implements AsyncResultStoreInterface
      * @var ResultSerializer
      */
     private $serializer;
-    /**
-     * @var FinalSearchResultsAnswerManager
-     */
-    private $finalResultsBuilder;
 
     /**
      * ResultRedisStore constructor.
      * @param Client $cache
      * @param ResultSerializer $serializer
-     * @param FinalSearchResultsAnswerManager $resultsBuilder
      */
     public function __construct(
         Client $cache,
-        ResultSerializer $serializer,
-        FinalSearchResultsAnswerManager $resultsBuilder
+        ResultSerializer $serializer
     ) {
         $this->cache = $cache;
         $this->serializer = $serializer;
-        $this->finalResultsBuilder = $resultsBuilder;
     }
 
     public function storeInStock($result, SearchConditionsInterface $conditions): void
@@ -70,10 +63,7 @@ class AsyncResultStore implements AsyncResultStoreInterface
      * @throws GroupingFactoryException
      */
     public function receiveFromStock(
-        SearchConditionsInterface $conditions,
-        $grouperName = null,
-        bool $isCreateJson = false,
-        bool $isCreateAnswer = false
+        SearchConditionsInterface $conditions
     ) {
         $results = [];
         $keysForDelete = [];
@@ -109,15 +99,6 @@ class AsyncResultStore implements AsyncResultStoreInterface
 
         $results = array_map([$this->serializer, 'decodeJsonToArray'], $results);
 
-        //** вынести в отдельный сервис для формирования результатов ? */
-        $results = $this->finalResultsBuilder->createAnswer(
-            $results,
-            $conditions->getErrorLevel(),
-            $isCreateJson,
-            $isCreateAnswer,
-            $grouperName,
-            $conditions
-        );
 
         return $results;
     }

@@ -61,9 +61,9 @@ class FinalSearchResultsBuilder
         return $this;
     }
 
-    public function setSearchHashConditions(SearchConditionsInterface $conditions): void
+    public function setSearchHashConditions(string $searchHashConditions): void
     {
-        $this->searchHashConditions = $conditions->getSearchHash();
+        $this->searchHashConditions = $searchHashConditions;
     }
 
 
@@ -109,7 +109,7 @@ class FinalSearchResultsBuilder
      * @return mixed
      * @throws \MBH\Bundle\SearchBundle\Lib\Exceptions\GroupingFactoryException
      */
-    public function getResults()
+    public function getResults(bool $separated)
     {
         $results = $this->results ?? [];
 
@@ -120,7 +120,7 @@ class FinalSearchResultsBuilder
         $results = array_values($results);
         $groupingFactory = new GroupingFactory();
         /** @noinspection CallableParameterUseCaseInTypeContextInspection */
-        $grouping = $groupingFactory->createGrouping($this->grouping);
+        $grouping = $groupingFactory->createGrouping($this->grouping, $separated);
         $results = $grouping->group($results);
 
         if ($this->isCreateAnswer) {

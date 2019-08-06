@@ -5,13 +5,20 @@ namespace MBH\Bundle\PackageBundle\EventListener;
 
 
 use MBH\Bundle\HotelBundle\Document\RoomType;
+use MBH\Bundle\PackageBundle\Document\PackagePrice;
 use MBH\Bundle\PackageBundle\Lib\SearchCalculateEvent;
 use MBH\Bundle\PackageBundle\Services\Calculation;
 use MBH\Bundle\PackageBundle\Services\MagicCalculation;
 use MBH\Bundle\PriceBundle\Document\Promotion;
 use MBH\Bundle\PriceBundle\Document\Special;
 use MBH\Bundle\PriceBundle\Document\Tariff;
+use MBH\Bundle\SearchBundle\Services\Calc\Prices\DayPrice;
 use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminerEvent;
+use MBH\Bundle\SearchBundle\Services\Search\Result\Builder\ChildFreeTariffDayPriceDirector;
+use MBH\Bundle\SearchBundle\Services\Search\Result\Builder\DayPriceBuilder;
+use MBH\Bundle\SearchBundle\Services\Search\Result\Builder\DayPriceDirector;
+use MBH\Bundle\SearchBundle\Services\Search\Result\Builder\PriceBuilder;
+use MBH\Bundle\SearchBundle\Services\Search\Result\Builder\PriceDirector;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -173,6 +180,7 @@ class SearchSubscriber implements EventSubscriberInterface
                     return;
                 }
                 $prices = $this->mergePrices($thirtyPrices, $childrenPrices);
+                throw new \LogicException('Need to convert array of price to Price array');
                 $event->setPrices($prices)->stopPropagation();
             }
         }
@@ -249,5 +257,6 @@ class SearchSubscriber implements EventSubscriberInterface
 
         return $prices;
     }
+
 
 }

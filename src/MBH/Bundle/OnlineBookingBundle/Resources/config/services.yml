@@ -91,6 +91,7 @@ services:
             - '@doctrine.odm.mongodb.document_manager'
             - '@mbh.package.search'
             - '@mbh_search.shared_data_fetcher'
+            - '@mbh_search.results_answer_manager'
 
     mbh.special_data_provider:
         public: false

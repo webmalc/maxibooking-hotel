@@ -17,6 +17,7 @@ use MBH\Bundle\SearchBundle\Services\Data\SharedDataFetcherInterface;
 use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminer;
 use MBH\Bundle\SearchBundle\Services\Search\Determiners\Occupancies\OccupancyDeterminerEvent;
 use MBH\Bundle\SearchBundle\Services\Search\Determiners\OccupancyInterface;
+use MBH\Bundle\SearchBundle\Services\Search\Result\OldToNewPriceConverter;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -44,6 +45,10 @@ class PriceSearcher
      * @var SharedDataFetcherInterface
      */
     private $dataFetcher;
+    /**
+     * @var OldToNewPriceConverter
+     */
+    private $converter;
 
 
     /**
@@ -54,13 +59,14 @@ class PriceSearcher
      * @param RoomTypeManager $roomTypeManager
      * @param SharedDataFetcherInterface $dataFetcher
      */
-    public function __construct(Calculation $calculation, OccupancyDeterminer $occupancyDeterminer, EventDispatcherInterface $eventDispatcher, RoomTypeManager $roomTypeManager, SharedDataFetcherInterface $dataFetcher)
+    public function __construct(Calculation $calculation, OccupancyDeterminer $occupancyDeterminer, EventDispatcherInterface $eventDispatcher, RoomTypeManager $roomTypeManager, SharedDataFetcherInterface $dataFetcher, OldToNewPriceConverter $converter)
     {
         $this->calculation = $calculation;
         $this->occupancyDeterminer = $occupancyDeterminer;
         $this->eventDispatcher = $eventDispatcher;
         $this->roomTypeManager = $roomTypeManager;
         $this->dataFetcher = $dataFetcher;
+        $this->converter = $converter;
     }
 
     /**
@@ -81,8 +87,8 @@ class PriceSearcher
             if (false === $prices) {
                 throw new CalculationException('No price for subscriber');
             }
-
-            return $prices;
+            //** Тут я в азовском всегда (пока что) получаю старый формат цен для ребенка бесплатно по этому надо конвертить в новый формат цен */
+            return $this->converter->oldToNewPriceConvert($prices, $searchQuery->getRoomTypeId());
         }
 
         return $this->getPricesForOccupancy($searchQuery, $occupancy);
