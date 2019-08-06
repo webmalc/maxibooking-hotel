@@ -206,7 +206,7 @@
     width: @_width_for_result_page;
   }
 
-  width: 100%;
+  width: 100vw;
 }
 
 @indent_btn: 30px;

@@ -298,6 +298,10 @@ MbhResultForm.prototype.stepOne = function() {
         success: function(data) {
             _this.wrapper.html(data);
 
+            if (document.querySelector('.mbh-results-error') !== null) {
+                return;
+            }
+
             _this.backgroundImageRoomForTablet();
 
             _this.resize();

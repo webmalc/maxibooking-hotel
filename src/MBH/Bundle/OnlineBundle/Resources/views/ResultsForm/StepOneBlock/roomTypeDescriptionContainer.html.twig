@@ -2,20 +2,14 @@
     {% if result.roomType.description is not empty %}
         {% set desc = result.roomType.description | striptags | remove_non_printable_characters %}
         <div class="mbh-results-room-type-description-wrapper">
-            {% if desc|length > 180 %}
-                <span class="mbh-results-room-type-description description-small">
-                                            {{ desc|slice(0, 130) ~ '...' }}
-                                        </span>
-                <div class="mbh-results-room-type-description description-full">
-                    {{ desc }}
-                </div>
+            {% if desc|length > 200 %}
+                <span class="mbh-results-room-type-description description-small">{{ desc|slice(0, 150) ~ '...' }}</span>
+                <div class="mbh-results-room-type-description description-full">{{ desc }}</div>
                 <button class="mbh-results-room-type-description-toggle">
                     {{ 'views.api.getResultsTable.room_description.show'|trans({}, 'MBHOnlineBundle') }}
                 </button>
             {% else %}
-                <div class="mbh-results-room-type-description">
-                    {{ desc }}
-                </div>
+                <div class="mbh-results-room-type-description">{{ desc }}</div>
             {% endif %}
         </div>
     {% endif %}

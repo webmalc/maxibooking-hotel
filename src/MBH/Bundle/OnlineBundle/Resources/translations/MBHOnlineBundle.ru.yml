@@ -36,7 +36,7 @@ views.api.getResultsTable.guests: Гости
 views.api.getResultsTable.price: Цена
 views.api.getResultsTable.rooms_amount: 'Количество номеров'
 views.api.getResultsTable.room_description.show: 'Подробнее'
-views.api.getResultsTable.room_description.hide: 'Скрыть'
+views.api.getResultsTable.room_description.hide: 'Свернуть'
 views.api.getResultsTable.room_price: 'Цена за номер'
 views.api.getResultsTable.hotel: Отель
 views.api.getResultsTable.service_type: 'Тип услуги'
@@ -65,7 +65,7 @@ views.api.step_one.result_actions.guest.many: гостя
 
 views.api.result.packages_info.total_to_pay: 'К оплате:'
 
-views.api.getUserForm.enter_data_to_continue: 'Заполните данные для продолжения'
+views.api.getUserForm.enter_data_to_continue: 'Данные плательщика'
 views.api.getUserForm.surname: Фамилия
 views.api.getUserForm.placeholder_surname: Иванов
 views.api.getUserForm.patronymic: Отчество

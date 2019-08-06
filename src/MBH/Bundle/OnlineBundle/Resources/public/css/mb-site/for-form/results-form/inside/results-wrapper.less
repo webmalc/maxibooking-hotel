@@ -6,6 +6,13 @@
 
   .mbh-results-select-guest {
     .styleForSelect2();
+    .mbh-results-tourists-select {
+      min-width: 80px;
+    }
+    .price-for {
+      .fontSizeLineHeight(14px, 20px);
+      font-weight: bold;
+    }
   }
 
   .mbh-results-container {
@@ -76,26 +83,38 @@
   }
 
   .mbh-results-container-desktop {
+    @media (min-width: @size-screen-mid-width-tablet) {
+      .mbh-results-image-wrapper {
+        width: 300px;
+        .image-container {
+          width: 270px;
+        }
+      }
+
+      .mbh-results-description-container {
+        width: 450px;
+      }
+
+      .mbh-results-price-container {
+        width: 190px;
+      }
+    }
     padding: 28px 15px 27px;
 
     .price-wrapper {
-      font-size: 28px;
+      font-size: 32px;
     }
 
     .currency-symbol {
-      font-size: 24px;
-    }
-
-    .mbh-results-image-wrapper {
-      width: 270px;
-      padding-right: 0;
-      padding-left: 0;
+      font-size: 28px;
     }
 
     .mbh-results-description-container {
-      width: 420px;
       > div {
         margin-bottom: 3px;
+        &:first-of-type {
+          margin-bottom: 7px;
+        }
       }
     }
 
@@ -116,6 +135,7 @@
     }
 
     .mbh-results-price-container {
+      //width: 190px;
       min-height: 200px;
       display: flex;
       flex-direction: column;
@@ -126,7 +146,7 @@
         }
       }
       .nights {
-        .fontSizeLineHeight(16px, 28px);
+        .fontSizeLineHeight(14px, 20px);
       }
       .room-count-selector {
         margin-top: 10px;
@@ -174,7 +194,7 @@
     }
 
     .mbh-results-image-wrapper {
-      @media (max-width: 359px) {
+      @media (max-width: 415px) {
         padding-left: 0;
         padding-right: 0;
       }
