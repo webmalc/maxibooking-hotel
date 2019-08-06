@@ -35,6 +35,14 @@ abstract class ChannelManagerServiceTestCase extends UnitTestCase
      */
     protected function initConfig($isDefault)
     {
+        $entities = $this->dm->getRepository(
+            'MBHChannelManagerBundle:' . (new \ReflectionClass($this->getServiceConfig()))->getShortName()
+        )->findAll();
+
+        if (count($entities) === 2) {
+            return;
+        }
+
         $hotelId = $isDefault
             ? $this->getServiceHotelIdByIsDefault(true)
             : $this->getServiceHotelIdByIsDefault(false);
