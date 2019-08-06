@@ -242,7 +242,7 @@ body .mbh-results-info-load {
 }
 body #mbh-results-wrapper {
   box-sizing: border-box;
-  width: 100vw;
+  width: 100%;
 }
 @media (min-width: 700px) {
   body #mbh-results-wrapper {
