@@ -20,10 +20,10 @@ parameters:
       gel: {text: 'Lari', small: 't', icon: 'fa fa-money'}
       inr: {text: '₹', small: 'paisa', icon: 'fa fa-inr'}
       pln: {text: 'zł', small: 'gr', icon: 'fa fa-money'}
-      tbh: {text: '฿', small: 'satang', icon: 'fa fa-money'}
+      thb: {text: '฿', small: 'satang', icon: 'fa fa-money'}
       idr: {text: 'currency.idr.text', small: 'currency.idr.small', icon: 'fa fa-money'}
       gbp: {text: '£', small: 'p', icon: 'fa fa-gbp'}
-      adm: {text: 'Դ', small: 'lym', icon: 'fa fa-money'}
+      amd: {text: 'Դ', small: 'lym', icon: 'fa fa-money'}
 
     # ReCaptcha
     mbh.recaptcha:
