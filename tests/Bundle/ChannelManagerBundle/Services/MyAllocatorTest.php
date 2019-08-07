@@ -14,7 +14,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class MyAllocatorTest extends ChannelManagerServiceTestCase
 {
-
     protected const ALL_HOTEL_ID1 = 101;
     protected const ALL_HOTEL_ID2 = 202;
 

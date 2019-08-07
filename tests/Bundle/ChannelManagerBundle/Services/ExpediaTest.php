@@ -94,21 +94,6 @@ class ExpediaTest  extends ChannelManagerServiceTestCase
     }
 
     /** @depends testGetConfig */
-    public function testFormatPriceRequestData()
-    {
-        $requestDataArray = [];
-
-        /** @var ExpediaConfig $config */
-        foreach ($this->expedia->getConfig() as $config) {
-            $ans = $this->requestDataFormatter->formatRoomRequestData($this->startDate, $this->endDate, $this->getRoomType(), $config);
-            $requestDataArray[] = $ans[0];
-        }
-
-        $this->assertEquals($this->getRequestData(false), $requestDataArray[1]);
-        $this->assertEquals($this->getRequestData(true), $requestDataArray[0]);
-    }
-
-    /** @depends testGetConfig */
     public function testFormatUpdateRoomsRequest()
     {
         $requestDataFormatterArray = [];
@@ -338,30 +323,6 @@ class ExpediaTest  extends ChannelManagerServiceTestCase
             "=\"10\"/></RoomType></AvailRateUpdate><AvailRateUpdate><DateRange from=\"".$begin."\" to=\"".$end."\"/>".
             "<RoomType id=\"". $roomId[2] ."\" closed=\"false\"><Inventory totalInventoryAvailable=\"10\"/></RoomType>".
             "</AvailRateUpdate></AvailRateUpdateRQ>\n";
-
-
-        return $isDefault
-            ?
-            "<?xml version=\"1.0\"?>\n".
-            "<AvailRateUpdateRQ xmlns=\"http://www.expediaconnect.com/EQC/AR/2011/06\"><Authentication username=\"EQC".
-            "Maxibooking\" password=\"\"/><Hotel id=\"" . self::EXPEDIA_HOTEL_ID1 . "\"/><AvailRateUpdate><DateRange".
-            " from=\"".$begin."\" to=\"".$end."\"/><RoomType id=\"" . $roomId[0] . "\" closed=\"false\"><Inventory".
-            " totalInventoryAvailable=\"10\"/></RoomType></AvailRateUpdate><AvailRateUpdate><DateRange from=\"".$begin.
-            "\" to=\"".$end."\"/><RoomType id=\"". $roomId[1] ."\" closed=\"true\"><Inventory totalInventoryAvailable".
-            "=\"0\"/></RoomType></AvailRateUpdate><AvailRateUpdate><DateRange from=\"".$begin."\" to=\"".$end."\"/>".
-            "<RoomType id=\"". $roomId[2] ."\" closed=\"true\"><Inventory totalInventoryAvailable=\"0\"/></RoomType>".
-            "</AvailRateUpdate></AvailRateUpdateRQ>\n"
-            :
-            "<?xml version=\"1.0\"?>\n".
-            "<AvailRateUpdateRQ xmlns=\"http://www.expediaconnect.com/EQC/AR/2011/06\"><Authentication username=\"EQC".
-            "Maxibooking\" password=\"\"/><Hotel id=\"" . self::EXPEDIA_HOTEL_ID2 . "\"/><AvailRateUpdate><DateRange".
-            " from=\"".$begin."\" to=\"".$end."\"/><RoomType id=\"" . $roomId[0] . "\" closed=\"true\"><Inventory".
-            " totalInventoryAvailable=\"0\"/></RoomType></AvailRateUpdate><AvailRateUpdate><DateRange from=\"".$begin.
-            "\" to=\"".$end."\"/><RoomType id=\"". $roomId[1] ."\" closed=\"true\"><Inventory totalInventoryAvailable".
-            "=\"0\"/></RoomType></AvailRateUpdate><AvailRateUpdate><DateRange from=\"".$begin."\" to=\"".$end."\"/>".
-            "<RoomType id=\"". $roomId[2] ."\" closed=\"true\"><Inventory totalInventoryAvailable=\"0\"/></RoomType>".
-            "</AvailRateUpdate></AvailRateUpdateRQ>\n";
-
     }
 
     private function getUpdatePricesRequestData($isDefaultHotel)
