@@ -27,7 +27,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Translation\Translator;
 
 /**
  * @Route("/api")
@@ -552,9 +551,9 @@ class ResultsFormController extends BaseController
                     $this->renderView(
                         '@MBHOnline/ResultsForm/stepFour.html.twig',
                         [
-                            'roomStr'    => $roomStr,
-                            'orderId'    => $order->getId(),
-                            'form'       => $form,
+                            'roomStr' => $roomStr,
+                            'orderId' => $order->getId(),
+                            'form'    => $form,
                         ]
                     ),
                 'order'      => $order->getJsonSerialized(),

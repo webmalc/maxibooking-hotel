@@ -199,7 +199,6 @@ class MBSiteController extends BaseController
         $siteConfig = $siteManager->getSiteConfig();
 
         if ($isUsedForm) {
-
             $paymentSystemName = $paymentSystemName ?? $request->get(ClientPaymentSystemType::FORM_NAME)['paymentSystem'] ?? null;
             $form = $this->createForm(ClientPaymentSystemType::class, $this->clientConfig, [
                 'paymentSystemName' => $paymentSystemName,

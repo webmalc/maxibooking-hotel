@@ -1,6 +1,5 @@
 <?php
 /**
- * Created by PhpStorm.
  * Date: 04.12.18
  */
 
@@ -38,28 +37,20 @@ class MBSiteControllerTest extends WebTestCase
         $dm->persist($clientConfig);
         $dm->flush();
 
-        self::$siteManager = $container->get('mbh.site_manager');
-
-        $siteConfig = self::$siteManager->getSiteConfig();
-
         /** TODO: move to fixture? */
-        if ($siteConfig === null) {
-            $hotel = $dm->getRepository(Hotel::class)->findOneBy([]);
+        $hotel = $dm->getRepository(Hotel::class)->findOneBy([]);
+        $siteContent = new SiteContent();
+        $siteContent->setHotel($hotel);
 
-            $siteContent = new SiteContent();
-            $siteContent->setHotel($hotel);
+        $dm->persist($siteContent);
 
-            $dm->persist($siteContent);
+        self::$siteManager = $container->get('mbh.site_manager');
+        $siteConfig = self::$siteManager->getSiteConfig();
+        $siteConfig->getHotels()->add($hotel);
+        $siteConfig->getContents(true)->add($siteContent);
+        $siteConfig->setSiteDomain('best-site');
 
-            $siteConfig = new SiteConfig();
-            $siteConfig->getHotels()->add($hotel);
-            $siteConfig->getContents(true)->add($siteContent);
-            $siteConfig
-                ->setSiteDomain('best-site');
-
-
-            $dm->persist($siteConfig);
-        }
+        $dm->persist($siteConfig);
 
         $dm->flush();
     }
@@ -108,8 +99,8 @@ class MBSiteControllerTest extends WebTestCase
     public function getDataForCreate(): iterable
     {
         $data = [
-            'invalid' => [false, 'invalid url'],
-            'valid'   => [true, 'http://twitter.com'],
+            'test invalid url' => [false, 'invalid url'],
+            'test valid url'   => [true, 'http://twitter.com'],
         ];
 
         yield from $data;
