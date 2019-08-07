@@ -20,6 +20,7 @@ class MyAllocatorTest extends ChannelManagerServiceTestCase
 
     protected const UPDATE_PRICES = 'updatePrices';
     protected const UPDATE_RESTRICTIONS = 'updateRestrictions';
+    protected const UPDATE_ROOMS = 'updateRooms';
 
     /**@var ContainerInterface */
     private $container;
@@ -82,6 +83,9 @@ class MyAllocatorTest extends ChannelManagerServiceTestCase
             case self::UPDATE_RESTRICTIONS:
                 $this->mockUpdateRestrictionsSend($mock);
                 break;
+            case self::UPDATE_ROOMS:
+                $this->mockUpdateRoomsSend($mock);
+                break;
         }
 
         $this->container->set('mbh.channelmanager.myallocator', $mock);
@@ -131,6 +135,28 @@ class MyAllocatorTest extends ChannelManagerServiceTestCase
         });
     }
 
+    protected function mockUpdateRoomsSend($mock): void
+    {
+        /** @var MockInterface $mock */
+        $mock->shouldReceive('call')->andReturnUsing(function ($data) {
+            $reflectionClass = (new \ReflectionClass($data))->getParentClass();
+
+            $property = $reflectionClass->getProperty('params');
+            $property->setAccessible(true);
+            $sendData = $property->getValue($data)['Allocations'];
+
+            $this->assertEquals(
+                str_replace([' ', PHP_EOL], '', json_encode($sendData)),
+                str_replace([' ', PHP_EOL], '', $this->getUpdateRoomsRequestData($this->datum))
+            );
+
+            $this->datum = !$this->datum;
+            $arr['response']['body']['Success'] = null;
+
+            return $arr;
+        });
+    }
+
     public function testUpdatePrices(): void
     {
         $date = clone $this->startDate;
@@ -153,6 +179,422 @@ class MyAllocatorTest extends ChannelManagerServiceTestCase
 
         $cm = $this->container->get('mbh.channelmanager.myallocator');
         $cm->updateRestrictions($this->startDate, $this->endDate);
+    }
+
+    public function testUpdateRooms(): void
+    {
+        $this->container->get('mbh.room.cache')->recalculateByPackages();
+        $this->setMock(self::UPDATE_ROOMS);
+
+        $cm = $this->container->get('mbh.channelmanager.myallocator');
+        $cm->updateRooms($this->startDate, $this->endDate);
+    }
+
+    protected function getUpdateRoomsRequestData($isDefault): string
+    {
+        return $isDefault
+            ?
+            '[
+   {
+      "RoomId": "def_room1",
+      "StartDate": "'. (clone $this->startDate)->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "def_room1",
+      "StartDate": "'. (clone $this->startDate)->modify('+1 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+1 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "def_room1",
+      "StartDate": "'. (clone $this->startDate)->modify('+2 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+2 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "def_room1",
+      "StartDate": "'. (clone $this->startDate)->modify('+3 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+3 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "def_room1",
+      "StartDate": "'. (clone $this->startDate)->modify('+4 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+4 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "def_room1",
+      "StartDate": "'. (clone $this->startDate)->modify('+5 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+5 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "def_room1",
+      "StartDate": "'. (clone $this->startDate)->modify('+6 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+6 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "def_room1",
+      "StartDate": "'. (clone $this->startDate)->modify('+7 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+7 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "def_room1",
+      "StartDate": "'. (clone $this->startDate)->modify('+8 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+8 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "def_room1",
+      "StartDate": "'. (clone $this->startDate)->modify('+9 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+9 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "def_room1",
+      "StartDate": "'. (clone $this->startDate)->modify('+10 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+10 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "def_room2",
+      "StartDate": "'. (clone $this->startDate)->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->format('Y-m-d') .'",
+      "Units": 3
+   },
+   {
+      "RoomId": "def_room2",
+      "StartDate": "'. (clone $this->startDate)->modify('+1 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+1 days')->format('Y-m-d') .'",
+      "Units": 2
+   },
+   {
+      "RoomId": "def_room2",
+      "StartDate": "'. (clone $this->startDate)->modify('+2 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+2 days')->format('Y-m-d') .'",
+      "Units": 1
+   },
+   {
+      "RoomId": "def_room2",
+      "StartDate": "'. (clone $this->startDate)->modify('+3 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+3 days')->format('Y-m-d') .'",
+      "Units": 6
+   },
+   {
+      "RoomId": "def_room2",
+      "StartDate": "'. (clone $this->startDate)->modify('+4 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+4 days')->format('Y-m-d') .'",
+      "Units": 5
+   },
+   {
+      "RoomId": "def_room2",
+      "StartDate": "'. (clone $this->startDate)->modify('+5 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+5 days')->format('Y-m-d') .'",
+      "Units": 5
+   },
+   {
+      "RoomId": "def_room2",
+      "StartDate": "'. (clone $this->startDate)->modify('+6 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+6 days')->format('Y-m-d') .'",
+      "Units": 8
+   },
+   {
+      "RoomId": "def_room2",
+      "StartDate": "'. (clone $this->startDate)->modify('+7 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+7 days')->format('Y-m-d') .'",
+      "Units": 8
+   },
+   {
+      "RoomId": "def_room2",
+      "StartDate": "'. (clone $this->startDate)->modify('+8 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+8 days')->format('Y-m-d') .'",
+      "Units": 5
+   },
+   {
+      "RoomId": "def_room2",
+      "StartDate": "'. (clone $this->startDate)->modify('+9 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+9 days')->format('Y-m-d') .'",
+      "Units": 5
+   },
+   {
+      "RoomId": "def_room2",
+      "StartDate": "'. (clone $this->startDate)->modify('+10 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+10 days')->format('Y-m-d') .'",
+      "Units": 4
+   },
+   {
+      "RoomId": "def_room3",
+      "StartDate": "'. (clone $this->startDate)->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "def_room3",
+      "StartDate": "'. (clone $this->startDate)->modify('+1 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+1 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "def_room3",
+      "StartDate": "'. (clone $this->startDate)->modify('+2 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+2 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "def_room3",
+      "StartDate": "'. (clone $this->startDate)->modify('+3 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+3 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "def_room3",
+      "StartDate": "'. (clone $this->startDate)->modify('+4 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+4 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "def_room3",
+      "StartDate": "'. (clone $this->startDate)->modify('+5 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+5 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "def_room3",
+      "StartDate": "'. (clone $this->startDate)->modify('+6 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+6 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "def_room3",
+      "StartDate": "'. (clone $this->startDate)->modify('+7 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+7 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "def_room3",
+      "StartDate": "'. (clone $this->startDate)->modify('+8 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+8 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "def_room3",
+      "StartDate": "'. (clone $this->startDate)->modify('+9 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+9 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "def_room3",
+      "StartDate": "'. (clone $this->startDate)->modify('+10 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+10 days')->format('Y-m-d') .'",
+      "Units": 10
+   }
+]'
+            :
+            '[
+   {
+      "RoomId": "not_def_room1",
+      "StartDate": "'. (clone $this->startDate)->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room1",
+      "StartDate": "'. (clone $this->startDate)->modify('+1 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+1 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room1",
+      "StartDate": "'. (clone $this->startDate)->modify('+2 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+2 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room1",
+      "StartDate": "'. (clone $this->startDate)->modify('+3 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+3 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room1",
+      "StartDate": "'. (clone $this->startDate)->modify('+4 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+4 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room1",
+      "StartDate": "'. (clone $this->startDate)->modify('+5 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+5 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room1",
+      "StartDate": "'. (clone $this->startDate)->modify('+6 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+6 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room1",
+      "StartDate": "'. (clone $this->startDate)->modify('+7 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+7 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room1",
+      "StartDate": "'. (clone $this->startDate)->modify('+8 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+8 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room1",
+      "StartDate": "'. (clone $this->startDate)->modify('+9 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+9 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room1",
+      "StartDate": "'. (clone $this->startDate)->modify('+10 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+10 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room2",
+      "StartDate": "'. (clone $this->startDate)->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room2",
+      "StartDate": "'. (clone $this->startDate)->modify('+1 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+1 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room2",
+      "StartDate": "'. (clone $this->startDate)->modify('+2 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+2 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room2",
+      "StartDate": "'. (clone $this->startDate)->modify('+3 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+3 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room2",
+      "StartDate": "'. (clone $this->startDate)->modify('+4 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+4 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room2",
+      "StartDate": "'. (clone $this->startDate)->modify('+5 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+5 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room2",
+      "StartDate": "'. (clone $this->startDate)->modify('+6 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+6 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room2",
+      "StartDate": "'. (clone $this->startDate)->modify('+7 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+7 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room2",
+      "StartDate": "'. (clone $this->startDate)->modify('+8 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+8 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room2",
+      "StartDate": "'. (clone $this->startDate)->modify('+9 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+9 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room2",
+      "StartDate": "'. (clone $this->startDate)->modify('+10 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+10 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room3",
+      "StartDate": "'. (clone $this->startDate)->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room3",
+      "StartDate": "'. (clone $this->startDate)->modify('+1 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+1 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room3",
+      "StartDate": "'. (clone $this->startDate)->modify('+2 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+2 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room3",
+      "StartDate": "'. (clone $this->startDate)->modify('+3 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+3 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room3",
+      "StartDate": "'. (clone $this->startDate)->modify('+4 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+4 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room3",
+      "StartDate": "'. (clone $this->startDate)->modify('+5 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+5 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room3",
+      "StartDate": "'. (clone $this->startDate)->modify('+6 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+6 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room3",
+      "StartDate": "'. (clone $this->startDate)->modify('+7 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+7 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room3",
+      "StartDate": "'. (clone $this->startDate)->modify('+8 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+8 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room3",
+      "StartDate": "'. (clone $this->startDate)->modify('+9 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+9 days')->format('Y-m-d') .'",
+      "Units": 10
+   },
+   {
+      "RoomId": "not_def_room3",
+      "StartDate": "'. (clone $this->startDate)->modify('+10 days')->format('Y-m-d') .'",
+      "EndDate": "'. (clone $this->startDate)->modify('+10 days')->format('Y-m-d') .'",
+      "Units": 10
+   }
+]';
     }
 
     protected function getUpdateRestrictionsRequestData($isDefaultHotel): string

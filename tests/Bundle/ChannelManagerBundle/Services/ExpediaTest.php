@@ -112,15 +112,18 @@ class ExpediaTest  extends ChannelManagerServiceTestCase
     public function testFormatUpdateRoomsRequest()
     {
         $requestDataFormatterArray = [];
-
+        $this->container->get('mbh.room.cache')->recalculateByPackages();
         /** @var ExpediaConfig $config */
         foreach ($this->expedia->getConfig() as $config) {
-            $roomsData = $this->requestDataFormatter->formatRoomRequestData($this->startDate, $this->endDate, $this->getRoomType(), $config);
+            $roomsData = $this->requestDataFormatter->formatRoomRequestData($this->startDate, $this->endDate, null, $config);
             $requestDataFormatterArray[] = $this->requestFormatter->formatUpdateRoomsRequest($roomsData)[0];
         }
 
         $this->assertEquals(self::METHOD_NAME, $requestDataFormatterArray[0]->getMethodName());
-        $this->assertEquals($this->getRequestData(true), $requestDataFormatterArray[0]->getRequestData());
+        $this->assertEquals(
+            str_replace([' ', PHP_EOL], '', $this->getRequestData(true)),
+            str_replace([' ', PHP_EOL], '', $requestDataFormatterArray[0]->getRequestData())
+        );
         $this->assertEquals(self::HEADERS, $requestDataFormatterArray[0]->getHeadersList());
         $this->assertEquals(self::EXPEDIA_UPDATE_ROOMS_API_URL, $requestDataFormatterArray[0]->getUrl());
         $this->assertEquals(self::METHOD_NAME, $requestDataFormatterArray[1]->getMethodName());
@@ -214,7 +217,7 @@ class ExpediaTest  extends ChannelManagerServiceTestCase
         $exp->shouldReceive('send')->andReturn(true);
         $exp->shouldReceive('checkResponse')->andReturn(true);
 
-        $this->assertTrue($exp->updateRooms($this->startDate, $this->endDate, $this->getRoomType()));
+        $this->assertTrue($exp->updateRooms($this->startDate, $this->endDate));
     }
 
     /**
@@ -226,6 +229,116 @@ class ExpediaTest  extends ChannelManagerServiceTestCase
         $begin = $this->startDate->format(ExpediaRequestDataFormatter::EXPEDIA_DEFAULT_DATE_FORMAT_STRING);
         $end = $this->endDate->format(ExpediaRequestDataFormatter::EXPEDIA_DEFAULT_DATE_FORMAT_STRING);
         $roomId = $this->getServiceRoomIds($isDefault);
+
+        return $isDefault
+            ?
+            '<?xml version="1.0"?>
+<AvailRateUpdateRQ xmlns="http://www.expediaconnect.com/EQC/AR/2011/06">
+   <Authentication username="EQCMaxibooking" password="" />
+   <Hotel id="123" />
+   <AvailRateUpdate>
+      <DateRange from="'. (clone $this->startDate)->format('Y-m-d') .'" 
+      to="'. (clone $this->endDate)->format('Y-m-d') .'" />
+      <RoomType id="def_room1" closed="false">
+         <Inventory totalInventoryAvailable="10" />
+      </RoomType>
+   </AvailRateUpdate>
+   <AvailRateUpdate>
+      <DateRange from="'. (clone $this->startDate)->format('Y-m-d') .'" 
+      to="'. (clone $this->startDate)->format('Y-m-d') .'" />
+      <RoomType id="def_room2" closed="false">
+         <Inventory totalInventoryAvailable="3" />
+      </RoomType>
+   </AvailRateUpdate>
+   <AvailRateUpdate>
+      <DateRange from="'. (clone $this->startDate)->modify('+1 days')->format('Y-m-d') .'"
+      to="'. (clone $this->startDate)->modify('+1 days')->format('Y-m-d') .'" />
+      <RoomType id="def_room2" closed="false">
+         <Inventory totalInventoryAvailable="2" />
+      </RoomType>
+   </AvailRateUpdate>
+   <AvailRateUpdate>
+      <DateRange from="'. (clone $this->startDate)->modify('+2 days')->format('Y-m-d') .'" 
+      to="'. (clone $this->startDate)->modify('+2 days')->format('Y-m-d') .'" />
+      <RoomType id="def_room2" closed="false">
+         <Inventory totalInventoryAvailable="1" />
+      </RoomType>
+   </AvailRateUpdate>
+   <AvailRateUpdate>
+      <DateRange from="'. (clone $this->startDate)->modify('+3 days')->format('Y-m-d') .'" 
+      to="'. (clone $this->startDate)->modify('+3 days')->format('Y-m-d') .'" />
+      <RoomType id="def_room2" closed="false">
+         <Inventory totalInventoryAvailable="6" />
+      </RoomType>
+   </AvailRateUpdate>
+   <AvailRateUpdate>
+      <DateRange from="'. (clone $this->startDate)->modify('+4 days')->format('Y-m-d') .'" 
+      to="'. (clone $this->startDate)->modify('+5 days')->format('Y-m-d') .'" />
+      <RoomType id="def_room2" closed="false">
+         <Inventory totalInventoryAvailable="5" />
+      </RoomType>
+   </AvailRateUpdate>
+   <AvailRateUpdate>
+      <DateRange from="'. (clone $this->startDate)->modify('+6 days')->format('Y-m-d') .'" 
+      to="'. (clone $this->startDate)->modify('+7 days')->format('Y-m-d') .'" />
+      <RoomType id="def_room2" closed="false">
+         <Inventory totalInventoryAvailable="8" />
+      </RoomType>
+   </AvailRateUpdate>
+   <AvailRateUpdate>
+      <DateRange from="'. (clone $this->startDate)->modify('+8 days')->format('Y-m-d') .'" 
+      to="'. (clone $this->startDate)->modify('+9 days')->format('Y-m-d') .'" />
+      <RoomType id="def_room2" closed="false">
+         <Inventory totalInventoryAvailable="5" />
+      </RoomType>
+   </AvailRateUpdate>
+   <AvailRateUpdate>
+      <DateRange from="'. (clone $this->startDate)->modify('+10 days')->format('Y-m-d') .'" 
+      to="'. (clone $this->startDate)->modify('+10 days')->format('Y-m-d') .'" />
+      <RoomType id="def_room2" closed="false">
+         <Inventory totalInventoryAvailable="4" />
+      </RoomType>
+   </AvailRateUpdate>
+   <AvailRateUpdate>
+      <DateRange from="'. (clone $this->startDate)->modify('+11 days')->format('Y-m-d') .'" 
+      to="'. (clone $this->startDate)->modify('+15 days')->format('Y-m-d') .'" />
+      <RoomType id="def_room2" closed="false">
+         <Inventory totalInventoryAvailable="7" />
+      </RoomType>
+   </AvailRateUpdate>
+   <AvailRateUpdate>
+      <DateRange from="'. (clone $this->startDate)->modify('+16 days')->format('Y-m-d') .'" 
+      to="'. (clone $this->startDate)->modify('+17 days')->format('Y-m-d') .'" />
+      <RoomType id="def_room2" closed="false">
+         <Inventory totalInventoryAvailable="8" />
+      </RoomType>
+   </AvailRateUpdate>
+   <AvailRateUpdate>
+      <DateRange from="'. (clone $this->startDate)->modify('+18 days')->format('Y-m-d') .'" 
+      to="'. (clone $this->endDate)->format('Y-m-d') .'" />
+      <RoomType id="def_room2" closed="false">
+         <Inventory totalInventoryAvailable="10" />
+      </RoomType>
+   </AvailRateUpdate>
+   <AvailRateUpdate>
+      <DateRange from="'. (clone $this->startDate)->format('Y-m-d') .'" 
+      to="'. (clone $this->endDate)->format('Y-m-d') .'" />
+      <RoomType id="def_room3" closed="false">
+         <Inventory totalInventoryAvailable="10" />
+      </RoomType>
+   </AvailRateUpdate>
+</AvailRateUpdateRQ>'
+            :
+            "<?xml version=\"1.0\"?>\n".
+            "<AvailRateUpdateRQ xmlns=\"http://www.expediaconnect.com/EQC/AR/2011/06\"><Authentication username=\"EQC".
+            "Maxibooking\" password=\"\"/><Hotel id=\"" . self::EXPEDIA_HOTEL_ID2 . "\"/><AvailRateUpdate><DateRange".
+            " from=\"".$begin."\" to=\"".$end."\"/><RoomType id=\"" . $roomId[0] . "\" closed=\"false\"><Inventory".
+            " totalInventoryAvailable=\"10\"/></RoomType></AvailRateUpdate><AvailRateUpdate><DateRange from=\"".$begin.
+            "\" to=\"".$end."\"/><RoomType id=\"". $roomId[1] ."\" closed=\"false\"><Inventory totalInventoryAvailable".
+            "=\"10\"/></RoomType></AvailRateUpdate><AvailRateUpdate><DateRange from=\"".$begin."\" to=\"".$end."\"/>".
+            "<RoomType id=\"". $roomId[2] ."\" closed=\"false\"><Inventory totalInventoryAvailable=\"10\"/></RoomType>".
+            "</AvailRateUpdate></AvailRateUpdateRQ>\n";
+
 
         return $isDefault
             ?
