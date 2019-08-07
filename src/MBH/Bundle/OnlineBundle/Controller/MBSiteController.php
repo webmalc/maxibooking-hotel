@@ -79,7 +79,7 @@ class MBSiteController extends BaseController
                                 $form->get('siteDomain')->addError(new FormError($error));
                             }
                         } else {
-                            throw new \UnexpectedValueException('Incorrect errors from billing: ' . json_encode($result->getErrors()));
+                            throw new \UnexpectedValueException('Incorrect errors from billing: ' . json_encode($result->getErrors(), JSON_UNESCAPED_UNICODE));
                         }
                     }
                 }

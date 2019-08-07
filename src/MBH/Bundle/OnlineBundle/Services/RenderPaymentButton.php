@@ -25,9 +25,9 @@ class RenderPaymentButton
     private $twig;
 
     /**
-     * @var ClientConfig
+     * @var ClientConfigManager
      */
-    private $clientConfig;
+    private $clientConfigManager;
 
     /**
      * @var TranslatorInterface
@@ -42,7 +42,7 @@ class RenderPaymentButton
     /**
      * RenderForm constructor.
      * @param Twig_Environment $twig
-     * @param ClientConfig $clientConfig
+     * @param ClientConfigManager $clientConfigManager
      * @param TranslatorInterface $translator
      * @param PaymentSystemWrapperFactory $paymentSystemWrapperFactory
      */
@@ -53,7 +53,7 @@ class RenderPaymentButton
         PaymentSystemWrapperFactory $paymentSystemWrapperFactory
     ) {
         $this->twig = $twig;
-        $this->clientConfig = $clientConfigManager->fetchConfig();
+        $this->clientConfigManager = $clientConfigManager;
         $this->translator = $translator;
         $this->paymentSystemWrapperFactory = $paymentSystemWrapperFactory;
     }
@@ -71,7 +71,7 @@ class RenderPaymentButton
      */
     public function getClientConfig(): ClientConfig
     {
-        return $this->clientConfig;
+        return $this->clientConfigManager->fetchConfig();
     }
 
     /**

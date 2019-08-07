@@ -179,6 +179,7 @@ services:
           - '@validator'
           - '@mbh.cache.logger'
           - '@mbh.mongo'
+        public: true
 
     mbh.task.logger:
         class:     Symfony\Bridge\Monolog\Logger

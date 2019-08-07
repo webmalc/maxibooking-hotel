@@ -25,11 +25,15 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class Vashotel extends Base implements ChannelManagerServiceInterface
 {
-    const UNAVAIBLE_PRICES = [
+    const UNAVAILABLE_PRICES = [
         'additionalChildrenPrice' => null,
     ];
 
-    const UNAVAIBLE_RESTRICTIONS = [
+    const UNAVAILABLE_PRICES_ADAPTER = [
+        'additionalChildrenPrice' => 'isChildPrices',
+    ];
+
+    const UNAVAILABLE_RESTRICTIONS = [
         'minStay' => null,
         'maxStay' => null,
         'minStayArrival' => null,
@@ -935,7 +939,7 @@ class Vashotel extends Base implements ChannelManagerServiceInterface
                         $this->getRoomTypeArray($filterRoomType),
                         [],
                         true,
-                        $this->roomManager->useCategories
+                        $this->roomManager->getIsUseCategories()
                     )
                 );
                 return $filtered;

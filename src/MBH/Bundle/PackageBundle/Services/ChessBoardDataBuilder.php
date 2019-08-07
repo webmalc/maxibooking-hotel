@@ -50,7 +50,6 @@ class ChessBoardDataBuilder
     /** @var $accommodationManipulator PackageAccommodationManipulator */
     private $accommodationManipulator;
     private $pageNumber;
-    private $clientConfig;
 
     private $isRoomTypesInit = false;
     private $roomTypes;
@@ -82,7 +81,6 @@ class ChessBoardDataBuilder
         $this->helper = $helper;
         $this->accommodationManipulator = $accommodationManipulator;
         $this->translator = $translator;
-        $this->clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
     }
 
     /**
@@ -504,7 +502,8 @@ class ChessBoardDataBuilder
     public function getRoomsByRoomTypeIds()
     {
         $username = $this->container->get('security.token_storage')->getToken()->getUsername();
-        $numberOfRooms = $this->clientConfig->getFrontSettings()->getRoomsInChessboard($username);
+        $numberOfRooms = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig()
+            ->getFrontSettings()->getRoomsInChessboard($username);
         if (!$this->isRoomsByRoomTypeIdsInit) {
             $roomTypes = $this->getRoomTypeIds();
             $skipValue = ($this->pageNumber - 1) * $numberOfRooms;
