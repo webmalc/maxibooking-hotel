@@ -1,4 +1,4 @@
-FROM phpdockerio/php73-cli:latest
+FROM phpdockerio/php73-fpm:latest
 WORKDIR "/var/www/mbh"
 
 # Fix debconf warnings upon build
@@ -7,11 +7,11 @@ ARG DEBIAN_FRONTEND=noninteractive
 # Install selected extensions and other stuff
 RUN apt-get update \
     && apt-get -y --no-install-recommends install  \
-    php-memcached php-memcache php-redis php-xdebug acl \
+    php-memcached php-memcache php-redis acl \
     php7.3-bcmath php7.3-bz2 php7.3-gd php-imagick php7.3-intl php-mongodb php-ssh2 php-yaml php-zmq  &&\
     apt-get -y install fish supervisor vim && \
     curl -sL http://gordalina.github.io/cachetool/downloads/cachetool.phar -o /usr/local/bin/cachetool && chmod +x /usr/local/bin/cachetool && \
-    curl -sL https://deb.nodesource.com/setup_9.x -o /tmp/nodesource_setup.sh && \
+    curl -sL https://deb.nodesource.com/setup_10.x -o /tmp/nodesource_setup.sh && \
     bash /tmp/nodesource_setup.sh && \
     apt-get -y install gcc g++ make && \
     apt-get -y --no-install-recommends install nodejs build-essential && npm install -g bower && npm install -g uglifycss && npm install -g uglify-js && npm install -g less && \

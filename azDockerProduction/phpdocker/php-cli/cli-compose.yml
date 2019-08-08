@@ -1,0 +1,22 @@
+version: "3.5"
+services:
+    az-php-cli:
+      build: .
+      container_name: az-php-cli
+      hostname: az-php-cli
+      working_dir: /var/www/mbh
+      volumes:
+        - ../../..:/var/www/mbh
+        - ./php-ini-overrides-cli.ini:/etc/php/7.3/cli/conf.d/99-overrides.ini
+        - ./supervisor.conf.d:/etc/supervisor/conf.d
+      networks:
+        - mynetwork
+      restart: always
+
+
+networks:
+  mynetwork:
+    name: az-network
+    driver: bridge
+
+

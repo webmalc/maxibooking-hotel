@@ -7,7 +7,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 # Install selected extensions and other stuff
 RUN apt-get update \
     && apt-get -y --no-install-recommends install  \
-    php-memcached php-memcache php-redis php-xdebug acl \
+    php-memcached php-memcache php-redis acl \
     php7.3-bcmath php7.3-bz2 php7.3-gd php-imagick php7.3-intl php-mongodb php-ssh2 php-yaml php-zmq  &&\
     apt-get -y install fish supervisor vim && \
     curl -sL http://gordalina.github.io/cachetool/downloads/cachetool.phar -o /usr/local/bin/cachetool && chmod +x /usr/local/bin/cachetool && \
@@ -24,3 +24,5 @@ RUN apt-get update \
 RUN apt-get update \
     && apt-get -y install git \
     && apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
+
+CMD ["/usr/bin/supervisord", "-n"]

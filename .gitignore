@@ -120,12 +120,21 @@ gtags
 /localScripts/
 /app/config/secrets.yml
 #docker2
-/docker2/phpdocker/nginx/nginx.conf
+docker2/phpdocker/nginx/nginx.conf
 docker2/phpdocker/php-fpm/php-ini-overrides-cli.ini
 docker2/phpdocker/php-cli/php-ini-overrides-cli.ini
 docker2/phpdocker/php-fpm/php-ini-overrides-fpm.ini
 docker2/phpdocker/php-fpm/xdebug.ini
 docker2/phpdocker/php-fpm/supervisor.conf.d/*
 !docker2/phpdocker/php-fpm/supervisor.conf.d/*.dist
+
+
+azDockerProduction/phpdocker/nginx/nginx.conf
+azDockerProduction/phpdocker/php-fpm/php-ini-overrides-cli.ini
+azDockerProduction/phpdocker/php-cli/php-ini-overrides-cli.ini
+azDockerProduction/phpdocker/php-fpm/php-ini-overrides-fpm.ini
+azDockerProduction/phpdocker/php-fpm/xdebug.ini
+azDockerProduction/phpdocker/php-fpm/supervisor.conf.d/*
+!azDockerProduction/phpdocker/php-fpm/supervisor.conf.d/*.dist
 
 

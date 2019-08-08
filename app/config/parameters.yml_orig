@@ -1,0 +1,63 @@
+# This file is auto-generated during the composer install
+parameters:
+    mailer_transport: smtp
+    mailer_host: smtp.yandex.ru
+    mailer_user: robot@maxi-booking.ru
+    mailer_password: ghjlflbv10rjgbq
+    from_email: robot@maxi-booking.ru
+    mailer_encryption: ssl
+    mongodb_url: 'mongodb://mbh-mongo:27017/az'
+    mongodb_database: az
+    rabbitmq_user: rabbitmq
+    rabbitmq_password: rabbitmq
+    rabbitmq_host: mbh-rabbitmq
+    rabbitmq_vhost: /
+    rabbitmq_port: '5672'
+    secret: aslifjf;al8jfa3w48jsf
+    mbhs_key: j;al8w3rflsiejf
+    mbh_environment: dev
+    locale: ru
+    locale.currency: rub
+    debug_toolbar: true
+    debug_redirects: false
+    use_assetic_controller: false
+    router.request_context.host: localhost:9090
+    router.request_context.scheme: http
+    router.request_context.base_url: /app_dev.php
+    mbh_timezone: default
+    mbh_package_arrival_time: 12
+    mbh_package_departure_time: 14
+    mbh_package_notpaid_time: '-5 days'
+    mbh_online_form_max_packages: 5
+    mailer_user_arrival_links:
+        about: 'http://example.com/'
+        rooms: 'http://example.com/'
+        map: 'http://example.com/'
+        contacts: 'http://example.com/'
+        poll: 'http://example.com'
+    mbh_payment_systems_change: true
+    currency_ratio_fix: 1.015
+    mbh_redis: 'redis://mbh-redis'
+    mbh_cache:
+        is_enabled: false
+        prefix: mbh
+        lifetime: 7
+        logs: false
+        search:
+            months: 6
+            max_duration: 21
+            min_duration: 3
+    wkhtmltopdf_path: /usr/local/bin/wkhtmltopdf
+    mbh_modules:
+        tasks: true
+    online_form_sites:
+        - 'http://example.com'
+        - 'http://example.com'
+    online_form_result_url: 'http://example.com/results/'
+    packaging.month_count: 5
+    dev_delivery_addresses:
+        - zalex@zalex.com.ua
+    mbh_dynamic_sale_period: 90
+    data_fetch_log_level: 100
+    ide_project_host_dir: /home/zalex/PhpstormProjects/maxibooking-hotel-azovsky-new-search
+    ide_project_docker_dir: /var/www/mbh
