@@ -255,7 +255,7 @@ class MyAllocator extends Base
     /**
      * {@inheritDoc}
      */
-    public function updateRooms(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    public function updateRooms(\DateTime $begin = null, \DateTime $end = null, RoomType $paramRoomType = null)
     {
         $result = true;
         $begin = $this->getDefaultBegin($begin);
@@ -272,7 +272,7 @@ class MyAllocator extends Base
                 $begin,
                 $end,
                 $config->getHotel(),
-                $roomType ? [$roomType->getId()] : [],
+                $paramRoomType ? [$paramRoomType->getId()] : [],
                 null,
                 true
             );

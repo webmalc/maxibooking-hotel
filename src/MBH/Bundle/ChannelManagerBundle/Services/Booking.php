@@ -48,6 +48,8 @@ class Booking extends Base
      */
     const CONFIG = 'BookingConfig';
 
+    public const CHANNEL_MANAGER_TYPE = 'booking';
+
     /**
      * Base API URL
      */
@@ -678,7 +680,7 @@ class Booking extends Base
 
         $orderPrice = $this->currencyConvertToRub($config, (float)$reservation->totalprice);
 
-        $order->setChannelManagerType('booking')
+        $order->setChannelManagerType(self::CHANNEL_MANAGER_TYPE)
             ->setChannelManagerId((string)$reservation->id)
             ->setChannelManagerHumanId(empty((string)$customer->loyalty_id) ? null : (string)$customer->loyalty_id)
             ->setMainTourist($payer)
