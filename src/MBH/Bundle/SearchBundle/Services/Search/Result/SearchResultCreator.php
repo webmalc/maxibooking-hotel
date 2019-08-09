@@ -77,7 +77,7 @@ class SearchResultCreator implements SearchResultCreatorInterface
             ->addChildrenAges($searchQuery->getChildrenAges())
             ->addTariff($searchQuery->getTariffId())
             ->addRoomType($searchQuery->getRoomTypeId());
-        if (true === $this->roomTypeManager->useCategories) {
+        if (true === $this->roomTypeManager->getIsUseCategories()) {
             $roomType = $this->dataFetcher->getFetchedRoomType($searchQuery->getRoomTypeId());
             $category = $roomType->getCategory();
             if (null === $category) {

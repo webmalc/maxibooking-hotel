@@ -40,8 +40,8 @@ class PriceCacheRawFetcher implements DataRawFetcherInterface
      */
     public function __construct(RoomTypeManager $roomTypeManager, PriceCacheRepository $priceCacheRepository, ActualChildOptionDeterminer $actualChildOptionDeterminer)
     {
-        $this->isUseCategory =  $roomTypeManager->useCategories;
-        $this->roomTypeField = $roomTypeManager->useCategories ? 'roomTypeCategory' : 'roomType';
+        $this->isUseCategory =  $roomTypeManager->getIsUseCategories();
+        $this->roomTypeField = $roomTypeManager->getIsUseCategories() ? 'roomTypeCategory' : 'roomType';
         $this->priceCacheRepository = $priceCacheRepository;
         $this->actualChildOptionDeterminer = $actualChildOptionDeterminer;
     }

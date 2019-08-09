@@ -90,7 +90,7 @@ class InvalidateMessageFactory
         $priceCache = $invalidateQuery->getObject();
         $message = new InvalidateMessage();
 
-        $isUseCategory = $this->roomManager->useCategories;
+        $isUseCategory = $this->roomManager->getIsUseCategories();
         $roomTypeIds = [];
         if ($isUseCategory) {
             $category = $priceCache->getRoomTypeCategory();
@@ -187,7 +187,7 @@ class InvalidateMessageFactory
     {
         $message = new InvalidateMessage();
 
-        $isUseCategory = $this->roomManager->useCategories;
+        $isUseCategory = $this->roomManager->getIsUseCategories();
         $roomTypeIds = [];
         if ($isUseCategory) {
             $categoryIds = $invalidateQuery->getRoomTypeIds();

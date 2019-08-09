@@ -30,7 +30,7 @@ class SearchCacheInvalidatorTest extends WebTestCase
         $container = $this->getContainer();
         $dm = $container->get('doctrine.odm.mongodb.document_manager');
         $tariffId = $dm->getRepository(Tariff::class)->findOneBy(['fullTitle' => 'UpTariff'])->getId();
-        $isUseCategory = $container->get('mbh.hotel.room_type_manager')->useCategories;
+        $isUseCategory = $container->get('mbh.hotel.room_type_manager')->getIsUseCategories();
         $excludeRoomTypeType = !$isUseCategory ? 'roomTypeCategory' : 'roomType';
         $priceCache = $dm->getRepository(PriceCache::class)->findOneBy(
             ['date' => $date, 'tariff.id' => $tariffId, $excludeRoomTypeType => null]
@@ -133,7 +133,7 @@ class SearchCacheInvalidatorTest extends WebTestCase
                     'fullTitle' => ['$in' => ['UpTariff', 'DownTariff']],
                     'hotel.id' => $hotel->getId()
                 ]);
-        $isUseCategory = $this->getContainer()->get('mbh.hotel.room_type_manager')->useCategories;
+        $isUseCategory = $this->getContainer()->get('mbh.hotel.room_type_manager')->getIsUseCategories();
         $roomTypeType = $isUseCategory ? RoomTypeCategory::class : RoomType::class;
         $roomTypes = $dm->getRepository($roomTypeType)->findBy([
             'hotel.id' => $hotel->getId()

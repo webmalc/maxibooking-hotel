@@ -210,7 +210,7 @@ class Result implements ResultInterface, ResultCacheablesInterface
      * @param string $roomTypeCategory
      * @return Result
      */
-    public function setRoomTypeCategory(string $roomTypeCategory): Result
+    public function setRoomTypeCategory(?string $roomTypeCategory): Result
     {
         $this->roomTypeCategory = $roomTypeCategory;
 

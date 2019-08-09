@@ -29,7 +29,7 @@ class CalculationHelper
 
     public function isIndividualAdditionalPrices(RoomType $roomType): bool
     {
-        if ($this->roomTypeManager->useCategories) {
+        if ($this->roomTypeManager->getIsUseCategories()) {
             if (null === $roomType->getCategory()) {
                 throw new CalcHelperException('Categories in use, but RoomType hasn\'t category');
             }
@@ -42,7 +42,7 @@ class CalculationHelper
 
     public function isChildPrices(RoomType $roomType): bool
     {
-        if ($this->roomTypeManager->useCategories) {
+        if ($this->roomTypeManager->getIsUseCategories()) {
             if (null === $roomType->getCategory()) {
                 throw new CalcHelperException('Categories in use, but RoomType hasn\'t category');
             }
@@ -59,7 +59,7 @@ class CalculationHelper
         $roomType = $this->sharedDataFetcher->getFetchedRoomType($roomTypeId);
         $result = [];
         if ($adults === 0 && $children === 0) {
-            $this->roomTypeManager->useCategories ? $isChildPrices = $roomType->getCategory()->getIsChildPrices() : $isChildPrices = $roomType->getIsChildPrices();
+            $this->roomTypeManager->getIsUseCategories() ? $isChildPrices = $roomType->getCategory()->getIsChildPrices() : $isChildPrices = $roomType->getIsChildPrices();
             $total = $roomType->getTotalPlaces();
 
             $isChildPrices ? $additional = $roomType->getTotalPlaces() : $additional = $roomType->getAdditionalPlaces();

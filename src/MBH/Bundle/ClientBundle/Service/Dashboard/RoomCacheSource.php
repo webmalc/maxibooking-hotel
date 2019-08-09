@@ -44,6 +44,6 @@ class RoomCacheSource extends AbstractCacheSource
     protected function getCaches(): array
     {
         return $this->documentManager->getRepository('MBHPriceBundle:RoomCache')
-        ->findForDashboard(static::PERIOD, $this->roomTypeKey);
+        ->findForDashboard(static::PERIOD, $this->getRoomTypeKey());
     }
 }
