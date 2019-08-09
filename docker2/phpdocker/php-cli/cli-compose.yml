@@ -1,0 +1,20 @@
+version: "3.5"
+services:
+    php-cli:
+      build: .
+      container_name: mbh-php-cli
+      hostname: docker-php-cli
+      working_dir: /var/www/mbh
+      volumes:
+        - ../../..:/var/www/mbh
+        - ./php-ini-overrides-cli.ini:/etc/php/7.3/cli/conf.d/99-overrides.ini
+      networks:
+        - mynetwork
+
+
+networks:
+  mynetwork:
+    name: mbh-network
+    driver: bridge
+
+
