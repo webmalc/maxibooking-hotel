@@ -3,6 +3,7 @@
 namespace MBH\Bundle\ChannelManagerBundle\Services;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\BaseBundle\Service\Helper;
 use MBH\Bundle\CashBundle\Document\CashDocument;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractOrderInfo;
 use MBH\Bundle\ChannelManagerBundle\Lib\AbstractPackageInfo;
@@ -15,11 +16,20 @@ use MBH\Bundle\PackageBundle\Document\Package;
  */
 class OrderHandler
 {
+    /**
+     * @var DocumentManager
+     */
     private $dm;
 
-    public function __construct(DocumentManager $dm)
+    /**
+     * @var Helper
+     */
+    private $helper;
+
+    public function __construct(DocumentManager $dm, Helper $helper)
     {
         $this->dm = $dm;
+        $this->helper = $helper;
     }
 
     /**
@@ -119,14 +129,18 @@ class OrderHandler
         foreach ($newCashDocuments as $newCashDocumentIndex => $newCashDocument) {
             /** @var CashDocument $newCashDocument*/
             if (isset($newCashDocument)) {
+                /** @var CashDocument $oldCashDocument*/
                 foreach ($electronicCashDocuments as $oldCashDocumentIndex => $oldCashDocument) {
-                    if ($oldCashDocument->getTotal() == $newCashDocument->getTotal()
-                        && $oldCashDocument->getMethod() == $newCashDocument->getMethod()
-                        && $oldCashDocument->getTouristPayer() == $newCashDocument->getTouristPayer()
-                        && $oldCashDocument->getOperation() == $newCashDocument->getOperation()
+                    if ($oldCashDocument->getTotal() === $newCashDocument->getTotal()
+                        && $oldCashDocument->getMethod() === $newCashDocument->getMethod()
+                        && $oldCashDocument->getOperation() === $newCashDocument->getOperation()
+                        && $this->helper->isObjectsEqual($oldCashDocument->getTouristPayer(),
+                            $newCashDocument->getTouristPayer())
                     ) {
-                        unset($newCashDocuments[$newCashDocumentIndex]);
-                        unset($electronicCashDocuments[$oldCashDocumentIndex]);
+                        unset(
+                            $newCashDocuments[$newCashDocumentIndex],
+                            $electronicCashDocuments[$oldCashDocumentIndex]
+                        );
                         break;
                     }
                 }
@@ -137,10 +151,12 @@ class OrderHandler
         foreach ($electronicCashDocuments as $electronicCashDocument) {
             $this->dm->remove($electronicCashDocument);
         }
+        $this->dm->flush();
         foreach ($newCashDocuments as $cashDocument) {
             /** @var CashDocument $cashDocument */
             $this->dm->persist($cashDocument);
         }
+        $this->dm->flush();
 
         return $order;
     }

@@ -149,9 +149,8 @@ abstract class AbstractICalTypeChannelManagerService extends AbstractChannelMana
         $httpService = $this->container->get('mbh.cm_http_service');
         /** @var ICalTypeChannelManagerConfigInterface $config */
         foreach ($this->getConfig() as $config) {
-
-            $packagesByRoomIds = $this->getPackagesByRoomIds($config);
-
+            $packagesByRoomIds = $this->getPackagesByRoomIds();
+            $channelManagerPackageIds = [];
             foreach ($config->getRooms() as $room) {
                 /** @var Result $result */
                 $result = $httpService->getResult($room->getSyncUrl());
@@ -162,8 +161,9 @@ abstract class AbstractICalTypeChannelManagerService extends AbstractChannelMana
                     continue;
                 }
 
-                $this->handleResponse($result, $room, $config, $packagesByRoomIds);
+                $channelManagerPackageIds = $this->handleResponse($result, $room, $config, $packagesByRoomIds);
             }
+            $this->removeMissingOrders($packagesByRoomIds, $channelManagerPackageIds);
         }
 
         return $isSuccess ?? true;
@@ -174,6 +174,7 @@ abstract class AbstractICalTypeChannelManagerService extends AbstractChannelMana
      * @param AbstractICalTypeChannelManagerRoom $room
      * @param ICalTypeChannelManagerConfigInterface $config
      * @param array $packagesByRoomIds
+     * @return array
      * @throws \Exception
      */
     protected function handleResponse(
@@ -181,10 +182,10 @@ abstract class AbstractICalTypeChannelManagerService extends AbstractChannelMana
         AbstractICalTypeChannelManagerRoom $room,
         ICalTypeChannelManagerConfigInterface $config,
         array $packagesByRoomIds
-    ): void
+    ): array
     {
         $packagesInRoom = $packagesByRoomIds[$room->getRoomType()->getId()] ?? [];
-
+        $channelManagerPackageIds = [];
         $iCalResponse = new ICal($response->getData());
         $events = $iCalResponse->cal['VEVENT'];
 
@@ -217,7 +218,7 @@ abstract class AbstractICalTypeChannelManagerService extends AbstractChannelMana
             }
         }
 
-        $this->removeMissingOrders($packagesInRoom, $channelManagerPackageIds ?? []);
+        return $channelManagerPackageIds;
     }
 
     /**
@@ -295,29 +296,21 @@ abstract class AbstractICalTypeChannelManagerService extends AbstractChannelMana
     }
 
     /**
-     * @param ICalTypeChannelManagerConfigInterface $config
      * @return array
      */
-    protected function getPackagesByRoomIds(ICalTypeChannelManagerConfigInterface $config): array
+    protected function getPackagesByRoomIds(): array
     {
-        $roomTypes = array_map(static function (AbstractICalTypeChannelManagerRoom $room) {
-            return $room->getRoomType();
-        }, $config->getRooms()->toArray());
-        $roomTypeIds = $this->helper::toIds($roomTypes);
-
         $packages = $this->dm
             ->getRepository(Package::class)
             ->findBy([
-                'roomType.id' => ['$in' => $roomTypeIds],
                 'channelManagerType' => $this->getName()
             ]);
 
-        $packagesByRoomIds = [];
         foreach ($packages as $package) {
             $packagesByRoomIds[$package->getRoomType()->getId()][$package->getChannelManagerId()] = $package;
         }
 
-        return $packagesByRoomIds;
+        return $packagesByRoomIds ?? [];
     }
 
     /**
