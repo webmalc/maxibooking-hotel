@@ -10,6 +10,7 @@ use MBH\Bundle\ChannelManagerBundle\Services\Airbnb\Airbnb;
 use MBH\Bundle\ChannelManagerBundle\Services\HomeAway\HomeAway;
 use MBH\Bundle\ClientBundle\Document\ClientConfig;
 use MBH\Bundle\HotelBundle\Document\QueryCriteria\TaskQueryCriteria;
+use MBH\Bundle\UserBundle\DataFixtures\MongoDB\UserData;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class Builder
@@ -797,9 +798,16 @@ class Builder
             $hundredOneHotel,
             $vashotel,
             $myAllLocator,
-            $facebook
+            $this->isMBUser() ? $facebook : []
         ]));
+    }
 
+    public function isMBUser()
+    {
+        /** @var \MBH\Bundle\UserBundle\Document\User $user */
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+
+        return $user instanceof \MBH\Bundle\UserBundle\Document\User && $user->getUsername() === UserData::MB_USER_USERNAME;
     }
 
     /**

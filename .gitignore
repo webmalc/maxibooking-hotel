@@ -158,6 +158,7 @@ Vagrantfile
 /app/config/jwt/*
 
 #docker2
+/docker2/*
 /docker2/phpdocker/nginx/nginx.conf
 docker2/phpdocker/php-fpm/php-ini-overrides-cli.ini
 docker2/phpdocker/php-cli/php-ini-overrides-cli.ini
