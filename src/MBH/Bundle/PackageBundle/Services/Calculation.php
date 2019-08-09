@@ -146,8 +146,9 @@ class Calculation
      * @param int $children
      * @param Promotion|null $promotion
      * @param bool $useCategories
-     * @param bool $useDuration
      * @param Special|null $special
+     * @param bool $useDuration
+     * @param bool $useMemcached
      * @return array|bool
      */
     public function calcPrices(
@@ -172,7 +173,7 @@ class Calculation
         $endPlus = clone $end;
         $endPlus->modify('+1 day');
 
-        if ($this->manager->useCategories) {
+        if ($this->manager->getIsUseCategories()) {
             if (!$roomType->getCategory()) {
                 return false;
             }
@@ -194,7 +195,7 @@ class Calculation
                     [$roomTypeId],
                     [$tariffId],
                     true,
-                    $this->manager->useCategories,
+                    $this->manager->getIsUseCategories(),
                     $memcached
                 )
             );
@@ -221,7 +222,7 @@ class Calculation
                         [$roomTypeId],
                         [$defaultTariff->getId()],
                         true,
-                        $this->manager->useCategories,
+                        $this->manager->getIsUseCategories(),
                         $memcached
                     )
                 );
@@ -250,7 +251,7 @@ class Calculation
                         [$roomTypeId],
                         $ids,
                         true,
-                        $this->manager->useCategories,
+                        $this->manager->getIsUseCategories(),
                         $memcached
                     )
                 );
@@ -346,7 +347,7 @@ class Calculation
 
                 if ($cache->getSinglePrice() !== null &&
                     $all == 1 &&
-                    !$cache->getCategoryOrRoomType($this->manager->useCategories)->getIsHostel()
+                    !$cache->getCategoryOrRoomType($this->manager->getIsUseCategories())->getIsHostel()
                 ) {
                     $dayPrice += $cache->getSinglePrice();
                 } elseif ($cache->getIsPersonPrice()) {

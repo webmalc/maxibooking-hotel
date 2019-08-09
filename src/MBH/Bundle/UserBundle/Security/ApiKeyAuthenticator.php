@@ -12,11 +12,8 @@ use Symfony\Component\Security\Http\Authentication\SimplePreAuthenticatorInterfa
 
 class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface
 {
-    private $roles;
 
-    public function __construct(array $roles) {
-        $this->roles = $roles;
-    }
+    public const ROLE_ACCESS_WITH_TOKEN = 'ROLE_ACCESS_WITH_TOKEN';
 
     public function authenticateToken(TokenInterface $token, UserProviderInterface $userProvider, $providerKey)
     {
@@ -32,12 +29,13 @@ class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface
 
         $apiKey = $token->getCredentials();
         $user = $userProvider->loadUserByUsername($apiKey);
+        $roles = $this->addTokenRoles($user->getRoles());
 
         return new PreAuthenticatedToken(
             $user,
             $apiKey,
             $providerKey,
-            $user->getRoles()
+            $roles
         );
     }
 
@@ -59,5 +57,12 @@ class ApiKeyAuthenticator implements SimplePreAuthenticatorInterface
             $apiKey,
             $providerKey
         );
+    }
+
+    private function addTokenRoles(array $roles)
+    {
+        $rolesToAdd = [self::ROLE_ACCESS_WITH_TOKEN];
+
+        return array_merge($roles, $rolesToAdd);
     }
 }

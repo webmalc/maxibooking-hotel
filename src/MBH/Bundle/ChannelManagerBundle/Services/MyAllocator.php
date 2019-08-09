@@ -10,6 +10,7 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
+use MBH\Bundle\PriceBundle\Document\PriceCache;
 use MBH\Bundle\PriceBundle\Services\PriceCacheRepositoryFilter;
 use MyAllocator\phpsdk\src\Api\ARIUpdate;
 use MyAllocator\phpsdk\src\Api\AssociateUserToPMS;
@@ -254,7 +255,7 @@ class MyAllocator extends Base
     /**
      * {@inheritDoc}
      */
-    public function updateRooms(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    public function updateRooms(\DateTime $begin = null, \DateTime $end = null, RoomType $paramRoomType = null)
     {
         $result = true;
         $begin = $this->getDefaultBegin($begin);
@@ -271,7 +272,7 @@ class MyAllocator extends Base
                 $begin,
                 $end,
                 $config->getHotel(),
-                $roomType ? [$roomType->getId()] : [],
+                $paramRoomType ? [$paramRoomType->getId()] : [],
                 null,
                 true
             );
@@ -314,29 +315,32 @@ class MyAllocator extends Base
     /**
      * {@inheritDoc}
      */
-    public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $paramRoomType = null)
     {
         $result = true;
         $begin = $this->getDefaultBegin($begin);
         $end = $this->getDefaultEnd($begin, $end);
 
-        // iterate hotels
+        $restrictionsMap = $this->container->get('mbh.channel_manager.restriction.mapper')
+            ->getMap($this->getConfig(), $begin, $end, 'd.m.Y');
+
+        /** @var ChannelManagerConfigInterface $config */
         foreach ($this->getConfig() as $config) {
             $api = new ARIUpdate();
             $api->setAuth($this->getAuth($config));
             $allocations = [];
             $roomTypes = $this->getRoomTypes($config);
             $tariffs = $this->getTariffs($config);
-            $priceCachesCallback = function () use ($begin, $end, $config, $roomType) {
+            $priceCachesCallback = function () use ($begin, $end, $config, $paramRoomType) {
                 $filtered = $this->priceCacheFilter->filterFetch(
                     $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
                         $begin,
                         $end,
                         $config->getHotel(),
-                        $this->getRoomTypeArray($roomType),
+                        $this->getRoomTypeArray($paramRoomType),
                         [],
                         true,
-                        $this->roomManager->useCategories
+                        $this->roomManager->getIsUseCategories()
                     )
                 );
                 return $filtered;
@@ -350,7 +354,11 @@ class MyAllocator extends Base
                 foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
                     foreach ($tariffs as $tariffId => $tariff) {
                         if (isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
+
+                            /** @var PriceCache $info */
                             $info = $priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')];
+
+                            $isClosed = $restrictionsMap[$config->getHotel()->getId()][$tariffId][$roomTypeId][$day->format('d.m.Y')];
 
                             $allocations[] = [
                                 'RoomId' => $roomType['syncId'],
@@ -361,6 +369,7 @@ class MyAllocator extends Base
                                     $config,
                                     $info->getSinglePrice()
                                 ) : false,
+                                'Closed' => $isClosed
                             ];
 
                         } else {
@@ -392,13 +401,16 @@ class MyAllocator extends Base
     /**
      * {@inheritDoc}
      */
-    public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $paramRoomType = null)
     {
         $result = true;
         $begin = $this->getDefaultBegin($begin);
         $end = $this->getDefaultEnd($begin, $end);
 
-        // iterate hotels
+        $restrictionsMap = $this->container->get('mbh.channel_manager.restriction.mapper')
+            ->getMap($this->getConfig(), $begin, $end, 'd.m.Y');
+
+        /** @var ChannelManagerConfigInterface $config */
         foreach ($this->getConfig() as $config) {
             $api = new ARIUpdate();
             $api->setAuth($this->getAuth($config));
@@ -409,13 +421,16 @@ class MyAllocator extends Base
                 $begin,
                 $end,
                 $config->getHotel(),
-                $roomType ? [$roomType->getId()] : [],
+                $paramRoomType ? [$paramRoomType->getId()] : [],
                 [],
                 true
             );
             foreach ($roomTypes as $roomTypeId => $roomType) {
                 foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
                     foreach ($tariffs as $tariffId => $tariff) {
+
+                        $isClosed = $restrictionsMap[$config->getHotel()->getId(
+                        )][$tariffId][$roomTypeId][$day->format('d.m.Y')];
 
                         if (isset($restrictions[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
                             $info = $restrictions[$roomTypeId][$tariffId][$day->format('d.m.Y')];
@@ -425,7 +440,7 @@ class MyAllocator extends Base
                                 'EndDate' => $day->format('Y-m-d'),
                                 'MinStay' => (int)$info->getMinStay() < 1 ? 1 : (int)$info->getMinStay(),
                                 'MaxStay' => (int)$info->getMaxStay(),
-                                'Closed' => $info->getClosed(),
+                                'Closed' => $isClosed,
                                 'ClosedForArrival' => $info->getClosedOnArrival(),
                                 'ClosedForDeparture' => $info->getClosedOnDeparture(),
                             ];
@@ -436,7 +451,7 @@ class MyAllocator extends Base
                                 'EndDate' => $day->format('Y-m-d'),
                                 'MinStay' => 1,
                                 'MaxStay' => 0,
-                                'Closed' => false,
+                                'Closed' => $isClosed,
                                 'ClosedForArrival' => false,
                                 'ClosedForArrival' => false,
                             ];

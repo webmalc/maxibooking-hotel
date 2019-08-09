@@ -31,14 +31,14 @@ abstract class PaymentSystemType extends AbstractType
     protected $extraData;
 
     /**
-     * @var ClientConfig
+     * @var ClientConfigManager
      */
-    protected $clientConfig;
+    protected $clientConfigManager;
 
     public function __construct(ExtraData $extraData, ClientConfigManager $clientConfigManager)
     {
         $this->extraData = $extraData;
-        $this->clientConfig = $clientConfigManager->fetchConfig();
+        $this->clientConfigManager = $clientConfigManager;
     }
 
     /**
@@ -66,7 +66,7 @@ abstract class PaymentSystemType extends AbstractType
      */
     protected function getClientConfig(): ClientConfig
     {
-        return $this->clientConfig;
+        return $this->clientConfigManager->fetchConfig();
     }
 
     /**

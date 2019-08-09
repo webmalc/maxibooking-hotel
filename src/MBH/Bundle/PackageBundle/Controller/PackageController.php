@@ -337,8 +337,9 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      */
     public function resetTotalOverwriteValue(Package $package)
     {
-        $package->setTotalOverwrite(0);
-        $package->getOrder()->setTotalOverwrite(0);
+        $package->setTotalOverwrite(null);
+        $package->setIsLocked(false);
+        $package->getOrder()->setTotalOverwrite(null);
         $this->dm->flush();
         $this->addFlash(
             'success',
@@ -444,6 +445,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @Template()
      * @param Request $request
      * @return array|JsonResponse|RedirectResponse
+     * @throws \Doctrine\ODM\MongoDB\LockException
+     * @throws \Doctrine\ODM\MongoDB\Mapping\MappingException
      */
     public function newAction(Request $request)
     {
@@ -468,7 +471,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'infants' => $request->get('infants'),
             'childrenAges' => $request->get('children_age'),
             'savedQueryId' => $request->get('query_id')
-
         ];
 
         if ($quantity > 20 || $quantity < 1) {

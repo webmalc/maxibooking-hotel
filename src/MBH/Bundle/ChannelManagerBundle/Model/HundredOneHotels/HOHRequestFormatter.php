@@ -20,6 +20,11 @@ class HOHRequestFormatter
         $this->requestData = $data;
     }
 
+    public function resetRequestData()
+    {
+        $this->requestData = [];
+    }
+
     /**
      * get array key, where "day" field equal to specified value
      * @param $dateString
@@ -118,6 +123,7 @@ class HOHRequestFormatter
 
         //отправляемые сообщения должны содержать один POST параметр 'request', содержащий данные в json-формате
         $requestData = ['request' => json_encode($template)];
+
         return $requestData;
     }
 }

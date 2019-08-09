@@ -4,14 +4,21 @@
 {% set layout = "box" %}
 
 {% block content %}
-    {% if content %}
-        <div class="well scrolling">
-            <form action="" method="POST">
-            <pre>{{ content|raw }}</pre>
-                {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close': false, save_text: 'channel_manager.logs.clear'|trans } %}
-            </form>
-        </div>
+    {% if contentArray %}
+        {% include 'MBHChannelManagerBundle:ChannelManager:extendedPager.html.twig'
+            with {
+                paramPage: page,
+                link: link,
+                pagination: pagination
+            }
+        %}
+        <form action="" method="POST">
+                {% for stringArray in contentArray %}
+                    <div class="text-left">{{ stringArray | raw }}</div>
+                {% endfor %}
+            {% include 'MBHBaseBundle:Actions:new.html.twig' with {'save_close': false, save_text: 'channel_manager.logs.clear'|trans } %}
+        </form>
     {% else %}
-        <div class="alert alert-warning">{{ 'channel_manager.logs.no_entries_in_file'|trans}}</div>
+        <div class="alert alert-warning">{{ 'channel_manager.logs.no_entries_in_file'|trans }}</div>
     {% endif %}
 {% endblock %}

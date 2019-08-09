@@ -86,6 +86,7 @@
     "liip/functional-test-bundle": "*@stable",
     "phpunit/phpunit": "^6.2",
     "ext-json": "*"
+    "mockery/mockery": "*@stable"
   },
   "scripts": {
     "symfony-scripts": [

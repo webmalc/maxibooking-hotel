@@ -25,11 +25,15 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class Vashotel extends Base implements ChannelManagerServiceInterface
 {
-    const UNAVAIBLE_PRICES = [
+    const UNAVAILABLE_PRICES = [
         'additionalChildrenPrice' => null,
     ];
 
-    const UNAVAIBLE_RESTRICTIONS = [
+    const UNAVAILABLE_PRICES_ADAPTER = [
+        'additionalChildrenPrice' => 'isChildPrices',
+    ];
+
+    const UNAVAILABLE_RESTRICTIONS = [
         'minStay' => null,
         'maxStay' => null,
         'minStayArrival' => null,
@@ -917,6 +921,10 @@ class Vashotel extends Base implements ChannelManagerServiceInterface
         $end = $this->getDefaultEnd($begin);
         $calc = $this->container->get('mbh.calculation');
 
+        $restrictionsMap = $this->container->get('mbh.channel_manager.restriction.mapper')
+            ->getMap($this->getConfig(), $begin, $end);
+
+        /** @var ChannelManagerConfigInterface $config */
         foreach ($this->getConfig() as $config) {
             $salt = $this->helper->getRandomString(20);
             $data = ['config' => $config, 'salt' => $salt, 'sig' => null];
@@ -931,7 +939,7 @@ class Vashotel extends Base implements ChannelManagerServiceInterface
                         $this->getRoomTypeArray($filterRoomType),
                         [],
                         true,
-                        $this->roomManager->useCategories
+                        $this->roomManager->getIsUseCategories()
                     )
                 );
                 return $filtered;
@@ -959,13 +967,19 @@ class Vashotel extends Base implements ChannelManagerServiceInterface
                             $info = $priceCaches[$roomTypeId][$tariffDoc->getId()][$day->format('d.m.Y')];
                         }
 
+                        $isClosed = $restrictionsMap[$config->getHotel()->getId()][$tariffDoc->getId()][$roomTypeId][$day->format('Y-m-d')];
+
+                        $prices = $calc->calcPrices($roomType['doc'], $tariffDoc, $day, $day);
+
                         if ($info) {
                             $data['rooms'][$roomType['syncId']][$day->format('Y-m-d')] = [
-                                'prices' => $calc->calcPrices($roomType['doc'], $tariffDoc, $day, $day),
+                                'prices' => $prices,
+                                'closed' => $isClosed ? 1 : 0
                             ];
                         } else {
                             $data['rooms'][$roomType['syncId']][$day->format('Y-m-d')] = [
-                                'prices' => []
+                                'prices' => [],
+                                'closed' => $isClosed ? 1 : 0
                             ];
                         }
                     }
@@ -1041,7 +1055,11 @@ class Vashotel extends Base implements ChannelManagerServiceInterface
         $begin = $this->getDefaultBegin($begin);
         $end = $this->getDefaultEnd($begin);
 
+        $restrictionsMap = $this->container->get('mbh.channel_manager.restriction.mapper')
+            ->getMap($this->getConfig(), $begin, $end);
+
         // iterate hotels
+        /** @var ChannelManagerConfigInterface $config */
         foreach ($this->getConfig() as $config) {
             $salt = $this->helper->getRandomString(20);
             $data = ['config' => $config, 'salt' => $salt, 'sig' => null];
@@ -1053,15 +1071,6 @@ class Vashotel extends Base implements ChannelManagerServiceInterface
                 $config->getHotel(),
                 $filterRoomType ? [$filterRoomType->getId()] : [],
                 null,
-                true
-            );
-
-            $restrictions = $this->dm->getRepository('MBHPriceBundle:Restriction')->fetch(
-                $begin,
-                $end,
-                $config->getHotel(),
-                $filterRoomType ? [$filterRoomType->getId()] : [],
-                [],
                 true
             );
 
@@ -1095,13 +1104,11 @@ class Vashotel extends Base implements ChannelManagerServiceInterface
                             $info = $roomCaches[$roomTypeId][0][$day->format('d.m.Y')];
                         }
 
-                        if (isset($restrictions[$roomTypeId][$configTariffs[$tariffId]['doc']->getId(
-                        )][$day->format('d.m.Y')])) {
-                            $restriction = $restrictions[$roomTypeId][$configTariffs[$tariffId]['doc']->getId()][$day->format('d.m.Y')];
-                        }
+                        $isClosed = $restrictionsMap[$config->getHotel()->getId(
+                        )][$configTariffs[$tariffId]['doc']->getId()][$roomTypeId][$day->format('Y-m-d')];
 
                         if ($info) {
-                            if ($restriction && $restriction->getClosed()) {
+                            if ($isClosed) {
                                 if ($tariffId) {
                                     $data['rooms'][$roomType['syncId']][$day->format('Y-m-d')] = [
                                         'sellquantity' => 0,

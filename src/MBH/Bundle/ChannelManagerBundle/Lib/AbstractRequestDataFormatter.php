@@ -45,6 +45,7 @@ abstract class AbstractRequestDataFormatter
      * @param $roomType
      * @param $serviceTariffs
      * @param ChannelManagerConfigInterface $config
+     * @param array $restrictionsMap
      * @return mixed
      */
     abstract public function formatPriceRequestData(
@@ -52,7 +53,8 @@ abstract class AbstractRequestDataFormatter
         $end,
         $roomType,
         $serviceTariffs,
-        ChannelManagerConfigInterface $config
+        ChannelManagerConfigInterface $config,
+        array $restrictionsMap
     );
 
     /**
@@ -72,6 +74,7 @@ abstract class AbstractRequestDataFormatter
      * @param $roomTypes
      * @param $serviceTariffs
      * @param ChannelManagerConfigInterface $config
+     * @param array $restrictionsMap
      * @return mixed
      */
     abstract public function formatRestrictionRequestData(
@@ -79,7 +82,8 @@ abstract class AbstractRequestDataFormatter
         $end,
         $roomTypes,
         $serviceTariffs,
-        ChannelManagerConfigInterface $config
+        ChannelManagerConfigInterface $config,
+        array $restrictionsMap
     );
 
     /**
@@ -104,7 +108,7 @@ abstract class AbstractRequestDataFormatter
      * @param $serviceTariffs Массив актуальных данных о тарифах, полученный с сервиса
      * @param ChannelManagerConfigInterface $config
      * @return array
-     * @throws \Exception
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     protected function getPriceData($begin, $end, $roomType, $serviceTariffs, ChannelManagerConfigInterface $config)
     {
@@ -122,7 +126,7 @@ abstract class AbstractRequestDataFormatter
                 $this->getRoomTypeArray($roomType),
                 [],
                 true,
-                $this->roomManager->useCategories
+                $this->roomManager->getIsUseCategories()
             )
         );
 
@@ -138,8 +142,10 @@ abstract class AbstractRequestDataFormatter
                 foreach (new \DatePeriod($begin, new \DateInterval('P1D'), (clone $end)->modify('+ 1 day')) as $day) {
                     /** @var PriceCache $priceCache */
                     $priceCache = null;
+
                     /** @var \DateTime $day */
-                    if (isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
+                    if (isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])
+                    && $priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')]->getPrice()) {
                         /** @var PriceCache $priceCache */
                         $priceCache = $priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')];
                     }
@@ -183,10 +189,18 @@ abstract class AbstractRequestDataFormatter
      * @param $roomTypes
      * @param $serviceTariffs
      * @param ChannelManagerConfigInterface $config
+     * @param array $restrictionsMap
      * @return array
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
-    protected function getRestrictionData($begin, $end, $roomTypes, $serviceTariffs, ChannelManagerConfigInterface $config)
-    {
+    protected function getRestrictionData(
+        $begin,
+        $end,
+        $roomTypes,
+        $serviceTariffs,
+        ChannelManagerConfigInterface $config,
+        array $restrictionsMap
+    ) {
         $resultData = [];
 
         $channelManagerHelper = $this->container->get('mbh.channelmanager.helper');
@@ -223,10 +237,8 @@ abstract class AbstractRequestDataFormatter
 
                 foreach (new \DatePeriod($begin, new \DateInterval('P1D'), (clone $end)->modify('+ 1 day')) as $day) {
                     /** @var \DateTime $day */
-                    $isPriceSet = false;
-                    if (isset($priceCaches[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
-                        $isPriceSet = true;
-                    }
+
+                    $isClosed = $restrictionsMap[$config->getHotel()->getId()][$tariffId][$roomTypeId][$day->format('d.m.Y')];
 
                     $restriction = null;
                     if (isset($restrictions[$roomTypeId][$tariffId][$day->format('d.m.Y')])) {
@@ -234,7 +246,7 @@ abstract class AbstractRequestDataFormatter
                     }
 
                     $this->formatRestrictionData($restriction, $roomTypeInfo['doc'], $tariff,
-                        $roomTypeInfo['syncId'], $serviceTariffId, $resultData, $isPriceSet, $day, $serviceTariffs);
+                        $roomTypeInfo['syncId'], $serviceTariffId, $resultData, $isClosed, $day, $serviceTariffs);
                 }
             }
         }
@@ -255,7 +267,7 @@ abstract class AbstractRequestDataFormatter
      * @param \DateTime $day
      */
     protected function formatRestrictionData(
-        $restriction,
+        ?Restriction $restriction,
         RoomType $roomType,
         Tariff $tariff,
         $serviceRoomTypeId,
@@ -356,7 +368,7 @@ abstract class AbstractRequestDataFormatter
         if (!$roomType) {
             return [];
         }
-        if (!$this->roomManager->useCategories) {
+        if (!$this->roomManager->getIsUseCategories()) {
             return [$roomType->getId()];
         } else {
             if (!$roomType->getCategory()) {

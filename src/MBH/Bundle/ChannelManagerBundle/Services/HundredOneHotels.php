@@ -21,10 +21,10 @@ use Symfony\Component\HttpFoundation\Response;
 
 class HundredOneHotels extends Base
 {
-    const UNAVAIBLE_PRICES = [
+    const UNAVAILABLE_PRICES = [
     ];
 
-    const UNAVAIBLE_RESTRICTIONS = [
+    const UNAVAILABLE_RESTRICTIONS = [
         'maxStay' => null,
         'minStayArrival' => null,
         'maxStayArrival' => null,
@@ -49,11 +49,11 @@ class HundredOneHotels extends Base
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
-     * @param RoomType $roomType
+     * @param RoomType|null $paramRoomType
      * @return boolean
      * @throw \Exception
      */
-    public function updateRooms(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    public function updateRooms(\DateTime $begin = null, \DateTime $end = null, RoomType $paramRoomType = null)
     {
         $result = true;
         $begin = $this->getDefaultBegin($begin);
@@ -75,7 +75,7 @@ class HundredOneHotels extends Base
                 $begin,
                 $end,
                 $config->getHotel(),
-                $roomType ? [$roomType->getId()] : [],
+                $paramRoomType ? [$paramRoomType->getId()] : [],
                 null,
                 true
             );
@@ -102,6 +102,7 @@ class HundredOneHotels extends Base
             }
 
             $request = $requestFormatter->getRequest($config);
+            $requestFormatter->resetRequestData();
             $this->log(json_encode($request));
 
             $sendResult = $this->send(static::BASE_URL, $request, null, true);
@@ -116,16 +117,21 @@ class HundredOneHotels extends Base
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
-     * @param RoomType $roomType
+     * @param RoomType|null $paramRoomType
      * @return boolean
+     * @throws \Throwable
      * @throw \Exception
      */
-    public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $paramRoomType = null)
     {
         $result = true;
         $begin = $this->getDefaultBegin($begin);
         $end = $this->getDefaultEnd($begin, $end);
         $calc = $this->container->get('mbh.calculation');
+
+        $restrictionsMap = $this->container->get('mbh.channel_manager.restriction.mapper')
+            ->getMap($this->getConfig(), $begin, $end, 'd.m.Y');
+
         // iterate hotels
         /** @var HundredOneHotelsConfig $config */
         foreach ($this->getConfig() as $config) {
@@ -140,13 +146,13 @@ class HundredOneHotels extends Base
             $roomTypes = $this->getRoomTypes($config, true);
             //$priceCaches array [roomTypeId][tariffId][date => PriceCache]
             $priceCacheFilter = $this->container->get('mbh.price_cache_repository_filter');
-            $priceCachesCallback = function () use ($begin, $end, $config, $roomType, $priceCacheFilter) {
+            $priceCachesCallback = function () use ($begin, $end, $config, $paramRoomType, $priceCacheFilter) {
                 $filtered = $priceCacheFilter->filterFetch(
                     $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
                         $begin,
                         $end,
                         $config->getHotel(),
-                        $this->getRoomTypeArray($roomType),
+                        $this->getRoomTypeArray($paramRoomType),
                         [],
                         true
                     )
@@ -181,18 +187,39 @@ class HundredOneHotels extends Base
                             continue;
                         }
 
+                        $isClosed = $restrictionsMap[$config->getHotel()
+                            ->getId()][$syncPricesTariffId][$roomTypeId][$day->format('d.m.Y')];
+
                         if (isset($priceCaches[$roomTypeId][$syncPricesTariffId][$day->format('d.m.Y')])) {
                             /** @var PriceCache $currentDatePriceCache */
                             $occupantCount = $serviceTariffs[$serviceTariffId]['occupantCount'];
                             $currentDatePriceCache = $priceCaches[$roomTypeId][$syncPricesTariffId][$day->format('d.m.Y')];
-                            $priceFinal = $calc->calcPrices($currentDatePriceCache->getRoomType(), $tariff, $day, $day,
-                                $occupantCount);
+                            $priceFinal = $calc->calcPrices(
+                                $currentDatePriceCache->getRoomType(),
+                                $tariff,
+                                $day,
+                                $day,
+                                $occupantCount
+                            );
                             $currentDatePrice = isset($priceFinal[$occupantCount . '_0']) ? $priceFinal[$occupantCount . '_0']['total'] : 0;
                         } else {
                             $currentDatePrice = 0;
                         }
-                        $requestFormatter->addDoubleParamCondition($day, $requestFormatter::PRICES, $serviceRoomTypeId,
-                            $serviceTariffId, $currentDatePrice);
+                        $requestFormatter->addSingleParamCondition(
+                            $day,
+                            $requestFormatter::CLOSED,
+                            $serviceRoomTypeId,
+                            $isClosed ? 1 : 0
+                        );
+                        if ($currentDatePrice !== 0) {
+                            $requestFormatter->addDoubleParamCondition(
+                                $day,
+                                $requestFormatter::PRICES,
+                                $serviceRoomTypeId,
+                                $serviceTariffId,
+                                $currentDatePrice
+                            );
+                        }
                     }
                 }
             }
@@ -202,6 +229,7 @@ class HundredOneHotels extends Base
             }
 
             $request = $requestFormatter->getRequest($config);
+            $requestFormatter->resetRequestData();
             $this->log(json_encode($request));
             $sendResult = $this->send(static::BASE_URL, $request, null, true);
 
@@ -219,15 +247,19 @@ class HundredOneHotels extends Base
     /**
      * @param \DateTime $begin
      * @param \DateTime $end
-     * @param RoomType $roomType
+     * @param RoomType|null $paramRoomType
      * @return boolean
+     * @throws \Throwable
      * @throw \Exception
      */
-    public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    public function updateRestrictions(\DateTime $begin = null, \DateTime $end = null, RoomType $paramRoomType = null)
     {
         $result = true;
         $begin = $this->getDefaultBegin($begin);
         $end = $this->getDefaultEnd($begin, $end);
+
+        $restrictionsMap = $this->container->get('mbh.channel_manager.restriction.mapper')
+            ->getMap($this->getConfig(), $begin, $end, 'd.m.Y');
 
         // iterate hotels
         /** @var HundredOneHotelsConfig $config */
@@ -242,25 +274,10 @@ class HundredOneHotels extends Base
                 $begin,
                 $end,
                 $config->getHotel(),
-                $roomType ? [$roomType->getId()] : [],
+                $paramRoomType ? [$paramRoomType->getId()] : [],
                 [],
                 true
             );
-            $priceCacheFilter = $this->container->get('mbh.price_cache_repository_filter');
-            $priceCachesCallback = function () use ($begin, $end, $config, $roomType, $priceCacheFilter) {
-                $filtered = $priceCacheFilter->filterFetch(
-                    $this->dm->getRepository('MBHPriceBundle:PriceCache')->fetch(
-                        $begin,
-                        $end,
-                        $config->getHotel(),
-                        $roomType ? [$roomType->getId()] : [],
-                        [],
-                        true
-                    )
-                );
-                return $filtered;
-            };
-            $priceCaches = $this->helper->getFilteredResult($this->dm, $priceCachesCallback);
 
             foreach (new \DatePeriod($begin, \DateInterval::createFromDateString('1 day'), (clone $end)->modify('+1 day')) as $day) {
                 /** @var \DateTime $day */
@@ -291,61 +308,70 @@ class HundredOneHotels extends Base
                             continue;
                         }
 
-                        $price = false;
-                        if (isset($priceCaches[$roomTypeId][$syncPricesTariffId][$day->format('d.m.Y')])) {
-                            $price = true;
-                        }
+                        $isClosedRestrictionTariff = $restrictionsMap[$config->getHotel()->getId(
+                        )][$syncRestrictionsTariffId][$roomTypeId][$day->format('d.m.Y')];
+
+                        $isClosedPriceTariff = $restrictionsMap[$config->getHotel()->getId(
+                        )][$syncPricesTariffId][$roomTypeId][$day->format('d.m.Y')];
 
                         if (isset($restrictions[$roomTypeId][$syncRestrictionsTariffId][$day->format('d.m.Y')])) {
-
                             /** @var Restriction $maxiBookingRestrictionObject */
                             $maxiBookingRestrictionObject = $restrictions[$roomTypeId][$syncRestrictionsTariffId][$day->format('d.m.Y')];
 
                             $requestFormatter->addSingleParamCondition($day,
                                 $requestFormatter::CLOSED,
                                 $serviceRoomTypeId,
-                                $maxiBookingRestrictionObject->getClosed() || !$price ? 1 : 0);
+                                ($isClosedRestrictionTariff || $isClosedPriceTariff)
+                                && $maxiBookingRestrictionObject->getClosed() ? 1 : 0
+                            );
 
                             $requestFormatter->addDoubleParamCondition($day,
                                 $requestFormatter::CLOSED_TO_ARRIVAL,
                                 $serviceRoomTypeId,
                                 $serviceTariffId,
-                                $maxiBookingRestrictionObject->getClosedOnArrival() ? 1 : 0);
+                                $maxiBookingRestrictionObject->getClosedOnArrival() ? 1 : 0
+                            );
 
                             $requestFormatter->addDoubleParamCondition($day,
                                 $requestFormatter::CLOSED_TO_DEPARTURE,
                                 $serviceRoomTypeId,
                                 $serviceTariffId,
-                                $maxiBookingRestrictionObject->getClosedOnDeparture() ? 1 : 0);
+                                $maxiBookingRestrictionObject->getClosedOnDeparture() ? 1 : 0
+                            );
 
                             $requestFormatter->addDoubleParamCondition($day,
                                 $requestFormatter::MIN_STAY,
                                 $serviceRoomTypeId,
                                 $serviceTariffId,
-                                (int)$maxiBookingRestrictionObject->getMinStay());
+                                (int)$maxiBookingRestrictionObject->getMinStay()
+                            );
                         } else {
                             $requestFormatter->addSingleParamCondition($day,
                                 $requestFormatter::CLOSED,
                                 $serviceRoomTypeId,
-                                0);
+                                ($isClosedRestrictionTariff || $isClosedPriceTariff) ? 1 : 0
+                            );
 
                             $requestFormatter->addDoubleParamCondition($day,
                                 $requestFormatter::CLOSED_TO_ARRIVAL,
                                 $serviceRoomTypeId,
                                 $serviceTariffId,
-                                0);
+                                0
+                            );
 
                             $requestFormatter->addDoubleParamCondition($day,
                                 $requestFormatter::CLOSED_TO_DEPARTURE,
                                 $serviceRoomTypeId,
                                 $serviceTariffId,
-                                0);
+                                0
+                            );
 
                             $requestFormatter->addDoubleParamCondition($day,
                                 $requestFormatter::MIN_STAY,
                                 $serviceRoomTypeId,
                                 $serviceTariffId,
-                                1);
+                                1
+                            );
                         }
                     }
                 }
@@ -356,6 +382,7 @@ class HundredOneHotels extends Base
             }
 
             $request = $requestFormatter->getRequest($config);
+            $requestFormatter->resetRequestData();
             $sendResult = $this->send(static::BASE_URL, $request, null, true);
 
             if ($result) {
@@ -410,8 +437,11 @@ class HundredOneHotels extends Base
             $endTime = new \DateTime();
             $requestFormatter->addDateCondition($startTime, $endTime);
             $request = $requestFormatter->getRequest($config, 'get_bookings');
+            $requestFormatter->resetRequestData();
 
             $serviceOrders = $this->send(static::BASE_URL, $request, null, true);
+            $this->checkResponse($serviceOrders);
+
             $this->log($serviceOrders);
             $serviceOrders = json_decode($serviceOrders, true);
 

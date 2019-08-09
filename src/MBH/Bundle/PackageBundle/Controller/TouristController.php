@@ -45,7 +45,7 @@ class TouristController extends Controller
      * @Security("is_granted('ROLE_TOURIST_REPORT')")
      * @Template()
      */
-    public function indexAction()
+    public function indexAction(): array
     {
         $form = $this->createForm(TouristFilterForm::class);
         $hasMyOrganization = !empty($this->dm->getRepository('MBHPackageBundle:Organization')->getForFmsExport());
@@ -65,6 +65,7 @@ class TouristController extends Controller
      * @Template()
      * @param Request $request
      * @return array|JsonResponse
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function jsonAction(Request $request)
     {
@@ -80,8 +81,8 @@ class TouristController extends Controller
 
         $packageCriteria = new PackageQueryCriteria();
         $formData = $request->request->get('form');
-        $packageCriteria->begin = $this->helper->getDateFromString($formData['begin']);
-        $packageCriteria->end = $this->helper->getDateFromString($formData['end']);
+        $packageCriteria->begin = $this->helper::getDateFromString($formData['begin']);
+        $packageCriteria->end = $this->helper::getDateFromString($formData['end']);
 
         $touristPackages = [];
         foreach ($tourists as $tourist) {

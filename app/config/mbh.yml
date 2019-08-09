@@ -22,6 +22,8 @@ parameters:
       pln: {text: 'zł', small: 'gr', icon: 'fa fa-money'}
       tbh: {text: '฿', small: 'satang', icon: 'fa fa-money'}
       idr: {text: 'currency.idr.text', small: 'currency.idr.small', icon: 'fa fa-money'}
+      gbp: {text: '£', small: 'p', icon: 'fa fa-gbp'}
+      adm: {text: 'Դ', small: 'lym', icon: 'fa fa-money'}
 
     # ReCaptcha
     mbh.recaptcha:
@@ -268,6 +270,7 @@ parameters:
         airbnb:
           title: 'Airbnb'
           service: 'mbh.airbnb'
+
 #        oktogo:
 #          title: 'Oktogo'
 #          service: 'mbh.channelmanager.oktogo'
@@ -413,6 +416,7 @@ parameters:
           ostrovok: 115000755913
           hundred_one_hotels: 115000759814
           vashotel: 115004206894
+
 #     * Поведение меню:
 #     * - alwaysOpen не в зависимости от выбранного пункта все главные меню открыты
 #     * - custom запоминается последнее открытое меню (на фронтэнде) и в следующий раз открывается именно оно

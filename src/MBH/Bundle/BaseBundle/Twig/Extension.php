@@ -138,6 +138,27 @@ class Extension extends \Twig_Extension
     }
 
     /**
+     * if there are more than one CashDocuments - returns first CashDocument's total
+     *
+     * @param \MBH\Bundle\ClientBundle\Service\DocumentSerialize\Order $order
+     * @return string
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     */
+    public function getCashPrepayment(\MBH\Bundle\ClientBundle\Service\DocumentSerialize\Order $order): string
+    {
+        $prepaymentPrice = $this->container->get('mbh.template_prices_generator')->getPrepayment($order);
+
+        return $prepaymentPrice === null ? '0.00' : (string)$prepaymentPrice;
+    }
+
+    public function getCashSurcharge(\MBH\Bundle\ClientBundle\Service\DocumentSerialize\Order $order): string
+    {
+        $surchargePrice = $this->container->get('mbh.template_prices_generator')->getSurcharge($order);
+
+        return $surchargePrice === null ? '0.00' : (string)$surchargePrice;
+    }
+
+    /**
      * @param \MBH\Bundle\ClientBundle\Service\DocumentSerialize\Order $order
      * @return string
      */
@@ -496,7 +517,9 @@ class Extension extends \Twig_Extension
             'get_guide_article_url'   => new \Twig_SimpleFunction('get_guide_article_url', [$this, 'getGuideArticleUrl'], ['is_safe' => ['html']]),
             'contact_hotel'           => new \Twig_SimpleFunction('contact_hotel', [$this, 'getContactHotelIfNotSetPaymentSystem'], ['is_safe' => ['html']]),
             'get_cash_price'          => new \Twig_SimpleFunction('get_cash_price', [$this, 'getCashPrice'], ['is_safe' => ['html']]),
-            'get_cashless_price'      => new \Twig_SimpleFunction('get_cashless_price', [$this, 'getCashlessPrice'], ['is_safe' => ['html']])
+            'get_cashless_price'      => new \Twig_SimpleFunction('get_cashless_price', [$this, 'getCashlessPrice'], ['is_safe' => ['html']]),
+            'get_prepayment_price'    => new \Twig_SimpleFunction('get_prepayment_price', [$this, 'getCashPrepayment'], ['is_safe' => ['html']]),
+            'get_surcharge_price'    => new \Twig_SimpleFunction('get_surcharge_price', [$this, 'getCashSurcharge'], ['is_safe' => ['html']]),
         ];
     }
 

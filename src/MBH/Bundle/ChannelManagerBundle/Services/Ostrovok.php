@@ -104,8 +104,6 @@ class Ostrovok extends Base
         $result = $result && $this->sendApiRequest($rna_request_data, __METHOD__);
         $rna_request_data = [];
 
-
-        //Цены
         $rate_plans = $this->apiBrowser->getRatePlans(['hotel' => $hotelId]);
         $data = [];
         foreach ($rate_plans as $rate_plan) {
@@ -250,7 +248,7 @@ class Ostrovok extends Base
     /**
      * {@inheritDoc}
      */
-    public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $roomType = null)
+    public function updatePrices(\DateTime $begin = null, \DateTime $end = null, RoomType $paramRoomType = null)
     {
         $result = true;
         $begin = $this->getDefaultBegin($begin);
@@ -262,10 +260,10 @@ class Ostrovok extends Base
             foreach ($this->getConfig() as $config) {
                 $allOccupancies = $this->apiBrowser->getOccupancies(['hotel' => $config->getHotelId()], true);
                 $rooms = $config->getRooms()->toArray();
-                if (null !== $roomType) {
-                    $rooms = array_filter($rooms, function ($room) use ($roomType) {
+                if (null !== $paramRoomType) {
+                    $rooms = array_filter($rooms, function ($room) use ($paramRoomType) {
                         /** @var Room $room */
-                        return $room->getRoomType()->getId() === $roomType->getId();
+                        return $room->getRoomType()->getId() === $paramRoomType->getId();
                     });
                 }
 

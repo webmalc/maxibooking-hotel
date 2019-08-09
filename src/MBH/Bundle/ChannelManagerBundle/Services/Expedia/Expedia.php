@@ -13,10 +13,10 @@ use MBH\Bundle\ChannelManagerBundle\Lib\AbstractResponseHandler;
 class Expedia extends ExtendedAbstractChannelManager
 {
     const CONFIG = 'ExpediaConfig';
-    const UNAVAIBLE_PRICES = [
+    const UNAVAILABLE_PRICES = [
     ];
 
-    const UNAVAIBLE_RESTRICTIONS = [
+    const UNAVAILABLE_RESTRICTIONS = [
         'minStayArrival' => null,
         'maxStayArrival' => null,
         'minBeforeArrival' => null,
