@@ -54,21 +54,35 @@ liip_imagine:
 services:
   mbh.channelmanager.myallocator:
     class: Tests\Bundle\ChannelManagerBundle\Services\ChannelManagerServiceMock
+    arguments:
+      ['@service_container']
 
   mbh.channelmanager.booking:
     class: Tests\Bundle\ChannelManagerBundle\Services\ChannelManagerServiceMock
+    arguments:
+      ['@service_container']
 
   mbh.channelmanager.ostrovok:
     class: Tests\Bundle\ChannelManagerBundle\Services\ChannelManagerServiceMock
+    arguments:
+      ['@service_container']
 
   mbh.channelmanager.hundred_one_hotels:
     class: Tests\Bundle\ChannelManagerBundle\Services\ChannelManagerServiceMock
+    arguments:
+      ['@service_container']
 
   mbh.channelmanager.expedia:
     class: Tests\Bundle\ChannelManagerBundle\Services\ChannelManagerServiceMock
+    arguments:
+      ['@service_container']
 
   mbh.channelmanager.vashotel:
     class: Tests\Bundle\ChannelManagerBundle\Services\ChannelManagerServiceMock
+    arguments:
+      ['@service_container']
 
   mbh.channelmanager.facebook:
     class: Tests\Bundle\ChannelManagerBundle\Services\ChannelManagerServiceMock
+    arguments:
+      ['@service_container']

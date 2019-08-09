@@ -445,6 +445,8 @@ class PackageController extends Controller implements CheckHotelControllerInterf
      * @Template()
      * @param Request $request
      * @return array|JsonResponse|RedirectResponse
+     * @throws \Doctrine\ODM\MongoDB\LockException
+     * @throws \Doctrine\ODM\MongoDB\Mapping\MappingException
      */
     public function newAction(Request $request)
     {
@@ -469,7 +471,6 @@ class PackageController extends Controller implements CheckHotelControllerInterf
             'infants' => $request->get('infants'),
             'childrenAges' => $request->get('children_age') ?? $request->get('childrenAges'),
             'savedQueryId' => $request->get('query_id')
-
         ];
 
         if ($quantity > 20 || $quantity < 1) {
