@@ -59,36 +59,25 @@ class CashDocumentRepository extends DocumentRepository
         $criteria->limit = null;
         $qb = $this->queryCriteriaToBuilder($criteria);
 
-        if ($type == 'in') {
+        if ($type === 'in') {
             $qb->field('operation')->notIn(['out', 'fee']);
         } else {
             $qb->field('operation')->in(['out', 'fee']);
         }
 
-        $aggregate = [
-            ['$match' => $qb->getQuery()->getQuery()['query']],
-            ['$project' => ['total' => 1]],
-            ['$group' => [
-                '_id' => null, 'total' => ['$sum' => '$total']]
-            ]
-        ];
-        $result = $this->dm->getDocumentCollection(CashDocument::class)->aggregate($aggregate);
-        $total = $result[0]['total'];
+        $aggregateBuilder = $this->dm->createAggregationBuilder(CashDocument::class);
 
-        /*$qb
-            ->map('function() { emit(1, this.total); }')
-            ->reduce('function(k, vals) {
-                    var sum = 0;
-                    for (var i in vals) {
-                        sum += vals[i];
-                    }
-                    return sum;
-            }');
-        $result = $qb->getQuery()->execute();
-        $total = (isset($result[0]['value'])) ? $result[0]['value'] : 0;
-        */
+        $query = $qb->getQuery()->getQuery()['query'];
 
-        return $total;
+        $aggregateBuilder->match()->addAnd($query);
+        $aggregateBuilder->project()->includeFields(['total']);
+        $aggregateBuilder->group()
+            ->field('_id')->expression(null)
+            ->field('total')->sum('$total');
+
+        $result = $aggregateBuilder->execute()->getSingleResult();
+
+        return $result['total'] ?? 0;
     }
 
     /**
