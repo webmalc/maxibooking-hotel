@@ -39,8 +39,8 @@ class FacebookControllerTest extends WebTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->client = self::makeClient(true);
-        $this->container = self::getContainer();
+        $this->client = $this->makeAuthenticatedClient();
+        $this->container = $this->getContainer();
         $this->dm = $this->container->get('doctrine.odm.mongodb.document_manager');
 
     }

@@ -111,7 +111,7 @@
                     </div>
                 </td>
                 <td{# 2 #}>
-                    {% if not room.facilities is empty or not room.allFacilities is empty %}
+                    {% if room.facilities is not null and room.allFacilities is not null %}
                         <span class="label {% if room.facilities is not empty %}label-warning{% else %}label-default{% endif %}">
                             <i class="fa fa-bed"
                                style="cursor: pointer;"

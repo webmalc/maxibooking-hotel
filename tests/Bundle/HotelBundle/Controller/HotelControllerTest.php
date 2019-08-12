@@ -92,16 +92,16 @@ class HotelControllerTest extends CrudWebTestCase
         ]);
 
         $crawler = $this->client->request('GET', $url);
-        $this->assertStatusCode(200, $this->client);
+        self::assertStatusCode(200, $this->client);
         $formClass = 'form[name="' . $formName . '"]';
 
         $form = $crawler->filter($formClass)->form();
         $form->setValues($newValues);
         $this->client->submit($form);
-        $this->assertStatusCode(302, $this->client);
+        self::assertStatusCode(302, $this->client);
 
         $crawler = $this->client->request('GET', $url);
-        $this->assertStatusCode(200, $this->client);
+        self::assertStatusCode(200, $this->client);
         $this->assertTrue(self::checkValuesInForm($crawler->filter($formClass)->form(), $newValues));
     }
 }

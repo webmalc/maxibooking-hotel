@@ -33,61 +33,61 @@ class CashControllerTest extends \MBH\Bundle\BaseBundle\Lib\Test\WebTestCase
 
     private const VALUES_DEFAULT = [
         'draw'                => '',
-        'noConfirmedTotalIn'  => "1,360.00",
+        'noConfirmedTotalIn'  => '1,360.00',
         'noConfirmedTotalOut' => '0.00',
-        'recordsFiltered'     => 8,
-        'recordsTotal'        => 8,
-        'total'               => "12,647.00",
-        'totalIn'             => "12,647.00",
-        'totalOut'            => "0.00",
+        'recordsFiltered'     => '8',
+        'recordsTotal'        => '8',
+        'total'               => '12,647.00',
+        'totalIn'             => '12,647.00',
+        'totalOut'            => '0.00',
         'data'                => [],
     ];
 
     private const VALUES_COMMON_WITH_200_NOT_CONFIRMED = [
         'draw'                => '',
-        'noConfirmedTotalIn'  => "1,560.00",
+        'noConfirmedTotalIn'  => '1,560.00',
         'noConfirmedTotalOut' => '0.00',
-        'recordsFiltered'     => 9,
-        'recordsTotal'        => 9,
-        'total'               => "12,847.00",
-        'totalIn'             => "12,847.00",
-        'totalOut'            => "0.00",
+        'recordsFiltered'     => '9',
+        'recordsTotal'        => '9',
+        'total'               => '12,847.00',
+        'totalIn'             => '12,847.00',
+        'totalOut'            => '0.00',
         'data'                => [],
     ];
 
     private const VALUES_COMMON_WITH_200_CONFIRMED = [
         'draw'                => '',
-        'noConfirmedTotalIn'  => "1,360.00",
+        'noConfirmedTotalIn'  => '1,360.00',
         'noConfirmedTotalOut' => '0.00',
-        'recordsFiltered'     => 9,
-        'recordsTotal'        => 9,
-        'total'               => "12,847.00",
-        'totalIn'             => "12,847.00",
-        'totalOut'            => "0.00",
+        'recordsFiltered'     => '9',
+        'recordsTotal'        => '9',
+        'total'               => '12,847.00',
+        'totalIn'             => '12,847.00',
+        'totalOut'            => '0.00',
         'data'                => [],
     ];
 
     private const VALUES_AFTER_EDIT_UP_TO_200 = [
         'draw'                => '',
-        'noConfirmedTotalIn'  => "200.00",
+        'noConfirmedTotalIn'  => '200.00',
         'noConfirmedTotalOut' => '0.00',
-        'recordsFiltered'     => 1,
-        'recordsTotal'        => 1,
-        'total'               => "200.00",
-        'totalIn'             => "200.00",
-        'totalOut'            => "0",
+        'recordsFiltered'     => '1',
+        'recordsTotal'        => '1',
+        'total'               => '200.00',
+        'totalIn'             => '200.00',
+        'totalOut'            => '0.00',
         'data'                => [],
     ];
 
     private const VALUES_DEFAULT_DATA_FOR_FILTER_DELETE_AND_DOCUMENT_DATE = [
         'draw'                => '',
-        'noConfirmedTotalIn'  => "0.00",
+        'noConfirmedTotalIn'  => '0.00',
         'noConfirmedTotalOut' => '0.00',
-        'recordsFiltered'     => 0,
-        'recordsTotal'        => 0,
-        'total'               => "0.00",
-        'totalIn'             => "0.00",
-        'totalOut'            => "0",
+        'recordsFiltered'     => '0',
+        'recordsTotal'        => '0',
+        'total'               => '0.00',
+        'totalIn'             => '0.00',
+        'totalOut'            => '0.00',
         'data'                => [],
     ];
 
@@ -127,7 +127,7 @@ class CashControllerTest extends \MBH\Bundle\BaseBundle\Lib\Test\WebTestCase
     {
         $this->getListCrawler(self::URL_BASE);
 
-        $this->assertStatusCode(
+        self::assertStatusCode(
             200,
             $this->client
         );
@@ -138,7 +138,7 @@ class CashControllerTest extends \MBH\Bundle\BaseBundle\Lib\Test\WebTestCase
         $this->getListCrawler(self::URL_JSON);
         json_decode($this->client->getResponse()->getContent(), true);
 
-        $this->assertStatusCode(
+        self::assertStatusCode(
             200,
             $this->client
         );
@@ -189,7 +189,7 @@ class CashControllerTest extends \MBH\Bundle\BaseBundle\Lib\Test\WebTestCase
     {
         $this->getListCrawler('/cash/invalid_id_info_100pr/' . $data['url']);
 
-        $this->assertStatusCode(
+        self::assertStatusCode(
             $data['status'],
             $this->client
         );
@@ -259,8 +259,9 @@ class CashControllerTest extends \MBH\Bundle\BaseBundle\Lib\Test\WebTestCase
 
     /**
      * @dataProvider getDefaultData
+     * @param array $data
      */
-    public function testDefaultValueFromJsonWithFilter(array $data)
+    public function testDefaultValueFromJsonWithFilter(array $data): void
     {
         $this->filterTest($data);
     }
@@ -303,13 +304,13 @@ class CashControllerTest extends \MBH\Bundle\BaseBundle\Lib\Test\WebTestCase
     {
         $data = [
             'draw'                => '',
-            'noConfirmedTotalIn'  => "100.00",
+            'noConfirmedTotalIn'  => '100.00',
             'noConfirmedTotalOut' => '0.00',
-            'recordsFiltered'     => 1,
-            'recordsTotal'        => 1,
-            'total'               => "100.00",
-            'totalIn'             => "100.00",
-            'totalOut'            => "0",
+            'recordsFiltered'     => '1',
+            'recordsTotal'        => '1',
+            'total'               => '100.00',
+            'totalIn'             => '100.00',
+            'totalOut'            => '0.00',
             'data'                => [],
         ];
 
@@ -399,13 +400,13 @@ class CashControllerTest extends \MBH\Bundle\BaseBundle\Lib\Test\WebTestCase
 
         $dataFilter = [
             'draw'                => '',
-            'noConfirmedTotalIn'  => "1,560.00",
+            'noConfirmedTotalIn'  => '1,560.00',
             'noConfirmedTotalOut' => '0.00',
-            'recordsFiltered'     => 4,
-            'recordsTotal'        => 4,
-            'total'               => "12,847.00",
-            'totalIn'             => "12,847.00",
-            'totalOut'            => "0.00",
+            'recordsFiltered'     => '4',
+            'recordsTotal'        => '4',
+            'total'               => '12,847.00',
+            'totalIn'             => '12,847.00',
+            'totalOut'            => '0.00',
             'data'                => [],
         ];
 
@@ -465,13 +466,13 @@ class CashControllerTest extends \MBH\Bundle\BaseBundle\Lib\Test\WebTestCase
     {
         $dataOnlyDelete = [
             'draw'                => '',
-            'noConfirmedTotalIn'  => "0.00",
+            'noConfirmedTotalIn'  => '0.00',
             'noConfirmedTotalOut' => '0.00',
-            'recordsFiltered'     => 1,
-            'recordsTotal'        => 1,
-            'total'               => "200.00",
-            'totalIn'             => "200.00",
-            'totalOut'            => "0.00",
+            'recordsFiltered'     => '1',
+            'recordsTotal'        => '1',
+            'total'               => '200.00',
+            'totalIn'             => '200.00',
+            'totalOut'            => '0.00',
             'data'                => [],
         ];
 
@@ -532,7 +533,7 @@ class CashControllerTest extends \MBH\Bundle\BaseBundle\Lib\Test\WebTestCase
     public function testStatusCodeReportOneC()
     {
         $this->getListCrawler(self::URL_EXPORT_ONE_C);
-        $this->assertStatusCode(
+        self::assertStatusCode(
             200,
             $this->client
         );
@@ -551,7 +552,7 @@ class CashControllerTest extends \MBH\Bundle\BaseBundle\Lib\Test\WebTestCase
             return strpos($value,'ВремяСоздания') !== 0;
         });
 
-        $this->assertStatusCode(
+        self::assertStatusCode(
             200,
             $this->client
         );
@@ -561,7 +562,7 @@ class CashControllerTest extends \MBH\Bundle\BaseBundle\Lib\Test\WebTestCase
 
     private function getContetntReportOneC()
     {
-        $this->translator = self::getContainer()->get('translator');
+        $this->translator = $this->getContainer()->get('translator');
         $body = '';
 
         $dateBegin = (new DateTime('-7 days'))->format('d.m.Y');
@@ -678,7 +679,7 @@ class CashControllerTest extends \MBH\Bundle\BaseBundle\Lib\Test\WebTestCase
         return $this->valueJson;
     }
 
-    private function compareWithValueJson(array $compareData, string $msg = null): void
+    private function compareWithValueJson(array $compareData, string $msg = ''): void
     {
         if (!is_array($compareData['data'])) {
             $this->assertThat($compareData['data'], self::isType('array'));
@@ -695,7 +696,7 @@ class CashControllerTest extends \MBH\Bundle\BaseBundle\Lib\Test\WebTestCase
     private function filterTest(array $data): void
     {
         $this->changeValueJson($data['data']);
-        $this->compareWithValueJson($this->getDataFromUrlJson($data['filter']), $data['msg'] ?? null);
+        $this->compareWithValueJson($this->getDataFromUrlJson($data['filter']), $data['msg'] ?? '');
     }
 
     private function filterGroupTest(array $data): void

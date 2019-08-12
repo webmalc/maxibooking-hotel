@@ -66,11 +66,11 @@ class PackageQueryCriteria extends AbstractQueryCriteria
     /**
      * @var array
      */
-    public $packageOrders;
+    public $packageOrders = [];
     /**
      * @var array
      */
-    private $roomTypes;
+    private $roomTypes = [];
     /**
      * @var bool
      */

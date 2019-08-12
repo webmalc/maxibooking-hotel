@@ -157,7 +157,7 @@ class ClientConfigControllerPaymentSystemTest extends WebTestCase
     {
         $this->getListCrawler(self::URL_ADD_URL);
 
-        $this->assertStatusCode(
+        self::assertStatusCode(
             200,
             $this->client
         );

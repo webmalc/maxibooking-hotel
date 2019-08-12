@@ -341,7 +341,7 @@ class Room extends Base
     /**
      * @param array $facilities
      */
-    public function setFacilities($facilities)
+    public function setFacilities($facilities): void
     {
         $this->facilities = $facilities;
     }

@@ -30,7 +30,7 @@ abstract class WebTestCase extends Base
      */
     public function setUp()
     {
-        $this->client = self::makeClient(true);
+        $this->client = $this->makeAuthenticatedClient();
     }
 
     /**

@@ -37,7 +37,7 @@ class ApiPaymentFormControllerTest extends WebTestCase
 
     public function setUp()
     {
-        $this->client = $this->makeClient(false);
+        $this->client = $this->makeClient();
     }
 
     public function getDataForUrlLoad(): iterable
@@ -64,7 +64,7 @@ class ApiPaymentFormControllerTest extends WebTestCase
     public function testUrl(string $routeName, int $status, ?string $configId, bool $auth)
     {
         if ($auth) {
-            $this->client = $this->makeClient($auth);
+            $this->client = $this->makeAuthenticatedClient();
         }
 
         $url = $this->getUrlWithConfigId($routeName, $configId);

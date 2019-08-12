@@ -219,10 +219,10 @@ class BaseControllerTest extends WebTestCase
      * @dataProvider getRouterFor302
      * @param string $url
      */
-    public function testRouteAlways302(string $url)
+    public function testRouteAlways302(string $url): void
     {
-        $client = static::makeClient(true);
-        $client->followRedirects(true);
+        $client = $this->makeAuthenticatedClient();
+        $client->followRedirects();
 
         $client->request('GET', $url);
 
@@ -233,9 +233,9 @@ class BaseControllerTest extends WebTestCase
      * @dataProvider urlProvider401
      * @param string $url
      */
-    public function testBasicGetRouterInvalidAuth(string $url)
+    public function testBasicGetRouterInvalidAuth(string $url): void
     {
-        $client = static::makeClient(false);
+        $client = $this->makeClient();
         $client->request('GET', $url);
 
         $this->assertStatusCodeWithMsg($url, 401, $client);
@@ -246,9 +246,9 @@ class BaseControllerTest extends WebTestCase
      * @dataProvider urlProvider200
      * @param string $url
      */
-    public function testBasicGetRoutes(string $url)
+    public function testBasicGetRoutes(string $url): void
     {
-        $client = static::makeClient(true);
+        $client = $this->makeAuthenticatedClient();
         $client->request('GET', $url);
         $response = $client->getResponse();
 
@@ -280,16 +280,16 @@ class BaseControllerTest extends WebTestCase
     {
         $routers = array_filter($this->getContainer()->get('router')->getRouteCollection()->all(), function (Route $route, string $routeName) use ($forStatus) {
             $path = $route->getPath();
-            if (isset($path[1]) && $path[1] == '_') {
+            if (isset($path[1]) && $path[1] === '_') {
                 return false;
             }
 
             if ($forStatus === 200) {
-                if (in_array($routeName, $this->getExcludedFor200())) {
+                if (in_array($routeName, $this->getExcludedFor200(), true)) {
                     return false;
                 }
             } elseif ($forStatus === 401) {
-                if (in_array($routeName, $this->getExcludedFor401())) {
+                if (in_array($routeName, $this->getExcludedFor401(), true)) {
                     return false;
                 }
 
@@ -304,7 +304,8 @@ class BaseControllerTest extends WebTestCase
             return !$route->getMethods() || in_array('GET', $route->getMethods());
         }, ARRAY_FILTER_USE_BOTH);
 
-        return array_map(function ($route) {
+        return array_map(static function ($route) {
+            /** @var Route $route */
             return [$route->getPath()];
         }, $routers);
     }

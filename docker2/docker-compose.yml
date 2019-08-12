@@ -70,7 +70,6 @@ services:
         - ..:/var/www/mbh
         - ./phpdocker/php-fpm/php-ini-overrides-fpm.ini:/etc/php/7.3/fpm/conf.d/99-overrides.ini
         - ./phpdocker/php-fpm/php-ini-overrides-cli.ini:/etc/php/7.3/cli/conf.d/99-overrides.ini
-        - ./phpdocker/php-fpm/xdebug.ini:/etc/php/7.3/mods-available/xdebug.ini
         - ./phpdocker/php-fpm/supervisor.conf.d:/etc/supervisor/conf.d
         - ./phpdocker/php-fpm/fish:/root/.config/fish/functions
         - /tmp/:/tmp/

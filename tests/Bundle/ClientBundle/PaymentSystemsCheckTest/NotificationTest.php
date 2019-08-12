@@ -45,7 +45,7 @@ class NotificationTest extends WebTestCase
      */
     public function setUp()
     {
-        $this->client = self::makeClient(false);
+        $this->client = $this->makeClient();
     }
 
     /**
@@ -73,7 +73,7 @@ class NotificationTest extends WebTestCase
      */
     public function testSimpleAddPaymentSystems(HolderNamePaymentSystem $holder)
     {
-        $this->client = self::makeClient(true);
+        $this->client = $this->makeAuthenticatedClient();
 
         $this->addToClientConfigPaymentSystem($holder);
 

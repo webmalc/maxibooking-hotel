@@ -126,13 +126,13 @@ class CashController extends Controller
 
         if ($isByDay) {
             return $this->render('MBHCashBundle:Cash:jsonByDay.json.twig', $params + ['data' => $results]);
-        } else {
-            return $params + [
-                'entities' => $results,
-                'methods' => $this->container->getParameter('mbh.cash.methods'),
-                'operations' => $this->container->getParameter('mbh.cash.operations'),
-            ];
         }
+
+        return $params + [
+            'entities' => $results,
+            'methods' => $this->container->getParameter('mbh.cash.methods'),
+            'operations' => $this->container->getParameter('mbh.cash.operations'),
+        ];
     }
 
     /**
