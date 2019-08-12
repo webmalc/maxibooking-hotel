@@ -739,4 +739,14 @@ class Helper
 
         return [$dates[0], end($dates)];
     }
+
+    public function isObjectsEqual($obj1, $obj2): bool
+    {
+        if (!is_object($obj1) || !is_object($obj2)) {
+            throw new \InvalidArgumentException('params must be an object type');
+        }
+
+        return \Normalizer::normalize(serialize($obj1)) === \Normalizer::normalize(serialize($obj2));
+    }
+
 }

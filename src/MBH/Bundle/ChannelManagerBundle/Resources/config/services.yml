@@ -57,7 +57,7 @@ services:
 
     mbh.channelmanager.order_handler:
         class: MBH\Bundle\ChannelManagerBundle\Services\OrderHandler
-        arguments: ['@doctrine_mongodb.odm.document_manager']
+        arguments: ['@doctrine_mongodb.odm.document_manager', '@mbh.helper']
 
     mbh.channelmanager.expedia_response_handler:
         class: MBH\Bundle\ChannelManagerBundle\Services\Expedia\ExpediaResponseHandler
