@@ -144,6 +144,20 @@ class AirbnbTest extends UnitTestCase
         $this->assertEquals('Стандартный двухместный', $orders2[0]->getPackages()->toArray()[0]->getRoomType()->getFullTitle());
         $this->assertEquals('Люкс', $orders2[1]->getPackages()->toArray()[0]->getRoomType()->getFullTitle());
 
+//        $this->mockHttpService(true);
+//
+//        $this->assertTrue($this->container->get('mbh.airbnb')->pullOrders());
+//        $orders4 = $this->dm
+//            ->getRepository('MBHPackageBundle:Order')
+//            ->findBy(['channelManagerType' => Airbnb::NAME]);
+//        $packages4 = $this->dm
+//            ->getRepository(Package::class)
+//            ->findBy(['channelManagerType' => Airbnb::NAME]);
+//        $this->assertCount(2, $orders4);
+//        $this->assertCount(2, $packages4);
+//        $this->assertEquals('Стандартный двухместный', $orders4[0]->getPackages()->toArray()[0]->getRoomType()->getFullTitle());
+//        $this->assertEquals('Люкс', $orders4[1]->getPackages()->toArray()[0]->getRoomType()->getFullTitle());
+
         $this->changeRoomType($orders[0]->getPackages()->toArray()[0], true);
 
         $this->assertTrue($this->container->get('mbh.airbnb')->pullOrders());
@@ -264,13 +278,13 @@ class AirbnbTest extends UnitTestCase
         return $this->wrapCalendar($this->getMultipleEventsForDeletionCalendar($isDeleted));
     }
 
-    private function mockHttpService()
+    private function mockHttpService($isTestEdited = false)
     {
         $mock = \Mockery::mock(CMHttpService::class)->makePartial();
 
-        $mock->shouldReceive('getByAirbnbUrl')->andReturnUsing(function ($url) {
+        $mock->shouldReceive('getByAirbnbUrl')->andReturnUsing(function () use ($isTestEdited) {
             $this->datum = !$this->datum;
-            return (new Result())->setData($this->getFourthCalendar(!$this->datum));
+            return (new Result())->setData($this->getFourthCalendar(!$this->datum, $isTestEdited));
         });
 
         $this->container->set('mbh.cm_http_service', $mock);
@@ -304,9 +318,9 @@ class AirbnbTest extends UnitTestCase
         return $this->wrapCalendar($this->getEventById('1418fb94e984-4ac6e9143r674246f878defd58250d61@airbnb.com'));
     }
 
-    public function getFourthCalendar($datum): string
+    public function getFourthCalendar($datum, $isTestEdited): string
     {
-        return $this->wrapCalendar($this->getMultipleEventsDataBySyncUrl($datum));
+        return $this->wrapCalendar($this->getMultipleEventsDataBySyncUrl($datum, $isTestEdited));
     }
 
     private function getEventById(string $id)
@@ -387,12 +401,16 @@ END:VEVENT\n";
         $this->dm->flush();
     }
 
-    protected function getMultipleEventsDataBySyncUrl(string $datum): string
+    protected function getMultipleEventsDataBySyncUrl(string $datum, $isTestEdited = false): string
     {
         $id = $datum ? 'q' : 'w';
 
+        $editedDate = $isTestEdited
+            ? (new \DateTime('midnight + 4 days'))->format('Ymd')
+            : (new \DateTime('midnight + 5 days'))->format('Ymd');
+
         return "BEGIN:VEVENT
-DTEND;VALUE=DATE:". (new \DateTime('midnight + 5 days'))->format('Ymd') ."
+DTEND;VALUE=DATE:". $editedDate ."
 DTSTART;VALUE=DATE:". (new \DateTime('midnight - 5 days'))->format('Ymd') ."
 UID:1418fb94e984-4a".$id."dfhxf65yxehd61@airbnb.com
 DESCRIPTION:CHECKIN: ". (new \DateTime('midnight - 5 days'))->format('Ymd') .
