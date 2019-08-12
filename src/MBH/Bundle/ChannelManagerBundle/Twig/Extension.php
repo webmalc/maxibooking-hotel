@@ -77,7 +77,7 @@ class Extension extends \Twig_Extension
     /**
      * @return array
      */
-    public function serviceNotifications(ChannelManagerConfigInterface $config): array
+    public function serviceNotifications(?ChannelManagerConfigInterface $config): array
     {
         if ($this->notifications === null) {
             $service = $this->container->get(

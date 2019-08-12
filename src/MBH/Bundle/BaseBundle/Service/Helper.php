@@ -601,7 +601,7 @@ class Helper
     public function getTimeZone(?ClientConfig $clientConfig = null)
     {
         if ($clientConfig === null) {
-            $clientConfig = $this->container->get('mbh.client_config_manager')->fetchConfig();
+            $clientConfig = $this->container->get('mbh.client_config_manager')->getClientConfig();
         }
 
         if ($clientConfig === null || empty($clientConfig->getTimeZone())) {

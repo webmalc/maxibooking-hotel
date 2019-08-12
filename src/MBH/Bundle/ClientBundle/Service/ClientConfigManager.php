@@ -3,6 +3,7 @@
 namespace MBH\Bundle\ClientBundle\Service;
 
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MBH\Bundle\ClientBundle\Document\ClientConfig;
 
 class ClientConfigManager
 {
@@ -21,11 +22,16 @@ class ClientConfigManager
     public function fetchConfig()
     {
         if (!$this->isClientConfigInit) {
-            $this->clientConfig = $this->dm->getRepository('MBHClientBundle:ClientConfig')->fetchConfig();
+            $this->clientConfig = $this->dm->getRepository(ClientConfig::class)->fetchConfig();
             $this->isClientConfigInit = true;
         }
 
         return $this->clientConfig;
+    }
+
+    public function getClientConfig(): ?ClientConfig
+    {
+        return $this->dm->getRepository(ClientConfig::class)->getConfig();
     }
 
     /**

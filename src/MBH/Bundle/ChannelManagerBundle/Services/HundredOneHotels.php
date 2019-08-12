@@ -21,10 +21,10 @@ use Symfony\Component\HttpFoundation\Response;
 
 class HundredOneHotels extends Base
 {
-    const UNAVAIBLE_PRICES = [
+    const UNAVAILABLE_PRICES = [
     ];
 
-    const UNAVAIBLE_RESTRICTIONS = [
+    const UNAVAILABLE_RESTRICTIONS = [
         'maxStay' => null,
         'minStayArrival' => null,
         'maxStayArrival' => null,

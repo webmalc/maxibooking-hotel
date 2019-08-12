@@ -35,9 +35,11 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
      */
     const TEST = true;
 
-    const UNAVAIBLE_PRICES = [];
+    const UNAVAILABLE_PRICES = [];
 
-    const UNAVAIBLE_RESTRICTIONS = [];
+    const UNAVAILABLE_PRICES_ADAPTER = [];
+
+    const UNAVAILABLE_RESTRICTIONS = [];
 
     const CHANNEL_MANAGER_NAMES = [
         "vashotel",
@@ -164,8 +166,8 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             }
         };
 
-        $getError(static::UNAVAIBLE_PRICES, 'channelmanager.notifications.prices', $overview, 'prices');
-        $getError(static::UNAVAIBLE_RESTRICTIONS, 'channelmanager.notifications.restrictions', $overview, 'restrictions');
+        $getError(static::UNAVAILABLE_PRICES, 'channelmanager.notifications.prices', $overview, 'prices');
+        $getError(static::UNAVAILABLE_RESTRICTIONS, 'channelmanager.notifications.restrictions', $overview, 'restrictions');
 
         return $overview;
     }
@@ -184,17 +186,18 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
             if (empty($types)) {
                 return $errors;
             }
-            if (count($types) && $this->$method($config, $types)) {
+            if (count($types) && count($forbiddenPrices = $this->$method($config, $types))) {
                 $error = $trans->trans($message) . ': ';
                 $error .= implode(', ', array_map(function ($element) use ($trans, $message) {
                     return $trans->trans($message . '.type.' . $element);
-                }, array_keys($types)));
+                }, $forbiddenPrices));
                 $errors[] = $error;
             }
+
             return $errors;
         };
-        $getError(static::UNAVAIBLE_PRICES, 'channelmanager.notifications.prices', $errors, 'countPrices');
-        $getError(static::UNAVAIBLE_RESTRICTIONS, 'channelmanager.notifications.restrictions', $errors, 'countRestrictions');
+        $getError(static::UNAVAILABLE_PRICES, 'channelmanager.notifications.prices', $errors, 'getForbiddenPrices');
+        $getError(static::UNAVAILABLE_RESTRICTIONS, 'channelmanager.notifications.restrictions', $errors, 'countRestrictions');
 
         return $errors;
     }
@@ -217,10 +220,10 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         if (!$roomType) {
             return [];
         }
-        if (!$this->roomManager->useCategories) {
+        if (!$this->roomManager->getIsUseCategories()) {
             return [$roomType->getId()];
         }
-        if ($this->roomManager->useCategories) {
+        if ($this->roomManager->getIsUseCategories()) {
             if (!$roomType->getCategory()) {
                 return [0];
             }
@@ -502,8 +505,7 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
         $builder->field('tariff.id')->in($tariffsIds)
             ->field('roomType.id')->in($roomTypeIds)
             ->field('cancelDate')->equals(null)
-            ->field('date')->gte(new \DateTime('midnight'))
-        ;
+            ->field('date')->gte(new \DateTime('midnight'));
 
         return $builder;
     }
@@ -568,21 +570,35 @@ abstract class AbstractChannelManagerService implements ChannelManagerServiceInt
     }
 
     /**
-     * Count prices by config and type
+     * Return forbidden prices by config and type
      *
      * @param ChannelManagerConfigInterface $config
      * @param array $types
-     * @return int
+     * @return array
      */
-    protected function countPrices(ChannelManagerConfigInterface $config, array $types = []): int
+    protected function getForbiddenPrices(ChannelManagerConfigInterface $config, array $types = []): array
     {
         $builder = $this->getPricesByConfigQueryBuilder($config);
+        $forbiddenPricesArray = [];
+        $roomTypes = $this->dm->getRepository('MBHHotelBundle:RoomType')->findBy(['hotel.id' => $this->hotel->getId()]);
 
-        foreach ($types as $type => $val) {
-            $builder->addOr($builder->expr()->field($type)->notEqual($val));
+        foreach ($roomTypes as $roomType) {
+            foreach ($types as $type => $val) {
+                if (in_array($type, $forbiddenPricesArray)) {
+                    continue;
+                }
+                $paramName = 'get' . ucfirst(self::UNAVAILABLE_PRICES_ADAPTER[$type]);
+                if ($roomType->$paramName() && $roomType->$paramName() !== $types[$type]) {
+                    $builderMock = clone $builder;
+                    $builderMock->field($type)->notEqual($val);
+                    if ($builderMock->getQuery()->count()) {
+                        $forbiddenPricesArray[] = $type;
+                    }
+                }
+            }
         }
 
-        return $builder->getQuery()->count();
+        return $forbiddenPricesArray;
     }
 
     /**

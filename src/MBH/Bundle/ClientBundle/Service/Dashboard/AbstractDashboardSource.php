@@ -45,7 +45,6 @@ abstract class AbstractDashboardSource implements \SplObserver
      */
     protected $helper;
 
-    protected $roomTypeKey;
 
     /**
      * constructor
@@ -61,9 +60,15 @@ abstract class AbstractDashboardSource implements \SplObserver
         $this->validator = $validator;
         $this->translator = $translator;
         $this->helper = $helper;
-        $this->roomTypeKey = $documentManager->getRepository(ClientConfig::class)->fetchConfig()->getUseRoomTypeCategory() ? 'roomTypeCategory': 'roomType';
     }
-    
+
+    protected function getRoomTypeKey(): string
+    {
+        return $this->documentManager->getRepository(ClientConfig::class)->fetchConfig()->getUseRoomTypeCategory()
+            ? 'roomTypeCategory'
+            : 'roomType';
+    }
+
     /**
      * Save message to DB
      *

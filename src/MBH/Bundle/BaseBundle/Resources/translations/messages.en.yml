@@ -820,3 +820,7 @@ cm_connection_instructions.part2.airbnb.text1: 'Synchronization steps must be sp
 cm_connection_instructions.airbnb.part1.text2: '<strong>Please, note:</strong>'
 cm_connection_instructions.airbnb.part1.text4: 'Press  “<strong>Next</strong>”to continue.'
 cm_connection_instructions.airbnb.part1.text3: 'All reservations made by guests via the AirBnb will be automatically loaded to Maxibooking. If the reservation was made in Maxibooking or via any other reservation system, AirBnb will receive information about that reservation and the room will be closed for reservation.'
+cm_connection_instructions.part2.facebook.text1: 'You can get the search result via the <a href="%connectionLink%" target="_blank">%connectionLink%</a>. There should be some text'
+cm_connection_instructions.part2.facebook.text2: 'Some additional text here'
+cm_connection_instructions.part2.facebook.warning1: 'Data get error!'
+cm_connection_instructions.part2.facebook.warning2: 'Please, check the cite config'
