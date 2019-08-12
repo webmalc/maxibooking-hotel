@@ -11,123 +11,71 @@ use MBH\Bundle\HotelBundle\Document\RoomType;
 use MBH\Bundle\PackageBundle\Document\Order;
 use MBH\Bundle\PackageBundle\Document\Package;
 use MBH\Bundle\PackageBundle\Document\PackagePrice;
+use MBH\Bundle\PackageBundle\Document\PackageSource;
+use MBH\Bundle\PackageBundle\Document\Tourist;
 use MBH\Bundle\PriceBundle\Document\Tariff;
 use MBH\Bundle\UserBundle\DataFixtures\MongoDB\UserData;
 use MBH\Bundle\UserBundle\Document\User;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DomCrawler\Crawler;
 
 class PackageControllerTest extends WebTestCase
 
 {
+    const TOURIST_DATA = [
+        'ilya' => ['name' => 'Илья', 'lastName' => 'Габонов', 'patronymic' => 'Иванович'],
+        'pablo' => ['name' => 'Пабло', 'lastName' => 'Хосе', 'patronymic' => 'Васильевич'],
+    ];
+
     const FIXTURE_DATA = [
         [
             'number' => '18',
             'adults' => 1,
             'children' => 1,
             'price' => 2000,
-            'paid' => 2001,
+            'paid' => 0,
             'regDayAgo' => 5,
             'beginAfter' => -3,
             'length' => 8,
             'owner' => UserData::USER_MANAGER,
             'isCheckIn' => true,
-            'status' => 'channel_manager'
+            'status' => 'channel_manager',
+            'confirmed' => true,
+            'tourist' => 'ilya',
+            'rooms' => 1
         ],
         [
             'number' => '19',
             'adults' => 1,
             'children' => 0,
             'price' => 800,
-            'paid' => 10,
+            'paid' => 400,
             'regDayAgo' => 4,
             'beginAfter' => -2,
             'length' => 5,
             'owner' => UserData::USER_MANAGER,
             'isCheckIn' => true,
-            'status' => 'channel_manager'
+            'status' => 'channel_manager',
+            'confirmed' => true,
+            'tourist' => 'pablo',
+            'rooms' => 3
         ],
 
     ];
 
-    const REQUEST_DATA_COMMON = [
-        'draw' => 2,
-        'columns[0][data]' => 0,
-        'columns[0][name]' => '',
-        'columns[0][searchable]' => true,
-        'columns[0][orderable]' => false,
-        'columns[0][search][value]' => '',
-        'columns[0][search][regex]' => false,
-        'columns[1][data]' => 1,
-        'columns[1][name]' => '',
-        'columns[1][searchable]' => true,
-        'columns[1][orderable]' => true,
-        'columns[1][search][value]' => '',
-        'columns[1][search][regex]' => false,
-        'columns[2][data]' => 2,
-        'columns[2][name]' => '',
-        'columns[2][searchable]' => true,
-        'columns[2][orderable]' => true,
-        'columns[2][search][value]' => '',
-        'columns[2][search][regex]' => false,
-        'columns[3][data]' => 3,
-        'columns[3][name]' => '',
-        'columns[3][searchable]' => true,
-        'columns[3][orderable]' => true,
-        'columns[3][search][value]' => '',
-        'columns[3][search][regex]' => false,
-        'columns[4][data]' => 4,
-        'columns[4][name]' => '',
-        'columns[4][searchable]' => true,
-        'columns[4][orderable]' => true,
-        'columns[4][search][value]' => '',
-        'columns[4][search][regex]' => false,
-        'columns[5][data]' => 5,
-        'columns[5][name]' => '',
-        'columns[5][searchable]' => true,
-        'columns[5][orderable]' => true,
-        'columns[5][search][value]' => '',
-        'columns[5][search][regex]' => false,
-        'columns[6][data]' => 6,
-        'columns[6][name]' => '',
-        'columns[6][searchable]' => true,
-        'columns[6][orderable]' => true,
-        'columns[6][search][value]' => '',
-        'columns[6][search][regex]' => false,
-        'columns[7][data]' => 7,
-        'columns[7][name]' => '',
-        'columns[7][searchable]' => true,
-        'columns[7][orderable]' => false,
-        'columns[7][search][value]' => '',
-        'columns[7][search][regex]' => false,
-        'order[0][column]' => 3,
-        'order[0][dir]' => 'desc',
-        'start' => 0,
-        'length' => 50,
-        'search[value]' => '',
-        'search[regex]' => false,
-        'begin' => '',
-        'end' => '',
-        'roomType[]' => '',
-        'source' => '',
-        'status' => '',
-        'deleted' => 0,
-        'dates' => '',
-        'paid' => '',
-        'confirmed' => '',
-        'quick_link' => '',
-    ];
+    const REQUEST_DATA_COMMON = [];
 
-    const TEST_DATA = [
+    const FILTERS_DATA = [
         'date' => [
             [
                 'expected' => [
                     'recordsTotal' => 17,
-//                    'package_summary_total' => 100655,
-//                    'package_summary_paid' => 0,
-//                    'package_summary_debt' => 0,
-//                    'package_summary_nights' => 64,
-//                    'package_summary_guests' => 26
+                    'package_summary_total' => 130455,
+                    'package_summary_paid' => 400,
+                    'package_summary_debt' => 2400,
+                    'package_summary_nights' => 90,
+                    'package_summary_guests' => 38
                 ],
                 'beginDaysDiff' => -100,
                 'endDaysDiff' => '',
@@ -137,11 +85,11 @@ class PackageControllerTest extends WebTestCase
             [
                 'expected' => [
                     'recordsTotal' => 15,
-//                    'package_summary_total' => 100655,
-//                    'package_summary_paid' => 0,
-//                    'package_summary_debt' => 0,
-//                    'package_summary_nights' => 64,
-//                    'package_summary_guests' => 26
+                    'package_summary_total' => 127655,
+                    'package_summary_paid' => 0,
+                    'package_summary_debt' => 0,
+                    'package_summary_nights' => 77,
+                    'package_summary_guests' => 35
                 ],
                 'beginDaysDiff' => '',
                 'endDaysDiff' => '',
@@ -151,11 +99,11 @@ class PackageControllerTest extends WebTestCase
             [
                 'expected' => [
                     'recordsTotal' => 11,
-//                    'package_summary_total' => 100655,
-//                    'package_summary_paid' => 0,
-//                    'package_summary_debt' => 0,
-//                    'package_summary_nights' => 64,
-//                    'package_summary_guests' => 26
+                    'package_summary_total' => 77024,
+                    'package_summary_paid' => 0,
+                    'package_summary_debt' => 0,
+                    'package_summary_nights' => 48,
+                    'package_summary_guests' => 22
                 ],
                 'beginDaysDiff' => '',
                 'endDaysDiff' => 4,
@@ -165,11 +113,11 @@ class PackageControllerTest extends WebTestCase
             [
                 'expected' => [
                     'recordsTotal' => 7,
-//                    'package_summary_total' => 100655,
-//                    'package_summary_paid' => 0,
-//                    'package_summary_debt' => 0,
-//                    'package_summary_nights' => 64,
-//                    'package_summary_guests' => 26
+                    'package_summary_total' => 30824,
+                    'package_summary_paid' => 400,
+                    'package_summary_debt' => 400,
+                    'package_summary_nights' => 22,
+                    'package_summary_guests' => 10
                 ],
                 'beginDaysDiff' => '',
                 'endDaysDiff' => 4,
@@ -182,11 +130,11 @@ class PackageControllerTest extends WebTestCase
             [
                 'expected' => [
                     'recordsTotal' => 13,
-//                    'package_summary_total' => 100655,
-//                    'package_summary_paid' => 0,
-//                    'package_summary_debt' => 0,
-//                    'package_summary_nights' => 64,
-//                    'package_summary_guests' => 26
+                    'package_summary_total' => 100655,
+                    'package_summary_paid' => 0,
+                    'package_summary_debt' => 0,
+                    'package_summary_nights' => 64,
+                    'package_summary_guests' => 26
                 ],
                 'beginDaysDiff' => -100,
                 'endDaysDiff' => '',
@@ -196,11 +144,11 @@ class PackageControllerTest extends WebTestCase
             [
                 'expected' => [
                     'recordsTotal' => 2,
-//                    'package_summary_total' => 100655,
-//                    'package_summary_paid' => 0,
-//                    'package_summary_debt' => 0,
-//                    'package_summary_nights' => 64,
-//                    'package_summary_guests' => 26
+                    'package_summary_total' => 27000,
+                    'package_summary_paid' => 0,
+                    'package_summary_debt' => 0,
+                    'package_summary_nights' => 13,
+                    'package_summary_guests' => 9
                 ],
                 'beginDaysDiff' => -100,
                 'endDaysDiff' => '',
@@ -210,11 +158,11 @@ class PackageControllerTest extends WebTestCase
             [
                 'expected' => [
                     'recordsTotal' => 2,
-//                    'package_summary_total' => 100655,
-//                    'package_summary_paid' => 0,
-//                    'package_summary_debt' => 0,
-//                    'package_summary_nights' => 64,
-//                    'package_summary_guests' => 26
+                    'package_summary_total' => 2800,
+                    'package_summary_paid' => 400,
+                    'package_summary_debt' => 2400,
+                    'package_summary_nights' => 13,
+                    'package_summary_guests' => 3
                 ],
                 'beginDaysDiff' => -100,
                 'endDaysDiff' => '',
@@ -222,37 +170,597 @@ class PackageControllerTest extends WebTestCase
                 'errorMessage' => 'Expected the package list to be filtered by "begin date" minus 100 days to "today", booking type of "status" equals to "channel_manager".'
             ],
 
-        ]
+        ],
+
+        'paidType' => [
+            [
+                'expected' => [
+                    'recordsTotal' => 5,
+                    'package_summary_total' => 38860,
+                    'package_summary_paid' => 0,
+                    'package_summary_debt' => 0,
+                    'package_summary_nights' => 19,
+                    'package_summary_guests' => 13
+                ],
+                'beginDaysDiff' => -100,
+                'endDaysDiff' => '',
+                'criteria' => ['paid' => 'paid'],
+                'errorMessage' => 'Expected the package list to be filtered by "begin date" minus 100 days to "today", type of "paid" equals to "paid".'
+            ],
+            [
+                'expected' => [
+                    'recordsTotal' => 9,
+                    'package_summary_total' => 71231,
+                    'package_summary_paid' => 400,
+                    'package_summary_debt' => 400,
+                    'package_summary_nights' => 54,
+                    'package_summary_guests' => 20
+                ],
+                'beginDaysDiff' => -100,
+                'endDaysDiff' => '',
+                'criteria' => ['paid' => 'part'],
+                'errorMessage' => 'Expected the package list to be filtered by "begin date" minus 100 days to "today", type of "paid" equals to "part".'
+            ],
+            [
+                'expected' => [
+                    'recordsTotal' => 3,
+                    'package_summary_total' => 20364,
+                    'package_summary_paid' => 0,
+                    'package_summary_debt' => 2000,
+                    'package_summary_nights' => 17,
+                    'package_summary_guests' => 5
+                ],
+                'beginDaysDiff' => -100,
+                'endDaysDiff' => '',
+                'criteria' => ['paid' => 'not_paid'],
+                'errorMessage' => 'Expected the package list to be filtered by "begin date" minus 100 days to "today", type of "paid" equals to "not_paid".'
+            ],
+
+        ],
+
+        'confirmed' => [
+            [
+                'expected' => [
+                    'recordsTotal' => 17,
+                    'package_summary_total' => 130455,
+                    'package_summary_paid' => 400,
+                    'package_summary_debt' => 2400,
+                    'package_summary_nights' => 90,
+                    'package_summary_guests' => 38
+                ],
+                'beginDaysDiff' => -100,
+                'endDaysDiff' => '',
+                'criteria' => ['confirmed' => ''],
+                'errorMessage' => 'Expected the package list to be filtered by "begin date" minus 100 days to "today", type of "confirmed" equals to "".'
+            ],
+            [
+                'expected' => [
+                    'recordsTotal' => 15,
+                    'package_summary_total' => 127655,
+                    'package_summary_paid' => 0,
+                    'package_summary_debt' => 0,
+                    'package_summary_nights' => 77,
+                    'package_summary_guests' => 35
+                ],
+                'beginDaysDiff' => -100,
+                'endDaysDiff' => '',
+                'criteria' => ['confirmed' => 0],
+                'errorMessage' => 'Expected the package list to be filtered by "begin date" minus 100 days to "today", type of "confirmed" equals to "false".'
+            ],
+            [
+                'expected' => [
+                    'recordsTotal' => 2,
+                    'package_summary_total' => 2800,
+                    'package_summary_paid' => 400,
+                    'package_summary_debt' => 2400,
+                    'package_summary_nights' => 13,
+                    'package_summary_guests' => 3
+                ],
+                'beginDaysDiff' => -100,
+                'endDaysDiff' => '',
+                'criteria' => ['confirmed' => 1],
+                'errorMessage' => 'Expected the package list to be filtered by "begin date" minus 100 days to "today", type of "confirmed" equals to "true".'
+            ],
+        ],
+
+        'deleted' => [
+            [
+                'expected' => [
+                    'recordsTotal' => 17,
+                    'package_summary_total' => 130455,
+                    'package_summary_paid' => 400,
+                    'package_summary_debt' => 2400,
+                    'package_summary_nights' => 90,
+                    'package_summary_guests' => 38
+                ],
+                'beginDaysDiff' => -100,
+                'endDaysDiff' => '',
+                'criteria' => ['deleted' => 0],
+                'errorMessage' => 'Expected the package list to be filtered by "begin date" minus 100 days to "today", type of "deleted" equals to "disable".'
+            ],
+            [
+                'expected' => [
+                    'recordsTotal' => 19,
+                    'package_summary_total' => 138385,
+                    'package_summary_paid' => 400,
+                    'package_summary_debt' => 2400,
+                    'package_summary_nights' => 99,
+                    'package_summary_guests' => 42
+                ],
+                'beginDaysDiff' => -100,
+                'endDaysDiff' => '',
+                'criteria' => ['deleted' => 1],
+                'errorMessage' => 'Expected the package list to be filtered by "begin date" minus 100 days to "today", type of "deleted" equals to "enable".'
+            ],
+        ],
+
+        'begin-today' => [
+            [
+                'expected' => [
+                    'recordsTotal' => 7,
+                    'package_summary_total' => 45224,
+                    'package_summary_paid' => 0,
+                    'package_summary_debt' => 0,
+                    'package_summary_nights' => 27,
+                    'package_summary_guests' => 12
+                ],
+                'beginDaysDiff' => -100,
+                'endDaysDiff' => '',
+                'criteria' => ['quick_link' => 'begin-today'],
+                'errorMessage' => 'Expected the package list to be filtered by "begin date" minus 100 days to "today", type of "quick_link" equals to "begin-today".'
+            ],
+        ],
+
+        'begin-tomorrow' => [
+            [
+                'expected' => [
+                    'recordsTotal' => 1,
+                    'package_summary_total' => 7000,
+                    'package_summary_paid' => 0,
+                    'package_summary_debt' => 0,
+                    'package_summary_nights' => 5,
+                    'package_summary_guests' => 4
+                ],
+                'beginDaysDiff' => -100,
+                'endDaysDiff' => '',
+                'criteria' => ['quick_link' => 'begin-tomorrow'],
+                'errorMessage' => 'Expected the package list to be filtered by "begin date" minus 100 days to "today", type of "quick_link" equals to "begin-tomorrow".'
+            ],
+        ],
+
+        'live-now' => [
+            [
+                'expected' => [
+                    'recordsTotal' => 2,
+                    'package_summary_total' => 2800,
+                    'package_summary_paid' => 400,
+                    'package_summary_debt' => 2400,
+                    'package_summary_nights' => 13,
+                    'package_summary_guests' => 3
+                ],
+                'beginDaysDiff' => -100,
+                'endDaysDiff' => '',
+                'criteria' => ['quick_link' => 'live-now'],
+                'errorMessage' => 'Expected the package list to be filtered by "begin date" minus 100 days to "today", type of "quick_link" equals to "live-now".'
+            ],
+        ],
+
+        'without-approval' => [
+            [
+                'expected' => [
+                    'recordsTotal' => 15,
+                    'package_summary_total' => 127655,
+                    'package_summary_paid' => 0,
+                    'package_summary_debt' => 0,
+                    'package_summary_nights' => 77,
+                    'package_summary_guests' => 35
+                ],
+                'beginDaysDiff' => -100,
+                'endDaysDiff' => '',
+                'criteria' => ['quick_link' => 'without-approval'],
+                'errorMessage' => 'Expected the package list to be filtered by "begin date" minus 100 days to "today", type of "quick_link" equals to "without-approval".'
+            ],
+        ],
+
+        'without-accommodation' => [
+            [
+                'expected' => [
+                    'recordsTotal' => 9,
+                    'package_summary_total' => 48024,
+                    'package_summary_paid' => 400,
+                    'package_summary_debt' => 2400,
+                    'package_summary_nights' => 40,
+                    'package_summary_guests' => 15
+                ],
+                'beginDaysDiff' => -100,
+                'endDaysDiff' => '',
+                'criteria' => ['quick_link' => 'without-accommodation'],
+                'errorMessage' => 'Expected the package list to be filtered by "begin date" minus 100 days to "today", type of "quick_link" equals to "without-accommodation".'
+            ],
+        ],
+
+        'not-paid' => [
+            [
+                'expected' => [
+                    'recordsTotal' => 3,
+                    'package_summary_total' => 20364,
+                    'package_summary_paid' => 0,
+                    'package_summary_debt' => 2000,
+                    'package_summary_nights' => 17,
+                    'package_summary_guests' => 5
+                ],
+                'beginDaysDiff' => -100,
+                'endDaysDiff' => '',
+                'criteria' => ['quick_link' => 'not-paid'],
+                'errorMessage' => 'Expected the package list to be filtered by "begin date" minus 100 days to "today", type of "quick_link" equals to "not-paid".'
+            ],
+        ],
+
+        'not-paid-time' => [
+            [
+                'expected' => [
+                    'recordsTotal' => 3,
+                    'package_summary_total' => 20364,
+                    'package_summary_paid' => 0,
+                    'package_summary_debt' => 2000,
+                    'package_summary_nights' => 17,
+                    'package_summary_guests' => 5
+                ],
+                'beginDaysDiff' => -100,
+                'endDaysDiff' => '',
+                'criteria' => ['quick_link' => 'not-paid-time'],
+                'errorMessage' => 'Expected the package list to be filtered by "begin date" minus 100 days to "today", type of "quick_link" equals to "not-paid-time".'
+            ],
+        ],
+
+        'not-check-in' => [
+            [
+                'expected' => [
+                    'recordsTotal' => 7,
+                    'package_summary_total' => 45224,
+                    'package_summary_paid' => 0,
+                    'package_summary_debt' => 0,
+                    'package_summary_nights' => 27,
+                    'package_summary_guests' => 12
+                ],
+                'beginDaysDiff' => -100,
+                'endDaysDiff' => '',
+                'criteria' => ['quick_link' => 'not-check-in'],
+                'errorMessage' => 'Expected the package list to be filtered by "begin date" minus 100 days to "today", type of "quick_link" equals to "not-check-in".'
+            ],
+        ],
+
+        'created-by' => [
+            [
+                'expected' => [
+                    'recordsTotal' => 8,
+                    'package_summary_total' => 72224,
+                    'package_summary_paid' => 0,
+                    'package_summary_debt' => 0,
+                    'package_summary_nights' => 38,
+                    'package_summary_guests' => 19
+                ],
+                'beginDaysDiff' => -100,
+                'endDaysDiff' => '',
+                'criteria' => ['quick_link' => 'created-by'],
+                'errorMessage' => 'Expected the package list to be filtered by "begin date" minus 100 days to "today", type of "quick_link" equals to "created-by" ("My bookings").'
+            ],
+        ],
+
+        'records quantity' => [
+            [
+                'expected' => [
+                    'data' => ['type' => 'count', 'val' => 10],
+                ],
+                'criteria' => [
+                    'start' => 0,
+                    'length' => 10,
+                ],
+                'errorMessage' => 'Expected the package list to be filtered by "begin date" equals to "today", quantity of records 10, page 1.'
+            ],
+            [
+                'expected' => [
+                    'data' => ['type' => 'count', 'val' => 5],
+                ],
+                'criteria' => [
+                    'start' => 10,
+                    'length' => 10,
+                ],
+                'errorMessage' => 'Expected the package list to be filtered by "begin date" equals to "today", quantity of records 10, page 2.'
+            ],
+        ],
+
+
     ];
 
-    const TEST_ROOM_TYPE = 'room';
-    const TEST_BOOKING_TYPE = 'booking';
-    const TEST_SOURCE = 'date';
-    const TEST_PAYMENT_STATUS = 'payment';
-    const TEST_APPROVAL = 'approval';
-    const TEST_DELETED = 'deleted';
-    const TEST_BEGIN_TODAY = 'begin-today';
-    const TEST_BEGIN_TOMORROW = 'begin-tomorrow';
-    const TEST_LIVE_TODAY = 'live-now';
-    const TEST_WITHOUT_APPROVAL = 'without-approval';
-    const TEST_WITHOUT_ACCOMMODATION = 'without-accommodation';
-    const TEST_NOT_PAID = 'not-paid';
-    const TEST_NOT_PAID_TIME = 'not-paid-time';
-    const TEST_NOT_CHECK_IN = 'not-check-in';
-    const TEST_CREATED_BY = 'created-by';
+    const SEARCH_DATA = [
 
-//    const SEARCH_PARAMS = [
-//        ['quick_link' => 'begin-today'],
-//        ['quick_link' => 'begin-tomorrow'],
-//        ['quick_link' => 'live-now'],
-//        ['quick_link' => 'without-approval'],
-//        ['quick_link' => 'without-accommodation'],
-//        ['quick_link' => 'not-paid'],
-//        ['quick_link' => 'not-paid-time'],
-//        ['quick_link' => 'not-check-in'],
-//        ['quick_link' => 'created-by'],
-//        ['quick_link' => ''],
-//    ];
+        'search field' => [
+            [
+                'expected' => [
+                    'data' => ['type' => 'count', 'val' => 1],
+                ],
+                'criteria' => [
+                    'search' => 'Илья',
+                ],
+                'errorMessage' => 'Expected the package list to be filtered by "begin date" equals to "today", search field value equals to "Илья".'
+            ],
+            [
+                'expected' => [
+                    'data' => ['type' => 'count', 'val' => 1],
+                ],
+                'criteria' => [
+                    'search' => 'Габонов',
+                ],
+                'errorMessage' => 'Expected the package list to be filtered by "begin date" equals to "today", search field value equals to "Габонов".'
+            ],
+            [
+                'expected' => [
+                    'data' => ['type' => 'count', 'val' => 1],
+                ],
+                'criteria' => [
+                    'search' => 'Пабло',
+                ],
+                'errorMessage' => 'Expected the package list to be filtered by "begin date" equals to "today", search field value equals to "Пабло".'
+            ],
+            [
+                'expected' => [
+                    'data' => ['type' => 'count', 'val' => 1],
+                ],
+                'criteria' => [
+                    'search' => 'Хосе',
+                ],
+                'errorMessage' => 'Expected the package list to be filtered by "begin date" equals to "today", search field value equals to "Хосе".'
+            ],
+            [
+                'expected' => [
+                    'data' => ['type' => 'count', 'val' => 1],
+                ],
+                'criteria' => [
+                    'search' => 18,
+                ],
+                'errorMessage' => 'Expected the package list to be filtered by "begin date" equals to "today", search field value equals to "18".'
+            ],
+        ],
+    ];
+
+    const SORT_DATA = [
+
+        'sort by order number' => [
+            [
+                'expected' => [
+                    'record1' => [
+                        'type' => 'value',
+                        'elemNumber' => 0,
+                        'paramValue' => '1/1',
+                        'expectedVal' => 1
+                    ],
+                    'record2' => [
+                        'type' => 'value',
+                        'elemNumber' => 1,
+                        'paramValue' => '2/1',
+                        'expectedVal' => 1
+                    ],
+
+                ],
+                'criteria' => [
+                    'orderColumn' => 1,
+                    'dir' => 'asc'
+                ],
+                'errorMessage' => 'Expected the package list to be sorted by "order number" in ASC direction.'
+            ],
+            [
+                'expected' => [
+                    'record1' => [
+                        'type' => 'value',
+                        'elemNumber' => 0,
+                        'paramValue' => '19/1',
+                        'expectedVal' => 1
+                    ],
+                    'record2' => [
+                        'type' => 'value',
+                        'elemNumber' => 1,
+                        'paramValue' => '18/1',
+                        'expectedVal' => 1
+                    ],
+
+                ],
+                'criteria' => [
+                    'orderColumn' => 1,
+                    'dir' => 'desc'
+                ],
+                'errorMessage' => 'Expected the package list to be sorted by "order number" in DESC direction.'
+            ],
+        ],
+
+        'sort by dates' => [
+            [
+                'expected' => [
+                    'record1' => [
+                        'type' => 'value',
+                        'elemNumber' => 0,
+                        'paramValue' => '18/1',
+                        'expectedVal' => 1
+                    ],
+                    'record2' => [
+                        'type' => 'value',
+                        'elemNumber' => 1,
+                        'paramValue' => '19/1',
+                        'expectedVal' => 1
+                    ],
+
+                ],
+                'criteria' => [
+                    'orderColumn' => 2,
+                    'dir' => 'asc'
+                ],
+                'errorMessage' => 'Expected the package list to be sorted by "dates" in ASC direction.'
+            ],
+            [
+                'expected' => [
+                    'record1' => [
+                        'type' => 'value',
+                        'elemNumber' => 0,
+                        'paramValue' => '4/1',
+                        'expectedVal' => 1
+                    ],
+                    'record2' => [
+                        'type' => 'value',
+                        'elemNumber' => 1,
+                        'paramValue' => '5/1',
+                        'expectedVal' => 1
+                    ],
+
+                ],
+                'criteria' => [
+                    'orderColumn' => 2,
+                    'dir' => 'desc'
+                ],
+                'errorMessage' => 'Expected the package list to be sorted by "dates" in DESC direction.'
+            ],
+        ],
+
+        'sort by rooms' => [
+            [
+                'expected' => [
+                    'record1' => [
+                        'type' => 'value',
+                        'elemNumber' => 0,
+                        'paramValue' => '18/1',
+                        'expectedVal' => 1
+                    ],
+                    'record2' => [
+                        'type' => 'value',
+                        'elemNumber' => 1,
+                        'paramValue' => '1/1',
+                        'expectedVal' => 1
+                    ],
+
+                ],
+                'criteria' => [
+                    'orderColumn' => 3,
+                    'dir' => 'asc'
+                ],
+                'errorMessage' => 'Expected the package list to be sorted by "room type" in ASC direction.'
+            ],
+            [
+                'expected' => [
+                    'record1' => [
+                        'type' => 'value',
+                        'elemNumber' => 0,
+                        'paramValue' => '19/1',
+                        'expectedVal' => 1
+                    ],
+                    'record2' => [
+                        'type' => 'value',
+                        'elemNumber' => 1,
+                        'paramValue' => '1/1',
+                        'expectedVal' => 1
+                    ],
+
+                ],
+                'criteria' => [
+                    'orderColumn' => 3,
+                    'dir' => 'desc'
+                ],
+                'errorMessage' => 'Expected the package list to be sorted by "room type" in DESC direction.'
+            ],
+        ],
+
+        'sort by price' => [
+            [
+                'expected' => [
+                    'record1' => [
+                        'type' => 'value',
+                        'elemNumber' => 0,
+                        'paramValue' => '7/1',
+                        'expectedVal' => 1
+                    ],
+                    'record2' => [
+                        'type' => 'value',
+                        'elemNumber' => 1,
+                        'paramValue' => '2/1',
+                        'expectedVal' => 1
+                    ],
+
+                ],
+                'criteria' => [
+                    'orderColumn' => 5,
+                    'dir' => 'asc'
+                ],
+                'errorMessage' => 'Expected the package list to be sorted by "price" in ASC direction.'
+            ],
+            [
+                'expected' => [
+                    'record1' => [
+                        'type' => 'value',
+                        'elemNumber' => 0,
+                        'paramValue' => '12/1',
+                        'expectedVal' => 1
+                    ],
+                    'record2' => [
+                        'type' => 'value',
+                        'elemNumber' => 1,
+                        'paramValue' => '13/1',
+                        'expectedVal' => 1
+                    ],
+
+                ],
+                'criteria' => [
+                    'orderColumn' => 5,
+                    'dir' => 'desc'
+                ],
+                'errorMessage' => 'Expected the package list to be sorted by "price" in DESC direction.'
+            ],
+        ],
+
+        'sort by created at' => [
+            [
+                'expected' => [
+                    'record1' => [
+                        'type' => 'value',
+                        'elemNumber' => 0,
+                        'paramValue' => '15/1',
+                        'expectedVal' => 1
+                    ],
+                    'record2' => [
+                        'type' => 'value',
+                        'elemNumber' => 1,
+                        'paramValue' => '12/1',
+                        'expectedVal' => 1
+                    ],
+
+                ],
+                'criteria' => [
+                    'orderColumn' => 6,
+                    'dir' => 'asc'
+                ],
+                'errorMessage' => 'Expected the package list to be sorted by "created at" in ASC direction.'
+            ],
+            [
+                'expected' => [
+                    'record1' => [
+                        'type' => 'value',
+                        'elemNumber' => 0,
+                        'paramValue' => '2/1',
+                        'expectedVal' => 1
+                    ],
+                    'record2' => [
+                        'type' => 'value',
+                        'elemNumber' => 1,
+                        'paramValue' => '1/1',
+                        'expectedVal' => 1
+                    ],
+
+                ],
+                'criteria' => [
+                    'orderColumn' => 6,
+                    'dir' => 'desc'
+                ],
+                'errorMessage' => 'Expected the package list to be sorted by "created at" in DESC direction.'
+            ],
+        ]
+    ];
 
     /** @var Client */
     protected $client;
@@ -272,6 +780,8 @@ class PackageControllerTest extends WebTestCase
      */
     protected $hotel;
 
+    protected $newRecords = [];
+
     public static function setUpBeforeClass()
     {
         self::baseFixtures();
@@ -290,7 +800,15 @@ class PackageControllerTest extends WebTestCase
         $this->dm = $this->container->get('doctrine.odm.mongodb.document_manager');
         $this->hotel = $this->container->get('mbh.hotel.selector')->getSelected();
         $this->persistPackage($this->dm);
+    }
 
+    public function tearDown()
+    {
+        foreach ($this->newRecords as $record) {
+            $this->dm->remove($record);
+            $this->dm->flush();
+        }
+        $this->newRecords = [];
     }
 
     protected function getRequest($params)
@@ -337,14 +855,19 @@ class PackageControllerTest extends WebTestCase
         return $requestParams;
     }
 
+    protected function executeTest($testData)
+    {
+        $requestParams = self::REQUEST_DATA_COMMON;
+        $requestParams = $this->getParameters($requestParams, $testData);
+        $this->getRequest($requestParams);
+        $this->assertRecords($testData['expected'], $testData['errorMessage']);
+    }
+
     public function testIndexAction()
     {
-        foreach (self::TEST_DATA as $test) {
+        foreach (self::FILTERS_DATA as $test) {
             foreach ($test as $testData) {
-                $requestParams = self::REQUEST_DATA_COMMON;
-                $requestParams = $this->getParameters($requestParams, $testData);
-                $this->getRequest($requestParams);
-                $this->assertRecords($testData['expected'], $testData['errorMessage']);
+                $this->executeTest($testData);
             }
         }
     }
@@ -360,6 +883,7 @@ class PackageControllerTest extends WebTestCase
             'hotel' => $this->hotel,
             'places' => 1
         ]);
+
         /**
          * @var RoomType $doubleRoom
          */
@@ -372,12 +896,12 @@ class PackageControllerTest extends WebTestCase
         $this->getRequest($requestParams);
         $errorMessage = 'Expected the package list to be filtered by "begin date" minus 100 days to "today", "roomType" equals to "single room".';
         $expected = [
-            'recordsTotal' => 2,
-//                    'package_summary_total' => 100655,
-//                    'package_summary_paid' => 0,
-//                    'package_summary_debt' => 0,
-//                    'package_summary_nights' => 64,
-//                    'package_summary_guests' => 26
+            'recordsTotal' => 1,
+            'package_summary_total' => 2000,
+            'package_summary_paid' => 0,
+            'package_summary_debt' => 2000,
+            'package_summary_nights' => 8,
+            'package_summary_guests' => 2
         ];
         $this->assertRecords($expected, $errorMessage);
 
@@ -386,25 +910,139 @@ class PackageControllerTest extends WebTestCase
         $errorMessage = 'Expected the package list to be filtered by "begin date" minus 100 days to "today", "roomType" equals to "double room".';
         $expected = [
             'recordsTotal' => 15,
-//                    'package_summary_total' => 100655,
-//                    'package_summary_paid' => 0,
-//                    'package_summary_debt' => 0,
-//                    'package_summary_nights' => 64,
-//                    'package_summary_guests' => 26
+            'package_summary_total' => 127655,
+            'package_summary_paid' => 0,
+            'package_summary_debt' => 0,
+            'package_summary_nights' => 77,
+            'package_summary_guests' => 35
         ];
         $this->assertRecords($expected, $errorMessage);
 
     }
 
+    public function testSellingSource()
+    {
+        $requestParams = self::REQUEST_DATA_COMMON;
+        $requestParams['begin'] = new \DateTime('midnight');
+        /**
+         * @var PackageSource $online
+         */
+        $online = $this->dm->getRepository(PackageSource::class)->findOneBy([
+            'code' => 'online',
+        ]);
+
+        /**
+         * @var PackageSource $offline
+         */
+        $offline = $this->dm->getRepository(PackageSource::class)->findOneBy([
+            'code' => 'offline',
+        ]);
+
+        $requestParams['source'] = $online->getId();
+        $this->getRequest($requestParams);
+        $errorMessage = 'Expected the package list to be filtered by "begin date" equals to "today", "source" equals to "online".';
+        $expected = [
+            'recordsTotal' => 2,
+            'package_summary_total' => 27000,
+            'package_summary_paid' => 0,
+            'package_summary_debt' => 0,
+            'package_summary_nights' => 13,
+            'package_summary_guests' => 9
+        ];
+        $this->assertRecords($expected, $errorMessage);
+
+        $requestParams['source'] = $offline->getId();
+        $this->getRequest($requestParams);
+        $errorMessage = 'Expected the package list to be filtered by "begin date" equals to "today", "source" equals to "manager".';
+        $expected = [
+            'recordsTotal' => 13,
+            'package_summary_total' => 100655,
+            'package_summary_paid' => 0,
+            'package_summary_debt' => 0,
+            'package_summary_nights' => 64,
+            'package_summary_guests' => 26
+        ];
+        $this->assertRecords($expected, $errorMessage);
+
+    }
+
+    public function testSearching()
+    {
+        foreach (self::SEARCH_DATA as $test) {
+            foreach ($test as $testData) {
+                $requestParams = self::REQUEST_DATA_COMMON;
+                $requestParams['begin'] = new \DateTime('-' . 100 . 'days');
+                $requestParams['search']['value'] = $testData['criteria']['search'];
+                $expected = $testData['expected'];
+                $errorMessage = $testData['errorMessage'];
+                $this->getRequest($requestParams);
+                $this->assertRecords($expected, $errorMessage);
+            }
+        }
+    }
+
+    public function testSorting()
+    {
+        foreach (self::SORT_DATA as $test) {
+            foreach ($test as $testData) {
+                $requestParams = self::REQUEST_DATA_COMMON;
+                $requestParams['order'][0]['column'] = $testData['criteria']['orderColumn'];
+                $requestParams['order'][0]['dir'] = $testData['criteria']['dir'];
+                $expected = $testData['expected'];
+                $errorMessage = $testData['errorMessage'];
+                $this->getRequest($requestParams);
+                $this->assertRecords($expected, $errorMessage);
+            }
+        }
+    }
+
     protected function assertRecords($expected, $errorMessage = "")
     {
-        $response = json_decode($this->client->getResponse()->getContent());
-        foreach ($expected as $key => $value)
+
+        foreach ($expected as $key => $value) {
+            if (is_array($value)) {
+                switch ($value['type']) {
+                    case 'value':
+                        $response = json_decode($this->client->getResponse()->getContent(), true);
+                        $expectedValue = $value['expectedVal'];
+                        $assertParams['elemNumber'] = $value['elemNumber'];
+                        $assertParams['paramValue'] = $value['paramValue'];
+                        $actualValue = $this->getActualDataFromJson($response, $assertParams);
+                        break;
+
+                    case 'count':
+                        $response = json_decode($this->client->getResponse()->getContent());
+                        $expectedValue = $value['val'];
+                        $actualValue = count($response->$key);
+                        break;
+
+
+                }
+            } else {
+                $response = json_decode($this->client->getResponse()->getContent());
+                $expectedValue = $value;
+                $actualValue = $this->clearNumber($response->$key);
+            }
             $this->assertEquals(
-                $value,
-                $response->$key,
+                $expectedValue,
+                $actualValue,
                 $errorMessage
             );
+        }
+    }
+
+    protected function getActualDataFromJson($response, $assertParams)
+    {
+        $crawler = new Crawler(implode($response['data'][$assertParams['elemNumber']]));
+        return $crawler->filter('html:contains("' . $assertParams["paramValue"] . '")')->count();
+    }
+
+    protected function clearNumber($value)
+    {
+        if (!is_string($value)) {
+            return $value;
+        }
+        return preg_replace('/,/', '', $value);
     }
 
     /**
@@ -412,7 +1050,8 @@ class PackageControllerTest extends WebTestCase
      * @param $data
      * @return Order
      */
-    public function persistOrder(ObjectManager $manager, $data)
+    public
+    function persistOrder(ObjectManager $manager, $data)
     {
         $owner = $this->dm->getRepository(User::class)->findOneBy(['username' => $data['owner']]);
 
@@ -422,13 +1061,16 @@ class PackageControllerTest extends WebTestCase
             ->setStatus($data['status'] ?? 'offline')
             ->setTotalOverwrite($data['price'])
             ->setCreatedBy($owner)
-            ->setCreatedAt((new \DateTime())->modify('-' . $data['regDayAgo'] . 'days'));
+            ->setCreatedAt((new \DateTime())->modify('-' . $data['regDayAgo'] . 'days'))
+            ->setConfirmed($data['confirmed']);
+
         if ($owner) {
             $order->setOwner($owner);
 
         }
         $order->checkPaid();
         $manager->persist($order);
+        $this->newRecords[] = $order;
         $manager->flush();
 
         return $order;
@@ -438,22 +1080,25 @@ class PackageControllerTest extends WebTestCase
     /**
      * @param ObjectManager $manager
      */
-    public function persistPackage(ObjectManager $manager)
+    public
+    function persistPackage(ObjectManager $manager)
     {
         /** @var Tariff $tariff */
         $tariff = $this->dm->getRepository(Tariff::class)->findOneBy([
             'hotel' => $this->hotel,
             'isDefault' => true
         ]);
-        /** @var RoomType $roomType */
-        $roomType = $this->dm->getRepository(RoomType::class)->findOneBy([
-            'hotel' => $this->hotel,
-            'places' => 1
-        ]);
+
 
         foreach (self::FIXTURE_DATA as $packageData) {
+            /** @var RoomType $roomType */
+            $roomType = $this->dm->getRepository(RoomType::class)->findOneBy([
+                'hotel' => $this->hotel,
+                'places' => $packageData['rooms'],
+            ]);
             $owner = $this->getOwner($packageData['owner'] ?? null);
             $order = $this->persistOrder($manager, $packageData);
+            $tourist = $this->persistTourist($manager, $packageData);
             $beginDate = new \DateTime('midnight +' . $packageData['beginAfter'] . 'days');
             $endDate = (clone $beginDate)->modify('+' . $packageData['length'] . 'days');
             $dateOfCreation = new \DateTime('-' . $packageData['regDayAgo'] . 'days');
@@ -472,6 +1117,12 @@ class PackageControllerTest extends WebTestCase
                 ->setCreatedBy($owner)
                 ->setEnd($endDate)
                 ->setIsCheckIn($packageData['isCheckIn']);
+
+            $package->addTourist($tourist);
+            $tourist->addPackage($package);
+            $tourist->addOrder($order);
+            $order->addPackage($package);
+            $order->setMainTourist($tourist);
             if ($owner) {
                 $package->setOwner($owner);
             }
@@ -490,10 +1141,10 @@ class PackageControllerTest extends WebTestCase
             }
             $package->setPrices($prices);
             $manager->persist($package);
+//            $this->newRecords[] = $package;
             $manager->flush();
         }
     }
-
 
     private function getOwner($name): ?User
     {
@@ -503,6 +1154,36 @@ class PackageControllerTest extends WebTestCase
         }
 
         return null;
+    }
+
+    /**
+     * @param ObjectManager $manager
+     * @param $data
+     * @return Tourist
+     */
+    private function persistTourist(ObjectManager $manager, $data)
+    {
+        $touristData = self::TOURIST_DATA[$data['tourist']];
+        $locale = $this->container->getParameter('locale') === 'ru' ? 'ru' : 'en';
+
+        $tourist = new Tourist();
+        $tourist
+            ->setFirstName($touristData['name'])
+            ->setLastName($touristData['lastName'])
+            ->setSex('male')
+            ->setCommunicationLanguage($locale);
+
+        if ($locale === 'ru') {
+            $tourist->setPatronymic($touristData['patronymic']);
+        }
+
+        if (isset($touristData['email'])) {
+            $tourist->setEmail($touristData['email']);
+        }
+        $manager->persist($tourist);
+        $this->newRecords[] = $tourist;
+        $manager->flush();
+        return $tourist;
     }
 
 }

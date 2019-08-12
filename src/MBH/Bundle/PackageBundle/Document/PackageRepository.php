@@ -598,7 +598,7 @@ class PackageRepository extends DocumentRepository
         $showDeleted = (isset($data['deleted']) && $data['deleted']) || $deletedAtFilter;
 
         //confirmed
-        if (isset($data['confirmed']) && $data['confirmed'] != null) {
+        if (isset($data['confirmed']) && $data['confirmed'] !== "" && $data['confirmed'] !== null) {
             $orderData = array_merge(
                 $orderData,
                 ['asIdsArray' => true, 'confirmed' => !empty($data['confirmed']) ? true : false]

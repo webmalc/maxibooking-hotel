@@ -380,9 +380,9 @@ var docReadyPackages = function() {
       null, // prefix
       null, // created
       null, // room
-      null, //dates
-      null, //tourists
+      {'bSortable': false}, //tourists
       null, // price
+      null, // dates
       {'bSortable': false} // actions
     ],
     'drawCallback': function(settings, json) {
