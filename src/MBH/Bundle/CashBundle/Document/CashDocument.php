@@ -400,16 +400,22 @@ class CashDocument extends Base
      *
      * @return PayerInterface|null
      */
-    public function getPayer()
+    public function getPayer(): ?PayerInterface
     {
         if ($this->getOrganizationPayer()) {
             return $this->getOrganizationPayer();
-        } elseif ($this->getTouristPayer()) {
+        }
+
+        if ($this->getTouristPayer()) {
             return $this->getTouristPayer();
-        } elseif ($this->getOrder()) {
+        }
+
+        if ($this->getOrder()) {
             if ($this->getOrder()->getOrganization()) {
                 return $this->getOrder()->getOrganization();
-            } elseif ($this->getOrder()->getMainTourist()) {
+            }
+
+            if ($this->getOrder()->getMainTourist()) {
                 return $this->getOrder()->getMainTourist();
             }
         }
