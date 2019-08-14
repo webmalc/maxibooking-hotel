@@ -171,8 +171,6 @@ class Mailer implements \SplObserver, MailerInterface
             );
         } elseif (!$this->canISentToClient($data['messageType'])) {
             $this->logger->alert("There is no recipient client according mailer restrictions");
-
-            return true;
         }
 
         empty($data['subject']) ? $data['subject'] = $this->params['subject'] : $data['subject'];
