@@ -24,7 +24,7 @@ prompt-toolkit==2.0.7
 ptyprocess==0.6.0
 py==1.7.0
 pyflakes==2.0.0
-Pygments==2.2.0
+Pygments==2.7.4
 pymongo==3.7.2
 pytest==4.0.0
 pytest-cache==1.0
